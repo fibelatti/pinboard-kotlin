@@ -1,0 +1,27 @@
+apply plugin: "java"
+
+repositories {
+    jcenter()
+}
+
+configurations {
+    ktlint
+}
+
+task ktlint(type: JavaExec) {
+    description = "Check Kotlin code style."
+    classpath = configurations.ktlint
+    main = "com.github.shyiko.ktlint.Main"
+    args "$projectDir/*/src/**/*.kt"
+}
+
+task ktlintFormat(type: JavaExec) {
+    description = "Fix Kotlin code style deviations."
+    classpath = configurations.ktlint
+    main = "com.github.shyiko.ktlint.Main"
+    args "-F", "$projectDir/*/src/**/*.kt"
+}
+
+dependencies {
+    ktlint "com.github.shyiko:ktlint:0.29.0"
+}

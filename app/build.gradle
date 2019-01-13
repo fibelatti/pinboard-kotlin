@@ -1,0 +1,110 @@
+apply plugin: "com.android.application"
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-android-extensions"
+apply plugin: "kotlin-kapt"
+apply plugin: "com.getkeepsafe.dexcount"
+apply from: "coverage-report.gradle"
+
+android {
+    compileSdkVersion Versions.compileSdkVersion
+    buildToolsVersion Versions.buildToolsVersion
+
+    defaultConfig {
+        applicationId AppInfo.applicationId
+        versionCode AppInfo.versionCode
+        versionName AppInfo.versionName
+        minSdkVersion Versions.minSdkVersion
+        targetSdkVersion Versions.targetSdkVersion
+
+        resConfigs "en", "pt", "es"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file("../keystore/debug.keystore")
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+            storePassword "android"
+        }
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+            resValue "string", "app_name", AppInfo.appName + " Dev"
+
+            testCoverageEnabled = true
+            minifyEnabled false
+        }
+        release {
+            resValue "string", "app_name", AppInfo.appName
+
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
+
+    sourceSets {
+        main.java.srcDirs("src/main/kotlin")
+
+        test.java.srcDirs("src/sharedTest/resources", "src/test/kotlin")
+
+        androidTest.java.srcDirs("src/sharedTest/resources", "src/test/kotlin")
+    }
+
+    testOptions {
+        animationsDisabled true
+
+        unitTests {
+            returnDefaultValues = true
+            includeAndroidResources = true
+        }
+    }
+}
+
+dependencies {
+    implementation(name: "fibelatti-arch-components", ext: "aar")
+
+    // Kotlin
+    implementation KotlinDependencies.kotlin
+    implementation KotlinDependencies.coroutinesCore
+    implementation KotlinDependencies.coroutinesAndroid
+
+    // Support Library
+    implementation SupportLibraryDependencies.supportLibrary
+    implementation SupportLibraryDependencies.materialDesign
+    implementation SupportLibraryDependencies.constraintLayout
+
+    // Architecture Components
+    implementation ArchitectureComponentDependencies.archComponents
+    kapt ArchitectureComponentDependencies.archComponentsCompiler
+
+    // DI
+    implementation DIDependencies.dagger
+    kapt DIDependencies.daggerCompiler
+
+    // Third Party
+    implementation ThirdPartyDependencies.moshiKotlin
+
+    // Testing
+    testRuntimeOnly TestDependencies.junit5Engine
+    testRuntimeOnly TestDependencies.junitVintage
+
+    testCompileOnly TestDependencies.junit
+
+    testImplementation(name: "fibelatti-arch-components", ext: "aar")
+
+    testImplementation TestDependencies.junit5
+    testImplementation TestDependencies.junit5Params
+    testImplementation TestDependencies.mockitoCore
+    testImplementation TestDependencies.archComponentsTest
+
+    androidTestImplementation SupportLibraryDependencies.supportAnnotations
+    androidTestImplementation TestDependencies.mockitoAndroid
+    androidTestImplementation TestDependencies.archComponentsTest
+    androidTestImplementation TestDependencies.testRunner
+    androidTestImplementation TestDependencies.kotlinTest
+}

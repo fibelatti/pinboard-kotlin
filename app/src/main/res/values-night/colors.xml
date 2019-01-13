@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="color_status_bar">#000000</color>
+    <color name="color_background">#181818</color>
+    <color name="color_background_contrast">#282828</color>
+    <color name="color_icon">#F5F5F5</color>
+
+    <color name="color_divider">#9E9E9E</color>
+
+    <color name="text_primary">#F5F5F5</color>
+    <color name="text_secondary">#9E9E9E</color>
+</resources>

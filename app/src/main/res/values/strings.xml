@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Common -->
+    <string name="hint_ok">OK</string>
+    <string name="hint_yes">Yes</string>
+    <string name="hint_no">No</string>
+    <string name="hint_save">Save</string>
+    <string name="hint_edit">Edit</string>
+    <string name="hint_delete">Delete</string>
+    <string name="hint_continue">Continue</string>
+    <string name="hint_cancel">Cancel</string>
+    <string name="hint_search">Search</string>
+    <string name="hint_dismiss">Dismiss</string>
+    <string name="hint_reset">Reset</string>
+
+    <string name="alert_confirm_deletion">Confirm deletion?</string>
+
+    <string name="generic_log_error">Error in %1$s (%2$s)</string>
+
+    <string name="generic_msg_error">Oops! Something went wrong. Please try again.</string>
+
+    <!-- Preferences -->
+    <string name="preferences_about">Developed with ❤ by Filipe Belatti</string>
+    <string name="preferences_app_version">Version: %s</string>
+</resources>

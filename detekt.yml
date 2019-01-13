@@ -1,0 +1,104 @@
+autoCorrect: true
+failFast: false
+
+build:
+    maxIssues: 1
+    weights:
+        comments: 0.5
+        complexity: 2
+        empty-blocks: 0.5
+        exceptions: 1
+        naming: 0.5
+        potential-bugs: 2
+        style: 1
+        formatting: 0.5
+        code-smell: 2
+
+comments:
+    active: true
+    CommentOverPrivateMethod:
+        active: false
+    CommentOverPrivateProperty:
+        active: true
+    NoDocOverPublicClass:
+        active: false
+    NoDocOverPublicMethod:
+        active: false
+
+complexity:
+    active: true
+    ComplexCondition:
+        threshold: 2
+    ComplexInterface:
+        threshold: 15
+    ComplexMethod:
+        threshold: 10
+    LargeClass:
+        threshold: 500
+    LongMethod:
+        threshold: 30
+    LongParameterList:
+        threshold: 8
+        ignoreDefaultParameters: true
+    NestedBlockDepth:
+        threshold: 3
+    StringLiteralDuplication:
+        threshold: 1
+
+empty-blocks:
+    active: true
+
+exceptions:
+    active: true
+
+naming:
+    active: true
+    FunctionMinLength:
+        minimumFunctionNameLength: 3
+    VariableMinLength:
+        minimumVariableNameLength: 3
+
+potential-bugs:
+    active: true
+    DuplicateCaseInWhenExpression:
+        active: true
+    EqualsWithHashCodeExist:
+        active: true
+    ExplicitGarbageCollectionCall:
+        active: true
+    UnsafeCallOnNullableType:
+        active: true
+    UnsafeCast:
+        active: false
+
+style:
+    active: true
+    CollapsibleIfStatements:
+        active: true
+    MagicNumber:
+        active: true
+    MaxLineLength:
+        active: true
+        maxLineLength: 200
+        excludePackageStatements: true
+        excludeImportStatements: true
+    ModifierOrder:
+        active: true
+    NamingConventionViolation:
+        active: true
+        variablePattern: '^[a-z$][a-zA-Z$0-9]*$'
+        constantPattern: '^([A-Z_]*|serialVersionUID)$'
+        methodPattern: '^[a-z$][a-zA-Z$0-9]*$'
+        classPattern: '[A-Z$][a-zA-Z$]*'
+        enumEntryPattern: '^[A-Z$][a-zA-Z_$]*$'
+    NewLineAtEndOfFile:
+        active: true
+    SpacingBetweenPackageAndImports:
+        active: true
+    UnusedImports:
+        active: true
+    WildcardImport:
+        active: false
+
+code-smell:
+  active: true

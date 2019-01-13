@@ -1,0 +1,22 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/android:api-27-alpha
+
+    working_directory: ~/repo
+
+    environment:
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+
+    steps:
+      - checkout
+
+      - run:
+          name: Download dependencies
+          command: ./gradlew androidDependencies
+
+      - run:
+          name: Gradle build
+          command: ./gradlew clean assemble test
