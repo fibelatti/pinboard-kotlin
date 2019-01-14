@@ -1,24 +1,29 @@
-apply plugin: "com.android.application"
-apply plugin: "kotlin-android"
-apply plugin: "kotlin-android-extensions"
-apply plugin: "kotlin-kapt"
-apply plugin: "com.getkeepsafe.dexcount"
-apply from: "coverage-report.gradle"
+plugins {
+    id("com.android.application")
+    id("kotlin-android")
+    id("kotlin-android-extensions")
+    id("kotlin-kapt")
+    id("com.getkeepsafe.dexcount")
+}
+
+apply {
+    from("coverage-report.gradle")
+}
 
 android {
-    compileSdkVersion Versions.compileSdkVersion
-    buildToolsVersion Versions.buildToolsVersion
+    compileSdkVersion(Versions.compileSdkVersion)
+    buildToolsVersion(Versions.buildToolsVersion)
 
     defaultConfig {
-        applicationId AppInfo.applicationId
-        versionCode AppInfo.versionCode
-        versionName AppInfo.versionName
-        minSdkVersion Versions.minSdkVersion
-        targetSdkVersion Versions.targetSdkVersion
+        applicationId = AppInfo.applicationId
+        versionCode = AppInfo.versionCode
+        versionName = AppInfo.versionName
+        minSdkVersion(Versions.minSdkVersion)
+        targetSdkVersion(Versions.targetSdkVersion)
 
-        resConfigs "en", "pt", "es"
+        resConfigs("en", "pt", "es")
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -69,42 +74,44 @@ dependencies {
     implementation(name: "fibelatti-arch-components", ext: "aar")
 
     // Kotlin
-    implementation KotlinDependencies.kotlin
-    implementation KotlinDependencies.coroutinesCore
-    implementation KotlinDependencies.coroutinesAndroid
+    implementation(Dependencies.kotlin)
+    implementation(Dependencies.coroutinesCore)
+    implementation(Dependencies.coroutinesAndroid)
 
-    // Support Library
-    implementation SupportLibraryDependencies.supportLibrary
-    implementation SupportLibraryDependencies.materialDesign
-    implementation SupportLibraryDependencies.constraintLayout
+    // Android
+    implementation(Dependencies.supportLibrary)
+    implementation(Dependencies.materialDesign)
+    implementation(Dependencies.constraintLayout)
 
-    // Architecture Components
-    implementation ArchitectureComponentDependencies.archComponents
-    kapt ArchitectureComponentDependencies.archComponentsCompiler
+    implementation(Dependencies.archComponents)
+    kapt(Dependencies.archComponentsCompiler)
 
-    // DI
-    implementation DIDependencies.dagger
-    kapt DIDependencies.daggerCompiler
+    // Misc
+    implementation(Dependencies.dagger)
+    kapt(Dependencies.daggerCompiler)
 
-    // Third Party
-    implementation ThirdPartyDependencies.moshiKotlin
+    implementation(Dependencies.moshiKotlin)
 
-    // Testing
-    testRuntimeOnly TestDependencies.junit5Engine
-    testRuntimeOnly TestDependencies.junitVintage
+    implementation(Dependencies.retrofit)
+    implementation(Dependencies.retrofitMoshiConverter)
+    implementation(Dependencies.httpLoggingInterceptor)
 
-    testCompileOnly TestDependencies.junit
+    // Test
+    testRuntimeOnly(TestDependencies.junit5Engine)
+    testRuntimeOnly(TestDependencies.junitVintage)
+
+    testCompileOnly(TestDependencies.junit)
 
     testImplementation(name: "fibelatti-arch-components", ext: "aar")
 
-    testImplementation TestDependencies.junit5
-    testImplementation TestDependencies.junit5Params
-    testImplementation TestDependencies.mockitoCore
-    testImplementation TestDependencies.archComponentsTest
+    testImplementation(TestDependencies.junit5)
+    testImplementation(TestDependencies.junit5Params)
+    testImplementation(TestDependencies.mockitoCore)
+    testImplementation(TestDependencies.archComponentsTest)
 
-    androidTestImplementation SupportLibraryDependencies.supportAnnotations
-    androidTestImplementation TestDependencies.mockitoAndroid
-    androidTestImplementation TestDependencies.archComponentsTest
-    androidTestImplementation TestDependencies.testRunner
-    androidTestImplementation TestDependencies.kotlinTest
+    androidTestImplementation(Dependencies.supportAnnotations)
+    androidTestImplementation(TestDependencies.mockitoAndroid)
+    androidTestImplementation(TestDependencies.archComponentsTest)
+    androidTestImplementation(TestDependencies.testRunner)
+    androidTestImplementation(TestDependencies.kotlinTest)
 }
