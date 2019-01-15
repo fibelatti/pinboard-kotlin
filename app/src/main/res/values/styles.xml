@@ -42,6 +42,12 @@
         <item name="colorAccent">@color/color_accent</item>
         <item name="bottomSheetStyle">@style/AppTheme.BottomSheetModal</item>
         <item name="android:windowIsFloating">false</item>
+        <item name="android:windowAnimationStyle">@style/AppTheme.BaseBottomSheetDialog.Animation</item>
+    </style>
+
+    <style name="AppTheme.BaseBottomSheetDialog.Animation" parent="Animation.Design.BottomSheetDialog">
+        <item name="android:windowEnterAnimation">@anim/bottom_sheet_open</item>
+        <item name="android:windowExitAnimation">@anim/bottom_sheet_close</item>
     </style>
 
     <style name="AppTheme.BaseBottomSheetDialog.BottomSheetDialog">

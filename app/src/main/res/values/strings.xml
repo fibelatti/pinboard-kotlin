@@ -19,6 +19,25 @@
 
     <string name="generic_msg_error">Oops! Something went wrong. Please try again.</string>
 
+    <!-- Menus -->
+    <string name="menu_main_search">Search</string>
+    <string name="menu_main_add">Add link</string>
+
+    <string name="menu_navigation_public">Public</string>
+    <string name="menu_navigation_private">Private</string>
+    <string name="menu_navigation_unread">Unread</string>
+    <string name="menu_navigation_untagged">Untagged</string>
+    <string name="menu_navigation_tags">Tags</string>
+
+    <string name="menu_navigation_account">Account</string>
+
+    <string name="menu_navigation_preferences">Preferences</string>
+
+    <string name="menu_link_delete">Remove link</string>
+    <string name="menu_link_edit">Edit link</string>
+    <string name="menu_link_tags">Edit tags</string>
+    <string name="menu_link_share">Share link</string>
+
     <!-- Preferences -->
     <string name="preferences_about">Developed with ❤ by Filipe Belatti</string>
     <string name="preferences_app_version">Version: %s</string>
