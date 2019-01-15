@@ -1,5 +1,5 @@
 object AppInfo {
-    const val appName = "Pinboard"
+    const val appName = "Pinkt"
     const val applicationId = "com.fibelatti.pinboard"
 
     private const val versionMajor = 1
