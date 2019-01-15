@@ -6,12 +6,19 @@ import com.fibelatti.core.extension.put
 import com.fibelatti.pinboard.core.AppConfig
 import javax.inject.Inject
 
+const val KEY_AUTH_TOKEN = "AUTH_TOKEN"
 const val KEY_APP_THEME = "APP_THEME"
 const val KEY_APP_LANGUAGE = "APP_LANGUAGE"
 
 class CurrentInstallSharedPreferences @Inject constructor(
     private val sharedPreferences: SharedPreferences
 ) {
+    fun getAuthToken(): String = sharedPreferences.get(KEY_AUTH_TOKEN, "")
+
+    fun setAuthToken(authToken: String) {
+        sharedPreferences.put(KEY_AUTH_TOKEN, authToken)
+    }
+
     fun getTheme(): AppConfig.AppTheme {
         return if (sharedPreferences.get(KEY_APP_THEME, "") == AppConfig.AppTheme.DARK.value) {
             AppConfig.AppTheme.DARK
