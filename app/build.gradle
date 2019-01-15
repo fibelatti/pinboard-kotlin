@@ -71,6 +71,7 @@ android {
 }
 
 dependencies {
+    implementation(name: "fibelatti-core", ext: "aar")
     implementation(name: "fibelatti-arch-components", ext: "aar")
 
     // Kotlin
@@ -102,7 +103,8 @@ dependencies {
 
     testCompileOnly(TestDependencies.junit)
 
-    testImplementation(name: "fibelatti-arch-components", ext: "aar")
+    testImplementation(name: "fibelatti-core-test", ext: "aar")
+    testImplementation(name: "fibelatti-arch-components-test", ext: "aar")
 
     testImplementation(TestDependencies.junit5)
     testImplementation(TestDependencies.junit5Params)
