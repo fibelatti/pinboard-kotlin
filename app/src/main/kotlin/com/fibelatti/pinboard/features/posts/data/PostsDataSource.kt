@@ -6,6 +6,7 @@ import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.pinboard.core.extension.toResult
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.InvalidRequestException
+import com.fibelatti.pinboard.core.network.retryIO
 import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
@@ -28,7 +29,7 @@ class PostsDataSource @Inject constructor(
 ) : PostsRepository {
 
     override suspend fun update(): Result<String> =
-        postsApi.update()
+        retryIO { postsApi.update() }
             .toResult()
             .mapCatching { it.updateTime }
 
@@ -39,7 +40,7 @@ class PostsDataSource @Inject constructor(
         tags: String?
     ): Result<Unit> =
         validateUrl(url) {
-            postsApi.add(url, description, extended, tags)
+            retryIO { postsApi.add(url, description, extended, tags) }
                 .toResult()
                 .orThrow()
         }
@@ -48,7 +49,7 @@ class PostsDataSource @Inject constructor(
         url: String
     ): Result<Unit> =
         validateUrl(url) {
-            postsApi.delete(url)
+            retryIO { postsApi.delete(url) }
                 .toResult()
                 .orThrow()
         }
@@ -56,14 +57,14 @@ class PostsDataSource @Inject constructor(
     override suspend fun getRecentPosts(
         tag: String?
     ): Result<List<Post>> =
-        postsApi.getRecentPosts(tag)
+        retryIO { postsApi.getRecentPosts(tag) }
             .toResult()
             .mapCatching(postDtoMapper::mapList)
 
     override suspend fun getAllPosts(
         tag: String?
     ): Result<List<Post>> =
-        postsApi.getAllPosts(tag)
+        retryIO { postsApi.getAllPosts(tag) }
             .toResult()
             .mapCatching(postDtoMapper::mapList)
 
@@ -71,7 +72,7 @@ class PostsDataSource @Inject constructor(
         url: String
     ): Result<SuggestedTags> =
         validateUrl(url) {
-            postsApi.getSuggestedTagsForUrl(url)
+            retryIO { postsApi.getSuggestedTagsForUrl(url) }
                 .toResult()
                 .mapCatching(suggestedTagDtoMapper::map)
         }
