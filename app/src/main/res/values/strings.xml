@@ -23,6 +23,8 @@
     <string name="menu_main_search">Search</string>
     <string name="menu_main_add">Add link</string>
 
+    <string name="menu_navigation_all">All</string>
+    <string name="menu_navigation_recent">Recent</string>
     <string name="menu_navigation_public">Public</string>
     <string name="menu_navigation_private">Private</string>
     <string name="menu_navigation_unread">Unread</string>

@@ -4,6 +4,12 @@
         android:id="@+id/menuGroupLinks"
         android:checkableBehavior="none">
         <item
+            android:id="@+id/menuItemAll"
+            android:title="@string/menu_navigation_all" />
+        <item
+            android:id="@+id/menuItemRecent"
+            android:title="@string/menu_navigation_recent" />
+        <item
             android:id="@+id/menuItemPublic"
             android:title="@string/menu_navigation_public" />
         <item
