@@ -7,6 +7,7 @@ import com.fibelatti.pinboard.core.AppConfig
 import javax.inject.Inject
 
 const val KEY_AUTH_TOKEN = "AUTH_TOKEN"
+const val KEY_LAST_UPDATE = "LAST_UPDATE"
 const val KEY_APP_THEME = "APP_THEME"
 const val KEY_APP_LANGUAGE = "APP_LANGUAGE"
 
@@ -17,6 +18,12 @@ class CurrentInstallSharedPreferences @Inject constructor(
 
     fun setAuthToken(authToken: String) {
         sharedPreferences.put(KEY_AUTH_TOKEN, authToken)
+    }
+
+    fun getLastUpdate(): String = sharedPreferences.get(KEY_LAST_UPDATE, "")
+
+    fun setLastUpdate(value: String) {
+        sharedPreferences.put(KEY_LAST_UPDATE, value)
     }
 
     fun getTheme(): AppConfig.AppTheme {
