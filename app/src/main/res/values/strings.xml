@@ -12,6 +12,7 @@
     <string name="hint_search">Search</string>
     <string name="hint_dismiss">Dismiss</string>
     <string name="hint_reset">Reset</string>
+    <string name="hint_help">Help</string>
 
     <string name="alert_confirm_deletion">Confirm deletion?</string>
 
@@ -40,7 +41,14 @@
     <string name="menu_link_tags">Edit tags</string>
     <string name="menu_link_share">Share link</string>
 
+    <!-- Auth -->
+    <string name="auth_token_hint">Auth Token</string>
+    <string name="auth_title">Welcome to Pinkt</string>
+
     <!-- Preferences -->
     <string name="preferences_about">Developed with ❤ by Filipe Belatti</string>
     <string name="preferences_app_version">Version: %s</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_app_icon">App icon</string>
 </resources>

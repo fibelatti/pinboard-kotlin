@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.MenuItem
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseActivity
+import com.fibelatti.pinboard.core.android.inSupportFragmentManagerTransaction
+import com.fibelatti.pinboard.features.auth.presentation.AuthFragment
 import com.fibelatti.pinboard.features.navigation.NavigationDrawerFragment
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -69,7 +71,11 @@ class MainActivity :
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        showMainMenu()
+        inSupportFragmentManagerTransaction {
+            add(fragmentHost.id, AuthFragment.newInstance(), AuthFragment.TAG)
+        }
+
+//        showMainMenu()
     }
 
     override fun onPublicClicked() {

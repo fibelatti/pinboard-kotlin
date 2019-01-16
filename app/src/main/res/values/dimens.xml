@@ -32,10 +32,14 @@
     <dimen name="radius_small">4dp</dimen>
     <dimen name="radius_regular">8dp</dimen>
 
-    <dimen name="elevation_regular">4dp</dimen>
+    <dimen name="elevation_regular">8dp</dimen>
+    <dimen name="elevation_high">12dp</dimen>
 
     <dimen name="extended_fab_height">56dp</dimen>
     <dimen name="extended_fab_corner_radius">32dp</dimen>
     <dimen name="extended_fab_icon_size_small">16dp</dimen>
     <dimen name="extended_fab_icon_size">24dp</dimen>
+
+    <dimen name="app_icon_size">80dp</dimen>
+    <dimen name="app_icon_offset">50dp</dimen>
 </resources>
