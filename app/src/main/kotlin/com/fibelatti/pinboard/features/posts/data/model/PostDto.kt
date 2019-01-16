@@ -2,7 +2,7 @@ package com.fibelatti.pinboard.features.posts.data.model
 
 import com.fibelatti.core.functional.TwoWayMapper
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
-import com.fibelatti.pinboard.features.posts.domain.Post
+import com.fibelatti.pinboard.features.posts.domain.model.Post
 import javax.inject.Inject
 
 data class PostDto(

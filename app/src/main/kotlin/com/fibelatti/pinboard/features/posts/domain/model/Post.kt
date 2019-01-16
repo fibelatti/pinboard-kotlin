@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.posts.domain
+package com.fibelatti.pinboard.features.posts.domain.model
 
 data class Post(
     val url: String,
