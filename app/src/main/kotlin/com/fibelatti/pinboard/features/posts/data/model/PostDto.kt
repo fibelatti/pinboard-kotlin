@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.posts.data
+package com.fibelatti.pinboard.features.posts.data.model
 
 import com.fibelatti.core.functional.TwoWayMapper
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
