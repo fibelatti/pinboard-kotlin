@@ -55,9 +55,9 @@ android {
     sourceSets {
         main.java.srcDirs("src/main/kotlin")
 
-        test.java.srcDirs("src/sharedTest/resources", "src/test/kotlin")
+        test.java.srcDirs("src/test/kotlin")
 
-        androidTest.java.srcDirs("src/sharedTest/resources", "src/test/kotlin")
+        androidTest.java.srcDirs("src/androidTest/kotlin", "src/test/kotlin")
     }
 
     testOptions {
@@ -66,6 +66,10 @@ android {
         unitTests {
             returnDefaultValues = true
             includeAndroidResources = true
+
+            all {
+                useJUnitPlatform()
+            }
         }
     }
 }
@@ -116,4 +120,6 @@ dependencies {
     androidTestImplementation(TestDependencies.archComponentsTest)
     androidTestImplementation(TestDependencies.testRunner)
     androidTestImplementation(TestDependencies.kotlinTest)
+
+    androidTestImplementation(name: "fibelatti-core-test", ext: "aar")
 }

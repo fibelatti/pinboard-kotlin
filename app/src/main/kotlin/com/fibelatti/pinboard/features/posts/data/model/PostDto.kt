@@ -1,8 +1,11 @@
 package com.fibelatti.pinboard.features.posts.data.model
 
 import com.fibelatti.core.functional.TwoWayMapper
+import com.fibelatti.pinboard.core.AppConfig.API_ENCODING
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import java.net.URLDecoder
+import java.net.URLEncoder
 import javax.inject.Inject
 
 data class PostDto(
@@ -19,7 +22,7 @@ class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
 
     override fun map(param: PostDto): Post = with(param) {
         Post(
-            url = href,
+            url = URLDecoder.decode(href, API_ENCODING),
             description = description,
             extendedDescription = extended,
             time = time,
@@ -31,7 +34,7 @@ class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
 
     override fun mapReverse(param: Post): PostDto = with(param) {
         PostDto(
-            href = url,
+            href = URLEncoder.encode(url, API_ENCODING),
             description = description,
             extended = extendedDescription,
             time = time,

@@ -4,6 +4,7 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.pinboard.core.extension.toResult
+import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
@@ -69,15 +70,17 @@ class PostsDataSource @Inject constructor(
     override suspend fun getSuggestedTagsForUrl(
         url: String
     ): Result<SuggestedTags> =
-        postsApi.getSuggestedTagsForUrl(url)
-            .toResult()
-            .mapCatching(suggestedTagDtoMapper::map)
+        validateUrl(url) {
+            postsApi.getSuggestedTagsForUrl(url)
+                .toResult()
+                .mapCatching(suggestedTagDtoMapper::map)
+        }
 
     private fun Result<GenericResponseDto>.orThrow() = mapCatching {
-        if (it.resultCode != ApiResultCodes.DONE.code) throw InvalidRequestException()
+        if (it.resultCode != ApiResultCodes.DONE.code) throw ApiException()
     }
 
-    private inline fun validateUrl(url: String, ifValid: () -> Result<Unit>): Result<Unit> {
+    private inline fun <T> validateUrl(url: String, ifValid: () -> Result<T>): Result<T> {
         return if (url.substringBefore("://", "") !in UrlValidSchemes.allSchemes()) {
             Failure(InvalidRequestException())
         } else {
@@ -121,12 +124,12 @@ interface PostsApi {
 }
 
 enum class UrlValidSchemes(val scheme: String) {
-    HTTP("http://"),
-    HTTPS("https://"),
-    JAVASCRIPT("javascript://"),
-    MAILTO("mailto://"),
-    FTP("ftp://"),
-    FILE("file://");
+    HTTP("http"),
+    HTTPS("https"),
+    JAVASCRIPT("javascript"),
+    MAILTO("mailto"),
+    FTP("ftp"),
+    FILE("file");
 
     companion object {
         @JvmStatic
