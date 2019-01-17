@@ -91,6 +91,8 @@ dependencies {
     implementation(Dependencies.archComponents)
     kapt(Dependencies.archComponentsCompiler)
 
+    implementation(Dependencies.customTabs)
+
     // Misc
     implementation(Dependencies.dagger)
     kapt(Dependencies.daggerCompiler)

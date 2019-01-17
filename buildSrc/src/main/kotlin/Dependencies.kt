@@ -26,6 +26,7 @@ object Dependencies {
     val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.0-alpha1"
     val archComponents = "androidx.lifecycle:lifecycle-extensions:${Versions.archComponentsVersion}"
     val archComponentsCompiler = "androidx.lifecycle:lifecycle-compiler:${Versions.archComponentsVersion}"
+    val customTabs = "androidx.browser:browser:1.0.0"
 
     private const val daggerVersion = "2.17"
 

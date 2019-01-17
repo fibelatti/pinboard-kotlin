@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.features.auth.presentation
 
 import android.os.Bundle
-import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +11,7 @@ import com.fibelatti.core.extension.heightWrapContent
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.setupLinks
 import kotlinx.android.synthetic.main.fragment_auth.*
 import kotlinx.android.synthetic.main.layout_auth_form.*
 
@@ -26,15 +26,18 @@ class AuthFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+        sharedElementEnterTransition =
+            TransitionInflater.from(context).inflateTransition(android.R.transition.move)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.fragment_auth, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = inflater.inflate(R.layout.fragment_auth, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupLayout()
     }
 
@@ -47,7 +50,7 @@ class AuthFragment : BaseFragment() {
             imageViewAuthHelp.gone()
             textViewAuthHelpTitle.heightWrapContent()
             textViewAuthHelpDescription.heightWrapContent()
-            textViewAuthHelpDescription.movementMethod = LinkMovementMethod.getInstance()
+            textViewAuthHelpDescription.setupLinks()
         }
     }
 }
