@@ -8,6 +8,7 @@ import dagger.Provides
 
 @Module
 abstract class PreferencesModule {
+
     @Module
     companion object {
         @Provides

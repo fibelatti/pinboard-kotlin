@@ -16,36 +16,32 @@ import dagger.Provides
 import java.text.Collator
 import java.util.Locale
 
-@Module(
-    includes = [
-        CoreModule.Binder::class
-    ]
-)
-object CoreModule {
+@Module
+abstract class CoreModule {
     @Module
-    interface Binder {
-        @Binds
-        fun bindContext(app: App): Context
+    companion object {
+        @Provides
+        @JvmStatic
+        fun moshi(): Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
-        @Binds
-        fun bindResourceProvider(appResourceProvider: AppResourceProvider): ResourceProvider
+        @Provides
+        @JvmStatic
+        fun localeDefault(): Locale = Locale.getDefault()
 
-        @Binds
-        fun bindCoroutineLauncher(coroutineLauncherDelegate: CoroutineLauncherDelegate): CoroutineLauncher
-
-        @Binds
-        fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
+        @Provides
+        @JvmStatic
+        fun usCollator(): Collator = Collator.getInstance(Locale.US)
     }
 
-    @Provides
-    @JvmStatic
-    fun provideMoshi(): Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+    @Binds
+    abstract fun context(app: App): Context
 
-    @Provides
-    @JvmStatic
-    fun provideLocaleDefault(): Locale = Locale.getDefault()
+    @Binds
+    abstract fun resourceProvider(appResourceProvider: AppResourceProvider): ResourceProvider
 
-    @Provides
-    @JvmStatic
-    fun provideUSCollator(): Collator = Collator.getInstance(Locale.US)
+    @Binds
+    abstract fun coroutineLaunche(coroutineLauncherDelegate: CoroutineLauncherDelegate): CoroutineLauncher
+
+    @Binds
+    abstract fun viewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
 }
