@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutAuthForm"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/margin_regular"
+    android:layout_marginTop="@dimen/app_icon_offset"
+    android:layout_marginEnd="@dimen/margin_regular"
+    android:background="@drawable/background_auth"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/padding_regular"
+    android:paddingTop="@dimen/padding_large"
+    android:paddingEnd="@dimen/padding_regular"
+    android:paddingBottom="@dimen/padding_large"
+    app:elevation="@dimen/elevation_regular"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="@+id/imageViewAppLogo"
+    app:layout_constraintVertical_bias="0.0">
+
+    <TextView
+        style="@style/AppTheme.Text.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_regular"
+        android:gravity="center"
+        android:text="@string/auth_title" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutAuthToken"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_regular"
+        android:hint="@string/auth_token_hint">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextAuthToken"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textVisiblePassword" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageView
+        android:id="@+id/imageViewAuthHelp"
+        style="@style/AppTheme.ClickableIcon"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/margin_regular"
+        android:contentDescription="@string/hint_help"
+        android:tint="@color/color_accent"
+        app:srcCompat="@drawable/ic_help" />
+
+    <TextView
+        android:id="@+id/textViewAuthHelpTitle"
+        style="@style/AppTheme.Text.SectionTitle"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/margin_large"
+        android:gravity="center"
+        android:text="@string/auth_token_title" />
+
+    <TextView
+        android:id="@+id/textViewAuthHelpDescription"
+        style="@style/AppTheme.Text.Body"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/margin_small"
+        android:gravity="center"
+        android:text="@string/auth_token_description" />
+</LinearLayout>

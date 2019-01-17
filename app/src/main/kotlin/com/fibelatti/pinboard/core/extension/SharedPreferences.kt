@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.core.android
+package com.fibelatti.pinboard.core.extension
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE

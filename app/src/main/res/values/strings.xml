@@ -42,8 +42,10 @@
     <string name="menu_link_share">Share link</string>
 
     <!-- Auth -->
-    <string name="auth_token_hint">Auth Token</string>
+    <string name="auth_token_hint">API Token</string>
     <string name="auth_title">Welcome to Pinkt</string>
+    <string name="auth_token_title">Where do I find this?</string>
+    <string name="auth_token_description">You can find your API token in the <a href="https://pinboard.in/settings/password">Pinboard Settings</a> page.</string>
 
     <!-- Preferences -->
     <string name="preferences_about">Developed with ❤ by Filipe Belatti</string>

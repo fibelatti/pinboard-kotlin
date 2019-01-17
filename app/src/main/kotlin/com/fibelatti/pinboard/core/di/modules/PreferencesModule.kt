@@ -2,7 +2,7 @@ package com.fibelatti.pinboard.core.di.modules
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.fibelatti.pinboard.core.android.getUserPreferences
+import com.fibelatti.pinboard.core.extension.getUserPreferences
 import dagger.Module
 import dagger.Provides
 

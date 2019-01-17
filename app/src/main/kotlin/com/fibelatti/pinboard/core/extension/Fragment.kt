@@ -1,9 +1,10 @@
-package com.fibelatti.pinboard.core.android
+package com.fibelatti.pinboard.core.extension
 
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
 
-inline fun AppCompatActivity.inSupportFragmentManagerTransaction(
+inline fun FragmentActivity.inTransaction(
     allowStateLoss: Boolean = false,
     block: FragmentTransaction.() -> Unit
 ) {
@@ -18,4 +19,11 @@ inline fun AppCompatActivity.inSupportFragmentManagerTransaction(
             }
         }
     }
+}
+
+inline fun Fragment.inTransaction(
+    allowStateLoss: Boolean = false,
+    block: FragmentTransaction.() -> Unit
+) {
+    activity?.inTransaction(allowStateLoss, block)
 }

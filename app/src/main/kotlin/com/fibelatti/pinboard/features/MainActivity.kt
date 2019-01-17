@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.MenuItem
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseActivity
-import com.fibelatti.pinboard.core.android.inSupportFragmentManagerTransaction
-import com.fibelatti.pinboard.features.auth.presentation.AuthFragment
+import com.fibelatti.pinboard.core.extension.inTransaction
 import com.fibelatti.pinboard.features.navigation.NavigationDrawerFragment
+import com.fibelatti.pinboard.features.splash.presentation.SplashFragment
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.activity_main.*
@@ -71,8 +71,8 @@ class MainActivity :
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        inSupportFragmentManagerTransaction {
-            add(fragmentHost.id, AuthFragment.newInstance(), AuthFragment.TAG)
+        inTransaction {
+            add(R.id.fragmentHost, SplashFragment.newInstance())
         }
 
 //        showMainMenu()
