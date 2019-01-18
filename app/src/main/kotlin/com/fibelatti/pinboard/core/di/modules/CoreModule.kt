@@ -3,11 +3,11 @@ package com.fibelatti.pinboard.core.di.modules
 import android.content.Context
 import androidx.lifecycle.ViewModelProvider
 import com.fibelatti.core.android.AppResourceProvider
+import com.fibelatti.core.di.ViewModelFactory
 import com.fibelatti.core.provider.CoroutineLauncher
 import com.fibelatti.core.provider.CoroutineLauncherDelegate
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.App
-import com.fibelatti.pinboard.core.di.modules.viewmodel.ViewModelFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Binds

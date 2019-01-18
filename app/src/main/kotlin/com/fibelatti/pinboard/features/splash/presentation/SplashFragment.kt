@@ -5,10 +5,10 @@ import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.fibelatti.core.extension.inTransaction
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import com.fibelatti.pinboard.core.extension.inTransaction
 import com.fibelatti.pinboard.features.auth.presentation.AuthFragment
 import kotlinx.android.synthetic.main.fragment_splash.*
 

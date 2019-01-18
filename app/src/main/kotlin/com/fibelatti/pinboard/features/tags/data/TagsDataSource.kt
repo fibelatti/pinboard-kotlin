@@ -2,8 +2,8 @@ package com.fibelatti.pinboard.features.tags.data
 
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.mapCatching
+import com.fibelatti.core.functional.retryIO
 import com.fibelatti.pinboard.core.extension.toResult
-import com.fibelatti.pinboard.core.network.retryIO
 import com.fibelatti.pinboard.features.tags.domain.TagsRepository
 import retrofit2.Response
 import retrofit2.http.GET

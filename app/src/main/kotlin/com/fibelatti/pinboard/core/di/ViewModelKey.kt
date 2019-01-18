@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.core.di.modules.viewmodel
+package com.fibelatti.pinboard.core.di
 
 import androidx.lifecycle.ViewModel
 import dagger.MapKey

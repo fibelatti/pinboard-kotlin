@@ -1,16 +1,16 @@
 package com.fibelatti.pinboard.core.network
 
-import com.fibelatti.pinboard.core.persistence.CurrentInstallSharedPreferences
+import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
 
 class AuthInterceptor @Inject constructor(
-    currentInstallSharedPreferences: CurrentInstallSharedPreferences
+    userSharedPreferences: UserSharedPreferences
 ) : Interceptor {
 
     private val parameters: MutableMap<String, String> = hashMapOf(
-        "auth_token" to currentInstallSharedPreferences.getAuthToken(),
+        "auth_token" to userSharedPreferences.getAuthToken(),
         "format" to "json"
     )
 

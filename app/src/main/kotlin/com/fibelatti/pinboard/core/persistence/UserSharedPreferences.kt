@@ -1,7 +1,9 @@
 package com.fibelatti.pinboard.core.persistence
 
+import android.content.Context
 import android.content.SharedPreferences
 import com.fibelatti.core.extension.get
+import com.fibelatti.core.extension.getSharedPreferences
 import com.fibelatti.core.extension.put
 import com.fibelatti.pinboard.core.AppConfig
 import javax.inject.Inject
@@ -11,7 +13,9 @@ const val KEY_LAST_UPDATE = "LAST_UPDATE"
 const val KEY_APP_THEME = "APP_THEME"
 const val KEY_APP_LANGUAGE = "APP_LANGUAGE"
 
-class CurrentInstallSharedPreferences @Inject constructor(
+fun Context.getUserPreferences() = getSharedPreferences("user_preferences")
+
+class UserSharedPreferences @Inject constructor(
     private val sharedPreferences: SharedPreferences
 ) {
     fun getAuthToken(): String = sharedPreferences.get(KEY_AUTH_TOKEN, "")

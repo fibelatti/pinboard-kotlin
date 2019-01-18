@@ -3,10 +3,10 @@ package com.fibelatti.pinboard.features.posts.data
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.mapCatching
+import com.fibelatti.core.functional.retryIO
 import com.fibelatti.pinboard.core.extension.toResult
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.InvalidRequestException
-import com.fibelatti.pinboard.core.network.retryIO
 import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto

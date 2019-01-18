@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.core.di.modules
 
 import androidx.lifecycle.ViewModel
-import com.fibelatti.pinboard.core.di.modules.viewmodel.ViewModelKey
+import com.fibelatti.pinboard.core.di.ViewModelKey
 import com.fibelatti.pinboard.features.auth.presentation.AuthViewModel
 import com.fibelatti.pinboard.features.common.data.UserDataSource
 import com.fibelatti.pinboard.features.common.domain.UnauthorizedHandler
