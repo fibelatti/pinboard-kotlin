@@ -29,9 +29,9 @@
         android:id="@+id/menuGroupAccount"
         android:checkableBehavior="none">
         <item
-            android:id="@+id/menuItemAccount"
+            android:id="@+id/menuItemLogout"
             android:icon="@drawable/ic_person"
-            android:title="@string/menu_navigation_account" />
+            android:title="@string/menu_navigation_logout" />
     </group>
     <group
         android:id="@+id/menuGroupPreferences"

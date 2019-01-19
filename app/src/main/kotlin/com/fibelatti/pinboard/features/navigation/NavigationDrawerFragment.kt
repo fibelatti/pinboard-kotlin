@@ -13,12 +13,14 @@ import kotlinx.android.synthetic.main.fragment_navigation.*
 class NavigationDrawerFragment : BottomSheetDialogFragment() {
 
     interface Callback {
+        fun onAllClicked()
+        fun onRecentClicked()
         fun onPublicClicked()
         fun onPrivateClicked()
         fun onUnreadClicked()
         fun onUntaggedClicked()
         fun onTagsClicked()
-        fun onAccountClicked()
+        fun onLogoutClicked()
         fun onPreferencesClicked()
     }
 
@@ -38,14 +40,18 @@ class NavigationDrawerFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         navigationView.setNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.menuItemPublic -> callback?.onPublicClicked()
-                R.id.menuItemPrivate -> callback?.onPrivateClicked()
-                R.id.menuItemUnread -> callback?.onUnreadClicked()
-                R.id.menuItemUntagged -> callback?.onUntaggedClicked()
-                R.id.menuItemTags -> callback?.onTagsClicked()
-                R.id.menuItemAccount -> callback?.onAccountClicked()
-                R.id.menuItemPreferences -> callback?.onPreferencesClicked()
+            callback?.run {
+                when (menuItem.itemId) {
+                    R.id.menuItemAll -> onAllClicked()
+                    R.id.menuItemRecent -> onRecentClicked()
+                    R.id.menuItemPublic -> onPublicClicked()
+                    R.id.menuItemPrivate -> onPrivateClicked()
+                    R.id.menuItemUnread -> onUnreadClicked()
+                    R.id.menuItemUntagged -> onUntaggedClicked()
+                    R.id.menuItemTags -> onTagsClicked()
+                    R.id.menuItemLogout -> onLogoutClicked()
+                    R.id.menuItemPreferences -> onPreferencesClicked()
+                }
             }
 
             return@setNavigationItemSelectedListener true

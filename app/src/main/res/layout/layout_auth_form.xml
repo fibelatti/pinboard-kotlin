@@ -43,6 +43,15 @@
             android:inputType="textVisiblePassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonAuth"
+        style="@style/AppTheme.ButtonPrimary.Small"
+        android:layout_height="@dimen/button_height"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/margin_regular"
+        android:padding="@dimen/padding_small"
+        android:text="@string/auth_button" />
+
     <ImageView
         android:id="@+id/imageViewAuthHelp"
         style="@style/AppTheme.ClickableIcon"

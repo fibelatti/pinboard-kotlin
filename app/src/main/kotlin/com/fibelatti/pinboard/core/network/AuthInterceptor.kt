@@ -6,19 +6,17 @@ import okhttp3.Response
 import javax.inject.Inject
 
 class AuthInterceptor @Inject constructor(
-    userSharedPreferences: UserSharedPreferences
+    private val userSharedPreferences: UserSharedPreferences
 ) : Interceptor {
-
-    private val parameters: MutableMap<String, String> = hashMapOf(
-        "auth_token" to userSharedPreferences.getAuthToken(),
-        "format" to "json"
-    )
 
     override fun intercept(chain: Interceptor.Chain): Response =
         chain.run {
             val request = request()
             val url = request.url().newBuilder()
-                .apply { parameters.forEach { (name, value) -> addQueryParameter(name, value) } }
+                .apply {
+                    addQueryParameter("format", "json")
+                    addQueryParameter("auth_token", userSharedPreferences.getAuthToken())
+                }
                 .build()
 
             proceed(request.newBuilder().url(url).build())

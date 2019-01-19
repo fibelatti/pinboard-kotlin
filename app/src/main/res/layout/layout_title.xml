@@ -1,32 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layoutTitle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <androidx.appcompat.widget.AppCompatImageView
+    <ImageView
         android:id="@+id/buttonNavigateBack"
         style="@style/AppTheme.ClickableIcon"
-        android:layout_marginRight="@dimen/margin_regular"
+        android:contentDescription="@string/cd_navigate_back"
         android:visibility="gone"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/textViewTitle"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_back_arrow"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/textViewTitle"
         style="@style/AppTheme.Text.Title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_regular"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/buttonNavigateBack"
+        app:layout_constraintRight_toLeftOf="@+id/imageViewAppLogo"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Some title" />
+
+    <ImageView
+        android:id="@+id/imageViewAppLogo"
+        android:layout_width="@dimen/clickable_area"
+        android:layout_height="@dimen/clickable_area"
+        android:contentDescription="@string/cd_app_logo"
+        android:src="@drawable/pinkt"
+        android:visibility="gone"
+        app:layout_constraintLeft_toRightOf="@+id/textViewTitle"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Some title"/>
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

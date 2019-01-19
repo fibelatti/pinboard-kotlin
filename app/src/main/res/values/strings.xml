@@ -32,7 +32,7 @@
     <string name="menu_navigation_untagged">Untagged</string>
     <string name="menu_navigation_tags">Tags</string>
 
-    <string name="menu_navigation_account">Account</string>
+    <string name="menu_navigation_logout">Logout</string>
 
     <string name="menu_navigation_preferences">Preferences</string>
 
@@ -44,13 +44,17 @@
     <!-- Auth -->
     <string name="auth_token_hint">API Token</string>
     <string name="auth_title">Welcome to Pinkt</string>
+    <string name="auth_button">Login</string>
     <string name="auth_token_title">Where do I find this?</string>
     <string name="auth_token_description">You can find your API token in the <a href="https://pinboard.in/settings/password">Pinboard Settings</a> page.</string>
+    <string name="auth_token_error">Authentication failed. Please double check your API Token.</string>
+    <string name="auth_logged_out_feedback">Logged out</string>
 
     <!-- Preferences -->
     <string name="preferences_about">Developed with ❤ by Filipe Belatti</string>
     <string name="preferences_app_version">Version: %s</string>
 
     <!-- Content Descriptions -->
-    <string name="cd_app_icon">App icon</string>
+    <string name="cd_app_logo">App logo</string>
+    <string name="cd_navigate_back">Navigate back</string>
 </resources>

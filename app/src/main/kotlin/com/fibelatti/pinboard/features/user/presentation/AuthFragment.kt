@@ -1,17 +1,21 @@
-package com.fibelatti.pinboard.features.auth.presentation
+package com.fibelatti.pinboard.features.user.presentation
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.transition.TransitionInflater
+import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.heightWrapContent
+import com.fibelatti.core.extension.setupLinks
+import com.fibelatti.core.extension.showError
+import com.fibelatti.core.extension.textAsString
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.LinkTransformationMethod
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import com.fibelatti.pinboard.core.extension.setupLinks
 import kotlinx.android.synthetic.main.fragment_auth.*
 import kotlinx.android.synthetic.main.layout_auth_form.*
 
@@ -24,10 +28,18 @@ class AuthFragment : BaseFragment() {
         fun newInstance(): AuthFragment = AuthFragment()
     }
 
+    private val authViewModel: AuthViewModel by lazy {
+        viewModelFactory.get<AuthViewModel>(requireActivity())
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        injector.inject(this)
+
         sharedElementEnterTransition =
             TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+
+        observeEvent(authViewModel.apiTokenError, ::handleAuthError)
     }
 
     override fun onCreateView(
@@ -43,14 +55,19 @@ class AuthFragment : BaseFragment() {
 
     private fun setupLayout() {
         imageViewAppLogo.transitionName = SharedElementTransitionNames.APP_LOGO
-
         layoutAuthForm.animateChangingTransitions()
+
+        buttonAuth.setOnClickListener { authViewModel.login(editTextAuthToken.textAsString()) }
 
         imageViewAuthHelp.setOnClickListener {
             imageViewAuthHelp.gone()
             textViewAuthHelpTitle.heightWrapContent()
             textViewAuthHelpDescription.heightWrapContent()
-            textViewAuthHelpDescription.setupLinks()
+            textViewAuthHelpDescription.setupLinks(LinkTransformationMethod())
         }
+    }
+
+    private fun handleAuthError(message: String) {
+        textInputLayoutAuthToken.showError(message)
     }
 }

@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.common.domain
+package com.fibelatti.pinboard.features.user.domain
 
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.onFailure

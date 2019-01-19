@@ -11,7 +11,7 @@
         android:id="@+id/imageViewAppLogo"
         android:layout_width="@dimen/app_icon_size_splash"
         android:layout_height="@dimen/app_icon_size_splash"
-        android:contentDescription="@string/cd_app_icon"
+        android:contentDescription="@string/cd_app_logo"
         android:elevation="@dimen/elevation_high"
         android:src="@drawable/pinkt"
         app:layout_constraintBottom_toBottomOf="parent"
