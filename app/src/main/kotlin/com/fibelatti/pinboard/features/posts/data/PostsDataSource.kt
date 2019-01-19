@@ -3,8 +3,7 @@ package com.fibelatti.pinboard.features.posts.data
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.mapCatching
-import com.fibelatti.core.functional.retryIO
-import com.fibelatti.pinboard.core.extension.toResult
+import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
@@ -17,7 +16,7 @@ import com.fibelatti.pinboard.features.posts.data.model.UpdateDto
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
-import retrofit2.Response
+import kotlinx.coroutines.Deferred
 import retrofit2.http.GET
 import retrofit2.http.Query
 import javax.inject.Inject
@@ -29,8 +28,7 @@ class PostsDataSource @Inject constructor(
 ) : PostsRepository {
 
     override suspend fun update(): Result<String> =
-        retryIO { postsApi.update() }
-            .toResult()
+        resultFrom { postsApi.update().await() }
             .mapCatching { it.updateTime }
 
     override suspend fun add(
@@ -40,8 +38,7 @@ class PostsDataSource @Inject constructor(
         tags: String?
     ): Result<Unit> =
         validateUrl(url) {
-            retryIO { postsApi.add(url, description, extended, tags) }
-                .toResult()
+            resultFrom { postsApi.add(url, description, extended, tags).await() }
                 .orThrow()
         }
 
@@ -49,31 +46,27 @@ class PostsDataSource @Inject constructor(
         url: String
     ): Result<Unit> =
         validateUrl(url) {
-            retryIO { postsApi.delete(url) }
-                .toResult()
+            resultFrom { postsApi.delete(url).await() }
                 .orThrow()
         }
 
     override suspend fun getRecentPosts(
         tag: String?
     ): Result<List<Post>> =
-        retryIO { postsApi.getRecentPosts(tag) }
-            .toResult()
+        resultFrom { postsApi.getRecentPosts(tag).await() }
             .mapCatching(postDtoMapper::mapList)
 
     override suspend fun getAllPosts(
         tag: String?
     ): Result<List<Post>> =
-        retryIO { postsApi.getAllPosts(tag) }
-            .toResult()
+        resultFrom { postsApi.getAllPosts(tag).await() }
             .mapCatching(postDtoMapper::mapList)
 
     override suspend fun getSuggestedTagsForUrl(
         url: String
     ): Result<SuggestedTags> =
         validateUrl(url) {
-            retryIO { postsApi.getSuggestedTagsForUrl(url) }
-                .toResult()
+            resultFrom { postsApi.getSuggestedTagsForUrl(url).await() }
                 .mapCatching(suggestedTagDtoMapper::map)
         }
 
@@ -92,36 +85,36 @@ class PostsDataSource @Inject constructor(
 
 interface PostsApi {
 
-    @GET("/posts/update")
-    fun update(): Response<UpdateDto>
+    @GET("posts/update")
+    fun update(): Deferred<UpdateDto>
 
-    @GET("/posts/add")
+    @GET("posts/add")
     fun add(
         @Query("url") url: String,
         @Query("description") description: String,
         @Query("extended") extended: String? = null,
         @Query("tags") tags: String? = null
-    ): Response<GenericResponseDto>
+    ): Deferred<GenericResponseDto>
 
-    @GET("/posts/delete")
+    @GET("posts/delete")
     fun delete(
         @Query("url") url: String
-    ): Response<GenericResponseDto>
+    ): Deferred<GenericResponseDto>
 
-    @GET("/posts/recent")
+    @GET("posts/recent")
     fun getRecentPosts(
         @Query("tag") tag: String? = null
-    ): Response<List<PostDto>>
+    ): Deferred<List<PostDto>>
 
-    @GET("/posts/all")
+    @GET("posts/all")
     fun getAllPosts(
         @Query("tag") tag: String? = null
-    ): Response<List<PostDto>>
+    ): Deferred<List<PostDto>>
 
-    @GET("/posts/suggest")
+    @GET("posts/suggest")
     fun getSuggestedTagsForUrl(
         @Query("url") url: String
-    ): Response<SuggestedTagsDto>
+    ): Deferred<SuggestedTagsDto>
 }
 
 enum class UrlValidSchemes(val scheme: String) {

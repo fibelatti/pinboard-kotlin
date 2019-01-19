@@ -8,9 +8,6 @@ import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagsDto
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
-import okhttp3.MediaType
-import okhttp3.ResponseBody
-import retrofit2.Response
 import java.net.URLEncoder
 
 object MockDataProvider {
@@ -25,22 +22,10 @@ object MockDataProvider {
     val mockTags = listOf("tag1", "tag2", "tag3")
     // endregion
 
-    // region Network
-    fun <T> createResponse(body: T) = Response.success(body)
-
-    fun <T> createErrorResponse() = Response.error<T>(
-        500,
-        ResponseBody.create(
-            MediaType.parse("application/json"),
-            """{"result_code":"something went wrong"}"""
-        )
-    )
-
-    fun createGenericResponse(responseCode: ApiResultCodes): Response<GenericResponseDto> =
-        createResponse(GenericResponseDto(responseCode.code))
-    // endregion
-
     // region Data classes
+    fun createGenericResponse(responseCode: ApiResultCodes): GenericResponseDto =
+        GenericResponseDto(responseCode.code)
+
     fun createPostDto(
         shared: String = PinboardApiLiterals.YES,
         toread: String = PinboardApiLiterals.YES,
