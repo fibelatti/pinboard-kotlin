@@ -55,9 +55,12 @@ android {
     sourceSets {
         main.java.srcDirs("src/main/kotlin")
 
-        test.java.srcDirs("src/test/kotlin")
+        test.java.srcDirs("src/test/kotlin", "src/sharedTest/kotlin")
 
-        androidTest.java.srcDirs("src/androidTest/kotlin", "src/test/kotlin")
+        androidTest {
+            java.srcDirs("src/androidTest/kotlin", "src/sharedTest/kotlin", "src/test/resources")
+            assets.srcDirs += files("$projectDir/schemas")
+        }
     }
 
     testOptions {

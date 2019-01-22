@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard
 
+import com.fibelatti.core.functional.Failure
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
@@ -8,18 +9,26 @@ import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagsDto
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
+import okhttp3.MediaType
+import okhttp3.ResponseBody
+import retrofit2.HttpException
+import retrofit2.Response
+import java.net.HttpURLConnection
 import java.net.URLEncoder
 
 object MockDataProvider {
 
     // region Properties
     const val mockTime = "2019-01-10T08:20:10Z"
+    const val mockFutureTime = "2019-01-20T08:20:10Z"
     const val mockUrlValid = "https://www.url.com"
     const val mockUrlInvalid = "www.url.com"
     const val mockUrlDescription = "Some url description"
+    const val mockHash = "7b7cc6c90a84124026569c84f2236ecb"
     const val mockTag = "tag"
-    const val mockTagsResponse = "tag1 tag2 tag3"
     val mockTags = listOf("tag1", "tag2", "tag3")
+    val mockTagsResponse = mockTags.joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE)
+    val mockTagsRequest = mockTags.joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST)
     // endregion
 
     // region Data classes
@@ -27,6 +36,7 @@ object MockDataProvider {
         GenericResponseDto(responseCode.code)
 
     fun createPostDto(
+        hash: String = mockHash,
         shared: String = PinboardApiLiterals.YES,
         toread: String = PinboardApiLiterals.YES,
         tags: String = mockTagsResponse
@@ -35,6 +45,7 @@ object MockDataProvider {
             href = URLEncoder.encode(mockUrlValid, AppConfig.API_ENCODING),
             description = mockUrlDescription,
             extended = mockUrlDescription,
+            hash = hash,
             time = mockTime,
             shared = shared,
             toread = toread,
@@ -42,6 +53,8 @@ object MockDataProvider {
         )
 
     fun createPost(
+        hash: String = mockHash,
+        time: String = mockTime,
         public: Boolean = true,
         unread: Boolean = true,
         tags: List<String> = mockTags
@@ -50,7 +63,8 @@ object MockDataProvider {
             url = mockUrlValid,
             description = mockUrlDescription,
             extendedDescription = mockUrlDescription,
-            time = mockTime,
+            hash = hash,
+            time = time,
             public = public,
             unread = unread,
             tags = tags
@@ -66,4 +80,13 @@ object MockDataProvider {
         recommended: List<String> = mockTags
     ): SuggestedTags = SuggestedTags(popular, recommended)
     // endregion
+
+    fun UnauthorizedFailure(): Failure = Failure(
+        HttpException(
+            Response.error<GenericResponseDto>(
+                HttpURLConnection.HTTP_UNAUTHORIZED,
+                ResponseBody.create(MediaType.parse("application/json"), "{}")
+            )
+        )
+    )
 }
