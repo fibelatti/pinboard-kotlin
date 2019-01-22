@@ -94,6 +94,9 @@ dependencies {
     implementation(Dependencies.archComponents)
     kapt(Dependencies.archComponentsCompiler)
 
+    implementation(Dependencies.room)
+    kapt(Dependencies.roomCompiler)
+
     implementation(Dependencies.customTabs)
 
     // Misc

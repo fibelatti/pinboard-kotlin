@@ -5,7 +5,8 @@ object Versions {
     const val buildToolsVersion = "28.0.3"
 
     internal const val kotlinVersion = "1.3.11"
-    internal const val archComponentsVersion = "2.0.0"
+    internal const val lifeCycleVersion = "2.0.0"
+    internal const val roomVersion = "2.0.0"
 }
 
 object Classpaths {
@@ -20,12 +21,17 @@ object Dependencies {
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.0"
     const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.0"
 
-    const val supportLibrary = "androidx.appcompat:appcompat:1.0.2"
+    const val supportLibrary = "androidx.appcompat:appcompat:1.1.0-alpha01"
     const val materialDesign = "com.google.android.material:material:1.0.0"
     const val supportAnnotations = "androidx.annotation:annotation:1.0.0"
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.0-alpha1"
-    const val archComponents = "androidx.lifecycle:lifecycle-extensions:${Versions.archComponentsVersion}"
-    const val archComponentsCompiler = "androidx.lifecycle:lifecycle-compiler:${Versions.archComponentsVersion}"
+
+    const val archComponents = "androidx.lifecycle:lifecycle-extensions:${Versions.lifeCycleVersion}"
+    const val archComponentsCompiler = "androidx.lifecycle:lifecycle-compiler:${Versions.lifeCycleVersion}"
+
+    const val room = "androidx.room:room-runtime:${Versions.roomVersion}"
+    const val roomCompiler = "androidx.room:room-compiler:${Versions.roomVersion}"
+
     const val customTabs = "androidx.browser:browser:1.0.0"
 
     private const val daggerVersion = "2.17"
@@ -57,5 +63,5 @@ object TestDependencies {
     const val kotlinTest = "org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlinVersion}"
     const val mockitoCore = "org.mockito:mockito-core:2.23.0"
     const val mockitoAndroid = "org.mockito:mockito-android:2.18.3"
-    const val archComponentsTest = "android.arch.core:core-testing:${Versions.archComponentsVersion}"
+    const val archComponentsTest = "android.arch.core:core-testing:${Versions.lifeCycleVersion}"
 }
