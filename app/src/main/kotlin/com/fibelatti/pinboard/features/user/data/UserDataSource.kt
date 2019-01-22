@@ -16,9 +16,6 @@ class UserDataSource @Inject constructor(
     private val loginState = MutableLiveData<LoginState>().apply {
         value = if (userSharedPreferences.getAuthToken().isNotEmpty()) LoginState.LoggedIn else LoginState.LoggedOut
     }
-    private val lastUpdate = MutableLiveData<String>().apply {
-        value = userSharedPreferences.getLastUpdate()
-    }
 
     override fun getLoginState(): LiveData<LoginState> = loginState
 
@@ -33,18 +30,19 @@ class UserDataSource @Inject constructor(
 
     override fun logout() {
         userSharedPreferences.setAuthToken("")
+        userSharedPreferences.setLastUpdate("")
         this.loginState.postValue(LoginState.LoggedOut)
     }
 
     override fun forceLogout() {
         userSharedPreferences.setAuthToken("")
+        userSharedPreferences.setLastUpdate("")
         this.loginState.postValue(LoginState.Unauthorized)
     }
 
-    override fun getLastUpdate(): LiveData<String> = lastUpdate
+    override fun getLastUpdate(): String = userSharedPreferences.getLastUpdate()
 
     override fun setLastUpdate(value: String) {
         userSharedPreferences.setLastUpdate(value)
-        this.lastUpdate.postValue(value)
     }
 }

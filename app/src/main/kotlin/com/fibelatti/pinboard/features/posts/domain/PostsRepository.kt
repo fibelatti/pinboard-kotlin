@@ -12,7 +12,7 @@ interface PostsRepository {
         url: String,
         description: String,
         extended: String? = null,
-        tags: String? = null
+        tags: List<String>? = null
     ): Result<Unit>
 
     suspend fun delete(
@@ -20,11 +20,11 @@ interface PostsRepository {
     ): Result<Unit>
 
     suspend fun getRecentPosts(
-        tag: String? = null
+        tags: List<String>? = null
     ): Result<List<Post>>
 
     suspend fun getAllPosts(
-        tag: String? = null
+        tags: List<String>? = null
     ): Result<List<Post>>
 
     suspend fun getSuggestedTagsForUrl(

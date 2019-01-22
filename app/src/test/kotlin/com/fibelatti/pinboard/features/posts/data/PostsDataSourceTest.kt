@@ -6,18 +6,20 @@ import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.test.extension.callSuspend
 import com.fibelatti.core.test.extension.mock
+import com.fibelatti.core.test.extension.safeAny
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
 import com.fibelatti.core.test.extension.willReturnDeferred
 import com.fibelatti.core.test.extension.willReturnFailedDeferred
 import com.fibelatti.pinboard.MockDataProvider.createGenericResponse
-import com.fibelatti.pinboard.MockDataProvider.mockTag
+import com.fibelatti.pinboard.MockDataProvider.mockFutureTime
+import com.fibelatti.pinboard.MockDataProvider.mockTags
+import com.fibelatti.pinboard.MockDataProvider.mockTagsRequest
 import com.fibelatti.pinboard.MockDataProvider.mockTime
 import com.fibelatti.pinboard.MockDataProvider.mockUrlDescription
-import com.fibelatti.pinboard.MockDataProvider.mockUrlInvalid
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.core.network.ApiException
-import com.fibelatti.pinboard.core.network.InvalidRequestException
+import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
@@ -27,19 +29,23 @@ import com.fibelatti.pinboard.features.posts.data.model.UpdateDto
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import kotlinx.coroutines.CompletableDeferred
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.MethodSource
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.BDDMockito.given
+import org.mockito.Mockito.never
+import org.mockito.Mockito.verify
 
 class PostsDataSourceTest {
 
+    private val mockUserRepository = mock<UserRepository>()
     private val mockApi = mock<PostsApi>()
+    private val mockDao = mock<PostsDao>()
     private val mockPostDtoMapper = mock<PostDtoMapper>()
     private val mockSuggestedTagsDtoMapper = mock<SuggestedTagDtoMapper>()
+    private val mockDateFormatter = mock<DateFormatter>()
 
     private val mockListPostDto = listOf(mock<PostDto>())
     private val mockListPost = listOf(mock<Post>())
@@ -47,9 +53,12 @@ class PostsDataSourceTest {
     private val mockSuggestedTags = mock<SuggestedTags>()
 
     private val dataSource: PostsRepository = PostsDataSource(
+        mockUserRepository,
         mockApi,
+        mockDao,
         mockPostDtoMapper,
-        mockSuggestedTagsDtoMapper
+        mockSuggestedTagsDtoMapper,
+        mockDateFormatter
     )
 
     @Nested
@@ -84,43 +93,16 @@ class PostsDataSourceTest {
     }
 
     @Nested
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class AddTests {
-        fun validUrls(): Array<String> = UrlValidSchemes.allSchemes()
-            .map { "$it://$mockUrlInvalid" }.toTypedArray()
-
-        @ParameterizedTest
-        @MethodSource("validUrls")
-        fun `GIVEN that a valid url is received WHEN add is called THEN Success is returned`(url: String) {
-            // GIVEN
-            given(mockApi.add(url, mockUrlDescription))
-                .willReturnDeferred(createGenericResponse(ApiResultCodes.DONE))
-
-            // WHEN
-            val result = callSuspend { dataSource.add(url, mockUrlDescription) }
-
-            // THEN
-            result.shouldBeAnInstanceOf<Success<Unit>>()
-        }
-
-        @Test
-        fun `GIVEN that an invalid url is received WHEN add is called THEN Failure is returned`() {
-            // WHEN
-            val result = callSuspend { dataSource.add(mockUrlInvalid, mockUrlDescription) }
-
-            // THEN
-            result.shouldBeAnInstanceOf<Failure>()
-            result.exceptionOrNull()?.shouldBeAnInstanceOf<InvalidRequestException>()
-        }
 
         @Test
         fun `GIVEN that the api returns an error WHEN add is called THEN Failure is returned`() {
             // GIVEN
-            given(mockApi.add(mockUrlValid, mockUrlDescription))
+            given(mockApi.add(mockUrlValid, mockUrlDescription, tags = mockTagsRequest))
                 .willReturnFailedDeferred(Exception())
 
             // WHEN
-            val result = callSuspend { dataSource.add(mockUrlValid, mockUrlDescription) }
+            val result = callSuspend { dataSource.add(mockUrlValid, mockUrlDescription, tags = mockTags) }
 
             // THEN
             result.shouldBeAnInstanceOf<Failure>()
@@ -130,11 +112,11 @@ class PostsDataSourceTest {
         @Test
         fun `GIVEN that the api returns 200 but the result code is not DONE WHEN add is called THEN Failure is returned`() {
             // GIVEN
-            given(mockApi.add(mockUrlValid, mockUrlDescription))
+            given(mockApi.add(mockUrlValid, mockUrlDescription, tags = mockTagsRequest))
                 .willReturnDeferred(createGenericResponse(ApiResultCodes.MISSING_URL))
 
             // WHEN
-            val result = callSuspend { dataSource.add(mockUrlValid, mockUrlDescription) }
+            val result = callSuspend { dataSource.add(mockUrlValid, mockUrlDescription, tags = mockTags) }
 
             // THEN
             result.shouldBeAnInstanceOf<Failure>()
@@ -144,11 +126,11 @@ class PostsDataSourceTest {
         @Test
         fun `GIVEN that the api returns 200 and the result code is DONE WHEN add is called THEN Success is returned`() {
             // GIVEN
-            given(mockApi.add(mockUrlValid, mockUrlDescription))
+            given(mockApi.add(mockUrlValid, mockUrlDescription, tags = mockTagsRequest))
                 .willReturnDeferred(createGenericResponse(ApiResultCodes.DONE))
 
             // WHEN
-            val result = callSuspend { dataSource.add(mockUrlValid, mockUrlDescription) }
+            val result = callSuspend { dataSource.add(mockUrlValid, mockUrlDescription, tags = mockTags) }
 
             // THEN
             result.shouldBeAnInstanceOf<Success<Unit>>()
@@ -156,34 +138,7 @@ class PostsDataSourceTest {
     }
 
     @Nested
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class DeleteTests {
-        fun validUrls(): Array<String> = UrlValidSchemes.allSchemes()
-            .map { "$it://$mockUrlInvalid" }.toTypedArray()
-
-        @ParameterizedTest
-        @MethodSource("validUrls")
-        fun `GIVEN that a valid url is received WHEN delete is called THEN Success is returned`(url: String) {
-            // GIVEN
-            given(mockApi.delete(url))
-                .willReturnDeferred(createGenericResponse(ApiResultCodes.DONE))
-
-            // WHEN
-            val result = callSuspend { dataSource.delete(url) }
-
-            // THEN
-            result.shouldBeAnInstanceOf<Success<Unit>>()
-        }
-
-        @Test
-        fun `GIVEN that an invalid url is received WHEN delete is called THEN Failure is returned`() {
-            // WHEN
-            val result = callSuspend { dataSource.delete(mockUrlInvalid) }
-
-            // THEN
-            result.shouldBeAnInstanceOf<Failure>()
-            result.exceptionOrNull()?.shouldBeAnInstanceOf<InvalidRequestException>()
-        }
 
         @Test
         fun `GIVEN that the api returns an error WHEN delete is called THEN Failure is returned`() {
@@ -232,11 +187,11 @@ class PostsDataSourceTest {
         @Test
         fun `GIVEN that the api returns an error WHEN getRecentPosts is called THEN Failure is returned`() {
             // GIVEN
-            given(mockApi.getRecentPosts(mockTag))
+            given(mockApi.getRecentPosts(mockTagsRequest))
                 .willReturnFailedDeferred(Exception())
 
             // WHEN
-            val result = callSuspend { dataSource.getRecentPosts(mockTag) }
+            val result = callSuspend { dataSource.getRecentPosts(mockTags) }
 
             // THEN
             result.shouldBeAnInstanceOf<Failure>()
@@ -246,13 +201,13 @@ class PostsDataSourceTest {
         @Test
         fun `WHEN getRecentPosts is called THEN Success is returned`() {
             // GIVEN
-            given(mockApi.getRecentPosts(mockTag))
+            given(mockApi.getRecentPosts(mockTagsRequest))
                 .willReturn(CompletableDeferred(mockListPostDto))
             given(mockPostDtoMapper.mapList(mockListPostDto))
                 .willReturn(mockListPost)
 
             // WHEN
-            val result = callSuspend { dataSource.getRecentPosts(mockTag) }
+            val result = callSuspend { dataSource.getRecentPosts(mockTags) }
 
             // THEN
             result.shouldBeAnInstanceOf<Success<List<Post>>>()
@@ -262,69 +217,128 @@ class PostsDataSourceTest {
 
     @Nested
     inner class GetAllPostsTests {
-        @Test
-        fun `GIVEN that the api returns an error WHEN getAllPosts is called THEN Failure is returned`() {
-            // GIVEN
-            given(mockApi.getAllPosts(mockTag))
-                .willReturnFailedDeferred(Exception())
+        @Nested
+        inner class API {
+            @Test
+            fun `GIVEN that the api returns an error WHEN getAllPosts is called THEN Failure is returned`() {
+                // GIVEN
+                given(mockUserRepository.getLastUpdate())
+                    .willReturn(mockTime)
+                given(mockApi.update())
+                    .willReturnDeferred(UpdateDto(mockFutureTime))
+                given(mockApi.getAllPosts(mockTagsRequest))
+                    .willReturnFailedDeferred(Exception())
 
-            // WHEN
-            val result = callSuspend { dataSource.getAllPosts(mockTag) }
+                // WHEN
+                val result = callSuspend { dataSource.getAllPosts(mockTags) }
 
-            // THEN
-            result.shouldBeAnInstanceOf<Failure>()
-            result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
+                // THEN
+                result.shouldBeAnInstanceOf<Failure>()
+                result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
+            }
+
+            @Test
+            fun `WHEN getAllPosts is called THEN Success is returned`() {
+                // GIVEN
+                given(mockUserRepository.getLastUpdate())
+                    .willReturn(mockTime)
+                given(mockApi.update())
+                    .willReturnDeferred(UpdateDto(mockFutureTime))
+                given(mockApi.getAllPosts(mockTagsRequest))
+                    .willReturnDeferred(mockListPostDto)
+                given(mockPostDtoMapper.mapList(mockListPostDto))
+                    .willReturn(mockListPost)
+
+                // WHEN
+                val result = callSuspend { dataSource.getAllPosts(mockTags) }
+
+                // THEN
+                result.shouldBeAnInstanceOf<Success<List<Post>>>()
+                result.getOrNull() shouldBe mockListPost
+            }
         }
 
-        @Test
-        fun `WHEN getAllPosts is called THEN Success is returned`() {
-            // GIVEN
-            given(mockApi.getAllPosts(mockTag))
-                .willReturnDeferred(mockListPostDto)
-            given(mockPostDtoMapper.mapList(mockListPostDto))
-                .willReturn(mockListPost)
+        @Nested
+        inner class Database {
+            @Test
+            fun `GIVEN lastUpdate matches and localPosts is empty WHEN getAllPosts is called THEN api response is returned`() {
+                // GIVEN
+                given(mockUserRepository.getLastUpdate())
+                    .willReturn(mockTime)
+                given(mockApi.update())
+                    .willReturnDeferred(UpdateDto(mockTime))
+                given(mockDao.getAllPosts())
+                    .willReturn(emptyList())
+                given(mockApi.getAllPosts(mockTagsRequest))
+                    .willReturnFailedDeferred(Exception())
 
-            // WHEN
-            val result = callSuspend { dataSource.getAllPosts(mockTag) }
+                // WHEN
+                val result = callSuspend { dataSource.getAllPosts(mockTags) }
 
-            // THEN
-            result.shouldBeAnInstanceOf<Success<List<Post>>>()
-            result.getOrNull() shouldBe mockListPost
+                // THEN
+                result.shouldBeAnInstanceOf<Failure>()
+                result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
+
+                verify(mockUserRepository, never()).setLastUpdate(anyString())
+                verify(mockDao, never()).savePosts(safeAny())
+            }
+
+            @Test
+            fun `GIVEN lastUpdate matches and localPosts is empty WHEN getAllPosts is called and it fails to save the result THEN api response is returned normally`() {
+                // GIVEN
+                given(mockUserRepository.getLastUpdate())
+                    .willReturn(mockTime)
+                given(mockApi.update())
+                    .willReturnDeferred(UpdateDto(mockTime))
+                given(mockDao.getAllPosts())
+                    .willReturn(emptyList())
+                given(mockApi.getAllPosts(mockTagsRequest))
+                    .willReturnDeferred(mockListPostDto)
+                given(mockDao.savePosts(mockListPostDto))
+                    .willAnswer { throw Exception() }
+                given(mockPostDtoMapper.mapList(mockListPostDto))
+                    .willReturn(mockListPost)
+
+                // WHEN
+                val result = callSuspend { dataSource.getAllPosts(mockTags) }
+
+                // THEN
+                result.shouldBeAnInstanceOf<Success<List<Post>>>()
+                result.getOrNull() shouldBe mockListPost
+
+                verify(mockUserRepository).setLastUpdate(mockTime)
+                verify(mockDao).deleteAllPosts()
+                verify(mockDao).savePosts(mockListPostDto)
+            }
+
+            @Test
+            fun `GIVEN lastUpdate matches and localPosts is not empty WHEN getAllPosts is called THEN local posts are returned`() {
+                // GIVEN
+                given(mockUserRepository.getLastUpdate())
+                    .willReturn(mockTime)
+                given(mockApi.update())
+                    .willReturnDeferred(UpdateDto(mockTime))
+                given(mockDao.getAllPosts())
+                    .willReturn(mockListPostDto)
+                given(mockApi.getAllPosts(mockTagsRequest))
+                    .willReturnFailedDeferred(Exception())
+                given(mockPostDtoMapper.mapList(mockListPostDto))
+                    .willReturn(mockListPost)
+
+                // WHEN
+                val result = callSuspend { dataSource.getAllPosts(mockTags) }
+
+                // THEN
+                result.shouldBeAnInstanceOf<Success<List<Post>>>()
+                result.getOrNull() shouldBe mockListPost
+
+                verify(mockApi, never()).getAllPosts(safeAny())
+            }
         }
     }
 
     @Nested
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class GetSuggestedTagsForUrlTests {
-        fun validUrls(): Array<String> = UrlValidSchemes.allSchemes()
-            .map { "$it://$mockUrlInvalid" }.toTypedArray()
-
-        @ParameterizedTest
-        @MethodSource("validUrls")
-        fun `GIVEN that a valid url is received WHEN getSuggestedTagsForUrl is called THEN Success is returned`(url: String) {
-            // GIVEN
-            given(mockApi.getSuggestedTagsForUrl(url))
-                .willReturnDeferred(mockSuggestedTagsDto)
-            given(mockSuggestedTagsDtoMapper.map(mockSuggestedTagsDto))
-                .willReturn(mockSuggestedTags)
-
-            // WHEN
-            val result = callSuspend { dataSource.getSuggestedTagsForUrl(url) }
-
-            // THEN
-            result.shouldBeAnInstanceOf<Success<SuggestedTags>>()
-            result.getOrNull() shouldBe mockSuggestedTags
-        }
-
-        @Test
-        fun `GIVEN that an invalid url is received WHEN getSuggestedTagsForUrl is called THEN Failure is returned`() {
-            // WHEN
-            val result = callSuspend { dataSource.getSuggestedTagsForUrl(mockUrlInvalid) }
-
-            // THEN
-            result.shouldBeAnInstanceOf<Failure>()
-            result.exceptionOrNull()?.shouldBeAnInstanceOf<InvalidRequestException>()
-        }
 
         @Test
         fun `GIVEN that the api returns an error WHEN getSuggestedTagsForUrl is called THEN Failure is returned`() {

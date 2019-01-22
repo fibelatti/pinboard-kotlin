@@ -13,7 +13,7 @@ interface UserRepository {
 
     fun forceLogout()
 
-    fun getLastUpdate(): LiveData<String>
+    fun getLastUpdate(): String
 
     fun setLastUpdate(value: String)
 }

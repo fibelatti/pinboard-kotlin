@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.core.di
 import com.fibelatti.pinboard.App
 import com.fibelatti.pinboard.core.di.modules.AuthModule
 import com.fibelatti.pinboard.core.di.modules.CoreModule
+import com.fibelatti.pinboard.core.di.modules.DatabaseModule
 import com.fibelatti.pinboard.core.di.modules.NetworkModule
 import com.fibelatti.pinboard.core.di.modules.PostsModule
 import com.fibelatti.pinboard.core.di.modules.PreferencesModule
@@ -15,6 +16,7 @@ import javax.inject.Singleton
         CoreModule::class,
         PreferencesModule::class,
         NetworkModule::class,
+        DatabaseModule::class,
         AuthModule::class,
         PostsModule::class
     ]
