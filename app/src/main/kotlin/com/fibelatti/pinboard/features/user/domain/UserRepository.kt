@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 interface UserRepository {
     fun getLoginState(): LiveData<LoginState>
 
-    fun login(authToken: String)
+    fun loginAttempt(authToken: String)
 
     fun loggedIn()
 

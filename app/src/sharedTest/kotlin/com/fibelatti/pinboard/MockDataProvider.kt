@@ -19,6 +19,7 @@ import java.net.URLEncoder
 object MockDataProvider {
 
     // region Properties
+    const val mockApiToken = "apitoken:00000000000"
     const val mockTime = "2019-01-10T08:20:10Z"
     const val mockFutureTime = "2019-01-20T08:20:10Z"
     const val mockUrlValid = "https://www.url.com"

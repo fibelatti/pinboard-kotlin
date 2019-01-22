@@ -19,7 +19,7 @@ class UserDataSource @Inject constructor(
 
     override fun getLoginState(): LiveData<LoginState> = loginState
 
-    override fun login(authToken: String) {
+    override fun loginAttempt(authToken: String) {
         userSharedPreferences.setAuthToken(authToken)
         this.loginState.postValue(LoginState.Authorizing)
     }

@@ -2,7 +2,8 @@ package com.fibelatti.pinboard.core.di.modules
 
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.core.AppConfig
-import com.fibelatti.pinboard.core.network.AuthInterceptor
+import com.fibelatti.pinboard.core.network.HeadersInterceptor
+import com.fibelatti.pinboard.core.network.UnauthorizedInterceptor
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import dagger.Binds
@@ -40,11 +41,13 @@ abstract class NetworkModule {
         @Provides
         @JvmStatic
         fun okHttpClientBuilder(
-            authInterceptor: AuthInterceptor,
+            headersInterceptor: HeadersInterceptor,
+            unauthorizedInterceptor: UnauthorizedInterceptor,
             loggingInterceptor: HttpLoggingInterceptor
         ): OkHttpClient.Builder =
             OkHttpClient.Builder()
-                .addInterceptor(authInterceptor)
+                .addInterceptor(headersInterceptor)
+                .addInterceptor(unauthorizedInterceptor)
                 .addInterceptor(loggingInterceptor)
 
         @Provides
@@ -56,5 +59,5 @@ abstract class NetworkModule {
     }
 
     @Binds
-    abstract fun authInterceptor(authInterceptor: AuthInterceptor): Interceptor
+    abstract fun authInterceptor(headersInterceptor: HeadersInterceptor): Interceptor
 }
