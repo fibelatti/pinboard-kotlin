@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutProgressBar"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_background"
+    android:clickable="true"
+    android:descendantFocusability="blocksDescendants"
+    android:focusable="true">
+
+    <com.fibelatti.pinboard.core.android.customview.ProgressBar
+        android:id="@+id/progressBar"
+        style="@style/AppTheme.ProgressBarStyle" />
+</FrameLayout>
