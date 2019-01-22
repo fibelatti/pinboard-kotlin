@@ -104,6 +104,8 @@ dependencies {
     implementation(Dependencies.coroutinesCallAdapter)
     implementation(Dependencies.httpLoggingInterceptor)
 
+    implementation(Dependencies.jodaTime)
+
     // Test
     testRuntimeOnly(TestDependencies.junit5Engine)
     testRuntimeOnly(TestDependencies.junitVintage)
