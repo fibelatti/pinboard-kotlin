@@ -6,5 +6,5 @@
         android:bottomRightRadius="@dimen/radius_regular"
         android:topLeftRadius="@dimen/radius_regular"
         android:topRightRadius="@dimen/radius_regular" />
-    <solid android:color="@color/color_background" />
+    <solid android:color="@color/auth_form_background" />
 </shape>

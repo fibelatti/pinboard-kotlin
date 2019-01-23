@@ -61,19 +61,7 @@
         <item name="android:activityCloseExitAnimation">@anim/slide_right_out</item>
     </style>
 
-    <style name="AppTheme.InputLayout">
-        <item name="android:textSize">@dimen/text_size_regular</item>
-        <item name="android:textColor">@color/text_secondary</item>
-        <item name="android:textColorHint">@color/text_secondary</item>
-        <item name="colorAccent">@color/color_accent</item>
-        <item name="colorControlNormal">@color/text_secondary</item>
-        <item name="colorControlActivated">@color/color_accent</item>
-        <item name="errorTextAppearance">@style/AppTheme.InputLayoutError</item>
-    </style>
-
-    <style name="AppTheme.InputLayoutError" parent="@android:style/TextAppearance">
-        <item name="android:textColor">@color/app_red</item>
-    </style>
+    <style name="AppTheme.InputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox" />
 
     <style name="AppTheme.Checkbox" parent="Base.Widget.AppCompat.CompoundButton.CheckBox">
         <item name="android:textColor">@color/text_primary</item>
@@ -88,14 +76,14 @@
         <item name="android:textColor">@drawable/selector_button_primary_text</item>
         <item name="android:textSize">@dimen/text_size_regular</item>
         <item name="android:textAllCaps">false</item>
+        <item name="android:paddingLeft">@dimen/padding_small</item>
+        <item name="android:paddingRight">@dimen/padding_small</item>
     </style>
 
     <style name="AppTheme.ButtonPrimary.Small">
         <item name="android:layout_height">@dimen/button_height_small</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:minHeight">@dimen/button_width_small</item>
-        <item name="android:paddingLeft">0dp</item>
-        <item name="android:paddingRight">0dp</item>
     </style>
 
     <style name="AppTheme.TextButton">

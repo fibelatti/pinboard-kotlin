@@ -35,9 +35,11 @@ class UserDataSource @Inject constructor(
     }
 
     override fun forceLogout() {
-        userSharedPreferences.setAuthToken("")
-        userSharedPreferences.setLastUpdate("")
-        this.loginState.postValue(LoginState.Unauthorized)
+        if (loginState.value == LoginState.LoggedIn) {
+            userSharedPreferences.setAuthToken("")
+            userSharedPreferences.setLastUpdate("")
+            this.loginState.postValue(LoginState.Unauthorized)
+        }
     }
 
     override fun getLastUpdate(): String = userSharedPreferences.getLastUpdate()

@@ -9,6 +9,7 @@ import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.heightWrapContent
+import com.fibelatti.core.extension.isKeyboardSubmit
 import com.fibelatti.core.extension.setupLinks
 import com.fibelatti.core.extension.showError
 import com.fibelatti.core.extension.textAsString
@@ -57,6 +58,10 @@ class AuthFragment : BaseFragment() {
         imageViewAppLogo.transitionName = SharedElementTransitionNames.APP_LOGO
         layoutAuthForm.animateChangingTransitions()
 
+        editTextAuthToken.setOnEditorActionListener { _, actionId, event ->
+            if (isKeyboardSubmit(actionId, event)) authViewModel.login(editTextAuthToken.textAsString())
+            return@setOnEditorActionListener true
+        }
         buttonAuth.setOnClickListener { authViewModel.login(editTextAuthToken.textAsString()) }
 
         imageViewAuthHelp.setOnClickListener {

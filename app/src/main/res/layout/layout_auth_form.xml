@@ -30,7 +30,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutAuthToken"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        style="@style/AppTheme.InputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_regular"
@@ -40,6 +40,7 @@
             android:id="@+id/editTextAuthToken"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:imeOptions="actionGo"
             android:inputType="textVisiblePassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -58,7 +59,6 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/margin_regular"
         android:contentDescription="@string/hint_help"
-        android:tint="@color/color_accent"
         app:srcCompat="@drawable/ic_help" />
 
     <TextView
