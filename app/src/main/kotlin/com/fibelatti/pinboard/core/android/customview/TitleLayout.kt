@@ -22,14 +22,6 @@ class TitleLayout @JvmOverloads constructor(
         LayoutInflater.from(context).inflate(R.layout.layout_title, this, true)
     }
 
-    fun setTitle(@StringRes titleRes: Int) {
-        setTitle(context.getString(titleRes))
-    }
-
-    fun setTitle(title: String) {
-        textViewTitle.text = title
-    }
-
     fun setNavigateUp(@DrawableRes iconRes: Int = R.drawable.ic_back_arrow, navigateUp: () -> Unit) {
         buttonNavigateBack.apply {
             setImageDrawable(ContextCompat.getDrawable(context, iconRes))
@@ -41,5 +33,26 @@ class TitleLayout @JvmOverloads constructor(
     fun hideNavigateUp() {
         buttonNavigateBack.setOnClickListener(null)
         buttonNavigateBack.gone()
+    }
+
+    fun setTitle(@StringRes titleRes: Int) {
+        setTitle(context.getString(titleRes))
+    }
+
+    fun setTitle(title: String) {
+        if (title.isNotEmpty()) textViewTitle.visible(title) else hideTitle()
+    }
+
+    fun hideTitle() {
+        textViewTitle.gone()
+        textViewPostCount.gone()
+    }
+
+    fun setPostCount(count: Int) {
+        textViewPostCount.visible(resources.getQuantityString(R.plurals.posts_quantity, count, count))
+    }
+
+    fun hidePostCount() {
+        textViewPostCount.gone()
     }
 }

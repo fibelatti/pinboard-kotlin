@@ -46,5 +46,5 @@
 
     <dimen name="progress_bar_size">50dp</dimen>
 
-    <dimen name="title_layout_height">60dp</dimen>
+    <dimen name="title_layout_height">65dp</dimen>
 </resources>
