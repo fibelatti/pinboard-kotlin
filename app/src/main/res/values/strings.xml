@@ -22,7 +22,7 @@
 
     <!-- Menus -->
     <string name="menu_main_search">Search</string>
-    <string name="menu_main_add">Add link</string>
+    <string name="menu_main_sorting">Sorting</string>
 
     <string name="menu_navigation_all">All</string>
     <string name="menu_navigation_recent">Recent</string>
@@ -33,8 +33,6 @@
     <string name="menu_navigation_tags">Tags</string>
 
     <string name="menu_navigation_logout">Logout</string>
-
-    <string name="menu_navigation_preferences">Preferences</string>
 
     <string name="menu_link_delete">Remove link</string>
     <string name="menu_link_edit">Edit link</string>
@@ -50,11 +48,48 @@
     <string name="auth_token_error">Authentication failed. Please double check your API Token.</string>
     <string name="auth_logged_out_feedback">Logged out</string>
 
-    <!-- Preferences -->
-    <string name="preferences_about">Developed with ❤ by Filipe Belatti</string>
-    <string name="preferences_app_version">Version: %s</string>
+    <!-- Posts -->
+    <string name="posts_title_all">All</string>
+    <string name="posts_title_recent">Recent</string>
+
+    <plurals name="posts_quantity">
+        <item quantity="zero">No links</item>
+        <item quantity="one">1 link</item>
+        <item quantity="other">%d links</item>
+    </plurals>
+
+    <string name="posts_sorting_newest_first">Newest first</string>
+    <string name="posts_sorting_oldest_first">Oldest first</string>
+
+    <string name="posts_saved_on">Saved on %s</string>
+    <plurals name="posts_tags_more">
+        <item quantity="one">and 1 other</item>
+        <item quantity="other">and %d others</item>
+    </plurals>
+    <string name="posts_share_title">Sharing URL</string>
+    <string name="posts_open_with_file_viewer">Open in file viewer</string>
+    <string name="posts_open_with_file_viewer_error">Failed to open this URL</string>
+
+    <string name="posts_empty_title">No pins in this board</string>
+    <string name="posts_empty_description">There aren\'t any links saved in the selected category.</string>
+
+    <!-- Tags -->
+    <string name="tags_empty_title">No tags found</string>
+    <string name="tags_empty_description">It wasn\'t possible to find any tags.</string>
+
+    <!-- About -->
+    <string name="about_share">Share Pinkt</string>
+    <string name="about_rate">Rate Pinkt on Google Play</string>
+    <string name="about_developer">Developed with ❤ by Filipe Belatti</string>
+    <string name="about_version">Version: %s</string>
+
+    <!-- Share -->
+    <string name="share_title">Sharing Pinkt</string>
+    <string name="share_text">Check out Pinkt for Pinboard. Download for free at %s</string>
 
     <!-- Content Descriptions -->
     <string name="cd_app_logo">App logo</string>
     <string name="cd_navigate_back">Navigate back</string>
+    <string name="cd_empty_list_placeholder">Empty list placeholder image</string>
+    <string name="cd_file">File icon</string>
 </resources>
