@@ -53,7 +53,7 @@ class PostsDataSource @Inject constructor(
         tags: List<String>?
     ): Result<List<Post>> =
         resultFrom { postsApi.getRecentPosts(tags?.forRequest()).await() }
-            .mapCatching(postDtoMapper::mapList)
+            .mapCatching { postDtoMapper.mapList(it.posts) }
 
     override suspend fun getAllPosts(tags: List<String>?): Result<List<Post>> =
         withLocalDataSourceCheck { postsApi.getAllPosts(tags?.forRequest()).await() }

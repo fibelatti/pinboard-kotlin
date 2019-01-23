@@ -12,6 +12,7 @@ import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
 import com.fibelatti.core.test.extension.willReturnDeferred
 import com.fibelatti.core.test.extension.willReturnFailedDeferred
 import com.fibelatti.pinboard.MockDataProvider.createGenericResponse
+import com.fibelatti.pinboard.MockDataProvider.createRecentDto
 import com.fibelatti.pinboard.MockDataProvider.mockFutureTime
 import com.fibelatti.pinboard.MockDataProvider.mockTags
 import com.fibelatti.pinboard.MockDataProvider.mockTagsRequest
@@ -202,7 +203,7 @@ class PostsDataSourceTest {
         fun `WHEN getRecentPosts is called THEN Success is returned`() {
             // GIVEN
             given(mockApi.getRecentPosts(mockTagsRequest))
-                .willReturn(CompletableDeferred(mockListPostDto))
+                .willReturn(CompletableDeferred(createRecentDto(mockListPostDto)))
             given(mockPostDtoMapper.mapList(mockListPostDto))
                 .willReturn(mockListPost)
 

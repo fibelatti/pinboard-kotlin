@@ -6,6 +6,7 @@ import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
+import com.fibelatti.pinboard.features.posts.data.model.RecentDto
 import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagsDto
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
@@ -19,7 +20,8 @@ import java.net.URLEncoder
 object MockDataProvider {
 
     // region Properties
-    const val mockApiToken = "apitoken:00000000000"
+    const val mockUser = "user"
+    const val mockApiToken = "user:00000000000"
     const val mockTime = "2019-01-10T08:20:10Z"
     const val mockFutureTime = "2019-01-20T08:20:10Z"
     const val mockUrlValid = "https://www.url.com"
@@ -69,6 +71,15 @@ object MockDataProvider {
             public = public,
             unread = unread,
             tags = tags
+        )
+
+    fun createRecentDto(
+        posts: List<PostDto> = listOf(createPostDto())
+    ): RecentDto =
+        RecentDto(
+            date = mockTime,
+            user = mockUser,
+            posts = posts
         )
 
     fun createSuggestedTagsDto(

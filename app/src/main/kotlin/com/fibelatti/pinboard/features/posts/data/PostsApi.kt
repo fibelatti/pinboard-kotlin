@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.posts.data
 
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
+import com.fibelatti.pinboard.features.posts.data.model.RecentDto
 import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagsDto
 import com.fibelatti.pinboard.features.posts.data.model.UpdateDto
 import kotlinx.coroutines.Deferred
@@ -26,15 +27,15 @@ interface PostsApi {
         @Query("url") url: String
     ): Deferred<GenericResponseDto>
 
-    @GET("posts/recent")
-    fun getRecentPosts(
-        @Query("tag") tag: String? = null
-    ): Deferred<List<PostDto>>
-
     @GET("posts/all")
     fun getAllPosts(
         @Query("tag") tag: String? = null
     ): Deferred<List<PostDto>>
+
+    @GET("posts/recent")
+    fun getRecentPosts(
+        @Query("tag") tag: String? = null
+    ): Deferred<RecentDto>
 
     @GET("posts/suggest")
     fun getSuggestedTagsForUrl(
