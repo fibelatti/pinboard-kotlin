@@ -110,6 +110,12 @@
         <item name="android:textColor">@color/color_white_opaque</item>
     </style>
 
+    <style name="AppTheme.TextButton.Menu">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:textColor">@color/color_white_opaque</item>
+        <item name="android:gravity">start|center_vertical</item>
+    </style>
+
     <style name="AppTheme.TextButton.Hint">
         <item name="android:minHeight">@dimen/clickable_area</item>
         <item name="android:textSize">@dimen/text_size_regular</item>

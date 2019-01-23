@@ -1,16 +1,13 @@
 package com.fibelatti.pinboard.features.navigation
 
-import android.app.Dialog
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.content.Context
+import androidx.appcompat.app.AppCompatDialog
+import com.fibelatti.core.extension.gone
 import com.fibelatti.pinboard.R
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.android.synthetic.main.fragment_navigation.*
+import kotlinx.android.synthetic.main.fragment_menu.*
 
-class NavigationDrawerFragment : BottomSheetDialogFragment() {
+class NavigationDrawerFragment {
 
     interface Callback {
         fun onAllClicked()
@@ -21,45 +18,68 @@ class NavigationDrawerFragment : BottomSheetDialogFragment() {
         fun onUntaggedClicked()
         fun onTagsClicked()
         fun onLogoutClicked()
-        fun onPreferencesClicked()
+        fun onShareAppClicked()
+        fun onRateAppClicked()
     }
 
-    var callback: Callback? = null
-
-    override fun getTheme(): Int = R.style.AppTheme_BaseBottomSheetDialog_BottomSheetDialog
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog = BottomSheetDialog(requireContext(), theme)
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_navigation, container, false)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        navigationView.setNavigationItemSelectedListener { menuItem ->
-            callback?.run {
-                when (menuItem.itemId) {
-                    R.id.menuItemAll -> onAllClicked()
-                    R.id.menuItemRecent -> onRecentClicked()
-                    R.id.menuItemPublic -> onPublicClicked()
-                    R.id.menuItemPrivate -> onPrivateClicked()
-                    R.id.menuItemUnread -> onUnreadClicked()
-                    R.id.menuItemUntagged -> onUntaggedClicked()
-                    R.id.menuItemTags -> onTagsClicked()
-                    R.id.menuItemLogout -> onLogoutClicked()
-                    R.id.menuItemPreferences -> onPreferencesClicked()
-                }
-            }
-
-            return@setNavigationItemSelectedListener true
+    fun showNavigation(context: Context) {
+        BottomSheetDialog(context, R.style.AppTheme_BaseBottomSheetDialog_BottomSheetDialog).apply {
+            setContentView(R.layout.fragment_menu)
+            (context as? Callback)?.let { setupListeners(it) }
+            setupVersion()
+            show()
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        callback = null
+    private fun AppCompatDialog.setupListeners(callback: Callback) {
+        menuItemAll.setOnClickListener {
+            callback.onAllClicked()
+            dismiss()
+        }
+        menuItemRecent.setOnClickListener {
+            callback.onRecentClicked()
+            dismiss()
+        }
+        menuItemPublic.setOnClickListener {
+            callback.onPublicClicked()
+            dismiss()
+        }
+        menuItemPrivate.setOnClickListener {
+            callback.onPrivateClicked()
+            dismiss()
+        }
+        menuItemUnread.setOnClickListener {
+            callback.onUnreadClicked()
+            dismiss()
+        }
+        menuItemUntagged.setOnClickListener {
+            callback.onUntaggedClicked()
+            dismiss()
+        }
+        menuItemTags.setOnClickListener {
+            callback.onTagsClicked()
+            dismiss()
+        }
+        menuItemLogout.setOnClickListener {
+            callback.onLogoutClicked()
+            dismiss()
+        }
+        menuItemShare.setOnClickListener {
+            callback.onShareAppClicked()
+            dismiss()
+        }
+        menuItemRate.setOnClickListener {
+            callback.onRateAppClicked()
+            dismiss()
+        }
+    }
+
+    private fun AppCompatDialog.setupVersion() {
+        try {
+            val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            menuItemVersion.text = context.getString(R.string.about_version, pInfo.versionName)
+        } catch (e: Exception) {
+            menuItemVersion.gone()
+        }
     }
 }
