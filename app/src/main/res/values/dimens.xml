@@ -47,4 +47,8 @@
     <dimen name="progress_bar_size">50dp</dimen>
 
     <dimen name="title_layout_height">65dp</dimen>
+
+    <dimen name="recycler_view_with_fab_padding_bottom">100dp</dimen>
+
+    <dimen name="file_viewer_icon_size">60dp</dimen>
 </resources>

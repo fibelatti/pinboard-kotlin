@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/padding_small"
+    android:paddingBottom="@dimen/padding_small">
+
+    <TextView
+        android:id="@+id/linkTitle"
+        style="@style/AppTheme.Text.SectionTitle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:text="Some URL" />
+
+    <TextView
+        android:id="@+id/linkAddedDate"
+        style="@style/AppTheme.Text.Detail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:text="Added on 01/01/2019" />
+
+    <LinearLayout
+        android:id="@+id/layoutTags"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_small"
+        android:orientation="horizontal" />
+
+</LinearLayout>

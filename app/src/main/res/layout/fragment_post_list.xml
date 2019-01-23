@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layoutRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_background"
     android:orientation="vertical">
 
-    <include layout="@layout/layout_title" />
+    <include
+        layout="@layout/layout_progress_bar"
+        android:visibility="gone"
+        tools:visibility="gone" />
+
+    <include
+        layout="@layout/layout_empty_list"
+        android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewPosts"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/margin_regular"
+        android:layout_marginEnd="@dimen/margin_regular"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/recycler_view_with_fab_padding_bottom"
+        tools:listitem="@layout/list_item_post" />
 </LinearLayout>

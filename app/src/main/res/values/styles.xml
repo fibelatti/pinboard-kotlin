@@ -209,4 +209,11 @@
     <style name="AppTheme.Text.Detail.White">
         <item name="android:textColor">@color/text_white</item>
     </style>
+
+    <style name="AppTheme.Text.Tag">
+        <item name="android:paddingEnd">@dimen/padding_xsmall</item>
+        <item name="android:textColor">@color/color_accent</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

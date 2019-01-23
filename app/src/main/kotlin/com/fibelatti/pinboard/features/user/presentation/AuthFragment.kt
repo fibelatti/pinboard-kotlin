@@ -19,15 +19,9 @@ import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import kotlinx.android.synthetic.main.fragment_auth.*
 import kotlinx.android.synthetic.main.layout_auth_form.*
+import javax.inject.Inject
 
-class AuthFragment : BaseFragment() {
-
-    companion object {
-        @JvmStatic
-        val TAG: String = AuthFragment::class.java.simpleName
-
-        fun newInstance(): AuthFragment = AuthFragment()
-    }
+class AuthFragment @Inject constructor() : BaseFragment() {
 
     private val authViewModel: AuthViewModel by lazy {
         viewModelFactory.get<AuthViewModel>(requireActivity())
@@ -35,7 +29,6 @@ class AuthFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        injector.inject(this)
 
         sharedElementEnterTransition =
             TransitionInflater.from(context).inflateTransition(android.R.transition.move)

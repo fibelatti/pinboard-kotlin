@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutEmptyList"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="@dimen/padding_large"
+    android:paddingEnd="@dimen/padding_large">
+
+    <ImageView
+        android:id="@+id/imageViewBoard"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:contentDescription="@string/cd_empty_list_placeholder"
+        android:scaleType="fitXY"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_board" />
+
+    <ImageView
+        android:id="@+id/imageViewIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/cd_empty_list_placeholder"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewBoard"
+        app:layout_constraintEnd_toEndOf="@+id/imageViewBoard"
+        app:layout_constraintHorizontal_bias="0.8"
+        app:layout_constraintStart_toStartOf="@+id/imageViewBoard"
+        app:layout_constraintTop_toTopOf="@+id/imageViewBoard"
+        app:layout_constraintVertical_bias="0.7"
+        app:srcCompat="@drawable/ic_pin" />
+
+    <TextView
+        android:id="@+id/textViewEmptyTitle"
+        style="@style/AppTheme.Text.Title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_xlarge"
+        android:layout_marginEnd="@dimen/margin_xlarge"
+        android:gravity="center"
+        android:text="@string/posts_empty_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewBoard" />
+
+    <TextView
+        android:id="@+id/textViewEmptyDescription"
+        style="@style/AppTheme.Text.Body"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_xlarge"
+        android:layout_marginTop="@dimen/margin_small"
+        android:layout_marginEnd="@dimen/margin_xlarge"
+        android:gravity="center"
+        android:text="@string/posts_empty_description"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewEmptyTitle" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

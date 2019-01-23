@@ -1,18 +1,27 @@
 package com.fibelatti.pinboard.features
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.MenuItem
-import android.widget.Toast
+import androidx.core.app.ShareCompat
 import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.inTransaction
+import com.fibelatti.core.extension.remove
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
+import com.fibelatti.pinboard.core.AppConfig.MARKET_BASE_URL
+import com.fibelatti.pinboard.core.AppConfig.PLAY_STORE_BASE_URL
 import com.fibelatti.pinboard.core.android.base.BaseActivity
+import com.fibelatti.pinboard.core.extension.createFragment
+import com.fibelatti.pinboard.core.extension.show
+import com.fibelatti.pinboard.core.extension.snackbar
 import com.fibelatti.pinboard.features.navigation.NavigationDrawerFragment
+import com.fibelatti.pinboard.features.navigation.NavigationViewModel
 import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
 import com.fibelatti.pinboard.features.splash.presentation.SplashFragment
 import com.fibelatti.pinboard.features.user.domain.LoginState
@@ -21,7 +30,6 @@ import com.fibelatti.pinboard.features.user.presentation.AuthViewModel
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_splash.*
 
 private const val SPLASH_DELAY = 500L
 
@@ -33,16 +41,23 @@ class MainActivity :
         override fun onHidden(fab: FloatingActionButton?) {
             super.onHidden(fab)
 
-            fab?.setImageResource(R.drawable.ic_add)
-            fab?.show()
+            fab?.run {
+                setOnClickListener { addLink() }
+                setImageResource(R.drawable.ic_pin)
+                show()
+            }
 
-            bottomAppBar.run {
+            bottomAppBar?.run {
                 setNavigationIcon(R.drawable.ic_menu)
                 replaceMenu(R.menu.menu_main)
 
                 setOnMenuItemClickListener { item: MenuItem? ->
                     when (item?.itemId) {
-                        R.id.menuItemSearch -> showLinkMenu()
+                        R.id.menuItemSearch -> {
+                        }
+                        R.id.menuItemSort -> {
+                            // postListFragment?.toggleSorting()
+                        }
                     }
 
                     return@setOnMenuItemClickListener true
@@ -56,17 +71,19 @@ class MainActivity :
         override fun onHidden(fab: FloatingActionButton?) {
             super.onHidden(fab)
 
-            fab?.setImageResource(R.drawable.ic_share)
-            fab?.show()
+            fab?.run {
+                setOnClickListener { shareLink() }
+                setImageResource(R.drawable.ic_share)
+                show()
+            }
 
-            bottomAppBar.run {
+            bottomAppBar?.run {
                 navigationIcon = null
                 replaceMenu(R.menu.menu_link)
 
                 setOnMenuItemClickListener { item: MenuItem? ->
                     when (item?.itemId) {
                         R.id.menuItemDelete -> {
-                            showMainMenu()
                         }
                         R.id.menuItemEditLink -> {
                         }
@@ -80,9 +97,8 @@ class MainActivity :
         }
     }
 
+    private val navigationViewModel: NavigationViewModel by lazy { viewModelFactory.get<NavigationViewModel>(this) }
     private val authViewModel: AuthViewModel by lazy { viewModelFactory.get<AuthViewModel>(this) }
-
-    private var navigationFragment: NavigationDrawerFragment? = null
 
     private val handler by lazy { Handler() }
 
@@ -91,19 +107,40 @@ class MainActivity :
         setContentView(R.layout.activity_main)
 
         inTransaction {
-            add(R.id.fragmentHost, SplashFragment.newInstance())
+            add(R.id.fragmentHost, createFragment<SplashFragment>())
         }
 
-        observe(authViewModel.loginState, ::handleLoginState)
-        error(authViewModel.error, ::handleError)
+        setupViewModels()
+    }
+
+    private fun setupViewModels() {
+        with(authViewModel) {
+            observe(loginState, ::handleLoginState)
+            error(error, ::handleError)
+        }
+        with(navigationViewModel) {
+            observe(title, layoutTitle::setTitle)
+            observe(postCount, layoutTitle::setPostCount)
+            observe(menuType) {
+                when (it) {
+                    NavigationViewModel.MenuType.MAIN -> showMainMenu()
+                    NavigationViewModel.MenuType.LINK -> showLinkMenu()
+                }
+            }
+        }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        navigationViewModel.viewList()
     }
 
     override fun onAllClicked() {
-        // TODO
+        navigationViewModel.viewContent(NavigationViewModel.ContentType.ALL)
     }
 
     override fun onRecentClicked() {
-        // TODO
+        navigationViewModel.viewContent(NavigationViewModel.ContentType.RECENT)
     }
 
     override fun onPublicClicked() {
@@ -128,28 +165,55 @@ class MainActivity :
 
     override fun onLogoutClicked() {
         authViewModel.logout()
-        navigationFragment?.dismiss()
     }
 
-    override fun onPreferencesClicked() {
-        // TODO
+    override fun onShareAppClicked() {
+        val appName = packageName.remove(".debug")
+        val message = getString(R.string.share_text, "$PLAY_STORE_BASE_URL$appName")
+
+        ShareCompat.IntentBuilder.from(this)
+            .setType("text/plain")
+            .setChooserTitle(R.string.share_title)
+            .setText(message)
+            .startChooser()
     }
 
-    fun showMainMenu() {
+    override fun onRateAppClicked() {
+        val appName = packageName.remove(".debug")
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("$MARKET_BASE_URL$appName")))
+        } catch (exception: ActivityNotFoundException) {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("$PLAY_STORE_BASE_URL$appName")))
+        }
+    }
+
+    private fun showNavigation() {
+        NavigationDrawerFragment().showNavigation(this)
+    }
+
+    private fun showMainMenu() {
+        layoutTitle.hideNavigateUp()
         bottomAppBar.fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
+        bottomAppBar.show()
         fabMain.hide(mainMenuFabListener)
     }
 
-    fun showLinkMenu() {
+    private fun showLinkMenu() {
+        layoutTitle.setNavigateUp { onBackPressed() }
         bottomAppBar.fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_END
         fabMain.hide(linkMenuFabListener)
     }
 
-    private fun showNavigation() {
-        NavigationDrawerFragment()
-            .apply { callback = this@MainActivity }
-            .also { navigationFragment = it }
-            .run { show(supportFragmentManager, tag) }
+    private fun hideControls() {
+        layoutTitle.gone()
+        bottomAppBar.gone()
+        fabMain.hide()
+    }
+
+    private fun showControls() {
+        layoutTitle.visible()
+        bottomAppBar.visible()
+        fabMain.show()
     }
 
     private fun handleLoginState(loginState: LoginState) {
@@ -157,37 +221,50 @@ class MainActivity :
             LoginState.LoggedIn -> {
                 handler.postDelayed({
                     inTransaction {
-                        replace(R.id.fragmentHost, PostListFragment.newInstance())
-                            .addSharedElement(imageViewAppLogo, SharedElementTransitionNames.APP_LOGO)
+                        setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+                        replace(R.id.fragmentHost, createFragment<PostListFragment>())
                     }
 
-                    bottomAppBar.visible()
-                    fabMain.show()
+                    showControls()
                     showMainMenu()
+                    layoutTitle.setTitle(R.string.posts_title_all)
                 }, SPLASH_DELAY)
             }
             LoginState.LoggedOut -> {
                 handler.postDelayed({
                     inTransaction {
-                        replace(R.id.fragmentHost, AuthFragment.newInstance())
-                            .addSharedElement(imageViewAppLogo, SharedElementTransitionNames.APP_LOGO)
+                        setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+                        replace(R.id.fragmentHost, createFragment<AuthFragment>())
                     }
 
-                    bottomAppBar.gone()
-                    fabMain.hide()
+                    hideControls()
                 }, SPLASH_DELAY)
             }
             LoginState.Unauthorized -> {
                 inTransaction {
                     supportFragmentManager.fragments.forEach { remove(it) }
-                    add(R.id.fragmentHost, AuthFragment.newInstance())
+                    setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+                    add(R.id.fragmentHost, createFragment<AuthFragment>())
                 }
 
-                bottomAppBar.gone()
-                fabMain.gone()
+                hideControls()
 
-                Toast.makeText(this, R.string.auth_logged_out_feedback, Toast.LENGTH_SHORT).show()
+                layoutRoot.snackbar(getString(R.string.auth_logged_out_feedback))
             }
+        }
+    }
+
+    private fun addLink() {
+        // TODO
+    }
+
+    private fun shareLink() {
+        navigationViewModel.post.value?.let {
+            ShareCompat.IntentBuilder.from(this)
+                .setType("text/plain")
+                .setChooserTitle(R.string.posts_share_title)
+                .setText(it.url)
+                .startChooser()
         }
     }
 }
