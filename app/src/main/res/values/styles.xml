@@ -177,6 +177,13 @@
         <item name="android:paddingBottom">@dimen/padding_regular</item>
     </style>
 
+    <style name="AppTheme.ProgressBarStyle" parent="Base.Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminate">true</item>
+        <item name="android:layout_height">@dimen/progress_bar_size</item>
+        <item name="android:layout_width">@dimen/progress_bar_size</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
     <style name="AppTheme.Text" />
 
     <style name="AppTheme.Text.Title">
