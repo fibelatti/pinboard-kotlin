@@ -6,7 +6,6 @@ import com.fibelatti.pinboard.core.di.modules.CoreModule
 import com.fibelatti.pinboard.core.di.modules.DatabaseModule
 import com.fibelatti.pinboard.core.di.modules.NetworkModule
 import com.fibelatti.pinboard.core.di.modules.PostsModule
-import com.fibelatti.pinboard.core.di.modules.PreferencesModule
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -14,7 +13,6 @@ import javax.inject.Singleton
 @Component(
     modules = [
         CoreModule::class,
-        PreferencesModule::class,
         NetworkModule::class,
         DatabaseModule::class,
         AuthModule::class,
