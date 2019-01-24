@@ -21,7 +21,7 @@ class PostListViewModel @Inject constructor(
 ) : BaseViewModel(coroutineLauncher) {
 
     val posts: LiveEvent<List<Post>> get() = _posts
-    private val _posts = MutableLiveEvent<List<Post>>().apply { setEvent(emptyList()) }
+    private val _posts = MutableLiveEvent<List<Post>>()
 
     val loading: LiveEvent<Boolean> get() = _loading
     private val _loading = MutableLiveEvent<Boolean>().apply { setEvent(true) }

@@ -16,6 +16,7 @@ import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig.MARKET_BASE_URL
 import com.fibelatti.pinboard.core.AppConfig.PLAY_STORE_BASE_URL
+import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.extension.createFragment
 import com.fibelatti.pinboard.core.extension.show
@@ -30,6 +31,8 @@ import com.fibelatti.pinboard.features.user.presentation.AuthViewModel
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_auth.imageViewAppLogo as authViewLogo
+import kotlinx.android.synthetic.main.fragment_splash.imageViewAppLogo as splashViewLogo
 
 private const val SPLASH_DELAY = 500L
 
@@ -221,8 +224,8 @@ class MainActivity :
             LoginState.LoggedIn -> {
                 handler.postDelayed({
                     inTransaction {
-                        setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                         replace(R.id.fragmentHost, createFragment<PostListFragment>())
+                            .addSharedElement(authViewLogo, SharedElementTransitionNames.APP_LOGO)
                     }
 
                     showControls()
@@ -235,6 +238,7 @@ class MainActivity :
                     inTransaction {
                         setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                         replace(R.id.fragmentHost, createFragment<AuthFragment>())
+                            .addSharedElement(splashViewLogo, SharedElementTransitionNames.APP_LOGO)
                     }
 
                     hideControls()

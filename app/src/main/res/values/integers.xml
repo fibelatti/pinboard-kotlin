@@ -2,5 +2,5 @@
 <resources>
     <integer name="anim_time_short">200</integer>
     <integer name="anim_time_default">300</integer>
-    <integer name="anim_time_long">400</integer>
+    <integer name="anim_time_long">500</integer>
 </resources>

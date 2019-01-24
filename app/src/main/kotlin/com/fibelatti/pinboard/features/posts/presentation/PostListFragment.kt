@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.transition.Transition
+import androidx.transition.TransitionInflater
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.gone
@@ -13,6 +15,8 @@ import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.core.extension.withLinearLayoutManager
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.DefaultTransitionListener
+import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.createFragment
 import com.fibelatti.pinboard.core.extension.snackbar
@@ -38,9 +42,32 @@ class PostListFragment @Inject constructor(
 
     private var sorting: Sorting = Sorting.NEWEST_FIRST
 
+    private val animTime by lazy {
+        requireContext().resources.getInteger(R.integer.anim_time_long).toLong()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setupSharedTransition()
+        setupViewModels()
+    }
 
+    private fun setupSharedTransition() {
+        sharedElementEnterTransition =
+            TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+                .setDuration(animTime)
+                .addListener(object : Transition.TransitionListener by DefaultTransitionListener {
+                    override fun onTransitionStart(transition: Transition) {
+                        imageViewAppLogo?.visible()
+                    }
+
+                    override fun onTransitionEnd(transition: Transition) {
+                        imageViewAppLogo?.gone()
+                    }
+                })
+    }
+
+    private fun setupViewModels() {
         with(postListViewModel) {
             observeEvent(posts, ::showPosts)
             observeEvent(loading) { layoutProgressBar.visibleIf(it) }
@@ -61,6 +88,8 @@ class PostListFragment @Inject constructor(
     }
 
     private fun setupLayout() {
+        imageViewAppLogo.transitionName = SharedElementTransitionNames.APP_LOGO
+
         recyclerViewPosts
             .withLinearLayoutManager()
             .apply { addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL)) }
