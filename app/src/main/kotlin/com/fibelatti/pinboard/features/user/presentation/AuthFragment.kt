@@ -13,12 +13,14 @@ import com.fibelatti.core.extension.isKeyboardSubmit
 import com.fibelatti.core.extension.setupLinks
 import com.fibelatti.core.extension.showError
 import com.fibelatti.core.extension.textAsString
+import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.LinkTransformationMethod
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import kotlinx.android.synthetic.main.fragment_auth.*
 import kotlinx.android.synthetic.main.layout_auth_form.*
+import kotlinx.android.synthetic.main.layout_progress_bar.*
 import javax.inject.Inject
 
 class AuthFragment @Inject constructor() : BaseFragment() {
@@ -32,8 +34,6 @@ class AuthFragment @Inject constructor() : BaseFragment() {
 
         sharedElementEnterTransition =
             TransitionInflater.from(context).inflateTransition(android.R.transition.move)
-
-        observeEvent(authViewModel.apiTokenError, ::handleAuthError)
     }
 
     override fun onCreateView(
@@ -45,6 +45,10 @@ class AuthFragment @Inject constructor() : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupLayout()
+
+        with(authViewModel) {
+            observeEvent(apiTokenError, ::handleAuthError)
+        }
     }
 
     private fun setupLayout() {
@@ -55,7 +59,11 @@ class AuthFragment @Inject constructor() : BaseFragment() {
             if (isKeyboardSubmit(actionId, event)) authViewModel.login(editTextAuthToken.textAsString())
             return@setOnEditorActionListener true
         }
-        buttonAuth.setOnClickListener { authViewModel.login(editTextAuthToken.textAsString()) }
+        buttonAuth.setOnClickListener {
+            layoutProgressBar.visible()
+            buttonAuth.gone()
+            authViewModel.login(editTextAuthToken.textAsString())
+        }
 
         imageViewAuthHelp.setOnClickListener {
             imageViewAuthHelp.gone()
@@ -66,6 +74,8 @@ class AuthFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun handleAuthError(message: String) {
+        layoutProgressBar.gone()
+        buttonAuth.visible()
         textInputLayoutAuthToken.showError(message)
     }
 }

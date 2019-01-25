@@ -40,8 +40,7 @@
             android:id="@+id/editTextAuthToken"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:imeOptions="actionGo"
-            android:inputType="textVisiblePassword" />
+            android:imeOptions="actionGo" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
@@ -52,6 +51,14 @@
         android:layout_marginTop="@dimen/margin_regular"
         android:padding="@dimen/padding_small"
         android:text="@string/auth_button" />
+
+    <include
+        layout="@layout/layout_progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/button_height"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/margin_regular"
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/imageViewAuthHelp"

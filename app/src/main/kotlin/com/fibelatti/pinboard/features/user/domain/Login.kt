@@ -20,5 +20,5 @@ class Login @Inject constructor(
             .mapCatching { Unit }
     }
 
-    class Params(val apiToken: String)
+    data class Params(val apiToken: String)
 }
