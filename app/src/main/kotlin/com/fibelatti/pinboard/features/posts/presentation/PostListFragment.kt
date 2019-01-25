@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -49,7 +50,6 @@ class PostListFragment @Inject constructor(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupSharedTransition()
-        setupViewModels()
     }
 
     private fun setupSharedTransition() {
@@ -57,23 +57,10 @@ class PostListFragment @Inject constructor(
             TransitionInflater.from(context).inflateTransition(android.R.transition.move)
                 .setDuration(animTime)
                 .addListener(object : Transition.TransitionListener by DefaultTransitionListener {
-                    override fun onTransitionStart(transition: Transition) {
-                        imageViewAppLogo?.visible()
-                    }
-
                     override fun onTransitionEnd(transition: Transition) {
-                        imageViewAppLogo?.gone()
+                        Handler().postDelayed({ imageViewAppLogo?.gone() }, animTime)
                     }
                 })
-    }
-
-    private fun setupViewModels() {
-        with(postListViewModel) {
-            observeEvent(posts, ::showPosts)
-            observeEvent(loading) { layoutProgressBar.visibleIf(it) }
-        }
-
-        observe(navigationViewModel.contentType, ::load)
     }
 
     override fun onCreateView(
@@ -85,6 +72,22 @@ class PostListFragment @Inject constructor(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupLayout()
+        setupViewModels()
+    }
+
+    private fun setupViewModels() {
+        with(postListViewModel) {
+            observeEvent(posts, ::showPosts)
+            observeEvent(loading) {
+                layoutProgressBar.visibleIf(it)
+                if (it) {
+                    recyclerViewPosts.gone()
+                    layoutEmptyList.gone()
+                }
+            }
+        }
+
+        observe(navigationViewModel.contentType, ::load)
     }
 
     private fun setupLayout() {
