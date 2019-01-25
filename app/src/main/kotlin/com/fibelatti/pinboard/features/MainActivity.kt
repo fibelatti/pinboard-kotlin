@@ -1,11 +1,11 @@
 package com.fibelatti.pinboard.features
 
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.MenuItem
+import androidx.annotation.StringRes
 import androidx.core.app.ShareCompat
 import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
@@ -14,7 +14,6 @@ import com.fibelatti.core.extension.inTransaction
 import com.fibelatti.core.extension.remove
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.AppConfig.MARKET_BASE_URL
 import com.fibelatti.pinboard.core.AppConfig.PLAY_STORE_BASE_URL
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseActivity
@@ -53,20 +52,6 @@ class MainActivity :
             bottomAppBar?.run {
                 setNavigationIcon(R.drawable.ic_menu)
                 replaceMenu(R.menu.menu_main)
-
-                setOnMenuItemClickListener { item: MenuItem? ->
-                    when (item?.itemId) {
-                        R.id.menuItemSearch -> {
-                        }
-                        R.id.menuItemSort -> {
-                            // postListFragment?.toggleSorting()
-                        }
-                    }
-
-                    return@setOnMenuItemClickListener true
-                }
-
-                setNavigationOnClickListener { showNavigation() }
             }
         }
     }
@@ -75,7 +60,9 @@ class MainActivity :
             super.onHidden(fab)
 
             fab?.run {
-                setOnClickListener { shareLink() }
+                setOnClickListener {
+                    navigationViewModel.post.value?.let { post -> shareText(R.string.posts_share_title, post.url) }
+                }
                 setImageResource(R.drawable.ic_share)
                 show()
             }
@@ -83,19 +70,6 @@ class MainActivity :
             bottomAppBar?.run {
                 navigationIcon = null
                 replaceMenu(R.menu.menu_link)
-
-                setOnMenuItemClickListener { item: MenuItem? ->
-                    when (item?.itemId) {
-                        R.id.menuItemDelete -> {
-                        }
-                        R.id.menuItemEditLink -> {
-                        }
-                        R.id.menuItemLinkTags -> {
-                        }
-                    }
-
-                    return@setOnMenuItemClickListener true
-                }
             }
         }
     }
@@ -113,7 +87,18 @@ class MainActivity :
             add(R.id.fragmentHost, createFragment<SplashFragment>())
         }
 
+        setupView()
         setupViewModels()
+    }
+
+    private fun setupView() {
+        bottomAppBar?.run {
+            setNavigationOnClickListener { showNavigation() }
+            setOnMenuItemClickListener { item: MenuItem? ->
+                handleMenuClick(item)
+                true
+            }
+        }
     }
 
     private fun setupViewModels() {
@@ -171,23 +156,31 @@ class MainActivity :
     }
 
     override fun onShareAppClicked() {
-        val appName = packageName.remove(".debug")
-        val message = getString(R.string.share_text, "$PLAY_STORE_BASE_URL$appName")
-
-        ShareCompat.IntentBuilder.from(this)
-            .setType("text/plain")
-            .setChooserTitle(R.string.share_title)
-            .setText(message)
-            .startChooser()
+        shareText(
+            R.string.share_title,
+            getString(R.string.share_text, "$PLAY_STORE_BASE_URL${packageName.remove(".debug")}")
+        )
     }
 
     override fun onRateAppClicked() {
-        val appName = packageName.remove(".debug")
-        try {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("$MARKET_BASE_URL$appName")))
-        } catch (exception: ActivityNotFoundException) {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("$PLAY_STORE_BASE_URL$appName")))
-        }
+        startActivity(
+            Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.parse("$PLAY_STORE_BASE_URL$${packageName.remove(".debug")}")
+                setPackage("com.android.vending")
+            }
+        )
+    }
+
+    private fun hideControls() {
+        layoutTitle.gone()
+        bottomAppBar.gone()
+        fabMain.hide()
+    }
+
+    private fun showControls() {
+        layoutTitle.visible()
+        bottomAppBar.visible()
+        fabMain.show()
     }
 
     private fun showNavigation() {
@@ -207,16 +200,28 @@ class MainActivity :
         fabMain.hide(linkMenuFabListener)
     }
 
-    private fun hideControls() {
-        layoutTitle.gone()
-        bottomAppBar.gone()
-        fabMain.hide()
-    }
-
-    private fun showControls() {
-        layoutTitle.visible()
-        bottomAppBar.visible()
-        fabMain.show()
+    private fun handleMenuClick(item: MenuItem?) {
+        when (item?.itemId) {
+            // Main
+            R.id.menuItemSearch -> {
+            }
+            R.id.menuItemSort -> {
+                // postListFragment?.toggleSorting()
+            }
+            // Link
+            R.id.menuItemDelete -> {
+            }
+            R.id.menuItemEditLink -> {
+            }
+            R.id.menuItemLinkTags -> {
+            }
+            R.id.menuItemOpenInBrowser -> {
+                navigationViewModel.post.value?.let {
+                    val intent = Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(it.url) }
+                    startActivity(intent)
+                }
+            }
+        }
     }
 
     private fun handleLoginState(loginState: LoginState) {
@@ -230,7 +235,6 @@ class MainActivity :
 
                     showControls()
                     showMainMenu()
-                    layoutTitle.setTitle(R.string.posts_title_all)
                 }, SPLASH_DELAY)
             }
             LoginState.LoggedOut -> {
@@ -262,13 +266,11 @@ class MainActivity :
         // TODO
     }
 
-    private fun shareLink() {
-        navigationViewModel.post.value?.let {
-            ShareCompat.IntentBuilder.from(this)
-                .setType("text/plain")
-                .setChooserTitle(R.string.posts_share_title)
-                .setText(it.url)
-                .startChooser()
-        }
+    private fun shareText(@StringRes title: Int, text: String) {
+        ShareCompat.IntentBuilder.from(this)
+            .setType("text/plain")
+            .setChooserTitle(title)
+            .setText(text)
+            .startChooser()
     }
 }

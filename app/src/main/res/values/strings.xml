@@ -37,7 +37,7 @@
     <string name="menu_link_delete">Remove link</string>
     <string name="menu_link_edit">Edit link</string>
     <string name="menu_link_tags">Edit tags</string>
-    <string name="menu_link_share">Share link</string>
+    <string name="menu_link_open_in_browser">Open in browser</string>
 
     <!-- Auth -->
     <string name="auth_token_hint">API Token</string>

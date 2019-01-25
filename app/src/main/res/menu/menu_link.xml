@@ -6,17 +6,23 @@
         android:id="@+id/menuItemDelete"
         android:icon="@drawable/ic_delete"
         android:title="@string/menu_link_delete"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/menuItemEditLink"
         android:icon="@drawable/ic_edit"
         android:title="@string/menu_link_edit"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/menuItemLinkTags"
         android:icon="@drawable/ic_tag"
         android:title="@string/menu_link_tags"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menuItemOpenInBrowser"
+        android:icon="@drawable/ic_open_in_browser"
+        android:title="@string/menu_link_open_in_browser"
+        app:showAsAction="always" />
 </menu>
