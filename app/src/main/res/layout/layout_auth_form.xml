@@ -45,8 +45,9 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonAuth"
-        style="@style/AppTheme.ButtonPrimary.Small"
-        android:layout_height="@dimen/button_height"
+        style="@style/AppTheme.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/margin_regular"
         android:padding="@dimen/padding_small"

@@ -42,7 +42,7 @@
 
     <Button
         android:id="@+id/buttonOpenInFileViewer"
-        style="@style/AppTheme.ButtonPrimary"
+        style="@style/AppTheme.Button"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/margin_large"
         android:text="@string/posts_open_with_file_viewer" />
