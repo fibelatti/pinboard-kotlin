@@ -9,7 +9,7 @@
 
     <TextView
         android:id="@+id/linkTitle"
-        style="@style/AppTheme.Text.SectionTitle"
+        style="@style/AppTheme.Text.ListItem"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:text="Some URL" />

@@ -22,7 +22,7 @@ object Dependencies {
     const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.0"
 
     const val supportLibrary = "androidx.appcompat:appcompat:1.1.0-alpha01"
-    const val materialDesign = "com.google.android.material:material:1.0.0"
+    const val materialDesign = "com.google.android.material:material:1.1.0-alpha02"
     const val supportAnnotations = "androidx.annotation:annotation:1.0.0"
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.0-alpha1"
 

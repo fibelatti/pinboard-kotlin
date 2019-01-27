@@ -10,9 +10,9 @@
     <color name="color_grey">#757575</color>
     <color name="color_grey_dark">#424242</color>
 
-    <color name="color_primary">#757575</color>
-    <color name="color_primary_dark">#424242</color>
-    <color name="color_accent">#3068F8</color>
+    <color name="color_primary">#3068F8</color>
+    <color name="color_secondary">#3068F8</color>
+    <color name="color_error">#F44336</color>
 
     <color name="color_status_bar">#000000</color>
     <color name="color_background">#000000</color>
@@ -24,10 +24,6 @@
     <color name="text_primary">#F5F5F5</color>
     <color name="text_secondary">#9E9E9E</color>
     <color name="text_white">#F5F5F5</color>
-
-    <color name="button_primary">#3068F8</color>
-
-    <color name="app_red">#F44336</color>
 
     <color name="auth_form_background">#424242</color>
 </resources>

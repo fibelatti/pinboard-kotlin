@@ -15,7 +15,7 @@ class ProgressBar @JvmOverloads constructor(
 
     init {
         indeterminateDrawable?.setColorFilter(
-            ContextCompat.getColor(context, R.color.color_accent),
+            ContextCompat.getColor(context, R.color.color_primary),
             PorterDuff.Mode.SRC_IN
         )
     }
