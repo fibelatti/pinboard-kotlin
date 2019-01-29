@@ -5,6 +5,8 @@ import com.fibelatti.core.functional.UseCaseWithParams
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class Login @Inject constructor(
@@ -12,10 +14,10 @@ class Login @Inject constructor(
     private val postsRepository: PostsRepository
 ) : UseCaseWithParams<Unit, Login.Params>() {
 
-    override suspend fun run(params: Params): Result<Unit> {
+    override suspend fun run(params: Params): Result<Unit> = withContext(Dispatchers.IO) {
         userRepository.loginAttempt(params.apiToken)
 
-        return postsRepository.update()
+        postsRepository.update()
             .onSuccess { userRepository.loggedIn() }
             .mapCatching { Unit }
     }

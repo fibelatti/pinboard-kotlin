@@ -28,8 +28,20 @@ object MockDataProvider {
     const val mockUrlInvalid = "www.url.com"
     const val mockUrlDescription = "Some url description"
     const val mockHash = "7b7cc6c90a84124026569c84f2236ecb"
-    const val mockTag = "tag"
-    val mockTags = listOf("tag1", "tag2", "tag3")
+
+    const val mockTag1 = "tag1"
+    const val mockTag2 = "tag2"
+    const val mockTag3 = "tag3"
+    const val mockTag4 = "tag4"
+
+    const val mockTime1 = "2019-01-10T08:20:10Z"
+    const val mockTime2 = "2019-01-11T08:20:10Z"
+    const val mockTime3 = "2019-01-12T08:20:10Z"
+    const val mockTime4 = "2019-01-13T08:20:10Z"
+
+    val mockTags = listOf(mockTag1, mockTag2, mockTag3, mockTag4)
+    val mockTagsTrimmed = listOf(mockTag1, mockTag2, mockTag3)
+
     val mockTagsResponse = mockTags.joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE)
     val mockTagsRequest = mockTags.joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST)
     // endregion

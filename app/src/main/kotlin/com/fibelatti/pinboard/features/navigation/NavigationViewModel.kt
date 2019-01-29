@@ -3,16 +3,14 @@ package com.fibelatti.pinboard.features.navigation
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fibelatti.core.archcomponents.BaseViewModel
-import com.fibelatti.core.provider.CoroutineLauncher
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import javax.inject.Inject
 
 class NavigationViewModel @Inject constructor(
-    private val resourceProvider: ResourceProvider,
-    coroutineLauncher: CoroutineLauncher
-) : BaseViewModel(coroutineLauncher) {
+    private val resourceProvider: ResourceProvider
+) : BaseViewModel() {
 
     // region LiveData and backing properties
     val contentType: LiveData<ContentType> get() = _contentType

@@ -1,9 +1,8 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
-import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
-import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.UseCaseWithParams
+import com.fibelatti.core.functional.map
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import javax.inject.Inject
@@ -13,10 +12,6 @@ class GetSuggestedTagsForUrl @Inject constructor(
     private val validateUrl: ValidateUrl
 ) : UseCaseWithParams<SuggestedTags, String>() {
 
-    override suspend fun run(params: String): Result<SuggestedTags> {
-        return when (val urlResult = validateUrl(params)) {
-            is Success -> postsRepository.getSuggestedTagsForUrl(params)
-            is Failure -> urlResult
-        }
-    }
+    override suspend fun run(params: String): Result<SuggestedTags> =
+        validateUrl(params).map { postsRepository.getSuggestedTagsForUrl(params) }
 }

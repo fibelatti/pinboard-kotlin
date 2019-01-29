@@ -6,8 +6,6 @@ import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.ViewModelProvider
 import com.fibelatti.core.android.AppResourceProvider
 import com.fibelatti.core.di.ViewModelFactory
-import com.fibelatti.core.provider.CoroutineLauncher
-import com.fibelatti.core.provider.CoroutineLauncherDelegate
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.App
 import com.fibelatti.pinboard.core.di.MultiBindingFragmentFactory
@@ -47,9 +45,6 @@ abstract class CoreModule {
 
     @Binds
     abstract fun resourceProvider(appResourceProvider: AppResourceProvider): ResourceProvider
-
-    @Binds
-    abstract fun coroutineLauncher(coroutineLauncherDelegate: CoroutineLauncherDelegate): CoroutineLauncher
 
     @Binds
     abstract fun viewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory

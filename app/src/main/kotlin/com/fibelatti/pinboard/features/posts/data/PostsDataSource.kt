@@ -19,6 +19,8 @@ import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class PostsDataSource @Inject constructor(
@@ -30,40 +32,48 @@ class PostsDataSource @Inject constructor(
     private val dateFormatter: DateFormatter
 ) : PostsRepository {
 
-    override suspend fun update(): Result<String> =
+    override suspend fun update(): Result<String> = withContext(Dispatchers.IO) {
         resultFrom { postsApi.update().await() }
             .mapCatching { it.updateTime }
+    }
 
     override suspend fun add(
         url: String,
         description: String,
         extended: String?,
         tags: List<String>?
-    ): Result<Unit> =
+    ): Result<Unit> = withContext(Dispatchers.IO) {
         resultFrom { postsApi.add(url, description, extended, tags?.forRequest()).await() }
             .orThrow()
+    }
 
     override suspend fun delete(
         url: String
-    ): Result<Unit> =
+    ): Result<Unit> = withContext(Dispatchers.IO) {
         resultFrom { postsApi.delete(url).await() }
             .orThrow()
+    }
 
     override suspend fun getRecentPosts(
         tags: List<String>?
-    ): Result<List<Post>> =
+    ): Result<List<Post>> = withContext(Dispatchers.IO) {
         resultFrom { postsApi.getRecentPosts(tags?.forRequest()).await() }
             .mapCatching { postDtoMapper.mapList(it.posts) }
+    }
 
-    override suspend fun getAllPosts(tags: List<String>?): Result<List<Post>> =
+    override suspend fun getAllPosts(
+        tags: List<String>?
+    ): Result<List<Post>> = withContext(Dispatchers.IO) {
         withLocalDataSourceCheck { postsApi.getAllPosts(tags?.forRequest()).await() }
             .mapCatching(postDtoMapper::mapList)
+    }
 
     override suspend fun getSuggestedTagsForUrl(
         url: String
-    ): Result<SuggestedTags> =
+    ): Result<SuggestedTags> = withContext(Dispatchers.IO) {
         resultFrom { postsApi.getSuggestedTagsForUrl(url).await() }
             .mapCatching(suggestedTagDtoMapper::map)
+    }
 
     private fun Result<GenericResponseDto>.orThrow() = mapCatching {
         if (it.resultCode != ApiResultCodes.DONE.code) throw ApiException()
