@@ -4,7 +4,8 @@ object Versions {
     const val compileSdkVersion = 28
     const val buildToolsVersion = "28.0.3"
 
-    internal const val kotlinVersion = "1.3.11"
+    internal const val kotlinVersion = "1.3.20"
+    internal const val coroutinesVersion = "1.1.1"
     internal const val lifeCycleVersion = "2.0.0"
     internal const val roomVersion = "2.0.0"
 }
@@ -18,8 +19,8 @@ object Classpaths {
 
 object Dependencies {
     const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlinVersion}"
-    const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.0"
-    const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.0"
+    const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutinesVersion}"
+    const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutinesVersion}"
 
     const val supportLibrary = "androidx.appcompat:appcompat:1.1.0-alpha01"
     const val materialDesign = "com.google.android.material:material:1.1.0-alpha02"
@@ -61,6 +62,7 @@ object TestDependencies {
     const val junitVintage = "org.junit.vintage:junit-vintage-engine:$junit5Version"
     const val testRunner = "com.android.support.test:runner:1.1.0"
     const val kotlinTest = "org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlinVersion}"
+    const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutinesVersion}"
     const val mockitoCore = "org.mockito:mockito-core:2.23.0"
     const val mockitoAndroid = "org.mockito:mockito-android:2.18.3"
     const val archComponentsTest = "android.arch.core:core-testing:${Versions.lifeCycleVersion}"

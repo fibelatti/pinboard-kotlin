@@ -130,6 +130,7 @@ dependencies {
     testImplementation(TestDependencies.junit5)
     testImplementation(TestDependencies.junit5Params)
     testImplementation(TestDependencies.mockitoCore)
+    testImplementation(TestDependencies.coroutinesTest)
     testImplementation(TestDependencies.archComponentsTest)
 
     androidTestImplementation(Dependencies.supportAnnotations)
