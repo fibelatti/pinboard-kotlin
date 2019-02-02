@@ -6,7 +6,7 @@ object Versions {
 
     internal const val kotlinVersion = "1.3.20"
     internal const val coroutinesVersion = "1.1.1"
-    internal const val lifeCycleVersion = "2.0.0"
+    internal const val lifecycleVersion = "2.0.0"
     internal const val roomVersion = "2.0.0"
 }
 
@@ -22,13 +22,16 @@ object Dependencies {
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutinesVersion}"
     const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutinesVersion}"
 
-    const val supportLibrary = "androidx.appcompat:appcompat:1.1.0-alpha01"
-    const val materialDesign = "com.google.android.material:material:1.1.0-alpha02"
+    const val supportLibrary = "androidx.appcompat:appcompat:1.1.0-alpha02"
+    const val materialDesign = "com.google.android.material:material:1.1.0-alpha03"
     const val supportAnnotations = "androidx.annotation:annotation:1.0.0"
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.0-alpha1"
 
-    const val archComponents = "androidx.lifecycle:lifecycle-extensions:${Versions.lifeCycleVersion}"
-    const val archComponentsCompiler = "androidx.lifecycle:lifecycle-compiler:${Versions.lifeCycleVersion}"
+    const val coreLib = "com.fibelatti.core:core:1.0.0"
+    const val coreLibArch = "com.fibelatti.core:arch-components:1.0.0"
+
+    const val archComponents = "androidx.lifecycle:lifecycle-extensions:${Versions.lifecycleVersion}"
+    const val archComponentsCompiler = "androidx.lifecycle:lifecycle-compiler:${Versions.lifecycleVersion}"
 
     const val room = "androidx.room:room-runtime:${Versions.roomVersion}"
     const val roomCompiler = "androidx.room:room-compiler:${Versions.roomVersion}"
@@ -55,6 +58,9 @@ object Dependencies {
 object TestDependencies {
     private const val junit5Version = "5.3.1"
 
+    const val coreLibTest = "com.fibelatti.core:core-test:1.0.0"
+    const val coreLibArchTest = "com.fibelatti.core:arch-components-test:1.0.0"
+
     const val junit = "junit:junit:4.12"
     const val junit5 = "org.junit.jupiter:junit-jupiter-api:$junit5Version"
     const val junit5Engine = "org.junit.jupiter:junit-jupiter-engine:$junit5Version"
@@ -65,5 +71,5 @@ object TestDependencies {
     const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutinesVersion}"
     const val mockitoCore = "org.mockito:mockito-core:2.23.0"
     const val mockitoAndroid = "org.mockito:mockito-android:2.18.3"
-    const val archComponentsTest = "android.arch.core:core-testing:${Versions.lifeCycleVersion}"
+    const val archComponentsTest = "android.arch.core:core-testing:${Versions.lifecycleVersion}"
 }
