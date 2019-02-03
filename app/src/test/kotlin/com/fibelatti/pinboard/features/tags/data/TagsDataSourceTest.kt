@@ -10,6 +10,7 @@ import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
 import com.fibelatti.core.test.extension.willReturnDeferred
 import com.fibelatti.core.test.extension.willReturnFailedDeferred
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
@@ -40,20 +41,6 @@ class TagsDataSourceTest {
         fun `GIVEN getTags returns a map with an invalid value WHEN getAllTags is called THEN Failure is returned`() {
             // GIVEN
             given(mockApi.getTags())
-                .willReturnDeferred(emptyMap())
-
-            // WHEN
-            val result = callSuspend { dataSource.getAllTags() }
-
-            // THEN
-            result.shouldBeAnInstanceOf<Success<*>>()
-            result.getOrNull() shouldBe emptyMap<String, Int>()
-        }
-
-        @Test
-        fun `GIVEN getTags returns an empty map WHEN getAllTags is called THEN Success is returned`() {
-            // GIVEN
-            given(mockApi.getTags())
                 .willReturnDeferred(mapOf("tag" to "a"))
 
             // WHEN
@@ -62,6 +49,20 @@ class TagsDataSourceTest {
             // THEN
             result.shouldBeAnInstanceOf<Failure>()
             result.exceptionOrNull()?.shouldBeAnInstanceOf<NumberFormatException>()
+        }
+
+        @Test
+        fun `GIVEN getTags returns an empty map WHEN getAllTags is called THEN Success is returned`() {
+            // GIVEN
+            given(mockApi.getTags())
+                .willReturnDeferred(emptyMap())
+
+            // WHEN
+            val result = callSuspend { dataSource.getAllTags() }
+
+            // THEN
+            result.shouldBeAnInstanceOf<Success<*>>()
+            result.getOrNull() shouldBe emptyList<Tag>()
         }
 
         @Test
@@ -75,7 +76,7 @@ class TagsDataSourceTest {
 
             // THEN
             result.shouldBeAnInstanceOf<Success<*>>()
-            result.getOrNull() shouldBe mapOf("tag" to 1)
+            result.getOrNull() shouldBe listOf(Tag("tag", 1))
         }
     }
 }
