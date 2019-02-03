@@ -8,6 +8,7 @@ import com.fibelatti.core.archcomponents.MutableLiveEvent
 import com.fibelatti.core.archcomponents.postEvent
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.NewestFirst
 import com.fibelatti.pinboard.features.posts.domain.usecase.OldestFirst
@@ -22,15 +23,18 @@ class NavigationViewModel @Inject constructor(
     val content: LiveData<Content> get() = _content
     private val _content = MutableLiveData<Content>().apply {
         value = Content(
-            contentType = ContentType.ALL,
+            contentType = ContentType.All,
             title = resourceProvider.getString(R.string.posts_title_all),
-            sortType = NewestFirst
+            sortType = NewestFirst,
+            search = Search()
         )
     }
     val newSort: LiveEvent<SortType> get() = _newSort
     private val _newSort = MutableLiveEvent<SortType>()
     val search: LiveData<Search> get() = _search
-    private val _search = MutableLiveData<Search>()
+    private val _search = MutableLiveData<Search>().apply {
+        value = Search()
+    }
     val post: LiveData<Post> get() = _post
     private val _post = MutableLiveData<Post>()
     // endregion
@@ -43,8 +47,10 @@ class NavigationViewModel @Inject constructor(
         updateContent(
             contentType = contentType,
             title = when (contentType) {
-                ContentType.ALL -> resourceProvider.getString(R.string.posts_title_all)
-                ContentType.RECENT -> resourceProvider.getString(R.string.posts_title_recent)
+                is ContentType.All -> resourceProvider.getString(R.string.posts_title_all)
+                is ContentType.Recent -> resourceProvider.getString(R.string.posts_title_recent)
+                is ContentType.Tags -> resourceProvider.getString(R.string.posts_title_tags)
+                is ContentType.Tag -> contentType.tagName
             }
         )
     }
@@ -66,33 +72,61 @@ class NavigationViewModel @Inject constructor(
         }
     }
 
-    fun search(term: String, tags: List<String>) {
-        _search.postValue(Search(term, tags))
+    fun updateSearchTags(tag: String, shouldRemove: Boolean = false) {
+        _search.value?.let {
+            _search.postValue(it.copy(
+                tags = it.tags.apply {
+                    when {
+                        shouldRemove -> remove(tag)
+                        !it.tags.contains(tag) && it.tags.size < AppConfig.API_FILTER_MAX_TAGS -> add(tag)
+                    }
+                }
+            ))
+        }
+    }
+
+    fun search(term: String) {
+        _search.value?.let {
+            val newSearch = it.copy(term = term)
+            _search.postValue(newSearch)
+            updateContent(search = newSearch)
+        }
     }
 
     fun clearSearch() {
-        _search.postValue(Search())
+        val newSearch = Search()
+        _search.postValue(newSearch)
+        updateContent(search = newSearch)
     }
 
     private fun updateContent(
         contentType: ContentType? = null,
         title: String? = null,
-        sortType: SortType? = null
+        sortType: SortType? = null,
+        search: Search? = null
     ) {
         _content.value?.let {
-            it.copy(
+            _content.value = it.copy(
                 contentType = contentType ?: it.contentType,
                 title = title ?: it.title,
-                sortType = sortType ?: it.sortType
+                sortType = sortType ?: it.sortType,
+                search = search ?: it.search
             )
-        }?.also(_content::postValue)
+        }
     }
 
-    enum class ContentType {
-        ALL,
-        RECENT
+    sealed class ContentType {
+        object All : ContentType()
+        object Recent : ContentType()
+        object Tags : ContentType()
+        class Tag(val tagName: String) : ContentType()
     }
 
-    data class Content(val contentType: ContentType, val title: String, val sortType: SortType)
-    class Search(val term: String = "", val tags: List<String> = emptyList())
+    data class Content(
+        val contentType: ContentType,
+        val title: String,
+        val sortType: SortType,
+        val search: Search
+    )
+    data class Search(val term: String = "", val tags: MutableList<String> = mutableListOf())
 }

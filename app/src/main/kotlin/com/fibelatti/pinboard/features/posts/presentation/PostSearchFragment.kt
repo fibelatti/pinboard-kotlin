@@ -6,19 +6,38 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import com.fibelatti.core.archcomponents.extension.observe
+import com.fibelatti.core.archcomponents.extension.observeEvent
+import com.fibelatti.core.extension.animateChangingTransitions
+import com.fibelatti.core.extension.children
+import com.fibelatti.core.extension.gone
+import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.hideKeyboard
+import com.fibelatti.core.extension.isKeyboardSubmit
+import com.fibelatti.core.extension.textAsString
+import com.fibelatti.core.extension.visible
+import com.fibelatti.core.extension.visibleIf
+import com.fibelatti.core.extension.withLinearLayoutManager
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.blink
 import com.fibelatti.pinboard.core.extension.navigateBack
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.navigation.NavigationViewModel
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import com.fibelatti.pinboard.features.tags.presentation.TagsAdapter
+import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
 import com.google.android.material.bottomappbar.BottomAppBar
+import com.google.android.material.chip.Chip
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_search_post.*
+import kotlinx.android.synthetic.main.layout_progress_bar.*
+import kotlinx.android.synthetic.main.layout_tag_list.*
 import javax.inject.Inject
 
-class PostSearchFragment @Inject constructor() : BaseFragment() {
+@Suppress("ValidFragment")
+class PostSearchFragment @Inject constructor(
+    private val tagsAdapter: TagsAdapter
+) : BaseFragment() {
 
     companion object {
         @JvmStatic
@@ -28,6 +47,9 @@ class PostSearchFragment @Inject constructor() : BaseFragment() {
     private val navigationViewModel: NavigationViewModel by lazy {
         viewModelFactory.get<NavigationViewModel>(requireActivity())
     }
+    private val tagsViewModel: TagsViewModel by lazy { viewModelFactory.get<TagsViewModel>(this) }
+
+    private var selectedTags: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,9 +62,25 @@ class PostSearchFragment @Inject constructor() : BaseFragment() {
 
         setupLayout()
         setupViewModels()
+
+        tagsViewModel.getAll()
     }
 
     private fun setupLayout() {
+        layoutRoot.animateChangingTransitions()
+
+        editTextSearchTerm.setOnEditorActionListener { _, actionId, event ->
+            if (isKeyboardSubmit(actionId, event)) editTextSearchTerm.hideKeyboard()
+            return@setOnEditorActionListener true
+        }
+
+        recyclerViewTags
+            .withLinearLayoutManager()
+            .adapter = tagsAdapter
+
+        tagsAdapter.onItemClicked = { navigationViewModel.updateSearchTags(it.name) }
+        tagsAdapter.onEmptyFilter = { showEmptyLayout() }
+
         mainActivity?.updateTitleLayout {
             setTitle(R.string.search_title)
             setNavigateUp {
@@ -61,7 +99,8 @@ class PostSearchFragment @Inject constructor() : BaseFragment() {
                 blink {
                     setImageResource(R.drawable.ic_search)
                     setOnClickListener {
-                        // TODO
+                        navigationViewModel.search(term = editTextSearchTerm.textAsString())
+                        navigateBack()
                     }
                 }
             }
@@ -72,8 +111,48 @@ class PostSearchFragment @Inject constructor() : BaseFragment() {
         with(navigationViewModel) {
             observe(search) { currentSearch ->
                 currentSearch.term.takeIf { it.isNotEmpty() }?.let(editTextSearchTerm::setText)
-                currentSearch.tags.takeIf { it.isNotEmpty() }?.let { it.forEach(::addSelectionChip) }
+
+                selectedTags = if (currentSearch.tags.isNotEmpty()) {
+                    textViewSelectedTagsTitle.visible()
+                    currentSearch.tags.forEach(::addSelectionChip)
+                    currentSearch.tags.joinToString(",")
+                } else {
+                    textViewSelectedTagsTitle.gone()
+                    ""
+                }
+
+                tagsAdapter.filter(selectedTags)
             }
+        }
+        with(tagsViewModel) {
+            observe(tags, ::showTags)
+            observeEvent(loading) {
+                layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE)
+                recyclerViewTags.goneIf(it)
+                layoutEmptyList.goneIf(it)
+            }
+        }
+    }
+
+    private fun showTags(list: List<Tag>) {
+        if (list.isNotEmpty()) {
+            recyclerViewTags.visible()
+            layoutEmptyList.gone()
+
+            tagsAdapter.addAll(list)
+            tagsAdapter.filter(selectedTags)
+        } else {
+            showEmptyLayout()
+        }
+    }
+
+    private fun showEmptyLayout() {
+        recyclerViewTags.gone()
+        layoutEmptyList.apply {
+            setIcon(R.drawable.ic_tag)
+            setTitle(R.string.tags_empty_title)
+            setDescription(R.string.tags_empty_description)
+            visible()
         }
     }
 
@@ -89,6 +168,19 @@ class PostSearchFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun addSelectionChip(value: String) {
-        // TODO
+        val chip = Chip(context).apply {
+            text = value
+            isClickable = true
+            isCheckable = false
+            isCloseIconVisible = true
+        }
+
+        if (chipGroupSelectedTags.children.none { (it as Chip).text == value }) {
+            chipGroupSelectedTags.addView(chip as View)
+            chip.setOnCloseIconClickListener {
+                chipGroupSelectedTags.removeView(chip as View)
+                navigationViewModel.updateSearchTags(value, shouldRemove = true)
+            }
+        }
     }
 }

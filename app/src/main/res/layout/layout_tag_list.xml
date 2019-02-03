@@ -10,8 +10,10 @@
         android:visibility="gone"
         tools:visibility="gone" />
 
-    <include
-        layout="@layout/layout_empty_list"
+    <com.fibelatti.pinboard.core.android.customview.EmptyListLayout
+        android:id="@+id/layoutEmptyList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView

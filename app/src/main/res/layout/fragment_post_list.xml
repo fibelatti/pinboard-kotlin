@@ -1,38 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layoutRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:background="@color/color_background"
+    android:clickable="true"
+    android:focusable="true"
     android:orientation="vertical">
 
     <include
         layout="@layout/layout_progress_bar"
         android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:visibility="gone" />
 
+    <com.fibelatti.pinboard.core.android.customview.EmptyListLayout
+        android:id="@+id/layoutEmptyList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <include
-        layout="@layout/layout_empty_list"
-        android:visibility="gone" />
+        android:id="@+id/layoutSearchActive"
+        layout="@layout/layout_search_active"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewPosts"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginStart="@dimen/margin_regular"
         android:layout_marginEnd="@dimen/margin_regular"
         android:clipToPadding="false"
         android:paddingBottom="@dimen/recycler_view_with_fab_padding_bottom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutSearchActive"
         tools:listitem="@layout/list_item_post" />
 
     <ImageView
         android:id="@+id/imageViewAppLogo"
         android:layout_width="@dimen/clickable_area"
         android:layout_height="@dimen/clickable_area"
-        android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="28dp"
         android:contentDescription="@string/cd_app_logo"
         android:elevation="@dimen/elevation_high"
-        android:src="@drawable/pinkt" />
-</FrameLayout>
+        android:src="@drawable/pinkt"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

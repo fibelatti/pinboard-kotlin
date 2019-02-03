@@ -71,15 +71,9 @@
         <item name="android:padding">@dimen/padding_small</item>
     </style>
 
-    <style name="AppTheme.TextButton">
-        <item name="android:layout_height">@dimen/button_height</item>
+    <style name="AppTheme.TextButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusable">true</item>
-        <item name="android:foreground">@drawable/selector_button_primary_touched</item>
-        <item name="android:gravity">center</item>
-        <item name="android:textColor">@color/color_primary</item>
-        <item name="android:textSize">@dimen/text_size_regular</item>
         <item name="android:textAllCaps">false</item>
     </style>
 

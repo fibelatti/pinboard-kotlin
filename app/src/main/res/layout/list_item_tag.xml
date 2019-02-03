@@ -8,14 +8,14 @@
     android:paddingBottom="@dimen/padding_small">
 
     <TextView
-        android:id="@+id/linkTitle"
+        android:id="@+id/textViewTagName"
         style="@style/AppTheme.Text.ListItem.Tag"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:text="Some TAG" />
 
     <TextView
-        android:id="@+id/linkAddedDate"
+        android:id="@+id/textViewPostCount"
         style="@style/AppTheme.Text.Detail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

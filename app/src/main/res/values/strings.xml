@@ -53,6 +53,7 @@
     <!-- Posts -->
     <string name="posts_title_all">All</string>
     <string name="posts_title_recent">Recent</string>
+    <string name="posts_title_tags">Tags</string>
 
     <plurals name="posts_quantity">
         <item quantity="zero">No links</item>
@@ -76,9 +77,11 @@
     <string name="posts_empty_description">There aren\'t any links saved in the selected category.</string>
 
     <!-- Search -->
-    <string name="search_title">Search URLs</string>
-    <string name="search_term">Search term</string>
-    <string name="search_tags">Search tags</string>
+    <string name="search_title">Filter links</string>
+    <string name="search_term">Keywords</string>
+    <string name="search_selected_tags">Selected tags (max. 3)</string>
+    <string name="search_tags">Saved tags</string>
+    <string name="search_active">Results are filtered</string>
 
     <!-- Tags -->
     <string name="tags_empty_title">No tags found</string>

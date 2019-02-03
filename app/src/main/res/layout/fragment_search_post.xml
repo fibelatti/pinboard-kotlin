@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:background="@color/color_background"
-    android:orientation="vertical">
+    android:clickable="true"
+    android:focusable="true">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutSearchTerm"
@@ -11,7 +15,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_regular"
-        android:layout_marginTop="@dimen/margin_regular"
         android:layout_marginEnd="@dimen/margin_regular"
         android:hint="@string/search_term">
 
@@ -19,27 +22,64 @@
             android:id="@+id/editTextSearchTerm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:imeOptions="actionGo" />
+            android:imeOptions="actionGo"
+            android:inputType="text"
+            android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
+        android:id="@+id/textViewSelectedTagsTitle"
         style="@style/AppTheme.Text.SectionTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/textInputLayoutSearchTerm"
+        android:layout_marginStart="@dimen/margin_regular"
+        android:layout_marginTop="@dimen/margin_regular"
+        android:layout_marginEnd="@dimen/margin_regular"
+        android:text="@string/search_selected_tags"
+        android:visibility="gone" />
+
+    <HorizontalScrollView
+        android:id="@+id/layoutChipContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewSelectedTagsTitle"
+        android:paddingTop="@dimen/padding_xsmall">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupSelectedTags"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_regular"
+            android:layout_marginEnd="@dimen/margin_regular" />
+    </HorizontalScrollView>
+
+    <TextView
+        android:id="@+id/textViewSearchTagsTitle"
+        style="@style/AppTheme.Text.SectionTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layoutChipContainer"
         android:layout_marginStart="@dimen/margin_regular"
         android:layout_marginTop="@dimen/margin_regular"
         android:layout_marginEnd="@dimen/margin_regular"
         android:text="@string/search_tags" />
 
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chipGroupSelectedTags"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
     <include
         layout="@layout/layout_tag_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_below="@+id/textViewSearchTagsTitle"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="@dimen/margin_xsmall" />
 
-</LinearLayout>
+    <include
+        layout="@layout/layout_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@+id/layoutChipContainer"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        tools:visibility="gone" />
+
+</RelativeLayout>

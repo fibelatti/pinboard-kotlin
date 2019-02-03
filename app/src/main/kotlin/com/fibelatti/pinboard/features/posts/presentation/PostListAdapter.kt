@@ -14,15 +14,16 @@ private const val MAX_TAGS_PER_ITEM = 4
 
 class PostListAdapter @Inject constructor(
     private val dateFormatter: DateFormatter
-) : BaseAdapter<Post>() {
+) : BaseAdapter<Post>(hasFilter = true) {
 
     var onItemClicked: ((Post) -> Unit)? = null
+    var onEmptyFilter: (() -> Unit)? = null
 
     override fun getLayoutRes(): Int = R.layout.list_item_post
 
     override fun View.bindView(item: Post, viewHolder: ViewHolder) {
-        linkTitle.text = item.description
-        linkAddedDate.text = context.getString(R.string.posts_saved_on, dateFormatter.tzFormatToDisplayFormat(item.time))
+        textViewLinkTitle.text = item.description
+        textViewLinkAddedDate.text = context.getString(R.string.posts_saved_on, dateFormatter.tzFormatToDisplayFormat(item.time))
 
         when {
             item.tags.isEmpty() -> layoutTags.gone()
@@ -47,5 +48,11 @@ class PostListAdapter @Inject constructor(
         TextView(context, null, 0, R.style.AppTheme_Text_Tag)
             .apply { text = value }
             .let { layoutTags.addView(it as View) }
+    }
+
+    override fun filterCriteria(query: String, item: Post): Boolean = item.description.contains(query)
+
+    override fun onEmptyFilterResult() {
+        onEmptyFilter?.invoke()
     }
 }

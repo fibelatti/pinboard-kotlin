@@ -80,11 +80,11 @@ class MainActivity :
     }
 
     override fun onAllClicked() {
-        navigationViewModel.viewContent(NavigationViewModel.ContentType.ALL)
+        navigationViewModel.viewContent(NavigationViewModel.ContentType.All)
     }
 
     override fun onRecentClicked() {
-        navigationViewModel.viewContent(NavigationViewModel.ContentType.RECENT)
+        navigationViewModel.viewContent(NavigationViewModel.ContentType.Recent)
     }
 
     override fun onPublicClicked() {

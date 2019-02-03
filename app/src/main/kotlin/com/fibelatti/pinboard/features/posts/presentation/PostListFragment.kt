@@ -10,6 +10,7 @@ import androidx.transition.Transition
 import androidx.transition.TransitionInflater
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
+import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.inTransaction
@@ -30,8 +31,8 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.SortType
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_post_list.*
-import kotlinx.android.synthetic.main.layout_empty_list.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
+import kotlinx.android.synthetic.main.layout_search_active.*
 import javax.inject.Inject
 
 @Suppress("ValidFragment")
@@ -49,6 +50,8 @@ class PostListFragment @Inject constructor(
     private val animTime by lazy {
         requireContext().resources.getInteger(R.integer.anim_time_long).toLong()
     }
+
+    private var searchTerm: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,6 +84,10 @@ class PostListFragment @Inject constructor(
     private fun setupLayout() {
         imageViewAppLogo.transitionName = SharedElementTransitionNames.APP_LOGO
 
+        layoutRoot.animateChangingTransitions()
+
+        buttonClearSearch.setOnClickListener { navigationViewModel.clearSearch() }
+
         recyclerViewPosts
             .withLinearLayoutManager()
             .adapter = postsAdapter
@@ -89,6 +96,7 @@ class PostListFragment @Inject constructor(
             navigationViewModel.viewLink(it)
             showPostDetail()
         }
+        postsAdapter.onEmptyFilter = { showEmptyLayout() }
     }
 
     private fun setupViewModels() {
@@ -125,27 +133,35 @@ class PostListFragment @Inject constructor(
                 setOnClickListener { addLink() }
             }
         }
+
         when (content.contentType) {
-            NavigationViewModel.ContentType.ALL -> postListViewModel.getAll(content.sortType)
-            NavigationViewModel.ContentType.RECENT -> postListViewModel.getRecent(content.sortType)
+            NavigationViewModel.ContentType.All -> postListViewModel.getAll(content.sortType, content.search.tags)
+            NavigationViewModel.ContentType.Recent -> postListViewModel.getRecent(content.sortType, content.search.tags)
         }
+
+        searchTerm = content.search.term
+
+        layoutSearchActive.visibleIf(
+            searchTerm.isNotEmpty() || content.search.tags.isNotEmpty(),
+            otherwiseVisibility = View.GONE
+        )
     }
 
     private fun showPosts(list: List<Post>) {
         if (list.isNotEmpty()) {
-            postsAdapter.addAll(list)
             recyclerViewPosts.visible()
             layoutEmptyList.gone()
 
-            mainActivity?.updateTitleLayout { setPostCount(list.size) }
+            postsAdapter.addAll(list)
+            postsAdapter.filter(searchTerm)
+            mainActivity?.updateTitleLayout { setPostCount(postsAdapter.itemCount) }
         } else {
             showEmptyLayout()
-
-            mainActivity?.updateTitleLayout { hidePostCount() }
         }
     }
 
     private fun showEmptyLayout() {
+        mainActivity?.updateTitleLayout { hidePostCount() }
         recyclerViewPosts.gone()
         layoutEmptyList.visible()
     }

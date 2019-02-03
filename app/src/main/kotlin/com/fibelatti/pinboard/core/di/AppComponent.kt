@@ -7,6 +7,7 @@ import com.fibelatti.pinboard.core.di.modules.DatabaseModule
 import com.fibelatti.pinboard.core.di.modules.NavigationModule
 import com.fibelatti.pinboard.core.di.modules.NetworkModule
 import com.fibelatti.pinboard.core.di.modules.PostsModule
+import com.fibelatti.pinboard.core.di.modules.TagsModule
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -18,7 +19,8 @@ import javax.inject.Singleton
         DatabaseModule::class,
         NavigationModule::class,
         AuthModule::class,
-        PostsModule::class
+        PostsModule::class,
+        TagsModule::class
     ]
 )
 @Singleton
