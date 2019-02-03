@@ -7,15 +7,20 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.fibelatti.pinboard.R
 import com.google.android.material.bottomappbar.BottomAppBar
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 
 @JvmOverloads
-fun Context.toast(message: String, duration: Int = Snackbar.LENGTH_SHORT) {
+fun Context.toast(message: String, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, message, duration).show()
 }
 
 @JvmOverloads
-fun View.snackbar(message: String, duration: Int = Snackbar.LENGTH_SHORT) {
+fun View.snackbar(
+    message: String,
+    duration: Int = Snackbar.LENGTH_SHORT,
+    additionalConfiguration: Snackbar.() -> Unit = {}
+) {
     Snackbar.make(this, message, duration)
         .apply {
             val margin = context.resources.getDimensionPixelSize(R.dimen.margin_regular)
@@ -23,6 +28,8 @@ fun View.snackbar(message: String, duration: Int = Snackbar.LENGTH_SHORT) {
                 setMargins(margin, margin, margin, margin)
             }
             view.background = ContextCompat.getDrawable(context, R.drawable.background_snackbar)
+
+            additionalConfiguration()
         }
         .show()
 }
@@ -31,4 +38,14 @@ fun BottomAppBar.show() {
     animate().translationY(0f)
         .setDuration(resources.getInteger(R.integer.anim_time_default).toLong())
         .start()
+}
+
+fun FloatingActionButton.blink(onHidden: () -> Unit = {}) {
+    hide(object : FloatingActionButton.OnVisibilityChangedListener() {
+        override fun onHidden(fab: FloatingActionButton?) {
+            super.onHidden(fab)
+            onHidden()
+            show()
+        }
+    })
 }

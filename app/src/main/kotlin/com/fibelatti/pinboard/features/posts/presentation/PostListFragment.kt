@@ -3,14 +3,15 @@ package com.fibelatti.pinboard.features.posts.presentation
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.gone
+import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.inTransaction
 import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
@@ -20,10 +21,14 @@ import com.fibelatti.pinboard.core.android.DefaultTransitionListener
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.createFragment
-import com.fibelatti.pinboard.core.extension.snackbar
+import com.fibelatti.pinboard.core.extension.show
+import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.navigation.NavigationViewModel
-import com.fibelatti.pinboard.features.posts.domain.Sorting
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.posts.domain.usecase.NewestFirst
+import com.fibelatti.pinboard.features.posts.domain.usecase.SortType
+import com.google.android.material.bottomappbar.BottomAppBar
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_post_list.*
 import kotlinx.android.synthetic.main.layout_empty_list.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
@@ -40,8 +45,6 @@ class PostListFragment @Inject constructor(
     private val postListViewModel: PostListViewModel by lazy {
         viewModelFactory.get<PostListViewModel>(requireActivity())
     }
-
-    private var sorting: Sorting = Sorting.NEWEST_FIRST
 
     private val animTime by lazy {
         requireContext().resources.getInteger(R.integer.anim_time_long).toLong()
@@ -75,52 +78,70 @@ class PostListFragment @Inject constructor(
         setupViewModels()
     }
 
-    private fun setupViewModels() {
-        with(postListViewModel) {
-            observeEvent(posts, ::showPosts)
-            observeEvent(loading) {
-                layoutProgressBar.visibleIf(it)
-                if (it) {
-                    recyclerViewPosts.gone()
-                    layoutEmptyList.gone()
-                }
-            }
-        }
-
-        observe(navigationViewModel.contentType, ::load)
-    }
-
     private fun setupLayout() {
         imageViewAppLogo.transitionName = SharedElementTransitionNames.APP_LOGO
 
         recyclerViewPosts
             .withLinearLayoutManager()
-            .apply { addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL)) }
             .adapter = postsAdapter
 
         postsAdapter.onItemClicked = {
             navigationViewModel.viewLink(it)
-            inTransaction {
-                setCustomAnimations(
-                    R.anim.slide_right_in,
-                    R.anim.slide_left_out,
-                    R.anim.slide_left_in,
-                    R.anim.slide_right_out
-                )
-                add(R.id.fragmentHost, requireActivity().createFragment<PostDetailFragment>(), PostDetailFragment.TAG)
-                addToBackStack(PostDetailFragment.TAG)
+            showPostDetail()
+        }
+    }
+
+    private fun setupViewModels() {
+        with(postListViewModel) {
+            observeEvent(posts, ::showPosts)
+            observeEvent(loading) {
+                layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE)
+                recyclerViewPosts.goneIf(it)
+                layoutEmptyList.goneIf(it)
             }
+        }
+
+        with(navigationViewModel) {
+            observe(content, ::load)
+            observeEvent(newSort) { toggleSorting(it) }
+        }
+    }
+
+    private fun load(content: NavigationViewModel.Content) {
+        mainActivity?.updateTitleLayout {
+            hideNavigateUp()
+            setTitle(content.title)
+        }
+        mainActivity?.updateViews { bottomAppBar: BottomAppBar, fab: FloatingActionButton ->
+            bottomAppBar.run {
+                fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
+                setNavigationIcon(R.drawable.ic_menu)
+                replaceMenu(R.menu.menu_main)
+                setOnMenuItemClickListener { item: MenuItem? -> handleMenuClick(item) }
+                show()
+            }
+            fab.run {
+                setImageResource(R.drawable.ic_pin)
+                setOnClickListener { addLink() }
+            }
+        }
+        when (content.contentType) {
+            NavigationViewModel.ContentType.ALL -> postListViewModel.getAll(content.sortType)
+            NavigationViewModel.ContentType.RECENT -> postListViewModel.getRecent(content.sortType)
         }
     }
 
     private fun showPosts(list: List<Post>) {
         if (list.isNotEmpty()) {
             postsAdapter.addAll(list)
-            navigationViewModel.setPostCount(postsAdapter.itemCount)
             recyclerViewPosts.visible()
             layoutEmptyList.gone()
+
+            mainActivity?.updateTitleLayout { setPostCount(list.size) }
         } else {
             showEmptyLayout()
+
+            mainActivity?.updateTitleLayout { hidePostCount() }
         }
     }
 
@@ -129,25 +150,38 @@ class PostListFragment @Inject constructor(
         layoutEmptyList.visible()
     }
 
-    fun toggleSorting() {
-        when (sorting) {
-            Sorting.NEWEST_FIRST -> {
-                sorting = Sorting.OLDEST_FIRST
-                layoutRoot.snackbar(getString(R.string.posts_sorting_oldest_first))
-            }
-            Sorting.OLDEST_FIRST -> {
-                sorting = Sorting.NEWEST_FIRST
-                layoutRoot.snackbar(getString(R.string.posts_sorting_newest_first))
-            }
+    private fun handleMenuClick(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.menuItemSearch -> showSearchView()
+            R.id.menuItemSort -> navigationViewModel.toggleSorting()
         }
 
-        navigationViewModel.contentType.value?.let(::load)
+        return true
     }
 
-    private fun load(contentType: NavigationViewModel.ContentType) {
-        when (contentType) {
-            NavigationViewModel.ContentType.ALL -> postListViewModel.getAll(sorting)
-            NavigationViewModel.ContentType.RECENT -> postListViewModel.getRecent(sorting)
+    private fun addLink() {
+        // TODO
+    }
+
+    private fun showPostDetail() {
+        inTransaction {
+            setCustomAnimations(R.anim.slide_right_in, R.anim.slide_left_out, R.anim.slide_left_in, R.anim.slide_right_out)
+            add(R.id.fragmentHost, requireActivity().createFragment<PostDetailFragment>(), PostDetailFragment.TAG)
+            addToBackStack(PostDetailFragment.TAG)
         }
+    }
+
+    private fun showSearchView() {
+        inTransaction {
+            setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
+            add(R.id.fragmentHost, requireActivity().createFragment<PostSearchFragment>(), PostSearchFragment.TAG)
+            addToBackStack(PostSearchFragment.TAG)
+        }
+    }
+
+    private fun toggleSorting(sortType: SortType) {
+        mainActivity?.snackbar(
+            getString(if (sortType == NewestFirst) R.string.posts_sorting_newest_first else R.string.posts_sorting_oldest_first)
+        )
     }
 }

@@ -4,21 +4,21 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.view.MenuItem
-import androidx.annotation.StringRes
-import androidx.core.app.ShareCompat
+import androidx.fragment.app.Fragment
 import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.inTransaction
+import com.fibelatti.core.extension.isVisible
 import com.fibelatti.core.extension.remove
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig.PLAY_STORE_BASE_URL
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseActivity
+import com.fibelatti.pinboard.core.android.customview.TitleLayout
 import com.fibelatti.pinboard.core.extension.createFragment
-import com.fibelatti.pinboard.core.extension.show
+import com.fibelatti.pinboard.core.extension.shareText
 import com.fibelatti.pinboard.core.extension.snackbar
 import com.fibelatti.pinboard.features.navigation.NavigationDrawerFragment
 import com.fibelatti.pinboard.features.navigation.NavigationViewModel
@@ -39,41 +39,6 @@ class MainActivity :
     BaseActivity(),
     NavigationDrawerFragment.Callback {
 
-    private val mainMenuFabListener = object : FloatingActionButton.OnVisibilityChangedListener() {
-        override fun onHidden(fab: FloatingActionButton?) {
-            super.onHidden(fab)
-
-            fab?.run {
-                setOnClickListener { addLink() }
-                setImageResource(R.drawable.ic_pin)
-                show()
-            }
-
-            bottomAppBar?.run {
-                setNavigationIcon(R.drawable.ic_menu)
-                replaceMenu(R.menu.menu_main)
-            }
-        }
-    }
-    private val linkMenuFabListener = object : FloatingActionButton.OnVisibilityChangedListener() {
-        override fun onHidden(fab: FloatingActionButton?) {
-            super.onHidden(fab)
-
-            fab?.run {
-                setOnClickListener {
-                    navigationViewModel.post.value?.let { post -> shareText(R.string.posts_share_title, post.url) }
-                }
-                setImageResource(R.drawable.ic_share)
-                show()
-            }
-
-            bottomAppBar?.run {
-                navigationIcon = null
-                replaceMenu(R.menu.menu_link)
-            }
-        }
-    }
-
     private val navigationViewModel: NavigationViewModel by lazy { viewModelFactory.get<NavigationViewModel>(this) }
     private val authViewModel: AuthViewModel by lazy { viewModelFactory.get<AuthViewModel>(this) }
 
@@ -89,16 +54,14 @@ class MainActivity :
 
         setupView()
         setupViewModels()
+
+        supportFragmentManager.run {
+            addOnBackStackChangedListener { navigationViewModel.backNavigation(backStackEntryCount) }
+        }
     }
 
     private fun setupView() {
-        bottomAppBar?.run {
-            setNavigationOnClickListener { showNavigation() }
-            setOnMenuItemClickListener { item: MenuItem? ->
-                handleMenuClick(item)
-                true
-            }
-        }
+        bottomAppBar?.setNavigationOnClickListener { showNavigation() }
     }
 
     private fun setupViewModels() {
@@ -106,21 +69,14 @@ class MainActivity :
             observe(loginState, ::handleLoginState)
             error(error, ::handleError)
         }
-        with(navigationViewModel) {
-            observe(title, layoutTitle::setTitle)
-            observe(postCount, layoutTitle::setPostCount)
-            observe(menuType) {
-                when (it) {
-                    NavigationViewModel.MenuType.MAIN -> showMainMenu()
-                    NavigationViewModel.MenuType.LINK -> showLinkMenu()
-                }
-            }
-        }
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        navigationViewModel.viewList()
+    inline fun updateTitleLayout(titleUpdates: TitleLayout.() -> Unit) {
+        layoutTitle.run(titleUpdates)
+    }
+
+    inline fun updateViews(crossinline update: (BottomAppBar, FloatingActionButton) -> Unit = { _, _ -> }) {
+        update(bottomAppBar, fabMain)
     }
 
     override fun onAllClicked() {
@@ -171,57 +127,8 @@ class MainActivity :
         )
     }
 
-    private fun hideControls() {
-        layoutTitle.gone()
-        bottomAppBar.gone()
-        fabMain.hide()
-    }
-
-    private fun showControls() {
-        layoutTitle.visible()
-        bottomAppBar.visible()
-        fabMain.show()
-    }
-
     private fun showNavigation() {
         NavigationDrawerFragment().showNavigation(this)
-    }
-
-    private fun showMainMenu() {
-        layoutTitle.hideNavigateUp()
-        bottomAppBar.fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
-        bottomAppBar.show()
-        fabMain.hide(mainMenuFabListener)
-    }
-
-    private fun showLinkMenu() {
-        layoutTitle.setNavigateUp { onBackPressed() }
-        bottomAppBar.fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_END
-        fabMain.hide(linkMenuFabListener)
-    }
-
-    private fun handleMenuClick(item: MenuItem?) {
-        when (item?.itemId) {
-            // Main
-            R.id.menuItemSearch -> {
-            }
-            R.id.menuItemSort -> {
-                // postListFragment?.toggleSorting()
-            }
-            // Link
-            R.id.menuItemDelete -> {
-            }
-            R.id.menuItemEditLink -> {
-            }
-            R.id.menuItemLinkTags -> {
-            }
-            R.id.menuItemOpenInBrowser -> {
-                navigationViewModel.post.value?.let {
-                    val intent = Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(it.url) }
-                    startActivity(intent)
-                }
-            }
-        }
     }
 
     private fun handleLoginState(loginState: LoginState) {
@@ -234,7 +141,6 @@ class MainActivity :
                     }
 
                     showControls()
-                    showMainMenu()
                 }, SPLASH_DELAY)
             }
             LoginState.LoggedOut -> {
@@ -262,15 +168,23 @@ class MainActivity :
         }
     }
 
-    private fun addLink() {
-        // TODO
+    private fun hideControls() {
+        layoutTitle.gone()
+        bottomAppBar.gone()
+        fabMain.hide()
     }
 
-    private fun shareText(@StringRes title: Int, text: String) {
-        ShareCompat.IntentBuilder.from(this)
-            .setType("text/plain")
-            .setChooserTitle(title)
-            .setText(text)
-            .startChooser()
+    private fun showControls() {
+        layoutTitle.visible()
+        bottomAppBar.visible()
+        fabMain.show()
+    }
+
+    fun snackbar(message: String) {
+        layoutRoot.snackbar(message) {
+            anchorView = if (fabMain.isVisible()) fabMain else bottomAppBar
+        }
     }
 }
+
+val Fragment.mainActivity: MainActivity? get() = activity as? MainActivity

@@ -10,6 +10,7 @@ import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.presentation.PostDetailFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostListViewModel
+import com.fibelatti.pinboard.features.posts.presentation.PostSearchFragment
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -39,6 +40,11 @@ abstract class PostsModule {
     @IntoMap
     @FragmentKey(PostListFragment::class)
     abstract fun postListFragment(postListFragment: PostListFragment): Fragment
+
+    @Binds
+    @IntoMap
+    @FragmentKey(PostSearchFragment::class)
+    abstract fun postSearchFragment(postSearchFragment: PostSearchFragment): Fragment
 
     @Binds
     @IntoMap

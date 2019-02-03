@@ -41,6 +41,7 @@ class TitleLayout @JvmOverloads constructor(
 
     fun setTitle(title: String) {
         if (title.isNotEmpty()) textViewTitle.visible(title) else hideTitle()
+        textViewPostCount.gone()
     }
 
     fun hideTitle() {

@@ -51,7 +51,13 @@
         <item name="android:activityCloseExitAnimation">@anim/slide_right_out</item>
     </style>
 
-    <style name="AppTheme.InputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox" />
+    <style name="AppTheme.InputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <!-- The color of the label in all other text field states (such as resting and disabled) -->
+        <item name="android:textColorHint">@color/selector_input_layout</item>
+        <!-- The color of the label when it is collapsed and the text field is active -->
+        <item name="hintTextColor">@color/selector_input_layout</item>
+        <item name="boxStrokeColor">@color/selector_input_layout</item>
+    </style>
 
     <style name="AppTheme.Checkbox" parent="Base.Widget.AppCompat.CompoundButton.CheckBox">
         <item name="android:textColor">@color/text_primary</item>

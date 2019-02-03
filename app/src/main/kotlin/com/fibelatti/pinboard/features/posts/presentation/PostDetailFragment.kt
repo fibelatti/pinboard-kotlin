@@ -6,18 +6,25 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.navigateBack
+import com.fibelatti.pinboard.core.extension.shareText
 import com.fibelatti.pinboard.core.extension.toast
+import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.navigation.NavigationViewModel
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.google.android.material.bottomappbar.BottomAppBar
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_post_detail.*
 import kotlinx.android.synthetic.main.layout_file_view.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
@@ -56,16 +63,34 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupLayout()
+
+        webView.webViewClient = PostWebViewClient()
+        with(navigationViewModel) {
+            observe(post, ::updateViews)
+        }
     }
 
-    private fun setupLayout() {
-        webView.webViewClient = PostWebViewClient()
-        withPost {
-            if (it.url.substringAfterLast(".") in knownFileExtensions) {
-                showFileView(it)
-            } else {
-                showWebView(it.url)
+    private fun updateViews(post: Post) {
+        if (post.url.substringAfterLast(".") in knownFileExtensions) {
+            showFileView(post)
+        } else {
+            showWebView(post.url)
+        }
+
+        mainActivity?.updateTitleLayout {
+            setTitle("")
+            setNavigateUp { navigateBack() }
+        }
+        mainActivity?.updateViews { bottomAppBar: BottomAppBar, fab: FloatingActionButton ->
+            bottomAppBar.run {
+                fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_END
+                navigationIcon = null
+                replaceMenu(R.menu.menu_link)
+                setOnMenuItemClickListener { item: MenuItem? -> handleMenuClick(item, post) }
+            }
+            fab.run {
+                setImageResource(R.drawable.ic_share)
+                setOnClickListener { requireActivity().shareText(R.string.posts_share_title, post.url) }
             }
         }
     }
@@ -100,8 +125,22 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
         }
     }
 
-    private fun withPost(block: (Post) -> Unit) {
-        navigationViewModel.post.value?.let(block)
+    private fun handleMenuClick(item: MenuItem?, post: Post): Boolean {
+        when (item?.itemId) {
+            R.id.menuItemDelete -> {
+            }
+            R.id.menuItemEditLink -> {
+            }
+            R.id.menuItemLinkTags -> {
+            }
+            R.id.menuItemOpenInBrowser -> openUrlInExternalBrowser(post)
+        }
+
+        return true
+    }
+
+    private fun openUrlInExternalBrowser(post: Post) {
+        startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(post.url) })
     }
 
     private inner class PostWebViewClient : WebViewClient() {

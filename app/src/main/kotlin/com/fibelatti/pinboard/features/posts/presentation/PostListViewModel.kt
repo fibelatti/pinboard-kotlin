@@ -10,15 +10,13 @@ import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetAllPosts
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
-import com.fibelatti.pinboard.features.posts.domain.usecase.Sort
 import com.fibelatti.pinboard.features.posts.domain.usecase.SortType
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class PostListViewModel @Inject constructor(
     private val getAllPosts: GetAllPosts,
-    private val getRecentPosts: GetRecentPosts,
-    private val sort: Sort
+    private val getRecentPosts: GetRecentPosts
 ) : BaseViewModel() {
 
     val posts: LiveEvent<List<Post>> get() = _posts
@@ -48,12 +46,6 @@ class PostListViewModel @Inject constructor(
                     _loading.postEvent(false)
                 }
                 .onFailure(::handleError)
-        }
-    }
-
-    fun sort(posts: List<Post>, sorting: SortType) {
-        launch {
-            sort(Sort.Params(posts, sorting)).onSuccess { _posts.postEvent(it) }
         }
     }
 }

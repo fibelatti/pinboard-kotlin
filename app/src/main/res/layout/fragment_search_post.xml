@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_background"
+    android:orientation="vertical">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutSearchTerm"
+        style="@style/AppTheme.InputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_regular"
+        android:layout_marginTop="@dimen/margin_regular"
+        android:layout_marginEnd="@dimen/margin_regular"
+        android:hint="@string/search_term">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextSearchTerm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionGo" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        style="@style/AppTheme.Text.SectionTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_regular"
+        android:layout_marginTop="@dimen/margin_regular"
+        android:layout_marginEnd="@dimen/margin_regular"
+        android:text="@string/search_tags" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroupSelectedTags"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <include
+        layout="@layout/layout_tag_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</LinearLayout>
