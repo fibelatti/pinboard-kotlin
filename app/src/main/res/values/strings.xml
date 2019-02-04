@@ -76,6 +76,8 @@
     <string name="posts_empty_title">No pins in this board</string>
     <string name="posts_empty_description">There aren\'t any links saved in the selected category.</string>
 
+    <string name="posts_deleted_feedback">Link deleted successfully!</string>
+
     <!-- Search -->
     <string name="search_title">Filter links</string>
     <string name="search_term">Keywords</string>

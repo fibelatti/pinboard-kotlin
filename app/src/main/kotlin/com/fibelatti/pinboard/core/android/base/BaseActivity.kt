@@ -6,6 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentFactory
 import com.fibelatti.core.di.ViewModelFactory
 import com.fibelatti.pinboard.App
+import com.fibelatti.pinboard.BuildConfig
+import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.extension.toast
 import javax.inject.Inject
 
 abstract class BaseActivity : AppCompatActivity() {
@@ -25,6 +28,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     fun handleError(error: Throwable) {
-        error.printStackTrace()
+        toast(getString(R.string.generic_msg_error))
+        if (BuildConfig.DEBUG) error.printStackTrace()
     }
 }

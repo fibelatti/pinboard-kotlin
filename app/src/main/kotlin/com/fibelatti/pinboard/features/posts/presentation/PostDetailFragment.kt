@@ -12,13 +12,18 @@ import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
+import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.gone
+import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.visible
+import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.navigateBack
 import com.fibelatti.pinboard.core.extension.shareText
+import com.fibelatti.pinboard.core.extension.showStyledDialog
 import com.fibelatti.pinboard.core.extension.toast
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.navigation.NavigationViewModel
@@ -39,6 +44,9 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
 
     private val navigationViewModel: NavigationViewModel by lazy {
         viewModelFactory.get<NavigationViewModel>(requireActivity())
+    }
+    private val postDetailViewModel: PostDetailViewModel by lazy {
+        viewModelFactory.get<PostDetailViewModel>(this)
     }
 
     private val knownFileExtensions by lazy {
@@ -67,6 +75,18 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
         webView.webViewClient = PostWebViewClient()
         with(navigationViewModel) {
             observe(post, ::updateViews)
+        }
+        with(postDetailViewModel) {
+            observeEvent(loading) {
+                layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE)
+                layoutRootFileViewer.goneIf(it)
+                layoutScrollViewWeb.goneIf(it)
+            }
+            observeEvent(deleted) {
+                mainActivity?.toast(getString(R.string.posts_deleted_feedback))
+                navigateBack()
+            }
+            error(error, ::handleError)
         }
     }
 
@@ -97,7 +117,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
 
     private fun showFileView(post: Post) {
         layoutRootFileViewer.visible()
-        layoutScrollView.gone()
+        layoutScrollViewWeb.gone()
 
         textViewDescription.text = post.description
         textViewUrl.text = post.url
@@ -106,7 +126,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
 
     private fun showWebView(url: String) {
         layoutRootFileViewer.gone()
-        layoutScrollView.visible()
+        layoutScrollViewWeb.visible()
         webView.loadUrl(url)
     }
 
@@ -127,8 +147,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
 
     private fun handleMenuClick(item: MenuItem?, post: Post): Boolean {
         when (item?.itemId) {
-            R.id.menuItemDelete -> {
-            }
+            R.id.menuItemDelete -> deletePost(post)
             R.id.menuItemEditLink -> {
             }
             R.id.menuItemLinkTags -> {
@@ -139,6 +158,14 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
         return true
     }
 
+    private fun deletePost(post: Post) {
+        context?.showStyledDialog {
+            setMessage(R.string.alert_confirm_deletion)
+            setPositiveButton(R.string.hint_yes) { _, _ -> postDetailViewModel.deletePost(post) }
+            setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
+        }
+    }
+
     private fun openUrlInExternalBrowser(post: Post) {
         startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(post.url) })
     }
@@ -147,11 +174,13 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             layoutProgressBar?.visible()
+            layoutScrollViewWeb?.gone()
         }
 
         override fun onPageFinished(view: WebView?, url: String?) {
             super.onPageFinished(view, url)
             layoutProgressBar?.gone()
+            layoutScrollViewWeb?.visible()
         }
     }
 }

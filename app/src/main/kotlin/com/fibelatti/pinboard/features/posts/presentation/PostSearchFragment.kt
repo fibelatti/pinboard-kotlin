@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.animateChangingTransitions
@@ -131,6 +132,7 @@ class PostSearchFragment @Inject constructor(
                 recyclerViewTags.goneIf(it)
                 layoutEmptyList.goneIf(it)
             }
+            error(error, ::handleError)
         }
     }
 

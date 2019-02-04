@@ -8,6 +8,7 @@ import com.fibelatti.pinboard.features.posts.data.PostsApi
 import com.fibelatti.pinboard.features.posts.data.PostsDataSource
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.presentation.PostDetailFragment
+import com.fibelatti.pinboard.features.posts.presentation.PostDetailViewModel
 import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostListViewModel
 import com.fibelatti.pinboard.features.posts.presentation.PostSearchFragment
@@ -35,6 +36,11 @@ abstract class PostsModule {
     @IntoMap
     @ViewModelKey(PostListViewModel::class)
     abstract fun postListViewModel(postListViewModel: PostListViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PostDetailViewModel::class)
+    abstract fun postDetailViewModel(postDetailsViewModel: PostDetailViewModel): ViewModel
 
     @Binds
     @IntoMap

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
+import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.animateChangingTransitions
@@ -107,6 +108,7 @@ class PostListFragment @Inject constructor(
                 recyclerViewPosts.goneIf(it)
                 layoutEmptyList.goneIf(it)
             }
+            error(error, ::handleError)
         }
 
         with(navigationViewModel) {
