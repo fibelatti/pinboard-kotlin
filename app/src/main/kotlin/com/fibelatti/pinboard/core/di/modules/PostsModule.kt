@@ -7,6 +7,8 @@ import com.fibelatti.pinboard.core.di.mapkeys.ViewModelKey
 import com.fibelatti.pinboard.features.posts.data.PostsApi
 import com.fibelatti.pinboard.features.posts.data.PostsDataSource
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
+import com.fibelatti.pinboard.features.posts.presentation.PostAddFragment
+import com.fibelatti.pinboard.features.posts.presentation.PostAddViewModel
 import com.fibelatti.pinboard.features.posts.presentation.PostDetailFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostDetailViewModel
 import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
@@ -39,21 +41,31 @@ abstract class PostsModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(PostDetailViewModel::class)
-    abstract fun postDetailViewModel(postDetailsViewModel: PostDetailViewModel): ViewModel
-
-    @Binds
-    @IntoMap
     @FragmentKey(PostListFragment::class)
     abstract fun postListFragment(postListFragment: PostListFragment): Fragment
 
     @Binds
     @IntoMap
-    @FragmentKey(PostSearchFragment::class)
-    abstract fun postSearchFragment(postSearchFragment: PostSearchFragment): Fragment
+    @ViewModelKey(PostDetailViewModel::class)
+    abstract fun postDetailViewModel(postDetailsViewModel: PostDetailViewModel): ViewModel
 
     @Binds
     @IntoMap
     @FragmentKey(PostDetailFragment::class)
     abstract fun postDetailFragment(postDetailFragment: PostDetailFragment): Fragment
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PostAddViewModel::class)
+    abstract fun postAddViewModel(postAddViewModel: PostAddViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @FragmentKey(PostAddFragment::class)
+    abstract fun postAddFragment(postAddFragment: PostAddFragment): Fragment
+
+    @Binds
+    @IntoMap
+    @FragmentKey(PostSearchFragment::class)
+    abstract fun postSearchFragment(postSearchFragment: PostSearchFragment): Fragment
 }

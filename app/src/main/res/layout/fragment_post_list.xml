@@ -8,8 +8,7 @@
     android:animateLayoutChanges="true"
     android:background="@color/color_background"
     android:clickable="true"
-    android:focusable="true"
-    android:orientation="vertical">
+    android:focusable="true">
 
     <include
         layout="@layout/layout_progress_bar"

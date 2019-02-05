@@ -178,7 +178,11 @@ class PostListFragment @Inject constructor(
     }
 
     private fun addLink() {
-        // TODO
+        inTransaction {
+            setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
+            add(R.id.fragmentHost, requireActivity().createFragment<PostAddFragment>(), PostAddFragment.TAG)
+            addToBackStack(PostAddFragment.TAG)
+        }
     }
 
     private fun showPostDetail() {
