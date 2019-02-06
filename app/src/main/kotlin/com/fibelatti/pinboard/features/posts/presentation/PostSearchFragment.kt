@@ -20,6 +20,7 @@ import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.core.extension.withLinearLayoutManager
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.applyAs
 import com.fibelatti.pinboard.core.extension.blink
 import com.fibelatti.pinboard.core.extension.navigateBack
 import com.fibelatti.pinboard.features.mainActivity
@@ -170,19 +171,17 @@ class PostSearchFragment @Inject constructor(
     }
 
     private fun addSelectionChip(value: String) {
-        val chip = Chip(context).apply {
-            text = value
-            isClickable = true
-            isCheckable = false
-            isCloseIconVisible = true
-        }
-
-        if (chipGroupSelectedTags.children.none { (it as Chip).text == value }) {
-            chipGroupSelectedTags.addView(chip as View)
-            chip.setOnCloseIconClickListener {
-                chipGroupSelectedTags.removeView(chip as View)
-                navigationViewModel.updateSearchTags(value, shouldRemove = true)
+        val chip = layoutInflater.inflate(R.layout.list_item_chip, chipGroupSelectedTags, false)
+            .applyAs<View, Chip> {
+                text = value
+                setOnCloseIconClickListener {
+                    chipGroupSelectedTags.removeView(this)
+                    navigationViewModel.updateSearchTags(value, shouldRemove = true)
+                }
             }
+
+        if (chipGroupSelectedTags.children.none { (it as? Chip)?.text == value }) {
+            chipGroupSelectedTags.addView(chip)
         }
     }
 }

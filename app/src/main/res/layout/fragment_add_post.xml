@@ -92,25 +92,18 @@
             android:id="@+id/editTextTags"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:imeOptions="actionNext"
+            android:imeOptions="actionDone"
             android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <HorizontalScrollView
-        android:id="@+id/layoutChipContainer"
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroupTags"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_small"
-        android:paddingTop="@dimen/padding_xsmall"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutTags">
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chipGroupTags"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </HorizontalScrollView>
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutTags" />
 
     <TextView
         android:id="@+id/textViewSuggestedTagsTitle"
@@ -122,7 +115,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutChipContainer"
+        app:layout_constraintTop_toBottomOf="@+id/chipGroupTags"
         tools:visibility="visible" />
 
     <androidx.recyclerview.widget.RecyclerView

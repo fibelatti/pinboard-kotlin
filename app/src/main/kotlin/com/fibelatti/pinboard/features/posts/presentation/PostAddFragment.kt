@@ -8,9 +8,12 @@ import com.fibelatti.core.extension.afterTextChanged
 import com.fibelatti.core.extension.children
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.hideKeyboard
+import com.fibelatti.core.extension.isKeyboardSubmit
+import com.fibelatti.core.extension.textAsString
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.applyAs
 import com.fibelatti.pinboard.core.extension.blink
 import com.fibelatti.pinboard.core.extension.navigateBack
 import com.fibelatti.pinboard.features.mainActivity
@@ -55,27 +58,37 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
             }
         }
 
-        editTextTags.afterTextChanged { text ->
-            text.substringBefore(" ", "")
-                .takeIf { it.isNotEmpty() }
-                ?.let {
-                    addTag(it.trim())
-                    editTextTags.setText("")
-                }
+        setupTagInput()
+    }
+
+    private fun setupTagInput() {
+        fun createTagFromText(text: String, considerWhiteSpace: Boolean = true) {
+            text.run {
+                if (considerWhiteSpace) takeIf { it.endsWith(" ") }?.substringBefore(" ", "") else this
+            }?.takeIf { it.isNotBlank() }?.let {
+                addTag(it.trim())
+                editTextTags.setText("")
+            }
+        }
+
+        editTextTags.afterTextChanged { createTagFromText(it) }
+        editTextTags.setOnEditorActionListener { _, actionId, event ->
+            if (isKeyboardSubmit(actionId, event)) {
+                createTagFromText(editTextTags.textAsString(), considerWhiteSpace = false)
+            }
+            return@setOnEditorActionListener true
         }
     }
 
     private fun addTag(value: String) {
-        val chip = Chip(context).apply {
-            text = value
-            isClickable = true
-            isCheckable = false
-            isCloseIconVisible = true
-        }
+        val chip = layoutInflater.inflate(R.layout.list_item_chip, chipGroupTags, false)
+            .applyAs<View, Chip> {
+                text = value
+                setOnCloseIconClickListener { chipGroupTags.removeView(this) }
+            }
 
-        if (chipGroupTags.children.none { (it as Chip).text == value }) {
-            chipGroupTags.addView(chip as View, 0)
-            chip.setOnCloseIconClickListener { chipGroupTags.removeView(chip as View) }
+        if (chipGroupTags.children.none { (it as? Chip)?.text == value }) {
+            chipGroupTags.addView(chip, 0)
         }
     }
 
