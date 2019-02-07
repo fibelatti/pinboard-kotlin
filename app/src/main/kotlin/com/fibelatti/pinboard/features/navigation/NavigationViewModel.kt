@@ -56,7 +56,7 @@ class NavigationViewModel @Inject constructor(
     }
 
     fun viewLink(post: Post) {
-        _post.postValue(post)
+        _post.value = post
     }
 
     fun toggleSorting() {
@@ -74,28 +74,28 @@ class NavigationViewModel @Inject constructor(
 
     fun updateSearchTags(tag: String, shouldRemove: Boolean = false) {
         _search.value?.let {
-            _search.postValue(it.copy(
+            _search.value = it.copy(
                 tags = it.tags.apply {
                     when {
                         shouldRemove -> remove(tag)
                         !it.tags.contains(tag) && it.tags.size < AppConfig.API_FILTER_MAX_TAGS -> add(tag)
                     }
                 }
-            ))
+            )
         }
     }
 
     fun search(term: String) {
         _search.value?.let {
             val newSearch = it.copy(term = term)
-            _search.postValue(newSearch)
+            _search.value = newSearch
             updateContent(search = newSearch)
         }
     }
 
     fun clearSearch() {
         val newSearch = Search()
-        _search.postValue(newSearch)
+        _search.value = newSearch
         updateContent(search = newSearch)
     }
 

@@ -17,3 +17,6 @@ fun Activity.shareText(@StringRes title: Int, text: String) {
         .setText(text)
         .startChooser()
 }
+
+fun FragmentActivity.isFragmentAtTheTop(fragment: Fragment): Boolean =
+    supportFragmentManager.fragments.last() == fragment

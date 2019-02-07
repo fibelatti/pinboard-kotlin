@@ -23,6 +23,7 @@ import com.fibelatti.pinboard.core.android.DefaultTransitionListener
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.createFragment
+import com.fibelatti.pinboard.core.extension.isAtTheTop
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.navigation.NavigationViewModel
@@ -103,11 +104,7 @@ class PostListFragment @Inject constructor(
     private fun setupViewModels() {
         with(postListViewModel) {
             observeEvent(posts, ::showPosts)
-            observeEvent(loading) {
-                layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE)
-                recyclerViewPosts.goneIf(it)
-                layoutEmptyList.goneIf(it)
-            }
+            observeEvent(loading, ::handleLoading)
             error(error, ::handleError)
         }
 
@@ -115,6 +112,12 @@ class PostListFragment @Inject constructor(
             observe(content, ::load)
             observeEvent(newSort) { toggleSorting(it) }
         }
+    }
+
+    private fun handleLoading(isLoading: Boolean) {
+        layoutProgressBar.visibleIf(isLoading, otherwiseVisibility = View.GONE)
+        recyclerViewPosts.goneIf(isLoading)
+        layoutEmptyList.goneIf(isLoading)
     }
 
     private fun load(content: NavigationViewModel.Content) {
@@ -150,15 +153,17 @@ class PostListFragment @Inject constructor(
     }
 
     private fun showPosts(list: List<Post>) {
-        if (list.isNotEmpty()) {
-            recyclerViewPosts.visible()
-            layoutEmptyList.gone()
+        if (isAtTheTop()) {
+            if (list.isNotEmpty()) {
+                recyclerViewPosts.visible()
+                layoutEmptyList.gone()
 
-            postsAdapter.addAll(list)
-            postsAdapter.filter(searchTerm)
-            mainActivity?.updateTitleLayout { setPostCount(postsAdapter.itemCount) }
-        } else {
-            showEmptyLayout()
+                postsAdapter.addAll(list)
+                postsAdapter.filter(searchTerm)
+                mainActivity?.updateTitleLayout { setPostCount(postsAdapter.itemCount) }
+            } else {
+                showEmptyLayout()
+            }
         }
     }
 
