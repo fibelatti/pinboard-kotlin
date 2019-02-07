@@ -18,5 +18,6 @@ fun Activity.shareText(@StringRes title: Int, text: String) {
         .startChooser()
 }
 
+// TODO - Move to CoreLib
 fun FragmentActivity.isFragmentAtTheTop(fragment: Fragment): Boolean =
     supportFragmentManager.fragments.last() == fragment
