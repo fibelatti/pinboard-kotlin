@@ -4,7 +4,7 @@ object Versions {
     const val compileSdkVersion = 28
     const val buildToolsVersion = "28.0.3"
 
-    internal const val kotlinVersion = "1.3.20"
+    internal const val kotlinVersion = "1.3.21"
     internal const val coroutinesVersion = "1.1.1"
     internal const val lifecycleVersion = "2.0.0"
     internal const val roomVersion = "2.0.0"
