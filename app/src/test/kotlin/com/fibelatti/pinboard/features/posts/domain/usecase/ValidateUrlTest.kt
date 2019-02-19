@@ -8,8 +8,6 @@ import com.fibelatti.core.test.extension.callSuspend
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
 import com.fibelatti.pinboard.MockDataProvider
-import com.fibelatti.pinboard.core.network.InvalidRequestException
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -19,8 +17,18 @@ class ValidateUrlTest {
 
     private val validateUrl = ValidateUrl()
 
-    fun validUrls(): Array<String> = UrlValidSchemes.allSchemes()
-        .map { "$it://${MockDataProvider.mockUrlInvalid}" }.toTypedArray()
+    fun validUrls(): List<String> = mutableListOf<String>().apply {
+        UrlValidSchemes.allSchemes().forEach {
+            add("$it://${MockDataProvider.mockUrlInvalid}")
+        }
+        add("https://bit.ly")
+    }
+
+    fun invalidUrls(): List<String> = mutableListOf<String>().apply {
+        add(MockDataProvider.mockUrlInvalid)
+        add("google")
+        add("google com")
+    }
 
     @ParameterizedTest
     @MethodSource("validUrls")
@@ -33,13 +41,14 @@ class ValidateUrlTest {
         result.getOrNull() shouldBe url
     }
 
-    @Test
-    fun `GIVEN that an invalid url is received WHEN validateUrl is called THEN Failure is returned`() {
+    @ParameterizedTest
+    @MethodSource("invalidUrls")
+    fun `GIVEN that an invalid url is received WHEN validateUrl is called THEN Failure is returned`(invalidUrl: String) {
         // WHEN
-        val result = callSuspend { validateUrl(MockDataProvider.mockUrlInvalid) }
+        val result = callSuspend { validateUrl(invalidUrl) }
 
         // THEN
         result.shouldBeAnInstanceOf<Failure>()
-        result.exceptionOrNull()?.shouldBeAnInstanceOf<InvalidRequestException>()
+        result.exceptionOrNull()?.shouldBeAnInstanceOf<InvalidUrlException>()
     }
 }
