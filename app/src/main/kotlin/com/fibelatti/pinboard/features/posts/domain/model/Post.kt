@@ -6,7 +6,7 @@ data class Post(
     val extendedDescription: String,
     val hash: String,
     val time: String,
-    val public: Boolean,
-    val unread: Boolean,
+    val private: Boolean,
+    val readLater: Boolean,
     val tags: List<String>
 )

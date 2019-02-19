@@ -19,6 +19,8 @@ interface PostsApi {
         @Query("url") url: String,
         @Query("description") description: String,
         @Query("extended") extended: String? = null,
+        @Query("shared") public: String? = null,
+        @Query("toread") readLater: String? = null,
         @Query("tags") tags: String? = null
     ): Deferred<GenericResponseDto>
 

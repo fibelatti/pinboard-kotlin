@@ -45,8 +45,16 @@ class AddPostTest {
         // GIVEN
         givenSuspend { mockValidateUrl(mockUrlValid) }
             .willReturn(Success(mockUrlValid))
-        givenSuspend { mockPostsRepository.add(params.url, params.description, params.extended, params.tags) }
-            .willReturn(Failure(ApiException()))
+        givenSuspend {
+            mockPostsRepository.add(
+                params.url,
+                params.description,
+                params.extended,
+                params.private,
+                params.readLater,
+                params.tags
+            )
+        }.willReturn(Failure(ApiException()))
 
         // WHEN
         val result = callSuspend { addPost(AddPost.Params(mockUrlValid, mockUrlDescription)) }
@@ -61,8 +69,16 @@ class AddPostTest {
         // GIVEN
         givenSuspend { mockValidateUrl(mockUrlValid) }
             .willReturn(Success(mockUrlValid))
-        givenSuspend { mockPostsRepository.add(params.url, params.description, params.extended, params.tags) }
-            .willReturn(Success(Unit))
+        givenSuspend {
+            mockPostsRepository.add(
+                params.url,
+                params.description,
+                params.extended,
+                params.private,
+                params.readLater,
+                params.tags
+            )
+        }.willReturn(Success(Unit))
 
         // WHEN
         val result = callSuspend { addPost(AddPost.Params(mockUrlValid, mockUrlDescription)) }

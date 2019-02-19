@@ -18,6 +18,8 @@ class AddPost @Inject constructor(
                     url = it,
                     description = params.description,
                     extended = params.extended,
+                    private = params.private,
+                    readLater = params.readLater,
                     tags = params.tags
                 )
             }
@@ -26,6 +28,8 @@ class AddPost @Inject constructor(
         val url: String,
         val description: String,
         val extended: String? = null,
+        val private: Boolean? = null,
+        val readLater: Boolean? = null,
         val tags: List<String>? = null
     )
 }

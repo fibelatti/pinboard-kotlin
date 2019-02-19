@@ -37,8 +37,8 @@ class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
             extendedDescription = extended,
             hash = hash,
             time = time,
-            public = shared == PinboardApiLiterals.YES,
-            unread = toread == PinboardApiLiterals.YES,
+            private = shared == PinboardApiLiterals.NO,
+            readLater = toread == PinboardApiLiterals.YES,
             tags = tags.split(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE).sorted()
         )
     }
@@ -50,8 +50,8 @@ class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
             extended = extendedDescription,
             hash = hash,
             time = time,
-            shared = if (public) PinboardApiLiterals.YES else PinboardApiLiterals.NO,
-            toread = if (unread) PinboardApiLiterals.YES else PinboardApiLiterals.NO,
+            shared = if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES,
+            toread = if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO,
             tags = tags.joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE)
         )
     }

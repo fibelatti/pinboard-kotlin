@@ -41,10 +41,20 @@ class PostsDataSource @Inject constructor(
         url: String,
         description: String,
         extended: String?,
+        private: Boolean?,
+        readLater: Boolean?,
         tags: List<String>?
     ): Result<Unit> = withContext(Dispatchers.IO) {
-        resultFrom { postsApi.add(url, description, extended, tags?.forRequest()).await() }
-            .orThrow()
+        resultFrom {
+            postsApi.add(
+                url = url,
+                description = description,
+                extended = extended,
+                public = private?.let { if (it) AppConfig.PinboardApiLiterals.NO else AppConfig.PinboardApiLiterals.YES },
+                readLater = readLater?.let { if (it) AppConfig.PinboardApiLiterals.YES else AppConfig.PinboardApiLiterals.NO },
+                tags = tags?.forRequest()
+            ).await()
+        }.orThrow()
     }
 
     override suspend fun delete(

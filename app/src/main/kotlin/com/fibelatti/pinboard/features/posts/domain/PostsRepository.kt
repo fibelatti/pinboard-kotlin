@@ -12,6 +12,8 @@ interface PostsRepository {
         url: String,
         description: String,
         extended: String? = null,
+        private: Boolean? = null,
+        readLater: Boolean? = null,
         tags: List<String>? = null
     ): Result<Unit>
 

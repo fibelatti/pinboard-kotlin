@@ -19,6 +19,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockTagsRequest
 import com.fibelatti.pinboard.MockDataProvider.mockTime
 import com.fibelatti.pinboard.MockDataProvider.mockUrlDescription
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
+import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
@@ -32,11 +33,16 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import kotlinx.coroutines.CompletableDeferred
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.never
+import org.mockito.Mockito.reset
 import org.mockito.Mockito.verify
 
 class PostsDataSourceTest {
@@ -94,7 +100,13 @@ class PostsDataSourceTest {
     }
 
     @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class AddTests {
+
+        @BeforeEach
+        fun setup() {
+            reset(mockApi)
+        }
 
         @Test
         fun `GIVEN that the api returns an error WHEN add is called THEN Failure is returned`() {
@@ -135,6 +147,68 @@ class PostsDataSourceTest {
 
             // THEN
             result.shouldBeAnInstanceOf<Success<Unit>>()
+        }
+
+        @ParameterizedTest
+        @MethodSource("testCases")
+        fun `GIVEN the parameters THEN the expected api call parameters are sent`(testCases: Params) {
+            // GIVEN
+            val expectedPublic = when (testCases.private) {
+                true -> AppConfig.PinboardApiLiterals.NO
+                false -> AppConfig.PinboardApiLiterals.YES
+                else -> null
+            }
+            val expectedReadLater = when (testCases.readLater) {
+                true -> AppConfig.PinboardApiLiterals.YES
+                false -> AppConfig.PinboardApiLiterals.NO
+                else -> null
+            }
+
+            given(mockApi.add(
+                mockUrlValid,
+                mockUrlDescription,
+                public = expectedPublic,
+                readLater = expectedReadLater,
+                tags = mockTagsRequest
+            )).willReturnDeferred(createGenericResponse(ApiResultCodes.DONE))
+
+            // WHEN
+            val result = callSuspend {
+                dataSource.add(
+                    mockUrlValid,
+                    mockUrlDescription,
+                    private = testCases.private,
+                    readLater = testCases.readLater,
+                    tags = mockTags
+                )
+            }
+
+            // THEN
+            result.shouldBeAnInstanceOf<Success<Unit>>()
+            verify(mockApi).add(
+                url = mockUrlValid,
+                description = mockUrlDescription,
+                public = expectedPublic,
+                readLater = expectedReadLater,
+                tags = mockTagsRequest
+            )
+        }
+
+        fun testCases(): List<Params> = mutableListOf<Params>().apply {
+            val values = listOf(true, false, null)
+
+            values.forEach { private ->
+                values.forEach { readLater ->
+                    add(Params(private, readLater))
+                }
+            }
+        }
+
+        inner class Params(
+            val private: Boolean?,
+            val readLater: Boolean?
+        ) {
+            override fun toString(): String = "Params(private=$private, readLater=$readLater)"
         }
     }
 

@@ -53,7 +53,7 @@ object MockDataProvider {
     fun createPostDto(
         hash: String = mockHash,
         shared: String = PinboardApiLiterals.YES,
-        toread: String = PinboardApiLiterals.YES,
+        toread: String = PinboardApiLiterals.NO,
         tags: String = mockTagsResponse
     ): PostDto =
         PostDto(
@@ -70,8 +70,8 @@ object MockDataProvider {
     fun createPost(
         hash: String = mockHash,
         time: String = mockTime,
-        public: Boolean = true,
-        unread: Boolean = true,
+        private: Boolean = false,
+        readLater: Boolean = false,
         tags: List<String> = mockTags
     ): Post =
         Post(
@@ -80,8 +80,8 @@ object MockDataProvider {
             extendedDescription = mockUrlDescription,
             hash = hash,
             time = time,
-            public = public,
-            unread = unread,
+            private = private,
+            readLater = readLater,
             tags = tags
         )
 
