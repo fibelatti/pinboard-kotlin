@@ -4,23 +4,32 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.fibelatti.core.archcomponents.extension.error
+import com.fibelatti.core.archcomponents.extension.observe
+import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.afterTextChanged
 import com.fibelatti.core.extension.children
+import com.fibelatti.core.extension.clearError
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.isKeyboardSubmit
+import com.fibelatti.core.extension.showError
 import com.fibelatti.core.extension.textAsString
 import com.fibelatti.core.extension.visible
+import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.applyAs
 import com.fibelatti.pinboard.core.extension.blink
 import com.fibelatti.pinboard.core.extension.navigateBack
+import com.fibelatti.pinboard.core.extension.toast
 import com.fibelatti.pinboard.features.mainActivity
+import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.chip.Chip
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_add_post.*
+import kotlinx.android.synthetic.main.layout_progress_bar.*
 import javax.inject.Inject
 
 class PostAddFragment @Inject constructor() : BaseFragment() {
@@ -41,6 +50,19 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupLayout()
+        setupViewModels()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mainActivity?.updateViews { bottomAppBar: BottomAppBar, _: FloatingActionButton ->
+            bottomAppBar.hideKeyboard()
+            bottomAppBar.visible()
+        }
+    }
+
+    private fun setupLayout() {
         mainActivity?.updateTitleLayout {
             setTitle(R.string.posts_add_title)
             setNavigateUp(R.drawable.ic_close) { navigateBack() }
@@ -52,7 +74,13 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
                 blink {
                     setImageResource(R.drawable.ic_done)
                     setOnClickListener {
-                        // TODO
+                        postAddViewModel.saveLink(
+                            editTextUrl.textAsString(),
+                            editTextDescription.textAsString(),
+                            checkboxPrivate.isChecked,
+                            checkboxReadLater.isChecked,
+                            chipGroupTags.children.map { (it as? Chip)?.text.toString() }
+                        )
                     }
                 }
             }
@@ -92,11 +120,41 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        mainActivity?.updateViews { bottomAppBar: BottomAppBar, fab: FloatingActionButton ->
-            bottomAppBar.hideKeyboard()
-            bottomAppBar.visible()
+    private fun setupViewModels() {
+        with(postAddViewModel) {
+            observeEvent(loading) { layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE) }
+            observe(post, ::showPostDetails)
+            observe(invalidUrlError, ::handleInvalidUrlError)
+            observe(invalidDescriptionError, ::handleInvalidDescriptionError)
+            observeEvent(saved) {
+                mainActivity?.toast(getString(R.string.posts_saved_feedback))
+                navigateBack()
+            }
+            error(error, ::handleError)
+        }
+    }
+
+    private fun showPostDetails(post: Post) {
+        with(post) {
+            editTextUrl.setText(url)
+            editTextDescription.setText(description)
+            checkboxPrivate.isChecked = !private
+            checkboxReadLater.isChecked = readLater
+
+            chipGroupTags.removeAllViews()
+            tags.forEach(::addTag)
+        }
+    }
+
+    private fun handleInvalidUrlError(message: String) {
+        textInputLayoutUrl.run {
+            message.takeIf(String::isNotEmpty)?.let { showError(it) } ?: clearError()
+        }
+    }
+
+    private fun handleInvalidDescriptionError(message: String) {
+        textInputLayoutDescription.run {
+            message.takeIf(String::isNotEmpty)?.let { showError(it) } ?: clearError()
         }
     }
 }

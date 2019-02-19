@@ -86,6 +86,13 @@
     <string name="posts_add_tags">Tags</string>
     <string name="posts_add_tags_suggested">Suggested tags</string>
 
+    <string name="posts_saved_feedback">Link saved successfully!</string>
+
+    <!-- Validation -->
+    <string name="validation_error_empty_url">The URL cannot be empty.</string>
+    <string name="validation_error_invalid_url">The URL is invalid.</string>
+    <string name="validation_error_empty_description">The description cannot be empty.</string>
+
     <!-- Search -->
     <string name="search_title">Filter links</string>
     <string name="search_term">Keywords</string>
