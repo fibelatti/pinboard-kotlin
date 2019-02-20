@@ -57,7 +57,7 @@ class PostSearchFragment @Inject constructor(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(com.fibelatti.pinboard.R.layout.fragment_search_post, container, false)
+    ): View? = inflater.inflate(R.layout.fragment_search_post, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -67,7 +67,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(com.fibelatti.pinboard.R.layout.fragment_post_detail, container, false)
+    ): View? = inflater.inflate(R.layout.fragment_post_detail, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
