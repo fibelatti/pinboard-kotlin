@@ -118,6 +118,8 @@ dependencies {
 
     implementation(Dependencies.jodaTime)
 
+    implementation(Dependencies.jsoup)
+
     // Test
     testRuntimeOnly(TestDependencies.junit5Engine)
     testRuntimeOnly(TestDependencies.junitVintage)
