@@ -14,6 +14,7 @@ import com.fibelatti.pinboard.features.posts.presentation.PostDetailViewModel
 import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostListViewModel
 import com.fibelatti.pinboard.features.posts.presentation.PostSearchFragment
+import com.fibelatti.pinboard.features.share.ShareReceiverViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -68,4 +69,9 @@ abstract class PostsModule {
     @IntoMap
     @FragmentKey(PostSearchFragment::class)
     abstract fun postSearchFragment(postSearchFragment: PostSearchFragment): Fragment
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ShareReceiverViewModel::class)
+    abstract fun shareReceiverViewModel(shareReceiverViewModel: ShareReceiverViewModel): ViewModel
 }

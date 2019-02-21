@@ -111,6 +111,7 @@
     <string name="about_version">Version: %s</string>
 
     <!-- Share -->
+    <string name="share_to_pinkt">Save to pinboard</string>
     <string name="share_title">Sharing Pinkt</string>
     <string name="share_text">Check out Pinkt for Pinboard. Download for free at %s</string>
 
@@ -119,4 +120,5 @@
     <string name="cd_navigate_back">Navigate back</string>
     <string name="cd_empty_list_placeholder">Empty list placeholder image</string>
     <string name="cd_file">File icon</string>
+    <string name="cd_share_receiver_image">Adding link to pinboard</string>
 </resources>

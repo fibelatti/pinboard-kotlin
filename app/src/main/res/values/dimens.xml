@@ -49,4 +49,7 @@
     <dimen name="recycler_view_with_fab_padding_bottom">100dp</dimen>
 
     <dimen name="file_viewer_icon_size">60dp</dimen>
+
+    <dimen name="share_receiver_image_size">50dp</dimen>
+    <dimen name="share_receiver_loading_size">120dp</dimen>
 </resources>
