@@ -6,7 +6,6 @@ import androidx.fragment.app.FragmentFactory
 import javax.inject.Inject
 import javax.inject.Provider
 
-// TODO - Move to CoreLib
 class MultiBindingFragmentFactory @Inject constructor(
     private val creators: Map<Class<out Fragment>, @JvmSuppressWildcards Provider<Fragment>>
 ) : FragmentFactory() {

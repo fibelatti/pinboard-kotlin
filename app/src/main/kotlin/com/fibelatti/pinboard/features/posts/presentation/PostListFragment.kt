@@ -15,6 +15,7 @@ import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.inTransaction
+import com.fibelatti.core.extension.isAtTheTop
 import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.core.extension.withLinearLayoutManager
@@ -23,7 +24,6 @@ import com.fibelatti.pinboard.core.android.DefaultTransitionListener
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.createFragment
-import com.fibelatti.pinboard.core.extension.isAtTheTop
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.navigation.NavigationViewModel

@@ -35,6 +35,8 @@ import kotlinx.android.synthetic.main.fragment_splash.imageViewAppLogo as splash
 
 private const val SPLASH_DELAY = 500L
 
+val Fragment.mainActivity: MainActivity? get() = activity as? MainActivity
+
 class MainActivity :
     BaseActivity(),
     NavigationDrawerFragment.Callback {
@@ -186,5 +188,3 @@ class MainActivity :
         }
     }
 }
-
-val Fragment.mainActivity: MainActivity? get() = activity as? MainActivity
