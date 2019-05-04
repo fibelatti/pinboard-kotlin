@@ -23,5 +23,5 @@ task ktlintFormat(type: JavaExec) {
 }
 
 dependencies {
-    ktlint "com.github.shyiko:ktlint:0.29.0"
+    ktlint "com.github.shyiko:ktlint:0.31.0"
 }
