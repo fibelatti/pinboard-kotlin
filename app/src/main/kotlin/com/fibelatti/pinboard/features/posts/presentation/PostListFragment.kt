@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
+import androidx.annotation.StringRes
 import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
@@ -37,7 +38,6 @@ import kotlinx.android.synthetic.main.layout_progress_bar.*
 import kotlinx.android.synthetic.main.layout_search_active.*
 import javax.inject.Inject
 
-@Suppress("ValidFragment")
 class PostListFragment @Inject constructor(
     private val postsAdapter: PostListAdapter
 ) : BaseFragment() {
@@ -98,7 +98,12 @@ class PostListFragment @Inject constructor(
             navigationViewModel.viewLink(it)
             showPostDetail()
         }
-        postsAdapter.onEmptyFilter = { showEmptyLayout() }
+        postsAdapter.onEmptyFilter = {
+            showEmptyLayout(
+                title = R.string.posts_empty_filter_title,
+                description = R.string.posts_empty_filter_description
+            )
+        }
     }
 
     private fun setupViewModels() {
@@ -162,15 +167,25 @@ class PostListFragment @Inject constructor(
                 postsAdapter.filter(searchTerm)
                 mainActivity?.updateTitleLayout { setPostCount(postsAdapter.itemCount) }
             } else {
-                showEmptyLayout()
+                showEmptyLayout(
+                    title = R.string.posts_empty_title,
+                    description = R.string.posts_empty_description
+                )
             }
         }
     }
 
-    private fun showEmptyLayout() {
+    private fun showEmptyLayout(
+        @StringRes title: Int,
+        @StringRes description: Int
+    ) {
         mainActivity?.updateTitleLayout { hidePostCount() }
         recyclerViewPosts.gone()
-        layoutEmptyList.visible()
+        layoutEmptyList.apply {
+            visible()
+            setTitle(title)
+            setDescription(description)
+        }
     }
 
     private fun handleMenuClick(item: MenuItem?): Boolean {

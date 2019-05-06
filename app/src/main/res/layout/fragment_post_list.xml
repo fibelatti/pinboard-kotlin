@@ -19,6 +19,14 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="gone" />
 
+    <include
+        android:id="@+id/layoutSearchActive"
+        layout="@layout/layout_search_active"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.fibelatti.pinboard.core.android.customview.EmptyListLayout
         android:id="@+id/layoutEmptyList"
         android:layout_width="0dp"
@@ -27,15 +35,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <include
-        android:id="@+id/layoutSearchActive"
-        layout="@layout/layout_search_active"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/layoutSearchActive" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewPosts"

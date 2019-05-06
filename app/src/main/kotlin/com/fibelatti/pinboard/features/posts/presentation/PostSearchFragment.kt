@@ -14,7 +14,6 @@ import com.fibelatti.core.extension.children
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.hideKeyboard
-import com.fibelatti.core.extension.isKeyboardSubmit
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.textAsString
 import com.fibelatti.core.extension.visible
@@ -23,6 +22,7 @@ import com.fibelatti.core.extension.withLinearLayoutManager
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.blink
+import com.fibelatti.pinboard.core.extension.onKeyboardSubmit
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.navigation.NavigationViewModel
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -36,7 +36,6 @@ import kotlinx.android.synthetic.main.layout_progress_bar.*
 import kotlinx.android.synthetic.main.layout_tag_list.*
 import javax.inject.Inject
 
-@Suppress("ValidFragment")
 class PostSearchFragment @Inject constructor(
     private val tagsAdapter: TagsAdapter
 ) : BaseFragment() {
@@ -71,10 +70,7 @@ class PostSearchFragment @Inject constructor(
     private fun setupLayout() {
         layoutRoot.animateChangingTransitions()
 
-        editTextSearchTerm.setOnEditorActionListener { _, actionId, event ->
-            if (isKeyboardSubmit(actionId, event)) editTextSearchTerm.hideKeyboard()
-            return@setOnEditorActionListener true
-        }
+        editTextSearchTerm.onKeyboardSubmit { editTextSearchTerm.hideKeyboard() }
 
         recyclerViewTags
             .withLinearLayoutManager()

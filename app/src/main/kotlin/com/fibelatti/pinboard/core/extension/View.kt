@@ -3,8 +3,10 @@ package com.fibelatti.pinboard.core.extension
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.fibelatti.core.extension.isKeyboardSubmit
 import com.fibelatti.pinboard.R
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -48,4 +50,15 @@ fun FloatingActionButton.blink(onHidden: () -> Unit = {}) {
             show()
         }
     })
+}
+
+inline fun EditText.onKeyboardSubmit(crossinline block: EditText.() -> Unit) {
+    setOnEditorActionListener { _, actionId, event ->
+        if (isKeyboardSubmit(actionId, event)) {
+            block()
+            true
+        } else {
+            false
+        }
+    }
 }

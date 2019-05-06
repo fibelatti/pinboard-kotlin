@@ -10,7 +10,6 @@ import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.heightWrapContent
-import com.fibelatti.core.extension.isKeyboardSubmit
 import com.fibelatti.core.extension.setupLinks
 import com.fibelatti.core.extension.showError
 import com.fibelatti.core.extension.textAsString
@@ -20,6 +19,7 @@ import com.fibelatti.pinboard.core.android.LinkTransformationMethod
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import kotlinx.android.synthetic.main.fragment_auth.*
+import com.fibelatti.pinboard.core.extension.onKeyboardSubmit
 import kotlinx.android.synthetic.main.layout_auth_form.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
 import javax.inject.Inject
@@ -57,9 +57,8 @@ class AuthFragment @Inject constructor() : BaseFragment() {
         imageViewAppLogo.transitionName = SharedElementTransitionNames.APP_LOGO
         layoutAuthForm.animateChangingTransitions()
 
-        editTextAuthToken.setOnEditorActionListener { _, actionId, event ->
-            if (isKeyboardSubmit(actionId, event)) authViewModel.login(editTextAuthToken.textAsString())
-            return@setOnEditorActionListener true
+        editTextAuthToken.onKeyboardSubmit {
+            authViewModel.login(editTextAuthToken.textAsString())
         }
         buttonAuth.setOnClickListener {
             layoutProgressBar.visible()

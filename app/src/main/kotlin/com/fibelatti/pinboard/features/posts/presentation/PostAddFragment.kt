@@ -13,7 +13,6 @@ import com.fibelatti.core.extension.children
 import com.fibelatti.core.extension.clearError
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.hideKeyboard
-import com.fibelatti.core.extension.isKeyboardSubmit
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.showError
 import com.fibelatti.core.extension.textAsString
@@ -22,6 +21,7 @@ import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.blink
+import com.fibelatti.pinboard.core.extension.onKeyboardSubmit
 import com.fibelatti.pinboard.core.extension.toast
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -100,11 +100,8 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
         }
 
         editTextTags.afterTextChanged { createTagFromText(it) }
-        editTextTags.setOnEditorActionListener { _, actionId, event ->
-            if (isKeyboardSubmit(actionId, event)) {
-                createTagFromText(editTextTags.textAsString(), considerWhiteSpace = false)
-            }
-            return@setOnEditorActionListener true
+        editTextTags.onKeyboardSubmit {
+            createTagFromText(editTextTags.textAsString(), considerWhiteSpace = false)
         }
     }
 
