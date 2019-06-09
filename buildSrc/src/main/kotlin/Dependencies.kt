@@ -6,8 +6,8 @@ object Versions {
 
     internal const val kotlinVersion = "1.3.31"
     internal const val coroutinesVersion = "1.2.1"
-    internal const val lifecycleVersion = "2.0.0"
-    internal const val roomVersion = "2.0.0"
+    internal const val lifecycleVersion = "2.1.0-beta01"
+    internal const val roomVersion = "2.1.0-beta01"
 }
 
 object Classpaths {
@@ -22,13 +22,13 @@ object Dependencies {
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutinesVersion}"
     const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutinesVersion}"
 
-    const val supportLibrary = "androidx.appcompat:appcompat:1.1.0-alpha04"
-    const val materialDesign = "com.google.android.material:material:1.1.0-alpha06"
+    const val supportLibrary = "androidx.appcompat:appcompat:1.1.0-beta01"
+    const val materialDesign = "com.google.android.material:material:1.1.0-alpha07"
     const val supportAnnotations = "androidx.annotation:annotation:1.0.0"
-    const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.0-alpha5"
+    const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.0-beta1"
 
-    const val coreLib = "com.fibelatti.core:core:1.1.0-alpha1"
-    const val coreLibArch = "com.fibelatti.core:arch-components:1.1.0-alpha1"
+    const val coreLib = "com.fibelatti.core:core:1.1.0-alpha2"
+    const val coreLibArch = "com.fibelatti.core:arch-components:1.1.0-alpha2"
 
     const val archComponents = "androidx.lifecycle:lifecycle-extensions:${Versions.lifecycleVersion}"
     const val archComponentsCompiler = "androidx.lifecycle:lifecycle-compiler:${Versions.lifecycleVersion}"
@@ -59,8 +59,8 @@ object Dependencies {
 object TestDependencies {
     private const val junit5Version = "5.4.2"
 
-    const val coreLibTest = "com.fibelatti.core:core-test:1.1.0-alpha1"
-    const val coreLibArchTest = "com.fibelatti.core:arch-components-test:1.1.0-alpha1"
+    const val coreLibTest = "com.fibelatti.core:core-test:1.1.0-alpha2"
+    const val coreLibArchTest = "com.fibelatti.core:arch-components-test:1.1.0-alpha2"
 
     const val junit = "junit:junit:4.12"
     const val junit5 = "org.junit.jupiter:junit-jupiter-api:$junit5Version"

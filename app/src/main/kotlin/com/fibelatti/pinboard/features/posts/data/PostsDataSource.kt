@@ -1,8 +1,8 @@
 package com.fibelatti.pinboard.features.posts.data
 
-import com.fibelatti.core.extension.orFalse
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.catching
+import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onSuccess
@@ -98,7 +98,7 @@ class PostsDataSource @Inject constructor(
         val apiLastUpdate = update().getOrNull() ?: dateFormatter.nowAsTzFormat()
         val localPosts = catching { postsDao.getAllPosts() }
 
-        return if (userLastUpdate == apiLastUpdate && localPosts.getOrNull()?.isNotEmpty().orFalse()) {
+        return if (userLastUpdate == apiLastUpdate && localPosts.getOrDefault(emptyList()).isNotEmpty()) {
             localPosts
         } else {
             resultFrom { onInvalidLocalData() }
