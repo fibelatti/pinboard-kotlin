@@ -33,7 +33,7 @@ class PostsDataSource @Inject constructor(
 ) : PostsRepository {
 
     override suspend fun update(): Result<String> = withContext(Dispatchers.IO) {
-        resultFrom { postsApi.update().await() }
+        resultFrom { postsApi.update() }
             .mapCatching { it.updateTime }
     }
 
@@ -53,35 +53,35 @@ class PostsDataSource @Inject constructor(
                 public = private?.let { if (it) AppConfig.PinboardApiLiterals.NO else AppConfig.PinboardApiLiterals.YES },
                 readLater = readLater?.let { if (it) AppConfig.PinboardApiLiterals.YES else AppConfig.PinboardApiLiterals.NO },
                 tags = tags?.forRequest()
-            ).await()
+            )
         }.orThrow()
     }
 
     override suspend fun delete(
         url: String
     ): Result<Unit> = withContext(Dispatchers.IO) {
-        resultFrom { postsApi.delete(url).await() }
+        resultFrom { postsApi.delete(url) }
             .orThrow()
     }
 
     override suspend fun getRecentPosts(
         tags: List<String>?
     ): Result<List<Post>> = withContext(Dispatchers.IO) {
-        resultFrom { postsApi.getRecentPosts(tags?.forRequest()).await() }
+        resultFrom { postsApi.getRecentPosts(tags?.forRequest()) }
             .mapCatching { postDtoMapper.mapList(it.posts) }
     }
 
     override suspend fun getAllPosts(
         tags: List<String>?
     ): Result<List<Post>> = withContext(Dispatchers.IO) {
-        withLocalDataSourceCheck { postsApi.getAllPosts(tags?.forRequest()).await() }
+        withLocalDataSourceCheck { postsApi.getAllPosts(tags?.forRequest()) }
             .mapCatching(postDtoMapper::mapList)
     }
 
     override suspend fun getSuggestedTagsForUrl(
         url: String
     ): Result<SuggestedTags> = withContext(Dispatchers.IO) {
-        resultFrom { postsApi.getSuggestedTagsForUrl(url).await() }
+        resultFrom { postsApi.getSuggestedTagsForUrl(url) }
             .mapCatching(suggestedTagDtoMapper::map)
     }
 
@@ -89,9 +89,7 @@ class PostsDataSource @Inject constructor(
         if (it.resultCode != ApiResultCodes.DONE.code) throw ApiException()
     }
 
-    private fun List<String>.forRequest() = run {
-        joinToString(AppConfig.PinboardApiLiterals.TAG_SEPARATOR_REQUEST)
-    }
+    private fun List<String>.forRequest() = joinToString(AppConfig.PinboardApiLiterals.TAG_SEPARATOR_REQUEST)
 
     private suspend inline fun withLocalDataSourceCheck(
         crossinline onInvalidLocalData: suspend () -> List<PostDto>

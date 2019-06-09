@@ -45,11 +45,10 @@ object Dependencies {
 
     const val moshiKotlin = "com.squareup.moshi:moshi-kotlin:1.8.0"
 
-    private const val retrofitVersion = "2.5.0"
+    private const val retrofitVersion = "2.6.0"
 
     const val retrofit = "com.squareup.retrofit2:retrofit:$retrofitVersion"
     const val retrofitMoshiConverter = "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
-    const val coroutinesCallAdapter = "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2"
     const val httpLoggingInterceptor = "com.squareup.okhttp3:logging-interceptor:3.10.0"
 
     const val jodaTime = "joda-time:joda-time:2.10.1"

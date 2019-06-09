@@ -113,7 +113,6 @@ dependencies {
 
     implementation(Dependencies.retrofit)
     implementation(Dependencies.retrofitMoshiConverter)
-    implementation(Dependencies.coroutinesCallAdapter)
     implementation(Dependencies.httpLoggingInterceptor)
 
     implementation(Dependencies.jodaTime)

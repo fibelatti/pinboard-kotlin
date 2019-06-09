@@ -5,15 +5,13 @@ import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.test.extension.callSuspend
+import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
-import com.fibelatti.core.test.extension.willReturnDeferred
-import com.fibelatti.core.test.extension.willReturnFailedDeferred
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito.given
 
 class TagsDataSourceTest {
 
@@ -26,8 +24,8 @@ class TagsDataSourceTest {
         @Test
         fun `GIVEN getTags returns an error WHEN getAllTags is called THEN Failure is returned`() {
             // GIVEN
-            given(mockApi.getTags())
-                .willReturnFailedDeferred(Exception())
+            givenSuspend { mockApi.getTags() }
+                .willAnswer { throw Exception() }
 
             // WHEN
             val result = callSuspend { dataSource.getAllTags() }
@@ -40,8 +38,8 @@ class TagsDataSourceTest {
         @Test
         fun `GIVEN getTags returns a map with an invalid value WHEN getAllTags is called THEN Failure is returned`() {
             // GIVEN
-            given(mockApi.getTags())
-                .willReturnDeferred(mapOf("tag" to "a"))
+            givenSuspend { mockApi.getTags() }
+                .willReturn(mapOf("tag" to "a"))
 
             // WHEN
             val result = callSuspend { dataSource.getAllTags() }
@@ -54,8 +52,8 @@ class TagsDataSourceTest {
         @Test
         fun `GIVEN getTags returns an empty map WHEN getAllTags is called THEN Success is returned`() {
             // GIVEN
-            given(mockApi.getTags())
-                .willReturnDeferred(emptyMap())
+            givenSuspend { mockApi.getTags() }
+                .willReturn(emptyMap())
 
             // WHEN
             val result = callSuspend { dataSource.getAllTags() }
@@ -68,8 +66,8 @@ class TagsDataSourceTest {
         @Test
         fun `WHEN getAllTags is called THEN Success is returned`() {
             // GIVEN
-            given(mockApi.getTags())
-                .willReturnDeferred(mapOf("tag" to "1"))
+            givenSuspend { mockApi.getTags() }
+                .willReturn(mapOf("tag" to "1"))
 
             // WHEN
             val result = callSuspend { dataSource.getAllTags() }

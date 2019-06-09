@@ -5,12 +5,12 @@ import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.test.extension.callSuspend
+import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.safeAny
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
-import com.fibelatti.core.test.extension.willReturnDeferred
-import com.fibelatti.core.test.extension.willReturnFailedDeferred
+import com.fibelatti.core.test.extension.verifySuspend
 import com.fibelatti.pinboard.MockDataProvider.createGenericResponse
 import com.fibelatti.pinboard.MockDataProvider.createRecentDto
 import com.fibelatti.pinboard.MockDataProvider.mockFutureTime
@@ -32,7 +32,6 @@ import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import kotlinx.coroutines.CompletableDeferred
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -73,8 +72,8 @@ class PostsDataSourceTest {
         @Test
         fun `GIVEN that the api returns an error WHEN update is called THEN Failure is returned`() {
             // GIVEN
-            given(mockApi.update())
-                .willReturnFailedDeferred(Exception())
+            givenSuspend { mockApi.update() }
+                .willAnswer { throw Exception() }
 
             // WHEN
             val result = callSuspend { dataSource.update() }
@@ -87,8 +86,8 @@ class PostsDataSourceTest {
         @Test
         fun `WHEN update is called THEN Success is returned`() {
             // GIVEN
-            given(mockApi.update())
-                .willReturnDeferred(UpdateDto(mockTime))
+            givenSuspend { mockApi.update() }
+                .willReturn(UpdateDto(mockTime))
 
             // WHEN
             val result = callSuspend { dataSource.update() }
@@ -111,8 +110,8 @@ class PostsDataSourceTest {
         @Test
         fun `GIVEN that the api returns an error WHEN add is called THEN Failure is returned`() {
             // GIVEN
-            given(mockApi.add(mockUrlValid, mockUrlDescription, tags = mockTagsRequest))
-                .willReturnFailedDeferred(Exception())
+            givenSuspend { mockApi.add(mockUrlValid, mockUrlDescription, tags = mockTagsRequest) }
+                .willAnswer { throw Exception() }
 
             // WHEN
             val result = callSuspend { dataSource.add(mockUrlValid, mockUrlDescription, tags = mockTags) }
@@ -125,8 +124,8 @@ class PostsDataSourceTest {
         @Test
         fun `GIVEN that the api returns 200 but the result code is not DONE WHEN add is called THEN Failure is returned`() {
             // GIVEN
-            given(mockApi.add(mockUrlValid, mockUrlDescription, tags = mockTagsRequest))
-                .willReturnDeferred(createGenericResponse(ApiResultCodes.MISSING_URL))
+            givenSuspend { mockApi.add(mockUrlValid, mockUrlDescription, tags = mockTagsRequest) }
+                .willReturn(createGenericResponse(ApiResultCodes.MISSING_URL))
 
             // WHEN
             val result = callSuspend { dataSource.add(mockUrlValid, mockUrlDescription, tags = mockTags) }
@@ -139,8 +138,8 @@ class PostsDataSourceTest {
         @Test
         fun `GIVEN that the api returns 200 and the result code is DONE WHEN add is called THEN Success is returned`() {
             // GIVEN
-            given(mockApi.add(mockUrlValid, mockUrlDescription, tags = mockTagsRequest))
-                .willReturnDeferred(createGenericResponse(ApiResultCodes.DONE))
+            givenSuspend { mockApi.add(mockUrlValid, mockUrlDescription, tags = mockTagsRequest) }
+                .willReturn(createGenericResponse(ApiResultCodes.DONE))
 
             // WHEN
             val result = callSuspend { dataSource.add(mockUrlValid, mockUrlDescription, tags = mockTags) }
@@ -164,13 +163,15 @@ class PostsDataSourceTest {
                 else -> null
             }
 
-            given(mockApi.add(
-                mockUrlValid,
-                mockUrlDescription,
-                public = expectedPublic,
-                readLater = expectedReadLater,
-                tags = mockTagsRequest
-            )).willReturnDeferred(createGenericResponse(ApiResultCodes.DONE))
+            givenSuspend {
+                mockApi.add(
+                    mockUrlValid,
+                    mockUrlDescription,
+                    public = expectedPublic,
+                    readLater = expectedReadLater,
+                    tags = mockTagsRequest
+                )
+            }.willReturn(createGenericResponse(ApiResultCodes.DONE))
 
             // WHEN
             val result = callSuspend {
@@ -218,8 +219,8 @@ class PostsDataSourceTest {
         @Test
         fun `GIVEN that the api returns an error WHEN delete is called THEN Failure is returned`() {
             // GIVEN
-            given(mockApi.delete(mockUrlValid))
-                .willReturnFailedDeferred(Exception())
+            givenSuspend { mockApi.delete(mockUrlValid) }
+                .willAnswer { throw Exception() }
 
             // WHEN
             val result = callSuspend { dataSource.delete(mockUrlValid) }
@@ -232,8 +233,8 @@ class PostsDataSourceTest {
         @Test
         fun `GIVEN that the api returns 200 but the result code is not DONE WHEN delete is called THEN Failure is returned`() {
             // GIVEN
-            given(mockApi.delete(mockUrlValid))
-                .willReturnDeferred(createGenericResponse(ApiResultCodes.MISSING_URL))
+            givenSuspend { mockApi.delete(mockUrlValid) }
+                .willReturn(createGenericResponse(ApiResultCodes.MISSING_URL))
 
             // WHEN
             val result = callSuspend { dataSource.delete(mockUrlValid) }
@@ -246,8 +247,8 @@ class PostsDataSourceTest {
         @Test
         fun `GIVEN that the api returns 200 and the result code is DONE WHEN delete is called THEN Success is returned`() {
             // GIVEN
-            given(mockApi.delete(mockUrlValid))
-                .willReturnDeferred(createGenericResponse(ApiResultCodes.DONE))
+            givenSuspend { mockApi.delete(mockUrlValid) }
+                .willReturn(createGenericResponse(ApiResultCodes.DONE))
 
             // WHEN
             val result = callSuspend { dataSource.delete(mockUrlValid) }
@@ -262,8 +263,8 @@ class PostsDataSourceTest {
         @Test
         fun `GIVEN that the api returns an error WHEN getRecentPosts is called THEN Failure is returned`() {
             // GIVEN
-            given(mockApi.getRecentPosts(mockTagsRequest))
-                .willReturnFailedDeferred(Exception())
+            givenSuspend { mockApi.getRecentPosts(mockTagsRequest) }
+                .willAnswer { throw Exception() }
 
             // WHEN
             val result = callSuspend { dataSource.getRecentPosts(mockTags) }
@@ -276,8 +277,8 @@ class PostsDataSourceTest {
         @Test
         fun `WHEN getRecentPosts is called THEN Success is returned`() {
             // GIVEN
-            given(mockApi.getRecentPosts(mockTagsRequest))
-                .willReturn(CompletableDeferred(createRecentDto(mockListPostDto)))
+            givenSuspend { mockApi.getRecentPosts(mockTagsRequest) }
+                .willReturn(createRecentDto(mockListPostDto))
             given(mockPostDtoMapper.mapList(mockListPostDto))
                 .willReturn(mockListPost)
 
@@ -299,10 +300,10 @@ class PostsDataSourceTest {
                 // GIVEN
                 given(mockUserRepository.getLastUpdate())
                     .willReturn(mockTime)
-                given(mockApi.update())
-                    .willReturnDeferred(UpdateDto(mockFutureTime))
-                given(mockApi.getAllPosts(mockTagsRequest))
-                    .willReturnFailedDeferred(Exception())
+                givenSuspend { mockApi.update() }
+                    .willReturn(UpdateDto(mockFutureTime))
+                givenSuspend { mockApi.getAllPosts(mockTagsRequest) }
+                    .willAnswer { throw Exception() }
 
                 // WHEN
                 val result = callSuspend { dataSource.getAllPosts(mockTags) }
@@ -317,10 +318,10 @@ class PostsDataSourceTest {
                 // GIVEN
                 given(mockUserRepository.getLastUpdate())
                     .willReturn(mockTime)
-                given(mockApi.update())
-                    .willReturnDeferred(UpdateDto(mockFutureTime))
-                given(mockApi.getAllPosts(mockTagsRequest))
-                    .willReturnDeferred(mockListPostDto)
+                givenSuspend { mockApi.update() }
+                    .willReturn(UpdateDto(mockFutureTime))
+                givenSuspend { mockApi.getAllPosts(mockTagsRequest) }
+                    .willReturn(mockListPostDto)
                 given(mockPostDtoMapper.mapList(mockListPostDto))
                     .willReturn(mockListPost)
 
@@ -340,12 +341,12 @@ class PostsDataSourceTest {
                 // GIVEN
                 given(mockUserRepository.getLastUpdate())
                     .willReturn(mockTime)
-                given(mockApi.update())
-                    .willReturnDeferred(UpdateDto(mockTime))
+                givenSuspend { mockApi.update() }
+                    .willReturn(UpdateDto(mockTime))
                 given(mockDao.getAllPosts())
                     .willReturn(emptyList())
-                given(mockApi.getAllPosts(mockTagsRequest))
-                    .willReturnFailedDeferred(Exception())
+                givenSuspend { mockApi.getAllPosts(mockTagsRequest) }
+                    .willAnswer { throw Exception() }
 
                 // WHEN
                 val result = callSuspend { dataSource.getAllPosts(mockTags) }
@@ -363,12 +364,12 @@ class PostsDataSourceTest {
                 // GIVEN
                 given(mockUserRepository.getLastUpdate())
                     .willReturn(mockTime)
-                given(mockApi.update())
-                    .willReturnDeferred(UpdateDto(mockTime))
+                givenSuspend { mockApi.update() }
+                    .willReturn(UpdateDto(mockTime))
                 given(mockDao.getAllPosts())
                     .willReturn(emptyList())
-                given(mockApi.getAllPosts(mockTagsRequest))
-                    .willReturnDeferred(mockListPostDto)
+                givenSuspend { mockApi.getAllPosts(mockTagsRequest) }
+                    .willReturn(mockListPostDto)
                 given(mockDao.savePosts(mockListPostDto))
                     .willAnswer { throw Exception() }
                 given(mockPostDtoMapper.mapList(mockListPostDto))
@@ -391,12 +392,12 @@ class PostsDataSourceTest {
                 // GIVEN
                 given(mockUserRepository.getLastUpdate())
                     .willReturn(mockTime)
-                given(mockApi.update())
-                    .willReturnDeferred(UpdateDto(mockTime))
+                givenSuspend { mockApi.update() }
+                    .willReturn(UpdateDto(mockTime))
                 given(mockDao.getAllPosts())
                     .willReturn(mockListPostDto)
-                given(mockApi.getAllPosts(mockTagsRequest))
-                    .willReturnFailedDeferred(Exception())
+                givenSuspend { mockApi.getAllPosts(mockTagsRequest) }
+                    .willAnswer { throw Exception() }
                 given(mockPostDtoMapper.mapList(mockListPostDto))
                     .willReturn(mockListPost)
 
@@ -407,7 +408,7 @@ class PostsDataSourceTest {
                 result.shouldBeAnInstanceOf<Success<List<Post>>>()
                 result.getOrNull() shouldBe mockListPost
 
-                verify(mockApi, never()).getAllPosts(safeAny())
+                verifySuspend(mockApi, never()) { getAllPosts(safeAny()) }
             }
         }
     }
@@ -418,8 +419,8 @@ class PostsDataSourceTest {
         @Test
         fun `GIVEN that the api returns an error WHEN getSuggestedTagsForUrl is called THEN Failure is returned`() {
             // GIVEN
-            given(mockApi.getSuggestedTagsForUrl(mockUrlValid))
-                .willReturnFailedDeferred(Exception())
+            givenSuspend { mockApi.getSuggestedTagsForUrl(mockUrlValid) }
+                .willAnswer { throw Exception() }
 
             // WHEN
             val result = callSuspend { dataSource.getSuggestedTagsForUrl(mockUrlValid) }
@@ -432,8 +433,8 @@ class PostsDataSourceTest {
         @Test
         fun `WHEN getSuggestedTagsForUrl is called THEN Success is returned`() {
             // GIVEN
-            given(mockApi.getSuggestedTagsForUrl(mockUrlValid))
-                .willReturnDeferred(mockSuggestedTagsDto)
+            givenSuspend { mockApi.getSuggestedTagsForUrl(mockUrlValid) }
+                .willReturn(mockSuggestedTagsDto)
             given(mockSuggestedTagsDtoMapper.map(mockSuggestedTagsDto))
                 .willReturn(mockSuggestedTags)
 

@@ -5,14 +5,13 @@ import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.RecentDto
 import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagsDto
 import com.fibelatti.pinboard.features.posts.data.model.UpdateDto
-import kotlinx.coroutines.Deferred
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface PostsApi {
 
     @GET("posts/update")
-    fun update(): Deferred<UpdateDto>
+    suspend fun update(): UpdateDto
 
     @GET("posts/add")
     fun add(
@@ -22,25 +21,25 @@ interface PostsApi {
         @Query("shared") public: String? = null,
         @Query("toread") readLater: String? = null,
         @Query("tags") tags: String? = null
-    ): Deferred<GenericResponseDto>
+    ): GenericResponseDto
 
     @GET("posts/delete")
-    fun delete(
+    suspend fun delete(
         @Query("url") url: String
-    ): Deferred<GenericResponseDto>
+    ): GenericResponseDto
 
     @GET("posts/all")
-    fun getAllPosts(
+    suspend fun getAllPosts(
         @Query("tag") tag: String? = null
-    ): Deferred<List<PostDto>>
+    ): List<PostDto>
 
     @GET("posts/recent")
-    fun getRecentPosts(
+    suspend fun getRecentPosts(
         @Query("tag") tag: String? = null
-    ): Deferred<RecentDto>
+    ): RecentDto
 
     @GET("posts/suggest")
-    fun getSuggestedTagsForUrl(
+    suspend fun getSuggestedTagsForUrl(
         @Query("url") url: String
-    ): Deferred<SuggestedTagsDto>
+    ): SuggestedTagsDto
 }

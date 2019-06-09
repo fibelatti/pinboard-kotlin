@@ -14,7 +14,7 @@ class GetRecentPosts @Inject constructor(
     private val sort: Sort
 ) : UseCaseWithParams<List<Post>, GetRecentPosts.Params>() {
 
-    override suspend fun run(params: GetRecentPosts.Params): Result<List<Post>> {
+    override suspend fun run(params: Params): Result<List<Post>> {
         val tags = params.tags?.take(AppConfig.API_FILTER_MAX_TAGS)
 
         return postsRepository.getRecentPosts(tags)

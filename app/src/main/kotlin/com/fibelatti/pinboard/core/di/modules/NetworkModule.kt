@@ -4,7 +4,6 @@ import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.network.HeadersInterceptor
 import com.fibelatti.pinboard.core.network.UnauthorizedInterceptor
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import dagger.Binds
 import dagger.Module
@@ -29,7 +28,6 @@ abstract class NetworkModule {
                 .baseUrl(AppConfig.API_BASE_URL)
                 .client(okHttpClient)
                 .addConverterFactory(MoshiConverterFactory.create(moshi))
-                .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .build()
 
         @Provides
