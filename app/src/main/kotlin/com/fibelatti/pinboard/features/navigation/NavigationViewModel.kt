@@ -49,6 +49,10 @@ class NavigationViewModel @Inject constructor(
             title = when (contentType) {
                 is ContentType.All -> resourceProvider.getString(R.string.posts_title_all)
                 is ContentType.Recent -> resourceProvider.getString(R.string.posts_title_recent)
+                is ContentType.Public -> resourceProvider.getString(R.string.posts_title_public)
+                is ContentType.Private -> resourceProvider.getString(R.string.posts_title_private)
+                is ContentType.Unread -> resourceProvider.getString(R.string.posts_title_unread)
+                is ContentType.Untagged -> resourceProvider.getString(R.string.posts_title_untagged)
                 is ContentType.Tags -> resourceProvider.getString(R.string.posts_title_tags)
                 is ContentType.Tag -> contentType.tagName
             }
@@ -118,6 +122,10 @@ class NavigationViewModel @Inject constructor(
     sealed class ContentType {
         object All : ContentType()
         object Recent : ContentType()
+        object Public : ContentType()
+        object Private : ContentType()
+        object Unread : ContentType()
+        object Untagged : ContentType()
         object Tags : ContentType()
         class Tag(val tagName: String) : ContentType()
     }
@@ -128,5 +136,9 @@ class NavigationViewModel @Inject constructor(
         val sortType: SortType,
         val search: Search
     )
-    data class Search(val term: String = "", val tags: MutableList<String> = mutableListOf())
+
+    data class Search(
+        val term: String = "",
+        val tags: MutableList<String> = mutableListOf()
+    )
 }

@@ -6,13 +6,14 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
-import androidx.annotation.StringRes
 import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.animateChangingTransitions
+import com.fibelatti.core.extension.exhaustive
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.inTransaction
@@ -49,10 +50,6 @@ class PostListFragment @Inject constructor(
         viewModelFactory.get<PostListViewModel>(requireActivity())
     }
 
-    private val animTime by lazy {
-        requireContext().resources.getInteger(R.integer.anim_time_long).toLong()
-    }
-
     private var searchTerm: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +58,8 @@ class PostListFragment @Inject constructor(
     }
 
     private fun setupSharedTransition() {
+        val animTime = requireContext().resources.getInteger(R.integer.anim_time_long).toLong()
+
         sharedElementEnterTransition =
             TransitionInflater.from(context).inflateTransition(android.R.transition.move)
                 .setDuration(animTime)
@@ -145,9 +144,27 @@ class PostListFragment @Inject constructor(
         }
 
         when (content.contentType) {
-            NavigationViewModel.ContentType.All -> postListViewModel.getAll(content.sortType, content.search.tags)
-            NavigationViewModel.ContentType.Recent -> postListViewModel.getRecent(content.sortType, content.search.tags)
-        }
+            is NavigationViewModel.ContentType.All -> {
+                postListViewModel.getAll(content.sortType, content.search.tags)
+            }
+            is NavigationViewModel.ContentType.Recent -> {
+                postListViewModel.getRecent(content.sortType, content.search.tags)
+            }
+            is NavigationViewModel.ContentType.Public -> {
+                postListViewModel.getPublic(content.sortType, content.search.tags)
+            }
+            is NavigationViewModel.ContentType.Private -> {
+                postListViewModel.getPrivate(content.sortType, content.search.tags)
+            }
+            is NavigationViewModel.ContentType.Unread -> {
+                postListViewModel.getUnread(content.sortType, content.search.tags)
+            }
+            is NavigationViewModel.ContentType.Untagged -> {
+                postListViewModel.getUntagged(content.sortType)
+            }
+            is NavigationViewModel.ContentType.Tags -> TODO()
+            is NavigationViewModel.ContentType.Tag -> TODO()
+        }.exhaustive
 
         searchTerm = content.search.term
 
@@ -158,7 +175,7 @@ class PostListFragment @Inject constructor(
     }
 
     private fun showPosts(list: List<Post>) {
-        if (isAtTheTop()) {
+        if (this.isAtTheTop()) {
             if (list.isNotEmpty()) {
                 recyclerViewPosts.visible()
                 layoutEmptyList.gone()

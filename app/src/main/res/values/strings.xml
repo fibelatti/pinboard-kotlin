@@ -53,6 +53,10 @@
     <!-- Posts -->
     <string name="posts_title_all">All</string>
     <string name="posts_title_recent">Recent</string>
+    <string name="posts_title_public">Public</string>
+    <string name="posts_title_private">Private</string>
+    <string name="posts_title_unread">Unread</string>
+    <string name="posts_title_untagged">Untagged</string>
     <string name="posts_title_tags">Tags</string>
 
     <plurals name="posts_quantity">

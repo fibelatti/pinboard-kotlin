@@ -77,7 +77,9 @@ class MainActivity :
         layoutTitle.run(titleUpdates)
     }
 
-    inline fun updateViews(crossinline update: (BottomAppBar, FloatingActionButton) -> Unit = { _, _ -> }) {
+    inline fun updateViews(
+        crossinline update: (BottomAppBar, FloatingActionButton) -> Unit = { _, _ -> }
+    ) {
         update(bottomAppBar, fabMain)
     }
 
@@ -90,23 +92,23 @@ class MainActivity :
     }
 
     override fun onPublicClicked() {
-        // TODO
+        navigationViewModel.viewContent(NavigationViewModel.ContentType.Public)
     }
 
     override fun onPrivateClicked() {
-        // TODO
+        navigationViewModel.viewContent(NavigationViewModel.ContentType.Private)
     }
 
     override fun onUnreadClicked() {
-        // TODO
+        navigationViewModel.viewContent(NavigationViewModel.ContentType.Unread)
     }
 
     override fun onUntaggedClicked() {
-        // TODO
+        navigationViewModel.viewContent(NavigationViewModel.ContentType.Untagged)
     }
 
     override fun onTagsClicked() {
-        // TODO
+        navigationViewModel.viewContent(NavigationViewModel.ContentType.Tags)
     }
 
     override fun onLogoutClicked() {
