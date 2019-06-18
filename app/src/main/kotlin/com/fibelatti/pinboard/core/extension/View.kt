@@ -25,6 +25,7 @@ fun View.snackbar(
 ) {
     Snackbar.make(this, message, duration)
         .apply {
+            setTextColor(ContextCompat.getColor(context, R.color.text_primary))
             val margin = context.resources.getDimensionPixelSize(R.dimen.margin_regular)
             view.layoutParams = (view.layoutParams as ViewGroup.MarginLayoutParams).apply {
                 setMargins(margin, margin, margin, margin)

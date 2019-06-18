@@ -8,8 +8,11 @@
         <item name="colorOnSecondary">@color/color_white_opaque</item>
         <item name="colorError">@color/color_error</item>
         <item name="colorOnError">@color/color_white_opaque</item>
-        <item name="android:windowBackground">@color/color_background</item>
+        <item name="colorSurface">@color/color_background_contrast</item>
+        <item name="colorOnSurface">@color/color_white_opaque</item>
         <item name="android:colorBackground">@color/color_background</item>
+        <item name="colorOnBackground">@color/color_white_opaque</item>
+        <item name="android:windowBackground">@color/color_background</item>
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
         <item name="android:statusBarColor">@color/color_status_bar</item>
