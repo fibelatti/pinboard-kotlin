@@ -10,32 +10,35 @@ import kotlinx.android.synthetic.main.activity_share.*
 
 class ShareReceiverActivity : BaseActivity() {
 
-    private val shareReceiverViewModel: ShareReceiverViewModel by lazy { viewModelFactory.get<ShareReceiverViewModel>(this) }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_share)
-        setupViewModels()
-        checkForExtraText(intent, shareReceiverViewModel::saveUrl)
+
+        val shareReceiverViewModel = viewModelFactory.get<ShareReceiverViewModel>(this)
+
+        setupViewModels(shareReceiverViewModel)
+        intent?.checkForExtraText(shareReceiverViewModel::saveUrl)
     }
 
-    private fun setupViewModels() {
+    private fun setupViewModels(
+        shareReceiverViewModel: ShareReceiverViewModel
+    ) {
         with(shareReceiverViewModel) {
-            observeEvent(saved) {
+            observeEvent(saved) { message ->
                 imageViewFeedback.setImageResource(R.drawable.ic_url_saved)
-                toast(it)
+                toast(message)
                 finish()
             }
-            observeEvent(failed) {
+            observeEvent(failed) { message ->
                 imageViewFeedback.setImageResource(R.drawable.ic_url_saved_error)
-                toast(it)
+                toast(message)
                 finish()
             }
         }
     }
 
-    private fun checkForExtraText(intent: Intent?, onExtraTextFound: (String) -> Unit) {
-        intent?.takeIf { it.action == Intent.ACTION_SEND && it.type == "text/plain" }
+    private fun Intent.checkForExtraText(onExtraTextFound: (String) -> Unit) {
+        takeIf { it.action == Intent.ACTION_SEND && it.type == "text/plain" }
             ?.getStringExtra(Intent.EXTRA_TEXT)
             ?.let(onExtraTextFound)
     }

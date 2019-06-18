@@ -15,6 +15,7 @@ import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
 import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagDtoMapper
+import com.fibelatti.pinboard.features.posts.data.model.UpdateDto
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
@@ -33,8 +34,8 @@ class PostsDataSource @Inject constructor(
 ) : PostsRepository {
 
     override suspend fun update(): Result<String> = withContext(Dispatchers.IO) {
-        resultFrom { postsApi.update() }
-            .mapCatching { it.updateTime }
+        resultFrom(postsApi::update)
+            .mapCatching(UpdateDto::updateTime)
     }
 
     override suspend fun add(
@@ -50,8 +51,8 @@ class PostsDataSource @Inject constructor(
                 url = url,
                 description = description,
                 extended = extended,
-                public = private?.let { if (it) AppConfig.PinboardApiLiterals.NO else AppConfig.PinboardApiLiterals.YES },
-                readLater = readLater?.let { if (it) AppConfig.PinboardApiLiterals.YES else AppConfig.PinboardApiLiterals.NO },
+                public = private?.let { if (private) AppConfig.PinboardApiLiterals.NO else AppConfig.PinboardApiLiterals.YES },
+                readLater = readLater?.let { if (readLater) AppConfig.PinboardApiLiterals.YES else AppConfig.PinboardApiLiterals.NO },
                 tags = tags?.forRequest()
             )
         }.orThrow()

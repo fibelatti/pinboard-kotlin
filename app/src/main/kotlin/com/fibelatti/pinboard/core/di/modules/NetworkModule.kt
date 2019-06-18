@@ -46,14 +46,13 @@ abstract class NetworkModule {
             OkHttpClient.Builder()
                 .addInterceptor(headersInterceptor)
                 .addInterceptor(unauthorizedInterceptor)
-                .addInterceptor(loggingInterceptor)
+                .apply { if (BuildConfig.DEBUG) addInterceptor(loggingInterceptor) }
 
         @Provides
         @JvmStatic
         fun httpLoggingInterceptor(): HttpLoggingInterceptor =
-            HttpLoggingInterceptor().apply {
-                if (BuildConfig.DEBUG) level = HttpLoggingInterceptor.Level.BODY
-            }
+            HttpLoggingInterceptor()
+                .apply { if (BuildConfig.DEBUG) level = HttpLoggingInterceptor.Level.BODY }
     }
 
     @Binds

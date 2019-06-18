@@ -15,7 +15,7 @@ class AddPost @Inject constructor(
         validateUrl(params.url)
             .map {
                 postsRepository.add(
-                    url = it,
+                    url = params.url,
                     description = params.description,
                     extended = params.extended,
                     private = params.private,
