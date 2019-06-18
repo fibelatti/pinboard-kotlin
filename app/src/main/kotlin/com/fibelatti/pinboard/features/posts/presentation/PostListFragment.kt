@@ -20,6 +20,7 @@ import com.fibelatti.core.extension.inTransaction
 import com.fibelatti.core.extension.isAtTheTop
 import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
+import com.fibelatti.core.extension.withItemOffsetDecoration
 import com.fibelatti.core.extension.withLinearLayoutManager
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.DefaultTransitionListener
@@ -91,6 +92,7 @@ class PostListFragment @Inject constructor(
 
         recyclerViewPosts
             .withLinearLayoutManager()
+            .withItemOffsetDecoration(R.dimen.padding_small)
             .adapter = postsAdapter
 
         postsAdapter.onItemClicked = {
