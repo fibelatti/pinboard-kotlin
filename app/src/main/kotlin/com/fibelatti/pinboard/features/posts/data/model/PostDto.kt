@@ -39,7 +39,11 @@ class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
             time = time,
             private = shared == PinboardApiLiterals.NO,
             readLater = toread == PinboardApiLiterals.YES,
-            tags = tags.split(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE).sorted()
+            tags = if (tags.isBlank()) {
+                emptyList()
+            } else {
+                tags.split(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE).sorted()
+            }
         )
     }
 

@@ -32,6 +32,11 @@ class PostDtoMapperTest {
         fun `GIVEN toread is not yes WHEN map is called THEN Post is returned AND readLater is true`() {
             mapper.map(createPostDto(toread = "dsadsa")) shouldBe createPost(readLater = false)
         }
+
+        @Test
+        fun `GIVEN tags is empty WHEN map is called THEN Post is returned AND tags is an empty list`() {
+            mapper.map(createPostDto(tags = "")) shouldBe createPost(tags = emptyList())
+        }
     }
 
     @Nested
