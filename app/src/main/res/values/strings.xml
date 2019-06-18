@@ -14,11 +14,11 @@
     <string name="hint_reset">Reset</string>
     <string name="hint_help">Help</string>
 
-    <string name="alert_confirm_deletion">Confirm deletion?</string>
+    <string name="alert_confirm_deletion">Are you sure you want to remove this link?</string>
 
     <string name="generic_log_error">Error in %1$s (%2$s)</string>
 
-    <string name="generic_msg_error">Oops! Something went wrong. Please try again.</string>
+    <string name="generic_msg_error">Oops! Something went wrong.</string>
 
     <!-- Menus -->
     <string name="menu_main_search">Search</string>
@@ -39,13 +39,13 @@
     <string name="menu_link_tags">Edit tags</string>
     <string name="menu_link_open_in_browser">Open in browser</string>
 
-    <string name="menu_search_clear">Clear</string>
+    <string name="menu_search_clear">Clear filter</string>
 
     <!-- Auth -->
     <string name="auth_token_hint">API Token</string>
     <string name="auth_title">Welcome to Pinkt</string>
     <string name="auth_button">Login</string>
-    <string name="auth_token_title">Where do I find this?</string>
+    <string name="auth_token_title">Where can I find this?</string>
     <string name="auth_token_description">You can find your API token in the <a href="https://pinboard.in/settings/password">Pinboard Settings</a> page.</string>
     <string name="auth_token_error">Authentication failed. Please double check your API Token.</string>
     <string name="auth_logged_out_feedback">Logged out</string>
@@ -79,7 +79,7 @@
     <string name="posts_empty_filter_title">No pins for this filter</string>
     <string name="posts_empty_filter_description">There aren\'t any links saved for this filter criteria.</string>
 
-    <string name="posts_deleted_feedback">Link deleted successfully!</string>
+    <string name="posts_deleted_feedback">Link removed successfully!</string>
 
     <string name="posts_add_title">Save link</string>
     <string name="posts_add_url">URL</string>
