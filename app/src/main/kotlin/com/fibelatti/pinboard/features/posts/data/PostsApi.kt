@@ -14,7 +14,7 @@ interface PostsApi {
     suspend fun update(): UpdateDto
 
     @GET("posts/add")
-    fun add(
+    suspend fun add(
         @Query("url") url: String,
         @Query("description") description: String,
         @Query("extended") extended: String? = null,
