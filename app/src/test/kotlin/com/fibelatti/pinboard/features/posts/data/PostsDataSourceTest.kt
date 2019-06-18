@@ -186,13 +186,15 @@ class PostsDataSourceTest {
 
             // THEN
             result.shouldBeAnInstanceOf<Success<Unit>>()
-            verify(mockApi).add(
-                url = mockUrlValid,
-                description = mockUrlDescription,
-                public = expectedPublic,
-                readLater = expectedReadLater,
-                tags = mockTagsRequest
-            )
+            verifySuspend(mockApi) {
+                add(
+                    url = mockUrlValid,
+                    description = mockUrlDescription,
+                    public = expectedPublic,
+                    readLater = expectedReadLater,
+                    tags = mockTagsRequest
+                )
+            }
         }
 
         fun testCases(): List<Params> = mutableListOf<Params>().apply {
