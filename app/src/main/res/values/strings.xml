@@ -95,6 +95,9 @@
 
     <string name="posts_saved_feedback">Link saved successfully!</string>
 
+    <string name="posts_item_private">Private</string>
+    <string name="posts_item_read_later">Read later</string>
+
     <!-- Validation -->
     <string name="validation_error_empty_url">The URL cannot be empty.</string>
     <string name="validation_error_invalid_url">The URL is invalid.</string>

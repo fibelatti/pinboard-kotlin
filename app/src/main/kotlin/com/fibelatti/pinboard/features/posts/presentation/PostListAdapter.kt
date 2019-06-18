@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.TextView
 import com.fibelatti.core.android.base.BaseAdapter
 import com.fibelatti.core.extension.gone
+import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -22,6 +23,9 @@ class PostListAdapter @Inject constructor(
     override fun getLayoutRes(): Int = R.layout.list_item_post
 
     override fun View.bindView(item: Post, viewHolder: ViewHolder) {
+        textViewPrivate.visibleIf(item.private, otherwiseVisibility = View.GONE)
+        textViewReadLater.visibleIf(item.readLater, otherwiseVisibility = View.GONE)
+
         textViewLinkTitle.text = item.description
         textViewLinkAddedDate.text = context.getString(R.string.posts_saved_on, dateFormatter.tzFormatToDisplayFormat(item.time))
 
