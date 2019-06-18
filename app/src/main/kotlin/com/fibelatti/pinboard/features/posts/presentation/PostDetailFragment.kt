@@ -42,9 +42,6 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
         val TAG: String = PostDetailFragment::class.java.simpleName
     }
 
-    private val navigationViewModel: NavigationViewModel by lazy {
-        viewModelFactory.get<NavigationViewModel>(requireActivity())
-    }
     private val postDetailViewModel: PostDetailViewModel by lazy {
         viewModelFactory.get<PostDetailViewModel>(this)
     }
@@ -70,9 +67,12 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         webView.webViewClient = PostWebViewClient()
-        with(navigationViewModel) {
+        setupViewModels()
+    }
+
+    private fun setupViewModels() {
+        viewModelFactory.get<NavigationViewModel>(requireActivity()).run {
             observe(post, ::updateViews)
         }
         with(postDetailViewModel) {

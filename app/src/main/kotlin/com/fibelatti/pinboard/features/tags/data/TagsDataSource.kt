@@ -16,7 +16,7 @@ class TagsDataSource @Inject constructor(
 
     override suspend fun getAllTags(): Result<List<Tag>> =
         withContext(Dispatchers.IO) {
-            resultFrom { tagsApi.getTags() }
+            resultFrom(tagsApi::getTags)
                 .mapCatching { it.map { (tag, posts) -> Tag(tag, posts.toInt()) } }
         }
 }
