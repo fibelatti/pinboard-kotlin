@@ -49,7 +49,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
         viewModelFactory.get<PostDetailViewModel>(this)
     }
 
-    private val knownFileExtensions by lazy {
+    private val knownFileExtensions =
         listOf(
             "pdf",
             "doc", "docx",
@@ -61,7 +61,6 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
             "gif", "jpg", "jpeg", "png", "svg",
             "mp4", "3gp", "mpg", "mpeg", "avi"
         )
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

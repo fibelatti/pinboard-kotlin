@@ -29,9 +29,9 @@ class PostAddViewModel @Inject constructor(
     val post: LiveData<Post> get() = _post
     private val _post = MutableLiveData<Post>()
     val invalidUrlError: LiveData<String> get() = _invalidUrlError
-    private val _invalidUrlError by lazy { MutableLiveData<String>() }
+    private val _invalidUrlError = MutableLiveData<String>()
     val invalidDescriptionError: LiveData<String> get() = _invalidDescriptionError
-    private val _invalidDescriptionError by lazy { MutableLiveData<String>() }
+    private val _invalidDescriptionError = MutableLiveData<String>()
     val saved: LiveEvent<Unit> get() = _saved
     private val _saved = MutableLiveEvent<Unit>()
 
