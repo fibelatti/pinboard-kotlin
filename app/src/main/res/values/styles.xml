@@ -161,7 +161,7 @@
 
     <style name="AppTheme.Text.Tag">
         <item name="android:paddingEnd">@dimen/padding_xsmall</item>
-        <item name="android:textColor">@color/color_primary</item>
+        <item name="android:textColor">@color/color_tag</item>
         <item name="android:textSize">@dimen/text_size_small</item>
         <item name="android:textStyle">bold</item>
     </style>
@@ -173,6 +173,6 @@
     </style>
 
     <style name="AppTheme.Text.ListItem.Tag">
-        <item name="android:textColor">@color/color_primary</item>
+        <item name="android:textColor">@color/color_tag</item>
     </style>
 </resources>

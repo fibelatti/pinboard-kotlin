@@ -26,4 +26,6 @@
     <color name="text_white">#F5F5F5</color>
 
     <color name="auth_form_background">#424242</color>
+
+    <color name="color_tag">#1976D2</color>
 </resources>
