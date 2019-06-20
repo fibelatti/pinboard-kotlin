@@ -3,6 +3,9 @@ package com.fibelatti.pinboard.features.posts.domain.usecase
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.UseCaseWithParams
+import com.fibelatti.pinboard.features.appstate.NewestFirst
+import com.fibelatti.pinboard.features.appstate.OldestFirst
+import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import javax.inject.Inject
 
@@ -18,7 +21,3 @@ class Sort @Inject constructor() : UseCaseWithParams<List<Post>, Sort.Params>() 
 
     data class Params(val posts: List<Post>, val sorting: SortType)
 }
-
-sealed class SortType
-object NewestFirst : SortType()
-object OldestFirst : SortType()

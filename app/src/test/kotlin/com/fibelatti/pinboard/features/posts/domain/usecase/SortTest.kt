@@ -14,6 +14,8 @@ import com.fibelatti.pinboard.MockDataProvider.mockTime1
 import com.fibelatti.pinboard.MockDataProvider.mockTime2
 import com.fibelatti.pinboard.MockDataProvider.mockTime3
 import com.fibelatti.pinboard.MockDataProvider.mockTime4
+import com.fibelatti.pinboard.features.appstate.NewestFirst
+import com.fibelatti.pinboard.features.appstate.OldestFirst
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import org.junit.jupiter.api.Test
 

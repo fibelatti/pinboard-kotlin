@@ -23,8 +23,13 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.blink
 import com.fibelatti.pinboard.core.extension.onKeyboardSubmit
+import com.fibelatti.pinboard.features.appstate.AddSearchTag
+import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.features.appstate.ClearSearch
+import com.fibelatti.pinboard.features.appstate.RemoveSearchTag
+import com.fibelatti.pinboard.features.appstate.Search
+import com.fibelatti.pinboard.features.appstate.SearchView
 import com.fibelatti.pinboard.features.mainActivity
-import com.fibelatti.pinboard.features.navigation.NavigationViewModel
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagsAdapter
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
@@ -45,8 +50,8 @@ class PostSearchFragment @Inject constructor(
         val TAG: String = PostSearchFragment::class.java.simpleName
     }
 
-    private val navigationViewModel: NavigationViewModel by lazy {
-        viewModelFactory.get<NavigationViewModel>(requireActivity())
+    private val appStateViewModel: AppStateViewModel by lazy {
+        viewModelFactory.get<AppStateViewModel>(requireActivity())
     }
     private val tagsViewModel: TagsViewModel by lazy { viewModelFactory.get<TagsViewModel>(this) }
 
@@ -76,7 +81,7 @@ class PostSearchFragment @Inject constructor(
             .withLinearLayoutManager()
             .adapter = tagsAdapter
 
-        tagsAdapter.onItemClicked = { navigationViewModel.updateSearchTags(it.name) }
+        tagsAdapter.onItemClicked = { appStateViewModel.runAction(AddSearchTag(it.name)) }
         tagsAdapter.onEmptyFilter = { showEmptyLayout() }
 
         mainActivity?.updateTitleLayout {
@@ -96,24 +101,21 @@ class PostSearchFragment @Inject constructor(
             fab.run {
                 blink {
                     setImageResource(R.drawable.ic_search)
-                    setOnClickListener {
-                        navigationViewModel.search(term = editTextSearchTerm.textAsString())
-                        navigateBack()
-                    }
+                    setOnClickListener { appStateViewModel.runAction(Search(editTextSearchTerm.textAsString())) }
                 }
             }
         }
     }
 
     private fun setupViewModels() {
-        with(navigationViewModel) {
-            observe(search) { currentSearch ->
-                currentSearch.term.takeIf { it.isNotEmpty() }?.let(editTextSearchTerm::setText)
+        observe(appStateViewModel.getContent()) { content ->
+            if (content is SearchView) {
+                content.searchParameters.term.takeIf(String::isNotEmpty)?.let(editTextSearchTerm::setText)
 
-                selectedTags = if (currentSearch.tags.isNotEmpty()) {
+                selectedTags = if (content.searchParameters.tags.isNotEmpty()) {
                     textViewSelectedTagsTitle.visible()
-                    currentSearch.tags.forEach(::addSelectionChip)
-                    currentSearch.tags.joinToString(",")
+                    content.searchParameters.tags.forEach(::addSelectionChip)
+                    content.searchParameters.tags.joinToString(",")
                 } else {
                     textViewSelectedTagsTitle.gone()
                     ""
@@ -158,7 +160,7 @@ class PostSearchFragment @Inject constructor(
     private fun handleMenuClick(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.menuItemClearSearch -> {
-                navigationViewModel.clearSearch()
+                appStateViewModel.runAction(ClearSearch)
                 navigateBack()
             }
         }
@@ -172,7 +174,7 @@ class PostSearchFragment @Inject constructor(
                 text = value
                 setOnCloseIconClickListener {
                     chipGroupSelectedTags.removeView(this)
-                    navigationViewModel.updateSearchTags(value, shouldRemove = true)
+                    appStateViewModel.runAction(RemoveSearchTag(value))
                 }
             }
 

@@ -25,8 +25,9 @@ import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.shareText
 import com.fibelatti.pinboard.core.extension.showStyledDialog
 import com.fibelatti.pinboard.core.extension.toast
+import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.features.appstate.PostDetail
 import com.fibelatti.pinboard.features.mainActivity
-import com.fibelatti.pinboard.features.navigation.NavigationViewModel
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -72,8 +73,10 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun setupViewModels() {
-        viewModelFactory.get<NavigationViewModel>(requireActivity()).run {
-            observe(post, ::updateViews)
+        viewModelFactory.get<AppStateViewModel>(requireActivity()).run {
+            observe(getContent()) {
+                if (it is PostDetail) { updateViews(it.post) }
+            }
         }
         with(postDetailViewModel) {
             observeEvent(loading) {

@@ -16,8 +16,6 @@ import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.exhaustive
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
-import com.fibelatti.core.extension.inTransaction
-import com.fibelatti.core.extension.isAtTheTop
 import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.core.extension.withItemOffsetDecoration
@@ -26,13 +24,25 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.DefaultTransitionListener
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import com.fibelatti.pinboard.core.extension.createFragment
 import com.fibelatti.pinboard.core.extension.show
+import com.fibelatti.pinboard.features.appstate.AddPost
+import com.fibelatti.pinboard.features.appstate.All
+import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.features.appstate.ClearSearch
+import com.fibelatti.pinboard.features.appstate.PostList
+import com.fibelatti.pinboard.features.appstate.Private
+import com.fibelatti.pinboard.features.appstate.Public
+import com.fibelatti.pinboard.features.appstate.Recent
+import com.fibelatti.pinboard.features.appstate.SortType
+import com.fibelatti.pinboard.features.appstate.Tag
+import com.fibelatti.pinboard.features.appstate.Tags
+import com.fibelatti.pinboard.features.appstate.ToggleSorting
+import com.fibelatti.pinboard.features.appstate.Unread
+import com.fibelatti.pinboard.features.appstate.Untagged
+import com.fibelatti.pinboard.features.appstate.ViewPost
+import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.mainActivity
-import com.fibelatti.pinboard.features.navigation.NavigationViewModel
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.fibelatti.pinboard.features.posts.domain.usecase.NewestFirst
-import com.fibelatti.pinboard.features.posts.domain.usecase.SortType
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_post_list.*
@@ -44,14 +54,17 @@ class PostListFragment @Inject constructor(
     private val postsAdapter: PostListAdapter
 ) : BaseFragment() {
 
-    private val navigationViewModel: NavigationViewModel by lazy {
-        viewModelFactory.get<NavigationViewModel>(requireActivity())
+    companion object {
+        @JvmStatic
+        val TAG: String = PostListFragment::class.java.simpleName
+    }
+
+    private val appStateViewModel: AppStateViewModel by lazy {
+        viewModelFactory.get<AppStateViewModel>(requireActivity())
     }
     private val postListViewModel: PostListViewModel by lazy {
         viewModelFactory.get<PostListViewModel>(requireActivity())
     }
-
-    private var searchTerm: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,35 +101,24 @@ class PostListFragment @Inject constructor(
 
         layoutRoot.animateChangingTransitions()
 
-        buttonClearSearch.setOnClickListener { navigationViewModel.clearSearch() }
+        buttonClearSearch.setOnClickListener { appStateViewModel.runAction(ClearSearch) }
 
         recyclerViewPosts
             .withLinearLayoutManager()
             .withItemOffsetDecoration(R.dimen.padding_small)
             .adapter = postsAdapter
 
-        postsAdapter.onItemClicked = {
-            navigationViewModel.viewLink(it)
-            showPostDetail()
-        }
-        postsAdapter.onEmptyFilter = {
-            showEmptyLayout(
-                title = R.string.posts_empty_filter_title,
-                description = R.string.posts_empty_filter_description
-            )
-        }
+        postsAdapter.onItemClicked = { appStateViewModel.runAction(ViewPost(it)) }
     }
 
     private fun setupViewModels() {
         with(postListViewModel) {
-            observeEvent(posts, ::showPosts)
             observeEvent(loading, ::handleLoading)
             error(error, ::handleError)
         }
 
-        with(navigationViewModel) {
-            observe(content, ::load)
-            observeEvent(newSort) { toggleSorting(it) }
+        observe(appStateViewModel.getContent()) { content ->
+            if (content is PostList) showPostList(content)
         }
     }
 
@@ -126,7 +128,7 @@ class PostListFragment @Inject constructor(
         layoutEmptyList.goneIf(isLoading)
     }
 
-    private fun load(content: NavigationViewModel.Content) {
+    private fun showPostList(content: PostList) {
         mainActivity?.updateTitleLayout {
             hideNavigateUp()
             setTitle(content.title)
@@ -141,56 +143,56 @@ class PostListFragment @Inject constructor(
             }
             fab.run {
                 setImageResource(R.drawable.ic_pin)
-                setOnClickListener { addLink() }
+                setOnClickListener { appStateViewModel.runAction(AddPost) }
             }
         }
 
-        when (content.contentType) {
-            is NavigationViewModel.ContentType.All -> {
-                postListViewModel.getAll(content.sortType, content.search.tags)
-            }
-            is NavigationViewModel.ContentType.Recent -> {
-                postListViewModel.getRecent(content.sortType, content.search.tags)
-            }
-            is NavigationViewModel.ContentType.Public -> {
-                postListViewModel.getPublic(content.sortType, content.search.tags)
-            }
-            is NavigationViewModel.ContentType.Private -> {
-                postListViewModel.getPrivate(content.sortType, content.search.tags)
-            }
-            is NavigationViewModel.ContentType.Unread -> {
-                postListViewModel.getUnread(content.sortType, content.search.tags)
-            }
-            is NavigationViewModel.ContentType.Untagged -> {
-                postListViewModel.getUntagged(content.sortType)
-            }
-            is NavigationViewModel.ContentType.Tags -> TODO()
-            is NavigationViewModel.ContentType.Tag -> TODO()
-        }.exhaustive
+        if (content.shouldLoad) {
+            when (content.category) {
+                is All -> {
+                    postListViewModel.getAll(content.sortType, content.searchParameters.term, content.searchParameters.tags)
+                }
+                is Recent -> {
+                    postListViewModel.getRecent(content.sortType, content.searchParameters.term, content.searchParameters.tags)
+                }
+                is Public -> {
+                    postListViewModel.getPublic(content.sortType, content.searchParameters.term, content.searchParameters.tags)
+                }
+                is Private -> {
+                    postListViewModel.getPrivate(content.sortType, content.searchParameters.term, content.searchParameters.tags)
+                }
+                is Unread -> {
+                    postListViewModel.getUnread(content.sortType, content.searchParameters.term, content.searchParameters.tags)
+                }
+                is Untagged -> {
+                    postListViewModel.getUntagged(content.sortType, content.searchParameters.term)
+                }
+                is Tags -> {
+                    // TODO
+                }
+                is Tag -> {
+                    // TODO
+                }
+            }.exhaustive
+        } else {
+            showPosts(content.posts, content.sortType)
+        }
 
-        searchTerm = content.search.term
-
-        layoutSearchActive.visibleIf(
-            searchTerm.isNotEmpty() || content.search.tags.isNotEmpty(),
-            otherwiseVisibility = View.GONE
-        )
+        layoutSearchActive.visibleIf(content.searchParameters.isActive(), otherwiseVisibility = View.GONE)
     }
 
-    private fun showPosts(list: List<Post>) {
-        if (this.isAtTheTop()) {
-            if (list.isNotEmpty()) {
-                recyclerViewPosts.visible()
-                layoutEmptyList.gone()
+    private fun showPosts(list: List<Post>, sortType: SortType) {
+        if (list.isNotEmpty()) {
+            recyclerViewPosts.visible()
+            layoutEmptyList.gone()
 
-                postsAdapter.addAll(list)
-                postsAdapter.filter(searchTerm)
-                mainActivity?.updateTitleLayout { setPostCount(postsAdapter.itemCount) }
-            } else {
-                showEmptyLayout(
-                    title = R.string.posts_empty_title,
-                    description = R.string.posts_empty_description
-                )
-            }
+            postsAdapter.addAll(list)
+            mainActivity?.updateTitleLayout { setPostCount(postsAdapter.itemCount, sortType) }
+        } else {
+            showEmptyLayout(
+                title = R.string.posts_empty_title,
+                description = R.string.posts_empty_description
+            )
         }
     }
 
@@ -209,40 +211,10 @@ class PostListFragment @Inject constructor(
 
     private fun handleMenuClick(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.menuItemSearch -> showSearchView()
-            R.id.menuItemSort -> navigationViewModel.toggleSorting()
+            R.id.menuItemSearch -> appStateViewModel.runAction(ViewSearch)
+            R.id.menuItemSort -> appStateViewModel.runAction(ToggleSorting)
         }
 
         return true
-    }
-
-    private fun addLink() {
-        inTransaction {
-            setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
-            add(R.id.fragmentHost, requireActivity().createFragment<PostAddFragment>(), PostAddFragment.TAG)
-            addToBackStack(PostAddFragment.TAG)
-        }
-    }
-
-    private fun showPostDetail() {
-        inTransaction {
-            setCustomAnimations(R.anim.slide_right_in, R.anim.slide_left_out, R.anim.slide_left_in, R.anim.slide_right_out)
-            add(R.id.fragmentHost, requireActivity().createFragment<PostDetailFragment>(), PostDetailFragment.TAG)
-            addToBackStack(PostDetailFragment.TAG)
-        }
-    }
-
-    private fun showSearchView() {
-        inTransaction {
-            setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
-            add(R.id.fragmentHost, requireActivity().createFragment<PostSearchFragment>(), PostSearchFragment.TAG)
-            addToBackStack(PostSearchFragment.TAG)
-        }
-    }
-
-    private fun toggleSorting(sortType: SortType) {
-        mainActivity?.snackbar(
-            getString(if (sortType == NewestFirst) R.string.posts_sorting_newest_first else R.string.posts_sorting_oldest_first)
-        )
     }
 }

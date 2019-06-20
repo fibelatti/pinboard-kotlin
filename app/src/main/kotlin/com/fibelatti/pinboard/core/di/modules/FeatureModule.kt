@@ -4,6 +4,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import com.fibelatti.pinboard.core.di.mapkeys.FragmentKey
 import com.fibelatti.pinboard.core.di.mapkeys.ViewModelKey
+import com.fibelatti.pinboard.features.appstate.AppStateDataSource
+import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.posts.data.PostsApi
 import com.fibelatti.pinboard.features.posts.data.PostsDataSource
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
@@ -15,6 +18,11 @@ import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostListViewModel
 import com.fibelatti.pinboard.features.posts.presentation.PostSearchFragment
 import com.fibelatti.pinboard.features.share.ShareReceiverViewModel
+import com.fibelatti.pinboard.features.splash.presentation.SplashFragment
+import com.fibelatti.pinboard.features.tags.data.TagsApi
+import com.fibelatti.pinboard.features.tags.data.TagsDataSource
+import com.fibelatti.pinboard.features.tags.domain.TagsRepository
+import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -23,15 +31,35 @@ import retrofit2.Retrofit
 import retrofit2.create
 
 @Module
-abstract class PostsModule {
+abstract class FeatureModule {
 
     @Module
     companion object {
         @Provides
         @JvmStatic
         fun postsApi(retrofit: Retrofit): PostsApi = retrofit.create()
+
+        @Provides
+        @JvmStatic
+        fun tagsApi(retrofit: Retrofit): TagsApi = retrofit.create()
     }
 
+    @Binds
+    @IntoMap
+    @FragmentKey(SplashFragment::class)
+    abstract fun splashFragment(splashFragment: SplashFragment): Fragment
+
+    // region State
+    @Binds
+    abstract fun appStateRepository(appStateDataSource: AppStateDataSource): AppStateRepository
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(AppStateViewModel::class)
+    abstract fun appStateViewModel(appStateViewModel: AppStateViewModel): ViewModel
+    // endregion
+
+    // region Posts
     @Binds
     abstract fun postsRepository(postsDataSource: PostsDataSource): PostsRepository
 
@@ -74,4 +102,15 @@ abstract class PostsModule {
     @IntoMap
     @ViewModelKey(ShareReceiverViewModel::class)
     abstract fun shareReceiverViewModel(shareReceiverViewModel: ShareReceiverViewModel): ViewModel
+    // endregion
+
+    // region Tags
+    @Binds
+    abstract fun tagsRepository(tagsDataSource: TagsDataSource): TagsRepository
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(TagsViewModel::class)
+    abstract fun tagsViewModel(tagsViewModel: TagsViewModel): ViewModel
+    // endregion
 }

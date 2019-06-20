@@ -2,6 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/margin_regular"
+    android:layout_marginEnd="@dimen/margin_regular"
     android:orientation="horizontal">
 
     <TextView
@@ -10,8 +12,6 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center_vertical"
-        android:paddingStart="@dimen/padding_regular"
-        android:paddingEnd="@dimen/padding_regular"
         android:text="@string/search_active" />
 
     <com.google.android.material.button.MaterialButton

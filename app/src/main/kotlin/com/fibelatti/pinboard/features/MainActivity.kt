@@ -20,9 +20,24 @@ import com.fibelatti.pinboard.core.android.customview.TitleLayout
 import com.fibelatti.pinboard.core.extension.createFragment
 import com.fibelatti.pinboard.core.extension.shareText
 import com.fibelatti.pinboard.core.extension.snackbar
+import com.fibelatti.pinboard.features.appstate.AddPostView
+import com.fibelatti.pinboard.features.appstate.All
+import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.features.appstate.NavigateBack
+import com.fibelatti.pinboard.features.appstate.PostDetail
+import com.fibelatti.pinboard.features.appstate.PostList
+import com.fibelatti.pinboard.features.appstate.Private
+import com.fibelatti.pinboard.features.appstate.Public
+import com.fibelatti.pinboard.features.appstate.Recent
+import com.fibelatti.pinboard.features.appstate.SearchView
+import com.fibelatti.pinboard.features.appstate.Tags
+import com.fibelatti.pinboard.features.appstate.Unread
+import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.navigation.NavigationDrawerFragment
-import com.fibelatti.pinboard.features.navigation.NavigationViewModel
+import com.fibelatti.pinboard.features.posts.presentation.PostAddFragment
+import com.fibelatti.pinboard.features.posts.presentation.PostDetailFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
+import com.fibelatti.pinboard.features.posts.presentation.PostSearchFragment
 import com.fibelatti.pinboard.features.splash.presentation.SplashFragment
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.presentation.AuthFragment
@@ -41,7 +56,7 @@ class MainActivity :
     BaseActivity(),
     NavigationDrawerFragment.Callback {
 
-    private val navigationViewModel: NavigationViewModel by lazy { viewModelFactory.get<NavigationViewModel>(this) }
+    private val appStateViewModel: AppStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(this) }
     private val authViewModel: AuthViewModel by lazy { viewModelFactory.get<AuthViewModel>(this) }
 
     private val handler = Handler()
@@ -56,10 +71,11 @@ class MainActivity :
 
         setupView()
         setupViewModels()
+    }
 
-        supportFragmentManager.run {
-            addOnBackStackChangedListener { navigationViewModel.backNavigation(backStackEntryCount) }
-        }
+    override fun onBackPressed() {
+        super.onBackPressed()
+        appStateViewModel.runAction(NavigateBack)
     }
 
     private fun setupView() {
@@ -70,6 +86,56 @@ class MainActivity :
         with(authViewModel) {
             observe(loginState, ::handleLoginState)
             error(error, ::handleError)
+        }
+
+        observe(appStateViewModel.getContent()) { content ->
+            when (content) {
+                is PostList -> showPostList()
+                is PostDetail -> showPostDetail()
+                is SearchView -> showSearchView()
+                is AddPostView -> showAddPostView()
+            }
+        }
+    }
+
+    private fun showPostList() {
+        for (fragment in supportFragmentManager.fragments.reversed()) {
+            if (fragment.tag != PostListFragment.TAG) {
+                supportFragmentManager.popBackStack()
+            } else {
+                break
+            }
+        }
+    }
+
+    private fun showPostDetail() {
+        inTransaction {
+            setCustomAnimations(
+                R.anim.slide_right_in,
+                R.anim.slide_left_out,
+                R.anim.slide_left_in,
+                R.anim.slide_right_out
+            )
+            add(R.id.fragmentHost, createFragment<PostDetailFragment>(), PostDetailFragment.TAG)
+            addToBackStack(PostDetailFragment.TAG)
+        }
+    }
+
+    private fun showSearchView() {
+        if (supportFragmentManager.findFragmentByTag(PostSearchFragment.TAG) == null) {
+            inTransaction {
+                setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
+                add(R.id.fragmentHost, createFragment<PostSearchFragment>(), PostSearchFragment.TAG)
+                addToBackStack(PostSearchFragment.TAG)
+            }
+        }
+    }
+
+    private fun showAddPostView() {
+        inTransaction {
+            setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
+            add(R.id.fragmentHost, createFragment<PostAddFragment>(), PostAddFragment.TAG)
+            addToBackStack(PostAddFragment.TAG)
         }
     }
 
@@ -84,31 +150,31 @@ class MainActivity :
     }
 
     override fun onAllClicked() {
-        navigationViewModel.viewContent(NavigationViewModel.ContentType.All)
+        appStateViewModel.runAction(All)
     }
 
     override fun onRecentClicked() {
-        navigationViewModel.viewContent(NavigationViewModel.ContentType.Recent)
+        appStateViewModel.runAction(Recent)
     }
 
     override fun onPublicClicked() {
-        navigationViewModel.viewContent(NavigationViewModel.ContentType.Public)
+        appStateViewModel.runAction(Public)
     }
 
     override fun onPrivateClicked() {
-        navigationViewModel.viewContent(NavigationViewModel.ContentType.Private)
+        appStateViewModel.runAction(Private)
     }
 
     override fun onUnreadClicked() {
-        navigationViewModel.viewContent(NavigationViewModel.ContentType.Unread)
+        appStateViewModel.runAction(Unread)
     }
 
     override fun onUntaggedClicked() {
-        navigationViewModel.viewContent(NavigationViewModel.ContentType.Untagged)
+        appStateViewModel.runAction(Untagged)
     }
 
     override fun onTagsClicked() {
-        navigationViewModel.viewContent(NavigationViewModel.ContentType.Tags)
+        appStateViewModel.runAction(Tags)
     }
 
     override fun onLogoutClicked() {
@@ -140,8 +206,8 @@ class MainActivity :
             LoginState.LoggedIn -> {
                 handler.postDelayed({
                     inTransaction {
-                        replace(R.id.fragmentHost, createFragment<PostListFragment>())
-                            .addSharedElement(authViewLogo, SharedElementTransitionNames.APP_LOGO)
+                        replace(R.id.fragmentHost, createFragment<PostListFragment>(), PostListFragment.TAG)
+                        addSharedElement(authViewLogo, SharedElementTransitionNames.APP_LOGO)
                     }
 
                     showControls()
@@ -152,7 +218,7 @@ class MainActivity :
                     inTransaction {
                         setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                         replace(R.id.fragmentHost, createFragment<AuthFragment>())
-                            .addSharedElement(splashViewLogo, SharedElementTransitionNames.APP_LOGO)
+                        addSharedElement(splashViewLogo, SharedElementTransitionNames.APP_LOGO)
                     }
 
                     hideControls()

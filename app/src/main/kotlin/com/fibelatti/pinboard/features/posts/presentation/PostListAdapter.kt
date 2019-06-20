@@ -15,10 +15,9 @@ private const val MAX_TAGS_PER_ITEM = 4
 
 class PostListAdapter @Inject constructor(
     private val dateFormatter: DateFormatter
-) : BaseAdapter<Post>(hasFilter = true) {
+) : BaseAdapter<Post>() {
 
     var onItemClicked: ((Post) -> Unit)? = null
-    var onEmptyFilter: (() -> Unit)? = null
 
     override fun getLayoutRes(): Int = R.layout.list_item_post
 
@@ -52,11 +51,5 @@ class PostListAdapter @Inject constructor(
         TextView(context, null, 0, R.style.AppTheme_Text_Tag)
             .apply { text = value }
             .let { layoutTags.addView(it as View) }
-    }
-
-    override fun filterCriteria(query: String, item: Post): Boolean = item.description.contains(query)
-
-    override fun onEmptyFilterResult() {
-        onEmptyFilter?.invoke()
     }
 }

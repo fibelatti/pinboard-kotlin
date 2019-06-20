@@ -8,70 +8,68 @@ import com.fibelatti.core.archcomponents.setEvent
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onSuccess
+import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.appstate.NewestFirst
+import com.fibelatti.pinboard.features.appstate.SetPosts
+import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetAllPosts
+import com.fibelatti.pinboard.features.posts.domain.usecase.GetParams
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
-import com.fibelatti.pinboard.features.posts.domain.usecase.NewestFirst
-import com.fibelatti.pinboard.features.posts.domain.usecase.SortType
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class PostListViewModel @Inject constructor(
     private val getAllPosts: GetAllPosts,
-    private val getRecentPosts: GetRecentPosts
+    private val getRecentPosts: GetRecentPosts,
+    private val appStateRepository: AppStateRepository
 ) : BaseViewModel() {
-
-    val posts: LiveEvent<List<Post>> get() = _posts
-    private val _posts = MutableLiveEvent<List<Post>>()
 
     val loading: LiveEvent<Boolean> get() = _loading
     private val _loading = MutableLiveEvent<Boolean>().apply { setEvent(true) }
 
-    fun getAll(sorting: SortType, tags: List<String>? = null) {
-        launchGetAll(tags, sorting)
+    fun getAll(sorting: SortType, searchTerm: String, tags: List<String>?) {
+        launchGetAll(sorting, searchTerm, tags)
     }
 
-    fun getRecent(sorting: SortType, tags: List<String>? = null) {
+    fun getRecent(sorting: SortType, searchTerm: String, tags: List<String>?) {
         launch {
             _loading.postEvent(true)
-            getRecentPosts(GetRecentPosts.Params(tags, sorting))
-                .onSuccess {
-                    _posts.postEvent(it)
-                    _loading.postEvent(false)
-                }
+            getRecentPosts(GetParams(sorting, searchTerm, tags))
+                .mapCatching { appStateRepository.runAction(SetPosts(it)) }
+                .onSuccess { _loading.postEvent(false) }
                 .onFailure(::handleError)
         }
     }
 
-    fun getPublic(sorting: SortType, tags: List<String>? = null) {
-        launchGetAll(tags, sorting) { allPosts -> allPosts.filterNot(Post::private) }
+    fun getPublic(sorting: SortType, searchTerm: String, tags: List<String>?) {
+        launchGetAll(sorting, searchTerm, tags) { allPosts -> allPosts.filterNot(Post::private) }
     }
 
-    fun getPrivate(sorting: SortType, tags: List<String>? = null) {
-        launchGetAll(tags, sorting) { allPosts -> allPosts.filter(Post::private) }
+    fun getPrivate(sorting: SortType, searchTerm: String, tags: List<String>?) {
+        launchGetAll(sorting, searchTerm, tags) { allPosts -> allPosts.filter(Post::private) }
     }
 
-    fun getUnread(sorting: SortType, tags: List<String>? = null) {
-        launchGetAll(tags, sorting) { allPosts -> allPosts.filter(Post::readLater) }
+    fun getUnread(sorting: SortType, searchTerm: String, tags: List<String>?) {
+        launchGetAll(sorting, searchTerm, tags) { allPosts -> allPosts.filter(Post::readLater) }
     }
 
-    fun getUntagged(sorting: SortType) {
-        launchGetAll(sorting = sorting) { allPosts -> allPosts.filter { it.tags.isEmpty() } }
+    fun getUntagged(sorting: SortType, searchTerm: String) {
+        launchGetAll(sorting, searchTerm) { allPosts -> allPosts.filter { it.tags.isEmpty() } }
     }
 
     private fun launchGetAll(
-        tags: List<String>? = null,
         sorting: SortType = NewestFirst,
+        searchTerm: String,
+        tags: List<String>? = null,
         extraFilter: (List<Post>) -> List<Post> = { it }
     ) {
         launch {
             _loading.postEvent(true)
-            getAllPosts(GetAllPosts.Params(tags, sorting))
+            getAllPosts(GetParams(sorting, searchTerm, tags))
                 .mapCatching(extraFilter)
-                .onSuccess {
-                    _posts.postEvent(it)
-                    _loading.postEvent(false)
-                }
+                .mapCatching { appStateRepository.runAction(SetPosts(it)) }
+                .onSuccess { _loading.postEvent(false) }
                 .onFailure(::handleError)
         }
     }

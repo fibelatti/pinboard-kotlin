@@ -22,6 +22,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockTime1
 import com.fibelatti.pinboard.MockDataProvider.mockTime2
 import com.fibelatti.pinboard.MockDataProvider.mockTime3
 import com.fibelatti.pinboard.MockDataProvider.mockTime4
+import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import org.junit.jupiter.api.Test
@@ -41,19 +42,19 @@ class GetRecentPostsTest {
     // endregion
 
     private val mockPostsRepository = mock<PostsRepository>()
-    private val mockFilterTags = mock<FilterTags>()
+    private val mockFilterPosts = mock<FilterPosts>()
     private val mockSort = mock<Sort>()
 
     private val getRecentPosts = GetRecentPosts(
         mockPostsRepository,
-        mockFilterTags,
+        mockFilterPosts,
         mockSort
     )
 
     @Test
     fun `GIVEN no tags are sent as a parameter WHEN GetRecentPosts is called THEN all posts are returned`() {
         // GIVEN
-        val params = GetRecentPosts.Params(sorting = mockSortType)
+        val params = GetParams(sorting = mockSortType)
         givenSuspend { mockPostsRepository.getRecentPosts() }
             .willReturn(Success(mockResponseFull))
         arrangeFilterAndSort(tags = null)
@@ -69,7 +70,7 @@ class GetRecentPostsTest {
     @Test
     fun `GIVEN more than API_FILTER_MAX_TAGS is sent as a parameter WHEN GetRecentPosts is called THEN only the first API_FILTER_MAX_TAGS are used`() {
         // GIVEN
-        val params = GetRecentPosts.Params(tags = mockTags, sorting = mockSortType)
+        val params = GetParams(tags = mockTags, sorting = mockSortType)
         givenSuspend { mockPostsRepository.getRecentPosts(mockTagsTrimmed) }
             .willReturn(Success(mockResponseFull))
         arrangeFilterAndSort()
@@ -85,7 +86,7 @@ class GetRecentPostsTest {
     @Test
     fun `GIVEN repository fails WHEN GetRecentPosts is called THEN Failure is returned`() {
         // GIVEN
-        val params = GetRecentPosts.Params()
+        val params = GetParams()
         givenSuspend { mockPostsRepository.getRecentPosts(params.tags) }
             .willReturn(Failure(Exception()))
 
@@ -96,14 +97,14 @@ class GetRecentPostsTest {
         result.shouldBeAnInstanceOf<Failure>()
         result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
 
-        verifySuspend(mockFilterTags, never()) { invoke(safeAny()) }
+        verifySuspend(mockFilterPosts, never()) { invoke(safeAny()) }
         verifySuspend(mockSort, never()) { invoke(safeAny()) }
     }
 
     private fun arrangeFilterAndSort(
         tags: List<String>? = mockTags
     ) {
-        givenSuspend { mockFilterTags(FilterTags.Params(mockResponseFull, tags)) }
+        givenSuspend { mockFilterPosts(FilterPosts.Params(mockResponseFull, term = "", tags = tags)) }
             .willReturn(Success(mockResponseFull))
         givenSuspend { mockSort(Sort.Params(mockResponseFull, mockSortType)) }
             .willReturn(Success(mockResponseFull))

@@ -65,8 +65,8 @@
         <item quantity="other">%d links</item>
     </plurals>
 
-    <string name="posts_sorting_newest_first">Newest first</string>
-    <string name="posts_sorting_oldest_first">Oldest first</string>
+    <string name="posts_sorting_newest_first">%s — Newest first</string>
+    <string name="posts_sorting_oldest_first">%s — Oldest first</string>
 
     <string name="posts_saved_on">Saved on %s</string>
     <plurals name="posts_tags_more">

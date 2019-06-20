@@ -10,6 +10,8 @@ import androidx.core.content.ContextCompat
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.features.appstate.NewestFirst
+import com.fibelatti.pinboard.features.appstate.SortType
 import kotlinx.android.synthetic.main.layout_title.view.*
 
 class TitleLayout @JvmOverloads constructor(
@@ -49,8 +51,18 @@ class TitleLayout @JvmOverloads constructor(
         textViewPostCount.gone()
     }
 
-    fun setPostCount(count: Int) {
-        textViewPostCount.visible(resources.getQuantityString(R.plurals.posts_quantity, count, count))
+    fun setPostCount(count: Int, sortType: SortType) {
+        val countString = resources.getQuantityString(R.plurals.posts_quantity, count, count)
+        val countWithSort = resources.getString(
+            if (sortType == NewestFirst) {
+                R.string.posts_sorting_newest_first
+            } else {
+                R.string.posts_sorting_oldest_first
+            },
+            countString
+        )
+
+        textViewPostCount.visible(countWithSort)
     }
 
     fun hidePostCount() {

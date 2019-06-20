@@ -47,7 +47,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/buttonNavigateBack"
         app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
-        tools:text="10 links"
+        tools:text="10 links - Newest first"
         tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
