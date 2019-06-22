@@ -55,7 +55,7 @@
         android:id="@+id/imageViewAppLogo"
         android:layout_width="@dimen/clickable_area"
         android:layout_height="@dimen/clickable_area"
-        android:layout_marginBottom="28dp"
+        android:layout_marginBottom="@dimen/post_list_animation_logo_margin"
         android:contentDescription="@string/cd_app_logo"
         android:elevation="@dimen/elevation_high"
         android:src="@drawable/pinkt"

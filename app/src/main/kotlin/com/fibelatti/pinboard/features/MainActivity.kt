@@ -49,8 +49,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_auth.imageViewAppLogo as authViewLogo
 import kotlinx.android.synthetic.main.fragment_splash.imageViewAppLogo as splashViewLogo
 
-private const val SPLASH_DELAY = 500L
-
 val Fragment.mainActivity: MainActivity? get() = activity as? MainActivity
 
 class MainActivity :
@@ -203,6 +201,8 @@ class MainActivity :
     }
 
     private fun handleLoginState(loginState: LoginState) {
+        val animTime = resources.getInteger(R.integer.anim_time_long).toLong()
+
         when (loginState) {
             LoginState.Authorizing -> DoNothing
             LoginState.LoggedIn -> {
@@ -213,7 +213,7 @@ class MainActivity :
                     }
 
                     showControls()
-                }, SPLASH_DELAY)
+                }, animTime)
             }
             LoginState.LoggedOut -> {
                 handler.postDelayed({
@@ -224,7 +224,7 @@ class MainActivity :
                     }
 
                     hideControls()
-                }, SPLASH_DELAY)
+                }, animTime)
             }
             LoginState.Unauthorized -> {
                 inTransaction {
