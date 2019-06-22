@@ -53,7 +53,7 @@ android {
         release {
             resValue "string", "app_name", AppInfo.appName
 
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }

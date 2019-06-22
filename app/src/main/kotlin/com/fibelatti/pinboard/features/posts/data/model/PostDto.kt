@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.posts.data.model
 
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
@@ -14,6 +15,7 @@ import javax.inject.Inject
 
 const val POST_TABLE_NAME = "Posts"
 
+@Keep
 @Entity(tableName = POST_TABLE_NAME)
 data class PostDto(
     val href: String,
