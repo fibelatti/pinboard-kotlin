@@ -10,6 +10,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.fibelatti.core.archcomponents.extension.error
@@ -33,7 +35,12 @@ import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_post_detail.*
 import kotlinx.android.synthetic.main.layout_file_view.*
+import kotlinx.android.synthetic.main.layout_file_view.textViewDescription as fileViewUrlDescription
+import kotlinx.android.synthetic.main.layout_file_view.textViewUrl as fileViewUrl
 import kotlinx.android.synthetic.main.layout_progress_bar.*
+import kotlinx.android.synthetic.main.layout_url_error.*
+import kotlinx.android.synthetic.main.layout_url_error.textViewDescription as errorUrlDescription
+import kotlinx.android.synthetic.main.layout_url_error.textViewUrl as errorUrl
 import javax.inject.Inject
 
 class PostDetailFragment @Inject constructor() : BaseFragment() {
@@ -68,14 +75,15 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        webView.webViewClient = PostWebViewClient()
         setupViewModels()
     }
 
     private fun setupViewModels() {
         viewModelFactory.get<AppStateViewModel>(requireActivity()).run {
             observe(getContent()) {
-                if (it is PostDetail) { updateViews(it.post) }
+                if (it is PostDetail) {
+                    updateViews(it.post)
+                }
             }
         }
         with(postDetailViewModel) {
@@ -96,7 +104,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
         if (post.url.substringAfterLast(".") in knownFileExtensions) {
             showFileView(post)
         } else {
-            showWebView(post.url)
+            showWebView(post)
         }
 
         mainActivity?.updateTitleLayout {
@@ -121,15 +129,27 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
         layoutRootFileViewer.visible()
         layoutScrollViewWeb.gone()
 
-        textViewDescription.text = post.description
-        textViewUrl.text = post.url
+        fileViewUrlDescription.text = post.description
+        fileViewUrl.text = post.url
         buttonOpenInFileViewer.setOnClickListener { openUrlInFileViewer(post.url) }
     }
 
-    private fun showWebView(url: String) {
+    private fun showWebView(post: Post) {
         layoutRootFileViewer.gone()
         layoutScrollViewWeb.visible()
-        webView.loadUrl(url)
+
+        webView.webViewClient = PostWebViewClient(post)
+        webView.loadUrl(post.url)
+    }
+
+    private fun showErrorLayout(post: Post) {
+        layoutRootFileViewer.gone()
+        layoutScrollViewWeb.gone()
+        layoutRootUrlError.visible()
+
+        errorUrlDescription.text = post.description
+        errorUrl.text = post.url
+        buttonOpenInBrowser.setOnClickListener { openUrlInExternalBrowser(post) }
     }
 
     private fun openUrlInFileViewer(url: String) {
@@ -172,17 +192,23 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
         startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(post.url) })
     }
 
-    private inner class PostWebViewClient : WebViewClient() {
+    private inner class PostWebViewClient(
+        private val post: Post
+    ) : WebViewClient() {
+
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             layoutProgressBar?.visible()
-            layoutScrollViewWeb?.gone()
         }
 
         override fun onPageFinished(view: WebView?, url: String?) {
             super.onPageFinished(view, url)
             layoutProgressBar?.gone()
-            layoutScrollViewWeb?.visible()
+        }
+
+        override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
+            super.onReceivedError(view, request, error)
+            showErrorLayout(post)
         }
     }
 }

@@ -98,6 +98,9 @@
     <string name="posts_item_private">Private</string>
     <string name="posts_item_read_later">Read later</string>
 
+    <string name="posts_url_error">Unfortunately, Pinkt can\'t open this link. Try opening it in your default browser.</string>
+    <string name="posts_open_in_browser">Open in browser</string>
+
     <!-- Validation -->
     <string name="validation_error_empty_url">The URL cannot be empty.</string>
     <string name="validation_error_invalid_url">The URL is invalid.</string>
@@ -130,5 +133,6 @@
     <string name="cd_navigate_back">Navigate back</string>
     <string name="cd_empty_list_placeholder">Empty list placeholder image</string>
     <string name="cd_file">File icon</string>
+    <string name="cd_warning">Warning</string>
     <string name="cd_share_receiver_image">Adding link to pinboard</string>
 </resources>

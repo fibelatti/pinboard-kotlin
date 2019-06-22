@@ -7,14 +7,6 @@
     android:clickable="true"
     android:focusable="true">
 
-    <include
-        layout="@layout/layout_progress_bar"
-        android:visibility="gone" />
-
-    <include
-        layout="@layout/layout_file_view"
-        android:visibility="gone" />
-
     <androidx.core.widget.NestedScrollView
         android:id="@+id/layoutScrollViewWeb"
         android:layout_width="match_parent"
@@ -26,4 +18,16 @@
             android:layout_height="match_parent"
             android:paddingTop="@dimen/padding_regular" />
     </androidx.core.widget.NestedScrollView>
+
+    <include
+        layout="@layout/layout_file_view"
+        android:visibility="gone" />
+
+    <include
+        layout="@layout/layout_url_error"
+        android:visibility="gone" />
+
+    <include
+        layout="@layout/layout_progress_bar"
+        android:visibility="gone" />
 </FrameLayout>

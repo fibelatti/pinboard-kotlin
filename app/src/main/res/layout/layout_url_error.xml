@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layoutRootFileViewer"
+    android:id="@+id/layoutRootUrlError"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
@@ -15,8 +15,8 @@
         android:layout_width="@dimen/post_detail_icon_size"
         android:layout_height="@dimen/post_detail_icon_size"
         android:layout_gravity="center_horizontal"
-        android:contentDescription="@string/cd_file"
-        app:srcCompat="@drawable/ic_file" />
+        android:contentDescription="@string/cd_warning"
+        app:srcCompat="@drawable/ic_warning" />
 
     <TextView
         android:id="@+id/textViewDescription"
@@ -40,11 +40,21 @@
         android:gravity="center"
         tools:text="www.url.com" />
 
+    <TextView
+        style="@style/AppTheme.Text.Detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_large"
+        android:layout_marginTop="@dimen/margin_regular"
+        android:layout_marginEnd="@dimen/margin_large"
+        android:gravity="center"
+        android:text="@string/posts_url_error" />
+
     <Button
-        android:id="@+id/buttonOpenInFileViewer"
+        android:id="@+id/buttonOpenInBrowser"
         style="@style/AppTheme.Button"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/margin_large"
-        android:text="@string/posts_open_with_file_viewer" />
+        android:text="@string/posts_open_in_browser" />
 
 </LinearLayout>
