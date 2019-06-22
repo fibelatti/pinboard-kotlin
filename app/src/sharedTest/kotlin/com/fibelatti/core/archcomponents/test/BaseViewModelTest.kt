@@ -10,7 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 abstract class BaseViewModelTest {
 
     @BeforeEach
-    fun setup() {
+    fun baseSetup() {
         Dispatchers.setMain(Dispatchers.Unconfined)
     }
 }

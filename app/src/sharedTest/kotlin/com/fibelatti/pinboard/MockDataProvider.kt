@@ -52,6 +52,8 @@ object MockDataProvider {
 
     val mockTagsResponse = mockTagsString.joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE)
     val mockTagsRequest = mockTagsString.joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST)
+
+    const val mockTitle = "All"
     // endregion
 
     // region Data classes
@@ -114,6 +116,10 @@ object MockDataProvider {
         popular: List<Tag> = mockTags,
         recommended: List<Tag> = mockTags
     ): SuggestedTags = SuggestedTags(popular, recommended)
+
+    fun createTag(
+        name: String = mockTagString1
+    ): Tag = Tag(name)
     // endregion
 
     fun UnauthorizedFailure(): Failure = Failure(

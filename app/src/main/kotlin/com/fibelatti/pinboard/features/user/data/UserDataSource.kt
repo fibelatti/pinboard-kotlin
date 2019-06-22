@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.user.data
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
@@ -13,7 +14,8 @@ class UserDataSource @Inject constructor(
     private val userSharedPreferences: UserSharedPreferences
 ) : UserRepository {
 
-    private val loginState = MutableLiveData<LoginState>().apply {
+    @VisibleForTesting
+    val loginState = MutableLiveData<LoginState>().apply {
         value = if (userSharedPreferences.getAuthToken().isNotEmpty()) LoginState.LoggedIn else LoginState.LoggedOut
     }
 

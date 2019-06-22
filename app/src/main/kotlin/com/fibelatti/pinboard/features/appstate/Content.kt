@@ -18,9 +18,9 @@ sealed class ContentWithHistory(
     open val previousContent: PostList
 ) : Content()
 
-class PostDetail(
+data class PostDetail(
     val post: Post,
-    previousContent: PostList
+    override val previousContent: PostList
 ) : ContentWithHistory(previousContent)
 
 data class SearchView(
@@ -31,6 +31,6 @@ data class SearchView(
     override val previousContent: PostList
 ) : ContentWithHistory(previousContent)
 
-class AddPostView(
-    previousContent: PostList
+data class AddPostView(
+    override val previousContent: PostList
 ) : ContentWithHistory(previousContent)
