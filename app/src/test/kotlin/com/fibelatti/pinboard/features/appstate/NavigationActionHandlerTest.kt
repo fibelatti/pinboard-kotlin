@@ -1,5 +1,7 @@
 package com.fibelatti.pinboard.features.appstate
 
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBe
@@ -7,19 +9,26 @@ import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.mockTagString1
 import com.fibelatti.pinboard.MockDataProvider.mockTitle
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.extension.isConnected
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito.verify
+import org.mockito.Mockito.reset
+import org.mockito.Mockito.times
 
 internal class NavigationActionHandlerTest {
 
     private val mockResourceProvider = mock<ResourceProvider>()
+    private val mockConnectivityManager = mock<ConnectivityManager>()
 
     private val navigationActionHandler = NavigationActionHandler(
-        mockResourceProvider
+        mockResourceProvider,
+        mockConnectivityManager
     )
 
     @Nested
@@ -90,6 +99,13 @@ internal class NavigationActionHandlerTest {
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class ViewCategoryTest {
 
+        private val mockActiveNetworkInfo = mock<NetworkInfo>()
+
+        @BeforeEach
+        fun setup() {
+            reset(mockConnectivityManager)
+        }
+
         @ParameterizedTest
         @MethodSource("testCases")
         fun `WHEN action is ViewCategory THEN a PostList is returned`(testCase: Triple<ViewCategory, Int, String>) {
@@ -97,6 +113,10 @@ internal class NavigationActionHandlerTest {
             val (category, stringId, resolvedString) = testCase
             given(mockResourceProvider.getString(stringId))
                 .willReturn(resolvedString)
+            given(mockConnectivityManager.activeNetworkInfo)
+                .willReturn(mockActiveNetworkInfo)
+            given(mockActiveNetworkInfo.isConnected)
+                .willReturn(false)
 
             // WHEN
             val result = navigationActionHandler.runAction(category, mock())
@@ -108,8 +128,11 @@ internal class NavigationActionHandlerTest {
                 posts = emptyList(),
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
-                shouldLoad = true
+                shouldLoad = false,
+                isConnected = false
             )
+
+            verify(mockConnectivityManager, times(2)).isConnected()
         }
 
         fun testCases(): List<Triple<ViewCategory, Int, String>> = listOf(

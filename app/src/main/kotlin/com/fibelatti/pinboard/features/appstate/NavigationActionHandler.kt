@@ -1,10 +1,15 @@
 package com.fibelatti.pinboard.features.appstate
 
+import android.net.ConnectivityManager
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.extension.isConnected
 import javax.inject.Inject
 
-class NavigationActionHandler @Inject constructor(private val resourceProvider: ResourceProvider) {
+class NavigationActionHandler @Inject constructor(
+    private val resourceProvider: ResourceProvider,
+    private val connectivityManager: ConnectivityManager?
+) {
 
     fun runAction(action: NavigationAction, currentContent: Content): Content {
         return when (action) {
@@ -40,7 +45,8 @@ class NavigationActionHandler @Inject constructor(private val resourceProvider: 
             posts = emptyList(),
             sortType = NewestFirst,
             searchParameters = SearchParameters(),
-            shouldLoad = true
+            shouldLoad = connectivityManager.isConnected(),
+            isConnected = connectivityManager.isConnected()
         )
     }
 

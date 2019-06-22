@@ -2,10 +2,12 @@ package com.fibelatti.pinboard.core.di.modules
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.ViewModelProvider
 import com.fibelatti.core.android.AppResourceProvider
 import com.fibelatti.core.di.ViewModelFactory
+import com.fibelatti.core.extension.getSystemService
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.App
 import com.fibelatti.pinboard.core.di.MultiBindingFragmentFactory
@@ -38,6 +40,11 @@ abstract class CoreModule {
         @JvmStatic
         fun provideSharedPreferences(context: Context): SharedPreferences =
             context.getUserPreferences()
+
+        @Provides
+        @JvmStatic
+        fun connectivityManager(context: Context): ConnectivityManager? =
+            context.getSystemService<ConnectivityManager>()
     }
 
     @Binds

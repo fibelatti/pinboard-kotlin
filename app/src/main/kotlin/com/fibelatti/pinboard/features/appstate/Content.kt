@@ -11,7 +11,8 @@ data class PostList(
     val posts: List<Post>,
     val sortType: SortType,
     val searchParameters: SearchParameters,
-    val shouldLoad: Boolean
+    val shouldLoad: Boolean,
+    val isConnected: Boolean = true
 ) : Content()
 
 sealed class ContentWithHistory(

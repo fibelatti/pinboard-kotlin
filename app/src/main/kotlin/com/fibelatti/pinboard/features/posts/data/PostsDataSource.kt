@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.posts.data
 
+import android.net.ConnectivityManager
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.getOrDefault
@@ -7,12 +8,12 @@ import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
+import com.fibelatti.pinboard.core.extension.isConnected
 import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
-import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
 import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagDtoMapper
 import com.fibelatti.pinboard.features.posts.data.model.UpdateDto
@@ -31,7 +32,8 @@ class PostsDataSource @Inject constructor(
     private val postsDao: PostsDao,
     private val postDtoMapper: PostDtoMapper,
     private val suggestedTagDtoMapper: SuggestedTagDtoMapper,
-    private val dateFormatter: DateFormatter
+    private val dateFormatter: DateFormatter,
+    private val connectivityManager: ConnectivityManager?
 ) : PostsRepository {
 
     override suspend fun update(): Result<String> = withContext(Dispatchers.IO) {
@@ -76,8 +78,29 @@ class PostsDataSource @Inject constructor(
     override suspend fun getAllPosts(
         tags: List<Tag>?
     ): Result<List<Post>> = withContext(Dispatchers.IO) {
-        withLocalDataSourceCheck { postsApi.getAllPosts(tags?.forRequest()) }
-            .mapCatching(postDtoMapper::mapList)
+        val isConnected = connectivityManager.isConnected()
+        val localPosts = catching { postsDao.getAllPosts() }
+        val hasLocalData = localPosts.getOrDefault(emptyList()).isNotEmpty()
+
+        if (!isConnected && hasLocalData) {
+            localPosts
+        } else {
+            val userLastUpdate = userRepository.getLastUpdate()
+            val apiLastUpdate = update().getOrNull() ?: dateFormatter.nowAsTzFormat()
+
+            if (userLastUpdate == apiLastUpdate && hasLocalData) {
+                localPosts
+            } else {
+                resultFrom { postsApi.getAllPosts(tags?.forRequest()) }
+                    .onSuccess {
+                        catching {
+                            userRepository.setLastUpdate(apiLastUpdate)
+                            postsDao.deleteAllPosts()
+                            postsDao.savePosts(it)
+                        }
+                    }
+            }
+        }.mapCatching(postDtoMapper::mapList)
     }
 
     override suspend fun getSuggestedTagsForUrl(
@@ -92,25 +115,4 @@ class PostsDataSource @Inject constructor(
     }
 
     private fun List<Tag>.forRequest() = joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST) { it.name }
-
-    private suspend inline fun withLocalDataSourceCheck(
-        crossinline onInvalidLocalData: suspend () -> List<PostDto>
-    ): Result<List<PostDto>> {
-        val userLastUpdate = userRepository.getLastUpdate()
-        val apiLastUpdate = update().getOrNull() ?: dateFormatter.nowAsTzFormat()
-        val localPosts = catching { postsDao.getAllPosts() }
-
-        return if (userLastUpdate == apiLastUpdate && localPosts.getOrDefault(emptyList()).isNotEmpty()) {
-            localPosts
-        } else {
-            resultFrom { onInvalidLocalData() }
-                .onSuccess {
-                    catching {
-                        userRepository.setLastUpdate(apiLastUpdate)
-                        postsDao.deleteAllPosts()
-                        postsDao.savePosts(it)
-                    }
-                }
-        }
-    }
 }

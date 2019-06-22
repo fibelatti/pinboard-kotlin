@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/margin_regular"
+    android:layout_marginEnd="@dimen/margin_regular"
+    android:orientation="horizontal">
+
+    <TextView
+        style="@style/AppTheme.Text.Detail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:text="@string/offline_alert" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonRetryConnection"
+        style="@style/AppTheme.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/offline_retry" />
+</LinearLayout>

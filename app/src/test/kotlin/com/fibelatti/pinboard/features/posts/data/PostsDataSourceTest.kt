@@ -1,5 +1,7 @@
 package com.fibelatti.pinboard.features.posts.data
 
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
@@ -20,6 +22,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockTime
 import com.fibelatti.pinboard.MockDataProvider.mockUrlDescription
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.core.extension.isConnected
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
@@ -52,6 +55,7 @@ class PostsDataSourceTest {
     private val mockPostDtoMapper = mock<PostDtoMapper>()
     private val mockSuggestedTagsDtoMapper = mock<SuggestedTagDtoMapper>()
     private val mockDateFormatter = mock<DateFormatter>()
+    private val mockConnectivityManager = mock<ConnectivityManager>()
 
     private val mockListPostDto = listOf(mock<PostDto>())
     private val mockListPost = listOf(mock<Post>())
@@ -64,7 +68,8 @@ class PostsDataSourceTest {
         mockDao,
         mockPostDtoMapper,
         mockSuggestedTagsDtoMapper,
-        mockDateFormatter
+        mockDateFormatter,
+        mockConnectivityManager
     )
 
     @Nested
@@ -295,8 +300,20 @@ class PostsDataSourceTest {
 
     @Nested
     inner class GetAllPostsTests {
+
+        private val mockActiveNetworkInfo = mock<NetworkInfo>()
+
         @Nested
         inner class API {
+
+            @BeforeEach
+            fun setup() {
+                given(mockConnectivityManager.activeNetworkInfo)
+                    .willReturn(mockActiveNetworkInfo)
+                given(mockActiveNetworkInfo.isConnected)
+                    .willReturn(false)
+            }
+
             @Test
             fun `GIVEN that the api returns an error WHEN getAllPosts is called THEN Failure is returned`() {
                 // GIVEN
@@ -339,6 +356,29 @@ class PostsDataSourceTest {
         @Nested
         inner class Database {
             @Test
+            fun `GIVEN isConnected is false and local data is available WHEN getAllPosts is called THEN localData is returned`() {
+                // GIVEN
+                given(mockConnectivityManager.activeNetworkInfo)
+                    .willReturn(mockActiveNetworkInfo)
+                given(mockActiveNetworkInfo.isConnected)
+                    .willReturn(false)
+                given(mockDao.getAllPosts())
+                    .willReturn(mockListPostDto)
+                given(mockPostDtoMapper.mapList(mockListPostDto))
+                    .willReturn(mockListPost)
+
+                // WHEN
+                val result = callSuspend { dataSource.getAllPosts(mockTags) }
+
+                // THEN
+                result.shouldBeAnInstanceOf<Success<List<Post>>>()
+                result.getOrNull() shouldBe mockListPost
+
+                verifySuspend(mockApi, never()) { update() }
+                verifySuspend(mockApi, never()) { getAllPosts(safeAny()) }
+            }
+
+            @Test
             fun `GIVEN lastUpdate matches and localPosts is empty WHEN getAllPosts is called THEN api response is returned`() {
                 // GIVEN
                 given(mockUserRepository.getLastUpdate())
@@ -357,6 +397,7 @@ class PostsDataSourceTest {
                 result.shouldBeAnInstanceOf<Failure>()
                 result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
 
+                verifySuspend(mockApi) { update() }
                 verify(mockUserRepository, never()).setLastUpdate(anyString())
                 verify(mockDao, never()).savePosts(safeAny())
             }
@@ -384,6 +425,7 @@ class PostsDataSourceTest {
                 result.shouldBeAnInstanceOf<Success<List<Post>>>()
                 result.getOrNull() shouldBe mockListPost
 
+                verifySuspend(mockApi) { update() }
                 verify(mockUserRepository).setLastUpdate(mockTime)
                 verify(mockDao).deleteAllPosts()
                 verify(mockDao).savePosts(mockListPostDto)
@@ -392,6 +434,10 @@ class PostsDataSourceTest {
             @Test
             fun `GIVEN lastUpdate matches and localPosts is not empty WHEN getAllPosts is called THEN local posts are returned`() {
                 // GIVEN
+                given(mockConnectivityManager.activeNetworkInfo)
+                    .willReturn(mockActiveNetworkInfo)
+                given(mockActiveNetworkInfo.isConnected)
+                    .willReturn(true)
                 given(mockUserRepository.getLastUpdate())
                     .willReturn(mockTime)
                 givenSuspend { mockApi.update() }
@@ -410,6 +456,7 @@ class PostsDataSourceTest {
                 result.shouldBeAnInstanceOf<Success<List<Post>>>()
                 result.getOrNull() shouldBe mockListPost
 
+                verifySuspend(mockApi) { update() }
                 verifySuspend(mockApi, never()) { getAllPosts(safeAny()) }
             }
         }

@@ -46,6 +46,7 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_post_list.*
+import kotlinx.android.synthetic.main.layout_offline_alert.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
 import kotlinx.android.synthetic.main.layout_search_active.*
 import javax.inject.Inject
@@ -122,6 +123,7 @@ class PostListFragment @Inject constructor(
         layoutRoot.animateChangingTransitions()
 
         buttonClearSearch.setOnClickListener { appStateViewModel.runAction(ClearSearch) }
+        buttonRetryConnection.setOnClickListener { appStateViewModel.runAction(Refresh) }
 
         swipeToRefresh.setOnRefreshListener {
             swipeToRefresh.isRefreshing = false
@@ -197,6 +199,7 @@ class PostListFragment @Inject constructor(
         }
 
         layoutSearchActive.visibleIf(content.searchParameters.isActive(), otherwiseVisibility = View.GONE)
+        layoutOfflineAlert.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
     }
 
     private fun handleLoading(isLoading: Boolean) {

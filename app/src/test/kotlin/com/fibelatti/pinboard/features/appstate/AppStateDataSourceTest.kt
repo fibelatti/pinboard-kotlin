@@ -1,5 +1,7 @@
 package com.fibelatti.pinboard.features.appstate
 
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.core.test.extension.mock
@@ -7,6 +9,7 @@ import com.fibelatti.pinboard.InstantExecutorExtension
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.createTag
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.extension.isConnected
 import com.fibelatti.pinboard.core.functional.SingleRunner
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -30,6 +33,8 @@ internal class AppStateDataSourceTest {
     private val mockPostActionHandler = mock<PostActionHandler>()
     private val mockSearchActionHandler = mock<SearchActionHandler>()
     private val singleRunner = SingleRunner()
+    private val mockConnectivityManager = mock<ConnectivityManager>()
+    private val mockActiveNetworkInfo = mock<NetworkInfo>()
 
     private lateinit var appStateDataSource: AppStateDataSource
 
@@ -39,7 +44,8 @@ internal class AppStateDataSourceTest {
         posts = emptyList(),
         sortType = NewestFirst,
         searchParameters = SearchParameters(),
-        shouldLoad = true
+        shouldLoad = true,
+        isConnected = false
     )
 
     @BeforeEach
@@ -49,12 +55,18 @@ internal class AppStateDataSourceTest {
         given(mockResourceProvider.getString(R.string.posts_title_all))
             .willReturn("R.string.posts_title_all")
 
+        given(mockConnectivityManager.activeNetworkInfo)
+            .willReturn(mockActiveNetworkInfo)
+        given(mockActiveNetworkInfo.isConnected)
+            .willReturn(false)
+
         appStateDataSource = AppStateDataSource(
             mockResourceProvider,
             mockNavigationActionHandler,
             mockPostActionHandler,
             mockSearchActionHandler,
-            singleRunner
+            singleRunner,
+            mockConnectivityManager
         )
     }
 

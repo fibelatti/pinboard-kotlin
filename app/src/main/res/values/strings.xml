@@ -101,6 +101,10 @@
     <string name="posts_url_error">Unfortunately, Pinkt can\'t open this link. Try opening it in your default browser.</string>
     <string name="posts_open_in_browser">Open in browser</string>
 
+    <!-- Offline -->
+    <string name="offline_alert">No connection available</string>
+    <string name="offline_retry">Retry</string>
+
     <!-- Validation -->
     <string name="validation_error_empty_url">The URL cannot be empty.</string>
     <string name="validation_error_invalid_url">The URL is invalid.</string>
