@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
-import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.applyAs
 import com.fibelatti.core.extension.children
@@ -34,7 +33,6 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagsAdapter
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
 import com.google.android.material.bottomappbar.BottomAppBar
-import com.google.android.material.chip.Chip
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_search_post.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
@@ -55,8 +53,6 @@ class PostSearchFragment @Inject constructor(
     }
     private val tagsViewModel: TagsViewModel by lazy { viewModelFactory.get<TagsViewModel>(this) }
 
-    private var selectedTags: String = ""
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -68,8 +64,6 @@ class PostSearchFragment @Inject constructor(
 
         setupLayout()
         setupViewModels()
-
-        tagsViewModel.getAll()
     }
 
     private fun setupLayout() {
@@ -81,8 +75,7 @@ class PostSearchFragment @Inject constructor(
             .withLinearLayoutManager()
             .adapter = tagsAdapter
 
-        tagsAdapter.onItemClicked = { appStateViewModel.runAction(AddSearchTag(it.name)) }
-        tagsAdapter.onEmptyFilter = { showEmptyLayout() }
+        tagsAdapter.onItemClicked = { appStateViewModel.runAction(AddSearchTag(it)) }
 
         mainActivity?.updateTitleLayout {
             setTitle(R.string.search_title)
@@ -110,29 +103,31 @@ class PostSearchFragment @Inject constructor(
     private fun setupViewModels() {
         observe(appStateViewModel.getContent()) { content ->
             if (content is SearchView) {
-                content.searchParameters.term.takeIf(String::isNotEmpty)?.let(editTextSearchTerm::setText)
+                editTextSearchTerm.setText(content.searchParameters.term)
 
-                selectedTags = if (content.searchParameters.tags.isNotEmpty()) {
-                    textViewSelectedTagsTitle.visible()
+                if (content.searchParameters.tags.isNotEmpty()) {
                     content.searchParameters.tags.forEach(::addSelectionChip)
-                    content.searchParameters.tags.joinToString(",")
+                    textViewSelectedTagsTitle.visible()
                 } else {
                     textViewSelectedTagsTitle.gone()
-                    ""
                 }
 
-                tagsAdapter.filter(selectedTags)
+                handleLoading(content.shouldLoadTags)
+
+                if (content.shouldLoadTags) {
+                    tagsViewModel.getAll()
+                } else {
+                    showTags(content.availableTags)
+                }
             }
         }
-        with(tagsViewModel) {
-            observe(tags, ::showTags)
-            observeEvent(loading) {
-                layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE)
-                recyclerViewTags.goneIf(it)
-                layoutEmptyList.goneIf(it)
-            }
-            error(error, ::handleError)
-        }
+        error(tagsViewModel.error, ::handleError)
+    }
+
+    private fun handleLoading(loading: Boolean) {
+        layoutProgressBar.visibleIf(loading, otherwiseVisibility = View.GONE)
+        recyclerViewTags.goneIf(loading)
+        layoutEmptyList.goneIf(loading)
     }
 
     private fun showTags(list: List<Tag>) {
@@ -141,7 +136,6 @@ class PostSearchFragment @Inject constructor(
             layoutEmptyList.gone()
 
             tagsAdapter.addAll(list)
-            tagsAdapter.filter(selectedTags)
         } else {
             showEmptyLayout()
         }
@@ -168,17 +162,17 @@ class PostSearchFragment @Inject constructor(
         return true
     }
 
-    private fun addSelectionChip(value: String) {
+    private fun addSelectionChip(value: Tag) {
         val chip = layoutInflater.inflate(R.layout.list_item_chip, chipGroupSelectedTags, false)
-            .applyAs<View, Chip> {
-                text = value
+            .applyAs<View, TagChip> {
+                setValue(value)
                 setOnCloseIconClickListener {
-                    chipGroupSelectedTags.removeView(this)
+                    setOnCloseIconClickListener { (parent as? ViewGroup)?.removeView(this) }
                     appStateViewModel.runAction(RemoveSearchTag(value))
                 }
             }
 
-        if (chipGroupSelectedTags.children.none { (it as? Chip)?.text == value }) {
+        if (chipGroupSelectedTags.children.none { (it as? TagChip)?.getValue() == value }) {
             chipGroupSelectedTags.addView(chip)
         }
     }

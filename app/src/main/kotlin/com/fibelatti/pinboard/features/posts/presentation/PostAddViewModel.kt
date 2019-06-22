@@ -15,6 +15,7 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetSuggestedTagsForUrl
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -40,7 +41,7 @@ class PostAddViewModel @Inject constructor(
         description: String,
         private: Boolean,
         readLater: Boolean,
-        tags: List<String>
+        tags: List<Tag>
     ) {
         launch {
             validateData(url, description, private, readLater, tags) { params ->
@@ -65,7 +66,7 @@ class PostAddViewModel @Inject constructor(
         description: String,
         private: Boolean,
         readLater: Boolean,
-        tags: List<String>,
+        tags: List<Tag>,
         ifValid: (AddPost.Params) -> Unit
     ) {
         when {

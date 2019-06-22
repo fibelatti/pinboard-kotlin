@@ -17,7 +17,6 @@ import com.fibelatti.pinboard.MockDataProvider.mockTag2
 import com.fibelatti.pinboard.MockDataProvider.mockTag3
 import com.fibelatti.pinboard.MockDataProvider.mockTag4
 import com.fibelatti.pinboard.MockDataProvider.mockTags
-import com.fibelatti.pinboard.MockDataProvider.mockTagsTrimmed
 import com.fibelatti.pinboard.MockDataProvider.mockTime1
 import com.fibelatti.pinboard.MockDataProvider.mockTime2
 import com.fibelatti.pinboard.MockDataProvider.mockTime3
@@ -25,6 +24,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockTime4
 import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.never
 
@@ -57,23 +57,7 @@ class GetAllPostsTest {
         val params = GetParams(sorting = mockSortType)
         givenSuspend { mockPostsRepository.getAllPosts() }
             .willReturn(Success(mockResponseFull))
-        arrangeFilterAndSort(tags = null)
-
-        // WHEN
-        val result = callSuspend { getAllPosts(params) }
-
-        // THEN
-        result.shouldBeAnInstanceOf<Success<List<Post>>>()
-        result.getOrNull() shouldBe mockResponseFull
-    }
-
-    @Test
-    fun `GIVEN more than API_FILTER_MAX_TAGS is sent as a parameter WHEN GetAllPosts is called THEN only the first API_FILTER_MAX_TAGS are used`() {
-        // GIVEN
-        val params = GetParams(tags = mockTags, sorting = mockSortType)
-        givenSuspend { mockPostsRepository.getAllPosts(mockTagsTrimmed) }
-            .willReturn(Success(mockResponseFull))
-        arrangeFilterAndSort()
+        arrangeFilterAndSort(tags = emptyList())
 
         // WHEN
         val result = callSuspend { getAllPosts(params) }
@@ -87,7 +71,7 @@ class GetAllPostsTest {
     fun `GIVEN repository fails WHEN GetAllPosts is called THEN Failure is returned`() {
         // GIVEN
         val params = GetParams()
-        givenSuspend { mockPostsRepository.getAllPosts(params.tags) }
+        givenSuspend { mockPostsRepository.getAllPosts() }
             .willReturn(Failure(Exception()))
 
         // WHEN
@@ -102,7 +86,7 @@ class GetAllPostsTest {
     }
 
     private fun arrangeFilterAndSort(
-        tags: List<String>? = mockTags
+        tags: List<Tag> = mockTags
     ) {
         givenSuspend { mockFilterPosts(FilterPosts.Params(mockResponseFull, term = "", tags = tags)) }
             .willReturn(Success(mockResponseFull))

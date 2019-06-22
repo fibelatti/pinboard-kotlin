@@ -8,6 +8,7 @@ import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.android.synthetic.main.list_item_post.view.*
 import javax.inject.Inject
 
@@ -42,14 +43,15 @@ class PostListAdapter @Inject constructor(
         setOnClickListener { onItemClicked?.invoke(item) }
     }
 
-    private fun View.layoutTags(tags: List<String>) {
+    private fun View.layoutTags(tags: List<Tag>) {
         layoutTags.removeAllViews()
-        tags.forEach { tag -> addTagView(tag) }
+        tags.forEach { tag -> addTagView(tag.name) }
     }
 
     private fun View.addTagView(value: String) {
-        TextView(context, null, 0, R.style.AppTheme_Text_Tag)
-            .apply { text = value }
-            .let { layoutTags.addView(it as View) }
+        layoutTags.addView(
+            TextView(context, null, 0, R.style.AppTheme_Text_Tag)
+                .apply { text = value }
+        )
     }
 }

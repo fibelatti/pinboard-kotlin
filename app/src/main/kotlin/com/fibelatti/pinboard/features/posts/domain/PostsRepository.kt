@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.posts.domain
 import com.fibelatti.core.functional.Result
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 
 interface PostsRepository {
 
@@ -14,7 +15,7 @@ interface PostsRepository {
         extended: String? = null,
         private: Boolean? = null,
         readLater: Boolean? = null,
-        tags: List<String>? = null
+        tags: List<Tag>? = null
     ): Result<Unit>
 
     suspend fun delete(
@@ -22,11 +23,11 @@ interface PostsRepository {
     ): Result<Unit>
 
     suspend fun getRecentPosts(
-        tags: List<String>? = null
+        tags: List<Tag>? = null
     ): Result<List<Post>>
 
     suspend fun getAllPosts(
-        tags: List<String>? = null
+        tags: List<Tag>? = null
     ): Result<List<Post>>
 
     suspend fun getSuggestedTagsForUrl(

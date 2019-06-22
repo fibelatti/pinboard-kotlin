@@ -10,6 +10,7 @@ import com.fibelatti.pinboard.features.posts.data.model.RecentDto
 import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagsDto
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import okhttp3.MediaType
 import okhttp3.ResponseBody
 import retrofit2.HttpException
@@ -30,10 +31,15 @@ object MockDataProvider {
     const val mockUrlExtendedDescription = "What the url is all about"
     const val mockHash = "7b7cc6c90a84124026569c84f2236ecb"
 
-    const val mockTag1 = "tag1"
-    const val mockTag2 = "tag2"
-    const val mockTag3 = "tag3"
-    const val mockTag4 = "tag4"
+    const val mockTagString1 = "tag1"
+    const val mockTagString2 = "tag2"
+    const val mockTagString3 = "tag3"
+    const val mockTagString4 = "tag4"
+
+    val mockTag1 = Tag(name = mockTagString1)
+    val mockTag2 = Tag(name = mockTagString2)
+    val mockTag3 = Tag(name = mockTagString3)
+    val mockTag4 = Tag(name = mockTagString4)
 
     const val mockTime1 = "2019-01-10T08:20:10Z"
     const val mockTime2 = "2019-01-11T08:20:10Z"
@@ -41,11 +47,11 @@ object MockDataProvider {
     const val mockTime4 = "2019-01-13T08:20:10Z"
     const val mockTime5 = "2019-01-14T08:20:10Z"
 
-    val mockTags = listOf(mockTag1, mockTag2, mockTag3, mockTag4)
-    val mockTagsTrimmed = listOf(mockTag1, mockTag2, mockTag3)
+    val mockTagsString = listOf(mockTagString1, mockTagString2, mockTagString3, mockTagString4)
+    val mockTags = mockTagsString.map { Tag(it) }
 
-    val mockTagsResponse = mockTags.joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE)
-    val mockTagsRequest = mockTags.joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST)
+    val mockTagsResponse = mockTagsString.joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE)
+    val mockTagsRequest = mockTagsString.joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST)
     // endregion
 
     // region Data classes
@@ -77,7 +83,7 @@ object MockDataProvider {
         extendedDescription: String = mockUrlExtendedDescription,
         private: Boolean = false,
         readLater: Boolean = false,
-        tags: List<String> = mockTags
+        tags: List<Tag> = mockTags
     ): Post =
         Post(
             url = url,
@@ -100,13 +106,13 @@ object MockDataProvider {
         )
 
     fun createSuggestedTagsDto(
-        popular: List<String> = mockTags,
-        recommended: List<String> = mockTags
+        popular: List<String> = mockTagsString,
+        recommended: List<String> = mockTagsString
     ): SuggestedTagsDto = SuggestedTagsDto(popular, recommended)
 
     fun createSuggestedTags(
-        popular: List<String> = mockTags,
-        recommended: List<String> = mockTags
+        popular: List<Tag> = mockTags,
+        recommended: List<Tag> = mockTags
     ): SuggestedTags = SuggestedTags(popular, recommended)
     // endregion
 

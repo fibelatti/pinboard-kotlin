@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 
 sealed class Content
 
@@ -24,6 +25,9 @@ class PostDetail(
 
 data class SearchView(
     val searchParameters: SearchParameters,
+    val availableTags: List<Tag> = emptyList(),
+    val allTags: List<Tag> = emptyList(),
+    val shouldLoadTags: Boolean = true,
     override val previousContent: PostList
 ) : ContentWithHistory(previousContent)
 

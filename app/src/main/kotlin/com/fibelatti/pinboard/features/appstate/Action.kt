@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 
 // region Action
 sealed class Action
@@ -21,8 +22,8 @@ object Public : ViewCategory()
 object Private : ViewCategory()
 object Unread : ViewCategory()
 object Untagged : ViewCategory()
-object Tags : ViewCategory()
-class Tag(val tagName: String) : ViewCategory()
+object AllTags : ViewCategory()
+class PostsForTag(val tagName: String) : ViewCategory()
 // endregion
 // endregion
 
@@ -36,8 +37,9 @@ object ToggleSorting : PostAction()
 // region SearchAction
 sealed class SearchAction : Action()
 
-class AddSearchTag(val tag: String) : SearchAction()
-class RemoveSearchTag(val tag: String) : SearchAction()
+class SetSearchTags(val tags: List<Tag>) : SearchAction()
+class AddSearchTag(val tag: Tag) : SearchAction()
+class RemoveSearchTag(val tag: Tag) : SearchAction()
 class Search(val term: String) : SearchAction()
 object ClearSearch : SearchAction()
 // endregion

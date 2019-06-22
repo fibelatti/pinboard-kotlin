@@ -4,6 +4,7 @@ import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.UseCaseWithParams
 import com.fibelatti.core.functional.map
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import javax.inject.Inject
 
 class AddPost @Inject constructor(
@@ -30,6 +31,6 @@ class AddPost @Inject constructor(
         val extended: String? = null,
         val private: Boolean? = null,
         val readLater: Boolean? = null,
-        val tags: List<String>? = null
+        val tags: List<Tag>? = null
     )
 }

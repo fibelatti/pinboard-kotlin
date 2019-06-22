@@ -34,8 +34,8 @@ class NavigationActionHandler @Inject constructor(private val resourceProvider: 
                 Private -> resourceProvider.getString(R.string.posts_title_private)
                 Unread -> resourceProvider.getString(R.string.posts_title_unread)
                 Untagged -> resourceProvider.getString(R.string.posts_title_untagged)
-                Tags -> resourceProvider.getString(R.string.posts_title_tags)
-                is Tag -> action.tagName
+                AllTags -> resourceProvider.getString(R.string.posts_title_tags)
+                is PostsForTag -> action.tagName
             },
             posts = emptyList(),
             sortType = NewestFirst,
@@ -54,7 +54,7 @@ class NavigationActionHandler @Inject constructor(private val resourceProvider: 
 
     private fun viewSearch(currentContent: Content): Content {
         return if (currentContent is PostList) {
-            SearchView(currentContent.searchParameters, previousContent = currentContent)
+            SearchView(currentContent.searchParameters, shouldLoadTags = true, previousContent = currentContent)
         } else {
             currentContent
         }

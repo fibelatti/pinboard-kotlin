@@ -1,5 +1,7 @@
 package com.fibelatti.pinboard.features.posts.domain.model
 
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
+
 data class Post(
     val url: String,
     val description: String,
@@ -8,5 +10,5 @@ data class Post(
     val time: String,
     val private: Boolean,
     val readLater: Boolean,
-    val tags: List<String>
+    val tags: List<Tag>
 )

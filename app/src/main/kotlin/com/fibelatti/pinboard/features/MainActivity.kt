@@ -20,6 +20,7 @@ import com.fibelatti.pinboard.core.android.customview.TitleLayout
 import com.fibelatti.pinboard.core.extension.createFragment
 import com.fibelatti.pinboard.core.extension.shareText
 import com.fibelatti.pinboard.core.extension.snackbar
+import com.fibelatti.pinboard.core.functional.DoNothing
 import com.fibelatti.pinboard.features.appstate.AddPostView
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -30,7 +31,7 @@ import com.fibelatti.pinboard.features.appstate.Private
 import com.fibelatti.pinboard.features.appstate.Public
 import com.fibelatti.pinboard.features.appstate.Recent
 import com.fibelatti.pinboard.features.appstate.SearchView
-import com.fibelatti.pinboard.features.appstate.Tags
+import com.fibelatti.pinboard.features.appstate.AllTags
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.navigation.NavigationDrawerFragment
@@ -174,7 +175,7 @@ class MainActivity :
     }
 
     override fun onTagsClicked() {
-        appStateViewModel.runAction(Tags)
+        appStateViewModel.runAction(AllTags)
     }
 
     override fun onLogoutClicked() {
@@ -203,6 +204,7 @@ class MainActivity :
 
     private fun handleLoginState(loginState: LoginState) {
         when (loginState) {
+            LoginState.Authorizing -> DoNothing
             LoginState.LoggedIn -> {
                 handler.postDelayed({
                     inTransaction {

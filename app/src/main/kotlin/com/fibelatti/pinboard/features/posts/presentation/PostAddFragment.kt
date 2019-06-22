@@ -25,8 +25,8 @@ import com.fibelatti.pinboard.core.extension.onKeyboardSubmit
 import com.fibelatti.pinboard.core.extension.toast
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.google.android.material.bottomappbar.BottomAppBar
-import com.google.android.material.chip.Chip
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_add_post.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
@@ -79,7 +79,7 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
                             editTextDescription.textAsString(),
                             checkboxPrivate.isChecked,
                             checkboxReadLater.isChecked,
-                            chipGroupTags.children.map { (it as? Chip)?.text.toString() }
+                            chipGroupTags.children.filterIsInstance<TagChip>().mapNotNull { it.getValue() }
                         )
                     }
                 }
@@ -90,29 +90,37 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun setupTagInput() {
-        fun createTagFromText(text: String, considerWhiteSpace: Boolean = true) {
-            text.run {
-                if (considerWhiteSpace) takeIf { it.endsWith(" ") }?.substringBefore(" ", "") else this
-            }?.takeIf { it.isNotBlank() }?.let {
-                addTag(it.trim())
+        editTextTags.afterTextChanged { createTagFromText(it) }
+        editTextTags.onKeyboardSubmit {
+            val tag = createTagFromText(editTextTags.textAsString(), handleWhiteSpace = false)
+
+            if (tag != null) {
+                addTag(tag)
                 editTextTags.setText("")
             }
         }
-
-        editTextTags.afterTextChanged { createTagFromText(it) }
-        editTextTags.onKeyboardSubmit {
-            createTagFromText(editTextTags.textAsString(), considerWhiteSpace = false)
-        }
     }
 
-    private fun addTag(value: String) {
+    private fun createTagFromText(text: String, handleWhiteSpace: Boolean = true): Tag? {
+        val tagText = text.run {
+            if (handleWhiteSpace) {
+                takeIf { it.endsWith(" ") }?.substringBefore(" ", "")
+            } else {
+                this
+            }
+        }?.takeIf { it.isNotBlank() }?.trim()
+
+        return tagText?.let { Tag(it) }
+    }
+
+    private fun addTag(value: Tag) {
         val chip = layoutInflater.inflate(R.layout.list_item_chip, chipGroupTags, false)
-            .applyAs<View, Chip> {
-                text = value
-                setOnCloseIconClickListener { chipGroupTags.removeView(this) }
+            .applyAs<View, TagChip> {
+                setValue(value)
+                setOnCloseIconClickListener { (parent as? ViewGroup)?.removeView(this) }
             }
 
-        if (chipGroupTags.children.none { (it as? Chip)?.text == value }) {
+        if (chipGroupTags.children.none { (it as? TagChip)?.getValue() == value }) {
             chipGroupTags.addView(chip, 0)
         }
     }
@@ -135,7 +143,7 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
         with(post) {
             editTextUrl.setText(url)
             editTextDescription.setText(description)
-            checkboxPrivate.isChecked = !private
+            checkboxPrivate.isChecked = private
             checkboxReadLater.isChecked = readLater
 
             chipGroupTags.removeAllViews()

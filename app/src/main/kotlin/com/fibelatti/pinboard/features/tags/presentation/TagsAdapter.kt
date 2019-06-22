@@ -7,10 +7,9 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.android.synthetic.main.list_item_tag.view.*
 import javax.inject.Inject
 
-class TagsAdapter @Inject constructor() : BaseAdapter<Tag>(hasFilter = true) {
+class TagsAdapter @Inject constructor() : BaseAdapter<Tag>() {
 
     var onItemClicked: ((Tag) -> Unit)? = null
-    var onEmptyFilter: (() -> Unit)? = null
 
     override fun getLayoutRes(): Int = R.layout.list_item_tag
 
@@ -20,11 +19,5 @@ class TagsAdapter @Inject constructor() : BaseAdapter<Tag>(hasFilter = true) {
             context.resources.getQuantityString(R.plurals.posts_quantity, item.posts, item.posts)
 
         setOnClickListener { onItemClicked?.invoke(item) }
-    }
-
-    override fun filterCriteria(query: String, item: Tag): Boolean = item.name !in query.split(",")
-
-    override fun onEmptyFilterResult() {
-        onEmptyFilter?.invoke()
     }
 }

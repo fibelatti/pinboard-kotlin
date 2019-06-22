@@ -7,6 +7,7 @@ import com.fibelatti.core.functional.TwoWayMapper
 import com.fibelatti.pinboard.core.AppConfig.API_ENCODING
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import java.net.URLDecoder
 import java.net.URLEncoder
 import javax.inject.Inject
@@ -42,7 +43,7 @@ class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
             tags = if (tags.isBlank()) {
                 emptyList()
             } else {
-                tags.split(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE).sorted()
+                tags.split(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE).sorted().map { Tag(it) }
             }
         )
     }
@@ -56,7 +57,7 @@ class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
             time = time,
             shared = if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES,
             toread = if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO,
-            tags = tags.joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE)
+            tags = tags.joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name }
         )
     }
 }

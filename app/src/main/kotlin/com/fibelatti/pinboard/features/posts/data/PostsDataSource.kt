@@ -6,7 +6,7 @@ import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onSuccess
-import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.util.DateFormatter
@@ -19,6 +19,7 @@ import com.fibelatti.pinboard.features.posts.data.model.UpdateDto
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -44,15 +45,15 @@ class PostsDataSource @Inject constructor(
         extended: String?,
         private: Boolean?,
         readLater: Boolean?,
-        tags: List<String>?
+        tags: List<Tag>?
     ): Result<Unit> = withContext(Dispatchers.IO) {
         resultFrom {
             postsApi.add(
                 url = url,
                 description = description,
                 extended = extended,
-                public = private?.let { if (private) AppConfig.PinboardApiLiterals.NO else AppConfig.PinboardApiLiterals.YES },
-                readLater = readLater?.let { if (readLater) AppConfig.PinboardApiLiterals.YES else AppConfig.PinboardApiLiterals.NO },
+                public = private?.let { if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES },
+                readLater = readLater?.let { if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO },
                 tags = tags?.forRequest()
             )
         }.orThrow()
@@ -66,14 +67,14 @@ class PostsDataSource @Inject constructor(
     }
 
     override suspend fun getRecentPosts(
-        tags: List<String>?
+        tags: List<Tag>?
     ): Result<List<Post>> = withContext(Dispatchers.IO) {
         resultFrom { postsApi.getRecentPosts(tags?.forRequest()) }
             .mapCatching { postDtoMapper.mapList(it.posts) }
     }
 
     override suspend fun getAllPosts(
-        tags: List<String>?
+        tags: List<Tag>?
     ): Result<List<Post>> = withContext(Dispatchers.IO) {
         withLocalDataSourceCheck { postsApi.getAllPosts(tags?.forRequest()) }
             .mapCatching(postDtoMapper::mapList)
@@ -90,7 +91,7 @@ class PostsDataSource @Inject constructor(
         if (it.resultCode != ApiResultCodes.DONE.code) throw ApiException()
     }
 
-    private fun List<String>.forRequest() = joinToString(AppConfig.PinboardApiLiterals.TAG_SEPARATOR_REQUEST)
+    private fun List<Tag>.forRequest() = joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST) { it.name }
 
     private suspend inline fun withLocalDataSourceCheck(
         crossinline onInvalidLocalData: suspend () -> List<PostDto>

@@ -66,7 +66,7 @@ class FilterPostsTest {
     @Test
     fun `GIVEN Params term is empty and tags is null WHEN FilterPosts is called THEN all Params posts are returned`() {
         // WHEN
-        val result = callSuspend { filterPosts(FilterPosts.Params(mockDataSet, term = "", tags = null)) }
+        val result = callSuspend { filterPosts(FilterPosts.Params(mockDataSet, term = "", tags = emptyList())) }
 
         // THEN
         result.shouldBeAnInstanceOf<Success<List<Post>>>()
@@ -104,7 +104,7 @@ class FilterPostsTest {
 
         // WHEN
         val result =
-            callSuspend { filterPosts(FilterPosts.Params(mockDataSet, term = "www", tags = null)) }
+            callSuspend { filterPosts(FilterPosts.Params(mockDataSet, term = "www", tags = emptyList())) }
 
         // THEN
         result.shouldBeAnInstanceOf<Success<List<Post>>>()
@@ -118,7 +118,7 @@ class FilterPostsTest {
 
         // WHEN
         val result =
-            callSuspend { filterPosts(FilterPosts.Params(mockDataSet, term = "description", tags = null)) }
+            callSuspend { filterPosts(FilterPosts.Params(mockDataSet, term = "description", tags = emptyList())) }
 
         // THEN
         result.shouldBeAnInstanceOf<Success<List<Post>>>()
@@ -132,7 +132,7 @@ class FilterPostsTest {
 
         // WHEN
         val result =
-            callSuspend { filterPosts(FilterPosts.Params(mockDataSet, term = "about", tags = null)) }
+            callSuspend { filterPosts(FilterPosts.Params(mockDataSet, term = "about", tags = emptyList())) }
 
         // THEN
         result.shouldBeAnInstanceOf<Success<List<Post>>>()

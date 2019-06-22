@@ -4,22 +4,19 @@ import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.UseCaseWithParams
 import com.fibelatti.core.functional.catching
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import javax.inject.Inject
 
 class FilterPosts @Inject constructor() : UseCaseWithParams<List<Post>, FilterPosts.Params>() {
 
     override suspend fun run(params: Params): Result<List<Post>> = catching {
-        val paramTags = params.tags?.takeIf { it.isNotEmpty() }
-
         params.posts.filter { post ->
             when {
-                params.term.isNotBlank() && paramTags != null -> {
-                    post.containsTerm(params.term) and post.tags.containsAll(paramTags)
+                params.term.isNotBlank() && params.tags.isNotEmpty() -> {
+                    post.containsTerm(params.term) and post.tags.containsAll(params.tags)
                 }
-                params.term.isNotBlank() -> {
-                    post.containsTerm(params.term)
-                }
-                paramTags != null -> post.tags.containsAll(paramTags)
+                params.term.isNotBlank() -> post.containsTerm(params.term)
+                params.tags.isNotEmpty() -> post.tags.containsAll(params.tags)
                 else -> true
             }
         }
@@ -31,6 +28,6 @@ class FilterPosts @Inject constructor() : UseCaseWithParams<List<Post>, FilterPo
     data class Params(
         val posts: List<Post>,
         val term: String,
-        val tags: List<String>?
+        val tags: List<Tag>
     )
 }

@@ -11,7 +11,6 @@ import androidx.transition.Transition
 import androidx.transition.TransitionInflater
 import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
-import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.exhaustive
 import com.fibelatti.core.extension.gone
@@ -34,8 +33,8 @@ import com.fibelatti.pinboard.features.appstate.Private
 import com.fibelatti.pinboard.features.appstate.Public
 import com.fibelatti.pinboard.features.appstate.Recent
 import com.fibelatti.pinboard.features.appstate.SortType
-import com.fibelatti.pinboard.features.appstate.Tag
-import com.fibelatti.pinboard.features.appstate.Tags
+import com.fibelatti.pinboard.features.appstate.PostsForTag
+import com.fibelatti.pinboard.features.appstate.AllTags
 import com.fibelatti.pinboard.features.appstate.ToggleSorting
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
@@ -112,20 +111,11 @@ class PostListFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        with(postListViewModel) {
-            observeEvent(loading, ::handleLoading)
-            error(error, ::handleError)
-        }
+        error(postListViewModel.error, ::handleError)
 
         observe(appStateViewModel.getContent()) { content ->
             if (content is PostList) showPostList(content)
         }
-    }
-
-    private fun handleLoading(isLoading: Boolean) {
-        layoutProgressBar.visibleIf(isLoading, otherwiseVisibility = View.GONE)
-        recyclerViewPosts.goneIf(isLoading)
-        layoutEmptyList.goneIf(isLoading)
     }
 
     private fun showPostList(content: PostList) {
@@ -147,6 +137,8 @@ class PostListFragment @Inject constructor(
             }
         }
 
+        handleLoading(content.shouldLoad)
+
         if (content.shouldLoad) {
             when (content.category) {
                 is All -> {
@@ -167,10 +159,10 @@ class PostListFragment @Inject constructor(
                 is Untagged -> {
                     postListViewModel.getUntagged(content.sortType, content.searchParameters.term)
                 }
-                is Tags -> {
+                is AllTags -> {
                     // TODO
                 }
-                is Tag -> {
+                is PostsForTag -> {
                     // TODO
                 }
             }.exhaustive
@@ -179,6 +171,12 @@ class PostListFragment @Inject constructor(
         }
 
         layoutSearchActive.visibleIf(content.searchParameters.isActive(), otherwiseVisibility = View.GONE)
+    }
+
+    private fun handleLoading(isLoading: Boolean) {
+        layoutProgressBar.visibleIf(isLoading, otherwiseVisibility = View.GONE)
+        recyclerViewPosts.goneIf(isLoading)
+        layoutEmptyList.goneIf(isLoading)
     }
 
     private fun showPosts(list: List<Post>, sortType: SortType) {
