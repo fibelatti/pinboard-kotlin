@@ -30,6 +30,7 @@ data class PostsForTag(val tagName: String) : ViewCategory()
 // region PostAction
 sealed class PostAction : Action()
 
+object Refresh : PostAction()
 data class SetPosts(val posts: List<Post>) : PostAction()
 object ToggleSorting : PostAction()
 // endregion

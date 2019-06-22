@@ -21,6 +21,30 @@ internal class PostActionHandlerTest {
     )
 
     @Nested
+    inner class RefreshTests {
+        @Test
+        fun `WHEN currentContent is not PostList THEN same content is returned`() {
+            // GIVEN
+            val content = mock<PostDetail>()
+
+            // WHEN
+            val result = postActionHandler.runAction(Refresh, content)
+
+            // THEN
+            result shouldBe content
+        }
+
+        @Test
+        fun `WHEN currentContent is PostList THEN updated content is returned`() {
+            // WHEN
+            val result = postActionHandler.runAction(Refresh, initialContent.copy(shouldLoad = false))
+
+            // THEN
+            result shouldBe initialContent.copy(shouldLoad = true)
+        }
+    }
+
+    @Nested
     inner class SetPostsTests {
         @Test
         fun `WHEN currentContent is not PostList THEN same content is returned`() {
@@ -57,23 +81,23 @@ internal class PostActionHandlerTest {
             // THEN
             result shouldBe content
         }
-    }
 
-    @Test
-    fun `GIVEN sortType is NewestFirst WHEN currentContent is PostList THEN updated content is returned`() {
-        // WHEN
-        val result = postActionHandler.runAction(ToggleSorting, initialContent.copy(sortType = NewestFirst))
+        @Test
+        fun `GIVEN sortType is NewestFirst WHEN currentContent is PostList THEN updated content is returned`() {
+            // WHEN
+            val result = postActionHandler.runAction(ToggleSorting, initialContent.copy(sortType = NewestFirst))
 
-        // THEN
-        result shouldBe initialContent.copy(sortType = OldestFirst, shouldLoad = true)
-    }
+            // THEN
+            result shouldBe initialContent.copy(sortType = OldestFirst, shouldLoad = true)
+        }
 
-    @Test
-    fun `GIVEN sortType is OldestFirst WHEN currentContent is PostList THEN updated content is returned`() {
-        // WHEN
-        val result = postActionHandler.runAction(ToggleSorting, initialContent.copy(sortType = OldestFirst))
+        @Test
+        fun `GIVEN sortType is OldestFirst WHEN currentContent is PostList THEN updated content is returned`() {
+            // WHEN
+            val result = postActionHandler.runAction(ToggleSorting, initialContent.copy(sortType = OldestFirst))
 
-        // THEN
-        result shouldBe initialContent.copy(sortType = NewestFirst, shouldLoad = true)
+            // THEN
+            result shouldBe initialContent.copy(sortType = NewestFirst, shouldLoad = true)
+        }
     }
 }

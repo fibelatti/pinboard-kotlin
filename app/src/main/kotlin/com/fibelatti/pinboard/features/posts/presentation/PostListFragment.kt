@@ -35,6 +35,7 @@ import com.fibelatti.pinboard.features.appstate.Recent
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.AllTags
+import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.ToggleSorting
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
@@ -121,6 +122,11 @@ class PostListFragment @Inject constructor(
         layoutRoot.animateChangingTransitions()
 
         buttonClearSearch.setOnClickListener { appStateViewModel.runAction(ClearSearch) }
+
+        swipeToRefresh.setOnRefreshListener {
+            swipeToRefresh.isRefreshing = false
+            appStateViewModel.runAction(Refresh)
+        }
 
         recyclerViewPosts
             .withLinearLayoutManager()

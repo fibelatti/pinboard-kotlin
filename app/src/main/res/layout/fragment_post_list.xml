@@ -37,19 +37,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutSearchActive" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewPosts"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeToRefresh"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="@dimen/margin_regular"
         android:layout_marginEnd="@dimen/margin_regular"
-        android:clipToPadding="false"
-        android:paddingBottom="@dimen/recycler_view_with_fab_padding_bottom"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutSearchActive"
-        tools:listitem="@layout/list_item_post" />
+        app:layout_constraintTop_toBottomOf="@+id/layoutSearchActive">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewPosts"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="@dimen/recycler_view_with_fab_padding_bottom"
+            tools:listitem="@layout/list_item_post" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <ImageView
         android:id="@+id/imageViewAppLogo"
