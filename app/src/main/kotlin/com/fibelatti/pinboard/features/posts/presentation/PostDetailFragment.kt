@@ -25,6 +25,7 @@ import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.shareText
+import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.showStyledDialog
 import com.fibelatti.pinboard.core.extension.toast
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -117,6 +118,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
                 navigationIcon = null
                 replaceMenu(R.menu.menu_link)
                 setOnMenuItemClickListener { item: MenuItem? -> handleMenuClick(item, post) }
+                show()
             }
             fab.run {
                 setImageResource(R.drawable.ic_share)
