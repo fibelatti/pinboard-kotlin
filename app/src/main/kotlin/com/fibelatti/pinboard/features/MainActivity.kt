@@ -107,15 +107,17 @@ class MainActivity :
     }
 
     private fun showPostDetail() {
-        inTransaction {
-            setCustomAnimations(
-                R.anim.slide_right_in,
-                R.anim.slide_left_out,
-                R.anim.slide_left_in,
-                R.anim.slide_right_out
-            )
-            add(R.id.fragmentHost, createFragment<PostDetailFragment>(), PostDetailFragment.TAG)
-            addToBackStack(PostDetailFragment.TAG)
+        if (supportFragmentManager.findFragmentByTag(PostDetailFragment.TAG) == null) {
+            inTransaction {
+                setCustomAnimations(
+                    R.anim.slide_right_in,
+                    R.anim.slide_left_out,
+                    R.anim.slide_left_in,
+                    R.anim.slide_right_out
+                )
+                add(R.id.fragmentHost, createFragment<PostDetailFragment>(), PostDetailFragment.TAG)
+                addToBackStack(PostDetailFragment.TAG)
+            }
         }
     }
 
@@ -130,10 +132,12 @@ class MainActivity :
     }
 
     private fun showAddPostView() {
-        inTransaction {
-            setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
-            add(R.id.fragmentHost, createFragment<PostAddFragment>(), PostAddFragment.TAG)
-            addToBackStack(PostAddFragment.TAG)
+        if (supportFragmentManager.findFragmentByTag(PostAddFragment.TAG) == null) {
+            inTransaction {
+                setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
+                add(R.id.fragmentHost, createFragment<PostAddFragment>(), PostAddFragment.TAG)
+                addToBackStack(PostAddFragment.TAG)
+            }
         }
     }
 
