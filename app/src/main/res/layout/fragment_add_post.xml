@@ -35,7 +35,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:imeOptions="actionNext"
-            android:inputType="textUri" />
+            android:inputType="textUri"
+            android:textSize="@dimen/text_size_small" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -54,7 +55,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:imeOptions="actionDone"
-            android:inputType="text" />
+            android:inputType="textMultiLine"
+            android:maxLines="3"
+            android:textSize="@dimen/text_size_small" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <CheckBox
@@ -93,7 +96,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:imeOptions="actionDone"
-            android:inputType="text" />
+            android:inputType="text"
+            android:textSize="@dimen/text_size_small" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.chip.ChipGroup

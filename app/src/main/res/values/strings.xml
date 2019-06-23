@@ -89,7 +89,7 @@
     <string name="posts_add_description">Description</string>
     <string name="posts_add_private">Private</string>
     <string name="posts_add_read_later">Read later</string>
-    <string name="posts_add_tags">Tags</string>
+    <string name="posts_add_tags">New tag</string>
     <string name="posts_add_tags_suggested">Suggested tags</string>
 
     <string name="posts_saved_feedback">Link saved successfully!</string>

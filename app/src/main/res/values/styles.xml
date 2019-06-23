@@ -64,7 +64,7 @@
 
     <style name="AppTheme.Checkbox" parent="Base.Widget.AppCompat.CompoundButton.CheckBox">
         <item name="android:textColor">@color/text_primary</item>
-        <item name="android:textSize">@dimen/text_size_regular</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
     </style>
 
     <style name="AppTheme.Button" parent="Widget.MaterialComponents.Button">
@@ -162,7 +162,7 @@
     <style name="AppTheme.Text.Tag">
         <item name="android:paddingEnd">@dimen/padding_xsmall</item>
         <item name="android:textColor">@color/color_tag</item>
-        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:textSize">@dimen/text_size_xsmall</item>
         <item name="android:textStyle">bold</item>
     </style>
 
