@@ -18,7 +18,7 @@
 
     <string name="generic_log_error">Error in %1$s (%2$s)</string>
 
-    <string name="generic_msg_error">Oops! Something went wrong.</string>
+    <string name="generic_msg_error">Oops! Something went wrong</string>
 
     <!-- Menus -->
     <string name="menu_main_search">Search</string>
@@ -46,8 +46,8 @@
     <string name="auth_title">Welcome to Pinkt</string>
     <string name="auth_button">Login</string>
     <string name="auth_token_title">Where can I find this?</string>
-    <string name="auth_token_description">You can find your API token in the <a href="https://pinboard.in/settings/password">Pinboard Settings</a> page.</string>
-    <string name="auth_token_error">Authentication failed. Please double check your API Token.</string>
+    <string name="auth_token_description">You can find your API token in the <a href="https://pinboard.in/settings/password">Pinboard Settings</a> page</string>
+    <string name="auth_token_error">Authentication failed. Please double check your API Token</string>
     <string name="auth_logged_out_feedback">Logged out</string>
 
     <!-- Posts -->
@@ -78,10 +78,10 @@
     <string name="posts_open_with_file_viewer_error">Failed to open this URL</string>
 
     <string name="posts_empty_title">No pins in this board</string>
-    <string name="posts_empty_description">There aren\'t any links saved in the selected category.</string>
+    <string name="posts_empty_description">There aren\'t any links saved in the selected category</string>
 
     <string name="posts_empty_filter_title">No pins for this filter</string>
-    <string name="posts_empty_filter_description">There aren\'t any links saved for this filter criteria.</string>
+    <string name="posts_empty_filter_description">There aren\'t any links saved for this filter criteria</string>
 
     <string name="posts_deleted_feedback">Link removed successfully!</string>
 
@@ -98,7 +98,7 @@
     <string name="posts_item_private">Private</string>
     <string name="posts_item_read_later">Read later</string>
 
-    <string name="posts_url_error">Unfortunately, Pinkt can\'t open this link. Try opening it in your default browser.</string>
+    <string name="posts_url_error">Unfortunately, Pinkt can\'t open this link. Try opening it in your default browser</string>
     <string name="posts_open_in_browser">Open in browser</string>
 
     <!-- Offline -->
@@ -107,8 +107,8 @@
 
     <!-- Validation -->
     <string name="validation_error_empty_url">The URL cannot be empty.</string>
-    <string name="validation_error_invalid_url">The URL is invalid.</string>
-    <string name="validation_error_empty_description">The description cannot be empty.</string>
+    <string name="validation_error_invalid_url">The URL is invalid</string>
+    <string name="validation_error_empty_description">The description cannot be empty</string>
 
     <!-- Search -->
     <string name="search_title">Filter links</string>
