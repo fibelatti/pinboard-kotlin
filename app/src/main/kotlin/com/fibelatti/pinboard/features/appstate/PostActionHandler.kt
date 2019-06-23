@@ -17,7 +17,7 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun refresh(currentContent: Content): Content {
-        return if (currentContent is PostList) {
+        return if (currentContent is PostList && !currentContent.shouldLoad) {
             currentContent.copy(
                 shouldLoad = connectivityManager.isConnected(),
                 isConnected = connectivityManager.isConnected()
@@ -39,7 +39,7 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun toggleSorting(currentContent: Content): Content {
-        return if (currentContent is PostList) {
+        return if (currentContent is PostList && !currentContent.shouldLoad) {
             if (connectivityManager.isConnected()) {
                 currentContent.copy(
                     sortType = when (currentContent.sortType) {

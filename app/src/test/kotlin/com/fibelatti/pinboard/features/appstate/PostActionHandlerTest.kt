@@ -26,7 +26,7 @@ internal class PostActionHandlerTest {
         posts = emptyList(),
         sortType = NewestFirst,
         searchParameters = SearchParameters(),
-        shouldLoad = true,
+        shouldLoad = false,
         isConnected = true
     )
 
@@ -36,6 +36,19 @@ internal class PostActionHandlerTest {
         fun `WHEN currentContent is not PostList THEN same content is returned`() {
             // GIVEN
             val content = mock<PostDetail>()
+
+            // WHEN
+            val result = postActionHandler.runAction(Refresh, content)
+
+            // THEN
+            result shouldBe content
+        }
+
+        @Test
+        fun `GIVEN shouldLoad is true WHEN currentContent is PostList THEN same content is returned`() {
+            // GIVEN
+            val content = mock<PostList>()
+            given(content.shouldLoad).willReturn(true)
 
             // WHEN
             val result = postActionHandler.runAction(Refresh, content)
@@ -94,6 +107,19 @@ internal class PostActionHandlerTest {
 
             // WHEN
             val result = postActionHandler.runAction(ToggleSorting, content)
+
+            // THEN
+            result shouldBe content
+        }
+
+        @Test
+        fun `GIVEN shouldLoad is true WHEN currentContent is PostList THEN same content is returned`() {
+            // GIVEN
+            val content = mock<PostList>()
+            given(content.shouldLoad).willReturn(true)
+
+            // WHEN
+            val result = postActionHandler.runAction(Refresh, content)
 
             // THEN
             result shouldBe content
