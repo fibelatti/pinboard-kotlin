@@ -18,6 +18,7 @@ class NavigationActionHandler @Inject constructor(
             is ViewPost -> viewPost(action, currentContent)
             is ViewSearch -> viewSearch(currentContent)
             is AddPost -> viewAddPost(currentContent)
+            is ViewTags -> viewTags(currentContent)
         }
     }
 
@@ -39,8 +40,6 @@ class NavigationActionHandler @Inject constructor(
                 Private -> resourceProvider.getString(R.string.posts_title_private)
                 Unread -> resourceProvider.getString(R.string.posts_title_unread)
                 Untagged -> resourceProvider.getString(R.string.posts_title_untagged)
-                AllTags -> resourceProvider.getString(R.string.posts_title_tags)
-                is PostsForTag -> action.tagName
             },
             posts = emptyList(),
             sortType = NewestFirst,
@@ -69,6 +68,19 @@ class NavigationActionHandler @Inject constructor(
     private fun viewAddPost(currentContent: Content): Content {
         return if (currentContent is PostList) {
             AddPostView(previousContent = currentContent)
+        } else {
+            currentContent
+        }
+    }
+
+    private fun viewTags(currentContent: Content): Content {
+        return if (currentContent is PostList) {
+            TagList(
+                tags = emptyList(),
+                shouldLoad = connectivityManager.isConnected(),
+                isConnected = connectivityManager.isConnected(),
+                previousContent = currentContent
+            )
         } else {
             currentContent
         }

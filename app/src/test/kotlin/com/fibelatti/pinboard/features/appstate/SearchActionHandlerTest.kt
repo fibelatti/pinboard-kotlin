@@ -16,6 +16,43 @@ internal class SearchActionHandlerTest {
     private val searchActionHandler = SearchActionHandler()
 
     @Nested
+    inner class RefreshSearchTagsTests {
+
+        @Test
+        fun `WHEN currentContent is not SearchView THEN same content is returned`() {
+            // GIVEN
+            val content = mock<PostDetail>()
+
+            // WHEN
+            val result = searchActionHandler.runAction(RefreshSearchTags, content)
+
+            // THEN
+            result shouldBe content
+        }
+
+        @Test
+        fun `WHEN currentContent is SearchView THEN an updated SearchView is returned`() {
+            // GIVEN
+            val mockPreviousContent = mock<PostList>()
+            val initialContent = SearchView(
+                searchParameters = SearchParameters(),
+                shouldLoadTags = false,
+                previousContent = mockPreviousContent
+            )
+
+            // WHEN
+            val result = searchActionHandler.runAction(RefreshSearchTags, initialContent)
+
+            // THEN
+            result shouldBe SearchView(
+                searchParameters = SearchParameters(),
+                shouldLoadTags = true,
+                previousContent = mockPreviousContent
+            )
+        }
+    }
+
+    @Nested
     inner class SetSearchTagsTests {
 
         @Test

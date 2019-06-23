@@ -6,12 +6,15 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
+import com.fibelatti.core.test.extension.safeAny
 import com.fibelatti.core.test.extension.verifySuspend
 import com.fibelatti.pinboard.MockDataProvider.mockTags
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.SetSearchTags
+import com.fibelatti.pinboard.features.appstate.SetTags
 import com.fibelatti.pinboard.features.tags.domain.usecase.GetAllTags
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito.never
 
 internal class TagsViewModelTest : BaseViewModelTest() {
 
@@ -31,20 +34,34 @@ internal class TagsViewModelTest : BaseViewModelTest() {
             .willReturn(Failure(error))
 
         // WHEN
-        tagsViewModel.getAll()
+        tagsViewModel.getAll(mock())
 
         // THEN
         tagsViewModel.error.currentValueShouldBe(error)
+        verifySuspend(mockAppStateRepository, never()) { runAction(safeAny()) }
     }
 
     @Test
-    fun `WHEN getAllTags succeeds THEN AppStateRepository should run SetSearchTags`() {
+    fun `GIVEN source is MENU WHEN getAllTags succeeds THEN AppStateRepository should run SetTags`() {
         // GIVEN
         givenSuspend { mockGetAllTags() }
             .willReturn(Success(mockTags))
 
         // WHEN
-        tagsViewModel.getAll()
+        tagsViewModel.getAll(TagsViewModel.Source.MENU)
+
+        // THEN
+        verifySuspend(mockAppStateRepository) { runAction(SetTags(mockTags)) }
+    }
+
+    @Test
+    fun `GIVEN source is SEARCH WHEN getAllTags succeeds THEN AppStateRepository should run SetSearchTags`() {
+        // GIVEN
+        givenSuspend { mockGetAllTags() }
+            .willReturn(Success(mockTags))
+
+        // WHEN
+        tagsViewModel.getAll(TagsViewModel.Source.SEARCH)
 
         // THEN
         verifySuspend(mockAppStateRepository) { runAction(SetSearchTags(mockTags)) }

@@ -7,11 +7,20 @@ class SearchActionHandler @Inject constructor() {
 
     fun runAction(action: SearchAction, currentContent: Content): Content {
         return when (action) {
+            is RefreshSearchTags -> refresh(currentContent)
             is SetSearchTags -> setSearchTags(action, currentContent)
             is AddSearchTag -> addSearchTag(action, currentContent)
             is RemoveSearchTag -> removeSearchTag(action, currentContent)
             is Search -> search(action, currentContent)
             is ClearSearch -> clearSearch(currentContent)
+        }
+    }
+
+    private fun refresh(currentContent: Content): Content {
+        return if (currentContent is SearchView) {
+            currentContent.copy(shouldLoadTags = true)
+        } else {
+            currentContent
         }
     }
 

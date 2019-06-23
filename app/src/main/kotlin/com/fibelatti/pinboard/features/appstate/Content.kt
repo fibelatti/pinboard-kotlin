@@ -15,14 +15,16 @@ data class PostList(
     val isConnected: Boolean = true
 ) : Content()
 
-sealed class ContentWithHistory(
-    open val previousContent: PostList
-) : Content()
+private interface ContentHistory {
+    val previousContent: PostList
+}
+
+sealed class ContentWithHistory : Content(), ContentHistory
 
 data class PostDetail(
     val post: Post,
     override val previousContent: PostList
-) : ContentWithHistory(previousContent)
+) : ContentWithHistory()
 
 data class SearchView(
     val searchParameters: SearchParameters,
@@ -30,8 +32,15 @@ data class SearchView(
     val allTags: List<Tag> = emptyList(),
     val shouldLoadTags: Boolean = true,
     override val previousContent: PostList
-) : ContentWithHistory(previousContent)
+) : ContentWithHistory()
 
 data class AddPostView(
     override val previousContent: PostList
-) : ContentWithHistory(previousContent)
+) : ContentWithHistory()
+
+data class TagList(
+    val tags: List<Tag>,
+    val shouldLoad: Boolean,
+    val isConnected: Boolean = true,
+    override val previousContent: PostList
+) : ContentWithHistory()

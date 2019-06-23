@@ -15,6 +15,7 @@ import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.exhaustive
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
+import com.fibelatti.core.extension.isGone
 import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.core.extension.withItemOffsetDecoration
@@ -32,10 +33,8 @@ import com.fibelatti.pinboard.features.appstate.PostList
 import com.fibelatti.pinboard.features.appstate.Private
 import com.fibelatti.pinboard.features.appstate.Public
 import com.fibelatti.pinboard.features.appstate.Recent
-import com.fibelatti.pinboard.features.appstate.SortType
-import com.fibelatti.pinboard.features.appstate.PostsForTag
-import com.fibelatti.pinboard.features.appstate.AllTags
 import com.fibelatti.pinboard.features.appstate.Refresh
+import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.appstate.ToggleSorting
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
@@ -157,11 +156,15 @@ class PostListFragment @Inject constructor(
                 setNavigationIcon(R.drawable.ic_menu)
                 replaceMenu(R.menu.menu_main)
                 setOnMenuItemClickListener { item: MenuItem? -> handleMenuClick(item) }
+                if (isGone()) {
+                    visible()
+                }
                 show()
             }
             fab.run {
                 setImageResource(R.drawable.ic_pin)
                 setOnClickListener { appStateViewModel.runAction(AddPost) }
+                show()
             }
         }
 
@@ -186,12 +189,6 @@ class PostListFragment @Inject constructor(
                 }
                 is Untagged -> {
                     postListViewModel.getUntagged(content.sortType, content.searchParameters.term)
-                }
-                is AllTags -> {
-                    // TODO
-                }
-                is PostsForTag -> {
-                    // TODO
                 }
             }.exhaustive
         } else {

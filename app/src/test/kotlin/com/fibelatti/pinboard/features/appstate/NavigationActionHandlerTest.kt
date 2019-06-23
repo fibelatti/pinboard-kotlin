@@ -6,7 +6,6 @@ import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.MockDataProvider.createPost
-import com.fibelatti.pinboard.MockDataProvider.mockTagString1
 import com.fibelatti.pinboard.MockDataProvider.mockTitle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.extension.isConnected
@@ -135,16 +134,21 @@ internal class NavigationActionHandlerTest {
             verify(mockConnectivityManager, times(2)).isConnected()
         }
 
-        fun testCases(): List<Triple<ViewCategory, Int, String>> = listOf(
-            Triple(All, R.string.posts_title_all, "R.string.posts_title_all"),
-            Triple(Recent, R.string.posts_title_recent, "R.string.posts_title_recent"),
-            Triple(Public, R.string.posts_title_public, "R.string.posts_title_public"),
-            Triple(Private, R.string.posts_title_private, "R.string.posts_title_private"),
-            Triple(Unread, R.string.posts_title_unread, "R.string.posts_title_unread"),
-            Triple(Untagged, R.string.posts_title_untagged, "R.string.posts_title_untagged"),
-            Triple(AllTags, R.string.posts_title_tags, "R.string.posts_title_tags"),
-            Triple(PostsForTag(mockTagString1), -1, mockTagString1)
-        )
+        fun testCases(): List<Triple<ViewCategory, Int, String>> =
+            mutableListOf<Triple<ViewCategory, Int, String>>().apply {
+                ViewCategory::class.sealedSubclasses.map { it.objectInstance as ViewCategory }.forEach { category ->
+                    when (category) {
+                        All -> add(Triple(category, R.string.posts_title_all, "R.string.posts_title_all"))
+                        Recent -> add(Triple(category, R.string.posts_title_recent, "R.string.posts_title_recent"))
+                        Public -> add(Triple(category, R.string.posts_title_public, "R.string.posts_title_public"))
+                        Private -> add(Triple(category, R.string.posts_title_private, "R.string.posts_title_private"))
+                        Unread -> add(Triple(category, R.string.posts_title_unread, "R.string.posts_title_unread"))
+                        Untagged -> {
+                            add(Triple(category, R.string.posts_title_untagged, "R.string.posts_title_untagged"))
+                        }
+                    }.let { }
+                }
+            }
     }
 
     @Nested
@@ -253,6 +257,55 @@ internal class NavigationActionHandlerTest {
 
             // THEN
             result shouldBe AddPostView(previousContent = initialContent)
+        }
+    }
+
+    @Nested
+    inner class ViewTagsTests {
+
+        private val mockActiveNetworkInfo = mock<NetworkInfo>()
+
+        @Test
+        fun `WHEN currentContent is not PostList THEN same content is returned`() {
+            // GIVEN
+            val content = mock<PostDetail>()
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewTags, content)
+
+            // THEN
+            result shouldBe content
+        }
+
+        @Test
+        fun `WHEN currentContent is PostList THEN TagList is returned`() {
+            // GIVEN
+            given(mockConnectivityManager.activeNetworkInfo)
+                .willReturn(mockActiveNetworkInfo)
+            given(mockActiveNetworkInfo.isConnected)
+                .willReturn(false)
+
+            val initialContent = PostList(
+                category = All,
+                title = mockTitle,
+                posts = emptyList(),
+                sortType = NewestFirst,
+                searchParameters = SearchParameters(),
+                shouldLoad = true
+            )
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewTags, initialContent)
+
+            // THEN
+            result shouldBe TagList(
+                tags = emptyList(),
+                shouldLoad = false,
+                isConnected = false,
+                previousContent = initialContent
+            )
+
+            verify(mockConnectivityManager, times(2)).isConnected()
         }
     }
 }

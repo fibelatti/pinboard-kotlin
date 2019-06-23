@@ -25,6 +25,7 @@ import com.fibelatti.pinboard.core.extension.onKeyboardSubmit
 import com.fibelatti.pinboard.features.appstate.AddSearchTag
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ClearSearch
+import com.fibelatti.pinboard.features.appstate.RefreshSearchTags
 import com.fibelatti.pinboard.features.appstate.RemoveSearchTag
 import com.fibelatti.pinboard.features.appstate.Search
 import com.fibelatti.pinboard.features.appstate.SearchView
@@ -71,6 +72,11 @@ class PostSearchFragment @Inject constructor(
 
         editTextSearchTerm.onKeyboardSubmit { editTextSearchTerm.hideKeyboard() }
 
+        swipeToRefresh.setOnRefreshListener {
+            swipeToRefresh.isRefreshing = false
+            appStateViewModel.runAction(RefreshSearchTags)
+        }
+
         recyclerViewTags
             .withLinearLayoutManager()
             .adapter = tagsAdapter
@@ -115,7 +121,7 @@ class PostSearchFragment @Inject constructor(
                 handleLoading(content.shouldLoadTags)
 
                 if (content.shouldLoadTags) {
-                    tagsViewModel.getAll()
+                    tagsViewModel.getAll(TagsViewModel.Source.SEARCH)
                 } else {
                     showTags(content.availableTags)
                 }

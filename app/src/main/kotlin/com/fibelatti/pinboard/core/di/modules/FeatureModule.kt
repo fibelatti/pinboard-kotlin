@@ -22,6 +22,7 @@ import com.fibelatti.pinboard.features.splash.presentation.SplashFragment
 import com.fibelatti.pinboard.features.tags.data.TagsApi
 import com.fibelatti.pinboard.features.tags.data.TagsDataSource
 import com.fibelatti.pinboard.features.tags.domain.TagsRepository
+import com.fibelatti.pinboard.features.tags.presentation.TagsFragment
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
 import dagger.Binds
 import dagger.Module
@@ -112,5 +113,10 @@ abstract class FeatureModule {
     @IntoMap
     @ViewModelKey(TagsViewModel::class)
     abstract fun tagsViewModel(tagsViewModel: TagsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @FragmentKey(TagsFragment::class)
+    abstract fun tagsFragment(tagsFragment: TagsFragment): Fragment
     // endregion
 }

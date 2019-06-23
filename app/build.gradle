@@ -89,6 +89,7 @@ dependencies {
 
     // Kotlin
     implementation(Dependencies.kotlin)
+    implementation(Dependencies.kotlinReflect) // Used for unit tests only, but the code needs to be compiled with it
     implementation(Dependencies.coroutinesCore)
     implementation(Dependencies.coroutinesAndroid)
 

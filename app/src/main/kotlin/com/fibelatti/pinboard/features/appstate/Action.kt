@@ -14,6 +14,7 @@ sealed class ViewCategory : NavigationAction()
 data class ViewPost(val post: Post) : NavigationAction()
 object ViewSearch : NavigationAction()
 object AddPost : NavigationAction()
+object ViewTags : NavigationAction()
 
 // region ViewCategory
 object All : ViewCategory()
@@ -22,8 +23,6 @@ object Public : ViewCategory()
 object Private : ViewCategory()
 object Unread : ViewCategory()
 object Untagged : ViewCategory()
-object AllTags : ViewCategory()
-data class PostsForTag(val tagName: String) : ViewCategory()
 // endregion
 // endregion
 
@@ -38,10 +37,19 @@ object ToggleSorting : PostAction()
 // region SearchAction
 sealed class SearchAction : Action()
 
+object RefreshSearchTags : SearchAction()
 data class SetSearchTags(val tags: List<Tag>) : SearchAction()
 data class AddSearchTag(val tag: Tag) : SearchAction()
 data class RemoveSearchTag(val tag: Tag) : SearchAction()
 data class Search(val term: String) : SearchAction()
 object ClearSearch : SearchAction()
+// endregion
+
+// region TagAction
+sealed class TagAction : Action()
+
+object RefreshTags : TagAction()
+data class SetTags(val tags: List<Tag>) : TagAction()
+data class PostsForTag(val tag: Tag) : TagAction()
 // endregion
 // endregion

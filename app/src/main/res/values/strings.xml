@@ -57,7 +57,6 @@
     <string name="posts_title_private">Private</string>
     <string name="posts_title_unread">Unread</string>
     <string name="posts_title_untagged">Untagged</string>
-    <string name="posts_title_tags">Tags</string>
 
     <plurals name="posts_quantity">
         <item quantity="zero">No links</item>
@@ -118,8 +117,9 @@
     <string name="search_active">Results are filtered</string>
 
     <!-- Tags -->
-    <string name="tags_empty_title">No tags found</string>
-    <string name="tags_empty_description">It wasn\'t possible to find any tags.</string>
+    <string name="tags_title">Tags</string>
+    <string name="tags_empty_title">No tags</string>
+    <string name="tags_empty_description">There are no tags for your saved links</string>
 
     <!-- About -->
     <string name="about_share">Share Pinkt</string>

@@ -16,13 +16,19 @@
         android:layout_height="match_parent"
         android:visibility="gone" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewTags"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeToRefresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/margin_regular"
-        android:layout_marginEnd="@dimen/margin_regular"
-        android:clipToPadding="false"
-        android:paddingBottom="@dimen/recycler_view_with_fab_padding_bottom"
-        tools:listitem="@layout/list_item_tag" />
+        android:layout_marginEnd="@dimen/margin_regular">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewTags"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="@dimen/recycler_view_with_fab_padding_bottom"
+            tools:listitem="@layout/list_item_tag" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </FrameLayout>

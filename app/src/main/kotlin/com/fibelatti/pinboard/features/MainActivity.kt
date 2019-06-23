@@ -7,6 +7,7 @@ import android.os.Handler
 import androidx.fragment.app.Fragment
 import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
+import com.fibelatti.core.extension.exhaustive
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.inTransaction
 import com.fibelatti.core.extension.remove
@@ -30,15 +31,17 @@ import com.fibelatti.pinboard.features.appstate.Private
 import com.fibelatti.pinboard.features.appstate.Public
 import com.fibelatti.pinboard.features.appstate.Recent
 import com.fibelatti.pinboard.features.appstate.SearchView
-import com.fibelatti.pinboard.features.appstate.AllTags
+import com.fibelatti.pinboard.features.appstate.TagList
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
+import com.fibelatti.pinboard.features.appstate.ViewTags
 import com.fibelatti.pinboard.features.navigation.NavigationDrawerFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostAddFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostDetailFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostSearchFragment
 import com.fibelatti.pinboard.features.splash.presentation.SplashFragment
+import com.fibelatti.pinboard.features.tags.presentation.TagsFragment
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.presentation.AuthFragment
 import com.fibelatti.pinboard.features.user.presentation.AuthViewModel
@@ -92,7 +95,8 @@ class MainActivity :
                 is PostDetail -> showPostDetail()
                 is SearchView -> showSearchView()
                 is AddPostView -> showAddPostView()
-            }
+                is TagList -> showTagsView()
+            }.exhaustive
         }
     }
 
@@ -141,6 +145,16 @@ class MainActivity :
         }
     }
 
+    private fun showTagsView() {
+        if (supportFragmentManager.findFragmentByTag(TagsFragment.TAG) == null) {
+            inTransaction {
+                setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
+                add(R.id.fragmentHost, createFragment<TagsFragment>(), TagsFragment.TAG)
+                addToBackStack(PostAddFragment.TAG)
+            }
+        }
+    }
+
     inline fun updateTitleLayout(titleUpdates: TitleLayout.() -> Unit) {
         layoutTitle.run(titleUpdates)
     }
@@ -176,7 +190,7 @@ class MainActivity :
     }
 
     override fun onTagsClicked() {
-        appStateViewModel.runAction(AllTags)
+        appStateViewModel.runAction(ViewTags)
     }
 
     override fun onLogoutClicked() {

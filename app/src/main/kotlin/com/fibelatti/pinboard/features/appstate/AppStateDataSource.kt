@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.appstate
 
 import android.net.ConnectivityManager
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fibelatti.core.provider.ResourceProvider
@@ -16,6 +17,7 @@ class AppStateDataSource @Inject constructor(
     private val navigationActionHandler: NavigationActionHandler,
     private val postActionHandler: PostActionHandler,
     private val searchActionHandler: SearchActionHandler,
+    private val tagActionHandler: TagActionHandler,
     private val singleRunner: SingleRunner,
     private val connectivityManager: ConnectivityManager?
 ) : AppStateRepository {
@@ -37,14 +39,22 @@ class AppStateDataSource @Inject constructor(
     override suspend fun runAction(action: Action) {
         singleRunner.afterPrevious {
             currentContent.value?.let { content ->
-                currentContent.postValue(
-                    when (action) {
-                        is NavigationAction -> navigationActionHandler.runAction(action, content)
-                        is PostAction -> postActionHandler.runAction(action, content)
-                        is SearchAction -> searchActionHandler.runAction(action, content)
-                    }
-                )
+                val newContent = when (action) {
+                    is NavigationAction -> navigationActionHandler.runAction(action, content)
+                    is PostAction -> postActionHandler.runAction(action, content)
+                    is SearchAction -> searchActionHandler.runAction(action, content)
+                    is TagAction -> tagActionHandler.runAction(action, content)
+                }
+
+                if (newContent != content) {
+                    updateContent(newContent)
+                }
             }
         }
+    }
+
+    @VisibleForTesting
+    fun updateContent(content: Content) {
+        currentContent.postValue(content)
     }
 }
