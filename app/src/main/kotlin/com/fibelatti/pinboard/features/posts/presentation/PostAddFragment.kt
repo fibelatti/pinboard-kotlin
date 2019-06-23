@@ -11,6 +11,7 @@ import com.fibelatti.core.extension.afterTextChanged
 import com.fibelatti.core.extension.applyAs
 import com.fibelatti.core.extension.children
 import com.fibelatti.core.extension.clearError
+import com.fibelatti.core.extension.clearText
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.navigateBack
@@ -90,18 +91,27 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun setupTagInput() {
-        editTextTags.afterTextChanged { createTagFromText(it) }
+        editTextTags.afterTextChanged { text ->
+            val tag = createTagFromText(text, handleWhiteSpace = true)
+
+            if (tag != null && chipGroupTags.children.none { (it as? TagChip)?.getValue() == tag }) {
+                chipGroupTags.addView(createTagChip(tag))
+                editTextTags.setText("")
+            }
+        }
         editTextTags.onKeyboardSubmit {
             val tag = createTagFromText(editTextTags.textAsString(), handleWhiteSpace = false)
 
             if (tag != null) {
-                addTag(tag)
-                editTextTags.setText("")
+                if (chipGroupTags.children.none { (it as? TagChip)?.getValue() == tag }) {
+                    chipGroupTags.addView(createTagChip(tag))
+                }
+                editTextTags.clearText()
             }
         }
     }
 
-    private fun createTagFromText(text: String, handleWhiteSpace: Boolean = true): Tag? {
+    private fun createTagFromText(text: String, handleWhiteSpace: Boolean): Tag? {
         val tagText = text.run {
             if (handleWhiteSpace) {
                 takeIf { it.endsWith(" ") }?.substringBefore(" ", "")
@@ -113,16 +123,12 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
         return tagText?.let { Tag(it) }
     }
 
-    private fun addTag(value: Tag) {
-        val chip = layoutInflater.inflate(R.layout.list_item_chip, chipGroupTags, false)
+    private fun createTagChip(value: Tag): View {
+        return layoutInflater.inflate(R.layout.list_item_chip, chipGroupTags, false)
             .applyAs<View, TagChip> {
                 setValue(value)
-                setOnCloseIconClickListener { (parent as? ViewGroup)?.removeView(this) }
+                setOnCloseIconClickListener { chipGroupTags.removeView(this) }
             }
-
-        if (chipGroupTags.children.none { (it as? TagChip)?.getValue() == value }) {
-            chipGroupTags.addView(chip, 0)
-        }
     }
 
     private fun setupViewModels() {
@@ -147,7 +153,9 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
             checkboxReadLater.isChecked = readLater
 
             chipGroupTags.removeAllViews()
-            tags.forEach(::addTag)
+            tags.forEach { tag ->
+                chipGroupTags.addView(createTagChip(tag))
+            }
         }
     }
 

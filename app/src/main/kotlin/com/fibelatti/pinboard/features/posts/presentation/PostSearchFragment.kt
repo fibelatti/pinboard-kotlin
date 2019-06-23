@@ -9,7 +9,6 @@ import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.applyAs
-import com.fibelatti.core.extension.children
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.hideKeyboard
@@ -112,10 +111,15 @@ class PostSearchFragment @Inject constructor(
                 editTextSearchTerm.setText(content.searchParameters.term)
 
                 if (content.searchParameters.tags.isNotEmpty()) {
-                    content.searchParameters.tags.forEach(::addSelectionChip)
+                    chipGroupSelectedTags.removeAllViews()
+                    content.searchParameters.tags.forEach { tag ->
+                        chipGroupSelectedTags.addView(createTagChip(tag))
+                    }
+
                     textViewSelectedTagsTitle.visible()
                 } else {
                     textViewSelectedTagsTitle.gone()
+                    chipGroupSelectedTags.removeAllViews()
                 }
 
                 handleLoading(content.shouldLoadTags)
@@ -168,18 +172,11 @@ class PostSearchFragment @Inject constructor(
         return true
     }
 
-    private fun addSelectionChip(value: Tag) {
-        val chip = layoutInflater.inflate(R.layout.list_item_chip, chipGroupSelectedTags, false)
+    private fun createTagChip(value: Tag): View {
+        return layoutInflater.inflate(R.layout.list_item_chip, chipGroupSelectedTags, false)
             .applyAs<View, TagChip> {
                 setValue(value)
-                setOnCloseIconClickListener {
-                    setOnCloseIconClickListener { (parent as? ViewGroup)?.removeView(this) }
-                    appStateViewModel.runAction(RemoveSearchTag(value))
-                }
+                setOnCloseIconClickListener { appStateViewModel.runAction(RemoveSearchTag(value)) }
             }
-
-        if (chipGroupSelectedTags.children.none { (it as? TagChip)?.getValue() == value }) {
-            chipGroupSelectedTags.addView(chip)
-        }
     }
 }
