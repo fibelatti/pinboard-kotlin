@@ -7,6 +7,7 @@ import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onSuccess
+import com.fibelatti.pinboard.core.AppConfig.API_MAX_LENGTH
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.extension.isConnected
 import com.fibelatti.pinboard.core.functional.resultFrom
@@ -52,11 +53,11 @@ class PostsDataSource @Inject constructor(
         resultFrom {
             postsApi.add(
                 url = url,
-                title = title,
+                title = title.take(API_MAX_LENGTH),
                 description = description,
                 public = private?.let { if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES },
                 readLater = readLater?.let { if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO },
-                tags = tags?.forRequest()
+                tags = tags?.forRequest()?.take(API_MAX_LENGTH)
             )
         }.orThrow()
     }
