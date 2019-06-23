@@ -61,10 +61,10 @@ class PostListFragment @Inject constructor(
     }
 
     private val appStateViewModel: AppStateViewModel by lazy {
-        viewModelFactory.get<AppStateViewModel>(requireActivity())
+        viewModelFactory.get<AppStateViewModel>(this)
     }
     private val postListViewModel: PostListViewModel by lazy {
-        viewModelFactory.get<PostListViewModel>(requireActivity())
+        viewModelFactory.get<PostListViewModel>(this)
     }
 
     private var sharedTransitionFinished: Boolean = false
@@ -141,7 +141,7 @@ class PostListFragment @Inject constructor(
     private fun setupViewModels() {
         error(postListViewModel.error, ::handleError)
 
-        observe(appStateViewModel.getContent()) { content ->
+        viewLifecycleOwner.observe(appStateViewModel.getContent()) { content ->
             if (content is PostList) showPostList(content)
         }
     }

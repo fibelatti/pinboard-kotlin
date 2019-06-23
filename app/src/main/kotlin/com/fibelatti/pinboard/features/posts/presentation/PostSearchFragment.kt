@@ -49,7 +49,7 @@ class PostSearchFragment @Inject constructor(
     }
 
     private val appStateViewModel: AppStateViewModel by lazy {
-        viewModelFactory.get<AppStateViewModel>(requireActivity())
+        viewModelFactory.get<AppStateViewModel>(this)
     }
     private val tagsViewModel: TagsViewModel by lazy { viewModelFactory.get<TagsViewModel>(this) }
 
@@ -101,7 +101,7 @@ class PostSearchFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        observe(appStateViewModel.getContent()) { content ->
+        viewLifecycleOwner.observe(appStateViewModel.getContent()) { content ->
             if (content is SearchView) {
                 editTextSearchTerm.setText(content.searchParameters.term)
 

@@ -36,13 +36,13 @@ import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_post_detail.*
 import kotlinx.android.synthetic.main.layout_file_view.*
-import kotlinx.android.synthetic.main.layout_file_view.textViewDescription as fileViewUrlDescription
-import kotlinx.android.synthetic.main.layout_file_view.textViewUrl as fileViewUrl
 import kotlinx.android.synthetic.main.layout_progress_bar.*
 import kotlinx.android.synthetic.main.layout_url_error.*
+import javax.inject.Inject
+import kotlinx.android.synthetic.main.layout_file_view.textViewDescription as fileViewUrlDescription
+import kotlinx.android.synthetic.main.layout_file_view.textViewUrl as fileViewUrl
 import kotlinx.android.synthetic.main.layout_url_error.textViewDescription as errorUrlDescription
 import kotlinx.android.synthetic.main.layout_url_error.textViewUrl as errorUrl
-import javax.inject.Inject
 
 class PostDetailFragment @Inject constructor() : BaseFragment() {
 
@@ -80,10 +80,10 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun setupViewModels() {
-        viewModelFactory.get<AppStateViewModel>(requireActivity()).run {
-            observe(getContent()) {
-                if (it is PostDetail) {
-                    updateViews(it.post)
+        viewModelFactory.get<AppStateViewModel>(this).run {
+            viewLifecycleOwner.observe(getContent()) { content ->
+                if (content is PostDetail) {
+                    updateViews(content.post)
                 }
             }
         }
