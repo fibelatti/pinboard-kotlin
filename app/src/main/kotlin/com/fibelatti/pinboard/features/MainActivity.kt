@@ -9,7 +9,6 @@ import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.inTransaction
-import com.fibelatti.core.extension.isVisible
 import com.fibelatti.core.extension.remove
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
@@ -250,11 +249,5 @@ class MainActivity :
         layoutTitle.visible()
         bottomAppBar.visible()
         fabMain.show()
-    }
-
-    fun snackbar(message: String) {
-        layoutRoot.snackbar(message) {
-            anchorView = if (fabMain.isVisible()) fabMain else bottomAppBar
-        }
     }
 }
