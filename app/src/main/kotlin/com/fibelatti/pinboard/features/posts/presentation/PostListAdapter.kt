@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.TextView
 import com.fibelatti.core.android.base.BaseAdapter
 import com.fibelatti.core.extension.gone
+import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.util.DateFormatter
@@ -44,6 +45,7 @@ class PostListAdapter @Inject constructor(
     }
 
     private fun View.layoutTags(tags: List<Tag>) {
+        layoutTags.visible()
         layoutTags.removeAllViews()
         tags.forEach { tag -> addTagView(tag.name) }
     }
