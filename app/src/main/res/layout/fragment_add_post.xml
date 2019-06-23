@@ -40,18 +40,18 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayoutDescription"
+        android:id="@+id/textInputLayoutTitle"
         style="@style/AppTheme.InputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_regular"
-        android:hint="@string/posts_add_description"
+        android:hint="@string/posts_add_url_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayoutUrl">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextDescription"
+            android:id="@+id/editTextTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:imeOptions="actionDone"
@@ -68,7 +68,7 @@
         android:text="@string/posts_add_private"
         app:layout_constraintEnd_toStartOf="@+id/checkboxReadLater"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutDescription" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutTitle" />
 
     <CheckBox
         android:id="@+id/checkboxReadLater"
@@ -78,7 +78,7 @@
         android:text="@string/posts_add_read_later"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/checkboxPrivate"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutDescription" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutTitle" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutTags"

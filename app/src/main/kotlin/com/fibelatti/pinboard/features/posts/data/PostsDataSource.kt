@@ -43,8 +43,8 @@ class PostsDataSource @Inject constructor(
 
     override suspend fun add(
         url: String,
-        description: String,
-        extended: String?,
+        title: String,
+        description: String?,
         private: Boolean?,
         readLater: Boolean?,
         tags: List<Tag>?
@@ -52,8 +52,8 @@ class PostsDataSource @Inject constructor(
         resultFrom {
             postsApi.add(
                 url = url,
+                title = title,
                 description = description,
-                extended = extended,
                 public = private?.let { if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES },
                 readLater = readLater?.let { if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO },
                 tags = tags?.forRequest()

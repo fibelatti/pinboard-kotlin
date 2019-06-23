@@ -86,7 +86,7 @@
 
     <string name="posts_add_title">Save link</string>
     <string name="posts_add_url">URL</string>
-    <string name="posts_add_description">Description</string>
+    <string name="posts_add_url_title">Title</string>
     <string name="posts_add_private">Private</string>
     <string name="posts_add_read_later">Read later</string>
     <string name="posts_add_tags">New tag</string>
@@ -107,7 +107,7 @@
     <!-- Validation -->
     <string name="validation_error_empty_url">The URL cannot be empty.</string>
     <string name="validation_error_invalid_url">The URL is invalid</string>
-    <string name="validation_error_empty_description">The description cannot be empty</string>
+    <string name="validation_error_empty_title">The title cannot be empty</string>
 
     <!-- Search -->
     <string name="search_title">Filter links</string>

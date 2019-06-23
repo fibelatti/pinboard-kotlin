@@ -19,7 +19,7 @@
         app:srcCompat="@drawable/ic_file" />
 
     <TextView
-        android:id="@+id/textViewDescription"
+        android:id="@+id/textViewUrlTitle"
         style="@style/AppTheme.Text.SectionTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

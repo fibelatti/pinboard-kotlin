@@ -39,10 +39,10 @@ import kotlinx.android.synthetic.main.layout_file_view.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
 import kotlinx.android.synthetic.main.layout_url_error.*
 import javax.inject.Inject
-import kotlinx.android.synthetic.main.layout_file_view.textViewDescription as fileViewUrlDescription
+import kotlinx.android.synthetic.main.layout_file_view.textViewUrlTitle as fileViewUrlTitle
 import kotlinx.android.synthetic.main.layout_file_view.textViewUrl as fileViewUrl
-import kotlinx.android.synthetic.main.layout_url_error.textViewDescription as errorUrlDescription
-import kotlinx.android.synthetic.main.layout_url_error.textViewUrl as errorUrl
+import kotlinx.android.synthetic.main.layout_url_error.textViewUrlTitle as errorViewUrlTitle
+import kotlinx.android.synthetic.main.layout_url_error.textViewUrl as errorViewUrl
 
 class PostDetailFragment @Inject constructor() : BaseFragment() {
 
@@ -131,7 +131,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
         layoutRootFileViewer.visible()
         layoutScrollViewWeb.gone()
 
-        fileViewUrlDescription.text = post.description
+        fileViewUrlTitle.text = post.title
         fileViewUrl.text = post.url
         buttonOpenInFileViewer.setOnClickListener { openUrlInFileViewer(post.url) }
     }
@@ -149,8 +149,8 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
         layoutScrollViewWeb.gone()
         layoutRootUrlError.visible()
 
-        errorUrlDescription.text = post.description
-        errorUrl.text = post.url
+        errorViewUrlTitle.text = post.title
+        errorViewUrl.text = post.url
         buttonOpenInBrowser.setOnClickListener { openUrlInExternalBrowser(post) }
     }
 

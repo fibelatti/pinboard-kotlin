@@ -36,8 +36,8 @@ class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
     override fun map(param: PostDto): Post = with(param) {
         Post(
             url = URLDecoder.decode(href, API_ENCODING),
-            description = description,
-            extendedDescription = extended,
+            title = description,
+            description = extended,
             hash = hash,
             time = time,
             private = shared == PinboardApiLiterals.NO,
@@ -53,8 +53,8 @@ class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
     override fun mapReverse(param: Post): PostDto = with(param) {
         PostDto(
             href = URLEncoder.encode(url, API_ENCODING),
-            description = description,
-            extended = extendedDescription,
+            description = title,
+            extended = description,
             hash = hash,
             time = time,
             shared = if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES,

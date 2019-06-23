@@ -16,8 +16,8 @@ interface PostsApi {
     @GET("posts/add")
     suspend fun add(
         @Query("url") url: String,
-        @Query("description") description: String,
-        @Query("extended") extended: String? = null,
+        @Query("description") title: String,
+        @Query("extended") description: String? = null,
         @Query("shared") public: String? = null,
         @Query("toread") readLater: String? = null,
         @Query("tags") tags: String? = null

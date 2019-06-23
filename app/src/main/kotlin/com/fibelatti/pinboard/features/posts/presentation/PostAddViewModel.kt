@@ -31,20 +31,21 @@ class PostAddViewModel @Inject constructor(
     private val _post = MutableLiveData<Post>()
     val invalidUrlError: LiveData<String> get() = _invalidUrlError
     private val _invalidUrlError = MutableLiveData<String>()
-    val invalidDescriptionError: LiveData<String> get() = _invalidDescriptionError
-    private val _invalidDescriptionError = MutableLiveData<String>()
+    val invalidUrlTitleError: LiveData<String> get() = _invalidUrlTitleError
+    private val _invalidUrlTitleError = MutableLiveData<String>()
     val saved: LiveEvent<Unit> get() = _saved
     private val _saved = MutableLiveEvent<Unit>()
 
     fun saveLink(
         url: String,
+        title: String,
         description: String,
         private: Boolean,
         readLater: Boolean,
         tags: List<Tag>
     ) {
         launch {
-            validateData(url, description, private, readLater, tags) { params ->
+            validateData(url, title, description, private, readLater, tags) { params ->
                 addPost(params)
                     .onSuccess { _saved.postEvent(Unit) }
                     .onFailure {
@@ -63,6 +64,7 @@ class PostAddViewModel @Inject constructor(
 
     private inline fun validateData(
         url: String,
+        title: String,
         description: String,
         private: Boolean,
         readLater: Boolean,
@@ -73,20 +75,23 @@ class PostAddViewModel @Inject constructor(
             url.isBlank() -> {
                 _invalidUrlError.postValue(resourceProvider.getString(R.string.validation_error_empty_url))
             }
-            description.isBlank() -> {
-                _invalidDescriptionError.postValue(resourceProvider.getString(R.string.validation_error_empty_description))
+            title.isBlank() -> {
+                _invalidUrlTitleError.postValue(resourceProvider.getString(R.string.validation_error_empty_title))
             }
             else -> {
                 _invalidUrlError.postValue(String.empty())
-                _invalidDescriptionError.postValue(String.empty())
+                _invalidUrlTitleError.postValue(String.empty())
 
-                ifValid(AddPost.Params(
-                    url = url,
-                    description = description,
-                    private = private,
-                    readLater = readLater,
-                    tags = tags
-                ))
+                ifValid(
+                    AddPost.Params(
+                        url = url,
+                        title = title,
+                        description = description,
+                        private = private,
+                        readLater = readLater,
+                        tags = tags
+                    )
+                )
             }
         }
     }

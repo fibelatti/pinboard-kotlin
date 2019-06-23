@@ -26,7 +26,7 @@ class PostListAdapter @Inject constructor(
         textViewPrivate.visibleIf(item.private, otherwiseVisibility = View.GONE)
         textViewReadLater.visibleIf(item.readLater, otherwiseVisibility = View.GONE)
 
-        textViewLinkTitle.text = item.description
+        textViewLinkTitle.text = item.title
         textViewLinkAddedDate.text = context.getString(R.string.posts_saved_on, dateFormatter.tzFormatToDisplayFormat(item.time))
 
         when {

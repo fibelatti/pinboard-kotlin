@@ -23,7 +23,7 @@ class FilterPosts @Inject constructor() : UseCaseWithParams<List<Post>, FilterPo
     }
 
     private fun Post.containsTerm(term: String): Boolean =
-        this.url.contains(term) or description.contains(term) or extendedDescription.contains(term)
+        this.url.contains(term) or title.contains(term) or description.contains(term)
 
     data class Params(
         val posts: List<Post>,

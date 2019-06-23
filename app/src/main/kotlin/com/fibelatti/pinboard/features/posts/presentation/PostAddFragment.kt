@@ -77,7 +77,7 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
                     setOnClickListener {
                         postAddViewModel.saveLink(
                             editTextUrl.textAsString(),
-                            editTextDescription.textAsString(),
+                            editTextTitle.textAsString(),
                             checkboxPrivate.isChecked,
                             checkboxReadLater.isChecked,
                             chipGroupTags.children.filterIsInstance<TagChip>().mapNotNull { it.getValue() }
@@ -136,7 +136,7 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
             observeEvent(loading) { layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE) }
             observe(post, ::showPostDetails)
             observe(invalidUrlError, ::handleInvalidUrlError)
-            observe(invalidDescriptionError, ::handleInvalidDescriptionError)
+            observe(invalidUrlTitleError, ::handleInvalidTitleError)
             observeEvent(saved) {
                 mainActivity?.toast(getString(R.string.posts_saved_feedback))
                 navigateBack()
@@ -148,7 +148,7 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
     private fun showPostDetails(post: Post) {
         with(post) {
             editTextUrl.setText(url)
-            editTextDescription.setText(description)
+            editTextTitle.setText(title)
             checkboxPrivate.isChecked = private
             checkboxReadLater.isChecked = readLater
 
@@ -165,8 +165,8 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
         }
     }
 
-    private fun handleInvalidDescriptionError(message: String) {
-        textInputLayoutDescription.run {
+    private fun handleInvalidTitleError(message: String) {
+        textInputLayoutTitle.run {
             message.takeIf(String::isNotEmpty)?.let { showError(it) } ?: clearError()
         }
     }

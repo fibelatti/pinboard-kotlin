@@ -19,10 +19,9 @@ import com.fibelatti.pinboard.MockDataProvider.mockFutureTime
 import com.fibelatti.pinboard.MockDataProvider.mockTags
 import com.fibelatti.pinboard.MockDataProvider.mockTagsRequest
 import com.fibelatti.pinboard.MockDataProvider.mockTime
-import com.fibelatti.pinboard.MockDataProvider.mockUrlDescription
+import com.fibelatti.pinboard.MockDataProvider.mockUrlTitle
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.core.AppConfig
-import com.fibelatti.pinboard.core.extension.isConnected
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
@@ -115,11 +114,11 @@ class PostsDataSourceTest {
         @Test
         fun `GIVEN that the api returns an error WHEN add is called THEN Failure is returned`() {
             // GIVEN
-            givenSuspend { mockApi.add(mockUrlValid, mockUrlDescription, tags = mockTagsRequest) }
+            givenSuspend { mockApi.add(mockUrlValid, mockUrlTitle, tags = mockTagsRequest) }
                 .willAnswer { throw Exception() }
 
             // WHEN
-            val result = callSuspend { dataSource.add(mockUrlValid, mockUrlDescription, tags = mockTags) }
+            val result = callSuspend { dataSource.add(mockUrlValid, mockUrlTitle, tags = mockTags) }
 
             // THEN
             result.shouldBeAnInstanceOf<Failure>()
@@ -129,11 +128,11 @@ class PostsDataSourceTest {
         @Test
         fun `GIVEN that the api returns 200 but the result code is not DONE WHEN add is called THEN Failure is returned`() {
             // GIVEN
-            givenSuspend { mockApi.add(mockUrlValid, mockUrlDescription, tags = mockTagsRequest) }
+            givenSuspend { mockApi.add(mockUrlValid, mockUrlTitle, tags = mockTagsRequest) }
                 .willReturn(createGenericResponse(ApiResultCodes.MISSING_URL))
 
             // WHEN
-            val result = callSuspend { dataSource.add(mockUrlValid, mockUrlDescription, tags = mockTags) }
+            val result = callSuspend { dataSource.add(mockUrlValid, mockUrlTitle, tags = mockTags) }
 
             // THEN
             result.shouldBeAnInstanceOf<Failure>()
@@ -143,11 +142,11 @@ class PostsDataSourceTest {
         @Test
         fun `GIVEN that the api returns 200 and the result code is DONE WHEN add is called THEN Success is returned`() {
             // GIVEN
-            givenSuspend { mockApi.add(mockUrlValid, mockUrlDescription, tags = mockTagsRequest) }
+            givenSuspend { mockApi.add(mockUrlValid, mockUrlTitle, tags = mockTagsRequest) }
                 .willReturn(createGenericResponse(ApiResultCodes.DONE))
 
             // WHEN
-            val result = callSuspend { dataSource.add(mockUrlValid, mockUrlDescription, tags = mockTags) }
+            val result = callSuspend { dataSource.add(mockUrlValid, mockUrlTitle, tags = mockTags) }
 
             // THEN
             result.shouldBeAnInstanceOf<Success<Unit>>()
@@ -171,7 +170,7 @@ class PostsDataSourceTest {
             givenSuspend {
                 mockApi.add(
                     mockUrlValid,
-                    mockUrlDescription,
+                    mockUrlTitle,
                     public = expectedPublic,
                     readLater = expectedReadLater,
                     tags = mockTagsRequest
@@ -182,7 +181,7 @@ class PostsDataSourceTest {
             val result = callSuspend {
                 dataSource.add(
                     mockUrlValid,
-                    mockUrlDescription,
+                    mockUrlTitle,
                     private = testCases.private,
                     readLater = testCases.readLater,
                     tags = mockTags
@@ -194,7 +193,7 @@ class PostsDataSourceTest {
             verifySuspend(mockApi) {
                 add(
                     url = mockUrlValid,
-                    description = mockUrlDescription,
+                    title = mockUrlTitle,
                     public = expectedPublic,
                     readLater = expectedReadLater,
                     tags = mockTagsRequest

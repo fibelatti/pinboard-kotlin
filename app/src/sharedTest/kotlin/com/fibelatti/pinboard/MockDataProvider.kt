@@ -27,8 +27,8 @@ object MockDataProvider {
     const val mockFutureTime = "2019-01-20T08:20:10Z"
     const val mockUrlValid = "https://www.url.com"
     const val mockUrlInvalid = "www.url.com"
-    const val mockUrlDescription = "Some url description"
-    const val mockUrlExtendedDescription = "What the url is all about"
+    const val mockUrlTitle = "Some url title"
+    const val mockUrlDescription = "What the url is all about"
     const val mockHash = "7b7cc6c90a84124026569c84f2236ecb"
 
     const val mockTagString1 = "tag1"
@@ -68,8 +68,8 @@ object MockDataProvider {
     ): PostDto =
         PostDto(
             href = URLEncoder.encode(mockUrlValid, AppConfig.API_ENCODING),
-            description = mockUrlDescription,
-            extended = mockUrlExtendedDescription,
+            description = mockUrlTitle,
+            extended = mockUrlDescription,
             hash = hash,
             time = mockTime,
             shared = shared,
@@ -81,16 +81,16 @@ object MockDataProvider {
         hash: String = mockHash,
         time: String = mockTime,
         url: String = mockUrlValid,
+        title: String = mockUrlTitle,
         description: String = mockUrlDescription,
-        extendedDescription: String = mockUrlExtendedDescription,
         private: Boolean = false,
         readLater: Boolean = false,
         tags: List<Tag> = mockTags
     ): Post =
         Post(
             url = url,
+            title = title,
             description = description,
-            extendedDescription = extendedDescription,
             hash = hash,
             time = time,
             private = private,

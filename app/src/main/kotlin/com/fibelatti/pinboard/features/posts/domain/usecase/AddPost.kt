@@ -17,8 +17,8 @@ class AddPost @Inject constructor(
             .map {
                 postsRepository.add(
                     url = params.url,
+                    title = params.title,
                     description = params.description,
-                    extended = params.extended,
                     private = params.private,
                     readLater = params.readLater,
                     tags = params.tags
@@ -27,8 +27,8 @@ class AddPost @Inject constructor(
 
     data class Params(
         val url: String,
-        val description: String,
-        val extended: String? = null,
+        val title: String,
+        val description: String? = null,
         val private: Boolean? = null,
         val readLater: Boolean? = null,
         val tags: List<Tag>? = null

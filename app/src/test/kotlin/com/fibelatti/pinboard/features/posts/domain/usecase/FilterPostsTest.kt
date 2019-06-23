@@ -13,8 +13,8 @@ import com.fibelatti.pinboard.MockDataProvider.mockTime2
 import com.fibelatti.pinboard.MockDataProvider.mockTime3
 import com.fibelatti.pinboard.MockDataProvider.mockTime4
 import com.fibelatti.pinboard.MockDataProvider.mockTime5
+import com.fibelatti.pinboard.MockDataProvider.mockUrlTitle
 import com.fibelatti.pinboard.MockDataProvider.mockUrlDescription
-import com.fibelatti.pinboard.MockDataProvider.mockUrlExtendedDescription
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import org.junit.jupiter.api.Test
@@ -25,36 +25,36 @@ class FilterPostsTest {
     private val postMultiTags = createPost(
         time = mockTime1,
         url = "",
+        title = "",
         description = "",
-        extendedDescription = "",
         tags = listOf(mockTag1, mockTag2)
     )
     private val postSingleTag = createPost(
         time = mockTime2,
         url = "",
+        title = "",
         description = "",
-        extendedDescription = "",
         tags = listOf(mockTag2)
     )
     private val postUrl = createPost(
         time = mockTime3,
         url = mockUrlValid,
+        title = "",
         description = "",
-        extendedDescription = "",
         tags = emptyList()
     )
     private val postDescription = createPost(
         time = mockTime4,
         url = "",
-        description = mockUrlDescription,
-        extendedDescription = "",
+        title = mockUrlTitle,
+        description = "",
         tags = emptyList()
     )
     private val postExtended = createPost(
         time = mockTime5,
         url = "",
-        description = "",
-        extendedDescription = mockUrlExtendedDescription,
+        title = "",
+        description = mockUrlDescription,
         tags = emptyList()
     )
 
@@ -112,13 +112,13 @@ class FilterPostsTest {
     }
 
     @Test
-    fun `GIVEN Params term is not empty WHEN FilterPosts is called THEN posts that contains the term in the description are returned`() {
+    fun `GIVEN Params term is not empty WHEN FilterPosts is called THEN posts that contains the term in the title are returned`() {
         // GIVEN
         val expectedResult = listOf(postDescription)
 
         // WHEN
         val result =
-            callSuspend { filterPosts(FilterPosts.Params(mockDataSet, term = "description", tags = emptyList())) }
+            callSuspend { filterPosts(FilterPosts.Params(mockDataSet, term = "title", tags = emptyList())) }
 
         // THEN
         result.shouldBeAnInstanceOf<Success<List<Post>>>()
@@ -126,7 +126,7 @@ class FilterPostsTest {
     }
 
     @Test
-    fun `GIVEN Params term is not empty WHEN FilterPosts is called THEN posts that contains the term in the extended description are returned`() {
+    fun `GIVEN Params term is not empty WHEN FilterPosts is called THEN posts that contains the term in the description are returned`() {
         // GIVEN
         val expectedResult = listOf(postExtended)
 

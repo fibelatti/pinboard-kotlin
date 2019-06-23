@@ -11,8 +11,8 @@ interface PostsRepository {
 
     suspend fun add(
         url: String,
-        description: String,
-        extended: String? = null,
+        title: String,
+        description: String? = null,
         private: Boolean? = null,
         readLater: Boolean? = null,
         tags: List<Tag>? = null

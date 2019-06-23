@@ -7,7 +7,7 @@ import com.fibelatti.core.test.extension.callSuspend
 import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
-import com.fibelatti.pinboard.MockDataProvider.mockUrlDescription
+import com.fibelatti.pinboard.MockDataProvider.mockUrlTitle
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.InvalidRequestException
@@ -19,7 +19,7 @@ class AddPostTest {
     private val mockPostsRepository = mock<PostsRepository>()
     private val mockValidateUrl = mock<ValidateUrl>()
 
-    private val params = AddPost.Params(mockUrlValid, mockUrlDescription)
+    private val params = AddPost.Params(mockUrlValid, mockUrlTitle)
 
     private val addPost = AddPost(
         mockPostsRepository,
@@ -48,8 +48,8 @@ class AddPostTest {
         givenSuspend {
             mockPostsRepository.add(
                 params.url,
+                params.title,
                 params.description,
-                params.extended,
                 params.private,
                 params.readLater,
                 params.tags
@@ -57,7 +57,7 @@ class AddPostTest {
         }.willReturn(Failure(ApiException()))
 
         // WHEN
-        val result = callSuspend { addPost(AddPost.Params(mockUrlValid, mockUrlDescription)) }
+        val result = callSuspend { addPost(AddPost.Params(mockUrlValid, mockUrlTitle)) }
 
         // THEN
         result.shouldBeAnInstanceOf<Failure>()
@@ -72,8 +72,8 @@ class AddPostTest {
         givenSuspend {
             mockPostsRepository.add(
                 params.url,
+                params.title,
                 params.description,
-                params.extended,
                 params.private,
                 params.readLater,
                 params.tags
@@ -81,7 +81,7 @@ class AddPostTest {
         }.willReturn(Success(Unit))
 
         // WHEN
-        val result = callSuspend { addPost(AddPost.Params(mockUrlValid, mockUrlDescription)) }
+        val result = callSuspend { addPost(AddPost.Params(mockUrlValid, mockUrlTitle)) }
 
         // THEN
         result.shouldBeAnInstanceOf<Success<Unit>>()
