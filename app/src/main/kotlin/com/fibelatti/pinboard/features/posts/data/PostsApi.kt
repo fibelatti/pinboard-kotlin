@@ -20,7 +20,7 @@ interface PostsApi {
         @Query("extended") description: String? = null,
         @Query("shared") public: String? = null,
         @Query("toread") readLater: String? = null,
-        @Query("tags") tags: String? = null
+        @Query("tags", encoded = true) tags: String? = null
     ): GenericResponseDto
 
     @GET("posts/delete")

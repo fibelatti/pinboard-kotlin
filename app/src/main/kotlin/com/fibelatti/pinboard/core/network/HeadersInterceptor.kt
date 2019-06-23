@@ -15,7 +15,7 @@ class HeadersInterceptor @Inject constructor(
             val url = request.url().newBuilder()
                 .apply {
                     addQueryParameter("format", "json")
-                    addQueryParameter("auth_token", userSharedPreferences.getAuthToken())
+                    addEncodedQueryParameter("auth_token", userSharedPreferences.getAuthToken())
                 }
                 .build()
 
