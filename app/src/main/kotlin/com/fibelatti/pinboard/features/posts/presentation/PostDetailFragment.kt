@@ -174,8 +174,6 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
             R.id.menuItemDelete -> deletePost(post)
             R.id.menuItemEditLink -> {
             }
-            R.id.menuItemLinkTags -> {
-            }
             R.id.menuItemOpenInBrowser -> openUrlInExternalBrowser(post)
         }
 
