@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.posts.data
 
+import com.fibelatti.pinboard.core.AppConfig.API_DEFAULT_RECENT_COUNT
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.RecentDto
@@ -35,7 +36,8 @@ interface PostsApi {
 
     @GET("posts/recent")
     suspend fun getRecentPosts(
-        @Query("tag") tag: String? = null
+        @Query("tag") tag: String? = null,
+        @Query("count") count: Int = API_DEFAULT_RECENT_COUNT
     ): RecentDto
 
     @GET("posts/suggest")

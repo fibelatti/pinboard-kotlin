@@ -310,7 +310,7 @@ class PostsDataSourceTest {
                 given(mockConnectivityManager.activeNetworkInfo)
                     .willReturn(mockActiveNetworkInfo)
                 given(mockActiveNetworkInfo.isConnected)
-                    .willReturn(false)
+                    .willReturn(true)
             }
 
             @Test
@@ -329,6 +329,8 @@ class PostsDataSourceTest {
                 // THEN
                 result.shouldBeAnInstanceOf<Failure>()
                 result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
+
+                verifySuspend(mockApi) { getAllPosts(mockTagsRequest) }
             }
 
             @Test
@@ -349,6 +351,8 @@ class PostsDataSourceTest {
                 // THEN
                 result.shouldBeAnInstanceOf<Success<List<Post>>>()
                 result.getOrNull() shouldBe mockListPost
+
+                verifySuspend(mockApi) { getAllPosts(mockTagsRequest) }
             }
         }
 
