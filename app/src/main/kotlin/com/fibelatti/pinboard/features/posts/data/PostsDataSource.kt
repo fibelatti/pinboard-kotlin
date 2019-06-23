@@ -92,13 +92,13 @@ class PostsDataSource @Inject constructor(
                 localPosts
             } else {
                 resultFrom { postsApi.getAllPosts(tags?.forRequest()) }
-                    .onSuccess {
-                        catching {
-                            userRepository.setLastUpdate(apiLastUpdate)
-                            postsDao.deleteAllPosts()
-                            postsDao.savePosts(it)
-                        }
+                    .mapCatching { posts ->
+                        postsDao.deleteAllPosts()
+                        postsDao.savePosts(posts)
+
+                        posts
                     }
+                    .onSuccess { userRepository.setLastUpdate(apiLastUpdate) }
             }
         }.mapCatching(postDtoMapper::mapList)
     }

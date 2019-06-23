@@ -402,7 +402,7 @@ class PostsDataSourceTest {
             }
 
             @Test
-            fun `GIVEN lastUpdate matches and localPosts is empty WHEN getAllPosts is called and it fails to save the result THEN api response is returned normally`() {
+            fun `GIVEN lastUpdate matches and localPosts is empty WHEN getAllPosts is called and it fails to save the result THEN error is returned`() {
                 // GIVEN
                 given(mockUserRepository.getLastUpdate())
                     .willReturn(mockTime)
@@ -414,18 +414,16 @@ class PostsDataSourceTest {
                     .willReturn(mockListPostDto)
                 given(mockDao.savePosts(mockListPostDto))
                     .willAnswer { throw Exception() }
-                given(mockPostDtoMapper.mapList(mockListPostDto))
-                    .willReturn(mockListPost)
 
                 // WHEN
                 val result = callSuspend { dataSource.getAllPosts(mockTags) }
 
                 // THEN
-                result.shouldBeAnInstanceOf<Success<List<Post>>>()
-                result.getOrNull() shouldBe mockListPost
+                result.shouldBeAnInstanceOf<Failure>()
+                result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
 
                 verifySuspend(mockApi) { update() }
-                verify(mockUserRepository).setLastUpdate(mockTime)
+                verify(mockUserRepository, never()).setLastUpdate(anyString())
                 verify(mockDao).deleteAllPosts()
                 verify(mockDao).savePosts(mockListPostDto)
             }
