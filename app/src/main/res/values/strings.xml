@@ -87,6 +87,7 @@
     <string name="posts_add_title">Save link</string>
     <string name="posts_add_url">URL</string>
     <string name="posts_add_url_title">Title</string>
+    <string name="posts_add_url_description">Description</string>
     <string name="posts_add_private">Private</string>
     <string name="posts_add_read_later">Read later</string>
     <string name="posts_add_tags">New tag</string>

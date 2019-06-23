@@ -60,6 +60,19 @@
             android:textSize="@dimen/text_size_small" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <EditText
+        android:id="@+id/editTextDescription"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:hint="@string/posts_add_url_description"
+        android:inputType="textMultiLine"
+        android:textSize="@dimen/text_size_small"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/checkboxPrivate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutTitle" />
+
     <CheckBox
         android:id="@+id/checkboxPrivate"
         android:layout_width="0dp"

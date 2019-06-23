@@ -78,6 +78,7 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
                         postAddViewModel.saveLink(
                             editTextUrl.textAsString(),
                             editTextTitle.textAsString(),
+                            editTextDescription.textAsString(),
                             checkboxPrivate.isChecked,
                             checkboxReadLater.isChecked,
                             chipGroupTags.children.filterIsInstance<TagChip>().mapNotNull { it.getValue() }
@@ -149,6 +150,7 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
         with(post) {
             editTextUrl.setText(url)
             editTextTitle.setText(title)
+            editTextDescription.setText(description)
             checkboxPrivate.isChecked = private
             checkboxReadLater.isChecked = readLater
 
