@@ -21,6 +21,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockTagsRequest
 import com.fibelatti.pinboard.MockDataProvider.mockTime
 import com.fibelatti.pinboard.MockDataProvider.mockUrlTitle
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
+import com.fibelatti.pinboard.TestRateLimitRunner
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.util.DateFormatter
@@ -55,6 +56,7 @@ class PostsDataSourceTest {
     private val mockSuggestedTagsDtoMapper = mock<SuggestedTagDtoMapper>()
     private val mockDateFormatter = mock<DateFormatter>()
     private val mockConnectivityManager = mock<ConnectivityManager>()
+    private val mockRunner = TestRateLimitRunner()
 
     private val mockListPostDto = listOf(mock<PostDto>())
     private val mockListPost = listOf(mock<Post>())
@@ -68,7 +70,8 @@ class PostsDataSourceTest {
         mockPostDtoMapper,
         mockSuggestedTagsDtoMapper,
         mockDateFormatter,
-        mockConnectivityManager
+        mockConnectivityManager,
+        mockRunner
     )
 
     @Nested

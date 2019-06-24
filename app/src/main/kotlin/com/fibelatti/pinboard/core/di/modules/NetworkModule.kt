@@ -2,7 +2,9 @@ package com.fibelatti.pinboard.core.di.modules
 
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.core.network.ApiRateLimitRunner
 import com.fibelatti.pinboard.core.network.HeadersInterceptor
+import com.fibelatti.pinboard.core.network.RateLimitRunner
 import com.fibelatti.pinboard.core.network.UnauthorizedInterceptor
 import com.squareup.moshi.Moshi
 import dagger.Binds
@@ -57,4 +59,7 @@ abstract class NetworkModule {
 
     @Binds
     abstract fun authInterceptor(headersInterceptor: HeadersInterceptor): Interceptor
+
+    @Binds
+    abstract fun rateLimitRunner(apiRateLimitRunner: ApiRateLimitRunner): RateLimitRunner
 }

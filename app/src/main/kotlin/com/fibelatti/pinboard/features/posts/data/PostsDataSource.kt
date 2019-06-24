@@ -13,6 +13,7 @@ import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.extension.isConnected
 import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.ApiException
+import com.fibelatti.pinboard.core.network.RateLimitRunner
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
@@ -35,11 +36,12 @@ class PostsDataSource @Inject constructor(
     private val postDtoMapper: PostDtoMapper,
     private val suggestedTagDtoMapper: SuggestedTagDtoMapper,
     private val dateFormatter: DateFormatter,
-    private val connectivityManager: ConnectivityManager?
+    private val connectivityManager: ConnectivityManager?,
+    private val rateLimitRunner: RateLimitRunner
 ) : PostsRepository {
 
     override suspend fun update(): Result<String> = withContext(Dispatchers.IO) {
-        resultFrom(postsApi::update)
+        resultFrom { rateLimitRunner.run(postsApi::update) }
             .mapCatching(UpdateDto::updateTime)
     }
 
@@ -74,8 +76,11 @@ class PostsDataSource @Inject constructor(
         tags: List<Tag>?
     ): Result<List<Post>> = withContext(Dispatchers.IO) {
         withLocalDataSourceCheck {
-            resultFrom { postsApi.getRecentPosts(tags?.forRequest(), count = API_DEFAULT_RECENT_COUNT) }
-                .mapCatching { postDtoMapper.mapList(it.posts) }
+            resultFrom {
+                rateLimitRunner.run {
+                    postsApi.getRecentPosts(tags?.forRequest(), count = API_DEFAULT_RECENT_COUNT)
+                }
+            }.mapCatching { postDtoMapper.mapList(it.posts) }
         }.mapCatching { it.take(API_DEFAULT_RECENT_COUNT) }
     }
 
@@ -83,7 +88,7 @@ class PostsDataSource @Inject constructor(
         tags: List<Tag>?
     ): Result<List<Post>> = withContext(Dispatchers.IO) {
         withLocalDataSourceCheck { apiLastUpdate ->
-            resultFrom { postsApi.getAllPosts(tags?.forRequest()) }
+            resultFrom { rateLimitRunner.run { postsApi.getAllPosts(tags?.forRequest()) } }
                 .mapCatching { posts ->
                     postsDao.deleteAllPosts()
                     postsDao.savePosts(posts)
@@ -97,7 +102,7 @@ class PostsDataSource @Inject constructor(
     override suspend fun getSuggestedTagsForUrl(
         url: String
     ): Result<SuggestedTags> = withContext(Dispatchers.IO) {
-        resultFrom { postsApi.getSuggestedTagsForUrl(url) }
+        resultFrom { rateLimitRunner.run { postsApi.getSuggestedTagsForUrl(url) } }
             .mapCatching(suggestedTagDtoMapper::map)
     }
 
