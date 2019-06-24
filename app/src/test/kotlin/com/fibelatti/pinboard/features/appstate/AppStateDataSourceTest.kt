@@ -4,7 +4,6 @@ import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
 import com.fibelatti.core.provider.ResourceProvider
-import com.fibelatti.pinboard.test.extension.createMockedInstance
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.safeAny
 import com.fibelatti.pinboard.InstantExecutorExtension
@@ -24,6 +23,7 @@ import org.junit.jupiter.api.fail
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.BDDMockito.given
+import org.mockito.Mockito
 import org.mockito.Mockito.never
 import org.mockito.Mockito.spy
 import org.mockito.Mockito.verify
@@ -142,7 +142,7 @@ internal class AppStateDataSourceTest {
                             it.sealedSubclasses
                         }
                     }
-                    .map { it.objectInstance ?: it.createMockedInstance() }
+                    .map { it.objectInstance ?: Mockito.mock(it.javaObjectType) }
                     .forEach { action ->
                         when (action) {
                             // Navigation
