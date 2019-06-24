@@ -16,13 +16,11 @@ import com.fibelatti.core.extension.withLinearLayoutManager
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.RefreshTags
 import com.fibelatti.pinboard.features.appstate.TagList
-import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import com.google.android.material.bottomappbar.BottomAppBar
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_tags.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
 import kotlinx.android.synthetic.main.layout_tag_list.*
@@ -75,7 +73,7 @@ class TagsFragment @Inject constructor(
             }
         }
 
-        mainActivity?.updateViews { bottomAppBar: BottomAppBar, fab: FloatingActionButton ->
+        mainActivity?.updateViews { bottomAppBar, fab ->
             bottomAppBar.run {
                 navigationIcon = null
                 menu.clear()

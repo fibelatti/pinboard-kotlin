@@ -42,8 +42,6 @@ import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.google.android.material.bottomappbar.BottomAppBar
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_post_list.*
 import kotlinx.android.synthetic.main.layout_offline_alert.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
@@ -150,9 +148,8 @@ class PostListFragment @Inject constructor(
             hideNavigateUp()
             setTitle(content.title)
         }
-        mainActivity?.updateViews { bottomAppBar: BottomAppBar, fab: FloatingActionButton ->
+        mainActivity?.updateViews { bottomAppBar, fab ->
             bottomAppBar.run {
-                fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
                 setNavigationIcon(R.drawable.ic_menu)
                 replaceMenu(R.menu.menu_main)
                 setOnMenuItemClickListener { item: MenuItem? -> handleMenuClick(item) }

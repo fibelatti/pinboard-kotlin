@@ -27,8 +27,6 @@ import com.fibelatti.pinboard.core.extension.toast
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import com.google.android.material.bottomappbar.BottomAppBar
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_add_post.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
 import javax.inject.Inject
@@ -50,14 +48,13 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupLayout()
         setupViewModels()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mainActivity?.updateViews { bottomAppBar: BottomAppBar, _: FloatingActionButton ->
+        mainActivity?.updateViews { bottomAppBar, _ ->
             bottomAppBar.hideKeyboard()
             bottomAppBar.visible()
         }
@@ -69,7 +66,7 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
             setNavigateUp(R.drawable.ic_close) { navigateBack() }
         }
 
-        mainActivity?.updateViews { bottomAppBar: BottomAppBar, fab: FloatingActionButton ->
+        mainActivity?.updateViews { bottomAppBar, fab ->
             bottomAppBar.gone()
             fab.run {
                 blink {

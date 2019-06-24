@@ -32,8 +32,6 @@ import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagsAdapter
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
-import com.google.android.material.bottomappbar.BottomAppBar
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_search_post.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
 import kotlinx.android.synthetic.main.layout_tag_list.*
@@ -90,7 +88,7 @@ class PostSearchFragment @Inject constructor(
             }
         }
 
-        mainActivity?.updateViews { bottomAppBar: BottomAppBar, fab: FloatingActionButton ->
+        mainActivity?.updateViews { bottomAppBar, fab ->
             bottomAppBar.run {
                 navigationIcon = null
                 replaceMenu(R.menu.menu_search)

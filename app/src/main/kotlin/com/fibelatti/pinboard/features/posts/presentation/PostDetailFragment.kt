@@ -24,6 +24,7 @@ import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.blink
 import com.fibelatti.pinboard.core.extension.shareText
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.showStyledDialog
@@ -32,17 +33,15 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.PostDetail
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.google.android.material.bottomappbar.BottomAppBar
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_post_detail.*
 import kotlinx.android.synthetic.main.layout_file_view.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
 import kotlinx.android.synthetic.main.layout_url_error.*
 import javax.inject.Inject
-import kotlinx.android.synthetic.main.layout_file_view.textViewUrlTitle as fileViewUrlTitle
 import kotlinx.android.synthetic.main.layout_file_view.textViewUrl as fileViewUrl
-import kotlinx.android.synthetic.main.layout_url_error.textViewUrlTitle as errorViewUrlTitle
+import kotlinx.android.synthetic.main.layout_file_view.textViewUrlTitle as fileViewUrlTitle
 import kotlinx.android.synthetic.main.layout_url_error.textViewUrl as errorViewUrl
+import kotlinx.android.synthetic.main.layout_url_error.textViewUrlTitle as errorViewUrlTitle
 
 class PostDetailFragment @Inject constructor() : BaseFragment() {
 
@@ -112,17 +111,18 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
             setTitle("")
             setNavigateUp { navigateBack() }
         }
-        mainActivity?.updateViews { bottomAppBar: BottomAppBar, fab: FloatingActionButton ->
+        mainActivity?.updateViews { bottomAppBar, fab ->
             bottomAppBar.run {
-                fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_END
                 navigationIcon = null
                 replaceMenu(R.menu.menu_link)
                 setOnMenuItemClickListener { item: MenuItem? -> handleMenuClick(item, post) }
                 show()
             }
             fab.run {
-                setImageResource(R.drawable.ic_share)
-                setOnClickListener { requireActivity().shareText(R.string.posts_share_title, post.url) }
+                blink {
+                    setImageResource(R.drawable.ic_share)
+                    setOnClickListener { requireActivity().shareText(R.string.posts_share_title, post.url) }
+                }
             }
         }
     }
