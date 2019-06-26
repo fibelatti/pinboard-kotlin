@@ -24,6 +24,7 @@ import com.fibelatti.pinboard.core.functional.DoNothing
 import com.fibelatti.pinboard.features.appstate.AddPostView
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.features.appstate.EditPostView
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.appstate.PostDetail
 import com.fibelatti.pinboard.features.appstate.PostList
@@ -96,6 +97,7 @@ class MainActivity :
                 is SearchView -> showSearchView()
                 is AddPostView -> showAddPostView()
                 is TagList -> showTagsView()
+                is EditPostView -> showEditPostView()
             }.exhaustive
         }
     }
@@ -121,6 +123,14 @@ class MainActivity :
                 )
                 add(R.id.fragmentHost, createFragment<PostDetailFragment>(), PostDetailFragment.TAG)
                 addToBackStack(PostDetailFragment.TAG)
+            }
+        } else {
+            for (fragment in supportFragmentManager.fragments.reversed()) {
+                if (fragment.tag != PostDetailFragment.TAG) {
+                    supportFragmentManager.popBackStack()
+                } else {
+                    break
+                }
             }
         }
     }
@@ -150,6 +160,16 @@ class MainActivity :
             inTransaction {
                 setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
                 add(R.id.fragmentHost, createFragment<TagsFragment>(), TagsFragment.TAG)
+                addToBackStack(PostAddFragment.TAG)
+            }
+        }
+    }
+
+    private fun showEditPostView() {
+        if (supportFragmentManager.findFragmentByTag(PostAddFragment.TAG) == null) {
+            inTransaction {
+                setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
+                add(R.id.fragmentHost, createFragment<PostAddFragment>(), PostAddFragment.TAG)
                 addToBackStack(PostAddFragment.TAG)
             }
         }

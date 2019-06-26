@@ -16,7 +16,7 @@ data class PostList(
 ) : Content()
 
 private interface ContentHistory {
-    val previousContent: PostList
+    val previousContent: Content
 }
 
 sealed class ContentWithHistory : Content(), ContentHistory
@@ -36,6 +36,11 @@ data class SearchView(
 
 data class AddPostView(
     override val previousContent: PostList
+) : ContentWithHistory()
+
+data class EditPostView(
+    val post: Post,
+    override val previousContent: PostDetail
 ) : ContentWithHistory()
 
 data class TagList(

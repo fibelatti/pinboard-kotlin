@@ -9,6 +9,7 @@ import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.safeAny
 import com.fibelatti.core.test.extension.verifySuspend
+import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
@@ -73,7 +74,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         givenSuspend { mockGetUrlTitle(mockUrlValid) }
             .willReturn(Success(mockUrlValid))
         givenSuspend { mockAddPost(AddPost.Params(mockUrlValid, mockUrlValid)) }
-            .willReturn(Success(Unit))
+            .willReturn(Success(createPost()))
 
         // WHEN
         shareReceiverViewModel.saveUrl(mockUrlValid)

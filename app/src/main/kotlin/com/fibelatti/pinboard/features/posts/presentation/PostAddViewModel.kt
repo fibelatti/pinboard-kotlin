@@ -11,24 +11,22 @@ import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.appstate.PostSaved
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
-import com.fibelatti.pinboard.features.posts.domain.usecase.GetSuggestedTagsForUrl
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class PostAddViewModel @Inject constructor(
+    private val appStateRepository: AppStateRepository,
     private val addPost: AddPost,
-    private val suggestedTagsForUrl: GetSuggestedTagsForUrl,
     private val resourceProvider: ResourceProvider
 ) : BaseViewModel() {
 
-    val loading: LiveEvent<Boolean> get() = _loading
-    private val _loading = MutableLiveEvent<Boolean>()
-    val post: LiveData<Post> get() = _post
-    private val _post = MutableLiveData<Post>()
+    val loading: LiveData<Boolean> get() = _loading
+    private val _loading = MutableLiveData<Boolean>()
     val invalidUrlError: LiveData<String> get() = _invalidUrlError
     private val _invalidUrlError = MutableLiveData<String>()
     val invalidUrlTitleError: LiveData<String> get() = _invalidUrlTitleError
@@ -46,16 +44,19 @@ class PostAddViewModel @Inject constructor(
     ) {
         launch {
             validateData(url, title, description, private, readLater, tags) { params ->
+                _loading.postValue(true)
                 addPost(params)
-                    .onSuccess { _saved.postEvent(Unit) }
-                    .onFailure {
-                        when (it) {
+                    .onSuccess {
+                        _saved.postEvent(Unit)
+                        appStateRepository.runAction(PostSaved(it))
+                    }
+                    .onFailure { error ->
+                        _loading.postValue(false)
+                        when (error) {
                             is InvalidUrlException -> {
                                 _invalidUrlError.postValue(resourceProvider.getString(R.string.validation_error_invalid_url))
                             }
-                            else -> {
-                                handleError(Throwable(resourceProvider.getString(R.string.generic_msg_error)))
-                            }
+                            else -> handleError(error)
                         }
                     }
             }
@@ -71,6 +72,9 @@ class PostAddViewModel @Inject constructor(
         tags: List<Tag>,
         ifValid: (AddPost.Params) -> Unit
     ) {
+        _invalidUrlError.postValue(String.empty())
+        _invalidUrlTitleError.postValue(String.empty())
+
         when {
             url.isBlank() -> {
                 _invalidUrlError.postValue(resourceProvider.getString(R.string.validation_error_empty_url))
@@ -79,9 +83,6 @@ class PostAddViewModel @Inject constructor(
                 _invalidUrlTitleError.postValue(resourceProvider.getString(R.string.validation_error_empty_title))
             }
             else -> {
-                _invalidUrlError.postValue(String.empty())
-                _invalidUrlTitleError.postValue(String.empty())
-
                 ifValid(
                     AddPost.Params(
                         url = url,

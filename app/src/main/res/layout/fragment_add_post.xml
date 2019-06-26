@@ -11,15 +11,6 @@
     android:paddingStart="@dimen/padding_regular"
     android:paddingEnd="@dimen/padding_regular">
 
-    <include
-        layout="@layout/layout_progress_bar"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="gone" />
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutUrl"
         style="@style/AppTheme.InputLayout"
@@ -148,5 +139,14 @@
         app:layout_constraintTop_toBottomOf="@+id/textViewSuggestedTagsTitle"
         tools:listitem="@layout/list_item_tag"
         tools:visibility="visible" />
+
+    <include
+        layout="@layout/layout_progress_bar"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

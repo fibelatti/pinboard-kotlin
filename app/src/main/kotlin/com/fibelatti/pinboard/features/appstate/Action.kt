@@ -32,6 +32,9 @@ sealed class PostAction : Action()
 object Refresh : PostAction()
 data class SetPosts(val posts: List<Post>) : PostAction()
 object ToggleSorting : PostAction()
+data class EditPost(val post: Post) : PostAction()
+data class PostSaved(val post: Post) : PostAction()
+object PostDeleted : PostAction()
 // endregion
 
 // region SearchAction

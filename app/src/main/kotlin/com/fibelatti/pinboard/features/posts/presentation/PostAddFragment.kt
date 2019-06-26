@@ -21,9 +21,10 @@ import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import com.fibelatti.pinboard.core.extension.blink
 import com.fibelatti.pinboard.core.extension.onKeyboardSubmit
 import com.fibelatti.pinboard.core.extension.toast
+import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.features.appstate.EditPostView
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -38,6 +39,9 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
         val TAG: String = PostAddFragment::class.java.simpleName
     }
 
+    private val appStateViewModel: AppStateViewModel by lazy {
+        viewModelFactory.get<AppStateViewModel>(this)
+    }
     private val postAddViewModel by lazy { viewModelFactory.get<PostAddViewModel>(this) }
 
     override fun onCreateView(
@@ -69,23 +73,27 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
         mainActivity?.updateViews { bottomAppBar, fab ->
             bottomAppBar.gone()
             fab.run {
-                blink {
-                    setImageResource(R.drawable.ic_done)
-                    setOnClickListener {
-                        postAddViewModel.saveLink(
-                            editTextUrl.textAsString(),
-                            editTextTitle.textAsString(),
-                            editTextDescription.textAsString(),
-                            checkboxPrivate.isChecked,
-                            checkboxReadLater.isChecked,
-                            chipGroupTags.children.filterIsInstance<TagChip>().mapNotNull { it.getValue() }
-                        )
-                    }
+                setImageResource(R.drawable.ic_done)
+                setOnClickListener {
+                    saveLink()
+                    hide()
                 }
+                show()
             }
         }
 
         setupTagInput()
+    }
+
+    private fun saveLink() {
+        postAddViewModel.saveLink(
+            editTextUrl.textAsString(),
+            editTextTitle.textAsString(),
+            editTextDescription.textAsString(),
+            checkboxPrivate.isChecked,
+            checkboxReadLater.isChecked,
+            chipGroupTags.children.filterIsInstance<TagChip>().mapNotNull(TagChip::getValue)
+        )
     }
 
     private fun setupTagInput() {
@@ -130,16 +138,21 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun setupViewModels() {
-        with(postAddViewModel) {
-            observeEvent(loading) { layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE) }
-            observe(post, ::showPostDetails)
-            observe(invalidUrlError, ::handleInvalidUrlError)
-            observe(invalidUrlTitleError, ::handleInvalidTitleError)
-            observeEvent(saved) {
-                mainActivity?.toast(getString(R.string.posts_saved_feedback))
-                navigateBack()
+        viewLifecycleOwner.observe(appStateViewModel.getContent()) { content ->
+            if (content is EditPostView) {
+                showPostDetails(content.post)
             }
-            error(error, ::handleError)
+        }
+
+        with(postAddViewModel) {
+            viewLifecycleOwner.observe(loading) { layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE) }
+            viewLifecycleOwner.observeEvent(saved) { mainActivity?.toast(getString(R.string.posts_saved_feedback)) }
+            viewLifecycleOwner.observe(invalidUrlError, ::handleInvalidUrlError)
+            viewLifecycleOwner.observe(invalidUrlTitleError, ::handleInvalidTitleError)
+            viewLifecycleOwner.error(error) {
+                handleError(it)
+                showFab()
+            }
         }
     }
 
@@ -152,21 +165,29 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
             checkboxReadLater.isChecked = readLater
 
             chipGroupTags.removeAllViews()
-            tags.forEach { tag ->
-                chipGroupTags.addView(createTagChip(tag))
-            }
+            tags.forEach { tag -> chipGroupTags.addView(createTagChip(tag)) }
         }
     }
 
     private fun handleInvalidUrlError(message: String) {
         textInputLayoutUrl.run {
-            message.takeIf(String::isNotEmpty)?.let { showError(it) } ?: clearError()
+            message.takeIf(String::isNotEmpty)?.let {
+                showError(it)
+                showFab()
+            } ?: clearError()
         }
     }
 
     private fun handleInvalidTitleError(message: String) {
         textInputLayoutTitle.run {
-            message.takeIf(String::isNotEmpty)?.let { showError(it) } ?: clearError()
+            message.takeIf(String::isNotEmpty)?.let {
+                showError(it)
+                showFab()
+            } ?: clearError()
         }
+    }
+
+    private fun showFab() {
+        mainActivity?.updateViews { _, fab -> fab.show() }
     }
 }

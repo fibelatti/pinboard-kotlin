@@ -4,15 +4,16 @@ import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.UseCaseWithParams
 import com.fibelatti.core.functional.map
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
+import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import javax.inject.Inject
 
 class AddPost @Inject constructor(
     private val postsRepository: PostsRepository,
     private val validateUrl: ValidateUrl
-) : UseCaseWithParams<Unit, AddPost.Params>() {
+) : UseCaseWithParams<Post, AddPost.Params>() {
 
-    override suspend fun run(params: Params): Result<Unit> =
+    override suspend fun run(params: Params): Result<Post> =
         validateUrl(params.url)
             .map {
                 postsRepository.add(
@@ -24,6 +25,7 @@ class AddPost @Inject constructor(
                     tags = params.tags
                 )
             }
+            .map { postsRepository.getPost(params.url) }
 
     data class Params(
         val url: String,

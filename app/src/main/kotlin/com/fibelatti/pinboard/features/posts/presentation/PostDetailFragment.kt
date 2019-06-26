@@ -24,12 +24,12 @@ import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import com.fibelatti.pinboard.core.extension.blink
 import com.fibelatti.pinboard.core.extension.shareText
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.showStyledDialog
 import com.fibelatti.pinboard.core.extension.toast
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.PostDetail
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -50,6 +50,9 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
         val TAG: String = PostDetailFragment::class.java.simpleName
     }
 
+    private val appStateViewModel: AppStateViewModel by lazy {
+        viewModelFactory.get<AppStateViewModel>(this)
+    }
     private val postDetailViewModel: PostDetailViewModel by lazy {
         viewModelFactory.get<PostDetailViewModel>(this)
     }
@@ -79,15 +82,13 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun setupViewModels() {
-        viewModelFactory.get<AppStateViewModel>(this).run {
-            viewLifecycleOwner.observe(getContent()) { content ->
-                if (content is PostDetail) {
-                    updateViews(content.post)
-                }
+        viewLifecycleOwner.observe(appStateViewModel.getContent()) { content ->
+            if (content is PostDetail) {
+                updateViews(content.post)
             }
         }
         with(postDetailViewModel) {
-            observeEvent(loading) {
+            observe(loading) {
                 layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE)
                 layoutRootFileViewer.goneIf(it)
                 layoutScrollViewWeb.goneIf(it)
@@ -119,10 +120,9 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
                 show()
             }
             fab.run {
-                blink {
-                    setImageResource(R.drawable.ic_share)
-                    setOnClickListener { requireActivity().shareText(R.string.posts_share_title, post.url) }
-                }
+                setImageResource(R.drawable.ic_share)
+                setOnClickListener { requireActivity().shareText(R.string.posts_share_title, post.url) }
+                show()
             }
         }
     }
@@ -172,8 +172,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
     private fun handleMenuClick(item: MenuItem?, post: Post): Boolean {
         when (item?.itemId) {
             R.id.menuItemDelete -> deletePost(post)
-            R.id.menuItemEditLink -> {
-            }
+            R.id.menuItemEditLink -> appStateViewModel.runAction(EditPost(post))
             R.id.menuItemOpenInBrowser -> openUrlInExternalBrowser(post)
         }
 

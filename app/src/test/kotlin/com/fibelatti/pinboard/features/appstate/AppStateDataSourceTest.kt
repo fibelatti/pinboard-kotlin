@@ -10,6 +10,7 @@ import com.fibelatti.pinboard.InstantExecutorExtension
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.createTag
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.allSealedSubclasses
 import com.fibelatti.pinboard.core.functional.SingleRunner
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -64,15 +65,17 @@ internal class AppStateDataSourceTest {
         given(mockActiveNetworkInfo.isConnected)
             .willReturn(false)
 
-        appStateDataSource = spy(AppStateDataSource(
-            mockResourceProvider,
-            mockNavigationActionHandler,
-            mockPostActionHandler,
-            mockSearchActionHandler,
-            mockTagActionHandler,
-            singleRunner,
-            mockConnectivityManager
-        ))
+        appStateDataSource = spy(
+            AppStateDataSource(
+                mockResourceProvider,
+                mockNavigationActionHandler,
+                mockPostActionHandler,
+                mockSearchActionHandler,
+                mockTagActionHandler,
+                singleRunner,
+                mockConnectivityManager
+            )
+        )
     }
 
     @Test
@@ -133,15 +136,7 @@ internal class AppStateDataSourceTest {
 
         fun testCases(): List<Pair<Action, ExpectedHandler>> =
             mutableListOf<Pair<Action, ExpectedHandler>>().apply {
-                Action::class.sealedSubclasses
-                    .flatMap { it.sealedSubclasses }
-                    .flatMap {
-                        if (it.sealedSubclasses.isEmpty()) {
-                            listOf(it)
-                        } else {
-                            it.sealedSubclasses
-                        }
-                    }
+                Action::class.allSealedSubclasses
                     .map { it.objectInstance ?: Mockito.mock(it.javaObjectType) }
                     .forEach { action ->
                         when (action) {
@@ -162,6 +157,9 @@ internal class AppStateDataSourceTest {
                             Refresh -> add(Refresh to ExpectedHandler.POST)
                             is SetPosts -> add(SetPosts(listOf(createPost())) to ExpectedHandler.POST)
                             ToggleSorting -> add(ToggleSorting to ExpectedHandler.POST)
+                            is EditPost -> add(EditPost(createPost()) to ExpectedHandler.POST)
+                            is PostSaved -> add(PostSaved(createPost()) to ExpectedHandler.POST)
+                            PostDeleted -> add(PostDeleted to ExpectedHandler.POST)
 
                             // Search
                             RefreshSearchTags -> add(RefreshSearchTags to ExpectedHandler.SEARCH)

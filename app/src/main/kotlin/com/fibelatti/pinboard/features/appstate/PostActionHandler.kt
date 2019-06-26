@@ -13,6 +13,9 @@ class PostActionHandler @Inject constructor(
             is Refresh -> refresh(currentContent)
             is SetPosts -> setPosts(action, currentContent)
             is ToggleSorting -> toggleSorting(currentContent)
+            is EditPost -> editPost(action, currentContent)
+            is PostSaved -> postSaved(action, currentContent)
+            is PostDeleted -> postDeleted(currentContent)
         }
     }
 
@@ -51,6 +54,38 @@ class PostActionHandler @Inject constructor(
             } else {
                 currentContent.copy(isConnected = false)
             }
+        } else {
+            currentContent
+        }
+    }
+
+    private fun editPost(action: EditPost, currentContent: Content): Content {
+        return if (currentContent is PostDetail) {
+            EditPostView(
+                post = action.post,
+                previousContent = currentContent
+            )
+        } else {
+            currentContent
+        }
+    }
+
+    private fun postSaved(action: PostSaved, currentContent: Content): Content {
+        return if (currentContent is EditPostView) {
+            val postDetail = currentContent.previousContent
+
+            postDetail.copy(
+                post = action.post,
+                previousContent = postDetail.previousContent.copy(shouldLoad = true)
+            )
+        } else {
+            currentContent
+        }
+    }
+
+    private fun postDeleted(currentContent: Content): Content {
+        return if (currentContent is PostDetail) {
+            currentContent.previousContent.copy(shouldLoad = true)
         } else {
             currentContent
         }
