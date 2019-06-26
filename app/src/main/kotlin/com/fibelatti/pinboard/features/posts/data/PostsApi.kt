@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.posts.data
 
 import com.fibelatti.pinboard.core.AppConfig.API_DEFAULT_RECENT_COUNT
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
+import com.fibelatti.pinboard.features.posts.data.model.GetPostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.RecentDto
 import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagsDto
@@ -28,6 +29,11 @@ interface PostsApi {
     suspend fun delete(
         @Query("url") url: String
     ): GenericResponseDto
+
+    @GET("posts/get")
+    suspend fun getPost(
+        @Query("url") url: String
+    ): GetPostDto
 
     @GET("posts/all")
     suspend fun getAllPosts(

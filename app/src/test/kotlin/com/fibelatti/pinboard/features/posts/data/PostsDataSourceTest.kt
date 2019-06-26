@@ -14,6 +14,9 @@ import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
 import com.fibelatti.core.test.extension.verifySuspend
 import com.fibelatti.pinboard.MockDataProvider.createGenericResponse
+import com.fibelatti.pinboard.MockDataProvider.createGetPostDto
+import com.fibelatti.pinboard.MockDataProvider.createPost
+import com.fibelatti.pinboard.MockDataProvider.createPostDto
 import com.fibelatti.pinboard.MockDataProvider.createRecentDto
 import com.fibelatti.pinboard.MockDataProvider.mockFutureTime
 import com.fibelatti.pinboard.MockDataProvider.mockTags
@@ -463,6 +466,55 @@ class PostsDataSourceTest {
                 verifySuspend(mockApi) { update() }
                 verifySuspend(mockApi, never()) { getAllPosts(safeAny()) }
             }
+        }
+    }
+
+    @Nested
+    inner class GetPostTests {
+
+        @Test
+        fun `GIVEN that the api returns an error WHEN getPost is called THEN Failure is returned`() {
+            // GIVEN
+            givenSuspend { mockApi.getPost(mockUrlValid) }
+                .willAnswer { throw Exception() }
+
+            // WHEN
+            val result = callSuspend { dataSource.getPost(mockUrlValid) }
+
+            // THEN
+            result.shouldBeAnInstanceOf<Failure>()
+            result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
+        }
+
+        @Test
+        fun `GIVEN the list is empty WHEN getPost is called THEN Failure is returned`() {
+            // GIVEN
+            givenSuspend { mockApi.getPost(mockUrlValid) }
+                .willReturn(createGetPostDto(posts = emptyList()))
+
+            // WHEN
+            val result = callSuspend { dataSource.getPost(mockUrlValid) }
+
+            // THEN
+            result.shouldBeAnInstanceOf<Failure>()
+        }
+
+        @Test
+        fun `WHEN getPost is called THEN Success is returned`() {
+            // GIVEN
+            val post = createPost()
+
+            givenSuspend { mockApi.getPost(mockUrlValid) }
+                .willReturn(createGetPostDto())
+            given(mockPostDtoMapper.map(createPostDto()))
+                .willReturn(post)
+
+            // WHEN
+            val result = callSuspend { dataSource.getPost(mockUrlValid) }
+
+            // THEN
+            result.shouldBeAnInstanceOf<Success<Post>>()
+            result.getOrNull() shouldBe post
         }
     }
 

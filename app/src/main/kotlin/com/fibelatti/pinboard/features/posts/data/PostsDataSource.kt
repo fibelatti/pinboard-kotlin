@@ -1,10 +1,13 @@
 package com.fibelatti.pinboard.features.posts.data
 
 import android.net.ConnectivityManager
+import android.provider.SyncStateContract.Helpers.update
+import com.fibelatti.core.extension.orThrow
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.getOrNull
+import com.fibelatti.core.functional.map
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.core.AppConfig.API_DEFAULT_RECENT_COUNT
@@ -97,6 +100,11 @@ class PostsDataSource @Inject constructor(
                 }
                 .onSuccess { userRepository.setLastUpdate(apiLastUpdate) }
         }
+    }
+
+    override suspend fun getPost(url: String): Result<Post> = withContext(Dispatchers.IO) {
+        resultFrom { postsApi.getPost(url) }
+            .mapCatching { postDtoMapper.map(it.posts.first()) }
     }
 
     override suspend fun getSuggestedTagsForUrl(

@@ -30,6 +30,10 @@ interface PostsRepository {
         tags: List<Tag>? = null
     ): Result<List<Post>>
 
+    suspend fun getPost(
+        url: String
+    ): Result<Post>
+
     suspend fun getSuggestedTagsForUrl(
         url: String
     ): Result<SuggestedTags>

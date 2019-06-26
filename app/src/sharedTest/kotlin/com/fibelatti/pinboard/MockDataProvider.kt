@@ -5,6 +5,7 @@ import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
+import com.fibelatti.pinboard.features.posts.data.model.GetPostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.RecentDto
 import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagsDto
@@ -96,6 +97,15 @@ object MockDataProvider {
             private = private,
             readLater = readLater,
             tags = tags
+        )
+
+    fun createGetPostDto(
+        posts: List<PostDto> = listOf(createPostDto())
+    ): GetPostDto =
+        GetPostDto(
+            date = mockTime,
+            user = mockUser,
+            posts = posts
         )
 
     fun createRecentDto(
