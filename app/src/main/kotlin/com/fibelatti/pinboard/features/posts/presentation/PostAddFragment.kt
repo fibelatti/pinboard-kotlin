@@ -120,7 +120,7 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
     private fun createTagFromText(text: String, handleWhiteSpace: Boolean): Tag? {
         val tagText = text.run {
             if (handleWhiteSpace) {
-                takeIf { it.endsWith(" ") }?.substringBefore(" ", "")
+                takeIf { it.endsWith(" ") }?.substringBeforeLast(" ", "")
             } else {
                 this
             }
