@@ -6,9 +6,9 @@ import javax.inject.Inject
 
 class PostActionHandler @Inject constructor(
     private val connectivityManager: ConnectivityManager?
-) {
+) : ActionHandler<PostAction>() {
 
-    fun runAction(action: PostAction, currentContent: Content): Content {
+    override fun runAction(action: PostAction, currentContent: Content): Content {
         return when (action) {
             is Refresh -> refresh(currentContent)
             is SetPosts -> setPosts(action, currentContent)
@@ -31,13 +31,11 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun setPosts(action: SetPosts, currentContent: Content): Content {
-        return if (currentContent is PostList) {
-            currentContent.copy(
+        return runOnlyForCurrentContentOfType<PostList>(currentContent) {
+            it.copy(
                 posts = action.posts,
                 shouldLoad = false
             )
-        } else {
-            currentContent
         }
     }
 
@@ -60,34 +58,28 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun editPost(action: EditPost, currentContent: Content): Content {
-        return if (currentContent is PostDetail) {
+        return runOnlyForCurrentContentOfType<PostDetail>(currentContent) {
             EditPostView(
                 post = action.post,
-                previousContent = currentContent
+                previousContent = it
             )
-        } else {
-            currentContent
         }
     }
 
     private fun postSaved(action: PostSaved, currentContent: Content): Content {
-        return if (currentContent is EditPostView) {
-            val postDetail = currentContent.previousContent
+        return runOnlyForCurrentContentOfType<EditPostView>(currentContent) {
+            val postDetail = it.previousContent
 
             postDetail.copy(
                 post = action.post,
                 previousContent = postDetail.previousContent.copy(shouldLoad = true)
             )
-        } else {
-            currentContent
         }
     }
 
     private fun postDeleted(currentContent: Content): Content {
-        return if (currentContent is PostDetail) {
-            currentContent.previousContent.copy(shouldLoad = true)
-        } else {
-            currentContent
+        return runOnlyForCurrentContentOfType<PostDetail>(currentContent) {
+            it.previousContent.copy(shouldLoad = true)
         }
     }
 }

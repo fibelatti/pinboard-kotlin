@@ -3,9 +3,9 @@ package com.fibelatti.pinboard.features.appstate
 import com.fibelatti.pinboard.core.AppConfig
 import javax.inject.Inject
 
-class SearchActionHandler @Inject constructor() {
+class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() {
 
-    fun runAction(action: SearchAction, currentContent: Content): Content {
+    override fun runAction(action: SearchAction, currentContent: Content): Content {
         return when (action) {
             is RefreshSearchTags -> refresh(currentContent)
             is SetSearchTags -> setSearchTags(action, currentContent)
@@ -17,22 +17,18 @@ class SearchActionHandler @Inject constructor() {
     }
 
     private fun refresh(currentContent: Content): Content {
-        return if (currentContent is SearchView) {
-            currentContent.copy(shouldLoadTags = true)
-        } else {
-            currentContent
+        return runOnlyForCurrentContentOfType<SearchView>(currentContent) {
+            it.copy(shouldLoadTags = true)
         }
     }
 
     private fun setSearchTags(action: SetSearchTags, currentContent: Content): Content {
-        return if (currentContent is SearchView) {
-            currentContent.copy(
-                availableTags = action.tags.filterNot { it in currentContent.searchParameters.tags },
+        return runOnlyForCurrentContentOfType<SearchView>(currentContent) { searchView ->
+            searchView.copy(
+                availableTags = action.tags.filterNot { it in searchView.searchParameters.tags },
                 allTags = action.tags,
                 shouldLoadTags = false
             )
-        } else {
-            currentContent
         }
     }
 
@@ -56,39 +52,33 @@ class SearchActionHandler @Inject constructor() {
     }
 
     private fun removeSearchTag(action: RemoveSearchTag, currentContent: Content): Content {
-        return if (currentContent is SearchView) {
-            val newSearchParameters = currentContent.searchParameters.copy(
-                tags = currentContent.searchParameters.tags.minus(action.tag)
+        return runOnlyForCurrentContentOfType<SearchView>(currentContent) { searchView ->
+            val newSearchParameters = searchView.searchParameters.copy(
+                tags = searchView.searchParameters.tags.minus(action.tag)
             )
 
-            currentContent.copy(
+            searchView.copy(
                 searchParameters = newSearchParameters,
-                availableTags = currentContent.allTags.filterNot { it in newSearchParameters.tags }
+                availableTags = searchView.allTags.filterNot { it in newSearchParameters.tags }
             )
-        } else {
-            currentContent
         }
     }
 
     private fun search(action: Search, currentContent: Content): Content {
-        return if (currentContent is SearchView) {
-            currentContent.previousContent.copy(
-                searchParameters = currentContent.searchParameters.copy(term = action.term),
+        return runOnlyForCurrentContentOfType<SearchView>(currentContent) {
+            it.previousContent.copy(
+                searchParameters = it.searchParameters.copy(term = action.term),
                 shouldLoad = true
             )
-        } else {
-            currentContent
         }
     }
 
     private fun clearSearch(currentContent: Content): Content {
-        return if (currentContent is PostList) {
-            currentContent.copy(
+        return runOnlyForCurrentContentOfType<PostList>(currentContent) {
+            it.copy(
                 searchParameters = SearchParameters(),
                 shouldLoad = true
             )
-        } else {
-            currentContent
         }
     }
 }

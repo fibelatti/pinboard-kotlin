@@ -9,9 +9,9 @@ import javax.inject.Inject
 class NavigationActionHandler @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val connectivityManager: ConnectivityManager?
-) {
+) : ActionHandler<NavigationAction>() {
 
-    fun runAction(action: NavigationAction, currentContent: Content): Content {
+    override fun runAction(action: NavigationAction, currentContent: Content): Content {
         return when (action) {
             is NavigateBack -> navigateBack(currentContent)
             is ViewCategory -> viewCategory(action)
@@ -23,11 +23,7 @@ class NavigationActionHandler @Inject constructor(
     }
 
     private fun navigateBack(currentContent: Content): Content {
-        return if (currentContent is ContentWithHistory) {
-            currentContent.previousContent
-        } else {
-            currentContent
-        }
+        return runOnlyForCurrentContentOfType(currentContent, ContentWithHistory::previousContent)
     }
 
     private fun viewCategory(action: ViewCategory): Content {
@@ -50,39 +46,31 @@ class NavigationActionHandler @Inject constructor(
     }
 
     private fun viewPost(action: ViewPost, currentContent: Content): Content {
-        return if (currentContent is PostList) {
-            PostDetail(action.post, previousContent = currentContent)
-        } else {
-            currentContent
+        return runOnlyForCurrentContentOfType<PostList>(currentContent) {
+            PostDetail(action.post, previousContent = it)
         }
     }
 
     private fun viewSearch(currentContent: Content): Content {
-        return if (currentContent is PostList) {
-            SearchView(currentContent.searchParameters, shouldLoadTags = true, previousContent = currentContent)
-        } else {
-            currentContent
+        return runOnlyForCurrentContentOfType<PostList>(currentContent) {
+            SearchView(it.searchParameters, shouldLoadTags = true, previousContent = it)
         }
     }
 
     private fun viewAddPost(currentContent: Content): Content {
-        return if (currentContent is PostList) {
-            AddPostView(previousContent = currentContent)
-        } else {
-            currentContent
+        return runOnlyForCurrentContentOfType<PostList>(currentContent) {
+            AddPostView(previousContent = it)
         }
     }
 
     private fun viewTags(currentContent: Content): Content {
-        return if (currentContent is PostList) {
+        return runOnlyForCurrentContentOfType<PostList>(currentContent) {
             TagList(
                 tags = emptyList(),
                 shouldLoad = connectivityManager.isConnected(),
                 isConnected = connectivityManager.isConnected(),
-                previousContent = currentContent
+                previousContent = it
             )
-        } else {
-            currentContent
         }
     }
 }
