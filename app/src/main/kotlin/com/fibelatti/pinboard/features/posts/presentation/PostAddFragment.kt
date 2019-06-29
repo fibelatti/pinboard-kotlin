@@ -98,36 +98,30 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
 
     private fun setupTagInput() {
         editTextTags.afterTextChanged { text ->
-            val tag = createTagFromText(text, handleWhiteSpace = true)
+            if (text.isNotBlank() && text.endsWith(" ")) {
+                val tags = createTagsFromText(text)
 
-            if (tag != null && chipGroupTags.children.none { (it as? TagChip)?.getValue() == tag }) {
-                chipGroupTags.addView(createTagChip(tag))
-                editTextTags.setText("")
+                for (tag in tags) {
+                    if (chipGroupTags.children.none { (it as? TagChip)?.getValue() == tag }) {
+                        chipGroupTags.addView(createTagChip(tag))
+                        editTextTags.clearText()
+                    }
+                }
             }
         }
         editTextTags.onKeyboardSubmit {
-            val tag = createTagFromText(editTextTags.textAsString(), handleWhiteSpace = false)
+            val tags = createTagsFromText(editTextTags.textAsString())
 
-            if (tag != null) {
+            for (tag in tags) {
                 if (chipGroupTags.children.none { (it as? TagChip)?.getValue() == tag }) {
                     chipGroupTags.addView(createTagChip(tag))
                 }
-                editTextTags.clearText()
             }
+            editTextTags.clearText()
         }
     }
 
-    private fun createTagFromText(text: String, handleWhiteSpace: Boolean): Tag? {
-        val tagText = text.run {
-            if (handleWhiteSpace) {
-                takeIf { it.endsWith(" ") }?.substringBeforeLast(" ", "")
-            } else {
-                this
-            }
-        }?.takeIf { it.isNotBlank() }?.trim()
-
-        return tagText?.let { Tag(it) }
-    }
+    private fun createTagsFromText(text: String): List<Tag> = text.trim().split(" ").map { Tag(it) }
 
     private fun createTagChip(value: Tag): View {
         return layoutInflater.inflate(R.layout.list_item_chip, chipGroupTags, false)
