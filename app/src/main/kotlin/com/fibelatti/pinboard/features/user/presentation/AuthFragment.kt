@@ -18,10 +18,9 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.LinkTransformationMethod
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import kotlinx.android.synthetic.main.fragment_auth.*
 import com.fibelatti.pinboard.core.extension.onKeyboardSubmit
+import kotlinx.android.synthetic.main.fragment_auth.*
 import kotlinx.android.synthetic.main.layout_auth_form.*
-import kotlinx.android.synthetic.main.layout_progress_bar.*
 import javax.inject.Inject
 
 class AuthFragment @Inject constructor() : BaseFragment() {
@@ -59,7 +58,7 @@ class AuthFragment @Inject constructor() : BaseFragment() {
             authViewModel.login(editTextAuthToken.textAsString())
         }
         buttonAuth.setOnClickListener {
-            layoutProgressBar.visible()
+            progressBar.visible()
             buttonAuth.gone()
             authViewModel.login(editTextAuthToken.textAsString())
         }
@@ -73,7 +72,7 @@ class AuthFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun handleAuthError(message: String) {
-        layoutProgressBar.gone()
+        progressBar.gone()
         buttonAuth.visible()
         textInputLayoutAuthToken.showError(message)
     }
