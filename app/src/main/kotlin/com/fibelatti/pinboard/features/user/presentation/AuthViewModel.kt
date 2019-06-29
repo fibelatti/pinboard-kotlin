@@ -40,6 +40,8 @@ class AuthViewModel @Inject constructor(
     }
 
     fun logout() {
-        userRepository.logout()
+        launch {
+            userRepository.logout()
+        }
     }
 }

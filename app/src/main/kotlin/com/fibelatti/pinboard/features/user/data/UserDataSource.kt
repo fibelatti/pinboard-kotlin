@@ -4,14 +4,18 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
+import com.fibelatti.pinboard.features.posts.data.PostsDao
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class UserDataSource @Inject constructor(
-    private val userSharedPreferences: UserSharedPreferences
+    private val userSharedPreferences: UserSharedPreferences,
+    private val postsDao: PostsDao
 ) : UserRepository {
 
     @VisibleForTesting
@@ -23,24 +27,30 @@ class UserDataSource @Inject constructor(
 
     override fun loginAttempt(authToken: String) {
         userSharedPreferences.setAuthToken(authToken)
-        this.loginState.postValue(LoginState.Authorizing)
+        loginState.postValue(LoginState.Authorizing)
     }
 
     override fun loggedIn() {
-        this.loginState.postValue(LoginState.LoggedIn)
+        loginState.postValue(LoginState.LoggedIn)
     }
 
-    override fun logout() {
+    override suspend fun logout() = withContext(Dispatchers.IO) {
         userSharedPreferences.setAuthToken("")
         userSharedPreferences.setLastUpdate("")
-        this.loginState.postValue(LoginState.LoggedOut)
+
+        postsDao.deleteAllPosts()
+
+        loginState.postValue(LoginState.LoggedOut)
     }
 
-    override fun forceLogout() {
+    override suspend fun forceLogout() = withContext(Dispatchers.IO) {
         if (loginState.value == LoginState.LoggedIn) {
             userSharedPreferences.setAuthToken("")
             userSharedPreferences.setLastUpdate("")
-            this.loginState.postValue(LoginState.Unauthorized)
+
+            postsDao.deleteAllPosts()
+
+            loginState.postValue(LoginState.Unauthorized)
         }
     }
 

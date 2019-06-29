@@ -1,6 +1,8 @@
 package com.fibelatti.pinboard.core.network
 
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.net.HttpURLConnection
@@ -12,5 +14,9 @@ class UnauthorizedInterceptor @Inject constructor(
 
     override fun intercept(chain: Interceptor.Chain): Response =
         chain.run { proceed(request()) }
-            .also { if (it.code() == HttpURLConnection.HTTP_UNAUTHORIZED) userRepository.forceLogout() }
+            .also { response ->
+                if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                    GlobalScope.launch { userRepository.forceLogout() }
+                }
+            }
 }

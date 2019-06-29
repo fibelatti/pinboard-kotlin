@@ -7,7 +7,9 @@ import com.fibelatti.pinboard.InstantExecutorExtension
 import com.fibelatti.pinboard.MockDataProvider.mockApiToken
 import com.fibelatti.pinboard.MockDataProvider.mockTime
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
+import com.fibelatti.pinboard.features.posts.data.PostsDao
 import com.fibelatti.pinboard.features.user.domain.LoginState
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -24,6 +26,8 @@ internal class UserDataSourceTest {
     inner class InitialisationTests {
 
         private val mockUserSharedPreferences = mock<UserSharedPreferences>()
+        private val mockPostsDao = mock<PostsDao>()
+
         private lateinit var userDataSource: UserDataSource
 
         @Test
@@ -32,7 +36,7 @@ internal class UserDataSourceTest {
             given(mockUserSharedPreferences.getAuthToken())
                 .willReturn(mockApiToken)
 
-            userDataSource = UserDataSource(mockUserSharedPreferences)
+            userDataSource = UserDataSource(mockUserSharedPreferences, mockPostsDao)
 
             // THEN
             userDataSource.getLoginState().currentValueShouldBe(LoginState.LoggedIn)
@@ -44,7 +48,7 @@ internal class UserDataSourceTest {
             given(mockUserSharedPreferences.getAuthToken())
                 .willReturn("")
 
-            userDataSource = UserDataSource(mockUserSharedPreferences)
+            userDataSource = UserDataSource(mockUserSharedPreferences, mockPostsDao)
 
             // THEN
             userDataSource.getLoginState().currentValueShouldBe(LoginState.LoggedOut)
@@ -55,6 +59,7 @@ internal class UserDataSourceTest {
     inner class Methods {
 
         private val mockUserSharedPreferences = mock<UserSharedPreferences>()
+        private val mockPostsDao = mock<PostsDao>()
 
         private lateinit var userDataSource: UserDataSource
 
@@ -62,7 +67,7 @@ internal class UserDataSourceTest {
         fun setup() {
             given(mockUserSharedPreferences.getAuthToken()).willReturn(mockApiToken)
 
-            userDataSource = UserDataSource(mockUserSharedPreferences)
+            userDataSource = UserDataSource(mockUserSharedPreferences, mockPostsDao)
         }
 
         @Test
@@ -88,11 +93,12 @@ internal class UserDataSourceTest {
         @Test
         fun `WHEN logout is called THEN setAuthToken is set and setLastUpdate is set and loginState value is updated to LoggedOut`() {
             // WHEN
-            userDataSource.logout()
+            runBlocking { userDataSource.logout() }
 
             // THEN
             verify(mockUserSharedPreferences).setAuthToken("")
             verify(mockUserSharedPreferences).setLastUpdate("")
+            verify(mockPostsDao).deleteAllPosts()
             userDataSource.getLoginState().currentValueShouldBe(LoginState.LoggedOut)
         }
 
@@ -102,11 +108,12 @@ internal class UserDataSourceTest {
             userDataSource.loginState.value = LoginState.LoggedOut
 
             // WHEN
-            userDataSource.forceLogout()
+            runBlocking { userDataSource.forceLogout() }
 
             // THEN
             verify(mockUserSharedPreferences, never()).setAuthToken(anyString())
             verify(mockUserSharedPreferences, never()).setLastUpdate(anyString())
+            verify(mockPostsDao, never()).deleteAllPosts()
             userDataSource.getLoginState().currentValueShouldBe(LoginState.LoggedOut)
         }
 
@@ -116,11 +123,12 @@ internal class UserDataSourceTest {
             userDataSource.loginState.value = LoginState.LoggedIn
 
             // WHEN
-            userDataSource.forceLogout()
+            runBlocking { userDataSource.forceLogout() }
 
             // THEN
             verify(mockUserSharedPreferences).setAuthToken("")
             verify(mockUserSharedPreferences).setLastUpdate("")
+            verify(mockPostsDao).deleteAllPosts()
             userDataSource.getLoginState().currentValueShouldBe(LoginState.Unauthorized)
         }
 

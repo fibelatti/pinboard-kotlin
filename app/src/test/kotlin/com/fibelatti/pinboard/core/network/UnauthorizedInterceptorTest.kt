@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.core.network
 
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.safeAny
+import com.fibelatti.core.test.extension.verifySuspend
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -9,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.never
-import org.mockito.Mockito.verify
 import java.net.HttpURLConnection
 
 internal class UnauthorizedInterceptorTest {
@@ -37,7 +37,7 @@ internal class UnauthorizedInterceptorTest {
         unauthorizedInterceptor.intercept(mockChain)
 
         // THEN
-        verify(mockUserRepository).forceLogout()
+        verifySuspend(mockUserRepository) { forceLogout() }
     }
 
     @Test
@@ -50,6 +50,6 @@ internal class UnauthorizedInterceptorTest {
         unauthorizedInterceptor.intercept(mockChain)
 
         // THEN
-        verify(mockUserRepository, never()).forceLogout()
+        verifySuspend(mockUserRepository, never()) { forceLogout() }
     }
 }

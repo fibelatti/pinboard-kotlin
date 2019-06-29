@@ -124,7 +124,7 @@ class PostsDataSource @Inject constructor(
         body: (apiLastUpdate: String) -> Result<List<Post>>
     ): Result<List<Post>> {
         val isConnected = connectivityManager.isConnected()
-        val localPosts = catching { postsDao.getAllPosts() }.mapCatching(postDtoMapper::mapList)
+        val localPosts = catching(postsDao::getAllPosts).mapCatching(postDtoMapper::mapList)
         val hasLocalData = localPosts.getOrDefault(emptyList()).isNotEmpty()
 
         return if (!isConnected && hasLocalData) {

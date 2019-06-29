@@ -10,6 +10,7 @@ import com.fibelatti.core.functional.Success
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
+import com.fibelatti.core.test.extension.verifySuspend
 import com.fibelatti.pinboard.MockDataProvider.UnauthorizedFailure
 import com.fibelatti.pinboard.MockDataProvider.mockApiToken
 import com.fibelatti.pinboard.R
@@ -19,7 +20,6 @@ import com.fibelatti.pinboard.features.user.domain.UserRepository
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verify
 
 class AuthViewModelTest : BaseViewModelTest() {
 
@@ -100,6 +100,6 @@ class AuthViewModelTest : BaseViewModelTest() {
         viewModel.logout()
 
         // THEN
-        verify(mockUserRepository).logout()
+        verifySuspend(mockUserRepository) { logout() }
     }
 }

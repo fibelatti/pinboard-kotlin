@@ -9,9 +9,9 @@ interface UserRepository {
 
     fun loggedIn()
 
-    fun logout()
+    suspend fun logout()
 
-    fun forceLogout()
+    suspend fun forceLogout()
 
     fun getLastUpdate(): String
 
