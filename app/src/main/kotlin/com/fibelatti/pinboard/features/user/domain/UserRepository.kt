@@ -5,15 +5,15 @@ import androidx.lifecycle.LiveData
 interface UserRepository {
     fun getLoginState(): LiveData<LoginState>
 
-    fun loginAttempt(authToken: String)
+    suspend fun loginAttempt(authToken: String)
 
-    fun loggedIn()
+    suspend fun loggedIn()
 
     suspend fun logout()
 
     suspend fun forceLogout()
 
-    fun getLastUpdate(): String
+    suspend fun getLastUpdate(): String
 
-    fun setLastUpdate(value: String)
+    suspend fun setLastUpdate(value: String)
 }

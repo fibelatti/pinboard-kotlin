@@ -6,12 +6,12 @@ import com.fibelatti.core.test.extension.callSuspend
 import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
+import com.fibelatti.core.test.extension.verifySuspend
 import com.fibelatti.pinboard.MockDataProvider.mockApiToken
 import com.fibelatti.pinboard.MockDataProvider.mockTime
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.never
-import org.mockito.Mockito.verify
 
 class LoginTest {
 
@@ -34,8 +34,8 @@ class LoginTest {
 
         // THEN
         result.shouldBeAnInstanceOf<Failure>()
-        verify(mockUserRepository).loginAttempt(mockApiToken)
-        verify(mockUserRepository, never()).loggedIn()
+        verifySuspend(mockUserRepository) { loginAttempt(mockApiToken) }
+        verifySuspend(mockUserRepository, never()) { loggedIn() }
     }
 
     @Test
@@ -49,7 +49,7 @@ class LoginTest {
 
         // THEN
         result.shouldBeAnInstanceOf<Success<Unit>>()
-        verify(mockUserRepository).loginAttempt(mockApiToken)
-        verify(mockUserRepository).loggedIn()
+        verifySuspend(mockUserRepository) { loginAttempt(mockApiToken) }
+        verifySuspend(mockUserRepository) { loggedIn() }
     }
 }

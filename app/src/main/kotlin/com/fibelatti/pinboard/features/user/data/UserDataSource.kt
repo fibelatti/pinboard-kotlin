@@ -25,12 +25,12 @@ class UserDataSource @Inject constructor(
 
     override fun getLoginState(): LiveData<LoginState> = loginState
 
-    override fun loginAttempt(authToken: String) {
+    override suspend fun loginAttempt(authToken: String) {
         userSharedPreferences.setAuthToken(authToken)
         loginState.postValue(LoginState.Authorizing)
     }
 
-    override fun loggedIn() {
+    override suspend fun loggedIn() {
         loginState.postValue(LoginState.LoggedIn)
     }
 
@@ -54,9 +54,9 @@ class UserDataSource @Inject constructor(
         }
     }
 
-    override fun getLastUpdate(): String = userSharedPreferences.getLastUpdate()
+    override suspend fun getLastUpdate(): String = userSharedPreferences.getLastUpdate()
 
-    override fun setLastUpdate(value: String) {
+    override suspend fun setLastUpdate(value: String) {
         userSharedPreferences.setLastUpdate(value)
     }
 }

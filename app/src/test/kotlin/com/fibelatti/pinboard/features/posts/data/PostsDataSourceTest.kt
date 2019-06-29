@@ -322,7 +322,7 @@ class PostsDataSourceTest {
             @Test
             fun `GIVEN that the api returns an error WHEN getAllPosts is called THEN Failure is returned`() {
                 // GIVEN
-                given(mockUserRepository.getLastUpdate())
+                givenSuspend { mockUserRepository.getLastUpdate() }
                     .willReturn(mockTime)
                 givenSuspend { mockApi.update() }
                     .willReturn(UpdateDto(mockFutureTime))
@@ -342,7 +342,7 @@ class PostsDataSourceTest {
             @Test
             fun `WHEN getAllPosts is called THEN Success is returned`() {
                 // GIVEN
-                given(mockUserRepository.getLastUpdate())
+                givenSuspend { mockUserRepository.getLastUpdate() }
                     .willReturn(mockTime)
                 givenSuspend { mockApi.update() }
                     .willReturn(UpdateDto(mockFutureTime))
@@ -390,7 +390,7 @@ class PostsDataSourceTest {
             @Test
             fun `GIVEN lastUpdate matches and localPosts is empty WHEN getAllPosts is called THEN api response is returned`() {
                 // GIVEN
-                given(mockUserRepository.getLastUpdate())
+                givenSuspend { mockUserRepository.getLastUpdate() }
                     .willReturn(mockTime)
                 givenSuspend { mockApi.update() }
                     .willReturn(UpdateDto(mockTime))
@@ -407,14 +407,14 @@ class PostsDataSourceTest {
                 result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
 
                 verifySuspend(mockApi) { update() }
-                verify(mockUserRepository, never()).setLastUpdate(anyString())
+                verifySuspend(mockUserRepository, never()) { setLastUpdate(anyString()) }
                 verify(mockDao, never()).savePosts(safeAny())
             }
 
             @Test
             fun `GIVEN lastUpdate matches and localPosts is empty WHEN getAllPosts is called and it fails to save the result THEN error is returned`() {
                 // GIVEN
-                given(mockUserRepository.getLastUpdate())
+                givenSuspend { mockUserRepository.getLastUpdate() }
                     .willReturn(mockTime)
                 givenSuspend { mockApi.update() }
                     .willReturn(UpdateDto(mockTime))
@@ -433,7 +433,7 @@ class PostsDataSourceTest {
                 result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
 
                 verifySuspend(mockApi) { update() }
-                verify(mockUserRepository, never()).setLastUpdate(anyString())
+                verifySuspend(mockUserRepository, never()) { setLastUpdate(anyString()) }
                 verify(mockDao).deleteAllPosts()
                 verify(mockDao).savePosts(mockListPostDto)
             }
@@ -445,7 +445,7 @@ class PostsDataSourceTest {
                     .willReturn(mockActiveNetworkInfo)
                 given(mockActiveNetworkInfo.isConnected)
                     .willReturn(true)
-                given(mockUserRepository.getLastUpdate())
+                givenSuspend { mockUserRepository.getLastUpdate() }
                     .willReturn(mockTime)
                 givenSuspend { mockApi.update() }
                     .willReturn(UpdateDto(mockTime))

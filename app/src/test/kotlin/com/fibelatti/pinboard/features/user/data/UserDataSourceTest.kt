@@ -72,9 +72,8 @@ internal class UserDataSourceTest {
 
         @Test
         fun `WHEN loginAttempt is called THEN setAuthToken is called and loginState value is updated to Authorizing`() {
-
             // WHEN
-            userDataSource.loginAttempt(mockApiToken)
+            runBlocking { userDataSource.loginAttempt(mockApiToken) }
 
             // THEN
             verify(mockUserSharedPreferences).setAuthToken(mockApiToken)
@@ -84,7 +83,7 @@ internal class UserDataSourceTest {
         @Test
         fun `WHEN loggedIn is called THEN loginState value is updated to LoggedIn`() {
             // WHEN
-            userDataSource.loggedIn()
+            runBlocking { userDataSource.loggedIn() }
 
             // THEN
             userDataSource.getLoginState().currentValueShouldBe(LoginState.LoggedIn)
@@ -139,13 +138,13 @@ internal class UserDataSourceTest {
                 .willReturn(mockTime)
 
             // THEN
-            userDataSource.getLastUpdate() shouldBe mockTime
+            runBlocking { userDataSource.getLastUpdate() shouldBe mockTime }
         }
 
         @Test
         fun `WHEN setLastUpdate is called THEN UserSharedPreferences is set`() {
             // WHEN
-            userDataSource.setLastUpdate(mockTime)
+            runBlocking { userDataSource.setLastUpdate(mockTime) }
 
             // THEN
             verify(mockUserSharedPreferences).setLastUpdate(mockTime)
