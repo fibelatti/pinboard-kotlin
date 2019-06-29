@@ -25,10 +25,21 @@ data class PostDto(
     val time: String,
     val shared: String,
     val toread: String,
-    val tags: String
+    val tags: String,
+    val imageUrl: String?
 ) {
     @Ignore
-    constructor() : this("", "", "", "", "", "", "", "")
+    constructor() : this(
+        href = "",
+        description = "",
+        extended = "",
+        hash = "",
+        time = "",
+        shared = "",
+        toread = "",
+        tags = "",
+        imageUrl = null
+    )
 }
 
 class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
@@ -59,7 +70,8 @@ class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
             time = time,
             shared = if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES,
             toread = if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO,
-            tags = tags.joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name }
+            tags = tags.joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name },
+            imageUrl = null
         )
     }
 }

@@ -75,7 +75,8 @@ object MockDataProvider {
             time = mockTime,
             shared = shared,
             toread = toread,
-            tags = tags
+            tags = tags,
+            imageUrl = null
         )
 
     fun createPost(
