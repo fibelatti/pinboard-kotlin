@@ -1,10 +1,13 @@
 package com.fibelatti.pinboard.features.appstate
 
 import android.net.ConnectivityManager
+import com.fibelatti.core.provider.ResourceProvider
+import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.extension.isConnected
 import javax.inject.Inject
 
 class TagActionHandler @Inject constructor(
+    private val resourceProvider: ResourceProvider,
     private val connectivityManager: ConnectivityManager?
 ) : ActionHandler<TagAction>() {
 
@@ -12,7 +15,7 @@ class TagActionHandler @Inject constructor(
         return when (action) {
             is RefreshTags -> refresh(currentContent)
             is SetTags -> setTags(action, currentContent)
-            is PostsForTag -> postsForTag(action, currentContent)
+            is PostsForTag -> postsForTag(action)
         }
     }
 
@@ -34,13 +37,15 @@ class TagActionHandler @Inject constructor(
         }
     }
 
-    private fun postsForTag(action: PostsForTag, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<TagList>(currentContent) {
-            it.previousContent.copy(
-                searchParameters = SearchParameters(tags = listOf(action.tag)),
-                shouldLoad = true,
-                isConnected = connectivityManager.isConnected()
-            )
-        }
+    private fun postsForTag(action: PostsForTag): Content {
+        return PostList(
+            category = All,
+            title = resourceProvider.getString(R.string.posts_title_all),
+            posts = emptyList(),
+            sortType = NewestFirst,
+            searchParameters = SearchParameters(tags = listOf(action.tag)),
+            shouldLoad = true,
+            isConnected = connectivityManager.isConnected()
+        )
     }
 }
