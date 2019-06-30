@@ -1,10 +1,10 @@
 package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.core.archcomponents.extension.asLiveData
-import com.fibelatti.core.archcomponents.test.BaseViewModelTest
 import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.verifySuspend
+import com.fibelatti.pinboard.BaseViewModelTest
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
 

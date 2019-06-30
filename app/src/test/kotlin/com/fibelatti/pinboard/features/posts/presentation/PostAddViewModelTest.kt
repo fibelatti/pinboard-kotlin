@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
-import com.fibelatti.core.archcomponents.test.BaseViewModelTest
 import com.fibelatti.core.archcomponents.test.extension.currentEventShouldBe
 import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
 import com.fibelatti.core.archcomponents.test.extension.shouldNeverReceiveValues
@@ -12,6 +11,7 @@ import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.safeAny
 import com.fibelatti.core.test.extension.verifySuspend
+import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.mockTags
 import com.fibelatti.pinboard.MockDataProvider.mockUrlDescription

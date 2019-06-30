@@ -1,6 +1,5 @@
-package com.fibelatti.core.archcomponents.test
+package com.fibelatti.pinboard
 
-import com.fibelatti.pinboard.InstantExecutorExtension
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.BeforeEach
