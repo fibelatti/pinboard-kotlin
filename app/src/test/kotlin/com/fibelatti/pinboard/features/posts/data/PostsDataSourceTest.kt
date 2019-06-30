@@ -327,16 +327,17 @@ class PostsDataSourceTest {
                 givenSuspend { mockApi.update() }
                     .willReturn(UpdateDto(mockFutureTime))
                 givenSuspend { mockApi.getAllPosts(mockTagsRequest) }
-                    .willAnswer { throw Exception() }
+                    .willAnswer { throw ApiException() }
 
                 // WHEN
                 val result = callSuspend { dataSource.getAllPosts(mockTags) }
 
                 // THEN
                 result.shouldBeAnInstanceOf<Failure>()
-                result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
+                result.exceptionOrNull()?.shouldBeAnInstanceOf<ApiException>()
 
                 verifySuspend(mockApi) { getAllPosts(mockTagsRequest) }
+                verify(mockDao, never()).getAllPosts()
             }
 
             @Test
@@ -359,6 +360,7 @@ class PostsDataSourceTest {
                 result.getOrNull() shouldBe mockListPost
 
                 verifySuspend(mockApi) { getAllPosts(mockTagsRequest) }
+                verify(mockDao, never()).getAllPosts()
             }
         }
 
@@ -371,6 +373,8 @@ class PostsDataSourceTest {
                     .willReturn(mockActiveNetworkInfo)
                 given(mockActiveNetworkInfo.isConnected)
                     .willReturn(false)
+                given(mockDao.getPostCount())
+                    .willReturn(1)
                 given(mockDao.getAllPosts())
                     .willReturn(mockListPostDto)
                 given(mockPostDtoMapper.mapList(mockListPostDto))
@@ -394,8 +398,8 @@ class PostsDataSourceTest {
                     .willReturn(mockTime)
                 givenSuspend { mockApi.update() }
                     .willReturn(UpdateDto(mockTime))
-                given(mockDao.getAllPosts())
-                    .willReturn(emptyList())
+                given(mockDao.getPostCount())
+                    .willReturn(0)
                 givenSuspend { mockApi.getAllPosts(mockTagsRequest) }
                     .willAnswer { throw Exception() }
 
@@ -408,6 +412,7 @@ class PostsDataSourceTest {
 
                 verifySuspend(mockApi) { update() }
                 verifySuspend(mockUserRepository, never()) { setLastUpdate(anyString()) }
+                verify(mockDao, never()).getAllPosts()
                 verify(mockDao, never()).savePosts(safeAny())
             }
 
@@ -418,8 +423,8 @@ class PostsDataSourceTest {
                     .willReturn(mockTime)
                 givenSuspend { mockApi.update() }
                     .willReturn(UpdateDto(mockTime))
-                given(mockDao.getAllPosts())
-                    .willReturn(emptyList())
+                given(mockDao.getPostCount())
+                    .willReturn(0)
                 givenSuspend { mockApi.getAllPosts(mockTagsRequest) }
                     .willReturn(mockListPostDto)
                 given(mockDao.savePosts(mockListPostDto))
@@ -434,6 +439,7 @@ class PostsDataSourceTest {
 
                 verifySuspend(mockApi) { update() }
                 verifySuspend(mockUserRepository, never()) { setLastUpdate(anyString()) }
+                verify(mockDao, never()).getAllPosts()
                 verify(mockDao).deleteAllPosts()
                 verify(mockDao).savePosts(mockListPostDto)
             }
@@ -449,10 +455,10 @@ class PostsDataSourceTest {
                     .willReturn(mockTime)
                 givenSuspend { mockApi.update() }
                     .willReturn(UpdateDto(mockTime))
+                given(mockDao.getPostCount())
+                    .willReturn(1)
                 given(mockDao.getAllPosts())
                     .willReturn(mockListPostDto)
-                givenSuspend { mockApi.getAllPosts(mockTagsRequest) }
-                    .willAnswer { throw Exception() }
                 given(mockPostDtoMapper.mapList(mockListPostDto))
                     .willReturn(mockListPost)
 

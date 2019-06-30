@@ -1,13 +1,9 @@
 package com.fibelatti.pinboard.features.posts.data
 
 import android.net.ConnectivityManager
-import android.provider.SyncStateContract.Helpers.update
-import com.fibelatti.core.extension.orThrow
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.getOrDefault
-import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.core.functional.map
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.core.AppConfig.API_DEFAULT_RECENT_COUNT
@@ -124,17 +120,17 @@ class PostsDataSource @Inject constructor(
         body: (apiLastUpdate: String) -> Result<List<Post>>
     ): Result<List<Post>> {
         val isConnected = connectivityManager.isConnected()
-        val localPosts = catching(postsDao::getAllPosts).mapCatching(postDtoMapper::mapList)
-        val hasLocalData = localPosts.getOrDefault(emptyList()).isNotEmpty()
+        val hasLocalData = postsDao.getPostCount() > 0
+        val localData by lazy { catching(postsDao::getAllPosts).mapCatching(postDtoMapper::mapList) }
 
         return if (!isConnected && hasLocalData) {
-            localPosts
+            localData
         } else {
             val userLastUpdate = userRepository.getLastUpdate()
-            val apiLastUpdate = update().getOrNull() ?: dateFormatter.nowAsTzFormat()
+            val apiLastUpdate = update().getOrDefault(dateFormatter.nowAsTzFormat())
 
             if (userLastUpdate == apiLastUpdate && hasLocalData) {
-                localPosts
+                localData
             } else {
                 body(apiLastUpdate)
             }

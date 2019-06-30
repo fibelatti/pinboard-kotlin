@@ -10,6 +10,9 @@ import com.fibelatti.pinboard.features.posts.data.model.PostDto
 @Dao
 interface PostsDao {
 
+    @Query("select count(*) from $POST_TABLE_NAME")
+    fun getPostCount(): Int
+
     @Query("select * from $POST_TABLE_NAME")
     fun getAllPosts(): List<PostDto>
 

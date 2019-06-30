@@ -16,6 +16,28 @@ class PostsDaoTest : BaseDbTest() {
     private val postsDao get() = appDatabase.postDao()
 
     @Test
+    fun givenDbHasNoDataWhenGetPostCountIsCalledThenZeroIsReturned() {
+        // WHEN
+        val result = postsDao.getPostCount()
+
+        // THEN
+        result shouldBe 0
+    }
+
+    @Test
+    fun givenDbHasDataWhenGetPostCountIsCalledThenCountIsReturned() {
+        // GIVEN
+        val list = listOf(createPostDto())
+        postsDao.savePosts(list)
+
+        // WHEN
+        val result = postsDao.getPostCount()
+
+        // THEN
+        result shouldBe list.size
+    }
+
+    @Test
     fun givenDbHasNoDataWhenGetAllPostsIsCalledThenEmptyListIsReturned() {
         // WHEN
         val result = postsDao.getAllPosts()
