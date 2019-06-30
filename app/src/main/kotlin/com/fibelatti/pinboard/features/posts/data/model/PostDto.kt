@@ -54,7 +54,7 @@ class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
             private = shared == PinboardApiLiterals.NO,
             readLater = toread == PinboardApiLiterals.YES,
             tags = if (tags.isBlank()) {
-                emptyList()
+                null
             } else {
                 tags.split(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE).sorted().map { Tag(it) }
             }
@@ -70,7 +70,7 @@ class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
             time = time,
             shared = if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES,
             toread = if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO,
-            tags = tags.joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name },
+            tags = tags?.joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name }.orEmpty(),
             imageUrl = null
         )
     }

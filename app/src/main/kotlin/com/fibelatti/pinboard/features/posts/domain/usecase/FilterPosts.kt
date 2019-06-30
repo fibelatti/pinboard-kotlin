@@ -13,10 +13,12 @@ class FilterPosts @Inject constructor() : UseCaseWithParams<List<Post>, FilterPo
         params.posts.filter { post ->
             when {
                 params.term.isNotBlank() && params.tags.isNotEmpty() -> {
-                    post.containsTerm(params.term) and post.tags.containsAll(params.tags)
+                    post.containsTerm(params.term) &&
+                        post.tags != null &&
+                        post.tags.containsAll(params.tags)
                 }
                 params.term.isNotBlank() -> post.containsTerm(params.term)
-                params.tags.isNotEmpty() -> post.tags.containsAll(params.tags)
+                params.tags.isNotEmpty() -> post.tags != null && post.tags.containsAll(params.tags)
                 else -> true
             }
         }

@@ -34,8 +34,8 @@ class PostDtoMapperTest {
         }
 
         @Test
-        fun `GIVEN tags is empty WHEN map is called THEN Post is returned AND tags is an empty list`() {
-            mapper.map(createPostDto(tags = "")) shouldBe createPost(tags = emptyList())
+        fun `GIVEN tags is empty WHEN map is called THEN Post is returned AND tags is null`() {
+            mapper.map(createPostDto(tags = "")) shouldBe createPost(tags = null)
         }
     }
 
@@ -59,6 +59,11 @@ class PostDtoMapperTest {
         @Test
         fun `GIVEN toread is false WHEN mapReverse is called THEN PostDto is returned AND toread is no`() {
             mapper.mapReverse(createPost(readLater = false)) shouldBe createPostDto(toread = PinboardApiLiterals.NO)
+        }
+
+        @Test
+        fun `GIVEN tags is null WHEN mapReverse is called THEN PostDto is returned AND tags is empty`() {
+            mapper.mapReverse(createPost(tags = null)) shouldBe createPostDto(tags = "")
         }
     }
 }

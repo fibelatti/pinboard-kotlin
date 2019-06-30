@@ -159,7 +159,7 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
             checkboxReadLater.isChecked = readLater
 
             chipGroupTags.removeAllViews()
-            tags.forEach { tag -> chipGroupTags.addView(createTagChip(tag)) }
+            tags?.forEach { tag -> chipGroupTags.addView(createTagChip(tag)) }
         }
     }
 

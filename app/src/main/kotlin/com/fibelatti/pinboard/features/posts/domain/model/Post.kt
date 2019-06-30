@@ -10,5 +10,5 @@ data class Post(
     val time: String,
     val private: Boolean,
     val readLater: Boolean,
-    val tags: List<Tag>
+    val tags: List<Tag>?
 )

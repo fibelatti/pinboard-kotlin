@@ -46,7 +46,7 @@ class PostListViewModel @Inject constructor(
     }
 
     fun getUntagged(sorting: SortType, searchTerm: String) {
-        launchGetAll(sorting, searchTerm, tags = emptyList()) { allPosts -> allPosts.filter { it.tags.isEmpty() } }
+        launchGetAll(sorting, searchTerm, tags = emptyList()) { allPosts -> allPosts.filter { it.tags.isNullOrEmpty() } }
     }
 
     private fun launchGetAll(

@@ -31,7 +31,7 @@ class PostListAdapter @Inject constructor(
         textViewLinkAddedDate.text = context.getString(R.string.posts_saved_on, dateFormatter.tzFormatToDisplayFormat(item.time))
 
         when {
-            item.tags.isEmpty() -> layoutTags.gone()
+            item.tags.isNullOrEmpty() -> layoutTags.gone()
             item.tags.size <= MAX_TAGS_PER_ITEM -> layoutTags(item.tags)
             else -> {
                 val otherAmount = item.tags.size - MAX_TAGS_PER_ITEM

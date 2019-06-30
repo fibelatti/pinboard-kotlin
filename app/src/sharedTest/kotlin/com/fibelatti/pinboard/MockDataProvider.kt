@@ -87,7 +87,7 @@ object MockDataProvider {
         description: String = mockUrlDescription,
         private: Boolean = false,
         readLater: Boolean = false,
-        tags: List<Tag> = mockTags
+        tags: List<Tag>? = mockTags
     ): Post =
         Post(
             url = url,
