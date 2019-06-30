@@ -47,7 +47,9 @@ class PostListAdapter @Inject constructor(
     private fun View.layoutTags(tags: List<Tag>) {
         layoutTags.visible()
         layoutTags.removeAllViews()
-        tags.forEach { tag -> addTagView(tag.name) }
+        for (tag in tags) {
+            addTagView(tag.name)
+        }
     }
 
     private fun View.addTagView(value: String) {

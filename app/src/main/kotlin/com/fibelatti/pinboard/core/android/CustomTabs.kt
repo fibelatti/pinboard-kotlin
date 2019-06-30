@@ -34,12 +34,12 @@ class LinkTransformationMethod : TransformationMethod {
             val text = view.text as Spannable
             val spans = text.getSpans(0, view.length(), URLSpan::class.java)
 
-            spans.forEach {
-                val spanStart = text.getSpanStart(it)
-                val spanEnd = text.getSpanEnd(it)
-                val url = it.url
+            for (span in spans) {
+                val spanStart = text.getSpanStart(span)
+                val spanEnd = text.getSpanEnd(span)
+                val url = span.url
 
-                text.removeSpan(it)
+                text.removeSpan(span)
                 text.setSpan(
                     CustomTabsURLSpan(url),
                     spanStart,

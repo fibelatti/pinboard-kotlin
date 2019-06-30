@@ -110,7 +110,7 @@ class PostSearchFragment @Inject constructor(
 
                 if (content.searchParameters.tags.isNotEmpty()) {
                     chipGroupSelectedTags.removeAllViews()
-                    content.searchParameters.tags.forEach { tag ->
+                    for (tag in content.searchParameters.tags) {
                         chipGroupSelectedTags.addView(createTagChip(tag))
                     }
 

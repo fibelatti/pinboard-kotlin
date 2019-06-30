@@ -265,7 +265,9 @@ class MainActivity :
             }
             LoginState.Unauthorized -> {
                 inTransaction {
-                    supportFragmentManager.fragments.forEach { remove(it) }
+                    for (fragment in supportFragmentManager.fragments) {
+                        remove(fragment)
+                    }
                     setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                     add(R.id.fragmentHost, createFragment<AuthFragment>())
                 }
