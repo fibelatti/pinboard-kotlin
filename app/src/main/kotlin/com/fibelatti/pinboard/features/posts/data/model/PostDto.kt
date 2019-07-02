@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.posts.data.model
 import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.Ignore
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.fibelatti.core.functional.TwoWayMapper
 import com.fibelatti.pinboard.core.AppConfig.API_ENCODING
@@ -16,7 +17,10 @@ import javax.inject.Inject
 const val POST_TABLE_NAME = "Posts"
 
 @Keep
-@Entity(tableName = POST_TABLE_NAME)
+@Entity(
+    tableName = POST_TABLE_NAME,
+    indices = [Index(value = ["shared"]), Index(value = ["toread"])]
+)
 data class PostDto(
     val href: String,
     val description: String,

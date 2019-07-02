@@ -7,7 +7,7 @@ object Versions {
     internal const val kotlinVersion = "1.3.40"
     internal const val coroutinesVersion = "1.2.1"
     internal const val lifecycleVersion = "2.1.0-beta01"
-    internal const val roomVersion = "2.1.0-beta01"
+    internal const val roomVersion = "2.1.0"
 }
 
 object Classpaths {
