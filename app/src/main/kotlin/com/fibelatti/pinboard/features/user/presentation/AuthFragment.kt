@@ -10,6 +10,7 @@ import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.heightWrapContent
+import com.fibelatti.core.extension.onKeyboardSubmit
 import com.fibelatti.core.extension.setupLinks
 import com.fibelatti.core.extension.showError
 import com.fibelatti.core.extension.textAsString
@@ -18,7 +19,6 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.LinkTransformationMethod
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import com.fibelatti.pinboard.core.extension.onKeyboardSubmit
 import kotlinx.android.synthetic.main.fragment_auth.*
 import kotlinx.android.synthetic.main.layout_auth_form.*
 import javax.inject.Inject

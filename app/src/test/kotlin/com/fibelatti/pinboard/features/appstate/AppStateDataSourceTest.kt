@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.appstate
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
+import com.fibelatti.core.functional.SingleRunner
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.safeAny
@@ -11,7 +12,6 @@ import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.createTag
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.allSealedSubclasses
-import com.fibelatti.pinboard.core.functional.SingleRunner
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.setMain

@@ -15,13 +15,13 @@ import com.fibelatti.core.extension.clearText
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.navigateBack
+import com.fibelatti.core.extension.onKeyboardSubmit
 import com.fibelatti.core.extension.showError
 import com.fibelatti.core.extension.textAsString
 import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import com.fibelatti.pinboard.core.extension.onKeyboardSubmit
 import com.fibelatti.pinboard.core.extension.toast
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPostView

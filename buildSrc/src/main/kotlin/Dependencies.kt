@@ -4,7 +4,7 @@ object Versions {
     const val compileSdkVersion = 28
     const val buildToolsVersion = "28.0.3"
 
-    internal const val kotlinVersion = "1.3.31"
+    internal const val kotlinVersion = "1.3.40"
     internal const val coroutinesVersion = "1.2.1"
     internal const val lifecycleVersion = "2.1.0-beta01"
     internal const val roomVersion = "2.1.0-beta01"
@@ -28,8 +28,8 @@ object Dependencies {
     const val supportAnnotations = "androidx.annotation:annotation:1.0.0"
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.0-beta1"
 
-    const val coreLib = "com.fibelatti.core:core:1.1.0-alpha2"
-    const val coreLibArch = "com.fibelatti.core:arch-components:1.1.0-alpha2"
+    const val coreLib = "com.fibelatti.core:core:1.1.0-alpha3"
+    const val coreLibArch = "com.fibelatti.core:arch-components:1.1.0-alpha3"
 
     const val archComponents = "androidx.lifecycle:lifecycle-extensions:${Versions.lifecycleVersion}"
     const val archComponentsCompiler = "androidx.lifecycle:lifecycle-compiler:${Versions.lifecycleVersion}"
@@ -60,8 +60,8 @@ object Dependencies {
 object TestDependencies {
     private const val junit5Version = "5.4.2"
 
-    const val coreLibTest = "com.fibelatti.core:core-test:1.1.0-alpha2"
-    const val coreLibArchTest = "com.fibelatti.core:arch-components-test:1.1.0-alpha2"
+    const val coreLibTest = "com.fibelatti.core:core-test:1.1.0-alpha3"
+    const val coreLibArchTest = "com.fibelatti.core:arch-components-test:1.1.0-alpha3"
 
     const val junit = "junit:junit:4.12"
     const val junit5 = "org.junit.jupiter:junit-jupiter-api:$junit5Version"

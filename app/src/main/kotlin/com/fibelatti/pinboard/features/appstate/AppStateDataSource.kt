@@ -4,10 +4,10 @@ import android.net.ConnectivityManager
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.fibelatti.core.functional.SingleRunner
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.extension.isConnected
-import com.fibelatti.pinboard.core.functional.SingleRunner
 import javax.inject.Inject
 import javax.inject.Singleton
 
