@@ -228,7 +228,7 @@ internal class SearchActionHandlerTest {
             val mockPreviousContent = PostList(
                 category = All,
                 title = mockTitle,
-                posts = emptyList(),
+                posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = true
@@ -245,7 +245,7 @@ internal class SearchActionHandlerTest {
             result shouldBe PostList(
                 category = All,
                 title = mockTitle,
-                posts = emptyList(),
+                posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(term = "new term", tags = listOf(mockTag1)),
                 shouldLoad = true
@@ -274,7 +274,7 @@ internal class SearchActionHandlerTest {
             val initialContent = PostList(
                 category = All,
                 title = mockTitle,
-                posts = emptyList(),
+                posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
                 shouldLoad = false
@@ -287,7 +287,7 @@ internal class SearchActionHandlerTest {
             result shouldBe PostList(
                 category = All,
                 title = mockTitle,
-                posts = emptyList(),
+                posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = true

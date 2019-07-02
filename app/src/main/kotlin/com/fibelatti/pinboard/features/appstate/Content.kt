@@ -8,7 +8,7 @@ sealed class Content
 data class PostList(
     val category: ViewCategory,
     val title: String,
-    val posts: List<Post>,
+    val posts: Pair<Int, List<Post>>?,
     val sortType: SortType,
     val searchParameters: SearchParameters,
     val shouldLoad: Boolean,

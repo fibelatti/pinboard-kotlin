@@ -41,7 +41,7 @@ class TagActionHandler @Inject constructor(
         return PostList(
             category = All,
             title = resourceProvider.getString(R.string.posts_title_all),
-            posts = emptyList(),
+            posts = null,
             sortType = NewestFirst,
             searchParameters = SearchParameters(tags = listOf(action.tag)),
             shouldLoad = true,

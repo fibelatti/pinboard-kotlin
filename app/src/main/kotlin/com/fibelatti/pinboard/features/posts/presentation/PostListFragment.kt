@@ -139,11 +139,11 @@ class PostListFragment @Inject constructor(
         error(postListViewModel.error, ::handleError)
 
         viewLifecycleOwner.observe(appStateViewModel.getContent()) { content ->
-            if (content is PostList) showPostList(content)
+            if (content is PostList) updateContent(content)
         }
     }
 
-    private fun showPostList(content: PostList) {
+    private fun updateContent(content: PostList) {
         mainActivity?.updateTitleLayout {
             hideNavigateUp()
             setTitle(content.title)
@@ -202,13 +202,15 @@ class PostListFragment @Inject constructor(
         layoutEmptyList.goneIf(isLoading)
     }
 
-    private fun showPosts(list: List<Post>, sortType: SortType) {
-        if (list.isNotEmpty()) {
+    private fun showPosts(countAndData: Pair<Int, List<Post>>?, sortType: SortType) {
+        if (countAndData != null) {
+            val (count, list) = countAndData
+
             recyclerViewPosts.visible()
             layoutEmptyList.gone()
 
             postsAdapter.addAll(list)
-            mainActivity?.updateTitleLayout { setPostCount(postsAdapter.itemCount, sortType) }
+            mainActivity?.updateTitleLayout { setPostCount(count, sortType) }
         } else {
             showEmptyLayout(
                 title = R.string.posts_empty_title,
@@ -217,10 +219,7 @@ class PostListFragment @Inject constructor(
         }
     }
 
-    private fun showEmptyLayout(
-        @StringRes title: Int,
-        @StringRes description: Int
-    ) {
+    private fun showEmptyLayout(@StringRes title: Int, @StringRes description: Int) {
         mainActivity?.updateTitleLayout { hidePostCount() }
         recyclerViewPosts.gone()
         layoutEmptyList.apply {

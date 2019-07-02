@@ -1,96 +1,313 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
-import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
-import com.fibelatti.core.functional.exceptionOrNull
-import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.test.extension.callSuspend
 import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
-import com.fibelatti.core.test.extension.safeAny
-import com.fibelatti.core.test.extension.shouldBe
-import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
 import com.fibelatti.core.test.extension.verifySuspend
-import com.fibelatti.pinboard.MockDataProvider.createPost
-import com.fibelatti.pinboard.MockDataProvider.mockTag1
-import com.fibelatti.pinboard.MockDataProvider.mockTag2
-import com.fibelatti.pinboard.MockDataProvider.mockTag3
-import com.fibelatti.pinboard.MockDataProvider.mockTag4
 import com.fibelatti.pinboard.MockDataProvider.mockTags
-import com.fibelatti.pinboard.MockDataProvider.mockTime1
-import com.fibelatti.pinboard.MockDataProvider.mockTime2
-import com.fibelatti.pinboard.MockDataProvider.mockTime3
-import com.fibelatti.pinboard.MockDataProvider.mockTime4
+import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.features.appstate.NewestFirst
+import com.fibelatti.pinboard.features.appstate.OldestFirst
+import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.never
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
+import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.anyBoolean
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.ArgumentMatchers.eq
+import org.mockito.ArgumentMatchers.isNull
 
 class GetAllPostsTest {
 
     // region Mock data
-    private val mockResponseFull = listOf(
-        createPost(time = mockTime1, tags = listOf(mockTag1)),
-        createPost(time = mockTime2, tags = listOf(mockTag2)),
-        createPost(time = mockTime3, tags = listOf(mockTag3)),
-        createPost(time = mockTime4, tags = listOf(mockTag4))
-    )
-
-    private val mockSortType = NewestFirst
-    // endregion
+    private val mockResponse = mock<Pair<Int, List<Post>>>()
 
     private val mockPostsRepository = mock<PostsRepository>()
-    private val mockFilterPosts = mock<FilterPosts>()
-    private val mockSort = mock<Sort>()
 
-    private val getAllPosts = GetAllPosts(
-        mockPostsRepository,
-        mockFilterPosts,
-        mockSort
-    )
+    private val getAllPosts = GetAllPosts(mockPostsRepository)
 
-    @Test
-    fun `GIVEN no tags are sent as a parameter WHEN GetAllPosts is called THEN all posts are returned`() {
-        // GIVEN
-        val params = GetParams(sorting = mockSortType)
-        givenSuspend { mockPostsRepository.getAllPosts() }
-            .willReturn(Success(mockResponseFull))
-        arrangeFilterAndSort(tags = emptyList())
+    @BeforeEach
+    fun setup() {
+        givenSuspend {
+            mockPostsRepository.getAllPosts(
+                newestFirst = anyBoolean(),
+                searchTerm = anyString(),
+                tags = any(),
+                untaggedOnly = anyBoolean(),
+                publicPostsOnly = anyBoolean(),
+                privatePostsOnly = anyBoolean(),
+                readLaterOnly = anyBoolean(),
+                limit = anyInt()
+            )
+        }.willReturn(Success(mockResponse))
+    }
 
-        // WHEN
-        val result = callSuspend { getAllPosts(params) }
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    inner class SortingTest {
 
-        // THEN
-        result.shouldBeAnInstanceOf<Success<List<Post>>>()
-        result.getOrNull() shouldBe mockResponseFull
+        @ParameterizedTest
+        @MethodSource("testCases")
+        fun `GIVEN sorting was set in the params WHEN getAllPosts is called THEN repository is called with the expected params`(sorting: SortType) {
+            // GIVEN
+            val params = GetPostParams(sorting = sorting)
+
+            // WHEN
+            callSuspend { getAllPosts(params) }
+
+            // THEN
+            verifySuspend(mockPostsRepository) {
+                getAllPosts(
+                    newestFirst = eq(sorting == NewestFirst),
+                    searchTerm = anyString(),
+                    tags = any(),
+                    untaggedOnly = anyBoolean(),
+                    publicPostsOnly = anyBoolean(),
+                    privatePostsOnly = anyBoolean(),
+                    readLaterOnly = anyBoolean(),
+                    limit = anyInt()
+                )
+            }
+        }
+
+        fun testCases(): List<SortType> = listOf(NewestFirst, OldestFirst)
     }
 
     @Test
-    fun `GIVEN repository fails WHEN GetAllPosts is called THEN Failure is returned`() {
+    fun `GIVEN search term was set in the params WHEN getAllPosts is called THEN repository is called with the expected params`() {
         // GIVEN
-        val params = GetParams()
-        givenSuspend { mockPostsRepository.getAllPosts() }
-            .willReturn(Failure(Exception()))
+        val params = GetPostParams(searchTerm = mockUrlValid)
 
         // WHEN
-        val result = callSuspend { getAllPosts(params) }
+        callSuspend { getAllPosts(params) }
 
         // THEN
-        result.shouldBeAnInstanceOf<Failure>()
-        result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
-
-        verifySuspend(mockFilterPosts, never()) { invoke(safeAny()) }
-        verifySuspend(mockSort, never()) { invoke(safeAny()) }
+        verifySuspend(mockPostsRepository) {
+            getAllPosts(
+                newestFirst = true,
+                searchTerm = mockUrlValid,
+                tags = null,
+                untaggedOnly = false,
+                publicPostsOnly = false,
+                privatePostsOnly = false,
+                readLaterOnly = false,
+                limit = -1
+            )
+        }
     }
 
-    private fun arrangeFilterAndSort(
-        tags: List<Tag> = mockTags
-    ) {
-        givenSuspend { mockFilterPosts(FilterPosts.Params(mockResponseFull, term = "", tags = tags)) }
-            .willReturn(Success(mockResponseFull))
-        givenSuspend { mockSort(Sort.Params(mockResponseFull, mockSortType)) }
-            .willReturn(Success(mockResponseFull))
+    @Test
+    fun `GIVEN tagParams was None WHEN getAllPosts is called THEN repository is called with the expected params`() {
+        // GIVEN
+        val params = GetPostParams(tagParams = GetPostParams.Tags.None)
+
+        // WHEN
+        callSuspend { getAllPosts(params) }
+
+        // THEN
+        verifySuspend(mockPostsRepository) {
+            getAllPosts(
+                newestFirst = anyBoolean(),
+                searchTerm = anyString(),
+                tags = isNull(),
+                untaggedOnly = anyBoolean(),
+                publicPostsOnly = anyBoolean(),
+                privatePostsOnly = anyBoolean(),
+                readLaterOnly = anyBoolean(),
+                limit = anyInt()
+            )
+        }
+    }
+
+    @Test
+    fun `GIVEN tagParams was Untagged WHEN getAllPosts is called THEN repository is called with the expected params`() {
+        // GIVEN
+        val params = GetPostParams(tagParams = GetPostParams.Tags.Untagged)
+
+        // WHEN
+        callSuspend { getAllPosts(params) }
+
+        // THEN
+        verifySuspend(mockPostsRepository) {
+            getAllPosts(
+                newestFirst = anyBoolean(),
+                searchTerm = anyString(),
+                tags = any(),
+                untaggedOnly = eq(true),
+                publicPostsOnly = anyBoolean(),
+                privatePostsOnly = anyBoolean(),
+                readLaterOnly = anyBoolean(),
+                limit = anyInt()
+            )
+        }
+    }
+
+    @Test
+    fun `GIVEN tagParams was Tagged WHEN getAllPosts is called THEN repository is called with the expected params`() {
+        // GIVEN
+        val params = GetPostParams(tagParams = GetPostParams.Tags.Tagged(mockTags))
+
+        // WHEN
+        callSuspend { getAllPosts(params) }
+
+        // THEN
+        verifySuspend(mockPostsRepository) {
+            getAllPosts(
+                newestFirst = anyBoolean(),
+                searchTerm = anyString(),
+                tags = eq(mockTags),
+                untaggedOnly = anyBoolean(),
+                publicPostsOnly = anyBoolean(),
+                privatePostsOnly = anyBoolean(),
+                readLaterOnly = anyBoolean(),
+                limit = anyInt()
+            )
+        }
+    }
+
+    @Test
+    fun `GIVEN visibilityParams was None WHEN getAllPosts is called THEN repository is called with the expected params`() {
+        // GIVEN
+        val params = GetPostParams(visibilityParams = GetPostParams.Visibility.None)
+
+        // WHEN
+        callSuspend { getAllPosts(params) }
+
+        // THEN
+        verifySuspend(mockPostsRepository) {
+            getAllPosts(
+                newestFirst = anyBoolean(),
+                searchTerm = anyString(),
+                tags = any(),
+                untaggedOnly = anyBoolean(),
+                publicPostsOnly = eq(false),
+                privatePostsOnly = eq(false),
+                readLaterOnly = anyBoolean(),
+                limit = anyInt()
+            )
+        }
+    }
+
+    @Test
+    fun `GIVEN visibilityParams was Public WHEN getAllPosts is called THEN repository is called with the expected params`() {
+        // GIVEN
+        val params = GetPostParams(visibilityParams = GetPostParams.Visibility.Public)
+
+        // WHEN
+        callSuspend { getAllPosts(params) }
+
+        // THEN
+        verifySuspend(mockPostsRepository) {
+            getAllPosts(
+                newestFirst = anyBoolean(),
+                searchTerm = anyString(),
+                tags = any(),
+                untaggedOnly = anyBoolean(),
+                publicPostsOnly = eq(true),
+                privatePostsOnly = eq(false),
+                readLaterOnly = anyBoolean(),
+                limit = anyInt()
+            )
+        }
+    }
+
+    @Test
+    fun `GIVEN visibilityParams was Private WHEN getAllPosts is called THEN repository is called with the expected params`() {
+        // GIVEN
+        val params = GetPostParams(visibilityParams = GetPostParams.Visibility.Private)
+
+        // WHEN
+        callSuspend { getAllPosts(params) }
+
+        // THEN
+        verifySuspend(mockPostsRepository) {
+            getAllPosts(
+                newestFirst = anyBoolean(),
+                searchTerm = anyString(),
+                tags = any(),
+                untaggedOnly = anyBoolean(),
+                publicPostsOnly = eq(false),
+                privatePostsOnly = eq(true),
+                readLaterOnly = anyBoolean(),
+                limit = anyInt()
+            )
+        }
+    }
+
+    @Test
+    fun `GIVEN read later only was set as true in the params WHEN getAllPosts is called THEN repository is called with the expected params`() {
+        // GIVEN
+        val params = GetPostParams(readLater = true)
+
+        // WHEN
+        callSuspend { getAllPosts(params) }
+
+        // THEN
+        verifySuspend(mockPostsRepository) {
+            getAllPosts(
+                newestFirst = anyBoolean(),
+                searchTerm = anyString(),
+                tags = any(),
+                untaggedOnly = anyBoolean(),
+                publicPostsOnly = anyBoolean(),
+                privatePostsOnly = anyBoolean(),
+                readLaterOnly = eq(true),
+                limit = anyInt()
+            )
+        }
+    }
+
+    @Test
+    fun `GIVEN read later only was set as false in the params WHEN getAllPosts is called THEN repository is called with the expected params`() {
+        // GIVEN
+        val params = GetPostParams(readLater = false)
+
+        // WHEN
+        callSuspend { getAllPosts(params) }
+
+        // THEN
+        verifySuspend(mockPostsRepository) {
+            getAllPosts(
+                newestFirst = anyBoolean(),
+                searchTerm = anyString(),
+                tags = any(),
+                untaggedOnly = anyBoolean(),
+                publicPostsOnly = anyBoolean(),
+                privatePostsOnly = anyBoolean(),
+                readLaterOnly = eq(false),
+                limit = anyInt()
+            )
+        }
+    }
+
+    @Test
+    fun `GIVEN limit was set in the params WHEN getAllPosts is called THEN repository is called with the expected params`() {
+        // GIVEN
+        val params = GetPostParams(limit = 100)
+
+        // WHEN
+        callSuspend { getAllPosts(params) }
+
+        // THEN
+        verifySuspend(mockPostsRepository) {
+            getAllPosts(
+                newestFirst = anyBoolean(),
+                searchTerm = anyString(),
+                tags = any(),
+                untaggedOnly = anyBoolean(),
+                publicPostsOnly = anyBoolean(),
+                privatePostsOnly = anyBoolean(),
+                readLaterOnly = anyBoolean(),
+                limit = eq(100)
+            )
+        }
     }
 }

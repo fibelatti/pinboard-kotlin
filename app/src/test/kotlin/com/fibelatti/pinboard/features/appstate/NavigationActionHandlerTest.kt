@@ -36,7 +36,7 @@ internal class NavigationActionHandlerTest {
         private val previousContent = PostList(
             category = All,
             title = mockTitle,
-            posts = emptyList(),
+            posts = null,
             sortType = NewestFirst,
             searchParameters = SearchParameters(),
             shouldLoad = true
@@ -124,7 +124,7 @@ internal class NavigationActionHandlerTest {
             result shouldBe PostList(
                 category = category,
                 title = resolvedString,
-                posts = emptyList(),
+                posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = false,
@@ -172,7 +172,7 @@ internal class NavigationActionHandlerTest {
             val initialContent = PostList(
                 category = All,
                 title = mockTitle,
-                posts = emptyList(),
+                posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = true
@@ -207,7 +207,7 @@ internal class NavigationActionHandlerTest {
             val initialContent = PostList(
                 category = All,
                 title = mockTitle,
-                posts = emptyList(),
+                posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = true
@@ -246,7 +246,7 @@ internal class NavigationActionHandlerTest {
             val initialContent = PostList(
                 category = All,
                 title = mockTitle,
-                posts = emptyList(),
+                posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = true
@@ -288,7 +288,7 @@ internal class NavigationActionHandlerTest {
             val initialContent = PostList(
                 category = All,
                 title = mockTitle,
-                posts = emptyList(),
+                posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = true

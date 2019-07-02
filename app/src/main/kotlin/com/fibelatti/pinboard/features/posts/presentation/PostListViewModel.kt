@@ -1,15 +1,14 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
+import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.archcomponents.BaseViewModel
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
-import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.appstate.SetPosts
 import com.fibelatti.pinboard.features.appstate.SortType
-import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetAllPosts
-import com.fibelatti.pinboard.features.posts.domain.usecase.GetParams
+import com.fibelatti.pinboard.features.posts.domain.usecase.GetPostParams
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.launch
@@ -22,42 +21,70 @@ class PostListViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     fun getAll(sorting: SortType, searchTerm: String, tags: List<Tag>) {
-        launchGetAll(sorting, searchTerm, tags)
+        launchGetAll(
+            GetPostParams(
+                sorting,
+                searchTerm,
+                GetPostParams.Tags.Tagged(tags)
+            )
+        )
     }
 
     fun getRecent(sorting: SortType, searchTerm: String, tags: List<Tag>) {
         launch {
-            getRecentPosts(GetParams(sorting, searchTerm, tags))
+            getRecentPosts(GetPostParams(sorting, searchTerm, GetPostParams.Tags.Tagged(tags)))
                 .mapCatching { appStateRepository.runAction(SetPosts(it)) }
                 .onFailure(::handleError)
         }
     }
 
     fun getPublic(sorting: SortType, searchTerm: String, tags: List<Tag>) {
-        launchGetAll(sorting, searchTerm, tags) { allPosts -> allPosts.filterNot(Post::private) }
+        launchGetAll(
+            GetPostParams(
+                sorting,
+                searchTerm,
+                GetPostParams.Tags.Tagged(tags),
+                GetPostParams.Visibility.Public
+            )
+        )
     }
 
     fun getPrivate(sorting: SortType, searchTerm: String, tags: List<Tag>) {
-        launchGetAll(sorting, searchTerm, tags) { allPosts -> allPosts.filter(Post::private) }
+        launchGetAll(
+            GetPostParams(
+                sorting,
+                searchTerm,
+                GetPostParams.Tags.Tagged(tags),
+                GetPostParams.Visibility.Private
+            )
+        )
     }
 
     fun getUnread(sorting: SortType, searchTerm: String, tags: List<Tag>) {
-        launchGetAll(sorting, searchTerm, tags) { allPosts -> allPosts.filter(Post::readLater) }
+        launchGetAll(
+            GetPostParams(
+                sorting,
+                searchTerm,
+                GetPostParams.Tags.Tagged(tags),
+                readLater = true
+            )
+        )
     }
 
     fun getUntagged(sorting: SortType, searchTerm: String) {
-        launchGetAll(sorting, searchTerm, tags = emptyList()) { allPosts -> allPosts.filter { it.tags.isNullOrEmpty() } }
+        launchGetAll(
+            GetPostParams(
+                sorting,
+                searchTerm,
+                GetPostParams.Tags.Untagged
+            )
+        )
     }
 
-    private fun launchGetAll(
-        sorting: SortType = NewestFirst,
-        searchTerm: String,
-        tags: List<Tag>,
-        extraFilter: (List<Post>) -> List<Post> = { it }
-    ) {
+    @VisibleForTesting
+    fun launchGetAll(params: GetPostParams) {
         launch {
-            getAllPosts(GetParams(sorting, searchTerm, tags))
-                .mapCatching(extraFilter)
+            getAllPosts(params)
                 .mapCatching { appStateRepository.runAction(SetPosts(it)) }
                 .onFailure(::handleError)
         }

@@ -1,10 +1,8 @@
 package com.fibelatti.pinboard.features.posts.data
 
-import com.fibelatti.pinboard.core.AppConfig.API_DEFAULT_RECENT_COUNT
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.GetPostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
-import com.fibelatti.pinboard.features.posts.data.model.RecentDto
 import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagsDto
 import com.fibelatti.pinboard.features.posts.data.model.UpdateDto
 import retrofit2.http.GET
@@ -26,28 +24,14 @@ interface PostsApi {
     ): GenericResponseDto
 
     @GET("posts/delete")
-    suspend fun delete(
-        @Query("url") url: String
-    ): GenericResponseDto
+    suspend fun delete(@Query("url") url: String): GenericResponseDto
 
     @GET("posts/get")
-    suspend fun getPost(
-        @Query("url") url: String
-    ): GetPostDto
+    suspend fun getPost(@Query("url") url: String): GetPostDto
 
     @GET("posts/all")
-    suspend fun getAllPosts(
-        @Query("tag") tag: String? = null
-    ): List<PostDto>
-
-    @GET("posts/recent")
-    suspend fun getRecentPosts(
-        @Query("tag") tag: String? = null,
-        @Query("count") count: Int = API_DEFAULT_RECENT_COUNT
-    ): RecentDto
+    suspend fun getAllPosts(): List<PostDto>
 
     @GET("posts/suggest")
-    suspend fun getSuggestedTagsForUrl(
-        @Query("url") url: String
-    ): SuggestedTagsDto
+    suspend fun getSuggestedTagsForUrl(@Query("url") url: String): SuggestedTagsDto
 }

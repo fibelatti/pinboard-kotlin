@@ -7,7 +7,6 @@ import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.GetPostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
-import com.fibelatti.pinboard.features.posts.data.model.RecentDto
 import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagsDto
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
@@ -62,17 +61,21 @@ object MockDataProvider {
         GenericResponseDto(responseCode.code)
 
     fun createPostDto(
+        href: String = URLEncoder.encode(mockUrlValid, AppConfig.API_ENCODING),
+        description: String = mockUrlTitle,
+        extended: String = mockUrlDescription,
         hash: String = mockHash,
+        time: String = mockTime,
         shared: String = PinboardApiLiterals.YES,
         toread: String = PinboardApiLiterals.NO,
         tags: String = mockTagsResponse
     ): PostDto =
         PostDto(
-            href = URLEncoder.encode(mockUrlValid, AppConfig.API_ENCODING),
-            description = mockUrlTitle,
-            extended = mockUrlDescription,
+            href = href,
+            description = description,
+            extended = extended,
             hash = hash,
-            time = mockTime,
+            time = time,
             shared = shared,
             toread = toread,
             tags = tags,
@@ -104,15 +107,6 @@ object MockDataProvider {
         posts: List<PostDto> = listOf(createPostDto())
     ): GetPostDto =
         GetPostDto(
-            date = mockTime,
-            user = mockUser,
-            posts = posts
-        )
-
-    fun createRecentDto(
-        posts: List<PostDto> = listOf(createPostDto())
-    ): RecentDto =
-        RecentDto(
             date = mockTime,
             user = mockUser,
             posts = posts

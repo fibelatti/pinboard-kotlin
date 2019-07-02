@@ -30,7 +30,7 @@ object Untagged : ViewCategory()
 sealed class PostAction : Action()
 
 object Refresh : PostAction()
-data class SetPosts(val posts: List<Post>) : PostAction()
+data class SetPosts(val posts: Pair<Int, List<Post>>?) : PostAction()
 object ToggleSorting : PostAction()
 data class EditPost(val post: Post) : PostAction()
 data class PostSaved(val post: Post) : PostAction()

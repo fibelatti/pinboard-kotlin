@@ -16,8 +16,18 @@ internal class AppConfigTest {
     }
 
     @Test
-    fun `API_FILTER_MAX_TAGS should be 3`() {
-        AppConfig.API_FILTER_MAX_TAGS shouldBe 3
+    fun `API_MAX_LENGTH should be 255`() {
+        AppConfig.API_MAX_LENGTH shouldBe 255
+    }
+
+    @Test
+    fun `DEFAULT_PAGE_SIZE_RECENT should be 50`() {
+        AppConfig.DEFAULT_RECENT_QUANTITY shouldBe 50
+    }
+
+    @Test
+    fun `DEFAULT_FILTER_MAX_TAGS should be 3`() {
+        AppConfig.DEFAULT_FILTER_MAX_TAGS shouldBe 3
     }
 
     @Test

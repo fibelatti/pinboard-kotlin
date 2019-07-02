@@ -12,23 +12,26 @@ interface PostsRepository {
     suspend fun add(
         url: String,
         title: String,
-        description: String? = null,
-        private: Boolean? = null,
-        readLater: Boolean? = null,
-        tags: List<Tag>? = null
+        description: String?,
+        private: Boolean?,
+        readLater: Boolean?,
+        tags: List<Tag>?
     ): Result<Unit>
 
     suspend fun delete(
         url: String
     ): Result<Unit>
 
-    suspend fun getRecentPosts(
-        tags: List<Tag>? = null
-    ): Result<List<Post>>
-
     suspend fun getAllPosts(
-        tags: List<Tag>? = null
-    ): Result<List<Post>>
+        newestFirst: Boolean,
+        searchTerm: String,
+        tags: List<Tag>?,
+        untaggedOnly: Boolean,
+        publicPostsOnly: Boolean,
+        privatePostsOnly: Boolean,
+        readLaterOnly: Boolean,
+        limit: Int
+    ): Result<Pair<Int, List<Post>>?>
 
     suspend fun getPost(
         url: String

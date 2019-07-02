@@ -1,12 +1,14 @@
 package com.fibelatti.pinboard.features.posts.data
 
 import android.net.ConnectivityManager
+import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.functional.Result
+import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.getOrDefault
+import com.fibelatti.core.functional.map
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onSuccess
-import com.fibelatti.pinboard.core.AppConfig.API_DEFAULT_RECENT_COUNT
 import com.fibelatti.pinboard.core.AppConfig.API_MAX_LENGTH
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.extension.isConnected
@@ -64,6 +66,8 @@ class PostsDataSource @Inject constructor(
         }.orThrow()
     }
 
+    private fun List<Tag>.forRequest() = joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST) { it.name }
+
     override suspend fun delete(
         url: String
     ): Result<Unit> = withContext(Dispatchers.IO) {
@@ -71,30 +75,114 @@ class PostsDataSource @Inject constructor(
             .orThrow()
     }
 
-    override suspend fun getRecentPosts(
-        tags: List<Tag>?
-    ): Result<List<Post>> = withContext(Dispatchers.IO) {
-        withLocalDataSourceCheck {
-            resultFrom {
-                rateLimitRunner.run {
-                    postsApi.getRecentPosts(tags?.forRequest(), count = API_DEFAULT_RECENT_COUNT)
+    override suspend fun getAllPosts(
+        newestFirst: Boolean,
+        searchTerm: String,
+        tags: List<Tag>?,
+        untaggedOnly: Boolean,
+        publicPostsOnly: Boolean,
+        privatePostsOnly: Boolean,
+        readLaterOnly: Boolean,
+        limit: Int
+    ): Result<Pair<Int, List<Post>>?> = withContext(Dispatchers.IO) {
+        val isConnected = connectivityManager.isConnected()
+        val localDataSize = getLocalDataSize(
+            searchTerm,
+            tags,
+            untaggedOnly,
+            publicPostsOnly,
+            privatePostsOnly,
+            readLaterOnly,
+            limit
+        )
+        val localData by lazy {
+            getLocalData(
+                localDataSize,
+                newestFirst,
+                searchTerm,
+                tags,
+                untaggedOnly,
+                publicPostsOnly,
+                privatePostsOnly,
+                readLaterOnly,
+                limit
+            )
+        }
+
+        when {
+            !isConnected && localDataSize > 0 -> localData
+            !isConnected -> Success(null)
+            else -> {
+                val userLastUpdate = userRepository.getLastUpdate()
+                val apiLastUpdate = update().getOrDefault(dateFormatter.nowAsTzFormat())
+
+                if (userLastUpdate == apiLastUpdate && localDataSize > 0) {
+                    localData
+                } else {
+                    resultFrom { rateLimitRunner.run { postsApi.getAllPosts() } }
+                        .mapCatching { posts ->
+                            postsDao.deleteAllPosts()
+                            postsDao.savePosts(posts)
+                        }
+                        .map { localData }
+                        .onSuccess { userRepository.setLastUpdate(apiLastUpdate) }
                 }
-            }.mapCatching { postDtoMapper.mapList(it.posts) }
-        }.mapCatching { it.take(API_DEFAULT_RECENT_COUNT) }
+            }
+        }
     }
 
-    override suspend fun getAllPosts(
-        tags: List<Tag>?
-    ): Result<List<Post>> = withContext(Dispatchers.IO) {
-        withLocalDataSourceCheck { apiLastUpdate ->
-            resultFrom { rateLimitRunner.run { postsApi.getAllPosts(tags?.forRequest()) } }
-                .mapCatching { posts ->
-                    postsDao.deleteAllPosts()
-                    postsDao.savePosts(posts)
+    @VisibleForTesting
+    fun getLocalDataSize(
+        searchTerm: String,
+        tags: List<Tag>?,
+        untaggedOnly: Boolean,
+        public: Boolean,
+        private: Boolean,
+        readLater: Boolean,
+        limit: Int
+    ): Int {
+        return postsDao.getPostCount(
+            term = searchTerm,
+            tag1 = tags?.getOrNull(0)?.name.orEmpty(),
+            tag2 = tags?.getOrNull(1)?.name.orEmpty(),
+            tag3 = tags?.getOrNull(2)?.name.orEmpty(),
+            untaggedOnly = untaggedOnly,
+            publicPostsOnly = public,
+            privatePostsOnly = private,
+            readLaterOnly = readLater,
+            limit = limit
+        )
+    }
 
-                    postDtoMapper.mapList(posts)
-                }
-                .onSuccess { userRepository.setLastUpdate(apiLastUpdate) }
+    @VisibleForTesting
+    fun getLocalData(
+        localDataSize: Int,
+        newestFirst: Boolean,
+        searchTerm: String,
+        tags: List<Tag>?,
+        untaggedOnly: Boolean,
+        public: Boolean,
+        private: Boolean,
+        readLater: Boolean,
+        limit: Int
+    ): Result<Pair<Int, List<Post>>?> {
+        return catching {
+            if (localDataSize > 0) {
+                localDataSize to postsDao.getAllPosts(
+                    newestFirst = newestFirst,
+                    term = searchTerm,
+                    tag1 = tags?.getOrNull(0)?.name.orEmpty(),
+                    tag2 = tags?.getOrNull(1)?.name.orEmpty(),
+                    tag3 = tags?.getOrNull(2)?.name.orEmpty(),
+                    untaggedOnly = untaggedOnly,
+                    publicPostsOnly = public,
+                    privatePostsOnly = private,
+                    readLaterOnly = readLater,
+                    limit = limit
+                ).let(postDtoMapper::mapList)
+            } else {
+                null
+            }
         }
     }
 
@@ -112,28 +200,5 @@ class PostsDataSource @Inject constructor(
 
     private fun Result<GenericResponseDto>.orThrow() = mapCatching {
         if (it.resultCode != ApiResultCodes.DONE.code) throw ApiException()
-    }
-
-    private fun List<Tag>.forRequest() = joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST) { it.name }
-
-    private suspend inline fun withLocalDataSourceCheck(
-        body: (apiLastUpdate: String) -> Result<List<Post>>
-    ): Result<List<Post>> {
-        val isConnected = connectivityManager.isConnected()
-        val hasLocalData = postsDao.getPostCount() > 0
-        val localData by lazy { catching(postsDao::getAllPosts).mapCatching(postDtoMapper::mapList) }
-
-        return if (!isConnected && hasLocalData) {
-            localData
-        } else {
-            val userLastUpdate = userRepository.getLastUpdate()
-            val apiLastUpdate = update().getOrDefault(dateFormatter.nowAsTzFormat())
-
-            if (userLastUpdate == apiLastUpdate && hasLocalData) {
-                localData
-            } else {
-                body(apiLastUpdate)
-            }
-        }
     }
 }

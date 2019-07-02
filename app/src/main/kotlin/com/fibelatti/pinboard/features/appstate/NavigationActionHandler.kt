@@ -37,7 +37,7 @@ class NavigationActionHandler @Inject constructor(
                 Unread -> resourceProvider.getString(R.string.posts_title_unread)
                 Untagged -> resourceProvider.getString(R.string.posts_title_untagged)
             },
-            posts = emptyList(),
+            posts = null,
             sortType = NewestFirst,
             searchParameters = SearchParameters(),
             shouldLoad = connectivityManager.isConnected(),

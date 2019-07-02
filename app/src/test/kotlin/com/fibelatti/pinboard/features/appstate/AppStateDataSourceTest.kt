@@ -46,7 +46,7 @@ internal class AppStateDataSourceTest {
     private val expectedInitialValue = PostList(
         category = All,
         title = "R.string.posts_title_all",
-        posts = emptyList(),
+        posts = null,
         sortType = NewestFirst,
         searchParameters = SearchParameters(),
         shouldLoad = true,
@@ -155,7 +155,7 @@ internal class AppStateDataSourceTest {
 
                             // Post
                             Refresh -> add(Refresh to ExpectedHandler.POST)
-                            is SetPosts -> add(SetPosts(listOf(createPost())) to ExpectedHandler.POST)
+                            is SetPosts -> add(SetPosts(1 to listOf(createPost())) to ExpectedHandler.POST)
                             ToggleSorting -> add(ToggleSorting to ExpectedHandler.POST)
                             is EditPost -> add(EditPost(createPost()) to ExpectedHandler.POST)
                             is PostSaved -> add(PostSaved(createPost()) to ExpectedHandler.POST)

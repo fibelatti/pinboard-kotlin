@@ -2,20 +2,24 @@ package com.fibelatti.pinboard.features.posts.domain.usecase
 
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.UseCaseWithParams
-import com.fibelatti.core.functional.map
+import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import javax.inject.Inject
 
 class GetAllPosts @Inject constructor(
-    private val postsRepository: PostsRepository,
-    private val filterPosts: FilterPosts,
-    private val sort: Sort
-) : UseCaseWithParams<List<Post>, GetParams>() {
+    private val postsRepository: PostsRepository
+) : UseCaseWithParams<Pair<Int, List<Post>>?, GetPostParams>() {
 
-    override suspend fun run(params: GetParams): Result<List<Post>> {
-        return postsRepository.getAllPosts(params.tags.takeIf { it.isNotEmpty() })
-            .map { filterPosts(FilterPosts.Params(it, params.searchTerm, params.tags)) }
-            .map { sort(Sort.Params(it, params.sorting)) }
-    }
+    override suspend fun run(params: GetPostParams): Result<Pair<Int, List<Post>>?> =
+        postsRepository.getAllPosts(
+            newestFirst = params.sorting == NewestFirst,
+            searchTerm = params.searchTerm,
+            tags = if (params.tagParams is GetPostParams.Tags.Tagged) params.tagParams.tags else null,
+            untaggedOnly = params.tagParams is GetPostParams.Tags.Untagged,
+            publicPostsOnly = params.visibilityParams is GetPostParams.Visibility.Public,
+            privatePostsOnly = params.visibilityParams is GetPostParams.Visibility.Private,
+            readLaterOnly = params.readLater,
+            limit = params.limit
+        )
 }

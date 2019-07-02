@@ -29,7 +29,7 @@ internal class TagActionHandlerTest {
     val mockPreviousContent = PostList(
         category = All,
         title = mockTitle,
-        posts = emptyList(),
+        posts = null,
         sortType = NewestFirst,
         searchParameters = SearchParameters(),
         shouldLoad = false
@@ -127,7 +127,7 @@ internal class TagActionHandlerTest {
             result shouldBe PostList(
                 category = All,
                 title = mockTitle,
-                posts = emptyList(),
+                posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(tags = listOf(createTag())),
                 shouldLoad = true,

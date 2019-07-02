@@ -25,7 +25,7 @@ internal class PostActionHandlerTest {
     private val initialContent = PostList(
         category = All,
         title = mockTitle,
-        posts = emptyList(),
+        posts = null,
         sortType = NewestFirst,
         searchParameters = SearchParameters(),
         shouldLoad = false,
@@ -84,7 +84,7 @@ internal class PostActionHandlerTest {
             val content = mock<PostDetail>()
 
             // WHEN
-            val result = postActionHandler.runAction(SetPosts(listOf(mockPost)), content)
+            val result = postActionHandler.runAction(SetPosts(mock()), content)
 
             // THEN
             result shouldBe content
@@ -93,10 +93,11 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is PostList THEN updated content is returned`() {
             // WHEN
-            val result = postActionHandler.runAction(SetPosts(listOf(mockPost)), initialContent)
+            val mockPosts = mock<Pair<Int, List<Post>>>()
+            val result = postActionHandler.runAction(SetPosts(mockPosts), initialContent)
 
             // THEN
-            result shouldBe initialContent.copy(posts = listOf(mockPost), shouldLoad = false)
+            result shouldBe initialContent.copy(posts = mockPosts, shouldLoad = false)
         }
     }
 
@@ -240,7 +241,7 @@ internal class PostActionHandlerTest {
                 previousContent = PostList(
                     category = All,
                     title = mockTitle,
-                    posts = emptyList(),
+                    posts = null,
                     sortType = NewestFirst,
                     searchParameters = SearchParameters(),
                     shouldLoad = true,
@@ -280,7 +281,7 @@ internal class PostActionHandlerTest {
             result shouldBe PostList(
                 category = All,
                 title = mockTitle,
-                posts = emptyList(),
+                posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = true,

@@ -35,7 +35,7 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
     private fun addSearchTag(action: AddSearchTag, currentContent: Content): Content {
         return if (
             currentContent is SearchView &&
-            currentContent.searchParameters.tags.size < AppConfig.API_FILTER_MAX_TAGS &&
+            currentContent.searchParameters.tags.size < AppConfig.DEFAULT_FILTER_MAX_TAGS &&
             currentContent.searchParameters.tags.none { it == action.tag }
         ) {
             val newSearchParameters = currentContent.searchParameters.copy(
