@@ -97,7 +97,6 @@ class PostsDataSource @Inject constructor(
         )
         val localData by lazy {
             getLocalData(
-                localDataSize,
                 newestFirst,
                 searchTerm,
                 tags,
@@ -136,9 +135,9 @@ class PostsDataSource @Inject constructor(
         searchTerm: String,
         tags: List<Tag>?,
         untaggedOnly: Boolean,
-        public: Boolean,
-        private: Boolean,
-        readLater: Boolean,
+        publicPostsOnly: Boolean,
+        privatePostsOnly: Boolean,
+        readLaterOnly: Boolean,
         limit: Int
     ): Int {
         return postsDao.getPostCount(
@@ -147,26 +146,35 @@ class PostsDataSource @Inject constructor(
             tag2 = tags?.getOrNull(1)?.name.orEmpty(),
             tag3 = tags?.getOrNull(2)?.name.orEmpty(),
             untaggedOnly = untaggedOnly,
-            publicPostsOnly = public,
-            privatePostsOnly = private,
-            readLaterOnly = readLater,
+            publicPostsOnly = publicPostsOnly,
+            privatePostsOnly = privatePostsOnly,
+            readLaterOnly = readLaterOnly,
             limit = limit
         )
     }
 
     @VisibleForTesting
     fun getLocalData(
-        localDataSize: Int,
         newestFirst: Boolean,
         searchTerm: String,
         tags: List<Tag>?,
         untaggedOnly: Boolean,
-        public: Boolean,
-        private: Boolean,
-        readLater: Boolean,
+        publicPostsOnly: Boolean,
+        privatePostsOnly: Boolean,
+        readLaterOnly: Boolean,
         limit: Int
     ): Result<Pair<Int, List<Post>>?> {
         return catching {
+            val localDataSize = getLocalDataSize(
+                searchTerm,
+                tags,
+                untaggedOnly,
+                publicPostsOnly,
+                privatePostsOnly,
+                readLaterOnly,
+                limit
+            )
+
             if (localDataSize > 0) {
                 localDataSize to postsDao.getAllPosts(
                     newestFirst = newestFirst,
@@ -175,9 +183,9 @@ class PostsDataSource @Inject constructor(
                     tag2 = tags?.getOrNull(1)?.name.orEmpty(),
                     tag3 = tags?.getOrNull(2)?.name.orEmpty(),
                     untaggedOnly = untaggedOnly,
-                    publicPostsOnly = public,
-                    privatePostsOnly = private,
-                    readLaterOnly = readLater,
+                    publicPostsOnly = publicPostsOnly,
+                    privatePostsOnly = privatePostsOnly,
+                    readLaterOnly = readLaterOnly,
                     limit = limit
                 ).let(postDtoMapper::mapList)
             } else {

@@ -47,6 +47,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.BDDMockito.anyString
@@ -358,21 +359,20 @@ class PostsDataSourceTest {
                         searchTerm = "",
                         tags = null,
                         untaggedOnly = false,
-                        public = false,
-                        private = false,
-                        readLater = false,
+                        publicPostsOnly = false,
+                        privatePostsOnly = false,
+                        readLaterOnly = false,
                         limit = -1
                     )
                 willReturn(Success(mockLocalData)).given(dataSource)
                     .getLocalData(
-                        localDataSize = mockLocalDataSize,
                         newestFirst = true,
                         searchTerm = "",
                         tags = null,
                         untaggedOnly = false,
-                        public = false,
-                        private = false,
-                        readLater = false,
+                        publicPostsOnly = false,
+                        privatePostsOnly = false,
+                        readLaterOnly = false,
                         limit = -1
                     )
 
@@ -402,9 +402,9 @@ class PostsDataSourceTest {
                         searchTerm = "",
                         tags = null,
                         untaggedOnly = false,
-                        public = false,
-                        private = false,
-                        readLater = false,
+                        publicPostsOnly = false,
+                        privatePostsOnly = false,
+                        readLaterOnly = false,
                         limit = -1
                     )
 
@@ -442,21 +442,20 @@ class PostsDataSourceTest {
                         searchTerm = "",
                         tags = null,
                         untaggedOnly = false,
-                        public = false,
-                        private = false,
-                        readLater = false,
+                        publicPostsOnly = false,
+                        privatePostsOnly = false,
+                        readLaterOnly = false,
                         limit = -1
                     )
                 willReturn(Success(mockLocalData)).given(dataSource)
                     .getLocalData(
-                        localDataSize = mockLocalDataSize,
                         newestFirst = true,
                         searchTerm = "",
                         tags = null,
                         untaggedOnly = false,
-                        public = false,
-                        private = false,
-                        readLater = false,
+                        publicPostsOnly = false,
+                        privatePostsOnly = false,
+                        readLaterOnly = false,
                         limit = -1
                     )
             }
@@ -683,9 +682,9 @@ class PostsDataSourceTest {
                 searchTerm = mockUrlTitle,
                 tags = emptyList(),
                 untaggedOnly = false,
-                public = false,
-                private = false,
-                readLater = false,
+                publicPostsOnly = false,
+                privatePostsOnly = false,
+                readLaterOnly = false,
                 limit = -1
             )
 
@@ -726,9 +725,9 @@ class PostsDataSourceTest {
                 searchTerm = mockUrlTitle,
                 tags = listOf(mockTag1),
                 untaggedOnly = false,
-                public = false,
-                private = false,
-                readLater = false,
+                publicPostsOnly = false,
+                privatePostsOnly = false,
+                readLaterOnly = false,
                 limit = -1
             )
 
@@ -769,9 +768,9 @@ class PostsDataSourceTest {
                 searchTerm = mockUrlTitle,
                 tags = listOf(mockTag1, mockTag2),
                 untaggedOnly = false,
-                public = false,
-                private = false,
-                readLater = false,
+                publicPostsOnly = false,
+                privatePostsOnly = false,
+                readLaterOnly = false,
                 limit = -1
             )
 
@@ -812,9 +811,9 @@ class PostsDataSourceTest {
                 searchTerm = mockUrlTitle,
                 tags = listOf(mockTag1, mockTag2, mockTag3),
                 untaggedOnly = false,
-                public = false,
-                private = false,
-                readLater = false,
+                publicPostsOnly = false,
+                privatePostsOnly = false,
+                readLaterOnly = false,
                 limit = -1
             )
 
@@ -837,8 +836,21 @@ class PostsDataSourceTest {
     @Nested
     inner class GetLocalDataTests {
 
+        private val mockLocalDataSize = 42
+
         @BeforeEach
         fun setup() {
+            willReturn(mockLocalDataSize).given(dataSource)
+                .getLocalDataSize(
+                    searchTerm = anyString(),
+                    tags = any(),
+                    untaggedOnly = anyBoolean(),
+                    publicPostsOnly = anyBoolean(),
+                    privatePostsOnly = anyBoolean(),
+                    readLaterOnly = anyBoolean(),
+                    limit = anyInt()
+                )
+
             given(
                 mockDao.getAllPosts(
                     anyBoolean(),
@@ -860,16 +872,27 @@ class PostsDataSourceTest {
 
         @Test
         fun `WHEN local data size is 0 THEN null is returned and getAllPosts is not called`() {
+            // GIVEN
+            willReturn(0).given(dataSource)
+                .getLocalDataSize(
+                    searchTerm = anyString(),
+                    tags = any(),
+                    untaggedOnly = anyBoolean(),
+                    publicPostsOnly = anyBoolean(),
+                    privatePostsOnly = anyBoolean(),
+                    readLaterOnly = anyBoolean(),
+                    limit = anyInt()
+                )
+
             // WHEN
             val result = dataSource.getLocalData(
-                localDataSize = 0,
                 newestFirst = true,
                 searchTerm = mockUrlTitle,
                 tags = emptyList(),
                 untaggedOnly = false,
-                public = false,
-                private = false,
-                readLater = false,
+                publicPostsOnly = false,
+                privatePostsOnly = false,
+                readLaterOnly = false,
                 limit = -1
             )
 
@@ -881,14 +904,13 @@ class PostsDataSourceTest {
         fun `WHEN tags is empty THEN tag1 tag2 and tag3 are sent as empty`() {
             // WHEN
             val result = dataSource.getLocalData(
-                localDataSize = 1,
                 newestFirst = true,
                 searchTerm = mockUrlTitle,
                 tags = emptyList(),
                 untaggedOnly = false,
-                public = false,
-                private = false,
-                readLater = false,
+                publicPostsOnly = false,
+                privatePostsOnly = false,
+                readLaterOnly = false,
                 limit = -1
             )
 
@@ -905,21 +927,20 @@ class PostsDataSourceTest {
                 readLaterOnly = false,
                 limit = -1
             )
-            result.getOrThrow() shouldBe Pair(1, mockListPost)
+            result.getOrThrow() shouldBe Pair(mockLocalDataSize, mockListPost)
         }
 
         @Test
         fun `WHEN tags size is 1 THEN tag2 and tag3 are sent as empty`() {
             // WHEN
             val result = dataSource.getLocalData(
-                localDataSize = 1,
                 newestFirst = true,
                 searchTerm = mockUrlTitle,
                 tags = listOf(mockTag1),
                 untaggedOnly = false,
-                public = false,
-                private = false,
-                readLater = false,
+                publicPostsOnly = false,
+                privatePostsOnly = false,
+                readLaterOnly = false,
                 limit = -1
             )
 
@@ -936,21 +957,20 @@ class PostsDataSourceTest {
                 readLaterOnly = false,
                 limit = -1
             )
-            result.getOrThrow() shouldBe Pair(1, mockListPost)
+            result.getOrThrow() shouldBe Pair(mockLocalDataSize, mockListPost)
         }
 
         @Test
         fun `WHEN tags size is 2 THEN tag3 is sent as empty`() {
             // WHEN
             val result = dataSource.getLocalData(
-                localDataSize = 1,
                 newestFirst = true,
                 searchTerm = mockUrlTitle,
                 tags = listOf(mockTag1, mockTag2),
                 untaggedOnly = false,
-                public = false,
-                private = false,
-                readLater = false,
+                publicPostsOnly = false,
+                privatePostsOnly = false,
+                readLaterOnly = false,
                 limit = -1
             )
 
@@ -967,21 +987,20 @@ class PostsDataSourceTest {
                 readLaterOnly = false,
                 limit = -1
             )
-            result.getOrThrow() shouldBe Pair(1, mockListPost)
+            result.getOrThrow() shouldBe Pair(mockLocalDataSize, mockListPost)
         }
 
         @Test
         fun `WHEN tags size is 3 THEN all tags are sent`() {
             // WHEN
             val result = dataSource.getLocalData(
-                localDataSize = 1,
                 newestFirst = true,
                 searchTerm = mockUrlTitle,
                 tags = listOf(mockTag1, mockTag2, mockTag3),
                 untaggedOnly = false,
-                public = false,
-                private = false,
-                readLater = false,
+                publicPostsOnly = false,
+                privatePostsOnly = false,
+                readLaterOnly = false,
                 limit = -1
             )
 
@@ -998,7 +1017,7 @@ class PostsDataSourceTest {
                 readLaterOnly = false,
                 limit = -1
             )
-            result.getOrThrow() shouldBe Pair(1, mockListPost)
+            result.getOrThrow() shouldBe Pair(mockLocalDataSize, mockListPost)
         }
 
         @Test
@@ -1021,14 +1040,13 @@ class PostsDataSourceTest {
 
             // WHEN
             val result = dataSource.getLocalData(
-                localDataSize = 1,
                 newestFirst = true,
                 searchTerm = mockUrlTitle,
                 tags = emptyList(),
                 untaggedOnly = false,
-                public = false,
-                private = false,
-                readLater = false,
+                publicPostsOnly = false,
+                privatePostsOnly = false,
+                readLaterOnly = false,
                 limit = -1
             )
 
