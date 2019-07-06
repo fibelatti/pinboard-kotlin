@@ -13,7 +13,8 @@ import javax.inject.Inject
 
 abstract class BaseActivity : AppCompatActivity() {
 
-    val injector get() = (application as App).appComponent
+    private val injector
+        get() = (application as App).appComponent
 
     @Inject
     lateinit var fragmentFactory: FragmentFactory

@@ -5,11 +5,10 @@ import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.extension.toast
 
-abstract class BaseFragment :
-    Fragment() {
+abstract class BaseFragment : Fragment() {
 
-    protected val injector by lazy { (activity as BaseActivity).injector }
-    protected val viewModelFactory by lazy { (activity as BaseActivity).viewModelFactory }
+    protected val viewModelFactory
+        get() = (activity as BaseActivity).viewModelFactory
 
     open fun handleError(error: Throwable) {
         activity?.toast(getString(R.string.generic_msg_error))
