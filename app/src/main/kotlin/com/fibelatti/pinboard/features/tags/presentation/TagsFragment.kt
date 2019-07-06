@@ -32,7 +32,7 @@ class TagsFragment @Inject constructor(
 
     companion object {
         @JvmStatic
-        val TAG: String = TagsFragment::class.java.simpleName
+        val TAG: String = "TagsFragment"
     }
 
     private val appStateViewModel: AppStateViewModel by lazy {

@@ -43,7 +43,7 @@ class PostSearchFragment @Inject constructor(
 
     companion object {
         @JvmStatic
-        val TAG: String = PostSearchFragment::class.java.simpleName
+        val TAG: String = "PostSearchFragment"
     }
 
     private val appStateViewModel: AppStateViewModel by lazy {

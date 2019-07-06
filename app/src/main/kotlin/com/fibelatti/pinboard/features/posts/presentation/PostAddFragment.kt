@@ -36,7 +36,7 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
 
     companion object {
         @JvmStatic
-        val TAG: String = PostAddFragment::class.java.simpleName
+        val TAG: String = "PostAddFragment"
     }
 
     private val appStateViewModel: AppStateViewModel by lazy {
