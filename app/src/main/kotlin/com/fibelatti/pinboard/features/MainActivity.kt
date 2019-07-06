@@ -13,6 +13,7 @@ import com.fibelatti.core.extension.inTransaction
 import com.fibelatti.core.extension.remove
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.AppConfig.MAIN_PACKAGE_NAME
 import com.fibelatti.pinboard.core.AppConfig.PLAY_STORE_BASE_URL
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseActivity
@@ -227,7 +228,7 @@ class MainActivity :
     override fun onRateAppClicked() {
         startActivity(
             Intent(Intent.ACTION_VIEW).apply {
-                data = Uri.parse("$PLAY_STORE_BASE_URL$${packageName.remove(".debug")}")
+                data = Uri.parse("$PLAY_STORE_BASE_URL$MAIN_PACKAGE_NAME")
                 setPackage("com.android.vending")
             }
         )

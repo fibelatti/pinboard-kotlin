@@ -1,6 +1,8 @@
 package com.fibelatti.pinboard.core
 
 object AppConfig {
+    const val MAIN_PACKAGE_NAME = "com.fibelatti.pinboard"
+
     const val API_BASE_URL = "https://api.pinboard.in/v1/"
     const val API_ENCODING = "UTF-8"
     const val API_MAX_LENGTH = 255
