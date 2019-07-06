@@ -12,7 +12,6 @@ import androidx.transition.TransitionInflater
 import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.extension.animateChangingTransitions
-import com.fibelatti.core.extension.exhaustive
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.isGone
@@ -26,18 +25,12 @@ import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.features.appstate.AddPost
-import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.PostList
-import com.fibelatti.pinboard.features.appstate.Private
-import com.fibelatti.pinboard.features.appstate.Public
-import com.fibelatti.pinboard.features.appstate.Recent
 import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.appstate.ToggleSorting
-import com.fibelatti.pinboard.features.appstate.Unread
-import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.mainActivity
@@ -165,26 +158,7 @@ class PostListFragment @Inject constructor(
         handleLoading(content.shouldLoad)
 
         if (content.shouldLoad) {
-            when (content.category) {
-                is All -> {
-                    postListViewModel.getAll(content.sortType, content.searchParameters.term, content.searchParameters.tags)
-                }
-                is Recent -> {
-                    postListViewModel.getRecent(content.sortType, content.searchParameters.term, content.searchParameters.tags)
-                }
-                is Public -> {
-                    postListViewModel.getPublic(content.sortType, content.searchParameters.term, content.searchParameters.tags)
-                }
-                is Private -> {
-                    postListViewModel.getPrivate(content.sortType, content.searchParameters.term, content.searchParameters.tags)
-                }
-                is Unread -> {
-                    postListViewModel.getUnread(content.sortType, content.searchParameters.term, content.searchParameters.tags)
-                }
-                is Untagged -> {
-                    postListViewModel.getUntagged(content.sortType, content.searchParameters.term)
-                }
-            }.exhaustive
+            postListViewModel.loadContent(content)
         } else {
             showPosts(content.posts, content.sortType)
         }

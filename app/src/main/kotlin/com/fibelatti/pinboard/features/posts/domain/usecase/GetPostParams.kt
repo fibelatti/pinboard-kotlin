@@ -10,7 +10,8 @@ data class GetPostParams(
     val tagParams: Tags = Tags.None,
     val visibilityParams: Visibility = Visibility.None,
     val readLater: Boolean = false,
-    val limit: Int = -1
+    val limit: Int = -1,
+    val offset: Int = 0
 ) {
     sealed class Tags {
         object Untagged : Tags()

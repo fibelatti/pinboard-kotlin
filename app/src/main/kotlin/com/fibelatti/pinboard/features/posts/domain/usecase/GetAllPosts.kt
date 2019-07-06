@@ -20,6 +20,8 @@ class GetAllPosts @Inject constructor(
             publicPostsOnly = params.visibilityParams is GetPostParams.Visibility.Public,
             privatePostsOnly = params.visibilityParams is GetPostParams.Visibility.Private,
             readLaterOnly = params.readLater,
-            limit = params.limit
+            countLimit = -1,
+            pageLimit = params.limit,
+            pageOffset = params.offset
         )
 }

@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.posts.data
 import androidx.test.runner.AndroidJUnit4
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.core.test.extension.shouldContain
+import com.fibelatti.core.test.extension.sizeShouldBe
 import com.fibelatti.pinboard.BaseDbTest
 import com.fibelatti.pinboard.MockDataProvider.createPostDto
 import com.fibelatti.pinboard.MockDataProvider.mockHash
@@ -15,6 +16,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockTime3
 import com.fibelatti.pinboard.MockDataProvider.mockTime4
 import com.fibelatti.pinboard.MockDataProvider.mockTime5
 import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.features.posts.domain.model.Post
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.UUID
@@ -578,6 +580,58 @@ class PostsDaoTest : BaseDbTest() {
 
         // THEN
         result shouldBe list
+    }
+
+    @Test
+    fun givenDbHasDataAndAndOffsetIsLowerThenDataSizeWhenGetAllPostsIsCalledThenTheRemainingDataIsReturned() {
+        // GIVEN
+        val list = listOf(
+            postWithoutTerm,
+            postWithTermInTheHref,
+            postWithTermInTheDescription,
+            postWithTermInTheExtended,
+            postWithNoTags,
+            postWithOneTag,
+            postWithTwoTags,
+            postWithThreeTags,
+            postPublic,
+            postPrivate,
+            postReadLater,
+            postNotReadLater
+        )
+        postsDao.savePosts(list)
+
+        // WHEN
+        val result = postsDao.getAllPosts(offset = list.size - 1)
+
+        // THEN
+        result sizeShouldBe 1
+    }
+
+    @Test
+    fun givenDbHasDataAndAndOffsetIsHigherThenDataSizeWhenGetAllPostsIsCalledThenNoDataIsReturned() {
+        // GIVEN
+        val list = listOf(
+            postWithoutTerm,
+            postWithTermInTheHref,
+            postWithTermInTheDescription,
+            postWithTermInTheExtended,
+            postWithNoTags,
+            postWithOneTag,
+            postWithTwoTags,
+            postWithThreeTags,
+            postPublic,
+            postPrivate,
+            postReadLater,
+            postNotReadLater
+        )
+        postsDao.savePosts(list)
+
+        // WHEN
+        val result = postsDao.getAllPosts(offset = list.size)
+
+        // THEN
+        result shouldBe emptyList<Post>()
     }
     // endregion
 }

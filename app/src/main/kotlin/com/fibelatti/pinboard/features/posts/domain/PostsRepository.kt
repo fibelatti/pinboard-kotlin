@@ -18,9 +18,7 @@ interface PostsRepository {
         tags: List<Tag>?
     ): Result<Unit>
 
-    suspend fun delete(
-        url: String
-    ): Result<Unit>
+    suspend fun delete(url: String): Result<Unit>
 
     suspend fun getAllPosts(
         newestFirst: Boolean,
@@ -30,14 +28,12 @@ interface PostsRepository {
         publicPostsOnly: Boolean,
         privatePostsOnly: Boolean,
         readLaterOnly: Boolean,
-        limit: Int
+        countLimit: Int,
+        pageLimit: Int,
+        pageOffset: Int
     ): Result<Pair<Int, List<Post>>?>
 
-    suspend fun getPost(
-        url: String
-    ): Result<Post>
+    suspend fun getPost(url: String): Result<Post>
 
-    suspend fun getSuggestedTagsForUrl(
-        url: String
-    ): Result<SuggestedTags>
+    suspend fun getSuggestedTagsForUrl(url: String): Result<SuggestedTags>
 }

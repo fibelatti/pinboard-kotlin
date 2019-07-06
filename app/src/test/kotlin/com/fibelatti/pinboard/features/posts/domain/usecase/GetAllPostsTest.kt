@@ -45,7 +45,9 @@ class GetAllPostsTest {
                 publicPostsOnly = anyBoolean(),
                 privatePostsOnly = anyBoolean(),
                 readLaterOnly = anyBoolean(),
-                limit = anyInt()
+                countLimit = anyInt(),
+                pageLimit = anyInt(),
+                pageOffset = anyInt()
             )
         }.willReturn(Success(mockResponse))
     }
@@ -73,7 +75,9 @@ class GetAllPostsTest {
                     publicPostsOnly = anyBoolean(),
                     privatePostsOnly = anyBoolean(),
                     readLaterOnly = anyBoolean(),
-                    limit = anyInt()
+                    countLimit = eq(-1),
+                    pageLimit = anyInt(),
+                    pageOffset = anyInt()
                 )
             }
         }
@@ -99,7 +103,9 @@ class GetAllPostsTest {
                 publicPostsOnly = false,
                 privatePostsOnly = false,
                 readLaterOnly = false,
-                limit = -1
+                countLimit = -1,
+                pageLimit = -1,
+                pageOffset = 0
             )
         }
     }
@@ -122,7 +128,9 @@ class GetAllPostsTest {
                 publicPostsOnly = anyBoolean(),
                 privatePostsOnly = anyBoolean(),
                 readLaterOnly = anyBoolean(),
-                limit = anyInt()
+                countLimit = eq(-1),
+                pageLimit = anyInt(),
+                pageOffset = anyInt()
             )
         }
     }
@@ -145,7 +153,9 @@ class GetAllPostsTest {
                 publicPostsOnly = anyBoolean(),
                 privatePostsOnly = anyBoolean(),
                 readLaterOnly = anyBoolean(),
-                limit = anyInt()
+                countLimit = eq(-1),
+                pageLimit = anyInt(),
+                pageOffset = anyInt()
             )
         }
     }
@@ -168,7 +178,9 @@ class GetAllPostsTest {
                 publicPostsOnly = anyBoolean(),
                 privatePostsOnly = anyBoolean(),
                 readLaterOnly = anyBoolean(),
-                limit = anyInt()
+                countLimit = eq(-1),
+                pageLimit = anyInt(),
+                pageOffset = anyInt()
             )
         }
     }
@@ -191,7 +203,9 @@ class GetAllPostsTest {
                 publicPostsOnly = eq(false),
                 privatePostsOnly = eq(false),
                 readLaterOnly = anyBoolean(),
-                limit = anyInt()
+                countLimit = eq(-1),
+                pageLimit = anyInt(),
+                pageOffset = anyInt()
             )
         }
     }
@@ -214,7 +228,9 @@ class GetAllPostsTest {
                 publicPostsOnly = eq(true),
                 privatePostsOnly = eq(false),
                 readLaterOnly = anyBoolean(),
-                limit = anyInt()
+                countLimit = eq(-1),
+                pageLimit = anyInt(),
+                pageOffset = anyInt()
             )
         }
     }
@@ -237,7 +253,9 @@ class GetAllPostsTest {
                 publicPostsOnly = eq(false),
                 privatePostsOnly = eq(true),
                 readLaterOnly = anyBoolean(),
-                limit = anyInt()
+                countLimit = eq(-1),
+                pageLimit = anyInt(),
+                pageOffset = anyInt()
             )
         }
     }
@@ -260,7 +278,9 @@ class GetAllPostsTest {
                 publicPostsOnly = anyBoolean(),
                 privatePostsOnly = anyBoolean(),
                 readLaterOnly = eq(true),
-                limit = anyInt()
+                countLimit = eq(-1),
+                pageLimit = anyInt(),
+                pageOffset = anyInt()
             )
         }
     }
@@ -283,7 +303,9 @@ class GetAllPostsTest {
                 publicPostsOnly = anyBoolean(),
                 privatePostsOnly = anyBoolean(),
                 readLaterOnly = eq(false),
-                limit = anyInt()
+                countLimit = eq(-1),
+                pageLimit = anyInt(),
+                pageOffset = anyInt()
             )
         }
     }
@@ -306,7 +328,34 @@ class GetAllPostsTest {
                 publicPostsOnly = anyBoolean(),
                 privatePostsOnly = anyBoolean(),
                 readLaterOnly = anyBoolean(),
-                limit = eq(100)
+                countLimit = eq(-1),
+                pageLimit = eq(100),
+                pageOffset = anyInt()
+            )
+        }
+    }
+
+    @Test
+    fun `GIVEN offset was set in the params WHEN getAllPosts is called THEN repository is called with the expected params`() {
+        // GIVEN
+        val params = GetPostParams(offset = 100)
+
+        // WHEN
+        callSuspend { getAllPosts(params) }
+
+        // THEN
+        verifySuspend(mockPostsRepository) {
+            getAllPosts(
+                newestFirst = anyBoolean(),
+                searchTerm = anyString(),
+                tags = any(),
+                untaggedOnly = anyBoolean(),
+                publicPostsOnly = anyBoolean(),
+                privatePostsOnly = anyBoolean(),
+                readLaterOnly = anyBoolean(),
+                countLimit = eq(-1),
+                pageLimit = anyInt(),
+                pageOffset = eq(100)
             )
         }
     }

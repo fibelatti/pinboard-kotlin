@@ -20,6 +20,8 @@ class GetRecentPosts @Inject constructor(
             publicPostsOnly = false,
             privatePostsOnly = false,
             readLaterOnly = false,
-            limit = DEFAULT_RECENT_QUANTITY
+            countLimit = DEFAULT_RECENT_QUANTITY,
+            pageLimit = DEFAULT_RECENT_QUANTITY,
+            pageOffset = 0
         )
 }

@@ -16,5 +16,6 @@ internal class GetPostParamsTest {
         params.visibilityParams shouldBe GetPostParams.Visibility.None
         params.readLater shouldBe false
         params.limit shouldBe -1
+        params.offset shouldBe 0
     }
 }

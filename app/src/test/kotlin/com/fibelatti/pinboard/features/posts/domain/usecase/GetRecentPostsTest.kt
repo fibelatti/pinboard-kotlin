@@ -36,7 +36,9 @@ class GetRecentPostsTest {
                 publicPostsOnly = anyBoolean(),
                 privatePostsOnly = anyBoolean(),
                 readLaterOnly = anyBoolean(),
-                limit = anyInt()
+                countLimit = anyInt(),
+                pageLimit = anyInt(),
+                pageOffset = anyInt()
             )
         }.willReturn(Success(mockResponse))
     }
@@ -59,7 +61,9 @@ class GetRecentPostsTest {
                 publicPostsOnly = false,
                 privatePostsOnly = false,
                 readLaterOnly = false,
-                limit = DEFAULT_RECENT_QUANTITY
+                countLimit = DEFAULT_RECENT_QUANTITY,
+                pageLimit = DEFAULT_RECENT_QUANTITY,
+                pageOffset = 0
             )
         }
     }
@@ -82,7 +86,9 @@ class GetRecentPostsTest {
                 publicPostsOnly = false,
                 privatePostsOnly = false,
                 readLaterOnly = false,
-                limit = DEFAULT_RECENT_QUANTITY
+                countLimit = DEFAULT_RECENT_QUANTITY,
+                pageLimit = DEFAULT_RECENT_QUANTITY,
+                pageOffset = 0
             )
         }
     }
@@ -105,7 +111,9 @@ class GetRecentPostsTest {
                 publicPostsOnly = false,
                 privatePostsOnly = false,
                 readLaterOnly = false,
-                limit = DEFAULT_RECENT_QUANTITY
+                countLimit = DEFAULT_RECENT_QUANTITY,
+                pageLimit = DEFAULT_RECENT_QUANTITY,
+                pageOffset = 0
             )
         }
     }
@@ -128,7 +136,9 @@ class GetRecentPostsTest {
                 publicPostsOnly = false,
                 privatePostsOnly = false,
                 readLaterOnly = false,
-                limit = DEFAULT_RECENT_QUANTITY
+                countLimit = DEFAULT_RECENT_QUANTITY,
+                pageLimit = DEFAULT_RECENT_QUANTITY,
+                pageOffset = 0
             )
         }
     }

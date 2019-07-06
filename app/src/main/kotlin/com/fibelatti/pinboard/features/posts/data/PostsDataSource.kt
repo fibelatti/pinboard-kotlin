@@ -68,9 +68,7 @@ class PostsDataSource @Inject constructor(
 
     private fun List<Tag>.forRequest() = joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST) { it.name }
 
-    override suspend fun delete(
-        url: String
-    ): Result<Unit> = withContext(Dispatchers.IO) {
+    override suspend fun delete(url: String): Result<Unit> = withContext(Dispatchers.IO) {
         resultFrom { postsApi.delete(url) }
             .orThrow()
     }
@@ -83,7 +81,9 @@ class PostsDataSource @Inject constructor(
         publicPostsOnly: Boolean,
         privatePostsOnly: Boolean,
         readLaterOnly: Boolean,
-        limit: Int
+        countLimit: Int,
+        pageLimit: Int,
+        pageOffset: Int
     ): Result<Pair<Int, List<Post>>?> = withContext(Dispatchers.IO) {
         val isConnected = connectivityManager.isConnected()
         val localData by lazy {
@@ -95,7 +95,9 @@ class PostsDataSource @Inject constructor(
                 publicPostsOnly,
                 privatePostsOnly,
                 readLaterOnly,
-                limit
+                countLimit,
+                pageLimit,
+                pageOffset
             )
         }
 
@@ -129,7 +131,7 @@ class PostsDataSource @Inject constructor(
         publicPostsOnly: Boolean,
         privatePostsOnly: Boolean,
         readLaterOnly: Boolean,
-        limit: Int
+        countLimit: Int
     ): Int {
         return postsDao.getPostCount(
             term = searchTerm,
@@ -140,7 +142,7 @@ class PostsDataSource @Inject constructor(
             publicPostsOnly = publicPostsOnly,
             privatePostsOnly = privatePostsOnly,
             readLaterOnly = readLaterOnly,
-            limit = limit
+            limit = countLimit
         )
     }
 
@@ -153,7 +155,9 @@ class PostsDataSource @Inject constructor(
         publicPostsOnly: Boolean,
         privatePostsOnly: Boolean,
         readLaterOnly: Boolean,
-        limit: Int
+        countLimit: Int,
+        pageLimit: Int,
+        pageOffset: Int
     ): Result<Pair<Int, List<Post>>?> {
         return catching {
             val localDataSize = getLocalDataSize(
@@ -163,7 +167,7 @@ class PostsDataSource @Inject constructor(
                 publicPostsOnly,
                 privatePostsOnly,
                 readLaterOnly,
-                limit
+                countLimit
             )
 
             if (localDataSize > 0) {
@@ -177,7 +181,8 @@ class PostsDataSource @Inject constructor(
                     publicPostsOnly = publicPostsOnly,
                     privatePostsOnly = privatePostsOnly,
                     readLaterOnly = readLaterOnly,
-                    limit = limit
+                    limit = pageLimit,
+                    offset = pageOffset
                 ).let(postDtoMapper::mapList)
             } else {
                 null

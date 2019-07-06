@@ -363,7 +363,9 @@ class PostsDataSourceTest {
                         publicPostsOnly = false,
                         privatePostsOnly = false,
                         readLaterOnly = false,
-                        limit = -1
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0
                     )
 
                 // WHEN
@@ -376,7 +378,9 @@ class PostsDataSourceTest {
                         publicPostsOnly = false,
                         privatePostsOnly = false,
                         readLaterOnly = false,
-                        limit = -1
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0
                     )
                 }
 
@@ -400,7 +404,9 @@ class PostsDataSourceTest {
                         publicPostsOnly = false,
                         privatePostsOnly = false,
                         readLaterOnly = false,
-                        limit = -1
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0
                     )
                 }
 
@@ -429,7 +435,9 @@ class PostsDataSourceTest {
                         publicPostsOnly = false,
                         privatePostsOnly = false,
                         readLaterOnly = false,
-                        limit = -1
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0
                     )
             }
 
@@ -451,7 +459,9 @@ class PostsDataSourceTest {
                         publicPostsOnly = false,
                         privatePostsOnly = false,
                         readLaterOnly = false,
-                        limit = -1
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0
                     )
                 }
 
@@ -484,7 +494,9 @@ class PostsDataSourceTest {
                         publicPostsOnly = false,
                         privatePostsOnly = false,
                         readLaterOnly = false,
-                        limit = -1
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0
                     )
                 }
 
@@ -512,7 +524,9 @@ class PostsDataSourceTest {
                         publicPostsOnly = false,
                         privatePostsOnly = false,
                         readLaterOnly = false,
-                        limit = -1
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0
                     )
                 }
 
@@ -542,7 +556,9 @@ class PostsDataSourceTest {
                         publicPostsOnly = false,
                         privatePostsOnly = false,
                         readLaterOnly = false,
-                        limit = -1
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0
                     )
                 }
 
@@ -574,7 +590,9 @@ class PostsDataSourceTest {
                         publicPostsOnly = false,
                         privatePostsOnly = false,
                         readLaterOnly = false,
-                        limit = -1
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0
                     )
                 }
 
@@ -606,7 +624,9 @@ class PostsDataSourceTest {
                         publicPostsOnly = false,
                         privatePostsOnly = false,
                         readLaterOnly = false,
-                        limit = -1
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0
                     )
                 }
 
@@ -636,7 +656,9 @@ class PostsDataSourceTest {
                         publicPostsOnly = false,
                         privatePostsOnly = false,
                         readLaterOnly = false,
-                        limit = -1
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0
                     )
                 }
 
@@ -678,7 +700,7 @@ class PostsDataSourceTest {
                 publicPostsOnly = false,
                 privatePostsOnly = false,
                 readLaterOnly = false,
-                limit = -1
+                countLimit = -1
             )
 
             // THEN
@@ -721,7 +743,7 @@ class PostsDataSourceTest {
                 publicPostsOnly = false,
                 privatePostsOnly = false,
                 readLaterOnly = false,
-                limit = -1
+                countLimit = -1
             )
 
             // THEN
@@ -764,7 +786,7 @@ class PostsDataSourceTest {
                 publicPostsOnly = false,
                 privatePostsOnly = false,
                 readLaterOnly = false,
-                limit = -1
+                countLimit = -1
             )
 
             // THEN
@@ -807,7 +829,7 @@ class PostsDataSourceTest {
                 publicPostsOnly = false,
                 privatePostsOnly = false,
                 readLaterOnly = false,
-                limit = -1
+                countLimit = -1
             )
 
             // THEN
@@ -841,7 +863,7 @@ class PostsDataSourceTest {
                     publicPostsOnly = anyBoolean(),
                     privatePostsOnly = anyBoolean(),
                     readLaterOnly = anyBoolean(),
-                    limit = anyInt()
+                    countLimit = anyInt()
                 )
 
             given(
@@ -855,6 +877,7 @@ class PostsDataSourceTest {
                     anyBoolean(),
                     anyBoolean(),
                     anyBoolean(),
+                    anyInt(),
                     anyInt()
                 )
             ).willReturn(mockListPostDto)
@@ -874,7 +897,7 @@ class PostsDataSourceTest {
                     publicPostsOnly = anyBoolean(),
                     privatePostsOnly = anyBoolean(),
                     readLaterOnly = anyBoolean(),
-                    limit = anyInt()
+                    countLimit = anyInt()
                 )
 
             // WHEN
@@ -886,7 +909,9 @@ class PostsDataSourceTest {
                 publicPostsOnly = false,
                 privatePostsOnly = false,
                 readLaterOnly = false,
-                limit = -1
+                countLimit = -1,
+                pageLimit = -1,
+                pageOffset = 0
             )
 
             // THEN
@@ -904,7 +929,9 @@ class PostsDataSourceTest {
                 publicPostsOnly = false,
                 privatePostsOnly = false,
                 readLaterOnly = false,
-                limit = -1
+                countLimit = -1,
+                pageLimit = -1,
+                pageOffset = 0
             )
 
             // THEN
@@ -918,7 +945,8 @@ class PostsDataSourceTest {
                 publicPostsOnly = false,
                 privatePostsOnly = false,
                 readLaterOnly = false,
-                limit = -1
+                limit = -1,
+                offset = 0
             )
             result.getOrThrow() shouldBe Pair(mockLocalDataSize, mockListPost)
         }
@@ -934,7 +962,9 @@ class PostsDataSourceTest {
                 publicPostsOnly = false,
                 privatePostsOnly = false,
                 readLaterOnly = false,
-                limit = -1
+                countLimit = -1,
+                pageLimit = -1,
+                pageOffset = 0
             )
 
             // THEN
@@ -948,7 +978,8 @@ class PostsDataSourceTest {
                 publicPostsOnly = false,
                 privatePostsOnly = false,
                 readLaterOnly = false,
-                limit = -1
+                limit = -1,
+                offset = 0
             )
             result.getOrThrow() shouldBe Pair(mockLocalDataSize, mockListPost)
         }
@@ -964,7 +995,9 @@ class PostsDataSourceTest {
                 publicPostsOnly = false,
                 privatePostsOnly = false,
                 readLaterOnly = false,
-                limit = -1
+                countLimit = -1,
+                pageLimit = -1,
+                pageOffset = 0
             )
 
             // THEN
@@ -978,7 +1011,8 @@ class PostsDataSourceTest {
                 publicPostsOnly = false,
                 privatePostsOnly = false,
                 readLaterOnly = false,
-                limit = -1
+                limit = -1,
+                offset = 0
             )
             result.getOrThrow() shouldBe Pair(mockLocalDataSize, mockListPost)
         }
@@ -994,7 +1028,9 @@ class PostsDataSourceTest {
                 publicPostsOnly = false,
                 privatePostsOnly = false,
                 readLaterOnly = false,
-                limit = -1
+                countLimit = -1,
+                pageLimit = -1,
+                pageOffset = 0
             )
 
             // THEN
@@ -1008,7 +1044,8 @@ class PostsDataSourceTest {
                 publicPostsOnly = false,
                 privatePostsOnly = false,
                 readLaterOnly = false,
-                limit = -1
+                limit = -1,
+                offset = 0
             )
             result.getOrThrow() shouldBe Pair(mockLocalDataSize, mockListPost)
         }
@@ -1027,6 +1064,7 @@ class PostsDataSourceTest {
                     anyBoolean(),
                     anyBoolean(),
                     anyBoolean(),
+                    anyInt(),
                     anyInt()
                 )
             ).will { throw Exception() }
@@ -1040,7 +1078,9 @@ class PostsDataSourceTest {
                 publicPostsOnly = false,
                 privatePostsOnly = false,
                 readLaterOnly = false,
-                limit = -1
+                countLimit = -1,
+                pageLimit = -1,
+                pageOffset = 0
             )
 
             // THEN

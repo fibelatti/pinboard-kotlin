@@ -39,8 +39,6 @@ private const val ORDER_BY_SUB_QUERY = "order by " +
     "case when :newestFirst = 1 then time end DESC, " +
     "case when :newestFirst = 0 then time end ASC"
 
-private const val LIMIT_SUB_QUERY = "limit :limit"
-
 @Dao
 interface PostsDao {
 
@@ -50,7 +48,7 @@ interface PostsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun savePosts(posts: List<PostDto>)
 
-    @Query("select count(*) from (select hash from $POST_TABLE_NAME $WHERE_SUB_QUERY $LIMIT_SUB_QUERY)")
+    @Query("select count(*) from (select hash from $POST_TABLE_NAME $WHERE_SUB_QUERY limit :limit)")
     fun getPostCount(
         term: String = "",
         tag1: String = "",
@@ -63,7 +61,7 @@ interface PostsDao {
         limit: Int = -1
     ): Int
 
-    @Query("select * from $POST_TABLE_NAME $WHERE_SUB_QUERY $ORDER_BY_SUB_QUERY $LIMIT_SUB_QUERY")
+    @Query("select * from $POST_TABLE_NAME $WHERE_SUB_QUERY $ORDER_BY_SUB_QUERY limit :offset, :limit")
     fun getAllPosts(
         newestFirst: Boolean = true,
         term: String = "",
@@ -74,6 +72,7 @@ interface PostsDao {
         publicPostsOnly: Boolean = false,
         privatePostsOnly: Boolean = false,
         readLaterOnly: Boolean = false,
-        limit: Int = -1
+        limit: Int = -1,
+        offset: Int = 0
     ): List<PostDto>
 }
