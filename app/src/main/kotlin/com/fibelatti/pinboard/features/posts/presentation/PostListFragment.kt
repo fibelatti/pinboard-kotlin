@@ -136,11 +136,8 @@ class PostListFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        error(postListViewModel.error, ::handleError)
-
-        viewLifecycleOwner.observe(appStateViewModel.getContent()) { content ->
-            if (content is PostList) updateContent(content)
-        }
+        viewLifecycleOwner.error(postListViewModel.error, ::handleError)
+        viewLifecycleOwner.observe(appStateViewModel.postList, ::updateContent)
     }
 
     private fun updateContent(content: PostList) {

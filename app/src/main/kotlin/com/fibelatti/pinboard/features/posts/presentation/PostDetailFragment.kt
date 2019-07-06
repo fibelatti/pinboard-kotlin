@@ -30,7 +30,6 @@ import com.fibelatti.pinboard.core.extension.showStyledDialog
 import com.fibelatti.pinboard.core.extension.toast
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPost
-import com.fibelatti.pinboard.features.appstate.PostDetail
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import kotlinx.android.synthetic.main.fragment_post_detail.*
@@ -82,10 +81,8 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun setupViewModels() {
-        viewLifecycleOwner.observe(appStateViewModel.getContent()) { content ->
-            if (content is PostDetail) {
-                updateViews(content.post)
-            }
+        viewLifecycleOwner.observe(appStateViewModel.postDetail) { content ->
+            updateViews(content.post)
         }
         with(postDetailViewModel) {
             observe(loading) {

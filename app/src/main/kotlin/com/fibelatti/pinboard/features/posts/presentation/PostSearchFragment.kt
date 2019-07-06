@@ -27,7 +27,6 @@ import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.RefreshSearchTags
 import com.fibelatti.pinboard.features.appstate.RemoveSearchTag
 import com.fibelatti.pinboard.features.appstate.Search
-import com.fibelatti.pinboard.features.appstate.SearchView
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagsAdapter
@@ -104,29 +103,27 @@ class PostSearchFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        viewLifecycleOwner.observe(appStateViewModel.getContent()) { content ->
-            if (content is SearchView) {
-                editTextSearchTerm.setText(content.searchParameters.term)
+        viewLifecycleOwner.observe(appStateViewModel.searchView) { content ->
+            editTextSearchTerm.setText(content.searchParameters.term)
 
-                if (content.searchParameters.tags.isNotEmpty()) {
-                    chipGroupSelectedTags.removeAllViews()
-                    for (tag in content.searchParameters.tags) {
-                        chipGroupSelectedTags.addView(createTagChip(tag))
-                    }
-
-                    textViewSelectedTagsTitle.visible()
-                } else {
-                    textViewSelectedTagsTitle.gone()
-                    chipGroupSelectedTags.removeAllViews()
+            if (content.searchParameters.tags.isNotEmpty()) {
+                chipGroupSelectedTags.removeAllViews()
+                for (tag in content.searchParameters.tags) {
+                    chipGroupSelectedTags.addView(createTagChip(tag))
                 }
 
-                handleLoading(content.shouldLoadTags)
+                textViewSelectedTagsTitle.visible()
+            } else {
+                textViewSelectedTagsTitle.gone()
+                chipGroupSelectedTags.removeAllViews()
+            }
 
-                if (content.shouldLoadTags) {
-                    tagsViewModel.getAll(TagsViewModel.Source.SEARCH)
-                } else {
-                    showTags(content.availableTags)
-                }
+            handleLoading(content.shouldLoadTags)
+
+            if (content.shouldLoadTags) {
+                tagsViewModel.getAll(TagsViewModel.Source.SEARCH)
+            } else {
+                showTags(content.availableTags)
             }
         }
         error(tagsViewModel.error, ::handleError)

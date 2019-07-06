@@ -18,7 +18,6 @@ import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.RefreshTags
-import com.fibelatti.pinboard.features.appstate.TagList
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.android.synthetic.main.fragment_tags.*
@@ -84,18 +83,16 @@ class TagsFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        viewLifecycleOwner.observe(appStateViewModel.getContent()) { content ->
-            if (content is TagList) {
-                handleLoading(content.shouldLoad)
+        viewLifecycleOwner.observe(appStateViewModel.tagList) { content ->
+            handleLoading(content.shouldLoad)
 
-                if (content.shouldLoad) {
-                    tagsViewModel.getAll(TagsViewModel.Source.MENU)
-                } else {
-                    showTags(content.tags)
-                }
-
-                layoutOfflineAlert.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
+            if (content.shouldLoad) {
+                tagsViewModel.getAll(TagsViewModel.Source.MENU)
+            } else {
+                showTags(content.tags)
             }
+
+            layoutOfflineAlert.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
         }
         error(tagsViewModel.error, ::handleError)
     }

@@ -24,7 +24,6 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.toast
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
-import com.fibelatti.pinboard.features.appstate.EditPostView
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -132,10 +131,8 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun setupViewModels() {
-        viewLifecycleOwner.observe(appStateViewModel.getContent()) { content ->
-            if (content is EditPostView) {
-                showPostDetails(content.post)
-            }
+        viewLifecycleOwner.observe(appStateViewModel.editPostView) { content ->
+            showPostDetails(content.post)
         }
 
         with(postAddViewModel) {

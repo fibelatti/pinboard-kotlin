@@ -90,7 +90,7 @@ class MainActivity :
             error(error, ::handleError)
         }
 
-        observe(appStateViewModel.getContent()) { content ->
+        observe(appStateViewModel.content) { content ->
             when (content) {
                 is PostList -> showPostList()
                 is PostDetail -> showPostDetail()
