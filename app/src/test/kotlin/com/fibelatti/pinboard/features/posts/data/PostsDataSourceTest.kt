@@ -336,8 +336,6 @@ class PostsDataSourceTest {
     inner class GetAllPostsTests {
 
         private val mockActiveNetworkInfo = mock<NetworkInfo>()
-
-        private val mockLocalDataSize = 42
         private val mockLocalData = mock<Pair<Int, List<Post>>>()
 
         @Nested
@@ -352,18 +350,10 @@ class PostsDataSourceTest {
             }
 
             @Test
-            fun `GIVEN isConnected is false and localDataSize is greater than 0 WHEN getAllPosts is called THEN local data is returned`() {
+            fun `GIVEN isConnected is false and user last update is not empty WHEN getAllPosts is called THEN local data is returned`() {
                 // GIVEN
-                willReturn(mockLocalDataSize).given(dataSource)
-                    .getLocalDataSize(
-                        searchTerm = "",
-                        tags = null,
-                        untaggedOnly = false,
-                        publicPostsOnly = false,
-                        privatePostsOnly = false,
-                        readLaterOnly = false,
-                        limit = -1
-                    )
+                givenSuspend { mockUserRepository.getLastUpdate() }
+                    .willReturn(mockTime)
                 willReturn(Success(mockLocalData)).given(dataSource)
                     .getLocalData(
                         newestFirst = true,
@@ -395,18 +385,10 @@ class PostsDataSourceTest {
             }
 
             @Test
-            fun `GIVEN isConnected is false and localDataSize is not greater than 0 WHEN getAllPosts is called THEN null is returned`() {
+            fun `GIVEN isConnected is false and user last update is empty WHEN getAllPosts is called THEN null is returned`() {
                 // GIVEN
-                willReturn(0).given(dataSource)
-                    .getLocalDataSize(
-                        searchTerm = "",
-                        tags = null,
-                        untaggedOnly = false,
-                        publicPostsOnly = false,
-                        privatePostsOnly = false,
-                        readLaterOnly = false,
-                        limit = -1
-                    )
+                givenSuspend { mockUserRepository.getLastUpdate() }
+                    .willReturn("")
 
                 // WHEN
                 val result = runBlocking {
@@ -436,17 +418,8 @@ class PostsDataSourceTest {
                     .willReturn(mockActiveNetworkInfo)
                 given(mockActiveNetworkInfo.isConnected)
                     .willReturn(true)
-
-                willReturn(mockLocalDataSize).given(dataSource)
-                    .getLocalDataSize(
-                        searchTerm = "",
-                        tags = null,
-                        untaggedOnly = false,
-                        publicPostsOnly = false,
-                        privatePostsOnly = false,
-                        readLaterOnly = false,
-                        limit = -1
-                    )
+                givenSuspend { mockUserRepository.getLastUpdate() }
+                    .willReturn(mockTime)
                 willReturn(Success(mockLocalData)).given(dataSource)
                     .getLocalData(
                         newestFirst = true,
@@ -463,8 +436,6 @@ class PostsDataSourceTest {
             @Test
             fun `WHEN update fails THEN nowAsTzFormat is used instead`() {
                 // GIVEN
-                givenSuspend { mockUserRepository.getLastUpdate() }
-                    .willReturn(mockTime)
                 givenSuspend { mockApi.update() }
                     .will { throw Exception() }
                 given(mockDateFormatter.nowAsTzFormat())
@@ -494,10 +465,40 @@ class PostsDataSourceTest {
             }
 
             @Test
-            fun `WHEN update time stamps match THEN local data is returned`() {
+            fun `WHEN user last update is null THEN api should be called`() {
                 // GIVEN
                 givenSuspend { mockUserRepository.getLastUpdate() }
-                    .willReturn(mockTime)
+                    .willReturn("")
+                givenSuspend { mockApi.update() }
+                    .willReturn(UpdateDto(mockFutureTime))
+                givenSuspend { mockApi.getAllPosts() }
+                    .willReturn(mockListPostDto)
+
+                // WHEN
+                val result = runBlocking {
+                    dataSource.getAllPosts(
+                        newestFirst = true,
+                        searchTerm = "",
+                        tags = null,
+                        untaggedOnly = false,
+                        publicPostsOnly = false,
+                        privatePostsOnly = false,
+                        readLaterOnly = false,
+                        limit = -1
+                    )
+                }
+
+                // THEN
+                result.getOrThrow() shouldBe mockLocalData
+                verifySuspend(mockApi) { getAllPosts() }
+                verifySuspend(mockDao) { deleteAllPosts() }
+                verifySuspend(mockDao) { savePosts(mockListPostDto) }
+                verifySuspend(mockUserRepository) { setLastUpdate(mockFutureTime) }
+            }
+
+            @Test
+            fun `WHEN update time stamps match THEN local data is returned`() {
+                // GIVEN
                 givenSuspend { mockApi.update() }
                     .willReturn(UpdateDto(mockTime))
 
@@ -526,8 +527,6 @@ class PostsDataSourceTest {
             @Test
             fun `WHEN getAllPosts fails THEN Failure is returned`() {
                 // GIVEN
-                givenSuspend { mockUserRepository.getLastUpdate() }
-                    .willReturn(mockTime)
                 givenSuspend { mockApi.update() }
                     .willReturn(UpdateDto(mockFutureTime))
                 givenSuspend { mockApi.getAllPosts() }
@@ -558,8 +557,6 @@ class PostsDataSourceTest {
             @Test
             fun `WHEN deleteAllPosts fails THEN Failure is returned`() {
                 // GIVEN
-                givenSuspend { mockUserRepository.getLastUpdate() }
-                    .willReturn(mockTime)
                 givenSuspend { mockApi.update() }
                     .willReturn(UpdateDto(mockFutureTime))
                 givenSuspend { mockApi.getAllPosts() }
@@ -592,8 +589,6 @@ class PostsDataSourceTest {
             @Test
             fun `WHEN savePosts fails THEN Failure is returned`() {
                 // GIVEN
-                givenSuspend { mockUserRepository.getLastUpdate() }
-                    .willReturn(mockTime)
                 givenSuspend { mockApi.update() }
                     .willReturn(UpdateDto(mockFutureTime))
                 givenSuspend { mockApi.getAllPosts() }
@@ -626,8 +621,6 @@ class PostsDataSourceTest {
             @Test
             fun `WHEN all calls are successful THEN local data is returned`() {
                 // GIVEN
-                givenSuspend { mockUserRepository.getLastUpdate() }
-                    .willReturn(mockTime)
                 givenSuspend { mockApi.update() }
                     .willReturn(UpdateDto(mockFutureTime))
                 givenSuspend { mockApi.getAllPosts() }

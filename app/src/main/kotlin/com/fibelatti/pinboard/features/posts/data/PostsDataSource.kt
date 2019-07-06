@@ -86,15 +86,6 @@ class PostsDataSource @Inject constructor(
         limit: Int
     ): Result<Pair<Int, List<Post>>?> = withContext(Dispatchers.IO) {
         val isConnected = connectivityManager.isConnected()
-        val localDataSize = getLocalDataSize(
-            searchTerm,
-            tags,
-            untaggedOnly,
-            publicPostsOnly,
-            privatePostsOnly,
-            readLaterOnly,
-            limit
-        )
         val localData by lazy {
             getLocalData(
                 newestFirst,
@@ -108,14 +99,14 @@ class PostsDataSource @Inject constructor(
             )
         }
 
+        val userLastUpdate = userRepository.getLastUpdate().takeIf { it.isNotBlank() }
         when {
-            !isConnected && localDataSize > 0 -> localData
+            !isConnected && userLastUpdate != null -> localData
             !isConnected -> Success(null)
             else -> {
-                val userLastUpdate = userRepository.getLastUpdate()
                 val apiLastUpdate = update().getOrDefault(dateFormatter.nowAsTzFormat())
 
-                if (userLastUpdate == apiLastUpdate && localDataSize > 0) {
+                if (userLastUpdate != null && userLastUpdate == apiLastUpdate) {
                     localData
                 } else {
                     resultFrom { rateLimitRunner.run { postsApi.getAllPosts() } }
