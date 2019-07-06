@@ -209,7 +209,7 @@ internal class PostActionHandlerTest {
     inner class PostSavedTests {
 
         @Test
-        fun `WHEN currentContent is not EditPostView THEN same content is returned`() {
+        fun `WHEN currentContent is not AddPostView or EditPostView THEN same content is returned`() {
             // GIVEN
             val content = mock<PostDetail>()
 
@@ -218,6 +218,26 @@ internal class PostActionHandlerTest {
 
             // THEN
             result shouldBe content
+        }
+
+        @Test
+        fun `WHEN currentContent is AddPostView THEN updated content is returned`() {
+            // GIVEN
+            val currentContent = AddPostView(previousContent = initialContent)
+
+            // WHEN
+            val result = postActionHandler.runAction(PostSaved(mockPost), currentContent)
+
+            // THEN
+            result shouldBe PostList(
+                category = All,
+                title = mockTitle,
+                posts = null,
+                sortType = NewestFirst,
+                searchParameters = SearchParameters(),
+                shouldLoad = true,
+                isConnected = true
+            )
         }
 
         @Test

@@ -67,13 +67,19 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun postSaved(action: PostSaved, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<EditPostView>(currentContent) {
-            val postDetail = it.previousContent
+        return when (currentContent) {
+            is AddPostView -> {
+                currentContent.previousContent.copy(shouldLoad = true)
+            }
+            is EditPostView -> {
+                val postDetail = currentContent.previousContent
 
-            postDetail.copy(
-                post = action.post,
-                previousContent = postDetail.previousContent.copy(shouldLoad = true)
-            )
+                postDetail.copy(
+                    post = action.post,
+                    previousContent = postDetail.previousContent.copy(shouldLoad = true)
+                )
+            }
+            else -> currentContent
         }
     }
 
