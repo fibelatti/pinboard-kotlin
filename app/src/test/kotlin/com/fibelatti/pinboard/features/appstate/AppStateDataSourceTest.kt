@@ -49,7 +49,7 @@ internal class AppStateDataSourceTest {
         posts = null,
         sortType = NewestFirst,
         searchParameters = SearchParameters(),
-        shouldLoad = true,
+        shouldLoad = ShouldLoadFirstPage,
         isConnected = false
     )
 
@@ -156,6 +156,8 @@ internal class AppStateDataSourceTest {
                             // Post
                             Refresh -> add(Refresh to ExpectedHandler.POST)
                             is SetPosts -> add(SetPosts(1 to listOf(createPost())) to ExpectedHandler.POST)
+                            GetNextPostPage -> add(GetNextPostPage to ExpectedHandler.POST)
+                            is SetNextPostPage -> add(SetNextPostPage(1 to listOf(createPost())) to ExpectedHandler.POST)
                             ToggleSorting -> add(ToggleSorting to ExpectedHandler.POST)
                             is EditPost -> add(EditPost(createPost()) to ExpectedHandler.POST)
                             is PostSaved -> add(PostSaved(createPost()) to ExpectedHandler.POST)

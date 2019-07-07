@@ -21,6 +21,11 @@ internal class AppConfigTest {
     }
 
     @Test
+    fun `DEFAULT_PAGE_SIZE should be 100`() {
+        AppConfig.DEFAULT_PAGE_SIZE shouldBe 100
+    }
+
+    @Test
     fun `DEFAULT_PAGE_SIZE_RECENT should be 50`() {
         AppConfig.DEFAULT_RECENT_QUANTITY shouldBe 50
     }

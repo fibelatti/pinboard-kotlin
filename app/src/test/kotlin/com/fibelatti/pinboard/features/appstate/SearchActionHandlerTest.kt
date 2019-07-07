@@ -231,7 +231,7 @@ internal class SearchActionHandlerTest {
                 posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
-                shouldLoad = true
+                shouldLoad = ShouldLoadFirstPage
             )
             val initialContent = SearchView(
                 searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
@@ -248,7 +248,7 @@ internal class SearchActionHandlerTest {
                 posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(term = "new term", tags = listOf(mockTag1)),
-                shouldLoad = true
+                shouldLoad = ShouldLoadFirstPage
             )
         }
     }
@@ -277,7 +277,7 @@ internal class SearchActionHandlerTest {
                 posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
-                shouldLoad = false
+                shouldLoad = Loaded
             )
 
             // WHEN
@@ -290,7 +290,7 @@ internal class SearchActionHandlerTest {
                 posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
-                shouldLoad = true
+                shouldLoad = ShouldLoadFirstPage
             )
         }
     }

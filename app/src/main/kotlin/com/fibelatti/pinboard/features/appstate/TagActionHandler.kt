@@ -44,7 +44,7 @@ class TagActionHandler @Inject constructor(
             posts = null,
             sortType = NewestFirst,
             searchParameters = SearchParameters(tags = listOf(action.tag)),
-            shouldLoad = true,
+            shouldLoad = ShouldLoadFirstPage,
             isConnected = connectivityManager.isConnected()
         )
     }

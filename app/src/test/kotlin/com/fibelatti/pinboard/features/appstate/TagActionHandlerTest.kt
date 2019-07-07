@@ -32,7 +32,7 @@ internal class TagActionHandlerTest {
         posts = null,
         sortType = NewestFirst,
         searchParameters = SearchParameters(),
-        shouldLoad = false
+        shouldLoad = Loaded
     )
     private val initialContent = TagList(
         tags = emptyList(),
@@ -130,7 +130,7 @@ internal class TagActionHandlerTest {
                 posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(tags = listOf(createTag())),
-                shouldLoad = true,
+                shouldLoad = ShouldLoadFirstPage,
                 isConnected = true
             )
         }

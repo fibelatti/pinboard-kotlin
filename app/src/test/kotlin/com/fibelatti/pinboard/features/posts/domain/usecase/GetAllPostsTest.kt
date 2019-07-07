@@ -104,8 +104,8 @@ class GetAllPostsTest {
                 privatePostsOnly = false,
                 readLaterOnly = false,
                 countLimit = -1,
-                pageLimit = -1,
-                pageOffset = 0
+                pageLimit = params.limit,
+                pageOffset = params.offset
             )
         }
     }

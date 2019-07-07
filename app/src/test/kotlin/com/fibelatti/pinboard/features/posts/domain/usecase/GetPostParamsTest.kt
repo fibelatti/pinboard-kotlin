@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
 import com.fibelatti.core.test.extension.shouldBe
+import com.fibelatti.pinboard.core.AppConfig.DEFAULT_PAGE_SIZE
 import com.fibelatti.pinboard.features.appstate.NewestFirst
 import org.junit.jupiter.api.Test
 
@@ -15,7 +16,7 @@ internal class GetPostParamsTest {
         params.tagParams shouldBe GetPostParams.Tags.None
         params.visibilityParams shouldBe GetPostParams.Visibility.None
         params.readLater shouldBe false
-        params.limit shouldBe -1
+        params.limit shouldBe DEFAULT_PAGE_SIZE
         params.offset shouldBe 0
     }
 }

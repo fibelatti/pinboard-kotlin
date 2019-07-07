@@ -68,7 +68,7 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
         return runOnlyForCurrentContentOfType<SearchView>(currentContent) {
             it.previousContent.copy(
                 searchParameters = it.searchParameters.copy(term = action.term),
-                shouldLoad = true
+                shouldLoad = ShouldLoadFirstPage
             )
         }
     }
@@ -77,7 +77,7 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
         return runOnlyForCurrentContentOfType<PostList>(currentContent) {
             it.copy(
                 searchParameters = SearchParameters(),
-                shouldLoad = true
+                shouldLoad = ShouldLoadFirstPage
             )
         }
     }

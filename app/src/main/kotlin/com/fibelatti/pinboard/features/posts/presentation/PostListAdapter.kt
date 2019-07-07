@@ -1,9 +1,12 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
-import com.fibelatti.core.android.base.BaseAdapter
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import com.fibelatti.core.extension.gone
+import com.fibelatti.core.extension.inflate
 import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
@@ -17,13 +20,21 @@ private const val MAX_TAGS_PER_ITEM = 4
 
 class PostListAdapter @Inject constructor(
     private val dateFormatter: DateFormatter
-) : BaseAdapter<Post>() {
+) : RecyclerView.Adapter<PostListAdapter.ViewHolder>() {
+
+    private val items: MutableList<Post> = mutableListOf()
 
     var onItemClicked: ((Post) -> Unit)? = null
 
-    override fun getLayoutRes(): Int = R.layout.list_item_post
+    override fun getItemCount(): Int = items.size
 
-    override fun View.bindView(item: Post, viewHolder: ViewHolder) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(parent)
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(items[position])
+    }
+
+    fun View.bindView(item: Post) {
         textViewPrivate.visibleIf(item.private, otherwiseVisibility = View.GONE)
         textViewReadLater.visibleIf(item.readLater, otherwiseVisibility = View.GONE)
 
@@ -57,5 +68,22 @@ class PostListAdapter @Inject constructor(
             TextView(context, null, 0, R.style.AppTheme_Text_Tag)
                 .apply { text = value }
         )
+    }
+
+    fun addAll(newItems: List<Post>, diffResult: DiffUtil.DiffResult) {
+        items.clear()
+        items.addAll(newItems)
+        diffResult.dispatchUpdatesTo(this)
+    }
+
+    fun clearItems() {
+        items.clear()
+        notifyDataSetChanged()
+    }
+
+    inner class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+        parent.inflate(R.layout.list_item_post)
+    ) {
+        fun bind(item: Post) = itemView.bindView(item)
     }
 }

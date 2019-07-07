@@ -11,7 +11,10 @@ import com.fibelatti.pinboard.features.appstate.PostList
 import com.fibelatti.pinboard.features.appstate.Private
 import com.fibelatti.pinboard.features.appstate.Public
 import com.fibelatti.pinboard.features.appstate.Recent
+import com.fibelatti.pinboard.features.appstate.SetNextPostPage
 import com.fibelatti.pinboard.features.appstate.SetPosts
+import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
+import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
@@ -29,7 +32,11 @@ class PostListViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     fun loadContent(content: PostList) {
-        val offset = 0
+        val offset = when (content.shouldLoad) {
+            is ShouldLoadFirstPage -> 0
+            is ShouldLoadNextPage -> content.shouldLoad.offset
+            else -> return
+        }
 
         when (content.category) {
             is All -> {
@@ -129,7 +136,11 @@ class PostListViewModel @Inject constructor(
     fun launchGetAll(params: GetPostParams) {
         launch {
             getAllPosts(params)
-                .mapCatching { appStateRepository.runAction(SetPosts(it)) }
+                .mapCatching {
+                    appStateRepository.runAction(
+                        if (params.offset == 0) SetPosts(it) else SetNextPostPage(it)
+                    )
+                }
                 .onFailure(::handleError)
         }
     }

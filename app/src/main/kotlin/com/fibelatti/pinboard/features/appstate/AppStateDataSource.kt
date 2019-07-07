@@ -29,7 +29,7 @@ class AppStateDataSource @Inject constructor(
             posts = null,
             sortType = NewestFirst,
             searchParameters = SearchParameters(),
-            shouldLoad = true,
+            shouldLoad = ShouldLoadFirstPage,
             isConnected = connectivityManager.isConnected()
         )
     }

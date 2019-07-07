@@ -20,6 +20,7 @@ import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.core.extension.withItemOffsetDecoration
 import com.fibelatti.core.extension.withLinearLayoutManager
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.android.DefaultTransitionListener
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
@@ -27,8 +28,12 @@ import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.features.appstate.AddPost
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ClearSearch
+import com.fibelatti.pinboard.features.appstate.GetNextPostPage
+import com.fibelatti.pinboard.features.appstate.Loaded
 import com.fibelatti.pinboard.features.appstate.PostList
 import com.fibelatti.pinboard.features.appstate.Refresh
+import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
+import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.appstate.ToggleSorting
 import com.fibelatti.pinboard.features.appstate.ViewPost
@@ -125,6 +130,12 @@ class PostListFragment @Inject constructor(
             .withItemOffsetDecoration(R.dimen.padding_small)
             .adapter = postsAdapter
 
+        recyclerViewPosts.apply {
+            setPageSize(AppConfig.DEFAULT_PAGE_SIZE)
+            setMinDistanceToLastItem(AppConfig.DEFAULT_PAGE_SIZE / 2)
+            onShouldRequestNextPage = { appStateViewModel.runAction(GetNextPostPage) }
+        }
+
         postsAdapter.onItemClicked = { appStateViewModel.runAction(ViewPost(it)) }
     }
 
@@ -155,32 +166,34 @@ class PostListFragment @Inject constructor(
             }
         }
 
-        handleLoading(content.shouldLoad)
+        when (content.shouldLoad) {
+            is ShouldLoadFirstPage -> {
+                layoutProgressBar.visible()
+                recyclerViewPosts.gone()
+                layoutEmptyList.gone()
 
-        if (content.shouldLoad) {
-            postListViewModel.loadContent(content)
-        } else {
-            showPosts(content.posts, content.sortType)
+                postsAdapter.clearItems()
+
+                postListViewModel.loadContent(content)
+            }
+            is ShouldLoadNextPage -> postListViewModel.loadContent(content)
+            is Loaded -> showPosts(content.posts, content.sortType)
         }
 
         layoutSearchActive.visibleIf(content.searchParameters.isActive(), otherwiseVisibility = View.GONE)
         layoutOfflineAlert.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
     }
 
-    private fun handleLoading(isLoading: Boolean) {
-        layoutProgressBar.visibleIf(isLoading, otherwiseVisibility = View.GONE)
-        recyclerViewPosts.goneIf(isLoading)
-        layoutEmptyList.goneIf(isLoading)
-    }
+    private fun showPosts(posts: Triple<Int, List<Post>, PostListDiffUtil>?, sortType: SortType) {
+        layoutProgressBar.gone()
+        recyclerViewPosts.onRequestNextPageCompleted()
 
-    private fun showPosts(countAndData: Pair<Int, List<Post>>?, sortType: SortType) {
-        if (countAndData != null) {
-            val (count, list) = countAndData
-
+        if (posts != null) {
             recyclerViewPosts.visible()
             layoutEmptyList.gone()
 
-            postsAdapter.addAll(list)
+            val (count, list, diffUtil) = posts
+            postsAdapter.addAll(list, diffUtil.result)
             mainActivity?.updateTitleLayout { setPostCount(count, sortType) }
         } else {
             showEmptyLayout(

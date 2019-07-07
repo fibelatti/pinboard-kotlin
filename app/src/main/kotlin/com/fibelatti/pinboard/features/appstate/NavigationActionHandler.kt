@@ -40,7 +40,7 @@ class NavigationActionHandler @Inject constructor(
             posts = null,
             sortType = NewestFirst,
             searchParameters = SearchParameters(),
-            shouldLoad = connectivityManager.isConnected(),
+            shouldLoad = if (connectivityManager.isConnected()) ShouldLoadFirstPage else Loaded,
             isConnected = connectivityManager.isConnected()
         )
     }

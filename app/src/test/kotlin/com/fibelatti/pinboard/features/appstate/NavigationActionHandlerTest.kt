@@ -39,7 +39,7 @@ internal class NavigationActionHandlerTest {
             posts = null,
             sortType = NewestFirst,
             searchParameters = SearchParameters(),
-            shouldLoad = true
+            shouldLoad = ShouldLoadFirstPage
         )
 
         @Test
@@ -127,7 +127,7 @@ internal class NavigationActionHandlerTest {
                 posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
-                shouldLoad = false,
+                shouldLoad = Loaded,
                 isConnected = false
             )
 
@@ -175,7 +175,7 @@ internal class NavigationActionHandlerTest {
                 posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
-                shouldLoad = true
+                shouldLoad = ShouldLoadFirstPage
             )
 
             // WHEN
@@ -210,7 +210,7 @@ internal class NavigationActionHandlerTest {
                 posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
-                shouldLoad = true
+                shouldLoad = ShouldLoadFirstPage
             )
 
             // WHEN
@@ -249,7 +249,7 @@ internal class NavigationActionHandlerTest {
                 posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
-                shouldLoad = true
+                shouldLoad = ShouldLoadFirstPage
             )
 
             // WHEN
@@ -291,7 +291,7 @@ internal class NavigationActionHandlerTest {
                 posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
-                shouldLoad = true
+                shouldLoad = ShouldLoadFirstPage
             )
 
             // WHEN

@@ -7,6 +7,7 @@ object AppConfig {
     const val API_ENCODING = "UTF-8"
     const val API_MAX_LENGTH = 255
 
+    const val DEFAULT_PAGE_SIZE = 100
     const val DEFAULT_RECENT_QUANTITY = 50
     const val DEFAULT_FILTER_MAX_TAGS = 3
 
