@@ -17,15 +17,15 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
     }
 
     private fun refresh(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<SearchView>(currentContent) {
+        return runOnlyForCurrentContentOfType<SearchContent>(currentContent) {
             it.copy(shouldLoadTags = true)
         }
     }
 
     private fun setSearchTags(action: SetSearchTags, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<SearchView>(currentContent) { searchView ->
-            searchView.copy(
-                availableTags = action.tags.filterNot { it in searchView.searchParameters.tags },
+        return runOnlyForCurrentContentOfType<SearchContent>(currentContent) { searchContent ->
+            searchContent.copy(
+                availableTags = action.tags.filterNot { it in searchContent.searchParameters.tags },
                 allTags = action.tags,
                 shouldLoadTags = false
             )
@@ -34,7 +34,7 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
 
     private fun addSearchTag(action: AddSearchTag, currentContent: Content): Content {
         return if (
-            currentContent is SearchView &&
+            currentContent is SearchContent &&
             currentContent.searchParameters.tags.size < AppConfig.DEFAULT_FILTER_MAX_TAGS &&
             currentContent.searchParameters.tags.none { it == action.tag }
         ) {
@@ -52,7 +52,7 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
     }
 
     private fun removeSearchTag(action: RemoveSearchTag, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<SearchView>(currentContent) { searchView ->
+        return runOnlyForCurrentContentOfType<SearchContent>(currentContent) { searchView ->
             val newSearchParameters = searchView.searchParameters.copy(
                 tags = searchView.searchParameters.tags.minus(action.tag)
             )
@@ -65,7 +65,7 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
     }
 
     private fun search(action: Search, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<SearchView>(currentContent) {
+        return runOnlyForCurrentContentOfType<SearchContent>(currentContent) {
             it.previousContent.copy(
                 searchParameters = it.searchParameters.copy(term = action.term),
                 shouldLoad = ShouldLoadFirstPage
@@ -74,7 +74,7 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
     }
 
     private fun clearSearch(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostList>(currentContent) {
+        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
             it.copy(
                 searchParameters = SearchParameters(),
                 shouldLoad = ShouldLoadFirstPage

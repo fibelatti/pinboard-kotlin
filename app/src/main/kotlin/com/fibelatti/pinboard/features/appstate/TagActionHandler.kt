@@ -20,7 +20,7 @@ class TagActionHandler @Inject constructor(
     }
 
     private fun refresh(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<TagList>(currentContent) {
+        return runOnlyForCurrentContentOfType<TagListContent>(currentContent) {
             it.copy(
                 shouldLoad = connectivityManager.isConnected(),
                 isConnected = connectivityManager.isConnected()
@@ -29,7 +29,7 @@ class TagActionHandler @Inject constructor(
     }
 
     private fun setTags(action: SetTags, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<TagList>(currentContent) {
+        return runOnlyForCurrentContentOfType<TagListContent>(currentContent) {
             it.copy(
                 tags = action.tags,
                 shouldLoad = false
@@ -38,7 +38,7 @@ class TagActionHandler @Inject constructor(
     }
 
     private fun postsForTag(action: PostsForTag): Content {
-        return PostList(
+        return PostListContent(
             category = All,
             title = resourceProvider.getString(R.string.posts_title_all),
             posts = null,

@@ -43,7 +43,7 @@ internal class AppStateDataSourceTest {
 
     private lateinit var appStateDataSource: AppStateDataSource
 
-    private val expectedInitialValue = PostList(
+    private val expectedInitialValue = PostListContent(
         category = All,
         title = "R.string.posts_title_all",
         posts = null,

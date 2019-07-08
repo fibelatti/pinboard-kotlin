@@ -23,7 +23,7 @@ class AppStateDataSource @Inject constructor(
 ) : AppStateRepository {
 
     private val currentContent = MutableLiveData<Content>().apply {
-        value = PostList(
+        value = PostListContent(
             category = All,
             title = resourceProvider.getString(R.string.posts_title_all),
             posts = null,

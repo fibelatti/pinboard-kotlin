@@ -26,7 +26,7 @@ internal class TagActionHandlerTest {
         mockConnectivityManager
     )
 
-    val mockPreviousContent = PostList(
+    val mockPreviousContent = PostListContent(
         category = All,
         title = mockTitle,
         posts = null,
@@ -34,7 +34,7 @@ internal class TagActionHandlerTest {
         searchParameters = SearchParameters(),
         shouldLoad = Loaded
     )
-    private val initialContent = TagList(
+    private val initialContent = TagListContent(
         tags = emptyList(),
         shouldLoad = true,
         isConnected = true,
@@ -44,9 +44,9 @@ internal class TagActionHandlerTest {
     @Nested
     inner class RefreshTagsTests {
         @Test
-        fun `WHEN currentContent is not TagList THEN same content is returned`() {
+        fun `WHEN currentContent is not TagListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostList>()
+            val content = mock<PostListContent>()
 
             // WHEN
             val result = tagActionHandler.runAction(RefreshTags, content)
@@ -56,7 +56,7 @@ internal class TagActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is TagList THEN updated content is returned`() {
+        fun `WHEN currentContent is TagListContent THEN updated content is returned`() {
             // GIVEN
             given(mockConnectivityManager.activeNetworkInfo)
                 .willReturn(mockActiveNetworkInfo)
@@ -67,7 +67,7 @@ internal class TagActionHandlerTest {
             val result = tagActionHandler.runAction(RefreshTags, initialContent)
 
             // THEN
-            result shouldBe TagList(
+            result shouldBe TagListContent(
                 tags = emptyList(),
                 shouldLoad = false,
                 isConnected = false,
@@ -81,9 +81,9 @@ internal class TagActionHandlerTest {
     inner class SetTagsTests {
 
         @Test
-        fun `WHEN currentContent is not TagList THEN same content is returned`() {
+        fun `WHEN currentContent is not TagListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostList>()
+            val content = mock<PostListContent>()
 
             // WHEN
             val result = tagActionHandler.runAction(mock<SetTags>(), content)
@@ -93,12 +93,12 @@ internal class TagActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is TagList THEN updated content is returned`() {
+        fun `WHEN currentContent is TagListContent THEN updated content is returned`() {
             // WHEN
             val result = tagActionHandler.runAction(SetTags(listOf(createTag())), initialContent)
 
             // THEN
-            result shouldBe TagList(
+            result shouldBe TagListContent(
                 tags = listOf(createTag()),
                 shouldLoad = false,
                 isConnected = true,
@@ -111,7 +111,7 @@ internal class TagActionHandlerTest {
     inner class PostsForTagTests {
 
         @Test
-        fun `WHEN postsForTag is called THEN PostList is returned and search parameters contains the tag`() {
+        fun `WHEN postsForTag is called THEN PostListContent is returned and search parameters contains the tag`() {
             // GIVEN
             given(mockResourceProvider.getString(R.string.posts_title_all))
                 .willReturn(mockTitle)
@@ -124,7 +124,7 @@ internal class TagActionHandlerTest {
             val result = tagActionHandler.runAction(PostsForTag(createTag()), initialContent)
 
             // THEN
-            result shouldBe PostList(
+            result shouldBe PostListContent(
                 category = All,
                 title = mockTitle,
                 posts = null,

@@ -103,7 +103,7 @@ class PostSearchFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        viewLifecycleOwner.observe(appStateViewModel.searchView) { content ->
+        viewLifecycleOwner.observe(appStateViewModel.searchContent) { content ->
             editTextSearchTerm.setText(content.searchParameters.term)
 
             if (content.searchParameters.tags.isNotEmpty()) {

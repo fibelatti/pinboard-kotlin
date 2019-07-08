@@ -27,7 +27,7 @@ class NavigationActionHandler @Inject constructor(
     }
 
     private fun viewCategory(action: ViewCategory): Content {
-        return PostList(
+        return PostListContent(
             category = action,
             title = when (action) {
                 All -> resourceProvider.getString(R.string.posts_title_all)
@@ -46,26 +46,26 @@ class NavigationActionHandler @Inject constructor(
     }
 
     private fun viewPost(action: ViewPost, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostList>(currentContent) {
-            PostDetail(action.post, previousContent = it)
+        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
+            PostDetailContent(action.post, previousContent = it)
         }
     }
 
     private fun viewSearch(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostList>(currentContent) {
-            SearchView(it.searchParameters, shouldLoadTags = true, previousContent = it)
+        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
+            SearchContent(it.searchParameters, shouldLoadTags = true, previousContent = it)
         }
     }
 
     private fun viewAddPost(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostList>(currentContent) {
-            AddPostView(previousContent = it)
+        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
+            AddPostContent(previousContent = it)
         }
     }
 
     private fun viewTags(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostList>(currentContent) {
-            TagList(
+        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
+            TagListContent(
                 tags = emptyList(),
                 shouldLoad = connectivityManager.isConnected(),
                 isConnected = connectivityManager.isConnected(),

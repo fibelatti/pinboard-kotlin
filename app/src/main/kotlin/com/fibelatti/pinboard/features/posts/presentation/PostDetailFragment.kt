@@ -81,7 +81,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun setupViewModels() {
-        viewLifecycleOwner.observe(appStateViewModel.postDetail) { content ->
+        viewLifecycleOwner.observe(appStateViewModel.postDetailContent) { content ->
             updateViews(content.post)
         }
         with(postDetailViewModel) {

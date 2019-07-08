@@ -136,7 +136,7 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun setupViewModels() {
-        viewLifecycleOwner.observe(appStateViewModel.editPostView) { content ->
+        viewLifecycleOwner.observe(appStateViewModel.editPostContent) { content ->
             showPostDetails(content.post)
         }
 

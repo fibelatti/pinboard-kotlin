@@ -7,7 +7,7 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 
 sealed class Content
 
-data class PostList(
+data class PostListContent(
     val category: ViewCategory,
     val title: String,
     val posts: Triple<Int, List<Post>, PostListDiffUtil>?,
@@ -29,31 +29,31 @@ private interface ContentHistory {
 
 sealed class ContentWithHistory : Content(), ContentHistory
 
-data class PostDetail(
+data class PostDetailContent(
     val post: Post,
-    override val previousContent: PostList
+    override val previousContent: PostListContent
 ) : ContentWithHistory()
 
-data class SearchView(
+data class SearchContent(
     val searchParameters: SearchParameters,
     val availableTags: List<Tag> = emptyList(),
     val allTags: List<Tag> = emptyList(),
     val shouldLoadTags: Boolean = true,
-    override val previousContent: PostList
+    override val previousContent: PostListContent
 ) : ContentWithHistory()
 
-data class AddPostView(
-    override val previousContent: PostList
+data class AddPostContent(
+    override val previousContent: PostListContent
 ) : ContentWithHistory()
 
-data class EditPostView(
+data class EditPostContent(
     val post: Post,
-    override val previousContent: PostDetail
+    override val previousContent: PostDetailContent
 ) : ContentWithHistory()
 
-data class TagList(
+data class TagListContent(
     val tags: List<Tag>,
     val shouldLoad: Boolean,
     val isConnected: Boolean = true,
-    override val previousContent: PostList
+    override val previousContent: PostListContent
 ) : ContentWithHistory()

@@ -30,7 +30,7 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.GetNextPostPage
 import com.fibelatti.pinboard.features.appstate.Loaded
-import com.fibelatti.pinboard.features.appstate.PostList
+import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
 import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
@@ -144,10 +144,10 @@ class PostListFragment @Inject constructor(
 
     private fun setupViewModels() {
         viewLifecycleOwner.error(postListViewModel.error, ::handleError)
-        viewLifecycleOwner.observe(appStateViewModel.postList, ::updateContent)
+        viewLifecycleOwner.observe(appStateViewModel.postListContent, ::updateContent)
     }
 
-    private fun updateContent(content: PostList) {
+    private fun updateContent(content: PostListContent) {
         mainActivity?.updateTitleLayout {
             hideNavigateUp()
             setTitle(content.title)

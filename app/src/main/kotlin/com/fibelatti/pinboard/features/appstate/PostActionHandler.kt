@@ -24,7 +24,7 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun refresh(currentContent: Content): Content {
-        return if (currentContent is PostList && currentContent.shouldLoad is Loaded) {
+        return if (currentContent is PostListContent && currentContent.shouldLoad is Loaded) {
             currentContent.copy(
                 shouldLoad = if (connectivityManager.isConnected()) ShouldLoadFirstPage else Loaded,
                 isConnected = connectivityManager.isConnected()
@@ -35,7 +35,7 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun setPosts(action: SetPosts, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostList>(currentContent) { currentPostList ->
+        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) { currentPostList ->
             val posts = action.posts?.let { (count, list) ->
                 Triple(count, list, postListDiffUtilFactory.create(currentPostList.currentList, list))
             }
@@ -45,7 +45,7 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun getNextPostPage(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostList>(currentContent) {
+        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
             if (it.posts != null) {
                 it.copy(shouldLoad = ShouldLoadNextPage(offset = it.currentCount))
             } else {
@@ -55,7 +55,7 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun setNextPostPage(action: SetNextPostPage, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostList>(currentContent) { currentPostList ->
+        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) { currentPostList ->
             if (currentPostList.posts != null && action.posts != null) {
                 val (_, currentList) = currentPostList.posts
                 val (updatedCount, newList) = action.posts
@@ -70,7 +70,7 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun toggleSorting(currentContent: Content): Content {
-        return if (currentContent is PostList && currentContent.shouldLoad is Loaded) {
+        return if (currentContent is PostListContent && currentContent.shouldLoad is Loaded) {
             if (connectivityManager.isConnected()) {
                 currentContent.copy(
                     sortType = when (currentContent.sortType) {
@@ -88,8 +88,8 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun editPost(action: EditPost, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostDetail>(currentContent) {
-            EditPostView(
+        return runOnlyForCurrentContentOfType<PostDetailContent>(currentContent) {
+            EditPostContent(
                 post = action.post,
                 previousContent = it
             )
@@ -98,10 +98,10 @@ class PostActionHandler @Inject constructor(
 
     private fun postSaved(action: PostSaved, currentContent: Content): Content {
         return when (currentContent) {
-            is AddPostView -> {
+            is AddPostContent -> {
                 currentContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
             }
-            is EditPostView -> {
+            is EditPostContent -> {
                 val postDetail = currentContent.previousContent
 
                 postDetail.copy(
@@ -114,7 +114,7 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun postDeleted(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostDetail>(currentContent) {
+        return runOnlyForCurrentContentOfType<PostDetailContent>(currentContent) {
             it.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
         }
     }

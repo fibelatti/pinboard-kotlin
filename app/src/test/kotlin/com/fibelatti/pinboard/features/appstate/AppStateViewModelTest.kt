@@ -55,7 +55,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
 
         @ParameterizedTest
         @MethodSource("testCases")
-        fun `Only post list should be emitted to postList`(content: Content) {
+        fun `Only post list content should be emitted to postListContent`(content: Content) {
             // GIVEN
             given(mockAppStateRepository.getContent())
                 .willReturn(content.asLiveData())
@@ -63,16 +63,16 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
             appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
             // THEN
-            if (content is PostList) {
-                appStateViewModel.postList.currentValueShouldBe(content)
+            if (content is PostListContent) {
+                appStateViewModel.postListContent.currentValueShouldBe(content)
             } else {
-                appStateViewModel.postList.shouldNeverReceiveValues()
+                appStateViewModel.postListContent.shouldNeverReceiveValues()
             }
         }
 
         @ParameterizedTest
         @MethodSource("testCases")
-        fun `Only post detail should be emitted to postDetail`(content: Content) {
+        fun `Only post detail content should be emitted to postDetailContent`(content: Content) {
             // GIVEN
             given(mockAppStateRepository.getContent())
                 .willReturn(content.asLiveData())
@@ -80,16 +80,16 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
             appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
             // THEN
-            if (content is PostDetail) {
-                appStateViewModel.postDetail.currentValueShouldBe(content)
+            if (content is PostDetailContent) {
+                appStateViewModel.postDetailContent.currentValueShouldBe(content)
             } else {
-                appStateViewModel.postDetail.shouldNeverReceiveValues()
+                appStateViewModel.postDetailContent.shouldNeverReceiveValues()
             }
         }
 
         @ParameterizedTest
         @MethodSource("testCases")
-        fun `Only edit post view should be emitted to editPostView`(content: Content) {
+        fun `Only edit post content should be emitted to editPostContent`(content: Content) {
             // GIVEN
             given(mockAppStateRepository.getContent())
                 .willReturn(content.asLiveData())
@@ -97,16 +97,16 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
             appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
             // THEN
-            if (content is EditPostView) {
-                appStateViewModel.editPostView.currentValueShouldBe(content)
+            if (content is EditPostContent) {
+                appStateViewModel.editPostContent.currentValueShouldBe(content)
             } else {
-                appStateViewModel.editPostView.shouldNeverReceiveValues()
+                appStateViewModel.editPostContent.shouldNeverReceiveValues()
             }
         }
 
         @ParameterizedTest
         @MethodSource("testCases")
-        fun `Only search view should be emitted to searchView`(content: Content) {
+        fun `Only search content should be emitted to searchContent`(content: Content) {
             // GIVEN
             given(mockAppStateRepository.getContent())
                 .willReturn(content.asLiveData())
@@ -114,16 +114,16 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
             appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
             // THEN
-            if (content is SearchView) {
-                appStateViewModel.searchView.currentValueShouldBe(content)
+            if (content is SearchContent) {
+                appStateViewModel.searchContent.currentValueShouldBe(content)
             } else {
-                appStateViewModel.searchView.shouldNeverReceiveValues()
+                appStateViewModel.searchContent.shouldNeverReceiveValues()
             }
         }
 
         @ParameterizedTest
         @MethodSource("testCases")
-        fun `Only tag list should be emitted to tagList`(content: Content) {
+        fun `Only tag list content should be emitted to tagListContent`(content: Content) {
             // GIVEN
             given(mockAppStateRepository.getContent())
                 .willReturn(content.asLiveData())
@@ -131,10 +131,10 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
             appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
             // THEN
-            if (content is TagList) {
-                appStateViewModel.tagList.currentValueShouldBe(content)
+            if (content is TagListContent) {
+                appStateViewModel.tagListContent.currentValueShouldBe(content)
             } else {
-                appStateViewModel.tagList.shouldNeverReceiveValues()
+                appStateViewModel.tagListContent.shouldNeverReceiveValues()
             }
         }
 

@@ -7,7 +7,7 @@ import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
-import com.fibelatti.pinboard.features.appstate.PostList
+import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.Private
 import com.fibelatti.pinboard.features.appstate.Public
 import com.fibelatti.pinboard.features.appstate.Recent
@@ -31,7 +31,7 @@ class PostListViewModel @Inject constructor(
     private val appStateRepository: AppStateRepository
 ) : BaseViewModel() {
 
-    fun loadContent(content: PostList) {
+    fun loadContent(content: PostListContent) {
         val offset = when (content.shouldLoad) {
             is ShouldLoadFirstPage -> 0
             is ShouldLoadNextPage -> content.shouldLoad.offset

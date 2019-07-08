@@ -22,18 +22,18 @@ import com.fibelatti.pinboard.core.extension.createFragment
 import com.fibelatti.pinboard.core.extension.shareText
 import com.fibelatti.pinboard.core.extension.snackbar
 import com.fibelatti.pinboard.core.functional.DoNothing
-import com.fibelatti.pinboard.features.appstate.AddPostView
+import com.fibelatti.pinboard.features.appstate.AddPostContent
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
-import com.fibelatti.pinboard.features.appstate.EditPostView
+import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.NavigateBack
-import com.fibelatti.pinboard.features.appstate.PostDetail
-import com.fibelatti.pinboard.features.appstate.PostList
+import com.fibelatti.pinboard.features.appstate.PostDetailContent
+import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.Private
 import com.fibelatti.pinboard.features.appstate.Public
 import com.fibelatti.pinboard.features.appstate.Recent
-import com.fibelatti.pinboard.features.appstate.SearchView
-import com.fibelatti.pinboard.features.appstate.TagList
+import com.fibelatti.pinboard.features.appstate.SearchContent
+import com.fibelatti.pinboard.features.appstate.TagListContent
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.appstate.ViewTags
@@ -93,12 +93,12 @@ class MainActivity :
 
         observe(appStateViewModel.content) { content ->
             when (content) {
-                is PostList -> showPostList()
-                is PostDetail -> showPostDetail()
-                is SearchView -> showSearchView()
-                is AddPostView -> showAddPostView()
-                is TagList -> showTagsView()
-                is EditPostView -> showEditPostView()
+                is PostListContent -> showPostList()
+                is PostDetailContent -> showPostDetail()
+                is SearchContent -> showSearch()
+                is AddPostContent -> showAddPost()
+                is TagListContent -> showTags()
+                is EditPostContent -> showEditPost()
             }.exhaustive
         }
     }
@@ -136,7 +136,7 @@ class MainActivity :
         }
     }
 
-    private fun showSearchView() {
+    private fun showSearch() {
         if (supportFragmentManager.findFragmentByTag(PostSearchFragment.TAG) == null) {
             inTransaction {
                 setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
@@ -146,7 +146,7 @@ class MainActivity :
         }
     }
 
-    private fun showAddPostView() {
+    private fun showAddPost() {
         if (supportFragmentManager.findFragmentByTag(PostAddFragment.TAG) == null) {
             inTransaction {
                 setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
@@ -156,7 +156,7 @@ class MainActivity :
         }
     }
 
-    private fun showTagsView() {
+    private fun showTags() {
         if (supportFragmentManager.findFragmentByTag(TagsFragment.TAG) == null) {
             inTransaction {
                 setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
@@ -166,7 +166,7 @@ class MainActivity :
         }
     }
 
-    private fun showEditPostView() {
+    private fun showEditPost() {
         if (supportFragmentManager.findFragmentByTag(PostAddFragment.TAG) == null) {
             inTransaction {
                 setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)

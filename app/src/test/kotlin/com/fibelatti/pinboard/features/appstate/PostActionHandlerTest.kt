@@ -27,7 +27,7 @@ internal class PostActionHandlerTest {
 
     private val postActionHandler = PostActionHandler(mockConnectivityManager, mockPostListDiffUtilFactory)
 
-    private val initialContent = PostList(
+    private val initialContent = PostListContent(
         category = All,
         title = mockTitle,
         posts = null,
@@ -40,9 +40,9 @@ internal class PostActionHandlerTest {
     @Nested
     inner class RefreshTests {
         @Test
-        fun `WHEN currentContent is not PostList THEN same content is returned`() {
+        fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostDetail>()
+            val content = mock<PostDetailContent>()
 
             // WHEN
             val result = postActionHandler.runAction(Refresh, content)
@@ -52,9 +52,9 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `GIVEN shouldLoad is ShouldLoadFirstPage WHEN currentContent is PostList THEN same content is returned`() {
+        fun `GIVEN shouldLoad is ShouldLoadFirstPage WHEN currentContent is PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostList>()
+            val content = mock<PostListContent>()
             given(content.shouldLoad).willReturn(ShouldLoadFirstPage)
 
             // WHEN
@@ -65,9 +65,9 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `GIVEN shouldLoad is ShouldLoadNextPage WHEN currentContent is PostList THEN same content is returned`() {
+        fun `GIVEN shouldLoad is ShouldLoadNextPage WHEN currentContent is PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostList>()
+            val content = mock<PostListContent>()
             given(content.shouldLoad).willReturn(ShouldLoadNextPage(0))
 
             // WHEN
@@ -78,7 +78,7 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is PostList and is connected is false THEN updated content is returned`() {
+        fun `WHEN currentContent is PostListContent and is connected is false THEN updated content is returned`() {
             // GIVEN
             given(mockConnectivityManager.activeNetworkInfo)
                 .willReturn(mockActiveNetworkInfo)
@@ -94,7 +94,7 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is PostList and is connected is true THEN updated content is returned`() {
+        fun `WHEN currentContent is PostListContent and is connected is true THEN updated content is returned`() {
             // GIVEN
             given(mockConnectivityManager.activeNetworkInfo)
                 .willReturn(mockActiveNetworkInfo)
@@ -113,9 +113,9 @@ internal class PostActionHandlerTest {
     @Nested
     inner class SetPostsTests {
         @Test
-        fun `WHEN currentContent is not PostList THEN same content is returned`() {
+        fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostDetail>()
+            val content = mock<PostDetailContent>()
 
             // WHEN
             val result = postActionHandler.runAction(SetPosts(mock()), content)
@@ -125,7 +125,7 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is PostList and actions posts is null THEN updated content is returned`() {
+        fun `WHEN currentContent is PostListContent and actions posts is null THEN updated content is returned`() {
             // WHEN
             val result = postActionHandler.runAction(SetPosts(null), initialContent)
 
@@ -134,13 +134,13 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is PostList and actions posts is not null THEN updated content is returned`() {
+        fun `WHEN currentContent is PostListContent and actions posts is not null THEN updated content is returned`() {
             // GIVEN
             val mockDiffUtil = mock<PostListDiffUtil>()
             given(mockPostListDiffUtilFactory.create(emptyList(), listOf(createPost())))
                 .willReturn(mockDiffUtil)
 
-            val currentContent = PostList(
+            val currentContent = PostListContent(
                 category = All,
                 title = mockTitle,
                 posts = null,
@@ -154,7 +154,7 @@ internal class PostActionHandlerTest {
             val result = postActionHandler.runAction(SetPosts(1 to listOf(createPost())), currentContent)
 
             // THEN
-            result shouldBe PostList(
+            result shouldBe PostListContent(
                 category = All,
                 title = mockTitle,
                 posts = Triple(1, listOf(createPost()), mockDiffUtil),
@@ -170,9 +170,9 @@ internal class PostActionHandlerTest {
     inner class GetNextPostPageTests {
 
         @Test
-        fun `WHEN currentContent is not PostList THEN same content is returned`() {
+        fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostDetail>()
+            val content = mock<PostDetailContent>()
 
             // WHEN
             val result = postActionHandler.runAction(GetNextPostPage, content)
@@ -182,7 +182,7 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is PostList and posts is null THEN same content is returned `() {
+        fun `WHEN currentContent is PostListContent and posts is null THEN same content is returned `() {
             // WHEN
             val result = postActionHandler.runAction(GetNextPostPage, initialContent)
 
@@ -191,9 +191,9 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is PostList and posts is not null THEN updated content is returned`() {
+        fun `WHEN currentContent is PostListContent and posts is not null THEN updated content is returned`() {
             // GIVEN
-            val currentContent = PostList(
+            val currentContent = PostListContent(
                 category = All,
                 title = mockTitle,
                 posts = Triple(1, listOf(mock()), mock()),
@@ -215,9 +215,9 @@ internal class PostActionHandlerTest {
     inner class SetNextPostPageTests {
 
         @Test
-        fun `WHEN currentContent is not PostList THEN same content is returned`() {
+        fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostDetail>()
+            val content = mock<PostDetailContent>()
 
             // WHEN
             val result = postActionHandler.runAction(SetNextPostPage(mock()), content)
@@ -227,9 +227,9 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is PostList and current content posts is null THEN same content is returned`() {
+        fun `WHEN currentContent is PostListContent and current content posts is null THEN same content is returned`() {
             // GIVEN
-            val content = PostList(
+            val content = PostListContent(
                 category = All,
                 title = mockTitle,
                 posts = null,
@@ -247,9 +247,9 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is PostList and action posts is null THEN same content is returned`() {
+        fun `WHEN currentContent is PostListContent and action posts is null THEN same content is returned`() {
             // GIVEN
-            val content = PostList(
+            val content = PostListContent(
                 category = All,
                 title = mockTitle,
                 posts = Triple(1, listOf(createPost()), mock()),
@@ -267,13 +267,13 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is PostList and posts are not null THEN updated content is returned`() {
+        fun `WHEN currentContent is PostListContent and posts are not null THEN updated content is returned`() {
             // GIVEN
             val mockCurrentList = listOf(mock<Post>())
             val mockNewList = listOf(mock<Post>())
             val mockDiffUtil = mock<PostListDiffUtil>()
 
-            val currentContent = PostList(
+            val currentContent = PostListContent(
                 category = All,
                 title = mockTitle,
                 posts = Triple(1, mockCurrentList, mock()),
@@ -290,7 +290,7 @@ internal class PostActionHandlerTest {
             val result = postActionHandler.runAction(SetNextPostPage(2 to mockNewList), currentContent)
 
             // THEN
-            result shouldBe PostList(
+            result shouldBe PostListContent(
                 category = All,
                 title = mockTitle,
                 posts = Triple(2, mockCurrentList.plus(mockNewList), mockDiffUtil),
@@ -305,9 +305,9 @@ internal class PostActionHandlerTest {
     @Nested
     inner class ToggleSortingTests {
         @Test
-        fun `WHEN currentContent is not PostList THEN same content is returned`() {
+        fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostDetail>()
+            val content = mock<PostDetailContent>()
 
             // WHEN
             val result = postActionHandler.runAction(ToggleSorting, content)
@@ -317,9 +317,9 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `GIVEN shouldLoad is ShouldLoadFirstPage WHEN currentContent is PostList THEN same content is returned`() {
+        fun `GIVEN shouldLoad is ShouldLoadFirstPage WHEN currentContent is PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostList>()
+            val content = mock<PostListContent>()
             given(content.shouldLoad).willReturn(ShouldLoadFirstPage)
 
             // WHEN
@@ -330,9 +330,9 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `GIVEN shouldLoad is ShouldLoadNextPage WHEN currentContent is PostList THEN same content is returned`() {
+        fun `GIVEN shouldLoad is ShouldLoadNextPage WHEN currentContent is PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostList>()
+            val content = mock<PostListContent>()
             given(content.shouldLoad).willReturn(ShouldLoadNextPage(0))
 
             // WHEN
@@ -343,7 +343,7 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `GIVEN isConnected is false WHEN currentContent is PostList THEN same content is returned`() {
+        fun `GIVEN isConnected is false WHEN currentContent is PostListContent THEN same content is returned`() {
             // GIVEN
             given(mockConnectivityManager.activeNetworkInfo)
                 .willReturn(mockActiveNetworkInfo)
@@ -358,7 +358,7 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `GIVEN sortType is NewestFirst WHEN currentContent is PostList THEN updated content is returned`() {
+        fun `GIVEN sortType is NewestFirst WHEN currentContent is PostListContent THEN updated content is returned`() {
             // GIVEN
             given(mockConnectivityManager.activeNetworkInfo)
                 .willReturn(mockActiveNetworkInfo)
@@ -373,7 +373,7 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `GIVEN sortType is OldestFirst WHEN currentContent is PostList THEN updated content is returned`() {
+        fun `GIVEN sortType is OldestFirst WHEN currentContent is PostListContent THEN updated content is returned`() {
             // GIVEN
             given(mockConnectivityManager.activeNetworkInfo)
                 .willReturn(mockActiveNetworkInfo)
@@ -392,9 +392,9 @@ internal class PostActionHandlerTest {
     inner class EditPostTests {
 
         @Test
-        fun `WHEN currentContent is not PostDetail THEN same content is returned`() {
+        fun `WHEN currentContent is not PostDetailContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostList>()
+            val content = mock<PostListContent>()
 
             // WHEN
             val result = postActionHandler.runAction(EditPost(mockPost), content)
@@ -404,15 +404,15 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is PostDetail THEN updated content is returned`() {
+        fun `WHEN currentContent is PostDetailContent THEN updated content is returned`() {
             // GIVEN
-            val mockCurrentContent = mock<PostDetail>()
+            val mockCurrentContent = mock<PostDetailContent>()
 
             // WHEN
             val result = postActionHandler.runAction(EditPost(mockPost), mockCurrentContent)
 
             // THEN
-            result shouldBe EditPostView(
+            result shouldBe EditPostContent(
                 post = mockPost,
                 previousContent = mockCurrentContent
             )
@@ -423,9 +423,9 @@ internal class PostActionHandlerTest {
     inner class PostSavedTests {
 
         @Test
-        fun `WHEN currentContent is not AddPostView or EditPostView THEN same content is returned`() {
+        fun `WHEN currentContent is not AddPostContent or EditPostContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostDetail>()
+            val content = mock<PostDetailContent>()
 
             // WHEN
             val result = postActionHandler.runAction(PostSaved(mockPost), content)
@@ -435,15 +435,15 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is AddPostView THEN updated content is returned`() {
+        fun `WHEN currentContent is AddPostContent THEN updated content is returned`() {
             // GIVEN
-            val currentContent = AddPostView(previousContent = initialContent)
+            val currentContent = AddPostContent(previousContent = initialContent)
 
             // WHEN
             val result = postActionHandler.runAction(PostSaved(mockPost), currentContent)
 
             // THEN
-            result shouldBe PostList(
+            result shouldBe PostListContent(
                 category = All,
                 title = mockTitle,
                 posts = null,
@@ -455,13 +455,13 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is EditPostView THEN updated content is returned`() {
+        fun `WHEN currentContent is EditPostContent THEN updated content is returned`() {
             // GIVEN
-            val postDetail = PostDetail(
+            val postDetail = PostDetailContent(
                 post = mockPost,
                 previousContent = initialContent
             )
-            val currentContent = EditPostView(
+            val currentContent = EditPostContent(
                 post = mockPost,
                 previousContent = postDetail
             )
@@ -470,9 +470,9 @@ internal class PostActionHandlerTest {
             val result = postActionHandler.runAction(PostSaved(mockPost), currentContent)
 
             // THEN
-            result shouldBe PostDetail(
+            result shouldBe PostDetailContent(
                 post = mockPost,
-                previousContent = PostList(
+                previousContent = PostListContent(
                     category = All,
                     title = mockTitle,
                     posts = null,
@@ -489,9 +489,9 @@ internal class PostActionHandlerTest {
     inner class PostDeletedTests {
 
         @Test
-        fun `WHEN currentContent is not PostDetail THEN same content is returned`() {
+        fun `WHEN currentContent is not PostDetailContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostList>()
+            val content = mock<PostListContent>()
 
             // WHEN
             val result = postActionHandler.runAction(PostDeleted, content)
@@ -501,9 +501,9 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is PostDetail THEN updated content is returned`() {
+        fun `WHEN currentContent is PostDetailContent THEN updated content is returned`() {
             // GIVEN
-            val currentContent = PostDetail(
+            val currentContent = PostDetailContent(
                 post = mockPost,
                 previousContent = initialContent
             )
@@ -512,7 +512,7 @@ internal class PostActionHandlerTest {
             val result = postActionHandler.runAction(PostDeleted, currentContent)
 
             // THEN
-            result shouldBe PostList(
+            result shouldBe PostListContent(
                 category = All,
                 title = mockTitle,
                 posts = null,

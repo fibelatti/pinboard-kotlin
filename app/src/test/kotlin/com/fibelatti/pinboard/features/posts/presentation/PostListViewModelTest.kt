@@ -13,7 +13,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockTags
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.Loaded
-import com.fibelatti.pinboard.features.appstate.PostList
+import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.Private
 import com.fibelatti.pinboard.features.appstate.Public
 import com.fibelatti.pinboard.features.appstate.Recent
@@ -37,7 +37,6 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.BDDMockito.verify
-import org.mockito.BDDMockito.verifyNoMoreInteractions
 import org.mockito.BDDMockito.willDoNothing
 import org.mockito.Mockito
 import org.mockito.Mockito.never
@@ -68,7 +67,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
         @Test
         fun `GIVEN should load is Loaded WHEN loadContent is called THEN nothing else is called`() {
             // GIVEN
-            val contentToLoad = PostList(
+            val contentToLoad = PostListContent(
                 category = mock(),
                 title = "",
                 posts = null,
@@ -183,8 +182,8 @@ internal class PostListViewModelTest : BaseViewModelTest() {
             verify(postListViewModel).getRecent(mockSortType, mockSearchTerm, mockTags)
         }
 
-        private fun createContent(category: ViewCategory, shouldLoad: ShouldLoad): PostList =
-            PostList(
+        private fun createContent(category: ViewCategory, shouldLoad: ShouldLoad): PostListContent =
+            PostListContent(
                 category = category,
                 title = "",
                 posts = null,

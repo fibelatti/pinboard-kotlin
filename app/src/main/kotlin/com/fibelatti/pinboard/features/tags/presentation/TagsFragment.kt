@@ -83,7 +83,7 @@ class TagsFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        viewLifecycleOwner.observe(appStateViewModel.tagList) { content ->
+        viewLifecycleOwner.observe(appStateViewModel.tagListContent) { content ->
             handleLoading(content.shouldLoad)
 
             if (content.shouldLoad) {
