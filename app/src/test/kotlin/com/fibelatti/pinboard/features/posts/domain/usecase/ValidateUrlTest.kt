@@ -18,7 +18,7 @@ class ValidateUrlTest {
     private val validateUrl = ValidateUrl()
 
     fun validUrls(): List<String> = mutableListOf<String>().apply {
-        UrlValidSchemes.allSchemes().forEach {
+        ValidUrlScheme.allSchemes().forEach {
             add("$it://${MockDataProvider.mockUrlInvalid}")
         }
         add("https://bit.ly")

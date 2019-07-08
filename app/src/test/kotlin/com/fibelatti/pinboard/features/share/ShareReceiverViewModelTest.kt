@@ -13,7 +13,9 @@ import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
-import com.fibelatti.pinboard.features.posts.domain.usecase.GetUrlTitle
+import com.fibelatti.pinboard.features.posts.domain.usecase.ExtractUrl
+import com.fibelatti.pinboard.features.posts.domain.usecase.RichUrl
+import com.fibelatti.pinboard.features.posts.domain.usecase.ParseUrl
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
@@ -21,12 +23,14 @@ import org.mockito.Mockito.never
 
 internal class ShareReceiverViewModelTest : BaseViewModelTest() {
 
-    private val mockGetUrlTitle = mock<GetUrlTitle>()
+    private val mockExtractUrl = mock<ExtractUrl>()
+    private val mockParseUrl = mock<ParseUrl>()
     private val mockAddPost = mock<AddPost>()
     private val mockResourceProvider = mock<ResourceProvider>()
 
     private val shareReceiverViewModel = ShareReceiverViewModel(
-        mockGetUrlTitle,
+        mockExtractUrl,
+        mockParseUrl,
         mockAddPost,
         mockResourceProvider
     )
@@ -40,9 +44,25 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `WHEN GetUrlTitle fails THEN failed should receive a value`() {
+    fun `WHEN ExtractUrl fails THEN failed should receive a value`() {
         // GIVEN
-        givenSuspend { mockGetUrlTitle(mockUrlValid) }
+        givenSuspend { mockExtractUrl(mockUrlValid) }
+            .willReturn(Failure(Exception()))
+
+        // WHEN
+        shareReceiverViewModel.saveUrl(mockUrlValid)
+
+        // THEN
+        shareReceiverViewModel.failed.currentEventShouldBe("R.string.generic_msg_error")
+        verifySuspend(mockAddPost, never()) { invoke(safeAny()) }
+    }
+
+    @Test
+    fun `WHEN ParseUrl fails THEN failed should receive a value`() {
+        // GIVEN
+        givenSuspend { mockExtractUrl(mockUrlValid) }
+            .willReturn(Success(mockUrlValid))
+        givenSuspend { mockParseUrl(mockUrlValid) }
             .willReturn(Failure(Exception()))
 
         // WHEN
@@ -56,8 +76,10 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     @Test
     fun `WHEN AddPost fails THEN failed should receive a value`() {
         // GIVEN
-        givenSuspend { mockGetUrlTitle(mockUrlValid) }
+        givenSuspend { mockExtractUrl(mockUrlValid) }
             .willReturn(Success(mockUrlValid))
+        givenSuspend { mockParseUrl(mockUrlValid) }
+            .willReturn(Success(RichUrl(mockUrlValid, mockUrlValid)))
         givenSuspend { mockAddPost(AddPost.Params(mockUrlValid, mockUrlValid)) }
             .willReturn(Failure(Exception()))
 
@@ -71,8 +93,10 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     @Test
     fun `WEHN saveUrl succeeds THEN saved should receive a value`() {
         // GIVEN
-        givenSuspend { mockGetUrlTitle(mockUrlValid) }
+        givenSuspend { mockExtractUrl(mockUrlValid) }
             .willReturn(Success(mockUrlValid))
+        givenSuspend { mockParseUrl(mockUrlValid) }
+            .willReturn(Success(RichUrl(mockUrlValid, mockUrlValid)))
         givenSuspend { mockAddPost(AddPost.Params(mockUrlValid, mockUrlValid)) }
             .willReturn(Success(createPost()))
 

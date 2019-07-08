@@ -10,12 +10,14 @@ import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
-import com.fibelatti.pinboard.features.posts.domain.usecase.GetUrlTitle
+import com.fibelatti.pinboard.features.posts.domain.usecase.ExtractUrl
+import com.fibelatti.pinboard.features.posts.domain.usecase.ParseUrl
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ShareReceiverViewModel @Inject constructor(
-    private val getUrlTitle: GetUrlTitle,
+    private val extractUrl: ExtractUrl,
+    private val parseUrl: ParseUrl,
     private val addPost: AddPost,
     private val resourceProvider: ResourceProvider
 ) : BaseViewModel() {
@@ -27,7 +29,9 @@ class ShareReceiverViewModel @Inject constructor(
 
     fun saveUrl(url: String) {
         launch {
-            getUrlTitle(url).map { title -> addPost(AddPost.Params(url, title)) }
+            extractUrl(url)
+                .map { extractedUrl -> parseUrl(extractedUrl) }
+                .map { (finalUrl, title) -> addPost(AddPost.Params(finalUrl, title)) }
                 .onSuccess {
                     _saved.postEvent(resourceProvider.getString(R.string.posts_saved_feedback))
                 }

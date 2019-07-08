@@ -14,29 +14,6 @@ class ValidateUrl @Inject constructor() : UseCaseWithParams<String, String>() {
         if (validate(params)) Success(params) else Failure(InvalidUrlException())
 
     private fun validate(url: String): Boolean =
-        url.substringBefore("://", "") in UrlValidSchemes.allSchemes() &&
+        url.substringBefore("://", "") in ValidUrlScheme.allSchemes() &&
             url.substringAfter("://", "").matches(urlRegex)
-}
-
-class InvalidUrlException : Throwable()
-
-enum class UrlValidSchemes(val scheme: String) {
-    HTTP("http"),
-    HTTPS("https"),
-    JAVASCRIPT("javascript"),
-    MAILTO("mailto"),
-    FTP("ftp"),
-    FILE("file");
-
-    companion object {
-        @JvmStatic
-        fun allSchemes() = listOf(
-            HTTP.scheme,
-            HTTPS.scheme,
-            JAVASCRIPT.scheme,
-            MAILTO.scheme,
-            FTP.scheme,
-            FILE.scheme
-        )
-    }
 }
