@@ -109,14 +109,19 @@ class PostAddFragment @Inject constructor() : BaseFragment() {
             }
         }
         editTextTags.onKeyboardSubmit {
-            val tags = createTagsFromText(editTextTags.textAsString())
+            when (val text = textAsString().trim()) {
+                "" -> hideKeyboard()
+                else -> {
+                    val tags = createTagsFromText(text)
 
-            for (tag in tags) {
-                if (chipGroupTags.children.none { (it as? TagChip)?.getValue() == tag }) {
-                    chipGroupTags.addView(createTagChip(tag))
+                    for (tag in tags) {
+                        if (chipGroupTags.children.none { (it as? TagChip)?.getValue() == tag }) {
+                            chipGroupTags.addView(createTagChip(tag))
+                        }
+                    }
+                    editTextTags.clearText()
                 }
             }
-            editTextTags.clearText()
         }
     }
 
