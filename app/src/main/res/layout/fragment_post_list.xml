@@ -60,6 +60,15 @@
             tools:listitem="@layout/list_item_post" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <com.fibelatti.pinboard.core.android.customview.ProgressBar
+        android:id="@+id/progressBarNextPage"
+        style="@style/AppTheme.ProgressBarHorizontalStyle"
+        android:layout_below="@+id/layoutOfflineAlert"
+        android:layout_marginStart="@dimen/margin_regular"
+        android:layout_marginEnd="@dimen/margin_regular"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
     <ImageView
         android:id="@+id/imageViewAppLogo"
         android:layout_width="@dimen/clickable_area"

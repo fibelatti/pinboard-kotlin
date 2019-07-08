@@ -133,7 +133,10 @@ class PostListFragment @Inject constructor(
         recyclerViewPosts.apply {
             setPageSize(AppConfig.DEFAULT_PAGE_SIZE)
             setMinDistanceToLastItem(AppConfig.DEFAULT_PAGE_SIZE / 2)
-            onShouldRequestNextPage = { appStateViewModel.runAction(GetNextPostPage) }
+            onShouldRequestNextPage = {
+                progressBarNextPage.visible()
+                appStateViewModel.runAction(GetNextPostPage)
+            }
         }
 
         postsAdapter.onItemClicked = { appStateViewModel.runAction(ViewPost(it)) }
@@ -186,6 +189,7 @@ class PostListFragment @Inject constructor(
 
     private fun showPosts(posts: Triple<Int, List<Post>, PostListDiffUtil>?, sortType: SortType) {
         layoutProgressBar.gone()
+        progressBarNextPage.gone()
         recyclerViewPosts.onRequestNextPageCompleted()
 
         if (posts != null) {
