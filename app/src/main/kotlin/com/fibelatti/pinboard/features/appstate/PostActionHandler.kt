@@ -16,6 +16,7 @@ class PostActionHandler @Inject constructor(
             is SetPosts -> setPosts(action, currentContent)
             is GetNextPostPage -> getNextPostPage(currentContent)
             is SetNextPostPage -> setNextPostPage(action, currentContent)
+            is PostsDisplayed -> postsDisplayed(currentContent)
             is ToggleSorting -> toggleSorting(currentContent)
             is EditPost -> editPost(action, currentContent)
             is PostSaved -> postSaved(action, currentContent)
@@ -37,7 +38,7 @@ class PostActionHandler @Inject constructor(
     private fun setPosts(action: SetPosts, currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) { currentPostList ->
             val posts = action.posts?.let { (count, list) ->
-                Triple(count, list, postListDiffUtilFactory.create(currentPostList.currentList, list))
+                PostList(count, list, postListDiffUtilFactory.create(currentPostList.currentList, list))
             }
 
             currentPostList.copy(posts = posts, shouldLoad = Loaded)
@@ -57,15 +58,21 @@ class PostActionHandler @Inject constructor(
     private fun setNextPostPage(action: SetNextPostPage, currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) { currentPostList ->
             if (currentPostList.posts != null && action.posts != null) {
-                val (_, currentList) = currentPostList.posts
+                val currentList = currentPostList.currentList
                 val (updatedCount, newList) = action.posts
                 val updatedList = currentList.plus(newList)
-                val posts = Triple(updatedCount, updatedList, postListDiffUtilFactory.create(currentList, updatedList))
+                val posts = PostList(updatedCount, updatedList, postListDiffUtilFactory.create(currentList, updatedList))
 
                 currentPostList.copy(posts = posts, shouldLoad = Loaded)
             } else {
                 currentContent
             }
+        }
+    }
+
+    private fun postsDisplayed(currentContent: Content): Content {
+        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
+            it.copy(posts = it.posts?.copy(alreadyDisplayed = true))
         }
     }
 

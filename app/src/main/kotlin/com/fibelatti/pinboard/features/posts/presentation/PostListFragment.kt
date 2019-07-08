@@ -14,7 +14,6 @@ import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
-import com.fibelatti.core.extension.isGone
 import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.core.extension.withItemOffsetDecoration
@@ -31,15 +30,14 @@ import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.GetNextPostPage
 import com.fibelatti.pinboard.features.appstate.Loaded
 import com.fibelatti.pinboard.features.appstate.PostListContent
+import com.fibelatti.pinboard.features.appstate.PostsDisplayed
 import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
 import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
-import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.appstate.ToggleSorting
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.mainActivity
-import com.fibelatti.pinboard.features.posts.domain.model.Post
 import kotlinx.android.synthetic.main.fragment_post_list.*
 import kotlinx.android.synthetic.main.layout_offline_alert.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
@@ -150,16 +148,13 @@ class PostListFragment @Inject constructor(
     private fun updateContent(content: PostListContent) {
         mainActivity?.updateTitleLayout {
             hideNavigateUp()
-            setTitle(content.title)
         }
         mainActivity?.updateViews { bottomAppBar, fab ->
             bottomAppBar.run {
                 setNavigationIcon(R.drawable.ic_menu)
                 replaceMenu(R.menu.menu_main)
-                setOnMenuItemClickListener { item: MenuItem? -> handleMenuClick(item) }
-                if (isGone()) {
-                    visible()
-                }
+                setOnMenuItemClickListener(::handleMenuClick)
+                visible()
                 show()
             }
             fab.run {
@@ -171,6 +166,10 @@ class PostListFragment @Inject constructor(
 
         when (content.shouldLoad) {
             is ShouldLoadFirstPage -> {
+                mainActivity?.updateTitleLayout {
+                    setTitle(content.title)
+                }
+
                 layoutProgressBar.visible()
                 recyclerViewPosts.gone()
                 layoutEmptyList.gone()
@@ -180,35 +179,39 @@ class PostListFragment @Inject constructor(
                 postListViewModel.loadContent(content)
             }
             is ShouldLoadNextPage -> postListViewModel.loadContent(content)
-            is Loaded -> showPosts(content.posts, content.sortType)
+            is Loaded -> showPosts(content)
         }
-
         layoutSearchActive.visibleIf(content.searchParameters.isActive(), otherwiseVisibility = View.GONE)
         layoutOfflineAlert.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
     }
 
-    private fun showPosts(posts: Triple<Int, List<Post>, PostListDiffUtil>?, sortType: SortType) {
+    private fun showPosts(content: PostListContent) {
         layoutProgressBar.gone()
         progressBarNextPage.gone()
         recyclerViewPosts.onRequestNextPageCompleted()
 
-        if (posts != null) {
+        if (content.posts == null) {
+            showEmptyLayout(title = R.string.posts_empty_title, description = R.string.posts_empty_description)
+            return
+        }
+
+        mainActivity?.updateTitleLayout {
+            setTitle(content.title, content.totalCount, content.sortType)
+        }
+
+        if (!content.posts.alreadyDisplayed) {
             recyclerViewPosts.visible()
             layoutEmptyList.gone()
 
-            val (count, list, diffUtil) = posts
-            postsAdapter.addAll(list, diffUtil.result)
-            mainActivity?.updateTitleLayout { setPostCount(count, sortType) }
-        } else {
-            showEmptyLayout(
-                title = R.string.posts_empty_title,
-                description = R.string.posts_empty_description
-            )
+            postsAdapter.addAll(content.posts.list, content.posts.diffUtil.result)
+            appStateViewModel.runAction(PostsDisplayed)
         }
     }
 
     private fun showEmptyLayout(@StringRes title: Int, @StringRes description: Int) {
-        mainActivity?.updateTitleLayout { hidePostCount() }
+        mainActivity?.updateTitleLayout {
+            hidePostCount()
+        }
         recyclerViewPosts.gone()
         layoutEmptyList.apply {
             visible()

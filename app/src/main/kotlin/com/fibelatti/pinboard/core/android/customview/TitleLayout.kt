@@ -37,6 +37,11 @@ class TitleLayout @JvmOverloads constructor(
         buttonNavigateBack.gone()
     }
 
+    fun hideTitle() {
+        textViewTitle.gone()
+        textViewPostCount.gone()
+    }
+
     fun setTitle(@StringRes titleRes: Int) {
         setTitle(context.getString(titleRes))
     }
@@ -46,9 +51,9 @@ class TitleLayout @JvmOverloads constructor(
         textViewPostCount.gone()
     }
 
-    fun hideTitle() {
-        textViewTitle.gone()
-        textViewPostCount.gone()
+    fun setTitle(title: String, count: Int, sortType: SortType) {
+        textViewTitle.visible(title)
+        setPostCount(count, sortType)
     }
 
     fun setPostCount(count: Int, sortType: SortType) {

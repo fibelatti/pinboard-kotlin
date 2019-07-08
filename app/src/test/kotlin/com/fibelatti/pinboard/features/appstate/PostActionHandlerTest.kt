@@ -157,7 +157,7 @@ internal class PostActionHandlerTest {
             result shouldBe PostListContent(
                 category = All,
                 title = mockTitle,
-                posts = Triple(1, listOf(createPost()), mockDiffUtil),
+                posts = PostList(1, listOf(createPost()), mockDiffUtil),
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = Loaded,
@@ -196,7 +196,7 @@ internal class PostActionHandlerTest {
             val currentContent = PostListContent(
                 category = All,
                 title = mockTitle,
-                posts = Triple(1, listOf(mock()), mock()),
+                posts = PostList(1, listOf(mock()), mock()),
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = Loaded,
@@ -252,7 +252,7 @@ internal class PostActionHandlerTest {
             val content = PostListContent(
                 category = All,
                 title = mockTitle,
-                posts = Triple(1, listOf(createPost()), mock()),
+                posts = PostList(1, listOf(createPost()), mock()),
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = Loaded,
@@ -276,7 +276,7 @@ internal class PostActionHandlerTest {
             val currentContent = PostListContent(
                 category = All,
                 title = mockTitle,
-                posts = Triple(1, mockCurrentList, mock()),
+                posts = PostList(1, mockCurrentList, mock()),
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = ShouldLoadFirstPage,
@@ -293,7 +293,53 @@ internal class PostActionHandlerTest {
             result shouldBe PostListContent(
                 category = All,
                 title = mockTitle,
-                posts = Triple(2, mockCurrentList.plus(mockNewList), mockDiffUtil),
+                posts = PostList(2, mockCurrentList.plus(mockNewList), mockDiffUtil),
+                sortType = NewestFirst,
+                searchParameters = SearchParameters(),
+                shouldLoad = Loaded,
+                isConnected = true
+            )
+        }
+    }
+
+    @Nested
+    inner class PostsDisplayedTests {
+
+        @Test
+        fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
+            // GIVEN
+            val content = mock<PostDetailContent>()
+
+            // WHEN
+            val result = postActionHandler.runAction(PostsDisplayed, content)
+
+            // THEN
+            result shouldBe content
+        }
+
+        @Test
+        fun `WHEN currentContent is PostListContent THEN the updated content is returned`() {
+            // GIVEN
+            val mockPostList = PostList(1, mock(), mock(), alreadyDisplayed = false)
+
+            val currentContent = PostListContent(
+                category = All,
+                title = mockTitle,
+                posts = mockPostList,
+                sortType = NewestFirst,
+                searchParameters = SearchParameters(),
+                shouldLoad = Loaded,
+                isConnected = true
+            )
+
+            // WHEN
+            val result = postActionHandler.runAction(PostsDisplayed, currentContent)
+
+            // THEN
+            result shouldBe PostListContent(
+                category = All,
+                title = mockTitle,
+                posts = mockPostList.copy(alreadyDisplayed = true),
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = Loaded,

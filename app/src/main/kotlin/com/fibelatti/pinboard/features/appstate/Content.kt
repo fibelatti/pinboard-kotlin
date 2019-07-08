@@ -2,7 +2,6 @@ package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.core.extension.orZero
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtil
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 
 sealed class Content
@@ -10,17 +9,19 @@ sealed class Content
 data class PostListContent(
     val category: ViewCategory,
     val title: String,
-    val posts: Triple<Int, List<Post>, PostListDiffUtil>?,
+    val posts: PostList?,
     val sortType: SortType,
     val searchParameters: SearchParameters,
     val shouldLoad: ShouldLoad,
     val isConnected: Boolean = true
 ) : Content() {
 
+    val totalCount: Int
+        get() = posts?.totalCount.orZero()
     val currentCount: Int
-        get() = posts?.second?.size.orZero()
+        get() = posts?.list?.size.orZero()
     val currentList: List<Post>
-        get() = posts?.second ?: emptyList()
+        get() = posts?.list ?: emptyList()
 }
 
 private interface ContentHistory {

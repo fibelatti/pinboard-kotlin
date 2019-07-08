@@ -158,6 +158,7 @@ internal class AppStateDataSourceTest {
                             is SetPosts -> add(SetPosts(1 to listOf(createPost())) to ExpectedHandler.POST)
                             GetNextPostPage -> add(GetNextPostPage to ExpectedHandler.POST)
                             is SetNextPostPage -> add(SetNextPostPage(1 to listOf(createPost())) to ExpectedHandler.POST)
+                            PostsDisplayed -> add(PostsDisplayed to ExpectedHandler.POST)
                             ToggleSorting -> add(ToggleSorting to ExpectedHandler.POST)
                             is EditPost -> add(EditPost(createPost()) to ExpectedHandler.POST)
                             is PostSaved -> add(PostSaved(createPost()) to ExpectedHandler.POST)
