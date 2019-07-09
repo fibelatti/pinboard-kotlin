@@ -1,7 +1,5 @@
 package com.fibelatti.pinboard.features.posts.data
 
-import android.net.ConnectivityManager
-import android.net.NetworkInfo
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
@@ -29,6 +27,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockUrlTitle
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.TestRateLimitRunner
 import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
@@ -66,7 +65,7 @@ class PostsDataSourceTest {
     private val mockPostDtoMapper = mock<PostDtoMapper>()
     private val mockSuggestedTagsDtoMapper = mock<SuggestedTagDtoMapper>()
     private val mockDateFormatter = mock<DateFormatter>()
-    private val mockConnectivityManager = mock<ConnectivityManager>()
+    private val mockConnectivityInfoProvider = mock<ConnectivityInfoProvider>()
     private val mockRunner = TestRateLimitRunner()
 
     private val mockListPostDto = listOf(mock<PostDto>())
@@ -81,7 +80,7 @@ class PostsDataSourceTest {
         mockPostDtoMapper,
         mockSuggestedTagsDtoMapper,
         mockDateFormatter,
-        mockConnectivityManager,
+        mockConnectivityInfoProvider,
         mockRunner
     ))
 
@@ -335,7 +334,6 @@ class PostsDataSourceTest {
     @Nested
     inner class GetAllPostsTests {
 
-        private val mockActiveNetworkInfo = mock<NetworkInfo>()
         private val mockLocalData = mock<Pair<Int, List<Post>>>()
 
         @Nested
@@ -343,9 +341,7 @@ class PostsDataSourceTest {
 
             @BeforeEach
             fun setup() {
-                given(mockConnectivityManager.activeNetworkInfo)
-                    .willReturn(mockActiveNetworkInfo)
-                given(mockActiveNetworkInfo.isConnected)
+                given(mockConnectivityInfoProvider.isConnected())
                     .willReturn(false)
             }
 
@@ -420,9 +416,7 @@ class PostsDataSourceTest {
 
             @BeforeEach
             fun setup() {
-                given(mockConnectivityManager.activeNetworkInfo)
-                    .willReturn(mockActiveNetworkInfo)
-                given(mockActiveNetworkInfo.isConnected)
+                given(mockConnectivityInfoProvider.isConnected())
                     .willReturn(true)
                 givenSuspend { mockUserRepository.getLastUpdate() }
                     .willReturn(mockTime)

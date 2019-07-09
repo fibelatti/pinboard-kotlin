@@ -1,29 +1,26 @@
 package com.fibelatti.pinboard.features.appstate
 
-import android.net.ConnectivityManager
-import android.net.NetworkInfo
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.MockDataProvider.createTag
 import com.fibelatti.pinboard.MockDataProvider.mockTitle
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.extension.isConnected
+import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito
+import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 
 internal class TagActionHandlerTest {
 
     private val mockResourceProvider = mock<ResourceProvider>()
-    private val mockConnectivityManager = mock<ConnectivityManager>()
-    private val mockActiveNetworkInfo = mock<NetworkInfo>()
+    private val mockConnectivityInfoProvider = mock<ConnectivityInfoProvider>()
 
     private val tagActionHandler = TagActionHandler(
         mockResourceProvider,
-        mockConnectivityManager
+        mockConnectivityInfoProvider
     )
 
     val mockPreviousContent = PostListContent(
@@ -58,9 +55,7 @@ internal class TagActionHandlerTest {
         @Test
         fun `WHEN currentContent is TagListContent THEN updated content is returned`() {
             // GIVEN
-            given(mockConnectivityManager.activeNetworkInfo)
-                .willReturn(mockActiveNetworkInfo)
-            given(mockActiveNetworkInfo.isConnected)
+            given(mockConnectivityInfoProvider.isConnected())
                 .willReturn(false)
 
             // WHEN
@@ -73,7 +68,7 @@ internal class TagActionHandlerTest {
                 isConnected = false,
                 previousContent = mockPreviousContent
             )
-            verify(mockConnectivityManager, Mockito.times(2)).isConnected()
+            verify(mockConnectivityInfoProvider, times(2)).isConnected()
         }
     }
 
@@ -115,9 +110,7 @@ internal class TagActionHandlerTest {
             // GIVEN
             given(mockResourceProvider.getString(R.string.posts_title_all))
                 .willReturn(mockTitle)
-            given(mockConnectivityManager.activeNetworkInfo)
-                .willReturn(mockActiveNetworkInfo)
-            given(mockActiveNetworkInfo.isConnected)
+            given(mockConnectivityInfoProvider.isConnected())
                 .willReturn(true)
 
             // WHEN

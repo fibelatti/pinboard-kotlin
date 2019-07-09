@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.posts.data
 
-import android.net.ConnectivityManager
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.Success
@@ -11,7 +10,7 @@ import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.core.AppConfig.API_MAX_LENGTH
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
-import com.fibelatti.pinboard.core.extension.isConnected
+import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.RateLimitRunner
@@ -37,7 +36,7 @@ class PostsDataSource @Inject constructor(
     private val postDtoMapper: PostDtoMapper,
     private val suggestedTagDtoMapper: SuggestedTagDtoMapper,
     private val dateFormatter: DateFormatter,
-    private val connectivityManager: ConnectivityManager?,
+    private val connectivityInfoProvider: ConnectivityInfoProvider,
     private val rateLimitRunner: RateLimitRunner
 ) : PostsRepository {
 
@@ -85,7 +84,7 @@ class PostsDataSource @Inject constructor(
         pageLimit: Int,
         pageOffset: Int
     ): Result<Pair<Int, List<Post>>?> = withContext(Dispatchers.IO) {
-        val isConnected = connectivityManager.isConnected()
+        val isConnected = connectivityInfoProvider.isConnected()
         val localData by lazy {
             getLocalData(
                 newestFirst,

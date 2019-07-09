@@ -1,12 +1,11 @@
 package com.fibelatti.pinboard.features.appstate
 
-import android.net.ConnectivityManager
-import com.fibelatti.pinboard.core.extension.isConnected
+import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtilFactory
 import javax.inject.Inject
 
 class PostActionHandler @Inject constructor(
-    private val connectivityManager: ConnectivityManager?,
+    private val connectivityInfoProvider: ConnectivityInfoProvider,
     private val postListDiffUtilFactory: PostListDiffUtilFactory
 ) : ActionHandler<PostAction>() {
 
@@ -27,8 +26,8 @@ class PostActionHandler @Inject constructor(
     private fun refresh(currentContent: Content): Content {
         return if (currentContent is PostListContent && currentContent.shouldLoad is Loaded) {
             currentContent.copy(
-                shouldLoad = if (connectivityManager.isConnected()) ShouldLoadFirstPage else Loaded,
-                isConnected = connectivityManager.isConnected()
+                shouldLoad = if (connectivityInfoProvider.isConnected()) ShouldLoadFirstPage else Loaded,
+                isConnected = connectivityInfoProvider.isConnected()
             )
         } else {
             currentContent
@@ -78,7 +77,7 @@ class PostActionHandler @Inject constructor(
 
     private fun toggleSorting(currentContent: Content): Content {
         return if (currentContent is PostListContent && currentContent.shouldLoad is Loaded) {
-            if (connectivityManager.isConnected()) {
+            if (connectivityInfoProvider.isConnected()) {
                 currentContent.copy(
                     sortType = when (currentContent.sortType) {
                         is NewestFirst -> OldestFirst

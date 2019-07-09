@@ -1,14 +1,13 @@
 package com.fibelatti.pinboard.features.appstate
 
-import android.net.ConnectivityManager
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.extension.isConnected
+import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import javax.inject.Inject
 
 class TagActionHandler @Inject constructor(
     private val resourceProvider: ResourceProvider,
-    private val connectivityManager: ConnectivityManager?
+    private val connectivityInfoProvider: ConnectivityInfoProvider
 ) : ActionHandler<TagAction>() {
 
     override fun runAction(action: TagAction, currentContent: Content): Content {
@@ -22,8 +21,8 @@ class TagActionHandler @Inject constructor(
     private fun refresh(currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<TagListContent>(currentContent) {
             it.copy(
-                shouldLoad = connectivityManager.isConnected(),
-                isConnected = connectivityManager.isConnected()
+                shouldLoad = connectivityInfoProvider.isConnected(),
+                isConnected = connectivityInfoProvider.isConnected()
             )
         }
     }
@@ -45,7 +44,7 @@ class TagActionHandler @Inject constructor(
             sortType = NewestFirst,
             searchParameters = SearchParameters(tags = listOf(action.tag)),
             shouldLoad = ShouldLoadFirstPage,
-            isConnected = connectivityManager.isConnected()
+            isConnected = connectivityInfoProvider.isConnected()
         )
     }
 }

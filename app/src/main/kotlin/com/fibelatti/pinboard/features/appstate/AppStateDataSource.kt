@@ -1,13 +1,12 @@
 package com.fibelatti.pinboard.features.appstate
 
-import android.net.ConnectivityManager
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fibelatti.core.functional.SingleRunner
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.extension.isConnected
+import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,7 +18,7 @@ class AppStateDataSource @Inject constructor(
     private val searchActionHandler: SearchActionHandler,
     private val tagActionHandler: TagActionHandler,
     private val singleRunner: SingleRunner,
-    private val connectivityManager: ConnectivityManager?
+    private val connectivityInfoProvider: ConnectivityInfoProvider
 ) : AppStateRepository {
 
     private val currentContent = MutableLiveData<Content>().apply {
@@ -30,7 +29,7 @@ class AppStateDataSource @Inject constructor(
             sortType = NewestFirst,
             searchParameters = SearchParameters(),
             shouldLoad = ShouldLoadFirstPage,
-            isConnected = connectivityManager.isConnected()
+            isConnected = connectivityInfoProvider.isConnected()
         )
     }
 

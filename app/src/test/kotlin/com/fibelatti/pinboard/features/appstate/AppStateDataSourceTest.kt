@@ -1,7 +1,5 @@
 package com.fibelatti.pinboard.features.appstate
 
-import android.net.ConnectivityManager
-import android.net.NetworkInfo
 import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
 import com.fibelatti.core.functional.SingleRunner
 import com.fibelatti.core.provider.ResourceProvider
@@ -12,6 +10,7 @@ import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.createTag
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.allSealedSubclasses
+import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.setMain
@@ -38,8 +37,7 @@ internal class AppStateDataSourceTest {
     private val mockSearchActionHandler = mock<SearchActionHandler>()
     private val mockTagActionHandler = mock<TagActionHandler>()
     private val singleRunner = SingleRunner()
-    private val mockConnectivityManager = mock<ConnectivityManager>()
-    private val mockActiveNetworkInfo = mock<NetworkInfo>()
+    private val mockConnectivityInfoProvider = mock<ConnectivityInfoProvider>()
 
     private lateinit var appStateDataSource: AppStateDataSource
 
@@ -60,9 +58,7 @@ internal class AppStateDataSourceTest {
         given(mockResourceProvider.getString(R.string.posts_title_all))
             .willReturn("R.string.posts_title_all")
 
-        given(mockConnectivityManager.activeNetworkInfo)
-            .willReturn(mockActiveNetworkInfo)
-        given(mockActiveNetworkInfo.isConnected)
+        given(mockConnectivityInfoProvider.isConnected())
             .willReturn(false)
 
         appStateDataSource = spy(
@@ -73,7 +69,7 @@ internal class AppStateDataSourceTest {
                 mockSearchActionHandler,
                 mockTagActionHandler,
                 singleRunner,
-                mockConnectivityManager
+                mockConnectivityInfoProvider
             )
         )
     }

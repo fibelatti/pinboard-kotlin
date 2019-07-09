@@ -1,12 +1,10 @@
 package com.fibelatti.pinboard.features.appstate
 
-import android.net.ConnectivityManager
-import android.net.NetworkInfo
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.mockTitle
-import com.fibelatti.pinboard.core.extension.isConnected
+import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtil
 import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtilFactory
@@ -18,14 +16,13 @@ import org.mockito.Mockito.times
 
 internal class PostActionHandlerTest {
 
-    private val mockConnectivityManager = mock<ConnectivityManager>()
-    private val mockActiveNetworkInfo = mock<NetworkInfo>()
+    private val mockConnectivityInfoProvider = mock<ConnectivityInfoProvider>()
 
     private val mockPostListDiffUtilFactory = mock< PostListDiffUtilFactory>()
 
     private val mockPost = mock<Post>()
 
-    private val postActionHandler = PostActionHandler(mockConnectivityManager, mockPostListDiffUtilFactory)
+    private val postActionHandler = PostActionHandler(mockConnectivityInfoProvider, mockPostListDiffUtilFactory)
 
     private val initialContent = PostListContent(
         category = All,
@@ -80,9 +77,7 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is PostListContent and is connected is false THEN updated content is returned`() {
             // GIVEN
-            given(mockConnectivityManager.activeNetworkInfo)
-                .willReturn(mockActiveNetworkInfo)
-            given(mockActiveNetworkInfo.isConnected)
+            given(mockConnectivityInfoProvider.isConnected())
                 .willReturn(false)
 
             // WHEN
@@ -90,15 +85,13 @@ internal class PostActionHandlerTest {
 
             // THEN
             result shouldBe initialContent.copy(shouldLoad = Loaded, isConnected = false)
-            verify(mockConnectivityManager, times(2)).isConnected()
+            verify(mockConnectivityInfoProvider, times(2)).isConnected()
         }
 
         @Test
         fun `WHEN currentContent is PostListContent and is connected is true THEN updated content is returned`() {
             // GIVEN
-            given(mockConnectivityManager.activeNetworkInfo)
-                .willReturn(mockActiveNetworkInfo)
-            given(mockActiveNetworkInfo.isConnected)
+            given(mockConnectivityInfoProvider.isConnected())
                 .willReturn(true)
 
             // WHEN
@@ -106,7 +99,7 @@ internal class PostActionHandlerTest {
 
             // THEN
             result shouldBe initialContent.copy(shouldLoad = ShouldLoadFirstPage, isConnected = true)
-            verify(mockConnectivityManager, times(2)).isConnected()
+            verify(mockConnectivityInfoProvider, times(2)).isConnected()
         }
     }
 
@@ -391,9 +384,7 @@ internal class PostActionHandlerTest {
         @Test
         fun `GIVEN isConnected is false WHEN currentContent is PostListContent THEN same content is returned`() {
             // GIVEN
-            given(mockConnectivityManager.activeNetworkInfo)
-                .willReturn(mockActiveNetworkInfo)
-            given(mockActiveNetworkInfo.isConnected)
+            given(mockConnectivityInfoProvider.isConnected())
                 .willReturn(false)
 
             // WHEN
@@ -406,9 +397,7 @@ internal class PostActionHandlerTest {
         @Test
         fun `GIVEN sortType is NewestFirst WHEN currentContent is PostListContent THEN updated content is returned`() {
             // GIVEN
-            given(mockConnectivityManager.activeNetworkInfo)
-                .willReturn(mockActiveNetworkInfo)
-            given(mockActiveNetworkInfo.isConnected)
+            given(mockConnectivityInfoProvider.isConnected())
                 .willReturn(true)
 
             // WHEN
@@ -421,9 +410,7 @@ internal class PostActionHandlerTest {
         @Test
         fun `GIVEN sortType is OldestFirst WHEN currentContent is PostListContent THEN updated content is returned`() {
             // GIVEN
-            given(mockConnectivityManager.activeNetworkInfo)
-                .willReturn(mockActiveNetworkInfo)
-            given(mockActiveNetworkInfo.isConnected)
+            given(mockConnectivityInfoProvider.isConnected())
                 .willReturn(true)
 
             // WHEN
