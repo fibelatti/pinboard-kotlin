@@ -199,7 +199,7 @@ class PostListFragment @Inject constructor(
             setTitle(content.title, content.totalCount, content.sortType)
         }
 
-        if (!content.posts.alreadyDisplayed) {
+        if (!content.posts.alreadyDisplayed || postsAdapter.itemCount == 0) {
             recyclerViewPosts.visible()
             layoutEmptyList.gone()
 
