@@ -699,7 +699,7 @@ class PostsDataSourceTest {
 
             // THEN
             verify(mockDao).getPostCount(
-                term = mockUrlTitle,
+                term = PostsDao.preFormatTerm(mockUrlTitle),
                 tag1 = "",
                 tag2 = "",
                 tag3 = "",
@@ -742,7 +742,7 @@ class PostsDataSourceTest {
 
             // THEN
             verify(mockDao).getPostCount(
-                term = mockUrlTitle,
+                term = PostsDao.preFormatTerm(mockUrlTitle),
                 tag1 = mockTag1.name,
                 tag2 = "",
                 tag3 = "",
@@ -785,7 +785,7 @@ class PostsDataSourceTest {
 
             // THEN
             verify(mockDao).getPostCount(
-                term = mockUrlTitle,
+                term = PostsDao.preFormatTerm(mockUrlTitle),
                 tag1 = mockTag1.name,
                 tag2 = mockTag2.name,
                 tag3 = "",
@@ -828,7 +828,7 @@ class PostsDataSourceTest {
 
             // THEN
             verify(mockDao).getPostCount(
-                term = mockUrlTitle,
+                term = PostsDao.preFormatTerm(mockUrlTitle),
                 tag1 = mockTag1.name,
                 tag2 = mockTag2.name,
                 tag3 = mockTag3.name,
@@ -931,7 +931,7 @@ class PostsDataSourceTest {
             // THEN
             verify(mockDao).getAllPosts(
                 newestFirst = true,
-                term = mockUrlTitle,
+                term = PostsDao.preFormatTerm(mockUrlTitle),
                 tag1 = "",
                 tag2 = "",
                 tag3 = "",
@@ -964,7 +964,7 @@ class PostsDataSourceTest {
             // THEN
             verify(mockDao).getAllPosts(
                 newestFirst = true,
-                term = mockUrlTitle,
+                term = PostsDao.preFormatTerm(mockUrlTitle),
                 tag1 = mockTag1.name,
                 tag2 = "",
                 tag3 = "",
@@ -997,7 +997,7 @@ class PostsDataSourceTest {
             // THEN
             verify(mockDao).getAllPosts(
                 newestFirst = true,
-                term = mockUrlTitle,
+                term = PostsDao.preFormatTerm(mockUrlTitle),
                 tag1 = mockTag1.name,
                 tag2 = mockTag2.name,
                 tag3 = "",
@@ -1030,7 +1030,7 @@ class PostsDataSourceTest {
             // THEN
             verify(mockDao).getAllPosts(
                 newestFirst = true,
-                term = mockUrlTitle,
+                term = PostsDao.preFormatTerm(mockUrlTitle),
                 tag1 = mockTag1.name,
                 tag2 = mockTag2.name,
                 tag3 = mockTag3.name,

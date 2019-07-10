@@ -25,7 +25,7 @@ import java.util.UUID
 class PostsDaoTest : BaseDbTest() {
 
     // region Data
-    private val mockTerm = "term"
+    private val mockTerm = "ter" // Intentionally incomplete to test wildcard matching
 
     private val postWithoutTerm = createPostDto(hash = randomHash(), href = "", description = "", extended = "")
     private val postWithTermInTheHref = createPostDto(hash = randomHash(), href = "term", description = "", extended = "")
@@ -34,8 +34,14 @@ class PostsDaoTest : BaseDbTest() {
 
     private val postWithNoTags = createPostDto(hash = randomHash(), tags = "")
     private val postWithOneTag = createPostDto(hash = randomHash(), tags = mockTagString1)
-    private val postWithTwoTags = createPostDto(hash = randomHash(), tags = "$mockTagString1 $mockTagString2")
-    private val postWithThreeTags = createPostDto(hash = randomHash(), tags = "$mockTagString1 $mockTagString2 $mockTagString3")
+    private val postWithTwoTags = createPostDto(
+        hash = randomHash(),
+        tags = listOf(mockTagString1, mockTagString2).shuffled().joinToString(separator = " ") // Intentionally shuffled because the order shouldn't matter
+    )
+    private val postWithThreeTags = createPostDto(
+        hash = randomHash(),
+        tags = listOf(mockTagString1, mockTagString2, mockTagString3).shuffled().joinToString(separator = " ") // Intentionally shuffled because the order shouldn't matter
+    )
 
     private val postPublic = createPostDto(hash = randomHash(), shared = AppConfig.PinboardApiLiterals.YES)
     private val postPrivate = createPostDto(hash = randomHash(), shared = AppConfig.PinboardApiLiterals.NO)
@@ -123,7 +129,7 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getPostCount(term = mockTerm)
+        val result = postsDao.getPostCount(term = PostsDao.preFormatTerm(mockTerm))
 
         // THEN
         result shouldBe 3
@@ -388,7 +394,7 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getAllPosts(term = mockTerm)
+        val result = postsDao.getAllPosts(term = PostsDao.preFormatTerm(mockTerm))
 
         // THEN
         result shouldBe listOf(

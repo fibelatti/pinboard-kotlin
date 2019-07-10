@@ -133,7 +133,7 @@ class PostsDataSource @Inject constructor(
         countLimit: Int
     ): Int {
         return postsDao.getPostCount(
-            term = searchTerm,
+            term = PostsDao.preFormatTerm(searchTerm),
             tag1 = tags?.getOrNull(0)?.name.orEmpty(),
             tag2 = tags?.getOrNull(1)?.name.orEmpty(),
             tag3 = tags?.getOrNull(2)?.name.orEmpty(),
@@ -172,7 +172,7 @@ class PostsDataSource @Inject constructor(
             if (localDataSize > 0) {
                 localDataSize to postsDao.getAllPosts(
                     newestFirst = newestFirst,
-                    term = searchTerm,
+                    term = PostsDao.preFormatTerm(searchTerm),
                     tag1 = tags?.getOrNull(0)?.name.orEmpty(),
                     tag2 = tags?.getOrNull(1)?.name.orEmpty(),
                     tag3 = tags?.getOrNull(2)?.name.orEmpty(),
