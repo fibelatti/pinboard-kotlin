@@ -44,26 +44,46 @@ android {
         }
     }
 
+    def buildTypeAppNameSuffix = ""
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
-            resValue "string", "app_name", AppInfo.appName + " Dev"
 
-            testCoverageEnabled = true
             minifyEnabled false
+            testCoverageEnabled = true
+
+            buildTypeAppNameSuffix = " Dev"
         }
         release {
-            resValue "string", "app_name", AppInfo.appName
-
             minifyEnabled true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+
+            buildTypeAppNameSuffix = ""
+        }
+    }
+
+    flavorDimensions("api")
+    productFlavors {
+        pinboardapi {
+            dimension("api")
+
+            resValue("string", "app_name", "${AppInfo.appName}$buildTypeAppNameSuffix")
+        }
+        noapi {
+            dimension("api")
+            applicationIdSuffix(".noapi")
+
+            resValue("string", "app_name", "${AppInfo.appName} NoApi $buildTypeAppNameSuffix")
         }
     }
 
     sourceSets {
         main.java.srcDirs("src/main/kotlin")
+        pinboardapi.java.srcDir("src/pinboardapi/kotlin")
+        noapi.java.srcDir("src/noapi/kotlin")
 
         test.java.srcDirs("src/test/kotlin", "src/sharedTest/kotlin")
+        testPinboardapi.java.srcDirs("src/test/kotlin", "src/sharedTest/kotlin", "src/testPinboardapi/kotlin")
 
         androidTest {
             java.srcDirs("src/androidTest/kotlin", "src/sharedTest/kotlin", "src/test/resources")

@@ -15,6 +15,9 @@ interface PostsDao {
     @Query("delete from $POST_TABLE_NAME")
     fun deleteAllPosts()
 
+    @Query("delete from $POST_TABLE_NAME where href = :url")
+    fun deletePost(url: String)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun savePosts(posts: List<PostDto>)
 
@@ -48,6 +51,12 @@ interface PostsDao {
 
     @Query("select tags from $POST_FTS_TABLE_NAME where tags match :tag")
     fun searchExistingPostTag(tag: String): List<String>
+
+    @Query("select * from $POST_TABLE_NAME where href = :url")
+    fun getPost(url: String): PostDto
+
+    @Query("select tags from $POST_TABLE_NAME")
+    fun getAllPostTags(): List<String>
 
     companion object {
         private const val SELECT_ALL_FROM_POST = "select $POST_TABLE_NAME.* from $POST_TABLE_NAME"
