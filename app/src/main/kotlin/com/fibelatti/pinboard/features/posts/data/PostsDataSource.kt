@@ -60,12 +60,11 @@ class PostsDataSource @Inject constructor(
                 description = description,
                 public = private?.let { if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES },
                 readLater = readLater?.let { if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO },
-                tags = tags?.forRequest()?.take(API_MAX_LENGTH)
+                tags = tags?.joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST) { it.name }
+                    ?.take(API_MAX_LENGTH)
             )
         }.orThrow()
     }
-
-    private fun List<Tag>.forRequest() = joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST) { it.name }
 
     override suspend fun delete(url: String): Result<Unit> = withContext(Dispatchers.IO) {
         resultFrom { postsApi.delete(url) }
@@ -192,6 +191,19 @@ class PostsDataSource @Inject constructor(
     override suspend fun getPost(url: String): Result<Post> = withContext(Dispatchers.IO) {
         resultFrom { postsApi.getPost(url) }
             .mapCatching { postDtoMapper.map(it.posts.first()) }
+    }
+
+    override suspend fun searchExistingPostTag(tag: String): Result<List<String>> {
+        return resultFrom {
+            val concatenatedTags = withContext(Dispatchers.IO) {
+                postsDao.searchExistingPostTag(PostsDao.preFormatTagForSearch(tag))
+            }
+
+            concatenatedTags.flatMap { it.split(" ") }
+                .filter { it.startsWith(tag) }
+                .distinct()
+                .sorted()
+        }
     }
 
     override suspend fun getSuggestedTagsForUrl(

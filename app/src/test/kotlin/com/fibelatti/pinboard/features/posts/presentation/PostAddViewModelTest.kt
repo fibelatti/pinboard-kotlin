@@ -13,6 +13,8 @@ import com.fibelatti.core.test.extension.safeAny
 import com.fibelatti.core.test.extension.verifySuspend
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.createPost
+import com.fibelatti.pinboard.MockDataProvider.mockTagString1
+import com.fibelatti.pinboard.MockDataProvider.mockTagString2
 import com.fibelatti.pinboard.MockDataProvider.mockTags
 import com.fibelatti.pinboard.MockDataProvider.mockUrlDescription
 import com.fibelatti.pinboard.MockDataProvider.mockUrlInvalid
@@ -22,6 +24,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostSaved
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
+import com.fibelatti.pinboard.features.posts.domain.usecase.GetSuggestedTags
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import com.fibelatti.pinboard.features.prepareToReceiveMany
 import com.fibelatti.pinboard.features.shouldHaveReceived
@@ -33,11 +36,13 @@ import org.mockito.Mockito.never
 internal class PostAddViewModelTest : BaseViewModelTest() {
 
     private val mockAppStateRepository = mock<AppStateRepository>()
+    private val mockGetSuggestedTags = mock<GetSuggestedTags>()
     private val mockAddPost = mock<AddPost>()
     private val mockResourceProvider = mock<ResourceProvider>()
 
     private val postAddViewModel = PostAddViewModel(
         mockAppStateRepository,
+        mockGetSuggestedTags,
         mockAddPost,
         mockResourceProvider
     )
@@ -50,6 +55,33 @@ internal class PostAddViewModelTest : BaseViewModelTest() {
             .willReturn("R.string.validation_error_empty_url")
         given(mockResourceProvider.getString(R.string.validation_error_empty_title))
             .willReturn("R.string.validation_error_empty_title")
+    }
+
+    @Test
+    fun `GIVEN getSuggestedTags will fail WHEN searchForTag is called THEN suggestedTags should never receive values`() {
+        // GIVEN
+        givenSuspend { mockGetSuggestedTags(safeAny()) }
+            .willReturn(Failure(Exception()))
+
+        // WHEN
+        postAddViewModel.searchForTag(mockTagString1, mock())
+
+        // THEN
+        postAddViewModel.suggestedTags.shouldNeverReceiveValues()
+    }
+
+    @Test
+    fun `GIVEN getSuggestedTags will succeed WHEN searchForTag is called THEN suggestedTags should receive its response`() {
+        // GIVEN
+        val result = listOf(mockTagString1, mockTagString2)
+        givenSuspend { mockGetSuggestedTags(safeAny()) }
+            .willReturn(Success(result))
+
+        // WHEN
+        postAddViewModel.searchForTag(mockTagString1, mock())
+
+        // THEN
+        postAddViewModel.suggestedTags.currentValueShouldBe(result)
     }
 
     @Test

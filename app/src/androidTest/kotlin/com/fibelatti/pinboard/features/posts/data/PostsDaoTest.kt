@@ -309,7 +309,7 @@ class PostsDaoTest : BaseDbTest() {
     }
     // endregion
 
-    // region getAllPosts {
+    // region getAllPosts
     @Test
     fun givenDbHasNoDataWhenGetAllPostsIsCalledThenEmptyListIsReturned() {
         // WHEN
@@ -640,4 +640,22 @@ class PostsDaoTest : BaseDbTest() {
         result shouldBe emptyList<Post>()
     }
     // endregion
+
+    @Test
+    fun whenSearchExistingPostTagIsCalledThenAListOfStringsContainingThatTagIsReturned() {
+        // GIVEN
+        val list = listOf(
+            postWithNoTags,
+            postWithOneTag,
+            postWithTwoTags,
+            postWithThreeTags
+        )
+        postsDao.savePosts(list)
+
+        // WHEN
+        val result = postsDao.searchExistingPostTag(mockTagString1)
+
+        // THEN
+        result shouldBe listOf(postWithOneTag.tags, postWithTwoTags.tags, postWithThreeTags.tags)
+    }
 }

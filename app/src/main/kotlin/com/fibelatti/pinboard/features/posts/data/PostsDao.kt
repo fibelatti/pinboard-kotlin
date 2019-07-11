@@ -46,6 +46,9 @@ interface PostsDao {
         offset: Int = 0
     ): List<PostDto>
 
+    @Query("select tags from $POST_FTS_TABLE_NAME where tags match :tag")
+    fun searchExistingPostTag(tag: String): List<String>
+
     companion object {
         private const val SELECT_ALL_FROM_POST = "select $POST_TABLE_NAME.* from $POST_TABLE_NAME"
 
@@ -92,6 +95,7 @@ interface PostsDao {
             "case when :newestFirst = 1 then time end DESC, " +
             "case when :newestFirst = 0 then time end ASC"
 
+        @JvmStatic
         fun preFormatTerm(term: String): String {
             return if (term.isBlank()) {
                 ""
@@ -99,5 +103,8 @@ interface PostsDao {
                 "href: $term* OR description: $term* OR extended: $term*"
             }
         }
+
+        @JvmStatic
+        fun preFormatTagForSearch(tag: String) = "$tag*"
     }
 }

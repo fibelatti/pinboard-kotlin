@@ -14,6 +14,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostSaved
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
+import com.fibelatti.pinboard.features.posts.domain.usecase.GetSuggestedTags
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.launch
@@ -21,18 +22,28 @@ import javax.inject.Inject
 
 class PostAddViewModel @Inject constructor(
     private val appStateRepository: AppStateRepository,
+    private val getSuggestedTags: GetSuggestedTags,
     private val addPost: AddPost,
     private val resourceProvider: ResourceProvider
 ) : BaseViewModel() {
 
     val loading: LiveData<Boolean> get() = _loading
     private val _loading = MutableLiveData<Boolean>()
+    val suggestedTags: LiveData<List<String>> get() = _suggestedTags
+    private val _suggestedTags = MutableLiveData<List<String>>()
     val invalidUrlError: LiveData<String> get() = _invalidUrlError
     private val _invalidUrlError = MutableLiveData<String>()
     val invalidUrlTitleError: LiveData<String> get() = _invalidUrlTitleError
     private val _invalidUrlTitleError = MutableLiveData<String>()
     val saved: LiveEvent<Unit> get() = _saved
     private val _saved = MutableLiveEvent<Unit>()
+
+    fun searchForTag(tag: String, currentTags: List<Tag>) {
+        launch {
+            getSuggestedTags(GetSuggestedTags.Params(tag, currentTags))
+                .onSuccess(_suggestedTags::postValue)
+        }
+    }
 
     fun saveLink(
         url: String,

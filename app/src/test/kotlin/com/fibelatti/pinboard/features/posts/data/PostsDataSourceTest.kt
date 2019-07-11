@@ -20,6 +20,9 @@ import com.fibelatti.pinboard.MockDataProvider.mockFutureTime
 import com.fibelatti.pinboard.MockDataProvider.mockTag1
 import com.fibelatti.pinboard.MockDataProvider.mockTag2
 import com.fibelatti.pinboard.MockDataProvider.mockTag3
+import com.fibelatti.pinboard.MockDataProvider.mockTagString1
+import com.fibelatti.pinboard.MockDataProvider.mockTagString2
+import com.fibelatti.pinboard.MockDataProvider.mockTagString3
 import com.fibelatti.pinboard.MockDataProvider.mockTags
 import com.fibelatti.pinboard.MockDataProvider.mockTagsRequest
 import com.fibelatti.pinboard.MockDataProvider.mockTime
@@ -73,16 +76,18 @@ class PostsDataSourceTest {
     private val mockSuggestedTagsDto = mock<SuggestedTagsDto>()
     private val mockSuggestedTags = mock<SuggestedTags>()
 
-    private val dataSource = spy(PostsDataSource(
-        mockUserRepository,
-        mockApi,
-        mockDao,
-        mockPostDtoMapper,
-        mockSuggestedTagsDtoMapper,
-        mockDateFormatter,
-        mockConnectivityInfoProvider,
-        mockRunner
-    ))
+    private val dataSource = spy(
+        PostsDataSource(
+            mockUserRepository,
+            mockApi,
+            mockDao,
+            mockPostDtoMapper,
+            mockSuggestedTagsDtoMapper,
+            mockDateFormatter,
+            mockConnectivityInfoProvider,
+            mockRunner
+        )
+    )
 
     @Nested
     inner class UpdateTests {
@@ -1127,6 +1132,48 @@ class PostsDataSourceTest {
             // THEN
             result.shouldBeAnInstanceOf<Success<Post>>()
             result.getOrNull() shouldBe post
+        }
+    }
+
+    @Nested
+    inner class SearchExistingPostTagTest {
+
+        @Test
+        fun `WHEN the db call fails THEN Failure is returned`() {
+            // GIVEN
+            given(mockDao.searchExistingPostTag(anyString()))
+                .will { throw Exception() }
+
+            // WHEN
+
+            val result = callSuspend { dataSource.searchExistingPostTag(mockTagString1) }
+
+            // THEN
+            result.shouldBeAnInstanceOf<Failure>()
+        }
+
+        @Test
+        fun `WHEN the db call succeeds THEN distinct and sorted values are returned`() {
+            // GIVEN
+            given(mockDao.searchExistingPostTag(anyString()))
+                .willReturn(
+                    listOf(
+                        mockTagString1,
+                        "$mockTagString2 $mockTagString1",
+                        "$mockTagString1 $mockTagString2 $mockTagString3"
+                    )
+                )
+
+            val commonPrefix = mockTagString1
+                .commonPrefixWith(mockTagString2)
+                .commonPrefixWith(mockTagString3)
+
+            // WHEN
+
+            val result = callSuspend { dataSource.searchExistingPostTag(commonPrefix) }
+
+            // THEN
+            result.getOrNull() shouldBe listOf(mockTagString1, mockTagString2, mockTagString3)
         }
     }
 
