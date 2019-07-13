@@ -9,24 +9,27 @@
 -packageobfuscationdictionary proguard-dictionary.txt
 -classobfuscationdictionary proguard-dictionary.txt
 
--repackageclasses 'fibelatti'
-
 # Debugging
 -keepattributes LineNumberTable, SourceFile
 
 # Common attributes
 -keepattributes Signature, Exceptions, InnerClasses, EnclosingMethod, *Annotation*
 
-# Remove log calls
--assumenosideeffects class android.util.Log {
-    public static *** d(...);
-}
-
 # Kotlin
 -keep class kotlin.** { *; }
+-keep class kotlin.Metadata { *; }
+-keepclassmembers class kotlin.Metadata {
+    public <methods>;
+}
+-assumenosideeffects class kotlin.jvm.internal.Intrinsics {
+    static void checkParameterIsNotNull(java.lang.Object, java.lang.String);
+}
+
 -dontnote kotlin.coroutines.jvm.internal.DebugMetadataKt**
 -dontnote kotlin.internal.PlatformImplementationsKt
 -dontnote kotlin.jvm.internal.Reflection
+-dontnote kotlin.reflect.jvm.internal.KClassImpl**
+-dontwarn kotlinx.atomicfu.AtomicBoolean
 
 # Coroutines
 -keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
@@ -36,11 +39,8 @@
 }
 
 # Material
--keepnames class androidx.** { *; }
--keepnames interface androidx.** { *; }
--keepnames class android.support.** { *; }
--keepnames interface android.support.** { *; }
--keepnames class com.google.android.material.** { *; }
+-dontnote com.google.android.material.**
+-dontnote android.widget.**
 
 # Retrofit does reflection on method and parameter annotations.
 -keepattributes RuntimeVisibleAnnotations, RuntimeVisibleParameterAnnotations
