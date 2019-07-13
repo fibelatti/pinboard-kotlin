@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -136,7 +137,13 @@ class PostAddFragment @Inject constructor(
         buttonTagsDone.gone()
         recyclerViewSuggestedTags.gone()
 
-        layoutRoot.hideKeyboard()
+        // Dirty hack because of animateLayoutChanges:
+        // Without this the underlying fragment becomes visible for a split second where the keyboard
+        // was because this fragment is still resizing
+        Handler().postDelayed(
+            { layoutRoot?.hideKeyboard() },
+            resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
+        )
     }
 
     private fun setupTagInput() {
