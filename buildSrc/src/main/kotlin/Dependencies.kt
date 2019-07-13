@@ -44,12 +44,12 @@ object Dependencies {
     const val dagger = "com.google.dagger:dagger:$daggerVersion"
     const val daggerCompiler = "com.google.dagger:dagger-compiler:$daggerVersion"
 
-    const val moshiKotlin = "com.squareup.moshi:moshi-kotlin:1.8.0"
+    const val gson = "com.google.code.gson:gson:2.8.5"
 
     private const val retrofitVersion = "2.6.0"
 
     const val retrofit = "com.squareup.retrofit2:retrofit:$retrofitVersion"
-    const val retrofitMoshiConverter = "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
+    const val retrofitGsonConverter = "com.squareup.retrofit2:converter-gson:$retrofitVersion"
     const val httpLoggingInterceptor = "com.squareup.okhttp3:logging-interceptor:3.10.0"
 
     const val jsoup = "org.jsoup:jsoup:1.11.3"

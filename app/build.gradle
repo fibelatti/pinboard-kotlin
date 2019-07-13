@@ -131,10 +131,10 @@ dependencies {
     implementation(Dependencies.dagger)
     kapt(Dependencies.daggerCompiler)
 
-    implementation(Dependencies.moshiKotlin)
+    implementation(Dependencies.gson)
 
     implementation(Dependencies.retrofit)
-    implementation(Dependencies.retrofitMoshiConverter)
+    implementation(Dependencies.retrofitGsonConverter)
     implementation(Dependencies.httpLoggingInterceptor)
 
     implementation(Dependencies.jsoup)

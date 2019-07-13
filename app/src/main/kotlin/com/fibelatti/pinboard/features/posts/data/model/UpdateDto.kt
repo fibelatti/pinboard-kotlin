@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.features.posts.data.model
 
 import androidx.annotation.Keep
-import com.squareup.moshi.Json
+import com.google.gson.annotations.SerializedName
 
 @Keep
-class UpdateDto(@Json(name = "update_time") val updateTime: String)
+class UpdateDto(@SerializedName("update_time") val updateTime: String)

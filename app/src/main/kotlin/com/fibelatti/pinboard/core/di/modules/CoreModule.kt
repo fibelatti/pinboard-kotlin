@@ -12,8 +12,7 @@ import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.App
 import com.fibelatti.pinboard.core.di.MultiBindingFragmentFactory
 import com.fibelatti.pinboard.core.persistence.getUserPreferences
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import com.google.gson.Gson
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -27,7 +26,7 @@ abstract class CoreModule {
     companion object {
         @Provides
         @JvmStatic
-        fun moshi(): Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+        fun gson(): Gson = Gson()
 
         @Provides
         @JvmStatic

@@ -6,7 +6,7 @@ import com.fibelatti.pinboard.core.network.ApiRateLimitRunner
 import com.fibelatti.pinboard.core.network.HeadersInterceptor
 import com.fibelatti.pinboard.core.network.RateLimitRunner
 import com.fibelatti.pinboard.core.network.UnauthorizedInterceptor
-import com.squareup.moshi.Moshi
+import com.google.gson.Gson
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -14,7 +14,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -25,11 +25,11 @@ abstract class NetworkModule {
         @Provides
         @JvmStatic
         @Singleton
-        fun retrofit(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit =
+        fun retrofit(okHttpClient: OkHttpClient, gson: Gson): Retrofit =
             Retrofit.Builder()
                 .baseUrl(AppConfig.API_BASE_URL)
                 .client(okHttpClient)
-                .addConverterFactory(MoshiConverterFactory.create(moshi))
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build()
 
         @Provides

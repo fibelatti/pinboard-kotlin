@@ -1,10 +1,10 @@
 package com.fibelatti.pinboard.features.posts.data.model
 
 import androidx.annotation.Keep
-import com.squareup.moshi.Json
+import com.google.gson.annotations.SerializedName
 
 @Keep
-class GenericResponseDto(@Json(name = "result_code") val resultCode: String)
+class GenericResponseDto(@SerializedName("result_code") val resultCode: String)
 
 enum class ApiResultCodes(val code: String) {
     DONE("done"),
