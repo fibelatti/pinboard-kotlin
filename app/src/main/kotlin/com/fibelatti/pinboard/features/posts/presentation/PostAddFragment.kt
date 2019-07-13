@@ -113,7 +113,10 @@ class PostAddFragment @Inject constructor(
             .withItemOffsetDecoration(R.dimen.padding_small)
             .adapter = suggestedTagsAdapter
 
-        suggestedTagsAdapter.onTagClicked = { chipGroupTags.addValue(it, index = 0) }
+        suggestedTagsAdapter.onTagClicked = {
+            chipGroupTags.addValue(it, index = 0)
+            editTextTags.clearText()
+        }
     }
 
     private fun focusOnTags() {
