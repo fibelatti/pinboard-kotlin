@@ -6,27 +6,30 @@
     android:layout_height="match_parent"
     android:layout_marginStart="@dimen/margin_regular"
     android:layout_marginEnd="@dimen/margin_regular"
-    android:animateLayoutChanges="true"
-    tools:showIn="@layout/fragment_add_post">
+    android:animateLayoutChanges="true">
 
     <TextView
         android:id="@+id/textViewTagsTitle"
         style="@style/AppTheme.Text.SectionTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_small"
         android:text="@string/posts_add_tags_title"
+        app:layout_constraintBottom_toTopOf="@+id/textInputLayoutTags"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutTags"
         style="@style/AppTheme.InputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_small"
         android:hint="@string/posts_add_tags"
         android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/buttonEditTags"
         app:layout_constraintEnd_toStartOf="@+id/buttonTagsDone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewTagsTitle"
@@ -55,13 +58,16 @@
     <ScrollView
         android:id="@+id/scrollViewCurrentTags"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginTop="@dimen/margin_small"
         app:layout_constrainedHeight="true"
+        app:layout_constraintBottom_toTopOf="@+id/buttonEditTags"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_max="@dimen/post_detail_tags_layout_height"
+        app:layout_constraintHeight_default="wrap"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutTags">
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutTags"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintVertical_chainStyle="packed">
 
         <com.fibelatti.pinboard.features.posts.presentation.TagChipGroup
             android:id="@+id/chipGroupTags"
@@ -75,6 +81,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/posts_add_tags_edit"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerViewSuggestedTags"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/scrollViewCurrentTags" />
 
@@ -87,6 +94,8 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_default="wrap"
+        app:layout_constraintHeight_min="@dimen/post_detail_tags_suggested_min_height"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonEditTags"
         tools:listitem="@layout/list_item_tag_simple"
