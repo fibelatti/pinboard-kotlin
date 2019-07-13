@@ -13,6 +13,11 @@
     android:paddingEnd="@dimen/padding_regular">
 
     <include
+        layout="@layout/layout_progress_bar"
+        android:visibility="gone"
+        tools:visibility="gone" />
+
+    <include
         android:id="@+id/layoutAddPost"
         layout="@layout/layout_add_post"
         android:layout_width="match_parent"
@@ -23,10 +28,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/margin_small" />
-
-    <include
-        layout="@layout/layout_progress_bar"
-        android:visibility="gone"
-        tools:visibility="gone" />
 
 </LinearLayout>
