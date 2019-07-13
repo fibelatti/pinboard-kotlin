@@ -137,8 +137,10 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
         layoutRootFileViewer.gone()
         layoutScrollViewWeb.visible()
 
-        webView.webViewClient = PostWebViewClient(post)
-        webView.loadUrl(post.url)
+        if (webView.url != post.url) {
+            webView.webViewClient = PostWebViewClient(post)
+            webView.loadUrl(post.url)
+        }
     }
 
     private fun showErrorLayout(post: Post) {
