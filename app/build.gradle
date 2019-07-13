@@ -137,8 +137,6 @@ dependencies {
     implementation(Dependencies.retrofitMoshiConverter)
     implementation(Dependencies.httpLoggingInterceptor)
 
-    implementation(Dependencies.jodaTime)
-
     implementation(Dependencies.jsoup)
 
     // Test

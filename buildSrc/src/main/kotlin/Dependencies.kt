@@ -52,8 +52,6 @@ object Dependencies {
     const val retrofitMoshiConverter = "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
     const val httpLoggingInterceptor = "com.squareup.okhttp3:logging-interceptor:3.10.0"
 
-    const val jodaTime = "joda-time:joda-time:2.10.1"
-
     const val jsoup = "org.jsoup:jsoup:1.11.3"
 }
 
