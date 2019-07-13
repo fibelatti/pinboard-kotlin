@@ -158,10 +158,7 @@ class PostSearchFragment @Inject constructor(
 
     private fun handleMenuClick(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.menuItemClearSearch -> {
-                appStateViewModel.runAction(ClearSearch)
-                navigateBack()
-            }
+            R.id.menuItemClearSearch -> { appStateViewModel.runAction(ClearSearch) }
         }
 
         return true

@@ -74,11 +74,20 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
     }
 
     private fun clearSearch(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
-            it.copy(
-                searchParameters = SearchParameters(),
-                shouldLoad = ShouldLoadFirstPage
-            )
+        return when (currentContent) {
+            is PostListContent -> {
+                currentContent.copy(
+                    searchParameters = SearchParameters(),
+                    shouldLoad = ShouldLoadFirstPage
+                )
+            }
+            is SearchContent -> {
+                currentContent.previousContent.copy(
+                    searchParameters = SearchParameters(),
+                    shouldLoad = ShouldLoadFirstPage
+                )
+            }
+            else -> currentContent
         }
     }
 }

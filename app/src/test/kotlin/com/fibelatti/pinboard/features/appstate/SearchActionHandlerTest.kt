@@ -293,5 +293,37 @@ internal class SearchActionHandlerTest {
                 shouldLoad = ShouldLoadFirstPage
             )
         }
+
+        @Test
+        fun `WHEN currentContent is SearchContent THEN an updated PostListContent is returned`() {
+            // GIVEN
+            val previousContent = PostListContent(
+                category = All,
+                title = mockTitle,
+                posts = null,
+                sortType = NewestFirst,
+                searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
+                shouldLoad = Loaded
+            )
+            val searchContent = SearchContent(
+                searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
+                availableTags = listOf(mockTag2, mockTag3),
+                allTags = listOf(mockTag1, mockTag2, mockTag3),
+                previousContent = previousContent
+            )
+
+            // WHEN
+            val result = searchActionHandler.runAction(ClearSearch, searchContent)
+
+            // THEN
+            result shouldBe PostListContent(
+                category = All,
+                title = mockTitle,
+                posts = null,
+                sortType = NewestFirst,
+                searchParameters = SearchParameters(),
+                shouldLoad = ShouldLoadFirstPage
+            )
+        }
     }
 }
