@@ -2,7 +2,6 @@ package com.fibelatti.pinboard.features.posts.data.model
 
 import androidx.annotation.Keep
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.fibelatti.core.functional.TwoWayMapper
@@ -31,20 +30,7 @@ data class PostDto(
     val toread: String,
     val tags: String,
     val imageUrl: String?
-) {
-    @Ignore
-    constructor() : this(
-        href = "",
-        description = "",
-        extended = "",
-        hash = "",
-        time = "",
-        shared = "",
-        toread = "",
-        tags = "",
-        imageUrl = null
-    )
-}
+)
 
 class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
 

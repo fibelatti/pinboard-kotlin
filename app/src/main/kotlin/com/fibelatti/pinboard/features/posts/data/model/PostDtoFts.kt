@@ -1,11 +1,12 @@
 package com.fibelatti.pinboard.features.posts.data.model
 
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.Fts4
-import androidx.room.Ignore
 
 const val POST_FTS_TABLE_NAME = "PostsFts"
 
+@Keep
 @Fts4(contentEntity = PostDto::class)
 @Entity(tableName = POST_FTS_TABLE_NAME)
 data class PostDtoFts(
@@ -13,13 +14,4 @@ data class PostDtoFts(
     val description: String,
     val extended: String,
     val tags: String
-) {
-
-    @Ignore
-    constructor() : this(
-        href = "",
-        description = "",
-        extended = "",
-        tags = ""
-    )
-}
+)
