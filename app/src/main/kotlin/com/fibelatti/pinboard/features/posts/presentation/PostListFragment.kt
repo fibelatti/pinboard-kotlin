@@ -31,6 +31,7 @@ import com.fibelatti.pinboard.features.appstate.GetNextPostPage
 import com.fibelatti.pinboard.features.appstate.Loaded
 import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.PostsDisplayed
+import com.fibelatti.pinboard.features.appstate.Recent
 import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
 import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
@@ -152,7 +153,7 @@ class PostListFragment @Inject constructor(
         mainActivity?.updateViews { bottomAppBar, fab ->
             bottomAppBar.run {
                 setNavigationIcon(R.drawable.ic_menu)
-                replaceMenu(R.menu.menu_main)
+                replaceMenu(if (content.category != Recent) R.menu.menu_main else R.menu.menu_main_recent)
                 setOnMenuItemClickListener(::handleMenuClick)
                 visible()
                 show()
