@@ -7,6 +7,9 @@ import com.fibelatti.pinboard.core.di.mapkeys.ViewModelKey
 import com.fibelatti.pinboard.features.appstate.AppStateDataSource
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.features.notes.data.NotesApi
+import com.fibelatti.pinboard.features.notes.data.NotesDataSource
+import com.fibelatti.pinboard.features.notes.domain.NotesRepository
 import com.fibelatti.pinboard.features.posts.data.PostsApi
 import com.fibelatti.pinboard.features.posts.data.PostsDataSource
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
@@ -43,6 +46,10 @@ abstract class FeatureModule {
         @Provides
         @JvmStatic
         fun tagsApi(retrofit: Retrofit): TagsApi = retrofit.create()
+
+        @Provides
+        @JvmStatic
+        fun notesApi(retrofit: Retrofit): NotesApi = retrofit.create()
     }
 
     @Binds
@@ -118,5 +125,10 @@ abstract class FeatureModule {
     @IntoMap
     @FragmentKey(TagsFragment::class)
     abstract fun tagsFragment(tagsFragment: TagsFragment): Fragment
+    // endregion
+
+    // region Notes
+    @Binds
+    abstract fun notesRepository(notesDataSource: NotesDataSource): NotesRepository
     // endregion
 }
