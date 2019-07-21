@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_post_item"
+    android:elevation="@dimen/elevation_regular"
+    android:orientation="vertical"
+    android:padding="@dimen/padding_small">
+
+    <TextView
+        android:id="@+id/textViewNoteTitle"
+        style="@style/AppTheme.Text.ListItem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Some Note" />
+
+    <TextView
+        android:id="@+id/textViewNoteSavedDate"
+        style="@style/AppTheme.Text.Detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_xsmall"
+        tools:text="Saved at 01/01/2019" />
+
+    <TextView
+        android:id="@+id/textViewNoteUpdatedDate"
+        style="@style/AppTheme.Text.Detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_xsmall"
+        tools:text="Last updated at 01/01/2019" />
+
+</LinearLayout>

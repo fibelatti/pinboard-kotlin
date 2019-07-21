@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@color/color_background"
+    android:clickable="true"
+    android:focusable="true">
+
+    <include
+        layout="@layout/layout_progress_bar"
+        android:visibility="gone"
+        tools:visibility="gone" />
+
+    <include
+        android:id="@+id/layoutOfflineAlert"
+        layout="@layout/layout_offline_alert"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layoutSearchActive"
+        android:layout_marginStart="@dimen/margin_regular"
+        android:layout_marginEnd="@dimen/margin_regular"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <com.fibelatti.pinboard.core.android.customview.EmptyListLayout
+        android:id="@+id/layoutEmptyList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layoutOfflineAlert"
+        android:visibility="gone" />
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeToRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layoutOfflineAlert"
+        android:layout_marginStart="@dimen/margin_regular"
+        android:layout_marginEnd="@dimen/margin_regular">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewNotes"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            tools:listitem="@layout/list_item_note" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</RelativeLayout>

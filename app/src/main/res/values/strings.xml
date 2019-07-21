@@ -31,6 +31,7 @@
     <string name="menu_navigation_unread">Unread</string>
     <string name="menu_navigation_untagged">Untagged</string>
     <string name="menu_navigation_tags">Tags</string>
+    <string name="menu_navigation_notes">Notes</string>
 
     <string name="menu_navigation_logout">Logout</string>
 
@@ -125,6 +126,18 @@
     <string name="tags_title">Tags</string>
     <string name="tags_empty_title">No tags</string>
     <string name="tags_empty_description">There are no tags for your saved links</string>
+
+    <!-- Notes -->
+    <string name="notes_title">Notes</string>
+    <plurals name="notes_quantity">
+        <item quantity="zero">No notes</item>
+        <item quantity="one">1 note</item>
+        <item quantity="other">%d notes</item>
+    </plurals>
+    <string name="notes_saved_at">Saved at %s</string>
+    <string name="notes_updated_at">Last updated at %s</string>
+    <string name="notes_empty_title">No notes</string>
+    <string name="notes_empty_description">You haven\'t saved any notes yet</string>
 
     <!-- About -->
     <string name="about_share">Share Pinkt</string>
