@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.appstate
 
+import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 
@@ -15,6 +16,8 @@ data class ViewPost(val post: Post) : NavigationAction()
 object ViewSearch : NavigationAction()
 object AddPost : NavigationAction()
 object ViewTags : NavigationAction()
+object ViewNotes : NavigationAction()
+data class ViewNote(val id: String) : NavigationAction()
 
 // region ViewCategory
 object All : ViewCategory()
@@ -57,5 +60,13 @@ sealed class TagAction : Action()
 object RefreshTags : TagAction()
 data class SetTags(val tags: List<Tag>) : TagAction()
 data class PostsForTag(val tag: Tag) : TagAction()
+// endregion
+
+// region NoteAction
+sealed class NoteAction : Action()
+
+object RefreshNotes : NoteAction()
+data class SetNotes(val notes: List<Note>) : NoteAction()
+data class SetNote(val note: Note) : NoteAction()
 // endregion
 // endregion

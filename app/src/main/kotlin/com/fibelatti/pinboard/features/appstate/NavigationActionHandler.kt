@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.appstate
 
+import com.fibelatti.core.functional.Either
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
@@ -18,6 +19,8 @@ class NavigationActionHandler @Inject constructor(
             is ViewSearch -> viewSearch(currentContent)
             is AddPost -> viewAddPost(currentContent)
             is ViewTags -> viewTags(currentContent)
+            is ViewNotes -> viewNotes(currentContent)
+            is ViewNote -> viewNote(action, currentContent)
         }
     }
 
@@ -67,6 +70,28 @@ class NavigationActionHandler @Inject constructor(
             TagListContent(
                 tags = emptyList(),
                 shouldLoad = connectivityInfoProvider.isConnected(),
+                isConnected = connectivityInfoProvider.isConnected(),
+                previousContent = it
+            )
+        }
+    }
+
+    private fun viewNotes(currentContent: Content): Content {
+        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
+            NoteListContent(
+                notes = emptyList(),
+                shouldLoad = connectivityInfoProvider.isConnected(),
+                isConnected = connectivityInfoProvider.isConnected(),
+                previousContent = it
+            )
+        }
+    }
+
+    private fun viewNote(action: ViewNote, currentContent: Content): Content {
+        return runOnlyForCurrentContentOfType<NoteListContent>(currentContent) {
+            NoteDetailContent(
+                id = action.id,
+                note = Either.left(connectivityInfoProvider.isConnected()),
                 isConnected = connectivityInfoProvider.isConnected(),
                 previousContent = it
             )

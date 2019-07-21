@@ -17,6 +17,7 @@ class AppStateDataSource @Inject constructor(
     private val postActionHandler: PostActionHandler,
     private val searchActionHandler: SearchActionHandler,
     private val tagActionHandler: TagActionHandler,
+    private val noteActionHandler: NoteActionHandler,
     private val singleRunner: SingleRunner,
     private val connectivityInfoProvider: ConnectivityInfoProvider
 ) : AppStateRepository {
@@ -43,6 +44,7 @@ class AppStateDataSource @Inject constructor(
                     is PostAction -> postActionHandler.runAction(action, content)
                     is SearchAction -> searchActionHandler.runAction(action, content)
                     is TagAction -> tagActionHandler.runAction(action, content)
+                    is NoteAction -> noteActionHandler.runAction(action, content)
                 }
 
                 if (newContent != content) {

@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.appstate
 
+import com.fibelatti.core.functional.Either
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBe
@@ -291,6 +292,94 @@ internal class NavigationActionHandlerTest {
             result shouldBe TagListContent(
                 tags = emptyList(),
                 shouldLoad = false,
+                isConnected = false,
+                previousContent = initialContent
+            )
+
+            verify(mockConnectivityInfoProvider, times(2)).isConnected()
+        }
+    }
+
+    @Nested
+    inner class ViewNotesTests {
+
+        @Test
+        fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
+            // GIVEN
+            val content = mock<PostDetailContent>()
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewNotes, content)
+
+            // THEN
+            result shouldBe content
+        }
+
+        @Test
+        fun `WHEN currentContent is PostListContent THEN NoteListContent is returned`() {
+            // GIVEN
+            given(mockConnectivityInfoProvider.isConnected())
+                .willReturn(false)
+
+            val initialContent = PostListContent(
+                category = All,
+                title = mockTitle,
+                posts = null,
+                sortType = NewestFirst,
+                searchParameters = SearchParameters(),
+                shouldLoad = ShouldLoadFirstPage
+            )
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewNotes, initialContent)
+
+            // THEN
+            result shouldBe NoteListContent(
+                notes = emptyList(),
+                shouldLoad = false,
+                isConnected = false,
+                previousContent = initialContent
+            )
+
+            verify(mockConnectivityInfoProvider, times(2)).isConnected()
+        }
+    }
+
+    @Nested
+    inner class ViewNoteTests {
+
+        @Test
+        fun `WHEN currentContent is not NoteListContent THEN same content is returned`() {
+            // GIVEN
+            val content = mock<PostDetailContent>()
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewNote("some-id"), content)
+
+            // THEN
+            result shouldBe content
+        }
+
+        @Test
+        fun `WHEN currentContent is NoteListContent THEN NoteDetailContent is returned`() {
+            // GIVEN
+            given(mockConnectivityInfoProvider.isConnected())
+                .willReturn(false)
+
+            val initialContent = NoteListContent(
+                notes = emptyList(),
+                shouldLoad = false,
+                isConnected = true,
+                previousContent = mock()
+            )
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewNote("some-id"), initialContent)
+
+            // THEN
+            result shouldBe NoteDetailContent(
+                id = "some-id",
+                note = Either.Left(false),
                 isConnected = false,
                 previousContent = initialContent
             )

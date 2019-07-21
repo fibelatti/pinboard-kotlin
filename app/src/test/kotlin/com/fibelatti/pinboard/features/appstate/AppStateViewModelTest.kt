@@ -138,6 +138,40 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
             }
         }
 
+        @ParameterizedTest
+        @MethodSource("testCases")
+        fun `Only note list content should be emitted to noteListContent`(content: Content) {
+            // GIVEN
+            given(mockAppStateRepository.getContent())
+                .willReturn(content.asLiveData())
+
+            appStateViewModel = AppStateViewModel(mockAppStateRepository)
+
+            // THEN
+            if (content is NoteListContent) {
+                appStateViewModel.noteListContent.currentValueShouldBe(content)
+            } else {
+                appStateViewModel.noteListContent.shouldNeverReceiveValues()
+            }
+        }
+
+        @ParameterizedTest
+        @MethodSource("testCases")
+        fun `Only note detail content should be emitted to noteDetailContent`(content: Content) {
+            // GIVEN
+            given(mockAppStateRepository.getContent())
+                .willReturn(content.asLiveData())
+
+            appStateViewModel = AppStateViewModel(mockAppStateRepository)
+
+            // THEN
+            if (content is NoteDetailContent) {
+                appStateViewModel.noteDetailContent.currentValueShouldBe(content)
+            } else {
+                appStateViewModel.noteDetailContent.shouldNeverReceiveValues()
+            }
+        }
+
         fun testCases(): List<Content> = mutableListOf<Content>().apply {
             Content::class.allSealedSubclasses
                 .map { it.objectInstance ?: Mockito.mock(it.javaObjectType) }

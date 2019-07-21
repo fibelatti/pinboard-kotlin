@@ -6,8 +6,6 @@ import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.safeAny
 import com.fibelatti.pinboard.InstantExecutorExtension
-import com.fibelatti.pinboard.MockDataProvider.createPost
-import com.fibelatti.pinboard.MockDataProvider.createTag
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.allSealedSubclasses
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
@@ -36,6 +34,7 @@ internal class AppStateDataSourceTest {
     private val mockPostActionHandler = mock<PostActionHandler>()
     private val mockSearchActionHandler = mock<SearchActionHandler>()
     private val mockTagActionHandler = mock<TagActionHandler>()
+    private val mockNoteActionHandler = mock<NoteActionHandler>()
     private val singleRunner = SingleRunner()
     private val mockConnectivityInfoProvider = mock<ConnectivityInfoProvider>()
 
@@ -68,6 +67,7 @@ internal class AppStateDataSourceTest {
                 mockPostActionHandler,
                 mockSearchActionHandler,
                 mockTagActionHandler,
+                mockNoteActionHandler,
                 singleRunner,
                 mockConnectivityInfoProvider
             )
@@ -91,6 +91,7 @@ internal class AppStateDataSourceTest {
             given(mockPostActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
             given(mockSearchActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
             given(mockTagActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
+            given(mockNoteActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
 
             val (action, expectedHandler) = testCase
 
@@ -127,6 +128,13 @@ internal class AppStateDataSourceTest {
                         fail { "Unexpected Action received" }
                     }
                 }
+                ExpectedHandler.NOTE -> {
+                    if (action is NoteAction) {
+                        verify(mockNoteActionHandler).runAction(action, expectedInitialValue)
+                    } else {
+                        fail { "Unexpected Action received" }
+                    }
+                }
             }.let { } // to make it exhaustive
         }
 
@@ -144,34 +152,41 @@ internal class AppStateDataSourceTest {
                             Private -> add(Private to ExpectedHandler.NAVIGATION)
                             Unread -> add(Unread to ExpectedHandler.NAVIGATION)
                             Untagged -> add(Untagged to ExpectedHandler.NAVIGATION)
-                            is ViewPost -> add(ViewPost(createPost()) to ExpectedHandler.NAVIGATION)
+                            is ViewPost -> add(mock<ViewPost>() to ExpectedHandler.NAVIGATION)
                             ViewSearch -> add(ViewSearch to ExpectedHandler.NAVIGATION)
                             AddPost -> add(AddPost to ExpectedHandler.NAVIGATION)
                             ViewTags -> add(ViewTags to ExpectedHandler.NAVIGATION)
+                            ViewNotes -> add(ViewNotes to ExpectedHandler.NAVIGATION)
+                            is ViewNote -> add(mock<ViewNote>() to ExpectedHandler.NAVIGATION)
 
                             // Post
                             Refresh -> add(Refresh to ExpectedHandler.POST)
-                            is SetPosts -> add(SetPosts(1 to listOf(createPost())) to ExpectedHandler.POST)
+                            is SetPosts -> add(mock<SetPosts>() to ExpectedHandler.POST)
                             GetNextPostPage -> add(GetNextPostPage to ExpectedHandler.POST)
-                            is SetNextPostPage -> add(SetNextPostPage(1 to listOf(createPost())) to ExpectedHandler.POST)
+                            is SetNextPostPage -> add(mock<SetNextPostPage>() to ExpectedHandler.POST)
                             PostsDisplayed -> add(PostsDisplayed to ExpectedHandler.POST)
                             ToggleSorting -> add(ToggleSorting to ExpectedHandler.POST)
-                            is EditPost -> add(EditPost(createPost()) to ExpectedHandler.POST)
-                            is PostSaved -> add(PostSaved(createPost()) to ExpectedHandler.POST)
+                            is EditPost -> add(mock<EditPost>() to ExpectedHandler.POST)
+                            is PostSaved -> add(mock<PostSaved>() to ExpectedHandler.POST)
                             PostDeleted -> add(PostDeleted to ExpectedHandler.POST)
 
                             // Search
                             RefreshSearchTags -> add(RefreshSearchTags to ExpectedHandler.SEARCH)
-                            is SetSearchTags -> add(SetSearchTags(listOf(createTag())) to ExpectedHandler.SEARCH)
-                            is AddSearchTag -> add(AddSearchTag(createTag()) to ExpectedHandler.SEARCH)
-                            is RemoveSearchTag -> add(RemoveSearchTag(createTag()) to ExpectedHandler.SEARCH)
-                            is Search -> add(Search("term") to ExpectedHandler.SEARCH)
+                            is SetSearchTags -> add(mock<SetSearchTags>() to ExpectedHandler.SEARCH)
+                            is AddSearchTag -> add(mock<AddSearchTag>() to ExpectedHandler.SEARCH)
+                            is RemoveSearchTag -> add(mock<RemoveSearchTag>() to ExpectedHandler.SEARCH)
+                            is Search -> add(mock<Search>() to ExpectedHandler.SEARCH)
                             ClearSearch -> add(ClearSearch to ExpectedHandler.SEARCH)
 
                             // Tag
                             RefreshTags -> add(RefreshTags to ExpectedHandler.TAG)
-                            is SetTags -> add(SetTags(listOf(createTag())) to ExpectedHandler.TAG)
-                            is PostsForTag -> add(PostsForTag(createTag()) to ExpectedHandler.TAG)
+                            is SetTags -> add(mock<SetTags>() to ExpectedHandler.TAG)
+                            is PostsForTag -> add(mock<PostsForTag>() to ExpectedHandler.TAG)
+
+                            // Notes
+                            RefreshNotes -> add(RefreshNotes to ExpectedHandler.NOTE)
+                            is SetNotes -> add(mock<SetNotes>() to ExpectedHandler.NOTE)
+                            is SetNote -> add(mock<SetNote>() to ExpectedHandler.NOTE)
                         }.let { } // to make it exhaustive
                     }
             }
@@ -238,6 +253,6 @@ internal class AppStateDataSourceTest {
     }
 
     internal enum class ExpectedHandler {
-        NAVIGATION, POST, SEARCH, TAG
+        NAVIGATION, POST, SEARCH, TAG, NOTE
     }
 }
