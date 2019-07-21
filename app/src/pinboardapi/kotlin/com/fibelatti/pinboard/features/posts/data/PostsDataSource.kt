@@ -133,9 +133,9 @@ class PostsDataSource @Inject constructor(
     ): Int {
         return postsDao.getPostCount(
             term = PostsDao.preFormatTerm(searchTerm),
-            tag1 = tags?.getOrNull(0)?.name.orEmpty(),
-            tag2 = tags?.getOrNull(1)?.name.orEmpty(),
-            tag3 = tags?.getOrNull(2)?.name.orEmpty(),
+            tag1 = tags.getAndFormat(0),
+            tag2 = tags.getAndFormat(1),
+            tag3 = tags.getAndFormat(2),
             untaggedOnly = untaggedOnly,
             publicPostsOnly = publicPostsOnly,
             privatePostsOnly = privatePostsOnly,
@@ -172,9 +172,9 @@ class PostsDataSource @Inject constructor(
                 localDataSize to postsDao.getAllPosts(
                     newestFirst = newestFirst,
                     term = PostsDao.preFormatTerm(searchTerm),
-                    tag1 = tags?.getOrNull(0)?.name.orEmpty(),
-                    tag2 = tags?.getOrNull(1)?.name.orEmpty(),
-                    tag3 = tags?.getOrNull(2)?.name.orEmpty(),
+                    tag1 = tags.getAndFormat(0),
+                    tag2 = tags.getAndFormat(1),
+                    tag3 = tags.getAndFormat(2),
                     untaggedOnly = untaggedOnly,
                     publicPostsOnly = publicPostsOnly,
                     privatePostsOnly = privatePostsOnly,
@@ -188,6 +188,10 @@ class PostsDataSource @Inject constructor(
         }
     }
 
+    private fun List<Tag>?.getAndFormat(index: Int): String {
+        return this?.getOrNull(index)?.name?.let(PostsDao.Companion::preFormatTag).orEmpty()
+    }
+
     override suspend fun getPost(url: String): Result<Post> = withContext(Dispatchers.IO) {
         resultFrom { postsApi.getPost(url) }
             .mapCatching { postDtoMapper.map(it.posts.first()) }
@@ -196,7 +200,7 @@ class PostsDataSource @Inject constructor(
     override suspend fun searchExistingPostTag(tag: String): Result<List<String>> {
         return resultFrom {
             val concatenatedTags = withContext(Dispatchers.IO) {
-                postsDao.searchExistingPostTag(PostsDao.preFormatTagForSearch(tag))
+                postsDao.searchExistingPostTag(PostsDao.preFormatTag(tag))
             }
 
             concatenatedTags.flatMap { it.split(" ") }

@@ -31,7 +31,7 @@ object MockDataProvider {
     const val mockUrlDescription = "What the url is all about"
     const val mockHash = "7b7cc6c90a84124026569c84f2236ecb"
 
-    const val mockTagString1 = "tag1"
+    const val mockTagString1 = "tag-1"
     const val mockTagString2 = "tag2"
     const val mockTagString3 = "tag3"
     const val mockTagString4 = "tag4"

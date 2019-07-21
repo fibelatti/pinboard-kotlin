@@ -109,11 +109,11 @@ interface PostsDao {
             return if (term.isBlank()) {
                 ""
             } else {
-                "href: $term* OR description: $term* OR extended: $term*"
+                "href: \"$term*\" OR description: \"$term*\" OR extended: \"$term*\""
             }
         }
 
         @JvmStatic
-        fun preFormatTagForSearch(tag: String) = "$tag*"
+        fun preFormatTag(tag: String) = "\"$tag*\""
     }
 }

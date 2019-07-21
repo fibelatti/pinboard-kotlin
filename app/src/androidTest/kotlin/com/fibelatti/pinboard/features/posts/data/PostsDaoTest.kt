@@ -27,27 +27,44 @@ class PostsDaoTest : BaseDbTest() {
     // region Data
     private val mockTerm = "ter" // Intentionally incomplete to test wildcard matching
 
-    private val postWithoutTerm = createPostDto(hash = randomHash(), href = "", description = "", extended = "")
-    private val postWithTermInTheHref = createPostDto(hash = randomHash(), href = "term", description = "", extended = "")
-    private val postWithTermInTheDescription = createPostDto(hash = randomHash(), href = "", description = "term", extended = "")
-    private val postWithTermInTheExtended = createPostDto(hash = randomHash(), href = "", description = "", extended = "term")
+    private val postWithoutTerm =
+        createPostDto(hash = randomHash(), href = "", description = "", extended = "")
+    private val postWithTermInTheHref =
+        createPostDto(hash = randomHash(), href = "term", description = "", extended = "")
+    private val postWithTermInTheDescription = createPostDto(
+        hash = randomHash(),
+        href = "",
+        description = "term-with-hyphen",
+        extended = ""
+    )
+    private val postWithTermInTheExtended =
+        createPostDto(hash = randomHash(), href = "", description = "", extended = "term")
 
     private val postWithNoTags = createPostDto(hash = randomHash(), tags = "")
     private val postWithOneTag = createPostDto(hash = randomHash(), tags = mockTagString1)
     private val postWithTwoTags = createPostDto(
         hash = randomHash(),
-        tags = listOf(mockTagString1, mockTagString2).shuffled().joinToString(separator = " ") // Intentionally shuffled because the order shouldn't matter
+        tags = listOf(
+            mockTagString1,
+            mockTagString2
+        ).shuffled().joinToString(separator = " ") // Intentionally shuffled because the order shouldn't matter
     )
     private val postWithThreeTags = createPostDto(
         hash = randomHash(),
-        tags = listOf(mockTagString1, mockTagString2, mockTagString3).shuffled().joinToString(separator = " ") // Intentionally shuffled because the order shouldn't matter
+        tags = listOf(mockTagString1, mockTagString2, mockTagString3).shuffled().joinToString(
+            separator = " "
+        ) // Intentionally shuffled because the order shouldn't matter
     )
 
-    private val postPublic = createPostDto(hash = randomHash(), shared = AppConfig.PinboardApiLiterals.YES)
-    private val postPrivate = createPostDto(hash = randomHash(), shared = AppConfig.PinboardApiLiterals.NO)
+    private val postPublic =
+        createPostDto(hash = randomHash(), shared = AppConfig.PinboardApiLiterals.YES)
+    private val postPrivate =
+        createPostDto(hash = randomHash(), shared = AppConfig.PinboardApiLiterals.NO)
 
-    private val postReadLater = createPostDto(hash = randomHash(), toread = AppConfig.PinboardApiLiterals.YES)
-    private val postNotReadLater = createPostDto(hash = randomHash(), toread = AppConfig.PinboardApiLiterals.NO)
+    private val postReadLater =
+        createPostDto(hash = randomHash(), toread = AppConfig.PinboardApiLiterals.YES)
+    private val postNotReadLater =
+        createPostDto(hash = randomHash(), toread = AppConfig.PinboardApiLiterals.NO)
 
     private val postFirst = createPostDto(hash = randomHash(), time = mockTime1)
     private val postSecond = createPostDto(hash = randomHash(), time = mockTime2)
@@ -136,6 +153,24 @@ class PostsDaoTest : BaseDbTest() {
     }
 
     @Test
+    fun givenDbHasDataAndTermFilterIsPassedAndItContainsAHyphenWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() {
+        // GIVEN
+        val list = listOf(
+            postWithoutTerm,
+            postWithTermInTheHref,
+            postWithTermInTheDescription,
+            postWithTermInTheExtended
+        )
+        postsDao.savePosts(list)
+
+        // WHEN
+        val result = postsDao.getPostCount(term = PostsDao.preFormatTerm("term-with"))
+
+        // THEN
+        result shouldBe 1
+    }
+
+    @Test
     @Suppress("MagicNumber")
     fun givenDbHasDataAndTag1FilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() {
         // GIVEN
@@ -148,7 +183,26 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getPostCount(tag1 = mockTagString1)
+        val result = postsDao.getPostCount(tag1 = PostsDao.preFormatTag(mockTagString1))
+
+        // THEN
+        result shouldBe 3
+    }
+
+    @Test
+    @Suppress("MagicNumber")
+    fun givenDbHasDataAndTag1FilterIsPassedAndItContainsAHyphenWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() {
+        // GIVEN
+        val list = listOf(
+            postWithNoTags,
+            postWithOneTag,
+            postWithTwoTags,
+            postWithThreeTags
+        )
+        postsDao.savePosts(list)
+
+        // WHEN
+        val result = postsDao.getPostCount(tag1 = PostsDao.preFormatTag("-1"))
 
         // THEN
         result shouldBe 3
@@ -166,7 +220,10 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getPostCount(tag1 = mockTagString1, tag2 = mockTagString2)
+        val result = postsDao.getPostCount(
+            tag1 = PostsDao.preFormatTag(mockTagString1),
+            tag2 = PostsDao.preFormatTag(mockTagString2)
+        )
 
         // THEN
         result shouldBe 2
@@ -184,7 +241,11 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getPostCount(tag1 = mockTagString1, tag2 = mockTagString2, tag3 = mockTagString3)
+        val result = postsDao.getPostCount(
+            tag1 = PostsDao.preFormatTag(mockTagString1),
+            tag2 = PostsDao.preFormatTag(mockTagString2),
+            tag3 = PostsDao.preFormatTag(mockTagString3)
+        )
 
         // THEN
         result shouldBe 1
@@ -405,6 +466,24 @@ class PostsDaoTest : BaseDbTest() {
     }
 
     @Test
+    fun givenDbHasDataAndTermFilterIsPassedAndItContainsAHyphenWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() {
+        // GIVEN
+        val list = listOf(
+            postWithoutTerm,
+            postWithTermInTheHref,
+            postWithTermInTheDescription,
+            postWithTermInTheExtended
+        )
+        postsDao.savePosts(list)
+
+        // WHEN
+        val result = postsDao.getAllPosts(term = PostsDao.preFormatTerm("term-with"))
+
+        // THEN
+        result shouldBe listOf(postWithTermInTheDescription)
+    }
+
+    @Test
     fun givenDbHasDataAndTag1FilterIsPassedWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() {
         // GIVEN
         val list = listOf(
@@ -416,7 +495,25 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getAllPosts(tag1 = mockTagString1)
+        val result = postsDao.getAllPosts(tag1 = PostsDao.preFormatTag(mockTagString1))
+
+        // THEN
+        result shouldBe listOf(postWithOneTag, postWithTwoTags, postWithThreeTags)
+    }
+
+    @Test
+    fun givenDbHasDataAndTag1FilterIsPassedAndItContainsAHyphenWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() {
+        // GIVEN
+        val list = listOf(
+            postWithNoTags,
+            postWithOneTag,
+            postWithTwoTags,
+            postWithThreeTags
+        )
+        postsDao.savePosts(list)
+
+        // WHEN
+        val result = postsDao.getAllPosts(tag1 = PostsDao.preFormatTag("-1"))
 
         // THEN
         result shouldBe listOf(postWithOneTag, postWithTwoTags, postWithThreeTags)
@@ -434,7 +531,10 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getAllPosts(tag1 = mockTagString1, tag2 = mockTagString2)
+        val result = postsDao.getAllPosts(
+            tag1 = PostsDao.preFormatTag(mockTagString1),
+            tag2 = PostsDao.preFormatTag(mockTagString2)
+        )
 
         // THEN
         result shouldBe listOf(postWithTwoTags, postWithThreeTags)
@@ -452,7 +552,11 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getAllPosts(tag1 = mockTagString1, tag2 = mockTagString2, tag3 = mockTagString3)
+        val result = postsDao.getAllPosts(
+            tag1 = PostsDao.preFormatTag(mockTagString1),
+            tag2 = PostsDao.preFormatTag(mockTagString2),
+            tag3 = PostsDao.preFormatTag(mockTagString3)
+        )
 
         // THEN
         result shouldBe listOf(postWithThreeTags)
@@ -653,7 +757,25 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.searchExistingPostTag(mockTagString1)
+        val result = postsDao.searchExistingPostTag(PostsDao.preFormatTag(mockTagString1))
+
+        // THEN
+        result shouldBe listOf(postWithOneTag.tags, postWithTwoTags.tags, postWithThreeTags.tags)
+    }
+
+    @Test
+    fun whenSearchExistingPostTagIsCalledWithAQueryThatContainsAHyphenThenAListOfStringsContainingThatTagIsReturned() {
+        // GIVEN
+        val list = listOf(
+            postWithNoTags,
+            postWithOneTag,
+            postWithTwoTags,
+            postWithThreeTags
+        )
+        postsDao.savePosts(list)
+
+        // WHEN
+        val result = postsDao.searchExistingPostTag(PostsDao.preFormatTag("-1"))
 
         // THEN
         result shouldBe listOf(postWithOneTag.tags, postWithTwoTags.tags, postWithThreeTags.tags)

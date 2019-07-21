@@ -748,7 +748,7 @@ class PostsDataSourceTest {
             // THEN
             verify(mockDao).getPostCount(
                 term = PostsDao.preFormatTerm(mockUrlTitle),
-                tag1 = mockTag1.name,
+                tag1 = PostsDao.preFormatTag(mockTag1.name),
                 tag2 = "",
                 tag3 = "",
                 untaggedOnly = false,
@@ -791,8 +791,8 @@ class PostsDataSourceTest {
             // THEN
             verify(mockDao).getPostCount(
                 term = PostsDao.preFormatTerm(mockUrlTitle),
-                tag1 = mockTag1.name,
-                tag2 = mockTag2.name,
+                tag1 = PostsDao.preFormatTag(mockTag1.name),
+                tag2 = PostsDao.preFormatTag(mockTag2.name),
                 tag3 = "",
                 untaggedOnly = false,
                 publicPostsOnly = false,
@@ -834,9 +834,9 @@ class PostsDataSourceTest {
             // THEN
             verify(mockDao).getPostCount(
                 term = PostsDao.preFormatTerm(mockUrlTitle),
-                tag1 = mockTag1.name,
-                tag2 = mockTag2.name,
-                tag3 = mockTag3.name,
+                tag1 = PostsDao.preFormatTag(mockTag1.name),
+                tag2 = PostsDao.preFormatTag(mockTag2.name),
+                tag3 = PostsDao.preFormatTag(mockTag3.name),
                 untaggedOnly = false,
                 publicPostsOnly = false,
                 privatePostsOnly = false,
@@ -970,7 +970,7 @@ class PostsDataSourceTest {
             verify(mockDao).getAllPosts(
                 newestFirst = true,
                 term = PostsDao.preFormatTerm(mockUrlTitle),
-                tag1 = mockTag1.name,
+                tag1 = PostsDao.preFormatTag(mockTag1.name),
                 tag2 = "",
                 tag3 = "",
                 untaggedOnly = false,
@@ -1003,8 +1003,8 @@ class PostsDataSourceTest {
             verify(mockDao).getAllPosts(
                 newestFirst = true,
                 term = PostsDao.preFormatTerm(mockUrlTitle),
-                tag1 = mockTag1.name,
-                tag2 = mockTag2.name,
+                tag1 = PostsDao.preFormatTag(mockTag1.name),
+                tag2 = PostsDao.preFormatTag(mockTag2.name),
                 tag3 = "",
                 untaggedOnly = false,
                 publicPostsOnly = false,
@@ -1036,9 +1036,9 @@ class PostsDataSourceTest {
             verify(mockDao).getAllPosts(
                 newestFirst = true,
                 term = PostsDao.preFormatTerm(mockUrlTitle),
-                tag1 = mockTag1.name,
-                tag2 = mockTag2.name,
-                tag3 = mockTag3.name,
+                tag1 = PostsDao.preFormatTag(mockTag1.name),
+                tag2 = PostsDao.preFormatTag(mockTag2.name),
+                tag3 = PostsDao.preFormatTag(mockTag3.name),
                 untaggedOnly = false,
                 publicPostsOnly = false,
                 privatePostsOnly = false,

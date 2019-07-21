@@ -12,11 +12,11 @@ internal class PostsDaoUnitTest {
 
     @Test
     fun `WHEN preFormatTerm is called THEN term formatted for the query is returned`() {
-        PostsDao.preFormatTerm("term") shouldBe "href: term* OR description: term* OR extended: term*"
+        PostsDao.preFormatTerm("term") shouldBe "href: \"term*\" OR description: \"term*\" OR extended: \"term*\""
     }
 
     @Test
-    fun `WHEN preFormatTagForSearch is called THEN tag formatted for the query is returned`() {
-        PostsDao.preFormatTagForSearch("tag") shouldBe "tag*"
+    fun `WHEN preFormatTag is called THEN tag formatted for the query is returned`() {
+        PostsDao.preFormatTag("tag") shouldBe "\"tag*\""
     }
 }
