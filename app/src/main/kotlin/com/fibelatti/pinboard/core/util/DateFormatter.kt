@@ -8,19 +8,23 @@ import java.util.TimeZone
 import javax.inject.Inject
 
 private const val FORMAT_TZ = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+private const val FORMAT_NOTES = "yyyy-MM-dd HH:mm:ss"
 
 @VisibleForTesting
 const val FORMAT_DISPLAY = "dd/MM/yy, HH:mm"
 
 class DateFormatter @Inject constructor() {
 
-    @VisibleForTesting
-    val utcFormat = getSimpleDateFormat(FORMAT_TZ, timeZone = TimeZone.getTimeZone("UTC"))
-
     fun tzFormatToDisplayFormat(input: String): String =
-        getSimpleDateFormat(FORMAT_DISPLAY).format(utcFormat.parse(input))
+        getSimpleDateFormat(FORMAT_DISPLAY).format(getUtcFormat(FORMAT_TZ).parse(input))
 
-    fun nowAsTzFormat(): String = utcFormat.format(Date())
+    fun notesFormatToDisplayFormat(input: String): String =
+        getSimpleDateFormat(FORMAT_DISPLAY).format(getUtcFormat(FORMAT_NOTES).parse(input))
+
+    fun nowAsTzFormat(): String = getUtcFormat(FORMAT_TZ).format(Date())
+
+    @VisibleForTesting
+    fun getUtcFormat(format: String) = getSimpleDateFormat(format, timeZone = TimeZone.getTimeZone("UTC"))
 
     @VisibleForTesting
     fun getSimpleDateFormat(format: String, timeZone: TimeZone? = null): SimpleDateFormat =
