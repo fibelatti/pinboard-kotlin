@@ -17,6 +17,7 @@ class NavigationDrawerFragment {
         fun onUnreadClicked()
         fun onUntaggedClicked()
         fun onTagsClicked()
+        fun onNotesClicked()
         fun onLogoutClicked()
         fun onShareAppClicked()
         fun onRateAppClicked()
@@ -58,6 +59,10 @@ class NavigationDrawerFragment {
         }
         menuItemTags.setOnClickListener {
             callback.onTagsClicked()
+            dismiss()
+        }
+        menuItemNotes.setOnClickListener {
+            callback.onNotesClicked()
             dismiss()
         }
         menuItemLogout.setOnClickListener {

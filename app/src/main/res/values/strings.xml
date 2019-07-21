@@ -68,7 +68,7 @@
     <string name="posts_sorting_newest_first">%s — Newest first</string>
     <string name="posts_sorting_oldest_first">%s — Oldest first</string>
 
-    <string name="posts_saved_on">Saved on %s</string>
+    <string name="posts_saved_on">Saved at %s</string>
     <plurals name="posts_tags_more">
         <item quantity="one">and 1 other</item>
         <item quantity="other">and %d others</item>

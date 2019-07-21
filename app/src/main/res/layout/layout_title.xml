@@ -30,14 +30,14 @@
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:maxLines="1"
-        app:layout_constraintBottom_toTopOf="@+id/textViewPostCount"
+        app:layout_constraintBottom_toTopOf="@+id/textViewCount"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/buttonNavigateBack"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Some title" />
 
     <TextView
-        android:id="@+id/textViewPostCount"
+        android:id="@+id/textViewCount"
         style="@style/AppTheme.Text.Detail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

@@ -197,7 +197,7 @@ class PostListFragment @Inject constructor(
         }
 
         mainActivity?.updateTitleLayout {
-            setTitle(content.title, content.totalCount, content.sortType)
+            setPostListTitle(content.title, content.totalCount, content.sortType)
         }
 
         if (!content.posts.alreadyDisplayed || postsAdapter.itemCount == 0) {

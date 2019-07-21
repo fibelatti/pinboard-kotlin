@@ -5,101 +5,112 @@
     android:layout_height="wrap_content"
     android:fillViewport="true">
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/color_background_contrast"
-        android:orientation="vertical"
-        android:paddingStart="@dimen/padding_regular"
-        android:paddingTop="@dimen/padding_large"
-        android:paddingEnd="@dimen/padding_regular">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/menuItemAll"
-            style="@style/AppTheme.TextButton.Menu"
-            android:text="@string/menu_navigation_all" />
-
-        <TextView
-            android:id="@+id/menuItemRecent"
-            style="@style/AppTheme.TextButton.Menu"
-            android:text="@string/menu_navigation_recent" />
-
-        <TextView
-            android:id="@+id/menuItemPublic"
-            style="@style/AppTheme.TextButton.Menu"
-            android:text="@string/menu_navigation_public"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/menuItemPrivate"
-            style="@style/AppTheme.TextButton.Menu"
-            android:text="@string/menu_navigation_private"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/menuItemUnread"
-            style="@style/AppTheme.TextButton.Menu"
-            android:text="@string/menu_navigation_unread" />
-
-        <TextView
-            android:id="@+id/menuItemUntagged"
-            style="@style/AppTheme.TextButton.Menu"
-            android:text="@string/menu_navigation_untagged" />
-
-        <TextView
-            android:id="@+id/menuItemTags"
-            style="@style/AppTheme.TextButton.Menu"
-            android:text="@string/menu_navigation_tags" />
-
-        <include
-            layout="@layout/layout_divider"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/divider_size"
-            android:layout_marginTop="@dimen/margin_regular"
-            android:layout_marginBottom="@dimen/margin_regular"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/menuItemLogout"
-            style="@style/AppTheme.TextButton.Menu"
-            android:drawablePadding="@dimen/padding_regular"
-            android:text="@string/menu_navigation_logout"
-            android:visibility="gone"
-            app:drawableStartCompat="@drawable/ic_person" />
-
-        <include
-            layout="@layout/layout_divider"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/divider_size"
-            android:layout_marginTop="@dimen/margin_regular"
-            android:layout_marginBottom="@dimen/margin_regular" />
-
-        <TextView
-            android:id="@+id/menuItemShare"
-            style="@style/AppTheme.TextButton.Menu"
-            android:text="@string/about_share" />
-
-        <TextView
-            android:id="@+id/menuItemRate"
-            style="@style/AppTheme.TextButton.Menu"
-            android:text="@string/about_rate" />
-
-        <TextView
-            android:id="@+id/menuItemAbout"
-            style="@style/AppTheme.Text.Detail"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small"
-            android:text="@string/about_developer" />
+            android:background="@color/color_background_contrast"
+            android:orientation="vertical"
+            android:paddingStart="@dimen/padding_regular"
+            android:paddingTop="@dimen/padding_large"
+            android:paddingEnd="@dimen/padding_regular">
 
-        <TextView
-            android:id="@+id/menuItemVersion"
-            style="@style/AppTheme.Text.Detail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_regular"
-            android:text="@string/about_version" />
+            <TextView
+                android:id="@+id/menuItemAll"
+                style="@style/AppTheme.TextButton.Menu"
+                android:text="@string/menu_navigation_all" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/menuItemRecent"
+                style="@style/AppTheme.TextButton.Menu"
+                android:text="@string/menu_navigation_recent" />
+
+            <TextView
+                android:id="@+id/menuItemPublic"
+                style="@style/AppTheme.TextButton.Menu"
+                android:text="@string/menu_navigation_public"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/menuItemPrivate"
+                style="@style/AppTheme.TextButton.Menu"
+                android:text="@string/menu_navigation_private"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/menuItemUnread"
+                style="@style/AppTheme.TextButton.Menu"
+                android:text="@string/menu_navigation_unread" />
+
+            <TextView
+                android:id="@+id/menuItemUntagged"
+                style="@style/AppTheme.TextButton.Menu"
+                android:text="@string/menu_navigation_untagged" />
+
+            <TextView
+                android:id="@+id/menuItemTags"
+                style="@style/AppTheme.TextButton.Menu"
+                android:text="@string/menu_navigation_tags" />
+
+            <TextView
+                android:id="@+id/menuItemNotes"
+                style="@style/AppTheme.TextButton.Menu"
+                android:text="@string/menu_navigation_notes"
+                android:visibility="gone" />
+
+            <include
+                layout="@layout/layout_divider"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_size"
+                android:layout_marginTop="@dimen/margin_regular"
+                android:layout_marginBottom="@dimen/margin_regular"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/menuItemLogout"
+                style="@style/AppTheme.TextButton.Menu"
+                android:drawablePadding="@dimen/padding_regular"
+                android:text="@string/menu_navigation_logout"
+                android:visibility="gone"
+                app:drawableStartCompat="@drawable/ic_person" />
+
+            <include
+                layout="@layout/layout_divider"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_size"
+                android:layout_marginTop="@dimen/margin_regular"
+                android:layout_marginBottom="@dimen/margin_regular" />
+
+            <TextView
+                android:id="@+id/menuItemShare"
+                style="@style/AppTheme.TextButton.Menu"
+                android:text="@string/about_share" />
+
+            <TextView
+                android:id="@+id/menuItemRate"
+                style="@style/AppTheme.TextButton.Menu"
+                android:text="@string/about_rate" />
+
+            <TextView
+                android:id="@+id/menuItemAbout"
+                style="@style/AppTheme.Text.Detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="@string/about_developer" />
+
+            <TextView
+                android:id="@+id/menuItemVersion"
+                style="@style/AppTheme.Text.Detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_regular"
+                android:text="@string/about_version" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.core.widget.NestedScrollView>

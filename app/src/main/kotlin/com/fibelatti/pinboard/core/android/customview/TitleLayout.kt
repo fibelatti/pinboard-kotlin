@@ -39,7 +39,7 @@ class TitleLayout @JvmOverloads constructor(
 
     fun hideTitle() {
         textViewTitle.gone()
-        textViewPostCount.gone()
+        textViewCount.gone()
     }
 
     fun setTitle(@StringRes titleRes: Int) {
@@ -48,15 +48,15 @@ class TitleLayout @JvmOverloads constructor(
 
     fun setTitle(title: String) {
         if (title.isNotEmpty()) textViewTitle.visible(title) else hideTitle()
-        textViewPostCount.gone()
+        textViewCount.gone()
     }
 
-    fun setTitle(title: String, count: Int, sortType: SortType) {
+    fun setPostListTitle(title: String, count: Int, sortType: SortType) {
         textViewTitle.visible(title)
         setPostCount(count, sortType)
     }
 
-    fun setPostCount(count: Int, sortType: SortType) {
+    private fun setPostCount(count: Int, sortType: SortType) {
         val countString = resources.getQuantityString(R.plurals.posts_quantity, count, count)
         val countWithSort = resources.getString(
             if (sortType == NewestFirst) {
@@ -67,10 +67,15 @@ class TitleLayout @JvmOverloads constructor(
             countString
         )
 
-        textViewPostCount.visible(countWithSort)
+        textViewCount.visible(countWithSort)
+    }
+
+    fun setNoteListTitle(title: String, count: Int) {
+        textViewTitle.visible(title)
+        textViewCount.visible(resources.getQuantityString(R.plurals.notes_quantity, count, count))
     }
 
     fun hidePostCount() {
-        textViewPostCount.gone()
+        textViewCount.gone()
     }
 }

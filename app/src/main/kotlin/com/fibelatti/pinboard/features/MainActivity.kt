@@ -27,6 +27,8 @@ import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.NavigateBack
+import com.fibelatti.pinboard.features.appstate.NoteDetailContent
+import com.fibelatti.pinboard.features.appstate.NoteListContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.Private
@@ -36,8 +38,11 @@ import com.fibelatti.pinboard.features.appstate.SearchContent
 import com.fibelatti.pinboard.features.appstate.TagListContent
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
+import com.fibelatti.pinboard.features.appstate.ViewNotes
 import com.fibelatti.pinboard.features.appstate.ViewTags
 import com.fibelatti.pinboard.features.navigation.NavigationDrawerFragment
+import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsFragment
+import com.fibelatti.pinboard.features.notes.presentation.NoteListFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostAddFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostDetailFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
@@ -97,8 +102,10 @@ class MainActivity :
                 is PostDetailContent -> showPostDetail()
                 is SearchContent -> showSearch()
                 is AddPostContent -> showAddPost()
-                is TagListContent -> showTags()
                 is EditPostContent -> showEditPost()
+                is TagListContent -> showTags()
+                is NoteListContent -> showNotes()
+                is NoteDetailContent -> showNoteDetail()
             }.exhaustive
         }
     }
@@ -161,7 +168,45 @@ class MainActivity :
             inTransaction {
                 setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
                 add(R.id.fragmentHost, createFragment<TagsFragment>(), TagsFragment.TAG)
-                addToBackStack(PostAddFragment.TAG)
+                addToBackStack(TagsFragment.TAG)
+            }
+        }
+    }
+
+    private fun showNotes() {
+        if (supportFragmentManager.findFragmentByTag(NoteListFragment.TAG) == null) {
+            inTransaction {
+                setCustomAnimations(
+                    R.anim.slide_right_in,
+                    R.anim.slide_left_out,
+                    R.anim.slide_left_in,
+                    R.anim.slide_right_out
+                )
+                add(R.id.fragmentHost, createFragment<NoteListFragment>(), NoteListFragment.TAG)
+                addToBackStack(NoteListFragment.TAG)
+            }
+        } else {
+            for (fragment in supportFragmentManager.fragments.reversed()) {
+                if (fragment.tag != NoteListFragment.TAG) {
+                    supportFragmentManager.popBackStack()
+                } else {
+                    break
+                }
+            }
+        }
+    }
+
+    private fun showNoteDetail() {
+        if (supportFragmentManager.findFragmentByTag(NoteDetailsFragment.TAG) == null) {
+            inTransaction {
+                setCustomAnimations(
+                    R.anim.slide_right_in,
+                    R.anim.slide_left_out,
+                    R.anim.slide_left_in,
+                    R.anim.slide_right_out
+                )
+                add(R.id.fragmentHost, createFragment<NoteDetailsFragment>(), NoteDetailsFragment.TAG)
+                addToBackStack(NoteDetailsFragment.TAG)
             }
         }
     }
@@ -212,6 +257,10 @@ class MainActivity :
 
     override fun onTagsClicked() {
         appStateViewModel.runAction(ViewTags)
+    }
+
+    override fun onNotesClicked() {
+        appStateViewModel.runAction(ViewNotes)
     }
 
     override fun onLogoutClicked() {

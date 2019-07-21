@@ -10,6 +10,10 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.notes.data.NotesApi
 import com.fibelatti.pinboard.features.notes.data.NotesDataSource
 import com.fibelatti.pinboard.features.notes.domain.NotesRepository
+import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsFragment
+import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsViewModel
+import com.fibelatti.pinboard.features.notes.presentation.NoteListFragment
+import com.fibelatti.pinboard.features.notes.presentation.NoteListViewModel
 import com.fibelatti.pinboard.features.posts.data.PostsApi
 import com.fibelatti.pinboard.features.posts.data.PostsDataSource
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
@@ -130,5 +134,25 @@ abstract class FeatureModule {
     // region Notes
     @Binds
     abstract fun notesRepository(notesDataSource: NotesDataSource): NotesRepository
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(NoteListViewModel::class)
+    abstract fun noteListViewModel(noteListViewModel: NoteListViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @FragmentKey(NoteListFragment::class)
+    abstract fun noteListFragment(noteListFragment: NoteListFragment): Fragment
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(NoteDetailsViewModel::class)
+    abstract fun noteDetailsViewModel(noteDetailsViewModel: NoteDetailsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @FragmentKey(NoteDetailsFragment::class)
+    abstract fun noteDetailsFragment(noteDetailsFragment: NoteDetailsFragment): Fragment
     // endregion
 }
