@@ -54,6 +54,8 @@ object MockDataProvider {
     val mockTagsRequest = mockTagsString.joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST)
 
     const val mockTitle = "All"
+
+    const val mockNoteId = "some-id"
     // endregion
 
     // region Data classes
