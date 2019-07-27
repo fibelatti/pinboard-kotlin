@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
     tools:showIn="@layout/fragment_add_post">
 
     <com.google.android.material.textfield.TextInputLayout
@@ -46,14 +47,11 @@
             android:textSize="@dimen/text_size_small" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <EditText
-        android:id="@+id/editTextDescription"
+    <include
+        android:id="@+id/layoutDescription"
+        layout="@layout/layout_add_description"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:hint="@string/posts_add_url_description"
-        android:inputType="textMultiLine"
-        android:textSize="@dimen/text_size_small"
-        android:visibility="gone"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@+id/checkboxPrivate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -69,7 +67,7 @@
         android:text="@string/posts_add_private"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/layoutDescription" />
 
     <CheckBox
         android:id="@+id/checkboxReadLater"
@@ -82,6 +80,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/checkboxPrivate"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/layoutDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

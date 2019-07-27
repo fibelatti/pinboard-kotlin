@@ -15,6 +15,7 @@ import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.onKeyboardSubmit
+import com.fibelatti.core.extension.setOnClickListener
 import com.fibelatti.core.extension.showError
 import com.fibelatti.core.extension.textAsString
 import com.fibelatti.core.extension.visible
@@ -28,6 +29,7 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.mainActivity
 import kotlinx.android.synthetic.main.fragment_add_post.*
+import kotlinx.android.synthetic.main.layout_add_description.*
 import kotlinx.android.synthetic.main.layout_add_post.*
 import kotlinx.android.synthetic.main.layout_add_tags.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
@@ -99,6 +101,42 @@ class PostAddFragment @Inject constructor(
         )
     }
 
+    private fun setupDescriptionLayouts() {
+        buttonEditDescription.setText(
+            if (editTextDescription.textAsString().isBlank()) {
+                R.string.posts_add_url_add_description
+            } else {
+                R.string.posts_add_url_edit_description
+            }
+        )
+        buttonEditDescription.setOnClickListener { focusOnDescription() }
+    }
+
+    private fun focusOnDescription() {
+        textInputLayoutUrl.gone()
+        textInputLayoutTitle.gone()
+        textInputUrlDescription.visible()
+        checkboxPrivate.gone()
+        checkboxReadLater.gone()
+        layoutAddTags.gone()
+
+        buttonEditDescription.setOnClickListener(R.string.hint_done) { dismissDescriptionFocus() }
+        hideFab()
+    }
+
+    private fun dismissDescriptionFocus() {
+        textInputLayoutUrl.visible()
+        textInputLayoutTitle.visible()
+        textInputUrlDescription.gone()
+        checkboxPrivate.visible()
+        checkboxReadLater.visible()
+        layoutAddTags.visible()
+
+        setupDescriptionLayouts()
+        showFab()
+        delayedHideKeyboard()
+    }
+
     private fun setupTagLayouts() {
         buttonEditTags.setOnClickListener { focusOnTags() }
         buttonTagsDone.setOnClickListener { focusOnPost() }
@@ -128,6 +166,7 @@ class PostAddFragment @Inject constructor(
         textInputLayoutTags.visible()
         buttonTagsDone.visible()
         recyclerViewSuggestedTags.visible()
+        hideFab()
     }
 
     private fun focusOnPost() {
@@ -140,6 +179,11 @@ class PostAddFragment @Inject constructor(
         buttonTagsDone.gone()
         recyclerViewSuggestedTags.gone()
 
+        showFab()
+        delayedHideKeyboard()
+    }
+
+    private fun delayedHideKeyboard() {
         // Dirty hack because of animateLayoutChanges:
         // Without this the underlying fragment becomes visible for a split second where the keyboard
         // was because this fragment is still resizing
@@ -199,6 +243,7 @@ class PostAddFragment @Inject constructor(
             editTextUrl.setText(url)
             editTextTitle.setText(title)
             editTextDescription.setText(description)
+            setupDescriptionLayouts()
             checkboxPrivate.isChecked = private
             checkboxReadLater.isChecked = readLater
 
@@ -227,5 +272,9 @@ class PostAddFragment @Inject constructor(
 
     private fun showFab() {
         mainActivity?.updateViews { _, fab -> fab.show() }
+    }
+
+    private fun hideFab() {
+        mainActivity?.updateViews { _, fab -> fab.hide() }
     }
 }

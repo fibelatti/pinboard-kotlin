@@ -13,6 +13,7 @@
     <string name="hint_dismiss">Dismiss</string>
     <string name="hint_reset">Reset</string>
     <string name="hint_help">Help</string>
+    <string name="hint_done">Done</string>
 
     <string name="alert_confirm_deletion">Are you sure you want to remove this link?</string>
 
@@ -89,6 +90,8 @@
     <string name="posts_add_url">URL</string>
     <string name="posts_add_url_title">Title</string>
     <string name="posts_add_url_description">Description</string>
+    <string name="posts_add_url_add_description">Add description</string>
+    <string name="posts_add_url_edit_description">Edit description</string>
     <string name="posts_add_private">Private</string>
     <string name="posts_add_read_later">Read later</string>
 
