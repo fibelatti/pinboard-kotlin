@@ -81,12 +81,12 @@
 
             <TextView
                 android:id="@+id/menuItemShare"
-                style="@style/AppTheme.TextButton.Menu"
+                style="@style/AppTheme.TextButton.Menu.Small"
                 android:text="@string/about_share" />
 
             <TextView
                 android:id="@+id/menuItemRate"
-                style="@style/AppTheme.TextButton.Menu"
+                style="@style/AppTheme.TextButton.Menu.Small"
                 android:text="@string/about_rate" />
 
             <TextView
@@ -94,6 +94,7 @@
                 style="@style/AppTheme.Text.Detail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
                 android:layout_marginTop="@dimen/margin_small"
                 android:text="@string/about_developer" />
 
@@ -102,6 +103,7 @@
                 style="@style/AppTheme.Text.Detail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
                 android:layout_marginBottom="@dimen/margin_regular"
                 android:text="@string/about_version" />
 

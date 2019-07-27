@@ -86,6 +86,10 @@
         <item name="android:gravity">start|center_vertical</item>
     </style>
 
+    <style name="AppTheme.TextButton.Menu.Small">
+        <item name="android:textSize">@dimen/text_size_xsmall</item>
+    </style>
+
     <style name="AppTheme.ClickableIcon">
         <item name="android:layout_width">@dimen/clickable_area</item>
         <item name="android:layout_height">@dimen/clickable_area</item>
