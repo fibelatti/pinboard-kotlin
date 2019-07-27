@@ -4,13 +4,13 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.core.test.extension.callSuspend
 import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
 import com.fibelatti.pinboard.TestRateLimitRunner
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
@@ -31,7 +31,7 @@ class TagsDataSourceTest {
                 .willAnswer { throw Exception() }
 
             // WHEN
-            val result = callSuspend { dataSource.getAllTags() }
+            val result = runBlocking { dataSource.getAllTags() }
 
             // THEN
             result.shouldBeAnInstanceOf<Failure>()
@@ -45,7 +45,7 @@ class TagsDataSourceTest {
                 .willReturn(mapOf("tag" to "a"))
 
             // WHEN
-            val result = callSuspend { dataSource.getAllTags() }
+            val result = runBlocking { dataSource.getAllTags() }
 
             // THEN
             result.shouldBeAnInstanceOf<Failure>()
@@ -59,7 +59,7 @@ class TagsDataSourceTest {
                 .willReturn(emptyMap())
 
             // WHEN
-            val result = callSuspend { dataSource.getAllTags() }
+            val result = runBlocking { dataSource.getAllTags() }
 
             // THEN
             result.shouldBeAnInstanceOf<Success<*>>()
@@ -73,7 +73,7 @@ class TagsDataSourceTest {
                 .willReturn(mapOf("tag" to "1"))
 
             // WHEN
-            val result = callSuspend { dataSource.getAllTags() }
+            val result = runBlocking { dataSource.getAllTags() }
 
             // THEN
             result.shouldBeAnInstanceOf<Success<*>>()

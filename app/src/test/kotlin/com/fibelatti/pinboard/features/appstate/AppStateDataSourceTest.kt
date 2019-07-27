@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.appstate
 import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
 import com.fibelatti.core.functional.SingleRunner
 import com.fibelatti.core.provider.ResourceProvider
+import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.safeAny
 import com.fibelatti.pinboard.InstantExecutorExtension
@@ -86,56 +87,58 @@ internal class AppStateDataSourceTest {
         @ParameterizedTest
         @MethodSource("testCases")
         fun `WHEN runAction is called THEN expected action handler is called`(testCase: Pair<Action, ExpectedHandler>) {
-            // GIVEN
-            given(mockNavigationActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
-            given(mockPostActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
-            given(mockSearchActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
-            given(mockTagActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
-            given(mockNoteActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
+            runBlocking {
+                // GIVEN
+                given(mockNavigationActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
+                given(mockPostActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
+                given(mockSearchActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
+                given(mockTagActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
+                given(mockNoteActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
 
-            val (action, expectedHandler) = testCase
+                val (action, expectedHandler) = testCase
 
-            // WHEN
-            runBlocking { appStateDataSource.runAction(action) }
+                // WHEN
+                appStateDataSource.runAction(action)
 
-            // THEN
-            when (expectedHandler) {
-                ExpectedHandler.NAVIGATION -> {
-                    if (action is NavigationAction) {
-                        verify(mockNavigationActionHandler).runAction(action, expectedInitialValue)
-                    } else {
-                        fail { "Unexpected Action received" }
+                // THEN
+                when (expectedHandler) {
+                    ExpectedHandler.NAVIGATION -> {
+                        if (action is NavigationAction) {
+                            verify(mockNavigationActionHandler).runAction(action, expectedInitialValue)
+                        } else {
+                            fail { "Unexpected Action received" }
+                        }
                     }
-                }
-                ExpectedHandler.POST -> {
-                    if (action is PostAction) {
-                        verify(mockPostActionHandler).runAction(action, expectedInitialValue)
-                    } else {
-                        fail { "Unexpected Action received" }
+                    ExpectedHandler.POST -> {
+                        if (action is PostAction) {
+                            verify(mockPostActionHandler).runAction(action, expectedInitialValue)
+                        } else {
+                            fail { "Unexpected Action received" }
+                        }
                     }
-                }
-                ExpectedHandler.SEARCH -> {
-                    if (action is SearchAction) {
-                        verify(mockSearchActionHandler).runAction(action, expectedInitialValue)
-                    } else {
-                        fail { "Unexpected Action received" }
+                    ExpectedHandler.SEARCH -> {
+                        if (action is SearchAction) {
+                            verify(mockSearchActionHandler).runAction(action, expectedInitialValue)
+                        } else {
+                            fail { "Unexpected Action received" }
+                        }
                     }
-                }
-                ExpectedHandler.TAG -> {
-                    if (action is TagAction) {
-                        verify(mockTagActionHandler).runAction(action, expectedInitialValue)
-                    } else {
-                        fail { "Unexpected Action received" }
+                    ExpectedHandler.TAG -> {
+                        if (action is TagAction) {
+                            verify(mockTagActionHandler).runAction(action, expectedInitialValue)
+                        } else {
+                            fail { "Unexpected Action received" }
+                        }
                     }
-                }
-                ExpectedHandler.NOTE -> {
-                    if (action is NoteAction) {
-                        verify(mockNoteActionHandler).runAction(action, expectedInitialValue)
-                    } else {
-                        fail { "Unexpected Action received" }
+                    ExpectedHandler.NOTE -> {
+                        if (action is NoteAction) {
+                            verify(mockNoteActionHandler).runAction(action, expectedInitialValue)
+                        } else {
+                            fail { "Unexpected Action received" }
+                        }
                     }
-                }
-            }.let { } // to make it exhaustive
+                }.let { } // to make it exhaustive
+            }
         }
 
         fun testCases(): List<Pair<Action, ExpectedHandler>> =
@@ -199,7 +202,7 @@ internal class AppStateDataSourceTest {
         fun `WHEN NavigationActionHandler return the same content THEN value is never updated`() {
             // GIVEN
             val mockAction = mock<NavigationAction>()
-            given(mockNavigationActionHandler.runAction(mockAction, expectedInitialValue))
+            givenSuspend { mockNavigationActionHandler.runAction(mockAction, expectedInitialValue) }
                 .willReturn(expectedInitialValue)
 
             // WHEN
@@ -213,7 +216,7 @@ internal class AppStateDataSourceTest {
         fun `WHEN PostActionHandler return the same content THEN value is never updated`() {
             // GIVEN
             val mockAction = mock<PostAction>()
-            given(mockPostActionHandler.runAction(mockAction, expectedInitialValue))
+            givenSuspend { mockPostActionHandler.runAction(mockAction, expectedInitialValue) }
                 .willReturn(expectedInitialValue)
 
             // WHEN
@@ -227,7 +230,7 @@ internal class AppStateDataSourceTest {
         fun `WHEN SearchActionHandler return the same content THEN value is never updated`() {
             // GIVEN
             val mockAction = mock<SearchAction>()
-            given(mockSearchActionHandler.runAction(mockAction, expectedInitialValue))
+            givenSuspend { mockSearchActionHandler.runAction(mockAction, expectedInitialValue) }
                 .willReturn(expectedInitialValue)
 
             // WHEN
@@ -241,7 +244,7 @@ internal class AppStateDataSourceTest {
         fun `WHEN TagActionHandler return the same content THEN value is never updated`() {
             // GIVEN
             val mockAction = mock<TagAction>()
-            given(mockTagActionHandler.runAction(mockAction, expectedInitialValue))
+            givenSuspend { mockTagActionHandler.runAction(mockAction, expectedInitialValue) }
                 .willReturn(expectedInitialValue)
 
             // WHEN

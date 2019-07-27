@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
 import com.fibelatti.core.functional.Success
-import com.fibelatti.core.test.extension.callSuspend
 import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.verifySuspend
@@ -12,6 +11,7 @@ import com.fibelatti.pinboard.features.appstate.OldestFirst
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -63,7 +63,7 @@ class GetAllPostsTest {
             val params = GetPostParams(sorting = sorting)
 
             // WHEN
-            callSuspend { getAllPosts(params) }
+            runBlocking { getAllPosts(params) }
 
             // THEN
             verifySuspend(mockPostsRepository) {
@@ -91,7 +91,7 @@ class GetAllPostsTest {
         val params = GetPostParams(searchTerm = mockUrlValid)
 
         // WHEN
-        callSuspend { getAllPosts(params) }
+        runBlocking { getAllPosts(params) }
 
         // THEN
         verifySuspend(mockPostsRepository) {
@@ -116,7 +116,7 @@ class GetAllPostsTest {
         val params = GetPostParams(tagParams = GetPostParams.Tags.None)
 
         // WHEN
-        callSuspend { getAllPosts(params) }
+        runBlocking { getAllPosts(params) }
 
         // THEN
         verifySuspend(mockPostsRepository) {
@@ -141,7 +141,7 @@ class GetAllPostsTest {
         val params = GetPostParams(tagParams = GetPostParams.Tags.Untagged)
 
         // WHEN
-        callSuspend { getAllPosts(params) }
+        runBlocking { getAllPosts(params) }
 
         // THEN
         verifySuspend(mockPostsRepository) {
@@ -166,7 +166,7 @@ class GetAllPostsTest {
         val params = GetPostParams(tagParams = GetPostParams.Tags.Tagged(mockTags))
 
         // WHEN
-        callSuspend { getAllPosts(params) }
+        runBlocking { getAllPosts(params) }
 
         // THEN
         verifySuspend(mockPostsRepository) {
@@ -191,7 +191,7 @@ class GetAllPostsTest {
         val params = GetPostParams(visibilityParams = GetPostParams.Visibility.None)
 
         // WHEN
-        callSuspend { getAllPosts(params) }
+        runBlocking { getAllPosts(params) }
 
         // THEN
         verifySuspend(mockPostsRepository) {
@@ -216,7 +216,7 @@ class GetAllPostsTest {
         val params = GetPostParams(visibilityParams = GetPostParams.Visibility.Public)
 
         // WHEN
-        callSuspend { getAllPosts(params) }
+        runBlocking { getAllPosts(params) }
 
         // THEN
         verifySuspend(mockPostsRepository) {
@@ -241,7 +241,7 @@ class GetAllPostsTest {
         val params = GetPostParams(visibilityParams = GetPostParams.Visibility.Private)
 
         // WHEN
-        callSuspend { getAllPosts(params) }
+        runBlocking { getAllPosts(params) }
 
         // THEN
         verifySuspend(mockPostsRepository) {
@@ -266,7 +266,7 @@ class GetAllPostsTest {
         val params = GetPostParams(readLater = true)
 
         // WHEN
-        callSuspend { getAllPosts(params) }
+        runBlocking { getAllPosts(params) }
 
         // THEN
         verifySuspend(mockPostsRepository) {
@@ -291,7 +291,7 @@ class GetAllPostsTest {
         val params = GetPostParams(readLater = false)
 
         // WHEN
-        callSuspend { getAllPosts(params) }
+        runBlocking { getAllPosts(params) }
 
         // THEN
         verifySuspend(mockPostsRepository) {
@@ -316,7 +316,7 @@ class GetAllPostsTest {
         val params = GetPostParams(limit = 100)
 
         // WHEN
-        callSuspend { getAllPosts(params) }
+        runBlocking { getAllPosts(params) }
 
         // THEN
         verifySuspend(mockPostsRepository) {
@@ -341,7 +341,7 @@ class GetAllPostsTest {
         val params = GetPostParams(offset = 100)
 
         // WHEN
-        callSuspend { getAllPosts(params) }
+        runBlocking { getAllPosts(params) }
 
         // THEN
         verifySuspend(mockPostsRepository) {

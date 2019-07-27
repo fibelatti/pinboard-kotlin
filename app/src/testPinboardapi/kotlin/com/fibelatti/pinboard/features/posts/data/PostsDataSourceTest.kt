@@ -5,7 +5,6 @@ import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.functional.getOrThrow
-import com.fibelatti.core.test.extension.callSuspend
 import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.safeAny
@@ -98,7 +97,7 @@ class PostsDataSourceTest {
                 .willAnswer { throw Exception() }
 
             // WHEN
-            val result = callSuspend { dataSource.update() }
+            val result = runBlocking { dataSource.update() }
 
             // THEN
             result.shouldBeAnInstanceOf<Failure>()
@@ -112,7 +111,7 @@ class PostsDataSourceTest {
                 .willReturn(UpdateDto(mockTime))
 
             // WHEN
-            val result = callSuspend { dataSource.update() }
+            val result = runBlocking { dataSource.update() }
 
             // THEN
             result.shouldBeAnInstanceOf<Success<String>>()
@@ -144,7 +143,7 @@ class PostsDataSourceTest {
             }.willAnswer { throw Exception() }
 
             // WHEN
-            val result = callSuspend {
+            val result = runBlocking {
                 dataSource.add(
                     url = mockUrlValid,
                     title = mockUrlTitle,
@@ -175,7 +174,7 @@ class PostsDataSourceTest {
             }.willReturn(createGenericResponse(ApiResultCodes.MISSING_URL))
 
             // WHEN
-            val result = callSuspend {
+            val result = runBlocking {
                 dataSource.add(
                     url = mockUrlValid,
                     title = mockUrlTitle,
@@ -206,7 +205,7 @@ class PostsDataSourceTest {
             }.willReturn(createGenericResponse(ApiResultCodes.DONE))
 
             // WHEN
-            val result = callSuspend {
+            val result = runBlocking {
                 dataSource.add(
                     url = mockUrlValid,
                     title = mockUrlTitle,
@@ -248,7 +247,7 @@ class PostsDataSourceTest {
             }.willReturn(createGenericResponse(ApiResultCodes.DONE))
 
             // WHEN
-            val result = callSuspend {
+            val result = runBlocking {
                 dataSource.add(
                     mockUrlValid,
                     mockUrlTitle,
@@ -301,7 +300,7 @@ class PostsDataSourceTest {
                 .willAnswer { throw Exception() }
 
             // WHEN
-            val result = callSuspend { dataSource.delete(mockUrlValid) }
+            val result = runBlocking { dataSource.delete(mockUrlValid) }
 
             // THEN
             result.shouldBeAnInstanceOf<Failure>()
@@ -315,7 +314,7 @@ class PostsDataSourceTest {
                 .willReturn(createGenericResponse(ApiResultCodes.MISSING_URL))
 
             // WHEN
-            val result = callSuspend { dataSource.delete(mockUrlValid) }
+            val result = runBlocking { dataSource.delete(mockUrlValid) }
 
             // THEN
             result.shouldBeAnInstanceOf<Failure>()
@@ -329,7 +328,7 @@ class PostsDataSourceTest {
                 .willReturn(createGenericResponse(ApiResultCodes.DONE))
 
             // WHEN
-            val result = callSuspend { dataSource.delete(mockUrlValid) }
+            val result = runBlocking { dataSource.delete(mockUrlValid) }
 
             // THEN
             result.shouldBeAnInstanceOf<Success<Unit>>()
@@ -1096,7 +1095,7 @@ class PostsDataSourceTest {
                 .willAnswer { throw Exception() }
 
             // WHEN
-            val result = callSuspend { dataSource.getPost(mockUrlValid) }
+            val result = runBlocking { dataSource.getPost(mockUrlValid) }
 
             // THEN
             result.shouldBeAnInstanceOf<Failure>()
@@ -1110,7 +1109,7 @@ class PostsDataSourceTest {
                 .willReturn(createGetPostDto(posts = emptyList()))
 
             // WHEN
-            val result = callSuspend { dataSource.getPost(mockUrlValid) }
+            val result = runBlocking { dataSource.getPost(mockUrlValid) }
 
             // THEN
             result.shouldBeAnInstanceOf<Failure>()
@@ -1127,7 +1126,7 @@ class PostsDataSourceTest {
                 .willReturn(post)
 
             // WHEN
-            val result = callSuspend { dataSource.getPost(mockUrlValid) }
+            val result = runBlocking { dataSource.getPost(mockUrlValid) }
 
             // THEN
             result.shouldBeAnInstanceOf<Success<Post>>()
@@ -1146,7 +1145,7 @@ class PostsDataSourceTest {
 
             // WHEN
 
-            val result = callSuspend { dataSource.searchExistingPostTag(mockTagString1) }
+            val result = runBlocking { dataSource.searchExistingPostTag(mockTagString1) }
 
             // THEN
             result.shouldBeAnInstanceOf<Failure>()
@@ -1170,7 +1169,7 @@ class PostsDataSourceTest {
 
             // WHEN
 
-            val result = callSuspend { dataSource.searchExistingPostTag(commonPrefix) }
+            val result = runBlocking { dataSource.searchExistingPostTag(commonPrefix) }
 
             // THEN
             result.getOrNull() shouldBe listOf(mockTagString1, mockTagString2, mockTagString3)
@@ -1187,7 +1186,7 @@ class PostsDataSourceTest {
                 .willAnswer { throw Exception() }
 
             // WHEN
-            val result = callSuspend { dataSource.getSuggestedTagsForUrl(mockUrlValid) }
+            val result = runBlocking { dataSource.getSuggestedTagsForUrl(mockUrlValid) }
 
             // THEN
             result.shouldBeAnInstanceOf<Failure>()
@@ -1203,7 +1202,7 @@ class PostsDataSourceTest {
                 .willReturn(mockSuggestedTags)
 
             // WHEN
-            val result = callSuspend { dataSource.getSuggestedTagsForUrl(mockUrlValid) }
+            val result = runBlocking { dataSource.getSuggestedTagsForUrl(mockUrlValid) }
 
             // THEN
             result.shouldBeAnInstanceOf<Success<SuggestedTags>>()

@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
 import com.fibelatti.core.functional.Success
-import com.fibelatti.core.test.extension.callSuspend
 import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.verifySuspend
@@ -10,6 +9,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_RECENT_QUANTITY
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.any
@@ -49,7 +49,7 @@ class GetRecentPostsTest {
         val params = GetPostParams(searchTerm = mockUrlValid)
 
         // WHEN
-        callSuspend { getRecentPosts(params) }
+        runBlocking { getRecentPosts(params) }
 
         // THEN
         verifySuspend(mockPostsRepository) {
@@ -74,7 +74,7 @@ class GetRecentPostsTest {
         val params = GetPostParams(tagParams = GetPostParams.Tags.None)
 
         // WHEN
-        callSuspend { getRecentPosts(params) }
+        runBlocking { getRecentPosts(params) }
 
         // THEN
         verifySuspend(mockPostsRepository) {
@@ -99,7 +99,7 @@ class GetRecentPostsTest {
         val params = GetPostParams(tagParams = GetPostParams.Tags.Untagged)
 
         // WHEN
-        callSuspend { getRecentPosts(params) }
+        runBlocking { getRecentPosts(params) }
 
         // THEN
         verifySuspend(mockPostsRepository) {
@@ -124,7 +124,7 @@ class GetRecentPostsTest {
         val params = GetPostParams(tagParams = GetPostParams.Tags.Tagged(mockTags))
 
         // WHEN
-        callSuspend { getRecentPosts(params) }
+        runBlocking { getRecentPosts(params) }
 
         // THEN
         verifySuspend(mockPostsRepository) {

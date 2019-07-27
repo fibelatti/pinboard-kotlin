@@ -4,9 +4,9 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
-import com.fibelatti.core.test.extension.callSuspend
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.fail
 import org.junit.jupiter.params.ParameterizedTest
@@ -24,7 +24,7 @@ internal class ExtractUrlTest {
         val (input, expectedResult) = scenario
 
         // WHEN
-        val result = callSuspend { extractUrl(input) }
+        val result = runBlocking { extractUrl(input) }
 
         // THEN
         if (result is Success) {

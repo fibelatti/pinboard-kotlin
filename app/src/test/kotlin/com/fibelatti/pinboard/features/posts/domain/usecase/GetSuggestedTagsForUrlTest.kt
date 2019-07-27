@@ -4,7 +4,6 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.core.test.extension.callSuspend
 import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBe
@@ -14,6 +13,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 
 class GetSuggestedTagsForUrlTest {
@@ -33,7 +33,7 @@ class GetSuggestedTagsForUrlTest {
             .willReturn(Failure(InvalidRequestException()))
 
         // WHEN
-        val result = callSuspend { getSuggestedTagsForUrl(mockUrlValid) }
+        val result = runBlocking { getSuggestedTagsForUrl(mockUrlValid) }
 
         // THEN
         result.shouldBeAnInstanceOf<Failure>()
@@ -49,7 +49,7 @@ class GetSuggestedTagsForUrlTest {
             .willReturn(Failure(ApiException()))
 
         // WHEN
-        val result = callSuspend { getSuggestedTagsForUrl(mockUrlValid) }
+        val result = runBlocking { getSuggestedTagsForUrl(mockUrlValid) }
 
         // THEN
         result.shouldBeAnInstanceOf<Failure>()
@@ -66,7 +66,7 @@ class GetSuggestedTagsForUrlTest {
             .willReturn(Success(response))
 
         // WHEN
-        val result = callSuspend { getSuggestedTagsForUrl(mockUrlValid) }
+        val result = runBlocking { getSuggestedTagsForUrl(mockUrlValid) }
 
         // THEN
         result.getOrNull() shouldBe response

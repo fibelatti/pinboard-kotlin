@@ -3,7 +3,6 @@ package com.fibelatti.pinboard.features.notes.data
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.core.test.extension.callSuspend
 import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBe
@@ -14,6 +13,7 @@ import com.fibelatti.pinboard.features.notes.data.model.NoteDto
 import com.fibelatti.pinboard.features.notes.data.model.NoteDtoMapper
 import com.fibelatti.pinboard.features.notes.data.model.NoteListDto
 import com.fibelatti.pinboard.features.notes.domain.model.Note
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
@@ -36,7 +36,7 @@ internal class NotesDataSourceTest {
                 .willAnswer { throw Exception() }
 
             // WHEN
-            val result = callSuspend { dataSource.getAllNotes() }
+            val result = runBlocking { dataSource.getAllNotes() }
 
             // THEN
             result.shouldBeAnInstanceOf<Failure>()
@@ -58,7 +58,7 @@ internal class NotesDataSourceTest {
                 .willReturn(mockNotes)
 
             // WHEN
-            val result = callSuspend { dataSource.getAllNotes() }
+            val result = runBlocking { dataSource.getAllNotes() }
 
             // THEN
             result.getOrNull() shouldBe mockNotes
@@ -75,7 +75,7 @@ internal class NotesDataSourceTest {
                 .willAnswer { throw Exception() }
 
             // WHEN
-            val result = callSuspend { dataSource.getNote(mockNoteId) }
+            val result = runBlocking { dataSource.getNote(mockNoteId) }
 
             // THEN
             result.shouldBeAnInstanceOf<Failure>()
@@ -94,7 +94,7 @@ internal class NotesDataSourceTest {
                 .willReturn(mockNote)
 
             // WHEN
-            val result = callSuspend { dataSource.getNote(mockNoteId) }
+            val result = runBlocking { dataSource.getNote(mockNoteId) }
 
             // THEN
             result.getOrNull() shouldBe mockNote

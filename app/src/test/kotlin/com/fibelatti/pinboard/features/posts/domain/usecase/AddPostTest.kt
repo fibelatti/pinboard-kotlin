@@ -4,7 +4,6 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.core.test.extension.callSuspend
 import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBe
@@ -16,6 +15,7 @@ import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.anyBoolean
 import org.mockito.Mockito.anyList
@@ -41,7 +41,7 @@ class AddPostTest {
             .willReturn(Failure(InvalidRequestException()))
 
         // WHEN
-        val result = callSuspend { addPost(params) }
+        val result = runBlocking { addPost(params) }
 
         // THEN
         result.shouldBeAnInstanceOf<Failure>()
@@ -75,7 +75,7 @@ class AddPostTest {
         }.willReturn(Failure(ApiException()))
 
         // WHEN
-        val result = callSuspend { addPost(AddPost.Params(mockUrlValid, mockUrlTitle)) }
+        val result = runBlocking { addPost(AddPost.Params(mockUrlValid, mockUrlTitle)) }
 
         // THEN
         result.shouldBeAnInstanceOf<Failure>()
@@ -103,7 +103,7 @@ class AddPostTest {
             .willReturn(Failure(ApiException()))
 
         // WHEN
-        val result = callSuspend { addPost(AddPost.Params(mockUrlValid, mockUrlTitle)) }
+        val result = runBlocking { addPost(AddPost.Params(mockUrlValid, mockUrlTitle)) }
 
         // THEN
         result.shouldBeAnInstanceOf<Failure>()
@@ -130,7 +130,7 @@ class AddPostTest {
             .willReturn(Success(mockPost))
 
         // WHEN
-        val result = callSuspend { addPost(AddPost.Params(mockUrlValid, mockUrlTitle)) }
+        val result = runBlocking { addPost(AddPost.Params(mockUrlValid, mockUrlTitle)) }
 
         // THEN
         result.shouldBeAnInstanceOf<Success<Post>>()

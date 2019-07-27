@@ -4,10 +4,10 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.core.test.extension.callSuspend
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
 import com.fibelatti.pinboard.MockDataProvider
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -34,7 +34,7 @@ class ValidateUrlTest {
     @MethodSource("validUrls")
     fun `GIVEN that a valid url is received WHEN validateUrl is called THEN Success is returned`(url: String) {
         // WHEN
-        val result = callSuspend { validateUrl(url) }
+        val result = runBlocking { validateUrl(url) }
 
         // THEN
         result.shouldBeAnInstanceOf<Success<Unit>>()
@@ -45,7 +45,7 @@ class ValidateUrlTest {
     @MethodSource("invalidUrls")
     fun `GIVEN that an invalid url is received WHEN validateUrl is called THEN Failure is returned`(invalidUrl: String) {
         // WHEN
-        val result = callSuspend { validateUrl(invalidUrl) }
+        val result = runBlocking { validateUrl(invalidUrl) }
 
         // THEN
         result.shouldBeAnInstanceOf<Failure>()

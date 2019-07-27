@@ -2,7 +2,6 @@ package com.fibelatti.pinboard.features.user.domain
 
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
-import com.fibelatti.core.test.extension.callSuspend
 import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
@@ -10,6 +9,7 @@ import com.fibelatti.core.test.extension.verifySuspend
 import com.fibelatti.pinboard.MockDataProvider.mockApiToken
 import com.fibelatti.pinboard.MockDataProvider.mockTime
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.never
 
@@ -30,7 +30,7 @@ class LoginTest {
             .willReturn(Failure(Exception()))
 
         // WHEN
-        val result = callSuspend { login(Login.Params(mockApiToken)) }
+        val result = runBlocking { login(Login.Params(mockApiToken)) }
 
         // THEN
         result.shouldBeAnInstanceOf<Failure>()
@@ -45,7 +45,7 @@ class LoginTest {
             .willReturn(Success(mockTime))
 
         // WHEN
-        val result = callSuspend { login(Login.Params(mockApiToken)) }
+        val result = runBlocking { login(Login.Params(mockApiToken)) }
 
         // THEN
         result.shouldBeAnInstanceOf<Success<Unit>>()

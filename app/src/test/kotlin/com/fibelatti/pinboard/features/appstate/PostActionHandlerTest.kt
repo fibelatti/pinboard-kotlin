@@ -315,7 +315,6 @@ internal class PostActionHandlerTest {
                 postActionHandler.runAction(SetNextPostPage(2 to mockNewList), currentContent)
             }
 
-
             // THEN
             result shouldBe PostListContent(
                 category = All,
