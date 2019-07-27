@@ -144,8 +144,6 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun showErrorLayout(post: Post) {
-        layoutRootFileViewer.gone()
-        layoutScrollViewWeb.gone()
         layoutRootUrlError.visible()
 
         errorViewUrlTitle.text = post.title
@@ -202,6 +200,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
         override fun onPageFinished(view: WebView?, url: String?) {
             super.onPageFinished(view, url)
             layoutProgressBar?.gone()
+            layoutRootUrlError?.gone()
         }
 
         override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
