@@ -23,7 +23,9 @@
     <include
         layout="@layout/layout_tag_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/margin_regular"
+        android:layout_marginEnd="@dimen/margin_regular" />
 
     <include
         layout="@layout/layout_progress_bar"

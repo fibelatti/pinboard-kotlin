@@ -69,6 +69,8 @@
         android:layout_height="0dp"
         android:layout_below="@+id/textViewSearchTagsTitle"
         android:layout_alignParentBottom="true"
-        android:layout_marginTop="@dimen/margin_xsmall" />
+        android:layout_marginStart="@dimen/margin_regular"
+        android:layout_marginTop="@dimen/margin_xsmall"
+        android:layout_marginEnd="@dimen/margin_regular" />
 
 </RelativeLayout>
