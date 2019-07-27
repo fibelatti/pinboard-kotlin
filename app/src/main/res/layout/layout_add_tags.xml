@@ -6,14 +6,14 @@
     android:layout_height="match_parent"
     android:layout_marginStart="@dimen/margin_regular"
     android:layout_marginEnd="@dimen/margin_regular"
-    android:animateLayoutChanges="true">
+    android:animateLayoutChanges="true"
+    android:paddingTop="@dimen/padding_regular">
 
     <TextView
         android:id="@+id/textViewTagsTitle"
         style="@style/AppTheme.Text.SectionTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/margin_small"
         android:text="@string/posts_add_tags_title"
         app:layout_constraintBottom_toTopOf="@+id/textInputLayoutTags"
         app:layout_constraintEnd_toEndOf="parent"
@@ -27,6 +27,7 @@
         style="@style/AppTheme.InputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_small"
         android:hint="@string/posts_add_tags"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/buttonEditTags"
