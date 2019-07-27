@@ -11,7 +11,7 @@ class NavigationActionHandler @Inject constructor(
     private val connectivityInfoProvider: ConnectivityInfoProvider
 ) : ActionHandler<NavigationAction>() {
 
-    override fun runAction(action: NavigationAction, currentContent: Content): Content {
+    override suspend fun runAction(action: NavigationAction, currentContent: Content): Content {
         return when (action) {
             is NavigateBack -> navigateBack(currentContent)
             is ViewCategory -> viewCategory(action)

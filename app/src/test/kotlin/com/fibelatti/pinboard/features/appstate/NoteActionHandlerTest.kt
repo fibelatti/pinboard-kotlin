@@ -5,6 +5,7 @@ import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.notes.domain.model.Note
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
@@ -35,7 +36,7 @@ internal class NoteActionHandlerTest {
             val content = mock<PostListContent>()
 
             // WHEN
-            val result = noteActionHandler.runAction(RefreshNotes, content)
+            val result = runBlocking { noteActionHandler.runAction(RefreshNotes, content) }
 
             // THEN
             result shouldBe content
@@ -48,7 +49,7 @@ internal class NoteActionHandlerTest {
                 .willReturn(true)
 
             // WHEN
-            val result = noteActionHandler.runAction(RefreshNotes, initialContent)
+            val result = runBlocking { noteActionHandler.runAction(RefreshNotes, initialContent) }
 
             // THEN
             result shouldBe NoteListContent(
@@ -70,7 +71,7 @@ internal class NoteActionHandlerTest {
             val content = mock<PostListContent>()
 
             // WHEN
-            val result = noteActionHandler.runAction(mock<SetNotes>(), content)
+            val result = runBlocking { noteActionHandler.runAction(mock<SetNotes>(), content) }
 
             // THEN
             result shouldBe content
@@ -84,7 +85,9 @@ internal class NoteActionHandlerTest {
 
             // WHEN
             val newNotes: List<Note> = mock()
-            val result = noteActionHandler.runAction(SetNotes(newNotes), initialContent)
+            val result = runBlocking {
+                noteActionHandler.runAction(SetNotes(newNotes), initialContent)
+            }
 
             // THEN
             result shouldBe NoteListContent(
@@ -105,7 +108,7 @@ internal class NoteActionHandlerTest {
             val content = mock<NoteListContent>()
 
             // WHEN
-            val result = noteActionHandler.runAction(mock<SetNote>(), content)
+            val result = runBlocking { noteActionHandler.runAction(mock<SetNote>(), content) }
 
             // THEN
             result shouldBe content
@@ -122,7 +125,7 @@ internal class NoteActionHandlerTest {
                 previousContent = mock()
             )
 
-            val result = noteActionHandler.runAction(SetNote(noteDetails), initialContent)
+            val result = runBlocking { noteActionHandler.runAction(SetNote(noteDetails), initialContent) }
 
             // THEN
             result shouldBe NoteDetailContent(

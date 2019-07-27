@@ -10,7 +10,7 @@ class TagActionHandler @Inject constructor(
     private val connectivityInfoProvider: ConnectivityInfoProvider
 ) : ActionHandler<TagAction>() {
 
-    override fun runAction(action: TagAction, currentContent: Content): Content {
+    override suspend fun runAction(action: TagAction, currentContent: Content): Content {
         return when (action) {
             is RefreshTags -> refresh(currentContent)
             is SetTags -> setTags(action, currentContent)

@@ -8,6 +8,7 @@ import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.mockTitle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -47,7 +48,9 @@ internal class NavigationActionHandlerTest {
             val content = mock<PostListContent>()
 
             // WHEN
-            val result = navigationActionHandler.runAction(NavigateBack, content)
+            val result = runBlocking {
+                navigationActionHandler.runAction(NavigateBack, content)
+            }
 
             // THEN
             result shouldBe content
@@ -60,7 +63,9 @@ internal class NavigationActionHandlerTest {
             given(mockPostDetail.previousContent).willReturn(previousContent)
 
             // WHEN
-            val result = navigationActionHandler.runAction(NavigateBack, mockPostDetail)
+            val result = runBlocking {
+                navigationActionHandler.runAction(NavigateBack, mockPostDetail)
+            }
 
             // THEN
             result shouldBe previousContent
@@ -73,7 +78,9 @@ internal class NavigationActionHandlerTest {
             given(mockSearchView.previousContent).willReturn(previousContent)
 
             // WHEN
-            val result = navigationActionHandler.runAction(NavigateBack, mockSearchView)
+            val result = runBlocking {
+                navigationActionHandler.runAction(NavigateBack, mockSearchView)
+            }
 
             // THEN
             result shouldBe previousContent
@@ -86,7 +93,9 @@ internal class NavigationActionHandlerTest {
             given(mockAddPostContent.previousContent).willReturn(previousContent)
 
             // WHEN
-            val result = navigationActionHandler.runAction(NavigateBack, mockAddPostContent)
+            val result = runBlocking {
+                navigationActionHandler.runAction(NavigateBack, mockAddPostContent)
+            }
 
             // THEN
             result shouldBe previousContent
@@ -113,7 +122,7 @@ internal class NavigationActionHandlerTest {
                 .willReturn(false)
 
             // WHEN
-            val result = navigationActionHandler.runAction(category, mock())
+            val result = runBlocking { navigationActionHandler.runAction(category, mock()) }
 
             // THEN
             result shouldBe PostListContent(
@@ -131,18 +140,55 @@ internal class NavigationActionHandlerTest {
 
         fun testCases(): List<Triple<ViewCategory, Int, String>> =
             mutableListOf<Triple<ViewCategory, Int, String>>().apply {
-                ViewCategory::class.sealedSubclasses.map { it.objectInstance as ViewCategory }.forEach { category ->
-                    when (category) {
-                        All -> add(Triple(category, R.string.posts_title_all, "R.string.posts_title_all"))
-                        Recent -> add(Triple(category, R.string.posts_title_recent, "R.string.posts_title_recent"))
-                        Public -> add(Triple(category, R.string.posts_title_public, "R.string.posts_title_public"))
-                        Private -> add(Triple(category, R.string.posts_title_private, "R.string.posts_title_private"))
-                        Unread -> add(Triple(category, R.string.posts_title_unread, "R.string.posts_title_unread"))
-                        Untagged -> {
-                            add(Triple(category, R.string.posts_title_untagged, "R.string.posts_title_untagged"))
-                        }
-                    }.let { }
-                }
+                ViewCategory::class.sealedSubclasses.map { it.objectInstance as ViewCategory }
+                    .forEach { category ->
+                        when (category) {
+                            All -> add(
+                                Triple(
+                                    category,
+                                    R.string.posts_title_all,
+                                    "R.string.posts_title_all"
+                                )
+                            )
+                            Recent -> add(
+                                Triple(
+                                    category,
+                                    R.string.posts_title_recent,
+                                    "R.string.posts_title_recent"
+                                )
+                            )
+                            Public -> add(
+                                Triple(
+                                    category,
+                                    R.string.posts_title_public,
+                                    "R.string.posts_title_public"
+                                )
+                            )
+                            Private -> add(
+                                Triple(
+                                    category,
+                                    R.string.posts_title_private,
+                                    "R.string.posts_title_private"
+                                )
+                            )
+                            Unread -> add(
+                                Triple(
+                                    category,
+                                    R.string.posts_title_unread,
+                                    "R.string.posts_title_unread"
+                                )
+                            )
+                            Untagged -> {
+                                add(
+                                    Triple(
+                                        category,
+                                        R.string.posts_title_untagged,
+                                        "R.string.posts_title_untagged"
+                                    )
+                                )
+                            }
+                        }.let { }
+                    }
             }
     }
 
@@ -155,7 +201,9 @@ internal class NavigationActionHandlerTest {
             val content = mock<PostDetailContent>()
 
             // WHEN
-            val result = navigationActionHandler.runAction(ViewPost(createPost()), content)
+            val result = runBlocking {
+                navigationActionHandler.runAction(ViewPost(createPost()), content)
+            }
 
             // THEN
             result shouldBe content
@@ -174,7 +222,9 @@ internal class NavigationActionHandlerTest {
             )
 
             // WHEN
-            val result = navigationActionHandler.runAction(ViewPost(createPost()), initialContent)
+            val result = runBlocking {
+                navigationActionHandler.runAction(ViewPost(createPost()), initialContent)
+            }
 
             // THEN
             result shouldBe PostDetailContent(post = createPost(), previousContent = initialContent)
@@ -190,7 +240,7 @@ internal class NavigationActionHandlerTest {
             val content = mock<PostDetailContent>()
 
             // WHEN
-            val result = navigationActionHandler.runAction(ViewSearch, content)
+            val result = runBlocking { navigationActionHandler.runAction(ViewSearch, content) }
 
             // THEN
             result shouldBe content
@@ -209,7 +259,9 @@ internal class NavigationActionHandlerTest {
             )
 
             // WHEN
-            val result = navigationActionHandler.runAction(ViewSearch, initialContent)
+            val result = runBlocking {
+                navigationActionHandler.runAction(ViewSearch, initialContent)
+            }
 
             // THEN
             result shouldBe SearchContent(
@@ -229,7 +281,7 @@ internal class NavigationActionHandlerTest {
             val content = mock<PostDetailContent>()
 
             // WHEN
-            val result = navigationActionHandler.runAction(AddPost, content)
+            val result = runBlocking { navigationActionHandler.runAction(AddPost, content) }
 
             // THEN
             result shouldBe content
@@ -248,7 +300,7 @@ internal class NavigationActionHandlerTest {
             )
 
             // WHEN
-            val result = navigationActionHandler.runAction(AddPost, initialContent)
+            val result = runBlocking { navigationActionHandler.runAction(AddPost, initialContent) }
 
             // THEN
             result shouldBe AddPostContent(previousContent = initialContent)
@@ -264,7 +316,7 @@ internal class NavigationActionHandlerTest {
             val content = mock<PostDetailContent>()
 
             // WHEN
-            val result = navigationActionHandler.runAction(ViewTags, content)
+            val result = runBlocking { navigationActionHandler.runAction(ViewTags, content) }
 
             // THEN
             result shouldBe content
@@ -286,7 +338,9 @@ internal class NavigationActionHandlerTest {
             )
 
             // WHEN
-            val result = navigationActionHandler.runAction(ViewTags, initialContent)
+            val result = runBlocking {
+                navigationActionHandler.runAction(ViewTags, initialContent)
+            }
 
             // THEN
             result shouldBe TagListContent(
@@ -309,7 +363,7 @@ internal class NavigationActionHandlerTest {
             val content = mock<PostDetailContent>()
 
             // WHEN
-            val result = navigationActionHandler.runAction(ViewNotes, content)
+            val result = runBlocking { navigationActionHandler.runAction(ViewNotes, content) }
 
             // THEN
             result shouldBe content
@@ -331,7 +385,9 @@ internal class NavigationActionHandlerTest {
             )
 
             // WHEN
-            val result = navigationActionHandler.runAction(ViewNotes, initialContent)
+            val result = runBlocking {
+                navigationActionHandler.runAction(ViewNotes, initialContent)
+            }
 
             // THEN
             result shouldBe NoteListContent(
@@ -354,7 +410,9 @@ internal class NavigationActionHandlerTest {
             val content = mock<PostDetailContent>()
 
             // WHEN
-            val result = navigationActionHandler.runAction(ViewNote("some-id"), content)
+            val result = runBlocking {
+                navigationActionHandler.runAction(ViewNote("some-id"), content)
+            }
 
             // THEN
             result shouldBe content
@@ -374,7 +432,9 @@ internal class NavigationActionHandlerTest {
             )
 
             // WHEN
-            val result = navigationActionHandler.runAction(ViewNote("some-id"), initialContent)
+            val result = runBlocking {
+                navigationActionHandler.runAction(ViewNote("some-id"), initialContent)
+            }
 
             // THEN
             result shouldBe NoteDetailContent(

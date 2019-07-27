@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() {
 
-    override fun runAction(action: SearchAction, currentContent: Content): Content {
+    override suspend fun runAction(action: SearchAction, currentContent: Content): Content {
         return when (action) {
             is RefreshSearchTags -> refresh(currentContent)
             is SetSearchTags -> setSearchTags(action, currentContent)

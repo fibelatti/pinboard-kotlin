@@ -7,6 +7,7 @@ import com.fibelatti.pinboard.MockDataProvider.createTag
 import com.fibelatti.pinboard.MockDataProvider.mockTitle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
@@ -46,7 +47,7 @@ internal class TagActionHandlerTest {
             val content = mock<PostListContent>()
 
             // WHEN
-            val result = tagActionHandler.runAction(RefreshTags, content)
+            val result = runBlocking { tagActionHandler.runAction(RefreshTags, content) }
 
             // THEN
             result shouldBe content
@@ -59,7 +60,7 @@ internal class TagActionHandlerTest {
                 .willReturn(false)
 
             // WHEN
-            val result = tagActionHandler.runAction(RefreshTags, initialContent)
+            val result = runBlocking { tagActionHandler.runAction(RefreshTags, initialContent) }
 
             // THEN
             result shouldBe TagListContent(
@@ -81,7 +82,7 @@ internal class TagActionHandlerTest {
             val content = mock<PostListContent>()
 
             // WHEN
-            val result = tagActionHandler.runAction(mock<SetTags>(), content)
+            val result = runBlocking { tagActionHandler.runAction(mock<SetTags>(), content) }
 
             // THEN
             result shouldBe content
@@ -90,7 +91,9 @@ internal class TagActionHandlerTest {
         @Test
         fun `WHEN currentContent is TagListContent THEN updated content is returned`() {
             // WHEN
-            val result = tagActionHandler.runAction(SetTags(listOf(createTag())), initialContent)
+            val result = runBlocking {
+                tagActionHandler.runAction(SetTags(listOf(createTag())), initialContent)
+            }
 
             // THEN
             result shouldBe TagListContent(
@@ -114,7 +117,9 @@ internal class TagActionHandlerTest {
                 .willReturn(true)
 
             // WHEN
-            val result = tagActionHandler.runAction(PostsForTag(createTag()), initialContent)
+            val result = runBlocking {
+                tagActionHandler.runAction(PostsForTag(createTag()), initialContent)
+            }
 
             // THEN
             result shouldBe PostListContent(

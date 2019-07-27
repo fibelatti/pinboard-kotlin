@@ -8,6 +8,7 @@ import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtil
 import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtilFactory
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
@@ -18,11 +19,12 @@ internal class PostActionHandlerTest {
 
     private val mockConnectivityInfoProvider = mock<ConnectivityInfoProvider>()
 
-    private val mockPostListDiffUtilFactory = mock< PostListDiffUtilFactory>()
+    private val mockPostListDiffUtilFactory = mock<PostListDiffUtilFactory>()
 
     private val mockPost = mock<Post>()
 
-    private val postActionHandler = PostActionHandler(mockConnectivityInfoProvider, mockPostListDiffUtilFactory)
+    private val postActionHandler =
+        PostActionHandler(mockConnectivityInfoProvider, mockPostListDiffUtilFactory)
 
     private val initialContent = PostListContent(
         category = All,
@@ -42,7 +44,7 @@ internal class PostActionHandlerTest {
             val content = mock<PostDetailContent>()
 
             // WHEN
-            val result = postActionHandler.runAction(Refresh, content)
+            val result = runBlocking { postActionHandler.runAction(Refresh, content) }
 
             // THEN
             result shouldBe content
@@ -55,7 +57,7 @@ internal class PostActionHandlerTest {
             given(content.shouldLoad).willReturn(ShouldLoadFirstPage)
 
             // WHEN
-            val result = postActionHandler.runAction(Refresh, content)
+            val result = runBlocking { postActionHandler.runAction(Refresh, content) }
 
             // THEN
             result shouldBe content
@@ -68,7 +70,7 @@ internal class PostActionHandlerTest {
             given(content.shouldLoad).willReturn(ShouldLoadNextPage(0))
 
             // WHEN
-            val result = postActionHandler.runAction(Refresh, content)
+            val result = runBlocking { postActionHandler.runAction(Refresh, content) }
 
             // THEN
             result shouldBe content
@@ -81,7 +83,7 @@ internal class PostActionHandlerTest {
                 .willReturn(false)
 
             // WHEN
-            val result = postActionHandler.runAction(Refresh, initialContent)
+            val result = runBlocking { postActionHandler.runAction(Refresh, initialContent) }
 
             // THEN
             result shouldBe initialContent.copy(shouldLoad = Loaded, isConnected = false)
@@ -95,10 +97,15 @@ internal class PostActionHandlerTest {
                 .willReturn(true)
 
             // WHEN
-            val result = postActionHandler.runAction(Refresh, initialContent)
+            val result = runBlocking {
+                postActionHandler.runAction(Refresh, initialContent)
+            }
 
             // THEN
-            result shouldBe initialContent.copy(shouldLoad = ShouldLoadFirstPage, isConnected = true)
+            result shouldBe initialContent.copy(
+                shouldLoad = ShouldLoadFirstPage,
+                isConnected = true
+            )
             verify(mockConnectivityInfoProvider, times(2)).isConnected()
         }
     }
@@ -111,7 +118,9 @@ internal class PostActionHandlerTest {
             val content = mock<PostDetailContent>()
 
             // WHEN
-            val result = postActionHandler.runAction(SetPosts(mock()), content)
+            val result = runBlocking {
+                postActionHandler.runAction(SetPosts(mock()), content)
+            }
 
             // THEN
             result shouldBe content
@@ -120,7 +129,9 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is PostListContent and actions posts is null THEN updated content is returned`() {
             // WHEN
-            val result = postActionHandler.runAction(SetPosts(null), initialContent)
+            val result = runBlocking {
+                postActionHandler.runAction(SetPosts(null), initialContent)
+            }
 
             // THEN
             result shouldBe initialContent.copy(posts = null, shouldLoad = Loaded)
@@ -144,7 +155,9 @@ internal class PostActionHandlerTest {
             )
 
             // WHEN
-            val result = postActionHandler.runAction(SetPosts(1 to listOf(createPost())), currentContent)
+            val result = runBlocking {
+                postActionHandler.runAction(SetPosts(1 to listOf(createPost())), currentContent)
+            }
 
             // THEN
             result shouldBe PostListContent(
@@ -168,7 +181,7 @@ internal class PostActionHandlerTest {
             val content = mock<PostDetailContent>()
 
             // WHEN
-            val result = postActionHandler.runAction(GetNextPostPage, content)
+            val result = runBlocking { postActionHandler.runAction(GetNextPostPage, content) }
 
             // THEN
             result shouldBe content
@@ -177,7 +190,9 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is PostListContent and posts is null THEN same content is returned `() {
             // WHEN
-            val result = postActionHandler.runAction(GetNextPostPage, initialContent)
+            val result = runBlocking {
+                postActionHandler.runAction(GetNextPostPage, initialContent)
+            }
 
             // THEN
             result shouldBe initialContent
@@ -197,7 +212,9 @@ internal class PostActionHandlerTest {
             )
 
             // WHEN
-            val result = postActionHandler.runAction(GetNextPostPage, currentContent)
+            val result = runBlocking {
+                postActionHandler.runAction(GetNextPostPage, currentContent)
+            }
 
             // THEN
             result shouldBe currentContent.copy(shouldLoad = ShouldLoadNextPage(offset = 1))
@@ -213,7 +230,9 @@ internal class PostActionHandlerTest {
             val content = mock<PostDetailContent>()
 
             // WHEN
-            val result = postActionHandler.runAction(SetNextPostPage(mock()), content)
+            val result = runBlocking {
+                postActionHandler.runAction(SetNextPostPage(mock()), content)
+            }
 
             // THEN
             result shouldBe content
@@ -233,7 +252,12 @@ internal class PostActionHandlerTest {
             )
 
             // WHEN
-            val result = postActionHandler.runAction(SetNextPostPage(posts = 1 to listOf(createPost())), content)
+            val result = runBlocking {
+                postActionHandler.runAction(
+                    SetNextPostPage(posts = 1 to listOf(createPost())),
+                    content
+                )
+            }
 
             // THEN
             result shouldBe content
@@ -253,7 +277,9 @@ internal class PostActionHandlerTest {
             )
 
             // WHEN
-            val result = postActionHandler.runAction(SetNextPostPage(posts = null), content)
+            val result = runBlocking {
+                postActionHandler.runAction(SetNextPostPage(posts = null), content)
+            }
 
             // THEN
             result shouldBe content
@@ -276,11 +302,19 @@ internal class PostActionHandlerTest {
                 isConnected = true
             )
 
-            given(mockPostListDiffUtilFactory.create(mockCurrentList, mockCurrentList.plus(mockNewList)))
+            given(
+                mockPostListDiffUtilFactory.create(
+                    mockCurrentList,
+                    mockCurrentList.plus(mockNewList)
+                )
+            )
                 .willReturn(mockDiffUtil)
 
             // WHEN
-            val result = postActionHandler.runAction(SetNextPostPage(2 to mockNewList), currentContent)
+            val result = runBlocking {
+                postActionHandler.runAction(SetNextPostPage(2 to mockNewList), currentContent)
+            }
+
 
             // THEN
             result shouldBe PostListContent(
@@ -304,7 +338,7 @@ internal class PostActionHandlerTest {
             val content = mock<PostDetailContent>()
 
             // WHEN
-            val result = postActionHandler.runAction(PostsDisplayed, content)
+            val result = runBlocking { postActionHandler.runAction(PostsDisplayed, content) }
 
             // THEN
             result shouldBe content
@@ -326,7 +360,9 @@ internal class PostActionHandlerTest {
             )
 
             // WHEN
-            val result = postActionHandler.runAction(PostsDisplayed, currentContent)
+            val result = runBlocking {
+                postActionHandler.runAction(PostsDisplayed, currentContent)
+            }
 
             // THEN
             result shouldBe PostListContent(
@@ -349,7 +385,7 @@ internal class PostActionHandlerTest {
             val content = mock<PostDetailContent>()
 
             // WHEN
-            val result = postActionHandler.runAction(ToggleSorting, content)
+            val result = runBlocking { postActionHandler.runAction(ToggleSorting, content) }
 
             // THEN
             result shouldBe content
@@ -362,7 +398,7 @@ internal class PostActionHandlerTest {
             given(content.shouldLoad).willReturn(ShouldLoadFirstPage)
 
             // WHEN
-            val result = postActionHandler.runAction(Refresh, content)
+            val result = runBlocking { postActionHandler.runAction(Refresh, content) }
 
             // THEN
             result shouldBe content
@@ -375,7 +411,7 @@ internal class PostActionHandlerTest {
             given(content.shouldLoad).willReturn(ShouldLoadNextPage(0))
 
             // WHEN
-            val result = postActionHandler.runAction(Refresh, content)
+            val result = runBlocking { postActionHandler.runAction(Refresh, content) }
 
             // THEN
             result shouldBe content
@@ -388,7 +424,7 @@ internal class PostActionHandlerTest {
                 .willReturn(false)
 
             // WHEN
-            val result = postActionHandler.runAction(ToggleSorting, initialContent)
+            val result = runBlocking { postActionHandler.runAction(ToggleSorting, initialContent) }
 
             // THEN
             result shouldBe initialContent.copy(isConnected = false)
@@ -401,10 +437,18 @@ internal class PostActionHandlerTest {
                 .willReturn(true)
 
             // WHEN
-            val result = postActionHandler.runAction(ToggleSorting, initialContent.copy(sortType = NewestFirst))
+            val result = runBlocking {
+                postActionHandler.runAction(
+                    ToggleSorting,
+                    initialContent.copy(sortType = NewestFirst)
+                )
+            }
 
             // THEN
-            result shouldBe initialContent.copy(sortType = OldestFirst, shouldLoad = ShouldLoadFirstPage)
+            result shouldBe initialContent.copy(
+                sortType = OldestFirst,
+                shouldLoad = ShouldLoadFirstPage
+            )
         }
 
         @Test
@@ -414,10 +458,18 @@ internal class PostActionHandlerTest {
                 .willReturn(true)
 
             // WHEN
-            val result = postActionHandler.runAction(ToggleSorting, initialContent.copy(sortType = OldestFirst))
+            val result = runBlocking {
+                postActionHandler.runAction(
+                    ToggleSorting,
+                    initialContent.copy(sortType = OldestFirst)
+                )
+            }
 
             // THEN
-            result shouldBe initialContent.copy(sortType = NewestFirst, shouldLoad = ShouldLoadFirstPage)
+            result shouldBe initialContent.copy(
+                sortType = NewestFirst,
+                shouldLoad = ShouldLoadFirstPage
+            )
         }
     }
 
@@ -430,7 +482,7 @@ internal class PostActionHandlerTest {
             val content = mock<PostListContent>()
 
             // WHEN
-            val result = postActionHandler.runAction(EditPost(mockPost), content)
+            val result = runBlocking { postActionHandler.runAction(EditPost(mockPost), content) }
 
             // THEN
             result shouldBe content
@@ -442,7 +494,9 @@ internal class PostActionHandlerTest {
             val mockCurrentContent = mock<PostDetailContent>()
 
             // WHEN
-            val result = postActionHandler.runAction(EditPost(mockPost), mockCurrentContent)
+            val result = runBlocking {
+                postActionHandler.runAction(EditPost(mockPost), mockCurrentContent)
+            }
 
             // THEN
             result shouldBe EditPostContent(
@@ -461,7 +515,9 @@ internal class PostActionHandlerTest {
             val content = mock<PostDetailContent>()
 
             // WHEN
-            val result = postActionHandler.runAction(PostSaved(mockPost), content)
+            val result = runBlocking {
+                postActionHandler.runAction(PostSaved(mockPost), content)
+            }
 
             // THEN
             result shouldBe content
@@ -473,7 +529,9 @@ internal class PostActionHandlerTest {
             val currentContent = AddPostContent(previousContent = initialContent)
 
             // WHEN
-            val result = postActionHandler.runAction(PostSaved(mockPost), currentContent)
+            val result = runBlocking {
+                postActionHandler.runAction(PostSaved(mockPost), currentContent)
+            }
 
             // THEN
             result shouldBe PostListContent(
@@ -500,7 +558,9 @@ internal class PostActionHandlerTest {
             )
 
             // WHEN
-            val result = postActionHandler.runAction(PostSaved(mockPost), currentContent)
+            val result = runBlocking {
+                postActionHandler.runAction(PostSaved(mockPost), currentContent)
+            }
 
             // THEN
             result shouldBe PostDetailContent(
@@ -527,7 +587,7 @@ internal class PostActionHandlerTest {
             val content = mock<PostListContent>()
 
             // WHEN
-            val result = postActionHandler.runAction(PostDeleted, content)
+            val result = runBlocking { postActionHandler.runAction(PostDeleted, content) }
 
             // THEN
             result shouldBe content
@@ -542,7 +602,9 @@ internal class PostActionHandlerTest {
             )
 
             // WHEN
-            val result = postActionHandler.runAction(PostDeleted, currentContent)
+            val result = runBlocking {
+                postActionHandler.runAction(PostDeleted, currentContent)
+            }
 
             // THEN
             result shouldBe PostListContent(

@@ -13,7 +13,7 @@ abstract class ActionHandler<A : Action> {
      *
      * @return an updated [Content]
      */
-    abstract fun runAction(action: A, currentContent: Content): Content
+    abstract suspend fun runAction(action: A, currentContent: Content): Content
 
     /**
      * Service method to check if [currentContent] is of type [T] before running [body] with it as a parameter. If type

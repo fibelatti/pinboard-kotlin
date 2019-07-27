@@ -8,6 +8,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockTag3
 import com.fibelatti.pinboard.MockDataProvider.mockTag4
 import com.fibelatti.pinboard.MockDataProvider.mockTitle
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
@@ -24,7 +25,7 @@ internal class SearchActionHandlerTest {
             val content = mock<PostDetailContent>()
 
             // WHEN
-            val result = searchActionHandler.runAction(RefreshSearchTags, content)
+            val result = runBlocking { searchActionHandler.runAction(RefreshSearchTags, content) }
 
             // THEN
             result shouldBe content
@@ -41,7 +42,9 @@ internal class SearchActionHandlerTest {
             )
 
             // WHEN
-            val result = searchActionHandler.runAction(RefreshSearchTags, initialContent)
+            val result = runBlocking {
+                searchActionHandler.runAction(RefreshSearchTags, initialContent)
+            }
 
             // THEN
             result shouldBe SearchContent(
@@ -61,7 +64,9 @@ internal class SearchActionHandlerTest {
             val content = mock<PostDetailContent>()
 
             // WHEN
-            val result = searchActionHandler.runAction(mock<SetSearchTags>(), content)
+            val result = runBlocking {
+                searchActionHandler.runAction(mock<SetSearchTags>(), content)
+            }
 
             // THEN
             result shouldBe content
@@ -77,10 +82,12 @@ internal class SearchActionHandlerTest {
             )
 
             // WHEN
-            val result = searchActionHandler.runAction(
-                SetSearchTags(listOf(mockTag1, mockTag2, mockTag3)),
-                initialContent
-            )
+            val result = runBlocking {
+                searchActionHandler.runAction(
+                    SetSearchTags(listOf(mockTag1, mockTag2, mockTag3)),
+                    initialContent
+                )
+            }
 
             // THEN
             result shouldBe SearchContent(
@@ -102,7 +109,9 @@ internal class SearchActionHandlerTest {
             val content = mock<PostDetailContent>()
 
             // WHEN
-            val result = searchActionHandler.runAction(mock<AddSearchTag>(), content)
+            val result = runBlocking {
+                searchActionHandler.runAction(mock<AddSearchTag>(), content)
+            }
 
             // THEN
             result shouldBe content
@@ -120,7 +129,9 @@ internal class SearchActionHandlerTest {
             )
 
             // WHEN
-            val result = searchActionHandler.runAction(AddSearchTag(mockTag1), initialContent)
+            val result = runBlocking {
+                searchActionHandler.runAction(AddSearchTag(mockTag1), initialContent)
+            }
 
             // THEN
             result shouldBe initialContent
@@ -131,14 +142,19 @@ internal class SearchActionHandlerTest {
             // GIVEN
             val mockPreviousContent = mock<PostListContent>()
             val initialContent = SearchContent(
-                searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1, mockTag2, mockTag3)),
+                searchParameters = SearchParameters(
+                    term = mockUrlValid,
+                    tags = listOf(mockTag1, mockTag2, mockTag3)
+                ),
                 availableTags = listOf(mockTag4),
                 allTags = listOf(mockTag1, mockTag2, mockTag3, mockTag4),
                 previousContent = mockPreviousContent
             )
 
             // WHEN
-            val result = searchActionHandler.runAction(AddSearchTag(mockTag4), initialContent)
+            val result = runBlocking {
+                searchActionHandler.runAction(AddSearchTag(mockTag4), initialContent)
+            }
 
             // THEN
             result shouldBe initialContent
@@ -156,11 +172,16 @@ internal class SearchActionHandlerTest {
             )
 
             // WHEN
-            val result = searchActionHandler.runAction(AddSearchTag(mockTag2), initialContent)
+            val result = runBlocking {
+                searchActionHandler.runAction(AddSearchTag(mockTag2), initialContent)
+            }
 
             // THEN
             result shouldBe SearchContent(
-                searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1, mockTag2)),
+                searchParameters = SearchParameters(
+                    term = mockUrlValid,
+                    tags = listOf(mockTag1, mockTag2)
+                ),
                 availableTags = listOf(mockTag3),
                 allTags = listOf(mockTag1, mockTag2, mockTag3),
                 previousContent = mockPreviousContent
@@ -177,7 +198,9 @@ internal class SearchActionHandlerTest {
             val content = mock<PostDetailContent>()
 
             // WHEN
-            val result = searchActionHandler.runAction(mock<RemoveSearchTag>(), content)
+            val result = runBlocking {
+                searchActionHandler.runAction(mock<RemoveSearchTag>(), content)
+            }
 
             // THEN
             result shouldBe content
@@ -195,7 +218,9 @@ internal class SearchActionHandlerTest {
             )
 
             // WHEN
-            val result = searchActionHandler.runAction(RemoveSearchTag(mockTag1), initialContent)
+            val result = runBlocking {
+                searchActionHandler.runAction(RemoveSearchTag(mockTag1), initialContent)
+            }
 
             // THEN
             result shouldBe SearchContent(
@@ -216,7 +241,7 @@ internal class SearchActionHandlerTest {
             val content = mock<PostDetailContent>()
 
             // WHEN
-            val result = searchActionHandler.runAction(mock<Search>(), content)
+            val result = runBlocking { searchActionHandler.runAction(mock<Search>(), content) }
 
             // THEN
             result shouldBe content
@@ -239,7 +264,9 @@ internal class SearchActionHandlerTest {
             )
 
             // WHEN
-            val result = searchActionHandler.runAction(Search("new term"), initialContent)
+            val result = runBlocking {
+                searchActionHandler.runAction(Search("new term"), initialContent)
+            }
 
             // THEN
             result shouldBe PostListContent(
@@ -262,7 +289,7 @@ internal class SearchActionHandlerTest {
             val content = mock<PostDetailContent>()
 
             // WHEN
-            val result = searchActionHandler.runAction(ClearSearch, content)
+            val result = runBlocking { searchActionHandler.runAction(ClearSearch, content) }
 
             // THEN
             result shouldBe content
@@ -281,7 +308,7 @@ internal class SearchActionHandlerTest {
             )
 
             // WHEN
-            val result = searchActionHandler.runAction(ClearSearch, initialContent)
+            val result = runBlocking { searchActionHandler.runAction(ClearSearch, initialContent) }
 
             // THEN
             result shouldBe PostListContent(
@@ -313,7 +340,9 @@ internal class SearchActionHandlerTest {
             )
 
             // WHEN
-            val result = searchActionHandler.runAction(ClearSearch, searchContent)
+            val result = runBlocking {
+                searchActionHandler.runAction(ClearSearch, searchContent)
+            }
 
             // THEN
             result shouldBe PostListContent(

@@ -8,7 +8,7 @@ class NoteActionHandler @Inject constructor(
     private val connectivityInfoProvider: ConnectivityInfoProvider
 ) : ActionHandler<NoteAction>() {
 
-    override fun runAction(action: NoteAction, currentContent: Content): Content {
+    override suspend fun runAction(action: NoteAction, currentContent: Content): Content {
         return when (action) {
             is RefreshNotes -> refresh(currentContent)
             is SetNotes -> setNotes(action, currentContent)

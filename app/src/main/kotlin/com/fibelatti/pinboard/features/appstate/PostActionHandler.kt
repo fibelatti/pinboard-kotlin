@@ -9,7 +9,7 @@ class PostActionHandler @Inject constructor(
     private val postListDiffUtilFactory: PostListDiffUtilFactory
 ) : ActionHandler<PostAction>() {
 
-    override fun runAction(action: PostAction, currentContent: Content): Content {
+    override suspend fun runAction(action: PostAction, currentContent: Content): Content {
         return when (action) {
             is Refresh -> refresh(currentContent)
             is SetPosts -> setPosts(action, currentContent)
