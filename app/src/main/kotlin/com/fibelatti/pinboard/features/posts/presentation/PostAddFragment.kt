@@ -87,6 +87,7 @@ class PostAddFragment @Inject constructor(
             }
         }
 
+        setupDescriptionLayouts()
         setupTagLayouts()
     }
 
