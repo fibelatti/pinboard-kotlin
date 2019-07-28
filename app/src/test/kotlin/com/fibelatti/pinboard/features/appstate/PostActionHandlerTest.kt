@@ -8,6 +8,7 @@ import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtil
 import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtilFactory
+import com.fibelatti.pinboard.randomBoolean
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -525,7 +526,12 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is AddPostContent THEN updated content is returned`() {
             // GIVEN
-            val currentContent = AddPostContent(previousContent = initialContent)
+            val randomBoolean = randomBoolean()
+            val currentContent = AddPostContent(
+                defaultPrivate = randomBoolean,
+                defaultReadLater = randomBoolean,
+                previousContent = initialContent
+            )
 
             // WHEN
             val result = runBlocking {

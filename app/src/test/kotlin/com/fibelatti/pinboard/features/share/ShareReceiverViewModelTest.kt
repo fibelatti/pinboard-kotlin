@@ -14,24 +14,30 @@ import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.ExtractUrl
-import com.fibelatti.pinboard.features.posts.domain.usecase.RichUrl
 import com.fibelatti.pinboard.features.posts.domain.usecase.ParseUrl
+import com.fibelatti.pinboard.features.posts.domain.usecase.RichUrl
+import com.fibelatti.pinboard.features.user.domain.UserRepository
+import com.fibelatti.pinboard.randomBoolean
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.never
+import org.mockito.Mockito.verify
 
 internal class ShareReceiverViewModelTest : BaseViewModelTest() {
 
     private val mockExtractUrl = mock<ExtractUrl>()
     private val mockParseUrl = mock<ParseUrl>()
     private val mockAddPost = mock<AddPost>()
+    private val mockUserRepository = mock<UserRepository>()
     private val mockResourceProvider = mock<ResourceProvider>()
 
     private val shareReceiverViewModel = ShareReceiverViewModel(
         mockExtractUrl,
         mockParseUrl,
         mockAddPost,
+        mockUserRepository,
         mockResourceProvider
     )
 
@@ -76,34 +82,72 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     @Test
     fun `WHEN AddPost fails THEN failed should receive a value`() {
         // GIVEN
+        val defaultPrivate = randomBoolean()
+        val defaultReadLater = randomBoolean()
+
         givenSuspend { mockExtractUrl(mockUrlValid) }
             .willReturn(Success(mockUrlValid))
         givenSuspend { mockParseUrl(mockUrlValid) }
             .willReturn(Success(RichUrl(mockUrlValid, mockUrlValid)))
-        givenSuspend { mockAddPost(AddPost.Params(mockUrlValid, mockUrlValid)) }
-            .willReturn(Failure(Exception()))
+        givenSuspend { mockUserRepository.getDefaultPrivate() }
+            .willReturn(defaultPrivate)
+        givenSuspend { mockUserRepository.getDefaultReadLater() }
+            .willReturn(defaultReadLater)
+        givenSuspend {
+            mockAddPost(
+                AddPost.Params(
+                    url = mockUrlValid,
+                    title = mockUrlValid,
+                    private = defaultPrivate,
+                    readLater = defaultReadLater
+                )
+            )
+        }.willReturn(Failure(Exception()))
 
         // WHEN
         shareReceiverViewModel.saveUrl(mockUrlValid)
 
         // THEN
+        runBlocking {
+            verify(mockUserRepository).getDefaultPrivate()
+            verify(mockUserRepository).getDefaultReadLater()
+        }
         shareReceiverViewModel.failed.currentEventShouldBe("R.string.generic_msg_error")
     }
 
     @Test
     fun `WEHN saveUrl succeeds THEN saved should receive a value`() {
         // GIVEN
+        val defaultPrivate = randomBoolean()
+        val defaultReadLater = randomBoolean()
+
         givenSuspend { mockExtractUrl(mockUrlValid) }
             .willReturn(Success(mockUrlValid))
         givenSuspend { mockParseUrl(mockUrlValid) }
             .willReturn(Success(RichUrl(mockUrlValid, mockUrlValid)))
-        givenSuspend { mockAddPost(AddPost.Params(mockUrlValid, mockUrlValid)) }
-            .willReturn(Success(createPost()))
+        givenSuspend { mockUserRepository.getDefaultPrivate() }
+            .willReturn(defaultPrivate)
+        givenSuspend { mockUserRepository.getDefaultReadLater() }
+            .willReturn(defaultReadLater)
+        givenSuspend {
+            mockAddPost(
+                AddPost.Params(
+                    url = mockUrlValid,
+                    title = mockUrlValid,
+                    private = defaultPrivate,
+                    readLater = defaultReadLater
+                )
+            )
+        }.willReturn(Success(createPost()))
 
         // WHEN
         shareReceiverViewModel.saveUrl(mockUrlValid)
 
         // THEN
+        runBlocking {
+            verify(mockUserRepository).getDefaultPrivate()
+            verify(mockUserRepository).getDefaultReadLater()
+        }
         shareReceiverViewModel.saved.currentEventShouldBe("R.string.posts_saved_feedback")
     }
 }

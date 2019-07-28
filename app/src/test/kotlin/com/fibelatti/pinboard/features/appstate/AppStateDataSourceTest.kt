@@ -161,6 +161,7 @@ internal class AppStateDataSourceTest {
                             ViewTags -> add(ViewTags to ExpectedHandler.NAVIGATION)
                             ViewNotes -> add(ViewNotes to ExpectedHandler.NAVIGATION)
                             is ViewNote -> add(mock<ViewNote>() to ExpectedHandler.NAVIGATION)
+                            ViewPreferences -> add(ViewPreferences to ExpectedHandler.NAVIGATION)
 
                             // Post
                             Refresh -> add(Refresh to ExpectedHandler.POST)

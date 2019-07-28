@@ -1,12 +1,15 @@
 package com.fibelatti.pinboard.features.appstate
 
+import com.fibelatti.core.extension.orFalse
 import com.fibelatti.core.functional.Either
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
 
 class NavigationActionHandler @Inject constructor(
+    private val userRepository: UserRepository,
     private val resourceProvider: ResourceProvider,
     private val connectivityInfoProvider: ConnectivityInfoProvider
 ) : ActionHandler<NavigationAction>() {
@@ -21,6 +24,7 @@ class NavigationActionHandler @Inject constructor(
             is ViewTags -> viewTags(currentContent)
             is ViewNotes -> viewNotes(currentContent)
             is ViewNote -> viewNote(action, currentContent)
+            is ViewPreferences -> viewPreferences(currentContent)
         }
     }
 
@@ -59,9 +63,13 @@ class NavigationActionHandler @Inject constructor(
         }
     }
 
-    private fun viewAddPost(currentContent: Content): Content {
+    private suspend fun viewAddPost(currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
-            AddPostContent(previousContent = it)
+            AddPostContent(
+                defaultPrivate = userRepository.getDefaultPrivate().orFalse(),
+                defaultReadLater = userRepository.getDefaultReadLater().orFalse(),
+                previousContent = it
+            )
         }
     }
 
@@ -93,6 +101,16 @@ class NavigationActionHandler @Inject constructor(
                 id = action.id,
                 note = Either.left(connectivityInfoProvider.isConnected()),
                 isConnected = connectivityInfoProvider.isConnected(),
+                previousContent = it
+            )
+        }
+    }
+
+    private suspend fun viewPreferences(currentContent: Content): Content {
+        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
+            UserPreferencesContent(
+                defaultPrivate = userRepository.getDefaultPrivate().orFalse(),
+                defaultReadLater = userRepository.getDefaultReadLater().orFalse(),
                 previousContent = it
             )
         }

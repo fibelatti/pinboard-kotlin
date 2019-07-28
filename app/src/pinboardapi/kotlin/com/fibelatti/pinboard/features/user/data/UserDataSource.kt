@@ -59,4 +59,16 @@ class UserDataSource @Inject constructor(
     override suspend fun setLastUpdate(value: String) {
         userSharedPreferences.setLastUpdate(value)
     }
+
+    override suspend fun getDefaultPrivate(): Boolean? = userSharedPreferences.getDefaultPrivate()
+
+    override suspend fun setDefaultPrivate(value: Boolean) {
+        userSharedPreferences.setDefaultPrivate(value)
+    }
+
+    override suspend fun getDefaultReadLater(): Boolean? = userSharedPreferences.getDefaultReadLater()
+
+    override suspend fun setDefaultReadLater(value: Boolean) {
+        userSharedPreferences.setDefaultReadLater(value)
+    }
 }

@@ -34,6 +34,7 @@
     <string name="menu_navigation_tags">Tags</string>
     <string name="menu_navigation_notes">Notes</string>
 
+    <string name="menu_navigation_preferences">Preferences</string>
     <string name="menu_navigation_logout">Logout</string>
 
     <string name="menu_link_delete">Remove link</string>
@@ -141,6 +142,15 @@
     <string name="notes_updated_at">Last updated at %s</string>
     <string name="notes_empty_title">No notes</string>
     <string name="notes_empty_description">You haven\'t saved any notes yet</string>
+
+    <!-- User Preferences -->
+    <string name="user_preferences_title">Preferences</string>
+    <string name="user_preferences_default_private">Private by default</string>
+    <string name="user_preferences_default_private_description">If checked, links shared to Pinkt will be saved as private, otherwise your default Pinboard preferences apply</string>
+    <string name="user_preferences_default_read_later">Read later by default</string>
+    <string name="user_preferences_default_read_later_description">If checked, links shared to Pinkt will be saved as read later, otherwise your default Pinboard preferences apply</string>
+    <string name="user_preferences_default_tags">Default tags</string>
+    <string name="user_preferences_default_tags_description">Links will be have the selected tags by default</string>
 
     <!-- About -->
     <string name="about_share">Share Pinkt</string>

@@ -66,6 +66,13 @@
                 android:layout_marginBottom="@dimen/margin_regular" />
 
             <TextView
+                android:id="@+id/menuItemPreferences"
+                style="@style/AppTheme.TextButton.Menu"
+                android:drawablePadding="@dimen/padding_regular"
+                android:text="@string/menu_navigation_preferences"
+                app:drawableStartCompat="@drawable/ic_preferences" />
+
+            <TextView
                 android:id="@+id/menuItemLogout"
                 style="@style/AppTheme.TextButton.Menu"
                 android:drawablePadding="@dimen/padding_regular"

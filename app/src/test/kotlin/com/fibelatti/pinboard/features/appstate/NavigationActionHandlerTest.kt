@@ -2,12 +2,14 @@ package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.core.functional.Either
 import com.fibelatti.core.provider.ResourceProvider
+import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.mockTitle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -22,10 +24,12 @@ import org.mockito.Mockito.times
 
 internal class NavigationActionHandlerTest {
 
+    private val mockUserRepository = mock<UserRepository>()
     private val mockResourceProvider = mock<ResourceProvider>()
     private val mockConnectivityInfoProvider = mock<ConnectivityInfoProvider>()
 
     private val navigationActionHandler = NavigationActionHandler(
+        mockUserRepository,
         mockResourceProvider,
         mockConnectivityInfoProvider
     )
@@ -275,6 +279,21 @@ internal class NavigationActionHandlerTest {
     @Nested
     inner class AddPostTests {
 
+        private val initialContent = PostListContent(
+            category = All,
+            title = mockTitle,
+            posts = null,
+            sortType = NewestFirst,
+            searchParameters = SearchParameters(),
+            shouldLoad = ShouldLoadFirstPage
+        )
+
+        @BeforeEach
+        fun setup() {
+            givenSuspend { mockUserRepository.getDefaultPrivate() }.willReturn(true)
+            givenSuspend { mockUserRepository.getDefaultReadLater() }.willReturn(true)
+        }
+
         @Test
         fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
             // GIVEN
@@ -289,21 +308,49 @@ internal class NavigationActionHandlerTest {
 
         @Test
         fun `WHEN currentContent is PostListContent THEN AddPostContent is returned`() {
-            // GIVEN
-            val initialContent = PostListContent(
-                category = All,
-                title = mockTitle,
-                posts = null,
-                sortType = NewestFirst,
-                searchParameters = SearchParameters(),
-                shouldLoad = ShouldLoadFirstPage
+            // WHEN
+            val result = runBlocking { navigationActionHandler.runAction(AddPost, initialContent) }
+
+            // THEN
+            result shouldBe AddPostContent(
+                defaultPrivate = true,
+                defaultReadLater = true,
+                previousContent = initialContent
             )
+        }
+
+        @Test
+        fun `WHEN getDefaultPrivate returns null THEN defaultPrivate is set to false`() {
+            // GIVEN
+            givenSuspend { mockUserRepository.getDefaultPrivate() }
+                .willReturn(null)
 
             // WHEN
             val result = runBlocking { navigationActionHandler.runAction(AddPost, initialContent) }
 
             // THEN
-            result shouldBe AddPostContent(previousContent = initialContent)
+            result shouldBe AddPostContent(
+                defaultPrivate = false,
+                defaultReadLater = true,
+                previousContent = initialContent
+            )
+        }
+
+        @Test
+        fun `WHEN getDefaultReadLater returns null THEN defaultReadLater is set to false`() {
+            // GIVEN
+            givenSuspend { mockUserRepository.getDefaultReadLater() }
+                .willReturn(null)
+
+            // WHEN
+            val result = runBlocking { navigationActionHandler.runAction(AddPost, initialContent) }
+
+            // THEN
+            result shouldBe AddPostContent(
+                defaultPrivate = true,
+                defaultReadLater = false,
+                previousContent = initialContent
+            )
         }
     }
 
@@ -445,6 +492,87 @@ internal class NavigationActionHandlerTest {
             )
 
             verify(mockConnectivityInfoProvider, times(2)).isConnected()
+        }
+    }
+
+    @Nested
+    inner class ViewPreferencesTests {
+
+        private val initialContent = PostListContent(
+            category = All,
+            title = mockTitle,
+            posts = null,
+            sortType = NewestFirst,
+            searchParameters = SearchParameters(),
+            shouldLoad = ShouldLoadFirstPage
+        )
+
+        @BeforeEach
+        fun setup() {
+            givenSuspend { mockUserRepository.getDefaultPrivate() }.willReturn(true)
+            givenSuspend { mockUserRepository.getDefaultReadLater() }.willReturn(true)
+        }
+
+        @Test
+        fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
+            // GIVEN
+            val content = mock<PostDetailContent>()
+
+            // WHEN
+            val result = runBlocking { navigationActionHandler.runAction(ViewPreferences, content) }
+
+            // THEN
+            result shouldBe content
+        }
+
+        @Test
+        fun `WHEN currentContent is PostListContent THEN UserPreferencesContent is returned`() {
+            // WHEN
+            val result =
+                runBlocking { navigationActionHandler.runAction(ViewPreferences, initialContent) }
+
+            // THEN
+            result shouldBe UserPreferencesContent(
+                defaultPrivate = true,
+                defaultReadLater = true,
+                previousContent = initialContent
+            )
+        }
+
+        @Test
+        fun `WHEN getDefaultPrivate returns null THEN defaultPrivate is set to false`() {
+            // GIVEN
+            givenSuspend { mockUserRepository.getDefaultPrivate() }
+                .willReturn(null)
+
+            // WHEN
+            val result =
+                runBlocking { navigationActionHandler.runAction(ViewPreferences, initialContent) }
+
+            // THEN
+            result shouldBe UserPreferencesContent(
+                defaultPrivate = false,
+                defaultReadLater = true,
+                previousContent = initialContent
+            )
+        }
+
+        @Test
+        fun `WHEN getDefaultReadLater returns null THEN defaultReadLater is set to false`() {
+            // GIVEN
+            givenSuspend { mockUserRepository.getDefaultReadLater() }
+                .willReturn(null)
+
+            // WHEN
+            val result =
+                runBlocking { navigationActionHandler.runAction(ViewPreferences, initialContent) }
+
+            // THEN
+            result shouldBe UserPreferencesContent(
+                defaultPrivate = true,
+                defaultReadLater = false,
+                previousContent = initialContent
+            )
         }
     }
 }

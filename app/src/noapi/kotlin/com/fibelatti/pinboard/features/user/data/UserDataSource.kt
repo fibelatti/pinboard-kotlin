@@ -3,13 +3,16 @@ package com.fibelatti.pinboard.features.user.data
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class UserDataSource @Inject constructor() : UserRepository {
+class UserDataSource @Inject constructor(
+    private val userSharedPreferences: UserSharedPreferences
+) : UserRepository {
 
     @VisibleForTesting
     val loginState = MutableLiveData<LoginState>().apply { value = LoginState.LoggedIn }
@@ -27,4 +30,14 @@ class UserDataSource @Inject constructor() : UserRepository {
     override suspend fun getLastUpdate(): String = ""
 
     override suspend fun setLastUpdate(value: String) {}
+
+    override suspend fun getDefaultPrivate(): Boolean? = null
+
+    override suspend fun setDefaultPrivate(value: Boolean) {}
+
+    override suspend fun getDefaultReadLater(): Boolean? = userSharedPreferences.getDefaultReadLater()
+
+    override suspend fun setDefaultReadLater(value: Boolean) {
+        userSharedPreferences.setDefaultReadLater(value)
+    }
 }

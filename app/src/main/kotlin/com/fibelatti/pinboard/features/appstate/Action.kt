@@ -18,6 +18,7 @@ object AddPost : NavigationAction()
 object ViewTags : NavigationAction()
 object ViewNotes : NavigationAction()
 data class ViewNote(val id: String) : NavigationAction()
+object ViewPreferences : NavigationAction()
 
 // region ViewCategory
 object All : ViewCategory()

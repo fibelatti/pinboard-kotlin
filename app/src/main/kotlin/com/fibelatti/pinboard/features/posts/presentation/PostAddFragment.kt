@@ -223,6 +223,10 @@ class PostAddFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
+        viewLifecycleOwner.observe(appStateViewModel.addPostContent) {
+            checkboxPrivate.isChecked = it.defaultPrivate
+            checkboxReadLater.isChecked = it.defaultReadLater
+        }
         viewLifecycleOwner.observe(appStateViewModel.editPostContent, ::showPostDetails)
         with(postAddViewModel) {
             viewLifecycleOwner.observe(loading) {

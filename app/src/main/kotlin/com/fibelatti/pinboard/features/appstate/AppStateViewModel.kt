@@ -14,11 +14,13 @@ class AppStateViewModel @Inject constructor(
 
     val postListContent: LiveData<PostListContent> = mediatorLiveDataForContentType()
     val postDetailContent: LiveData<PostDetailContent> = mediatorLiveDataForContentType()
+    val addPostContent: LiveData<AddPostContent> = mediatorLiveDataForContentType()
     val editPostContent: LiveData<EditPostContent> = mediatorLiveDataForContentType()
     val searchContent: LiveData<SearchContent> = mediatorLiveDataForContentType()
     val tagListContent: LiveData<TagListContent> = mediatorLiveDataForContentType()
     val noteListContent: LiveData<NoteListContent> = mediatorLiveDataForContentType()
     val noteDetailContent: LiveData<NoteDetailContent> = mediatorLiveDataForContentType()
+    val userPreferencesContent: LiveData<UserPreferencesContent> = mediatorLiveDataForContentType()
 
     fun runAction(action: Action) {
         launch { appStateRepository.runAction(action) }

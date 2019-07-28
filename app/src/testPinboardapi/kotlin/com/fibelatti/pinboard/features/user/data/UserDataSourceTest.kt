@@ -9,6 +9,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockTime
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.features.posts.data.PostsDao
 import com.fibelatti.pinboard.features.user.domain.LoginState
+import com.fibelatti.pinboard.randomBoolean
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -148,6 +149,52 @@ internal class UserDataSourceTest {
 
             // THEN
             verify(mockUserSharedPreferences).setLastUpdate(mockTime)
+        }
+
+        @Test
+        fun `WHEN getDefaultPrivate is called THEN UserSharedPreferences is returned`() {
+            // GIVEN
+            val value = randomBoolean()
+            given(mockUserSharedPreferences.getDefaultPrivate())
+                .willReturn(value)
+
+            // THEN
+            runBlocking { userDataSource.getDefaultPrivate() shouldBe value }
+        }
+
+        @Test
+        fun `WHEN setDefaultPrivate is called THEN UserSharedPreferences is set`() {
+            // GIVEN
+            val value = randomBoolean()
+
+            // WHEN
+            runBlocking { userDataSource.setDefaultPrivate(value) }
+
+            // THEN
+            verify(mockUserSharedPreferences).setDefaultPrivate(value)
+        }
+
+        @Test
+        fun `WHEN getDefaultReadLater is called THEN UserSharedPreferences is returned`() {
+            // GIVEN
+            val value = randomBoolean()
+            given(mockUserSharedPreferences.getDefaultReadLater())
+                .willReturn(value)
+
+            // THEN
+            runBlocking { userDataSource.getDefaultReadLater() shouldBe value }
+        }
+
+        @Test
+        fun `WHEN setDefaultReadLater is called THEN UserSharedPreferences is set`() {
+            // GIVEN
+            val value = randomBoolean()
+
+            // WHEN
+            runBlocking { userDataSource.setDefaultReadLater(value) }
+
+            // THEN
+            verify(mockUserSharedPreferences).setDefaultReadLater(value)
         }
     }
 }

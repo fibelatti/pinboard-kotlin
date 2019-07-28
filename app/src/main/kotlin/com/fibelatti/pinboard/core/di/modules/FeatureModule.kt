@@ -31,6 +31,8 @@ import com.fibelatti.pinboard.features.tags.data.TagsDataSource
 import com.fibelatti.pinboard.features.tags.domain.TagsRepository
 import com.fibelatti.pinboard.features.tags.presentation.TagsFragment
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
+import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
+import com.fibelatti.pinboard.features.user.presentation.UserPreferencesViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -154,5 +156,17 @@ abstract class FeatureModule {
     @IntoMap
     @FragmentKey(NoteDetailsFragment::class)
     abstract fun noteDetailsFragment(noteDetailsFragment: NoteDetailsFragment): Fragment
+    // endregion
+
+    // region Preferences
+    @Binds
+    @IntoMap
+    @ViewModelKey(UserPreferencesViewModel::class)
+    abstract fun userPreferencesViewModel(userPreferencesViewModel: UserPreferencesViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @FragmentKey(UserPreferencesFragment::class)
+    abstract fun userPreferencesFragment(userPreferencesFragment: UserPreferencesFragment): Fragment
     // endregion
 }

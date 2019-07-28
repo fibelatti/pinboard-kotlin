@@ -89,6 +89,23 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
 
         @ParameterizedTest
         @MethodSource("testCases")
+        fun `Only add post content should be emitted to addPostContent`(content: Content) {
+            // GIVEN
+            given(mockAppStateRepository.getContent())
+                .willReturn(content.asLiveData())
+
+            appStateViewModel = AppStateViewModel(mockAppStateRepository)
+
+            // THEN
+            if (content is AddPostContent) {
+                appStateViewModel.addPostContent.currentValueShouldBe(content)
+            } else {
+                appStateViewModel.addPostContent.shouldNeverReceiveValues()
+            }
+        }
+
+        @ParameterizedTest
+        @MethodSource("testCases")
         fun `Only edit post content should be emitted to editPostContent`(content: Content) {
             // GIVEN
             given(mockAppStateRepository.getContent())
@@ -169,6 +186,23 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
                 appStateViewModel.noteDetailContent.currentValueShouldBe(content)
             } else {
                 appStateViewModel.noteDetailContent.shouldNeverReceiveValues()
+            }
+        }
+
+        @ParameterizedTest
+        @MethodSource("testCases")
+        fun `Only user preferences content should be emitted to userPreferencesContent`(content: Content) {
+            // GIVEN
+            given(mockAppStateRepository.getContent())
+                .willReturn(content.asLiveData())
+
+            appStateViewModel = AppStateViewModel(mockAppStateRepository)
+
+            // THEN
+            if (content is UserPreferencesContent) {
+                appStateViewModel.userPreferencesContent.currentValueShouldBe(content)
+            } else {
+                appStateViewModel.userPreferencesContent.shouldNeverReceiveValues()
             }
         }
 

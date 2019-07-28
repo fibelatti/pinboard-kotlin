@@ -52,6 +52,8 @@
     <dimen name="post_detail_icon_size">60dp</dimen>
     <dimen name="post_detail_tags_suggested_min_height">80dp</dimen>
 
+    <dimen name="user_preferences_tag_list_min_height">100dp</dimen>
+
     <dimen name="share_receiver_image_size">50dp</dimen>
     <dimen name="share_receiver_loading_size">120dp</dimen>
 

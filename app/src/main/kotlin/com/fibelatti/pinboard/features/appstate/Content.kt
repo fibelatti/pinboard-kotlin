@@ -46,6 +46,8 @@ data class SearchContent(
 ) : ContentWithHistory()
 
 data class AddPostContent(
+    val defaultPrivate: Boolean,
+    val defaultReadLater: Boolean,
     override val previousContent: PostListContent
 ) : ContentWithHistory()
 
@@ -73,4 +75,10 @@ data class NoteDetailContent(
     val note: Either<Boolean, Note>,
     val isConnected: Boolean = true,
     override val previousContent: NoteListContent
+) : ContentWithHistory()
+
+data class UserPreferencesContent(
+    val defaultPrivate: Boolean,
+    val defaultReadLater: Boolean,
+    override val previousContent: PostListContent
 ) : ContentWithHistory()

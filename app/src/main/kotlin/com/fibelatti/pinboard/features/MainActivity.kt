@@ -38,8 +38,10 @@ import com.fibelatti.pinboard.features.appstate.SearchContent
 import com.fibelatti.pinboard.features.appstate.TagListContent
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
+import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
 import com.fibelatti.pinboard.features.appstate.ViewNotes
 import com.fibelatti.pinboard.features.appstate.ViewTags
+import com.fibelatti.pinboard.features.appstate.ViewPreferences
 import com.fibelatti.pinboard.features.navigation.NavigationDrawerFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteListFragment
@@ -52,6 +54,7 @@ import com.fibelatti.pinboard.features.tags.presentation.TagsFragment
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.presentation.AuthFragment
 import com.fibelatti.pinboard.features.user.presentation.AuthViewModel
+import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.activity_main.*
@@ -106,6 +109,7 @@ class MainActivity :
                 is TagListContent -> showTags()
                 is NoteListContent -> showNotes()
                 is NoteDetailContent -> showNoteDetail()
+                is UserPreferencesContent -> showPreferences()
             }.exhaustive
         }
     }
@@ -211,6 +215,21 @@ class MainActivity :
         }
     }
 
+    private fun showPreferences() {
+        if (supportFragmentManager.findFragmentByTag(UserPreferencesFragment.TAG) == null) {
+            inTransaction {
+                setCustomAnimations(
+                    R.anim.slide_right_in,
+                    R.anim.slide_left_out,
+                    R.anim.slide_left_in,
+                    R.anim.slide_right_out
+                )
+                add(R.id.fragmentHost, createFragment<UserPreferencesFragment>(), UserPreferencesFragment.TAG)
+                addToBackStack(UserPreferencesFragment.TAG)
+            }
+        }
+    }
+
     private fun showEditPost() {
         if (supportFragmentManager.findFragmentByTag(PostAddFragment.TAG) == null) {
             inTransaction {
@@ -261,6 +280,10 @@ class MainActivity :
 
     override fun onNotesClicked() {
         appStateViewModel.runAction(ViewNotes)
+    }
+
+    override fun onPreferencesClicked() {
+        appStateViewModel.runAction(ViewPreferences)
     }
 
     override fun onLogoutClicked() {

@@ -16,4 +16,12 @@ interface UserRepository {
     suspend fun getLastUpdate(): String
 
     suspend fun setLastUpdate(value: String)
+
+    suspend fun getDefaultPrivate(): Boolean?
+
+    suspend fun setDefaultPrivate(value: Boolean)
+
+    suspend fun getDefaultReadLater(): Boolean?
+
+    suspend fun setDefaultReadLater(value: Boolean)
 }
