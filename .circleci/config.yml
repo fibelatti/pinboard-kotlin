@@ -20,4 +20,4 @@ jobs:
 
       - run:
           name: Gradle build
-          command: ./gradlew clean assemble test
+          command: ./gradlew clean assembleDebug testNoapiDebugUnitTest testPinboardapiDebugUnitTest
