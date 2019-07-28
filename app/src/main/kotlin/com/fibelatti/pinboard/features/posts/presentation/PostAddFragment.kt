@@ -49,6 +49,11 @@ class PostAddFragment @Inject constructor(
     }
     private val postAddViewModel by lazy { viewModelFactory.get<PostAddViewModel>(this) }
 
+    /**
+     * Saved since different flavours have different visibilities
+     */
+    private var checkBoxPrivateVisibility: Int = View.VISIBLE
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -103,6 +108,8 @@ class PostAddFragment @Inject constructor(
     }
 
     private fun setupDescriptionLayouts() {
+        checkBoxPrivateVisibility = checkboxPrivate.visibility
+
         buttonEditDescription.setText(
             if (editTextDescription.textAsString().isBlank()) {
                 R.string.posts_add_url_add_description
@@ -129,7 +136,7 @@ class PostAddFragment @Inject constructor(
         textInputLayoutUrl.visible()
         textInputLayoutTitle.visible()
         textInputUrlDescription.gone()
-        checkboxPrivate.visible()
+        checkboxPrivate.visibility = checkBoxPrivateVisibility
         checkboxReadLater.visible()
         layoutAddTags.visible()
 
