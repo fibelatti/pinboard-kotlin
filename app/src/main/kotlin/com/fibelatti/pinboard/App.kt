@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard
 
 import android.app.Application
-import androidx.appcompat.app.AppCompatDelegate
 import com.fibelatti.pinboard.core.di.AppComponent
 import com.fibelatti.pinboard.core.di.DaggerAppComponent
 
@@ -15,7 +14,6 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         appComponent.inject(this)
     }
 }
