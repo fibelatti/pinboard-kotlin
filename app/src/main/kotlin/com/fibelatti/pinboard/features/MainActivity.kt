@@ -10,7 +10,6 @@ import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.extension.exhaustive
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.inTransaction
-import com.fibelatti.core.extension.remove
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig.MAIN_PACKAGE_NAME
@@ -42,7 +41,7 @@ import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
 import com.fibelatti.pinboard.features.appstate.ViewNotes
 import com.fibelatti.pinboard.features.appstate.ViewTags
 import com.fibelatti.pinboard.features.appstate.ViewPreferences
-import com.fibelatti.pinboard.features.navigation.NavigationDrawerFragment
+import com.fibelatti.pinboard.features.navigation.NavigationDrawer
 import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteListFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostAddFragment
@@ -63,9 +62,7 @@ import kotlinx.android.synthetic.main.fragment_splash.imageViewAppLogo as splash
 
 val Fragment.mainActivity: MainActivity? get() = activity as? MainActivity
 
-class MainActivity :
-    BaseActivity(),
-    NavigationDrawerFragment.Callback {
+class MainActivity : BaseActivity() {
 
     private val appStateViewModel: AppStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(this) }
     private val authViewModel: AuthViewModel by lazy { viewModelFactory.get<AuthViewModel>(this) }
@@ -90,7 +87,9 @@ class MainActivity :
     }
 
     private fun setupView() {
-        bottomAppBar?.setNavigationOnClickListener { showNavigation() }
+        bottomAppBar?.setNavigationOnClickListener {
+            NavigationDrawer.show(this, NavigationCallback())
+        }
     }
 
     private fun setupViewModels() {
@@ -250,66 +249,6 @@ class MainActivity :
         update(bottomAppBar, fabMain)
     }
 
-    override fun onAllClicked() {
-        appStateViewModel.runAction(All)
-    }
-
-    override fun onRecentClicked() {
-        appStateViewModel.runAction(Recent)
-    }
-
-    override fun onPublicClicked() {
-        appStateViewModel.runAction(Public)
-    }
-
-    override fun onPrivateClicked() {
-        appStateViewModel.runAction(Private)
-    }
-
-    override fun onUnreadClicked() {
-        appStateViewModel.runAction(Unread)
-    }
-
-    override fun onUntaggedClicked() {
-        appStateViewModel.runAction(Untagged)
-    }
-
-    override fun onTagsClicked() {
-        appStateViewModel.runAction(ViewTags)
-    }
-
-    override fun onNotesClicked() {
-        appStateViewModel.runAction(ViewNotes)
-    }
-
-    override fun onPreferencesClicked() {
-        appStateViewModel.runAction(ViewPreferences)
-    }
-
-    override fun onLogoutClicked() {
-        authViewModel.logout()
-    }
-
-    override fun onShareAppClicked() {
-        shareText(
-            R.string.share_title,
-            getString(R.string.share_text, "$PLAY_STORE_BASE_URL${packageName.remove(".debug")}")
-        )
-    }
-
-    override fun onRateAppClicked() {
-        startActivity(
-            Intent(Intent.ACTION_VIEW).apply {
-                data = Uri.parse("$PLAY_STORE_BASE_URL$MAIN_PACKAGE_NAME")
-                setPackage("com.android.vending")
-            }
-        )
-    }
-
-    private fun showNavigation() {
-        NavigationDrawerFragment().showNavigation(this)
-    }
-
     private fun handleLoginState(loginState: LoginState) {
         val animTime = resources.getInteger(R.integer.anim_time_long).toLong()
 
@@ -362,5 +301,63 @@ class MainActivity :
         layoutTitle.visible()
         bottomAppBar.visible()
         fabMain.show()
+    }
+
+    inner class NavigationCallback : NavigationDrawer.Callback {
+        override fun onAllClicked() {
+            appStateViewModel.runAction(All)
+        }
+
+        override fun onRecentClicked() {
+            appStateViewModel.runAction(Recent)
+        }
+
+        override fun onPublicClicked() {
+            appStateViewModel.runAction(Public)
+        }
+
+        override fun onPrivateClicked() {
+            appStateViewModel.runAction(Private)
+        }
+
+        override fun onUnreadClicked() {
+            appStateViewModel.runAction(Unread)
+        }
+
+        override fun onUntaggedClicked() {
+            appStateViewModel.runAction(Untagged)
+        }
+
+        override fun onTagsClicked() {
+            appStateViewModel.runAction(ViewTags)
+        }
+
+        override fun onNotesClicked() {
+            appStateViewModel.runAction(ViewNotes)
+        }
+
+        override fun onPreferencesClicked() {
+            appStateViewModel.runAction(ViewPreferences)
+        }
+
+        override fun onLogoutClicked() {
+            authViewModel.logout()
+        }
+
+        override fun onShareAppClicked() {
+            shareText(
+                R.string.share_title,
+                getString(R.string.share_text, "$PLAY_STORE_BASE_URL$MAIN_PACKAGE_NAME")
+            )
+        }
+
+        override fun onRateAppClicked() {
+            startActivity(
+                Intent(Intent.ACTION_VIEW).apply {
+                    data = Uri.parse("$PLAY_STORE_BASE_URL$MAIN_PACKAGE_NAME")
+                    setPackage("com.android.vending")
+                }
+            )
+        }
     }
 }

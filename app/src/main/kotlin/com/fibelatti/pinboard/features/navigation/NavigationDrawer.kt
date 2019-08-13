@@ -1,13 +1,15 @@
 package com.fibelatti.pinboard.features.navigation
 
 import android.content.Context
+import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatDialog
 import com.fibelatti.core.extension.gone
 import com.fibelatti.pinboard.R
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.fragment_menu.*
 
-class NavigationDrawerFragment {
+object NavigationDrawer {
 
     interface Callback {
         fun onAllClicked()
@@ -24,13 +26,23 @@ class NavigationDrawerFragment {
         fun onRateAppClicked()
     }
 
-    fun showNavigation(context: Context) {
-        BottomSheetDialog(context, R.style.AppTheme_BaseBottomSheetDialog_BottomSheetDialog).apply {
-            setContentView(R.layout.fragment_menu)
-            (context as? Callback)?.let { setupListeners(it) }
-            setupVersion()
-            show()
-        }
+    fun show(context: Context, callback: Callback) {
+        BottomSheetDialog(context, R.style.AppTheme_BaseBottomSheetDialog_BottomSheetDialog)
+            .apply {
+                setContentView(R.layout.fragment_menu)
+                setupListeners(callback)
+                setupVersion()
+                setOnShowListener { dialog ->
+                    (dialog as? BottomSheetDialog)
+                        ?.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)
+                        ?.let {
+                            val behavior = BottomSheetBehavior.from(it)
+                            behavior.skipCollapsed = true
+                            behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                        }
+                }
+                show()
+            }
     }
 
     private fun AppCompatDialog.setupListeners(callback: Callback) {
