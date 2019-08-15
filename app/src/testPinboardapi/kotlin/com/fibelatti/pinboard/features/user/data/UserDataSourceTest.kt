@@ -6,6 +6,9 @@ import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.InstantExecutorExtension
 import com.fibelatti.pinboard.MockDataProvider.mockApiToken
 import com.fibelatti.pinboard.MockDataProvider.mockTime
+import com.fibelatti.pinboard.core.android.Appearance
+import com.fibelatti.pinboard.core.android.DarkTheme
+import com.fibelatti.pinboard.core.android.LightTheme
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.features.posts.data.PostsDao
 import com.fibelatti.pinboard.features.user.domain.LoginState
@@ -149,6 +152,38 @@ internal class UserDataSourceTest {
 
             // THEN
             verify(mockUserSharedPreferences).setLastUpdate(mockTime)
+        }
+
+        @Test
+        fun `GIVEN set appearance is the light theme WHEN getAppearance is called THEN LightTheme is returned`() {
+            // GIVEN
+            given(mockUserSharedPreferences.getAppearance())
+                .willReturn(LightTheme.value)
+
+            // WHEN
+            runBlocking { userDataSource.getAppearance() shouldBe LightTheme }
+        }
+
+        @Test
+        fun `GIVEN set appearance is not the light theme WHEN getAppearance is called THEN DarkTheme is returned`() {
+            // GIVEN
+            given(mockUserSharedPreferences.getAppearance())
+                .willReturn("anything really")
+
+            // WHEN
+            runBlocking { userDataSource.getAppearance() shouldBe DarkTheme }
+        }
+
+        @Test
+        fun `WHEN setAppearance is called THEN UserSharedPreferences is set`() {
+            // GIVEN
+            val mockAppearance = mock<Appearance>()
+
+            // WHEN
+            runBlocking { userDataSource.setAppearance(mockAppearance) }
+
+            // THEN
+            verify(mockUserSharedPreferences).setAppearance(mockAppearance.value)
         }
 
         @Test

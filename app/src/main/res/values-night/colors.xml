@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="color_system_bar">#000000</color>
+    <color name="color_background">#000000</color>
+    <color name="color_background_contrast">#282828</color>
+    <color name="color_on_background">#F5F5F5</color>
+    <color name="color_icon">#F5F5F5</color>
+
+    <color name="color_divider">#9E9E9E</color>
+
+    <color name="text_primary">#F5F5F5</color>
+    <color name="text_secondary">#9E9E9E</color>
+
+    <color name="auth_form_background">#424242</color>
+</resources>

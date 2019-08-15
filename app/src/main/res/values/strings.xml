@@ -146,6 +146,9 @@
 
     <!-- User Preferences -->
     <string name="user_preferences_title">Preferences</string>
+    <string name="user_preferences_appearance">Appearance</string>
+    <string name="user_preferences_appearance_dark">Dark theme</string>
+    <string name="user_preferences_appearance_light">Light theme</string>
     <string name="user_preferences_default_private">Private by default</string>
     <string name="user_preferences_default_private_description">If checked, links shared to Pinkt will be saved as private, otherwise your default Pinboard preferences apply</string>
     <string name="user_preferences_default_read_later">Read later by default</string>

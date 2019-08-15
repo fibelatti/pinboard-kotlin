@@ -39,8 +39,8 @@ import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
 import com.fibelatti.pinboard.features.appstate.ViewNotes
-import com.fibelatti.pinboard.features.appstate.ViewTags
 import com.fibelatti.pinboard.features.appstate.ViewPreferences
+import com.fibelatti.pinboard.features.appstate.ViewTags
 import com.fibelatti.pinboard.features.navigation.NavigationDrawer
 import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteListFragment
@@ -64,8 +64,8 @@ val Fragment.mainActivity: MainActivity? get() = activity as? MainActivity
 
 class MainActivity : BaseActivity() {
 
-    private val appStateViewModel: AppStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(this) }
-    private val authViewModel: AuthViewModel by lazy { viewModelFactory.get<AuthViewModel>(this) }
+    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(this) }
+    private val authViewModel by lazy { viewModelFactory.get<AuthViewModel>(this) }
 
     private val handler = Handler()
 
@@ -98,6 +98,7 @@ class MainActivity : BaseActivity() {
             error(error, ::handleError)
         }
 
+        appStateViewModel.reset()
         observe(appStateViewModel.content) { content ->
             when (content) {
                 is PostListContent -> showPostList()
@@ -258,7 +259,9 @@ class MainActivity : BaseActivity() {
                 handler.postDelayed({
                     inTransaction {
                         replace(R.id.fragmentHost, createFragment<PostListFragment>(), PostListFragment.TAG)
-                        addSharedElement(authViewLogo, SharedElementTransitionNames.APP_LOGO)
+                        authViewLogo?.let {
+                            addSharedElement(it, SharedElementTransitionNames.APP_LOGO)
+                        }
                     }
 
                     showControls()
@@ -269,7 +272,9 @@ class MainActivity : BaseActivity() {
                     inTransaction {
                         setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                         replace(R.id.fragmentHost, createFragment<AuthFragment>())
-                        addSharedElement(splashViewLogo, SharedElementTransitionNames.APP_LOGO)
+                        splashViewLogo?.let {
+                            addSharedElement(it, SharedElementTransitionNames.APP_LOGO)
+                        }
                     }
 
                     hideControls()

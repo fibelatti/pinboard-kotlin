@@ -46,7 +46,7 @@ class NavigationActionHandler @Inject constructor(
             posts = null,
             sortType = NewestFirst,
             searchParameters = SearchParameters(),
-            shouldLoad = if (connectivityInfoProvider.isConnected()) ShouldLoadFirstPage else Loaded,
+            shouldLoad = ShouldLoadFirstPage,
             isConnected = connectivityInfoProvider.isConnected()
         )
     }
@@ -109,6 +109,7 @@ class NavigationActionHandler @Inject constructor(
     private suspend fun viewPreferences(currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
             UserPreferencesContent(
+                appearance = userRepository.getAppearance(),
                 defaultPrivate = userRepository.getDefaultPrivate().orFalse(),
                 defaultReadLater = userRepository.getDefaultReadLater().orFalse(),
                 previousContent = it

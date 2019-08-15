@@ -13,6 +13,7 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito.verify
 import org.mockito.Mockito
 
 internal class AppStateViewModelTest : BaseViewModelTest() {
@@ -33,6 +34,17 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
 
         // THEN
         appStateViewModel.content.currentValueShouldBe(mockContent)
+    }
+
+    @Test
+    fun `WHEN reset is called THEN repository should reset`() {
+        appStateViewModel = AppStateViewModel(mockAppStateRepository)
+
+        // WHEN
+        appStateViewModel.reset()
+
+        // THEN
+        verify(mockAppStateRepository).reset()
     }
 
     @Test

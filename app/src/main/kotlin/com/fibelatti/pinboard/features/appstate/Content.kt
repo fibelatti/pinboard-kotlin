@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.core.extension.orZero
 import com.fibelatti.core.functional.Either
+import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -78,6 +79,7 @@ data class NoteDetailContent(
 ) : ContentWithHistory()
 
 data class UserPreferencesContent(
+    val appearance: Appearance,
     val defaultPrivate: Boolean,
     val defaultReadLater: Boolean,
     override val previousContent: PostListContent

@@ -12,7 +12,7 @@ import javax.inject.Singleton
 
 @Singleton
 class AppStateDataSource @Inject constructor(
-    resourceProvider: ResourceProvider,
+    private val resourceProvider: ResourceProvider,
     private val navigationActionHandler: NavigationActionHandler,
     private val postActionHandler: PostActionHandler,
     private val searchActionHandler: SearchActionHandler,
@@ -22,8 +22,16 @@ class AppStateDataSource @Inject constructor(
     private val connectivityInfoProvider: ConnectivityInfoProvider
 ) : AppStateRepository {
 
-    private val currentContent = MutableLiveData<Content>().apply {
-        value = PostListContent(
+    private val currentContent = MutableLiveData<Content>()
+
+    init {
+        reset()
+    }
+
+    override fun getContent(): LiveData<Content> = currentContent
+
+    override fun reset() {
+        currentContent.value = PostListContent(
             category = All,
             title = resourceProvider.getString(R.string.posts_title_all),
             posts = null,
@@ -33,8 +41,6 @@ class AppStateDataSource @Inject constructor(
             isConnected = connectivityInfoProvider.isConnected()
         )
     }
-
-    override fun getContent(): LiveData<Content> = currentContent
 
     override suspend fun runAction(action: Action) {
         singleRunner.afterPrevious {

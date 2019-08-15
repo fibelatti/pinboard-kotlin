@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorOnPrimary">@color/color_white_opaque</item>
         <item name="colorSecondary">@color/color_secondary</item>
@@ -15,7 +15,8 @@
         <item name="android:windowBackground">@color/color_background</item>
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
-        <item name="android:statusBarColor">@color/color_status_bar</item>
+        <item name="android:statusBarColor">@color/color_system_bar</item>
+        <item name="android:navigationBarColor">@color/color_system_bar</item>
         <item name="android:fitsSystemWindows">true</item>
         <item name="android:windowAnimationStyle">@style/AppTheme.AppActivityAnimation</item>
         <item name="android:alertDialogTheme">@style/AppTheme.AlertDialog</item>
@@ -93,6 +94,11 @@
     </style>
 
     <style name="AppTheme.TextButton.Menu.Small">
+        <item name="android:textSize">@dimen/text_size_xsmall</item>
+    </style>
+
+    <style name="AppTheme.GroupButtonItem" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:textAllCaps">false</item>
         <item name="android:textSize">@dimen/text_size_xsmall</item>
     </style>
 

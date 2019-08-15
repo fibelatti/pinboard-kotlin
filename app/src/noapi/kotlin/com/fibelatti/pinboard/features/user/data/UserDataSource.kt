@@ -3,6 +3,9 @@ package com.fibelatti.pinboard.features.user.data
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.fibelatti.pinboard.core.android.Appearance
+import com.fibelatti.pinboard.core.android.DarkTheme
+import com.fibelatti.pinboard.core.android.LightTheme
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -30,6 +33,18 @@ class UserDataSource @Inject constructor(
     override suspend fun getLastUpdate(): String = ""
 
     override suspend fun setLastUpdate(value: String) {}
+
+    override suspend fun getAppearance(): Appearance {
+        return if (userSharedPreferences.getAppearance() == LightTheme.value) {
+            LightTheme
+        } else {
+            DarkTheme
+        }
+    }
+
+    override suspend fun setAppearance(appearance: Appearance) {
+        userSharedPreferences.setAppearance(appearance.value)
+    }
 
     override suspend fun getDefaultPrivate(): Boolean? = null
 

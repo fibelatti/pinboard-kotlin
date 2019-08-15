@@ -8,6 +8,7 @@ import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.mockTitle
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import kotlinx.coroutines.runBlocking
@@ -135,11 +136,11 @@ internal class NavigationActionHandlerTest {
                 posts = null,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
-                shouldLoad = Loaded,
+                shouldLoad = ShouldLoadFirstPage,
                 isConnected = false
             )
 
-            verify(mockConnectivityInfoProvider, times(2)).isConnected()
+            verify(mockConnectivityInfoProvider).isConnected()
         }
 
         fun testCases(): List<Triple<ViewCategory, Int, String>> =
@@ -506,9 +507,11 @@ internal class NavigationActionHandlerTest {
             searchParameters = SearchParameters(),
             shouldLoad = ShouldLoadFirstPage
         )
+        private val mockAppearance = mock<Appearance>()
 
         @BeforeEach
         fun setup() {
+            givenSuspend { mockUserRepository.getAppearance() }.willReturn(mockAppearance)
             givenSuspend { mockUserRepository.getDefaultPrivate() }.willReturn(true)
             givenSuspend { mockUserRepository.getDefaultReadLater() }.willReturn(true)
         }
@@ -533,6 +536,7 @@ internal class NavigationActionHandlerTest {
 
             // THEN
             result shouldBe UserPreferencesContent(
+                appearance = mockAppearance,
                 defaultPrivate = true,
                 defaultReadLater = true,
                 previousContent = initialContent
@@ -551,6 +555,7 @@ internal class NavigationActionHandlerTest {
 
             // THEN
             result shouldBe UserPreferencesContent(
+                appearance = mockAppearance,
                 defaultPrivate = false,
                 defaultReadLater = true,
                 previousContent = initialContent
@@ -569,6 +574,7 @@ internal class NavigationActionHandlerTest {
 
             // THEN
             result shouldBe UserPreferencesContent(
+                appearance = mockAppearance,
                 defaultPrivate = true,
                 defaultReadLater = false,
                 previousContent = initialContent

@@ -1,145 +1,197 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_background"
-    android:clickable="true"
-    android:focusable="true"
-    android:orientation="vertical"
-    android:paddingStart="@dimen/padding_regular"
-    android:paddingEnd="@dimen/padding_regular">
+    android:fillViewport="true">
 
-    <LinearLayout
-        android:id="@+id/layoutPrivateDefault"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/color_background"
+        android:clickable="true"
+        android:focusable="true"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/layoutReadLaterDefault"
-        app:layout_constraintTop_toTopOf="parent">
+        android:paddingStart="@dimen/padding_regular"
+        android:paddingEnd="@dimen/padding_regular">
 
         <TextView
-            android:id="@+id/textViewDefaultPrivateTitle"
+            android:id="@+id/textViewAppearanceTitle"
             style="@style/AppTheme.Text.SectionTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/user_preferences_default_private" />
+            android:text="@string/user_preferences_appearance"
+            app:layout_constraintBottom_toTopOf="@+id/buttonGroupAppearance"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <CheckBox
-            android:id="@+id/checkboxPrivateDefault"
-            android:layout_width="wrap_content"
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/buttonGroupAppearance"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_small"
-            android:drawableEnd="@drawable/ic_private"
-            android:drawablePadding="@dimen/padding_small"
-            android:text="@string/posts_add_private" />
+            app:layout_constraintBottom_toTopOf="@+id/dividerAppearance"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewAppearanceTitle"
+            app:singleSelection="true">
 
-        <TextView
-            android:id="@+id/textViewDefaultPrivateDescription"
-            style="@style/AppTheme.Text.Detail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_small"
-            android:layout_marginEnd="@dimen/margin_small"
-            android:text="@string/user_preferences_default_private_description" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonAppearanceDark"
+                style="@style/AppTheme.GroupButtonItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/user_preferences_appearance_dark" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonAppearanceLight"
+                style="@style/AppTheme.GroupButtonItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/user_preferences_appearance_light" />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
 
         <include
-            android:id="@+id/dividerPrivate"
+            android:id="@+id/dividerAppearance"
             layout="@layout/layout_divider"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="@dimen/divider_size"
             android:layout_marginTop="@dimen/margin_regular"
-            android:layout_marginBottom="@dimen/margin_regular" />
-    </LinearLayout>
+            android:layout_marginBottom="@dimen/margin_regular"
+            app:layout_constraintBottom_toTopOf="@+id/layoutPrivateDefault"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/buttonGroupAppearance" />
 
-    <LinearLayout
-        android:id="@+id/layoutReadLaterDefault"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/textViewDefaultTagsTitle"
-        app:layout_constraintTop_toBottomOf="@+id/layoutPrivateDefault">
+        <LinearLayout
+            android:id="@+id/layoutPrivateDefault"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/layoutReadLaterDefault"
+            app:layout_constraintTop_toBottomOf="@+id/dividerAppearance">
 
+            <TextView
+                android:id="@+id/textViewDefaultPrivateTitle"
+                style="@style/AppTheme.Text.SectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/user_preferences_default_private" />
+
+            <CheckBox
+                android:id="@+id/checkboxPrivateDefault"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:drawableEnd="@drawable/ic_private"
+                android:drawablePadding="@dimen/padding_small"
+                android:text="@string/posts_add_private" />
+
+            <TextView
+                android:id="@+id/textViewDefaultPrivateDescription"
+                style="@style/AppTheme.Text.Detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:text="@string/user_preferences_default_private_description" />
+
+            <include
+                android:id="@+id/dividerPrivate"
+                layout="@layout/layout_divider"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_size"
+                android:layout_marginTop="@dimen/margin_regular"
+                android:layout_marginBottom="@dimen/margin_regular" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutReadLaterDefault"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/textViewDefaultTagsTitle"
+            app:layout_constraintTop_toBottomOf="@+id/layoutPrivateDefault">
+
+
+            <TextView
+                android:id="@+id/textViewDefaultReadLaterTitle"
+                style="@style/AppTheme.Text.SectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/user_preferences_default_read_later" />
+
+            <CheckBox
+                android:id="@+id/checkboxReadLaterDefault"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:drawableEnd="@drawable/ic_read_later"
+                android:drawablePadding="@dimen/padding_small"
+                android:text="@string/posts_add_read_later" />
+
+            <TextView
+                android:id="@+id/textViewDefaultReadLaterDescription"
+                style="@style/AppTheme.Text.Detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:text="@string/user_preferences_default_read_later_description" />
+
+            <include
+                android:id="@+id/dividerReadLater"
+                layout="@layout/layout_divider"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_size"
+                android:layout_marginTop="@dimen/margin_regular"
+                android:layout_marginBottom="@dimen/margin_regular" />
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/textViewDefaultReadLaterTitle"
+            android:id="@+id/textViewDefaultTagsTitle"
             style="@style/AppTheme.Text.SectionTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/user_preferences_default_read_later" />
-
-        <CheckBox
-            android:id="@+id/checkboxReadLaterDefault"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small"
-            android:drawableEnd="@drawable/ic_read_later"
-            android:drawablePadding="@dimen/padding_small"
-            android:text="@string/posts_add_read_later" />
+            android:text="@string/user_preferences_default_tags"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/textViewDefaultTagsDescription"
+            app:layout_constraintTop_toBottomOf="@+id/layoutReadLaterDefault" />
 
         <TextView
-            android:id="@+id/textViewDefaultReadLaterDescription"
+            android:id="@+id/textViewDefaultTagsDescription"
             style="@style/AppTheme.Text.Detail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_small"
-            android:layout_marginEnd="@dimen/margin_small"
-            android:text="@string/user_preferences_default_read_later_description" />
+            android:text="@string/user_preferences_default_tags_description"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/layoutChipContainer"
+            app:layout_constraintTop_toBottomOf="@+id/textViewDefaultTagsTitle" />
+
+        <ScrollView
+            android:id="@+id/layoutChipContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            app:layout_constrainedHeight="true"
+            app:layout_constraintBottom_toTopOf="@+id/layoutTagList"
+            app:layout_constraintTop_toBottomOf="@+id/textViewDefaultTagsDescription">
+
+            <com.fibelatti.pinboard.features.posts.presentation.TagChipGroup
+                android:id="@+id/chipGroupSelectedTags"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </ScrollView>
 
         <include
-            android:id="@+id/dividerReadLater"
-            layout="@layout/layout_divider"
+            android:id="@+id/layoutTagList"
+            layout="@layout/layout_tag_list"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/divider_size"
-            android:layout_marginTop="@dimen/margin_regular"
-            android:layout_marginBottom="@dimen/margin_regular" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/textViewDefaultTagsTitle"
-        style="@style/AppTheme.Text.SectionTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/user_preferences_default_tags"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/textViewDefaultTagsDescription"
-        app:layout_constraintTop_toBottomOf="@+id/layoutReadLaterDefault" />
-
-    <TextView
-        android:id="@+id/textViewDefaultTagsDescription"
-        style="@style/AppTheme.Text.Detail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/user_preferences_default_tags_description"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/layoutChipContainer"
-        app:layout_constraintTop_toBottomOf="@+id/textViewDefaultTagsTitle" />
-
-    <ScrollView
-        android:id="@+id/layoutChipContainer"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:visibility="invisible"
-        app:layout_constrainedHeight="true"
-        app:layout_constraintBottom_toTopOf="@+id/layoutTagList"
-        app:layout_constraintHeight_default="wrap"
-        app:layout_constraintTop_toBottomOf="@+id/textViewDefaultTagsDescription">
-
-        <com.fibelatti.pinboard.features.posts.presentation.TagChipGroup
-            android:id="@+id/chipGroupSelectedTags"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </ScrollView>
-
-    <include
-        android:id="@+id/layoutTagList"
-        layout="@layout/layout_tag_list"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/margin_xsmall"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHeight_default="wrap"
-        app:layout_constraintHeight_min="@dimen/user_preferences_tag_list_min_height"
-        app:layout_constraintTop_toBottomOf="@+id/layoutChipContainer" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_xsmall"
+            android:visibility="invisible"
+            app:layout_constrainedHeight="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHeight_min="@dimen/user_preferences_tag_list_min_height"
+            app:layout_constraintTop_toBottomOf="@+id/layoutChipContainer" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

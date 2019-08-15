@@ -86,6 +86,35 @@ internal class UserSharedPreferencesTest {
     }
 
     @Test
+    fun `GIVEN KEY_APPEARANCE has no value WHEN getAppearance is called THEN empty string is returned`() {
+        // GIVEN
+        given(mockSharedPreferences.get(KEY_APPEARANCE, ""))
+            .willReturn("")
+
+        // THEN
+        userSharedPreferences.getAppearance() shouldBe ""
+    }
+
+    @Test
+    fun `GIVEN KEY_APPEARANCE has value WHEN getAppearance is called THEN value is returned`() {
+        // GIVEN
+        given(mockSharedPreferences.get(KEY_APPEARANCE, ""))
+            .willReturn("some-value")
+
+        // THEN
+        userSharedPreferences.getAppearance() shouldBe "some-value"
+    }
+
+    @Test
+    fun `WHEN setAppearance is called THEN KEY_APPEARANCE is set`() {
+        // WHEN
+        userSharedPreferences.setAppearance("some-value")
+
+        // THEN
+        verify(mockEditor).putString(KEY_APPEARANCE, "some-value")
+    }
+
+    @Test
     fun `GIVEN KEY_DEFAULT_PRIVATE returns false THEN null is returned`() {
         // GIVEN
         given(mockSharedPreferences.get(KEY_DEFAULT_PRIVATE, false))

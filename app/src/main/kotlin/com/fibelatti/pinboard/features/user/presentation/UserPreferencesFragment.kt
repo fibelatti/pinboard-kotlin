@@ -5,9 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.fibelatti.core.archcomponents.extension.observe
+import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.DarkTheme
+import com.fibelatti.pinboard.core.android.LightTheme
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.mainActivity
@@ -40,6 +43,17 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
         setupLayout()
 
         viewLifecycleOwner.observe(appStateViewModel.userPreferencesContent) {
+            when (it.appearance) {
+                DarkTheme -> buttonAppearanceDark.isChecked = true
+                LightTheme -> buttonAppearanceLight.isChecked = true
+            }
+            buttonAppearanceDark.setOnClickListener {
+                userPreferencesViewModel.saveAppearance(DarkTheme)
+            }
+            buttonAppearanceLight.setOnClickListener {
+                userPreferencesViewModel.saveAppearance(LightTheme)
+            }
+
             checkboxPrivateDefault.isChecked = it.defaultPrivate
             checkboxPrivateDefault.setOnCheckedChangeListener { _, isChecked ->
                 userPreferencesViewModel.saveDefaultPrivate(isChecked)
@@ -49,6 +63,10 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
             checkboxReadLaterDefault.setOnCheckedChangeListener { _, isChecked ->
                 userPreferencesViewModel.saveDefaultReadLater(isChecked)
             }
+        }
+
+        viewLifecycleOwner.observeEvent(userPreferencesViewModel.appearanceChanged) {
+            activity?.recreate()
         }
     }
 

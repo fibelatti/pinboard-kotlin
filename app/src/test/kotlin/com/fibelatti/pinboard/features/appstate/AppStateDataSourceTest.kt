@@ -80,6 +80,13 @@ internal class AppStateDataSourceTest {
         appStateDataSource.getContent().currentValueShouldBe(expectedInitialValue)
     }
 
+    @Test
+    fun `reset should set currentContent to the initial value`() {
+        appStateDataSource.reset()
+
+        appStateDataSource.getContent().currentValueShouldBe(expectedInitialValue)
+    }
+
     @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class RunActionTests {

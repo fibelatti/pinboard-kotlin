@@ -22,6 +22,10 @@ class AppStateViewModel @Inject constructor(
     val noteDetailContent: LiveData<NoteDetailContent> = mediatorLiveDataForContentType()
     val userPreferencesContent: LiveData<UserPreferencesContent> = mediatorLiveDataForContentType()
 
+    fun reset() {
+        appStateRepository.reset()
+    }
+
     fun runAction(action: Action) {
         launch { appStateRepository.runAction(action) }
     }
