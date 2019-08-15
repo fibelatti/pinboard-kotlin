@@ -6,28 +6,26 @@
     android:layout_height="match_parent"
     android:layout_marginStart="@dimen/margin_regular"
     android:layout_marginEnd="@dimen/margin_regular"
-    android:animateLayoutChanges="true"
-    android:paddingTop="@dimen/padding_regular">
+    android:animateLayoutChanges="true">
 
     <TextView
         android:id="@+id/textViewTagsTitle"
         style="@style/AppTheme.Text.SectionTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_small"
+        android:layout_marginBottom="@dimen/margin_small"
         android:text="@string/posts_add_tags_title"
         app:layout_constraintBottom_toTopOf="@+id/textInputLayoutTags"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutTags"
         style="@style/AppTheme.InputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_small"
         android:hint="@string/posts_add_tags"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/buttonEditTags"
