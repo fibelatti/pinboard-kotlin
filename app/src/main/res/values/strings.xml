@@ -49,7 +49,7 @@
     <string name="auth_title">Welcome to Pinkt</string>
     <string name="auth_button">Login</string>
     <string name="auth_token_title">Where can I find this?</string>
-    <string name="auth_token_description">You can find your API token in the <a href="https://pinboard.in/settings/password">Pinboard Settings</a> page</string>
+    <string name="auth_token_description">You can find your API token in the <a href="https://pinboard.in/settings/password">Pinboard Settings</a> page. It is composed by your username and an alphanumeric string\n(e.g. username:00F0D0FE123456789012)</string>
     <string name="auth_token_error">Authentication failed. Please double check your API Token</string>
     <string name="auth_logged_out_feedback">Logged out</string>
 

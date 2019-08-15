@@ -8,11 +8,12 @@ import com.fibelatti.core.archcomponents.postEvent
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.network.isUnauthorized
 import com.fibelatti.pinboard.features.user.domain.Login
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.net.HttpURLConnection
 import javax.inject.Inject
 
 class AuthViewModel @Inject constructor(
@@ -30,7 +31,12 @@ class AuthViewModel @Inject constructor(
         launch {
             login(Login.Params(apiToken))
                 .onFailure {
-                    if (it.isUnauthorized()) {
+                    val loginFailedCodes = listOf(
+                        HttpURLConnection.HTTP_UNAUTHORIZED,
+                        HttpURLConnection.HTTP_INTERNAL_ERROR
+                    )
+
+                    if (it is HttpException && it.code() in loginFailedCodes) {
                         _apiTokenError.postEvent(resourceProvider.getString(R.string.auth_token_error))
                     } else {
                         handleError(it)

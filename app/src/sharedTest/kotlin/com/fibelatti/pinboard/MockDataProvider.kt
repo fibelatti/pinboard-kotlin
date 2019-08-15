@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard
 
-import com.fibelatti.core.functional.Failure
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
@@ -11,11 +10,6 @@ import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagsDto
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import okhttp3.MediaType
-import okhttp3.ResponseBody
-import retrofit2.HttpException
-import retrofit2.Response
-import java.net.HttpURLConnection
 import java.net.URLEncoder
 
 object MockDataProvider {
@@ -128,13 +122,4 @@ object MockDataProvider {
         name: String = mockTagString1
     ): Tag = Tag(name)
     // endregion
-
-    fun UnauthorizedFailure(): Failure = Failure(
-        HttpException(
-            Response.error<GenericResponseDto>(
-                HttpURLConnection.HTTP_UNAUTHORIZED,
-                ResponseBody.create(MediaType.parse("application/json"), "{}")
-            )
-        )
-    )
 }
