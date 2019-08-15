@@ -39,7 +39,7 @@ object Dependencies {
 
     const val customTabs = "androidx.browser:browser:1.0.0"
 
-    private const val daggerVersion = "2.22.1"
+    private const val daggerVersion = "2.24"
 
     const val dagger = "com.google.dagger:dagger:$daggerVersion"
     const val daggerCompiler = "com.google.dagger:dagger-compiler:$daggerVersion"
