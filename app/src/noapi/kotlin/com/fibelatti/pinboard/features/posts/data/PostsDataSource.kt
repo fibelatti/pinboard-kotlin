@@ -5,7 +5,6 @@ import com.fibelatti.core.extension.orFalse
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.Success
-import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.pinboard.core.AppConfig
@@ -19,6 +18,7 @@ import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.lang.IllegalStateException
 import java.util.UUID
 import javax.inject.Inject
 
@@ -37,8 +37,12 @@ class PostsDataSource @Inject constructor(
         private: Boolean?,
         readLater: Boolean?,
         tags: List<Tag>?
-    ): Result<Unit> = withContext(Dispatchers.IO) {
-        val existingPost = catching { postsDao.getPost(url) }.getOrNull()
+    ): Result<Unit> {
+        val existingPost = resultFrom {
+            withContext(Dispatchers.IO) {
+                postsDao.getPost(url)
+            }
+        }.getOrNull()
 
         val newPost = PostDto(
             href = existingPost?.href ?: url,
@@ -52,11 +56,19 @@ class PostsDataSource @Inject constructor(
             imageUrl = null
         )
 
-        resultFrom { postsDao.savePosts(listOf(newPost)) }
+        return resultFrom {
+            withContext(Dispatchers.IO) {
+                postsDao.savePosts(listOf(newPost))
+            }
+        }
     }
 
-    override suspend fun delete(url: String): Result<Unit> = withContext(Dispatchers.IO) {
-        resultFrom { postsDao.deletePost(url) }
+    override suspend fun delete(url: String): Result<Unit> {
+        return resultFrom {
+            withContext(Dispatchers.IO) {
+                postsDao.deletePost(url)
+            }
+        }
     }
 
     override suspend fun getAllPosts(
@@ -70,7 +82,7 @@ class PostsDataSource @Inject constructor(
         countLimit: Int,
         pageLimit: Int,
         pageOffset: Int
-    ): Result<Pair<Int, List<Post>>?> = withContext(Dispatchers.IO) {
+    ): Result<Pair<Int, List<Post>>?> =
         getLocalData(
             newestFirst,
             searchTerm,
@@ -83,10 +95,9 @@ class PostsDataSource @Inject constructor(
             pageLimit,
             pageOffset
         )
-    }
 
     @VisibleForTesting
-    fun getLocalDataSize(
+    suspend fun getLocalDataSize(
         searchTerm: String,
         tags: List<Tag>?,
         untaggedOnly: Boolean,
@@ -94,8 +105,8 @@ class PostsDataSource @Inject constructor(
         privatePostsOnly: Boolean,
         readLaterOnly: Boolean,
         countLimit: Int
-    ): Int {
-        return postsDao.getPostCount(
+    ): Int = withContext(Dispatchers.IO) {
+        postsDao.getPostCount(
             term = PostsDao.preFormatTerm(searchTerm),
             tag1 = tags.getAndFormat(0),
             tag2 = tags.getAndFormat(1),
@@ -109,7 +120,7 @@ class PostsDataSource @Inject constructor(
     }
 
     @VisibleForTesting
-    fun getLocalData(
+    suspend fun getLocalData(
         newestFirst: Boolean,
         searchTerm: String,
         tags: List<Tag>?,
@@ -121,7 +132,7 @@ class PostsDataSource @Inject constructor(
         pageLimit: Int,
         pageOffset: Int
     ): Result<Pair<Int, List<Post>>?> {
-        return catching {
+        return resultFrom {
             val localDataSize = getLocalDataSize(
                 searchTerm,
                 tags,
@@ -133,19 +144,23 @@ class PostsDataSource @Inject constructor(
             )
 
             if (localDataSize > 0) {
-                localDataSize to postsDao.getAllPosts(
-                    newestFirst = newestFirst,
-                    term = PostsDao.preFormatTerm(searchTerm),
-                    tag1 = tags.getAndFormat(0),
-                    tag2 = tags.getAndFormat(1),
-                    tag3 = tags.getAndFormat(2),
-                    untaggedOnly = untaggedOnly,
-                    publicPostsOnly = publicPostsOnly,
-                    privatePostsOnly = privatePostsOnly,
-                    readLaterOnly = readLaterOnly,
-                    limit = pageLimit,
-                    offset = pageOffset
-                ).let(postDtoMapper::mapList)
+                val localData = withContext(Dispatchers.IO) {
+                    postsDao.getAllPosts(
+                        newestFirst = newestFirst,
+                        term = PostsDao.preFormatTerm(searchTerm),
+                        tag1 = tags.getAndFormat(0),
+                        tag2 = tags.getAndFormat(1),
+                        tag3 = tags.getAndFormat(2),
+                        untaggedOnly = untaggedOnly,
+                        publicPostsOnly = publicPostsOnly,
+                        privatePostsOnly = privatePostsOnly,
+                        readLaterOnly = readLaterOnly,
+                        limit = pageLimit,
+                        offset = pageOffset
+                    )
+                }.let(postDtoMapper::mapList)
+
+                localDataSize to localData
             } else {
                 null
             }
@@ -156,8 +171,12 @@ class PostsDataSource @Inject constructor(
         return this?.getOrNull(index)?.name?.let(PostsDao.Companion::preFormatTag).orEmpty()
     }
 
-    override suspend fun getPost(url: String): Result<Post> = withContext(Dispatchers.IO) {
-        resultFrom { postsDao.getPost(url) }.mapCatching(postDtoMapper::map)
+    override suspend fun getPost(url: String): Result<Post> {
+        return resultFrom {
+            withContext(Dispatchers.IO) {
+                postsDao.getPost(url)
+            }
+        }.mapCatching(postDtoMapper::map)
     }
 
     override suspend fun searchExistingPostTag(tag: String): Result<List<String>> {
@@ -173,7 +192,6 @@ class PostsDataSource @Inject constructor(
         }
     }
 
-    override suspend fun getSuggestedTagsForUrl(url: String): Result<SuggestedTags> {
-        return Failure(Exception())
-    }
+    override suspend fun getSuggestedTagsForUrl(url: String): Result<SuggestedTags> =
+        Failure(IllegalStateException("getSuggestedTagsForUrl should not be called in this flavor"))
 }

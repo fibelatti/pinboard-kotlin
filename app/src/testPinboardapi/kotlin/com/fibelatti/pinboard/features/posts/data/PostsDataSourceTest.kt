@@ -350,23 +350,23 @@ class PostsDataSourceTest {
             }
 
             @Test
-            fun `GIVEN isConnected is false and user last update is not empty WHEN getAllPosts is called THEN local data is returned`() {
+            fun `GIVEN isConnected is false WHEN getAllPosts is called THEN local data is returned`() {
                 // GIVEN
-                givenSuspend { mockUserRepository.getLastUpdate() }
-                    .willReturn(mockTime)
-                willReturn(Success(mockLocalData)).given(dataSource)
-                    .getLocalData(
-                        newestFirst = true,
-                        searchTerm = "",
-                        tags = null,
-                        untaggedOnly = false,
-                        publicPostsOnly = false,
-                        privatePostsOnly = false,
-                        readLaterOnly = false,
-                        countLimit = -1,
-                        pageLimit = -1,
-                        pageOffset = 0
-                    )
+                runBlocking {
+                    willReturn(Success(mockLocalData)).given(dataSource)
+                        .getLocalData(
+                            newestFirst = true,
+                            searchTerm = "",
+                            tags = null,
+                            untaggedOnly = false,
+                            publicPostsOnly = false,
+                            privatePostsOnly = false,
+                            readLaterOnly = false,
+                            countLimit = -1,
+                            pageLimit = -1,
+                            pageOffset = 0
+                        )
+                }
 
                 // WHEN
                 val result = runBlocking {
@@ -387,32 +387,6 @@ class PostsDataSourceTest {
                 // THEN
                 result.getOrThrow() shouldBe mockLocalData
             }
-
-            @Test
-            fun `GIVEN isConnected is false and user last update is empty WHEN getAllPosts is called THEN null is returned`() {
-                // GIVEN
-                givenSuspend { mockUserRepository.getLastUpdate() }
-                    .willReturn("")
-
-                // WHEN
-                val result = runBlocking {
-                    dataSource.getAllPosts(
-                        newestFirst = true,
-                        searchTerm = "",
-                        tags = null,
-                        untaggedOnly = false,
-                        publicPostsOnly = false,
-                        privatePostsOnly = false,
-                        readLaterOnly = false,
-                        countLimit = -1,
-                        pageLimit = -1,
-                        pageOffset = 0
-                    )
-                }
-
-                // THEN
-                result.getOrThrow() shouldBe null
-            }
         }
 
         @Nested
@@ -424,19 +398,21 @@ class PostsDataSourceTest {
                     .willReturn(true)
                 givenSuspend { mockUserRepository.getLastUpdate() }
                     .willReturn(mockTime)
-                willReturn(Success(mockLocalData)).given(dataSource)
-                    .getLocalData(
-                        newestFirst = true,
-                        searchTerm = "",
-                        tags = null,
-                        untaggedOnly = false,
-                        publicPostsOnly = false,
-                        privatePostsOnly = false,
-                        readLaterOnly = false,
-                        countLimit = -1,
-                        pageLimit = -1,
-                        pageOffset = 0
-                    )
+                runBlocking {
+                    willReturn(Success(mockLocalData)).given(dataSource)
+                        .getLocalData(
+                            newestFirst = true,
+                            searchTerm = "",
+                            tags = null,
+                            untaggedOnly = false,
+                            publicPostsOnly = false,
+                            privatePostsOnly = false,
+                            readLaterOnly = false,
+                            countLimit = -1,
+                            pageLimit = -1,
+                            pageOffset = 0
+                        )
+                }
             }
 
             @Test
@@ -691,15 +667,17 @@ class PostsDataSourceTest {
             ).willReturn(0)
 
             // WHEN
-            val result = dataSource.getLocalDataSize(
-                searchTerm = mockUrlTitle,
-                tags = emptyList(),
-                untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
-                readLaterOnly = false,
-                countLimit = -1
-            )
+            val result = runBlocking {
+                dataSource.getLocalDataSize(
+                    searchTerm = mockUrlTitle,
+                    tags = emptyList(),
+                    untaggedOnly = false,
+                    publicPostsOnly = false,
+                    privatePostsOnly = false,
+                    readLaterOnly = false,
+                    countLimit = -1
+                )
+            }
 
             // THEN
             verify(mockDao).getPostCount(
@@ -734,15 +712,17 @@ class PostsDataSourceTest {
             ).willReturn(0)
 
             // WHEN
-            val result = dataSource.getLocalDataSize(
-                searchTerm = mockUrlTitle,
-                tags = listOf(mockTag1),
-                untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
-                readLaterOnly = false,
-                countLimit = -1
-            )
+            val result = runBlocking {
+                dataSource.getLocalDataSize(
+                    searchTerm = mockUrlTitle,
+                    tags = listOf(mockTag1),
+                    untaggedOnly = false,
+                    publicPostsOnly = false,
+                    privatePostsOnly = false,
+                    readLaterOnly = false,
+                    countLimit = -1
+                )
+            }
 
             // THEN
             verify(mockDao).getPostCount(
@@ -777,15 +757,17 @@ class PostsDataSourceTest {
             ).willReturn(0)
 
             // WHEN
-            val result = dataSource.getLocalDataSize(
-                searchTerm = mockUrlTitle,
-                tags = listOf(mockTag1, mockTag2),
-                untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
-                readLaterOnly = false,
-                countLimit = -1
-            )
+            val result = runBlocking {
+                dataSource.getLocalDataSize(
+                    searchTerm = mockUrlTitle,
+                    tags = listOf(mockTag1, mockTag2),
+                    untaggedOnly = false,
+                    publicPostsOnly = false,
+                    privatePostsOnly = false,
+                    readLaterOnly = false,
+                    countLimit = -1
+                )
+            }
 
             // THEN
             verify(mockDao).getPostCount(
@@ -820,15 +802,17 @@ class PostsDataSourceTest {
             ).willReturn(0)
 
             // WHEN
-            val result = dataSource.getLocalDataSize(
-                searchTerm = mockUrlTitle,
-                tags = listOf(mockTag1, mockTag2, mockTag3),
-                untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
-                readLaterOnly = false,
-                countLimit = -1
-            )
+            val result = runBlocking {
+                dataSource.getLocalDataSize(
+                    searchTerm = mockUrlTitle,
+                    tags = listOf(mockTag1, mockTag2, mockTag3),
+                    untaggedOnly = false,
+                    publicPostsOnly = false,
+                    privatePostsOnly = false,
+                    readLaterOnly = false,
+                    countLimit = -1
+                )
+            }
 
             // THEN
             verify(mockDao).getPostCount(
@@ -853,16 +837,18 @@ class PostsDataSourceTest {
 
         @BeforeEach
         fun setup() {
-            willReturn(mockLocalDataSize).given(dataSource)
-                .getLocalDataSize(
-                    searchTerm = anyString(),
-                    tags = any(),
-                    untaggedOnly = anyBoolean(),
-                    publicPostsOnly = anyBoolean(),
-                    privatePostsOnly = anyBoolean(),
-                    readLaterOnly = anyBoolean(),
-                    countLimit = anyInt()
-                )
+            runBlocking {
+                willReturn(mockLocalDataSize).given(dataSource)
+                    .getLocalDataSize(
+                        searchTerm = anyString(),
+                        tags = any(),
+                        untaggedOnly = anyBoolean(),
+                        publicPostsOnly = anyBoolean(),
+                        privatePostsOnly = anyBoolean(),
+                        readLaterOnly = anyBoolean(),
+                        countLimit = anyInt()
+                    )
+            }
 
             given(
                 mockDao.getAllPosts(
@@ -887,30 +873,34 @@ class PostsDataSourceTest {
         @Test
         fun `WHEN local data size is 0 THEN null is returned and getAllPosts is not called`() {
             // GIVEN
-            willReturn(0).given(dataSource)
-                .getLocalDataSize(
-                    searchTerm = anyString(),
-                    tags = any(),
-                    untaggedOnly = anyBoolean(),
-                    publicPostsOnly = anyBoolean(),
-                    privatePostsOnly = anyBoolean(),
-                    readLaterOnly = anyBoolean(),
-                    countLimit = anyInt()
-                )
+            runBlocking {
+                willReturn(0).given(dataSource)
+                    .getLocalDataSize(
+                        searchTerm = anyString(),
+                        tags = any(),
+                        untaggedOnly = anyBoolean(),
+                        publicPostsOnly = anyBoolean(),
+                        privatePostsOnly = anyBoolean(),
+                        readLaterOnly = anyBoolean(),
+                        countLimit = anyInt()
+                    )
+            }
 
             // WHEN
-            val result = dataSource.getLocalData(
-                newestFirst = true,
-                searchTerm = mockUrlTitle,
-                tags = emptyList(),
-                untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
-                readLaterOnly = false,
-                countLimit = -1,
-                pageLimit = -1,
-                pageOffset = 0
-            )
+            val result = runBlocking {
+                dataSource.getLocalData(
+                    newestFirst = true,
+                    searchTerm = mockUrlTitle,
+                    tags = emptyList(),
+                    untaggedOnly = false,
+                    publicPostsOnly = false,
+                    privatePostsOnly = false,
+                    readLaterOnly = false,
+                    countLimit = -1,
+                    pageLimit = -1,
+                    pageOffset = 0
+                )
+            }
 
             // THEN
             result.getOrThrow() shouldBe null
@@ -919,18 +909,20 @@ class PostsDataSourceTest {
         @Test
         fun `WHEN tags is empty THEN tag1 tag2 and tag3 are sent as empty`() {
             // WHEN
-            val result = dataSource.getLocalData(
-                newestFirst = true,
-                searchTerm = mockUrlTitle,
-                tags = emptyList(),
-                untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
-                readLaterOnly = false,
-                countLimit = -1,
-                pageLimit = -1,
-                pageOffset = 0
-            )
+            val result = runBlocking {
+                dataSource.getLocalData(
+                    newestFirst = true,
+                    searchTerm = mockUrlTitle,
+                    tags = emptyList(),
+                    untaggedOnly = false,
+                    publicPostsOnly = false,
+                    privatePostsOnly = false,
+                    readLaterOnly = false,
+                    countLimit = -1,
+                    pageLimit = -1,
+                    pageOffset = 0
+                )
+            }
 
             // THEN
             verify(mockDao).getAllPosts(
@@ -952,18 +944,20 @@ class PostsDataSourceTest {
         @Test
         fun `WHEN tags size is 1 THEN tag2 and tag3 are sent as empty`() {
             // WHEN
-            val result = dataSource.getLocalData(
-                newestFirst = true,
-                searchTerm = mockUrlTitle,
-                tags = listOf(mockTag1),
-                untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
-                readLaterOnly = false,
-                countLimit = -1,
-                pageLimit = -1,
-                pageOffset = 0
-            )
+            val result = runBlocking {
+                dataSource.getLocalData(
+                    newestFirst = true,
+                    searchTerm = mockUrlTitle,
+                    tags = listOf(mockTag1),
+                    untaggedOnly = false,
+                    publicPostsOnly = false,
+                    privatePostsOnly = false,
+                    readLaterOnly = false,
+                    countLimit = -1,
+                    pageLimit = -1,
+                    pageOffset = 0
+                )
+            }
 
             // THEN
             verify(mockDao).getAllPosts(
@@ -985,18 +979,20 @@ class PostsDataSourceTest {
         @Test
         fun `WHEN tags size is 2 THEN tag3 is sent as empty`() {
             // WHEN
-            val result = dataSource.getLocalData(
-                newestFirst = true,
-                searchTerm = mockUrlTitle,
-                tags = listOf(mockTag1, mockTag2),
-                untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
-                readLaterOnly = false,
-                countLimit = -1,
-                pageLimit = -1,
-                pageOffset = 0
-            )
+            val result = runBlocking {
+                dataSource.getLocalData(
+                    newestFirst = true,
+                    searchTerm = mockUrlTitle,
+                    tags = listOf(mockTag1, mockTag2),
+                    untaggedOnly = false,
+                    publicPostsOnly = false,
+                    privatePostsOnly = false,
+                    readLaterOnly = false,
+                    countLimit = -1,
+                    pageLimit = -1,
+                    pageOffset = 0
+                )
+            }
 
             // THEN
             verify(mockDao).getAllPosts(
@@ -1018,18 +1014,20 @@ class PostsDataSourceTest {
         @Test
         fun `WHEN tags size is 3 THEN all tags are sent`() {
             // WHEN
-            val result = dataSource.getLocalData(
-                newestFirst = true,
-                searchTerm = mockUrlTitle,
-                tags = listOf(mockTag1, mockTag2, mockTag3),
-                untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
-                readLaterOnly = false,
-                countLimit = -1,
-                pageLimit = -1,
-                pageOffset = 0
-            )
+            val result = runBlocking {
+                dataSource.getLocalData(
+                    newestFirst = true,
+                    searchTerm = mockUrlTitle,
+                    tags = listOf(mockTag1, mockTag2, mockTag3),
+                    untaggedOnly = false,
+                    publicPostsOnly = false,
+                    privatePostsOnly = false,
+                    readLaterOnly = false,
+                    countLimit = -1,
+                    pageLimit = -1,
+                    pageOffset = 0
+                )
+            }
 
             // THEN
             verify(mockDao).getAllPosts(
@@ -1068,18 +1066,20 @@ class PostsDataSourceTest {
             ).will { throw Exception() }
 
             // WHEN
-            val result = dataSource.getLocalData(
-                newestFirst = true,
-                searchTerm = mockUrlTitle,
-                tags = emptyList(),
-                untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
-                readLaterOnly = false,
-                countLimit = -1,
-                pageLimit = -1,
-                pageOffset = 0
-            )
+            val result = runBlocking {
+                dataSource.getLocalData(
+                    newestFirst = true,
+                    searchTerm = mockUrlTitle,
+                    tags = emptyList(),
+                    untaggedOnly = false,
+                    publicPostsOnly = false,
+                    privatePostsOnly = false,
+                    readLaterOnly = false,
+                    countLimit = -1,
+                    pageLimit = -1,
+                    pageOffset = 0
+                )
+            }
 
             // THEN
             result.shouldBeAnInstanceOf<Failure>()
