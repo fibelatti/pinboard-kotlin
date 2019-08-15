@@ -52,7 +52,7 @@
 
     <style name="AppTheme.BaseBottomSheetDialog.BottomSheetDialog">
         <item name="android:statusBarColor">@color/color_transparent</item>
-        <item name="android:navigationBarColor">@color/color_black</item>
+        <item name="android:navigationBarColor">@color/color_system_bar</item>
     </style>
 
     <style name="AppTheme.AppActivityAnimation" parent="@android:style/Animation.Activity">
