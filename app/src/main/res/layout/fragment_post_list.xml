@@ -47,15 +47,15 @@
         android:id="@+id/swipeToRefresh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/layoutOfflineAlert"
-        android:layout_marginStart="@dimen/margin_regular"
-        android:layout_marginEnd="@dimen/margin_regular">
+        android:layout_below="@+id/layoutOfflineAlert">
 
         <com.fibelatti.pinboard.core.android.customview.PagingRecyclerView
             android:id="@+id/recyclerViewPosts"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
+            android:paddingStart="@dimen/padding_regular"
+            android:paddingEnd="@dimen/padding_regular"
             android:paddingBottom="@dimen/recycler_view_with_fab_padding_bottom"
             tools:listitem="@layout/list_item_post" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

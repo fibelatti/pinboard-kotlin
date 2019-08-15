@@ -36,15 +36,16 @@
         android:id="@+id/swipeToRefresh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/layoutOfflineAlert"
-        android:layout_marginStart="@dimen/margin_regular"
-        android:layout_marginEnd="@dimen/margin_regular">
+        android:layout_below="@+id/layoutOfflineAlert">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewNotes"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
+            android:paddingStart="@dimen/padding_regular"
+            android:paddingTop="@dimen/padding_regular"
+            android:paddingEnd="@dimen/padding_regular"
             tools:listitem="@layout/list_item_note" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </RelativeLayout>

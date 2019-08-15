@@ -9,15 +9,16 @@
         <item name="colorError">@color/color_error</item>
         <item name="colorOnError">@color/color_white_opaque</item>
         <item name="colorSurface">@color/color_background_contrast</item>
-        <item name="colorOnSurface">@color/color_white_opaque</item>
+        <item name="colorOnSurface">@color/color_grey</item>
         <item name="android:colorBackground">@color/color_background</item>
-        <item name="colorOnBackground">@color/color_white_opaque</item>
+        <item name="colorOnBackground">@color/color_grey</item>
         <item name="android:windowBackground">@color/color_background</item>
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
         <item name="android:statusBarColor">@color/color_status_bar</item>
         <item name="android:fitsSystemWindows">true</item>
         <item name="android:windowAnimationStyle">@style/AppTheme.AppActivityAnimation</item>
+        <item name="android:alertDialogTheme">@style/AppTheme.AlertDialog</item>
         <item name="fontFamily">@font/opensansregular</item>
         <item name="buttonStyle">@style/AppTheme.Button</item>
         <item name="checkboxStyle">@style/AppTheme.Checkbox</item>
@@ -31,7 +32,12 @@
         <item name="android:background">@drawable/background_bottom_sheet</item>
     </style>
 
-    <style name="AppTheme.BaseBottomSheetDialog" parent="@style/Theme.Design.Light.BottomSheetDialog">
+    <style name="AppTheme.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="android:colorPrimary">@color/text_primary</item>
+        <item name="android:colorAccent">@color/color_primary</item>
+    </style>
+
+    <style name="AppTheme.BaseBottomSheetDialog" parent="@style/Theme.Design.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/AppTheme.BottomSheetModal</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowAnimationStyle">@style/AppTheme.BaseBottomSheetDialog.Animation
@@ -82,7 +88,7 @@
 
     <style name="AppTheme.TextButton.Menu">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:textColor">@color/color_white_opaque</item>
+        <item name="android:textColor">@color/color_on_background</item>
         <item name="android:gravity">start|center_vertical</item>
     </style>
 

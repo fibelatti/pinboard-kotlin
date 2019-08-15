@@ -31,7 +31,7 @@
         style="@style/AppTheme.InputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_regular"
+        android:layout_marginTop="@dimen/margin_small"
         android:hint="@string/posts_add_url_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
