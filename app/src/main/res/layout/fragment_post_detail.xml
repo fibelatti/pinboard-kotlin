@@ -27,7 +27,5 @@
         layout="@layout/layout_url_error"
         android:visibility="gone" />
 
-    <include
-        layout="@layout/layout_progress_bar"
-        android:visibility="gone" />
+    <include layout="@layout/layout_progress_bar" />
 </FrameLayout>

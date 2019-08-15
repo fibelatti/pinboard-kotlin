@@ -18,11 +18,12 @@ import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.gone
-import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.navigateBack
+import com.fibelatti.core.extension.setOnClickListener
 import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.shareText
 import com.fibelatti.pinboard.core.extension.show
@@ -42,7 +43,9 @@ import kotlinx.android.synthetic.main.layout_file_view.textViewUrlTitle as fileV
 import kotlinx.android.synthetic.main.layout_url_error.textViewUrl as errorViewUrl
 import kotlinx.android.synthetic.main.layout_url_error.textViewUrlTitle as errorViewUrlTitle
 
-class PostDetailFragment @Inject constructor() : BaseFragment() {
+class PostDetailFragment @Inject constructor(
+    private val connectivityInfoProvider: ConnectivityInfoProvider
+) : BaseFragment() {
 
     companion object {
         @JvmStatic
@@ -85,16 +88,14 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
             updateViews(content.post)
         }
         with(postDetailViewModel) {
-            observe(loading) {
+            viewLifecycleOwner.observe(loading) {
                 layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE)
-                layoutRootFileViewer.goneIf(it)
-                layoutScrollViewWeb.goneIf(it)
             }
-            observeEvent(deleted) {
+            viewLifecycleOwner.observeEvent(deleted) {
                 mainActivity?.toast(getString(R.string.posts_deleted_feedback))
                 navigateBack()
             }
-            error(error, ::handleError)
+            viewLifecycleOwner.error(error, ::handleError)
         }
     }
 
@@ -113,12 +114,14 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
             bottomAppBar.run {
                 navigationIcon = null
                 replaceMenu(R.menu.menu_link)
-                setOnMenuItemClickListener { item: MenuItem? -> handleMenuClick(item, post) }
+                setOnMenuItemClickListener { item -> handleMenuClick(item, post) }
                 show()
             }
             fab.run {
                 setImageResource(R.drawable.ic_share)
-                setOnClickListener { requireActivity().shareText(R.string.posts_share_title, post.url) }
+                setOnClickListener {
+                    requireActivity().shareText(R.string.posts_share_title, post.url)
+                }
                 show()
             }
         }
@@ -127,6 +130,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
     private fun showFileView(post: Post) {
         layoutRootFileViewer.visible()
         layoutScrollViewWeb.gone()
+        layoutProgressBar.gone()
 
         fileViewUrlTitle.text = post.title
         fileViewUrl.text = post.url
@@ -136,6 +140,18 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
     private fun showWebView(post: Post) {
         layoutRootFileViewer.gone()
         layoutScrollViewWeb.visible()
+
+        if (!connectivityInfoProvider.isConnected()) {
+            layoutProgressBar.gone()
+            layoutRootUrlError.visible()
+
+            errorViewUrlTitle.text = post.title
+            errorViewUrl.text = post.url
+            textViewErrorDescription.setText(R.string.posts_url_offline_error)
+            buttonErrorAction.setOnClickListener(R.string.offline_retry) { showWebView(post) }
+
+            return
+        }
 
         if (webView.url != post.url) {
             webView.webViewClient = PostWebViewClient(post)
@@ -148,7 +164,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
 
         errorViewUrlTitle.text = post.title
         errorViewUrl.text = post.url
-        buttonOpenInBrowser.setOnClickListener { openUrlInExternalBrowser(post) }
+        buttonErrorAction.setOnClickListener { openUrlInExternalBrowser(post) }
     }
 
     private fun openUrlInFileViewer(url: String) {
@@ -188,9 +204,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
         startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(post.url) })
     }
 
-    private inner class PostWebViewClient(
-        private val post: Post
-    ) : WebViewClient() {
+    private inner class PostWebViewClient(private val post: Post) : WebViewClient() {
 
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
@@ -203,7 +217,11 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
             layoutRootUrlError?.gone()
         }
 
-        override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
+        override fun onReceivedError(
+            view: WebView?,
+            request: WebResourceRequest?,
+            error: WebResourceError?
+        ) {
             super.onReceivedError(view, request, error)
             showErrorLayout(post)
         }

@@ -107,6 +107,7 @@
     <string name="posts_item_private">Private</string>
     <string name="posts_item_read_later">Read later</string>
 
+    <string name="posts_url_offline_error">It looks like you\'re offline. Please try again once you\'re back online</string>
     <string name="posts_url_error">Unfortunately, Pinkt can\'t open this link. Try opening it in your default browser</string>
     <string name="posts_open_in_browser">Open in browser</string>
 
