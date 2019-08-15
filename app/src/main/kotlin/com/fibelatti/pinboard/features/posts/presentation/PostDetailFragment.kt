@@ -14,7 +14,6 @@ import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.gone
@@ -95,7 +94,7 @@ class PostDetailFragment @Inject constructor(
                 mainActivity?.toast(getString(R.string.posts_deleted_feedback))
                 navigateBack()
             }
-            viewLifecycleOwner.error(error, ::handleError)
+            viewLifecycleOwner.observe(error, ::handleError)
         }
     }
 

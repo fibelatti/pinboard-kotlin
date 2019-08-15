@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
@@ -87,6 +86,6 @@ class NoteDetailsFragment @Inject constructor() : BaseFragment() {
                 }
             )
         }
-        error(noteDetailsViewModel.error, ::handleError)
+        observe(noteDetailsViewModel.error, ::handleError)
     }
 }

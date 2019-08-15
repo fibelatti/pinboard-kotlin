@@ -5,7 +5,6 @@ import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.afterTextChanged
@@ -243,7 +242,7 @@ class PostAddFragment @Inject constructor(
             viewLifecycleOwner.observeEvent(saved) { mainActivity?.toast(getString(R.string.posts_saved_feedback)) }
             viewLifecycleOwner.observe(invalidUrlError, ::handleInvalidUrlError)
             viewLifecycleOwner.observe(invalidUrlTitleError, ::handleInvalidTitleError)
-            viewLifecycleOwner.error(error) {
+            viewLifecycleOwner.observe(error) {
                 handleError(it)
                 showFab()
             }

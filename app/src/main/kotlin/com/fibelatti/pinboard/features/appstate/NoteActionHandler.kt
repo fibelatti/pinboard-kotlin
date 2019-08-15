@@ -36,7 +36,7 @@ class NoteActionHandler @Inject constructor(
 
     private fun setNote(action: SetNote, currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<NoteDetailContent>(currentContent) {
-            it.copy(note = Either.right(action.note))
+            it.copy(note = Either.Right(action.note))
         }
     }
 }

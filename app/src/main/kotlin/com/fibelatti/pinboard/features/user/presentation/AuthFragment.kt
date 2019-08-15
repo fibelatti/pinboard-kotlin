@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.transition.TransitionInflater
-import com.fibelatti.core.archcomponents.extension.error
+import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.gone
@@ -46,7 +46,7 @@ class AuthFragment @Inject constructor() : BaseFragment() {
 
         with(authViewModel) {
             observeEvent(apiTokenError, ::handleAuthError)
-            error(error, ::handleError)
+            observe(error, ::handleError)
         }
     }
 

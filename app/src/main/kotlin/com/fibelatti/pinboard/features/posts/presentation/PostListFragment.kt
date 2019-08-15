@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
-import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.gone
@@ -142,7 +141,7 @@ class PostListFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        viewLifecycleOwner.error(postListViewModel.error, ::handleError)
+        viewLifecycleOwner.observe(postListViewModel.error, ::handleError)
         viewLifecycleOwner.observe(appStateViewModel.postListContent, ::updateContent)
     }
 

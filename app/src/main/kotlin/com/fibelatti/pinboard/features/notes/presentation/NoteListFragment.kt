@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
@@ -94,7 +93,7 @@ class NoteListFragment @Inject constructor(
 
             layoutOfflineAlert.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
         }
-        error(noteListViewModel.error, ::handleError)
+        observe(noteListViewModel.error, ::handleError)
     }
 
     private fun handleLoading(loading: Boolean) {

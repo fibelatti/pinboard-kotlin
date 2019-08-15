@@ -5,7 +5,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import androidx.fragment.app.Fragment
-import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.extension.exhaustive
 import com.fibelatti.core.extension.gone
@@ -95,7 +94,7 @@ class MainActivity : BaseActivity() {
     private fun setupViewModels() {
         with(authViewModel) {
             observe(loginState, ::handleLoginState)
-            error(error, ::handleError)
+            observe(error, ::handleError)
         }
 
         appStateViewModel.reset()

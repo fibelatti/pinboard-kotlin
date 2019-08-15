@@ -120,7 +120,7 @@ internal class NoteActionHandlerTest {
             val noteDetails: Note = mock()
             val initialContent = NoteDetailContent(
                 id = "some-id",
-                note = Either.left(true),
+                note = Either.Left(true),
                 isConnected = true,
                 previousContent = mock()
             )

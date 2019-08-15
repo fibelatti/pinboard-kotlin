@@ -99,7 +99,7 @@ class NavigationActionHandler @Inject constructor(
         return runOnlyForCurrentContentOfType<NoteListContent>(currentContent) {
             NoteDetailContent(
                 id = action.id,
-                note = Either.left(connectivityInfoProvider.isConnected()),
+                note = Either.Left(connectivityInfoProvider.isConnected()),
                 isConnected = connectivityInfoProvider.isConnected(),
                 previousContent = it
             )

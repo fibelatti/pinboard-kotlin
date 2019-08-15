@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import com.fibelatti.core.archcomponents.extension.error
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.applyAs
@@ -126,7 +125,7 @@ class PostSearchFragment @Inject constructor(
                 showTags(content.availableTags)
             }
         }
-        error(tagsViewModel.error, ::handleError)
+        observe(tagsViewModel.error, ::handleError)
     }
 
     private fun handleLoading(loading: Boolean) {
@@ -140,7 +139,7 @@ class PostSearchFragment @Inject constructor(
             recyclerViewTags.visible()
             layoutEmptyList.gone()
 
-            tagsAdapter.addAll(list)
+            tagsAdapter.submitList(list)
         } else {
             showEmptyLayout()
         }
