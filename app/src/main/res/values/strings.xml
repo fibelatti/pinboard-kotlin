@@ -72,8 +72,8 @@
 
     <string name="posts_saved_on">Saved at %s</string>
     <plurals name="posts_tags_more">
-        <item quantity="one">and 1 other</item>
-        <item quantity="other">and %d others</item>
+        <item quantity="one">And 1 other tag</item>
+        <item quantity="other">And %d other tags</item>
     </plurals>
     <string name="posts_share_title">Sharing URL</string>
     <string name="posts_open_with_file_viewer">Open in file viewer</string>

@@ -30,6 +30,7 @@ import com.fibelatti.pinboard.features.appstate.GetNextPostPage
 import com.fibelatti.pinboard.features.appstate.Loaded
 import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.PostsDisplayed
+import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.Recent
 import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
@@ -53,12 +54,8 @@ class PostListFragment @Inject constructor(
         val TAG: String = "PostListFragment"
     }
 
-    private val appStateViewModel: AppStateViewModel by lazy {
-        viewModelFactory.get<AppStateViewModel>(this)
-    }
-    private val postListViewModel: PostListViewModel by lazy {
-        viewModelFactory.get<PostListViewModel>(this)
-    }
+    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(this) }
+    private val postListViewModel by lazy { viewModelFactory.get<PostListViewModel>(this) }
 
     private var sharedTransitionFinished: Boolean = false
     private var sharedTransitionInterrupted: Boolean = false
@@ -138,6 +135,7 @@ class PostListFragment @Inject constructor(
         }
 
         postsAdapter.onItemClicked = { appStateViewModel.runAction(ViewPost(it)) }
+        postsAdapter.onTagClicked = { appStateViewModel.runAction(PostsForTag(it)) }
     }
 
     private fun setupViewModels() {
@@ -146,9 +144,7 @@ class PostListFragment @Inject constructor(
     }
 
     private fun updateContent(content: PostListContent) {
-        mainActivity?.updateTitleLayout {
-            hideNavigateUp()
-        }
+        mainActivity?.updateTitleLayout { hideNavigateUp() }
         mainActivity?.updateViews { bottomAppBar, fab ->
             bottomAppBar.run {
                 setNavigationIcon(R.drawable.ic_menu)
@@ -166,9 +162,7 @@ class PostListFragment @Inject constructor(
 
         when (content.shouldLoad) {
             is ShouldLoadFirstPage -> {
-                mainActivity?.updateTitleLayout {
-                    setTitle(content.title)
-                }
+                mainActivity?.updateTitleLayout { setTitle(content.title) }
 
                 layoutProgressBar.visible()
                 recyclerViewPosts.gone()
@@ -181,7 +175,10 @@ class PostListFragment @Inject constructor(
             is ShouldLoadNextPage -> postListViewModel.loadContent(content)
             is Loaded -> showPosts(content)
         }
-        layoutSearchActive.visibleIf(content.searchParameters.isActive(), otherwiseVisibility = View.GONE)
+        layoutSearchActive.visibleIf(
+            content.searchParameters.isActive(),
+            otherwiseVisibility = View.GONE
+        )
         layoutOfflineAlert.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
     }
 
@@ -191,7 +188,10 @@ class PostListFragment @Inject constructor(
         recyclerViewPosts.onRequestNextPageCompleted()
 
         if (content.posts == null) {
-            showEmptyLayout(title = R.string.posts_empty_title, description = R.string.posts_empty_description)
+            showEmptyLayout(
+                title = R.string.posts_empty_title,
+                description = R.string.posts_empty_description
+            )
             return
         }
 
@@ -209,9 +209,7 @@ class PostListFragment @Inject constructor(
     }
 
     private fun showEmptyLayout(@StringRes title: Int, @StringRes description: Int) {
-        mainActivity?.updateTitleLayout {
-            hidePostCount()
-        }
+        mainActivity?.updateTitleLayout { hidePostCount() }
         recyclerViewPosts.gone()
         layoutEmptyList.apply {
             visible()

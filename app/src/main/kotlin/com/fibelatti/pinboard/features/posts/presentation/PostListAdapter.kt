@@ -2,7 +2,6 @@ package com.fibelatti.pinboard.features.posts.presentation
 
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.fibelatti.core.extension.gone
@@ -16,7 +15,7 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.android.synthetic.main.list_item_post.view.*
 import javax.inject.Inject
 
-private const val MAX_TAGS_PER_ITEM = 4
+private const val MAX_TAGS_PER_ITEM = 3
 
 class PostListAdapter @Inject constructor(
     private val dateFormatter: DateFormatter
@@ -25,6 +24,7 @@ class PostListAdapter @Inject constructor(
     private val items: MutableList<Post> = mutableListOf()
 
     var onItemClicked: ((Post) -> Unit)? = null
+    var onTagClicked: ((Tag) -> Unit)? = null
 
     override fun getItemCount(): Int = items.size
 
@@ -42,32 +42,34 @@ class PostListAdapter @Inject constructor(
         textViewLinkAddedDate.text = context.getString(R.string.posts_saved_on, dateFormatter.tzFormatToDisplayFormat(item.time))
 
         when {
-            item.tags.isNullOrEmpty() -> layoutTags.gone()
-            item.tags.size <= MAX_TAGS_PER_ITEM -> layoutTags(item.tags)
+            item.tags.isNullOrEmpty() -> {
+                chipGroupTags.gone()
+                textViewOtherTagsAvailable.gone()
+            }
+            item.tags.size <= MAX_TAGS_PER_ITEM -> {
+                layoutTags(item.tags)
+                textViewOtherTagsAvailable.gone()
+            }
             else -> {
                 val otherAmount = item.tags.size - MAX_TAGS_PER_ITEM
 
                 layoutTags(item.tags.take(MAX_TAGS_PER_ITEM))
-                addTagView(resources.getQuantityString(R.plurals.posts_tags_more, otherAmount, otherAmount))
+                textViewOtherTagsAvailable.visible(
+                    resources.getQuantityString(R.plurals.posts_tags_more, otherAmount, otherAmount)
+                )
             }
         }
 
         setOnClickListener { onItemClicked?.invoke(item) }
+        chipGroupTags.onTagChipClicked = onTagClicked
     }
 
     private fun View.layoutTags(tags: List<Tag>) {
-        layoutTags.visible()
-        layoutTags.removeAllViews()
+        chipGroupTags.visible()
+        chipGroupTags.removeAllViews()
         for (tag in tags) {
-            addTagView(tag.name)
+            chipGroupTags.addValue(tag.name, showRemoveIcon = false)
         }
-    }
-
-    private fun View.addTagView(value: String) {
-        layoutTags.addView(
-            TextView(context, null, 0, R.style.AppTheme_Text_Tag)
-                .apply { text = value }
-        )
     }
 
     fun addAll(newItems: List<Post>, diffResult: DiffUtil.DiffResult) {

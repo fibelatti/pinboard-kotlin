@@ -18,37 +18,48 @@ class TagChipGroup @JvmOverloads constructor(
 
     var onTagChipAdded: (() -> Unit)? = null
     var onTagChipRemoved: (() -> Unit)? = null
+    var onTagChipClicked: ((Tag) -> Unit)? = null
 
     fun getAllTags(): List<Tag> = children.filterIsInstance<TagChip>().mapNotNull(TagChip::getValue)
 
-    fun addTag(tag: Tag, index: Int = -1) {
-        addIfNotAlreadyAdded(tag, index)
+    fun addTag(tag: Tag, index: Int = -1, showRemoveIcon: Boolean = true) {
+        addIfNotAlreadyAdded(tag, index, showRemoveIcon)
     }
 
-    fun addValue(value: String, index: Int = -1) {
+    fun addValue(value: String, index: Int = -1, showRemoveIcon: Boolean = true) {
         val tags = createTagsFromText(value)
 
         for (tag in tags) {
-            addIfNotAlreadyAdded(tag, index)
-        }
-    }
-
-    private fun addIfNotAlreadyAdded(tag: Tag, index: Int = -1) {
-        if (children.none { (it as? TagChip)?.getValue() == tag }) {
-            addView(createTagChip(tag), index)
-            onTagChipAdded?.invoke()
+            addIfNotAlreadyAdded(tag, index, showRemoveIcon)
         }
     }
 
     private fun createTagsFromText(text: String): List<Tag> = text.trim().split(" ").map { Tag(it) }
 
-    private fun createTagChip(value: Tag): View {
-        return LayoutInflater.from(context).inflate(R.layout.list_item_chip, this, false)
+    private fun addIfNotAlreadyAdded(tag: Tag, index: Int = -1, showRemoveIcon: Boolean) {
+        if (children.none { (it as? TagChip)?.getValue() == tag }) {
+            addView(createTagChip(tag, showRemoveIcon), index)
+            onTagChipAdded?.invoke()
+        }
+    }
+
+    private fun createTagChip(value: Tag, showRemoveIcon: Boolean): View {
+        return LayoutInflater.from(context)
+            .inflate(R.layout.list_item_chip, this, false)
             .applyAs<View, TagChip> {
                 setValue(value)
-                setOnCloseIconClickListener {
-                    removeView(this)
-                    onTagChipRemoved?.invoke()
+
+                setOnClickListener {
+                    onTagChipClicked?.invoke(value)
+                }
+
+                isCloseIconVisible = showRemoveIcon
+
+                if (showRemoveIcon) {
+                    setOnCloseIconClickListener {
+                        removeView(this)
+                        onTagChipRemoved?.invoke()
+                    }
                 }
             }
     }
