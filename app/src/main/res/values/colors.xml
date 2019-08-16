@@ -28,5 +28,8 @@
 
     <color name="auth_form_background">#E8E8E8</color>
 
+    <color name="chip_background">#D6D6D6</color>
+    <color name="chip_foreground">#424242</color>
+
     <color name="color_tag">#1976D2</color>
 </resources>

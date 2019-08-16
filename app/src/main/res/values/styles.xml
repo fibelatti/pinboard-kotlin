@@ -197,4 +197,8 @@
     <style name="AppTheme.Text.ListItem.Tag">
         <item name="android:textColor">@color/color_tag</item>
     </style>
+
+    <style name="AppTheme.ChipTextAppearance" parent="TextAppearance.MaterialComponents.Chip">
+        <item name="android:textSize">@dimen/text_size_xsmall</item>
+    </style>
 </resources>

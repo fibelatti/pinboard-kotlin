@@ -12,4 +12,7 @@
     <color name="text_secondary">#9E9E9E</color>
 
     <color name="auth_form_background">#424242</color>
+
+    <color name="chip_background">#535353</color>
+    <color name="chip_foreground">#F5F5F5</color>
 </resources>
