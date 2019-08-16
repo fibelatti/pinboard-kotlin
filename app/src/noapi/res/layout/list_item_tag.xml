@@ -12,6 +12,8 @@
         style="@style/AppTheme.Text.ListItem.Tag"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:ellipsize="end"
+        android:lines="1"
         tools:text="Some TAG" />
 
     <TextView
