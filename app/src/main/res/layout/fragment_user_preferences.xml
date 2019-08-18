@@ -15,52 +15,50 @@
         android:paddingStart="@dimen/padding_regular"
         android:paddingEnd="@dimen/padding_regular">
 
-        <TextView
-            android:id="@+id/textViewAppearanceTitle"
-            style="@style/AppTheme.Text.SectionTitle"
+        <LinearLayout
+            android:id="@+id/layoutAppearance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/user_preferences_appearance"
-            app:layout_constraintBottom_toTopOf="@+id/buttonGroupAppearance"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.google.android.material.button.MaterialButtonToggleGroup
-            android:id="@+id/buttonGroupAppearance"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small"
-            app:layout_constraintBottom_toTopOf="@+id/dividerAppearance"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewAppearanceTitle"
-            app:singleSelection="true">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonAppearanceDark"
-                style="@style/AppTheme.GroupButtonItem"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/user_preferences_appearance_dark" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonAppearanceLight"
-                style="@style/AppTheme.GroupButtonItem"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/user_preferences_appearance_light" />
-        </com.google.android.material.button.MaterialButtonToggleGroup>
-
-        <include
-            android:id="@+id/dividerAppearance"
-            layout="@layout/layout_divider"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/divider_size"
-            android:layout_marginTop="@dimen/margin_regular"
-            android:layout_marginBottom="@dimen/margin_regular"
+            android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@+id/layoutPrivateDefault"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/buttonGroupAppearance" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/textViewAppearanceTitle"
+                style="@style/AppTheme.Text.SectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/user_preferences_appearance" />
+
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/buttonGroupAppearance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                app:singleSelection="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonAppearanceDark"
+                    style="@style/AppTheme.GroupButtonItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/user_preferences_appearance_dark" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonAppearanceLight"
+                    style="@style/AppTheme.GroupButtonItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/user_preferences_appearance_light" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            <include
+                layout="@layout/layout_divider"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_size"
+                android:layout_marginTop="@dimen/margin_regular"
+                android:layout_marginBottom="@dimen/margin_regular" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/layoutPrivateDefault"
@@ -68,7 +66,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@+id/layoutReadLaterDefault"
-            app:layout_constraintTop_toBottomOf="@+id/dividerAppearance">
+            app:layout_constraintTop_toBottomOf="@+id/layoutAppearance">
 
             <TextView
                 android:id="@+id/textViewDefaultPrivateTitle"
@@ -96,7 +94,6 @@
                 android:text="@string/user_preferences_default_private_description" />
 
             <include
-                android:id="@+id/dividerPrivate"
                 layout="@layout/layout_divider"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/divider_size"
@@ -139,7 +136,6 @@
                 android:text="@string/user_preferences_default_read_later_description" />
 
             <include
-                android:id="@+id/dividerReadLater"
                 layout="@layout/layout_divider"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/divider_size"

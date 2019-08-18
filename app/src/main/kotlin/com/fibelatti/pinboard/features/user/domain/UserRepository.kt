@@ -18,6 +18,10 @@ interface UserRepository {
 
     suspend fun setLastUpdate(value: String)
 
+    suspend fun getAppearance(): Appearance
+
+    suspend fun setAppearance(appearance: Appearance)
+
     suspend fun getDefaultPrivate(): Boolean?
 
     suspend fun setDefaultPrivate(value: Boolean)
@@ -25,8 +29,4 @@ interface UserRepository {
     suspend fun getDefaultReadLater(): Boolean?
 
     suspend fun setDefaultReadLater(value: Boolean)
-
-    suspend fun getAppearance(): Appearance
-
-    suspend fun setAppearance(appearance: Appearance)
 }
