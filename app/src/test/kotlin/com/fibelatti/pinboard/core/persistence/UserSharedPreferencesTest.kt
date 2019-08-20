@@ -115,6 +115,69 @@ internal class UserSharedPreferencesTest {
     }
 
     @Test
+    fun `WHEN getDescriptionAutoFill is called THEN its value is returned`() {
+        // GIVEN
+        val value = randomBoolean()
+        given(mockSharedPreferences.get(KEY_AUTO_FILL_DESCRIPTION, false))
+            .willReturn(value)
+
+        // THEN
+        userSharedPreferences.getAutoFillDescription() shouldBe value
+    }
+
+    @Test
+    fun `WHEN setDescriptionAutoFill is called THEN KEY_DESCRIPTION_AUTO_FILL is set`() {
+        // WHEN
+        val value = randomBoolean()
+        userSharedPreferences.setAutoFillDescription(value)
+
+        // THEN
+        verify(mockEditor).putBoolean(KEY_AUTO_FILL_DESCRIPTION, value)
+    }
+
+    @Test
+    fun `WHEN getDescriptionVisibleInList is called THEN its value is returned`() {
+        // GIVEN
+        val value = randomBoolean()
+        given(mockSharedPreferences.get(KEY_SHOW_DESCRIPTION_IN_LISTS, false))
+            .willReturn(value)
+
+        // THEN
+        userSharedPreferences.getShowDescriptionInLists() shouldBe value
+    }
+
+    @Test
+    fun `WHEN setEditAfterSharing is called THEN KEY_DESCRIPTION_VISIBLE_LIST is set`() {
+        // WHEN
+        val value = randomBoolean()
+        userSharedPreferences.setShowDescriptionInLists(value)
+
+        // THEN
+        verify(mockEditor).putBoolean(KEY_SHOW_DESCRIPTION_IN_LISTS, value)
+    }
+
+    @Test
+    fun `WHEN getDescriptionVisibleInDetail is called THEN its value is returned`() {
+        // GIVEN
+        val value = randomBoolean()
+        given(mockSharedPreferences.get(KEY_SHOW_DESCRIPTION_IN_DETAILS, false))
+            .willReturn(value)
+
+        // THEN
+        userSharedPreferences.getShowDescriptionInDetails() shouldBe value
+    }
+
+    @Test
+    fun `WHEN setDescriptionVisibleInDetail is called THEN KEY_DESCRIPTION_VISIBLE_DETAIL is set`() {
+        // WHEN
+        val value = randomBoolean()
+        userSharedPreferences.setShowDescriptionInDetails(value)
+
+        // THEN
+        verify(mockEditor).putBoolean(KEY_SHOW_DESCRIPTION_IN_DETAILS, value)
+    }
+
+    @Test
     fun `GIVEN KEY_DEFAULT_PRIVATE returns false THEN null is returned`() {
         // GIVEN
         given(mockSharedPreferences.get(KEY_DEFAULT_PRIVATE, false))
@@ -176,5 +239,26 @@ internal class UserSharedPreferencesTest {
 
         // THEN
         verify(mockEditor).putBoolean(KEY_DEFAULT_READ_LATER, value)
+    }
+
+    @Test
+    fun `WHEN getEditAfterSharing is called THEN its value is returned`() {
+        // GIVEN
+        val value = randomBoolean()
+        given(mockSharedPreferences.get(KEY_EDIT_AFTER_SHARING, false))
+            .willReturn(value)
+
+        // THEN
+        userSharedPreferences.getEditAfterSharing() shouldBe value
+    }
+
+    @Test
+    fun `WHEN setEditAfterSharing is called THEN KEY_EDIT_AFTER_SHARING is set`() {
+        // WHEN
+        val value = randomBoolean()
+        userSharedPreferences.setEditAfterSharing(value)
+
+        // THEN
+        verify(mockEditor).putBoolean(KEY_EDIT_AFTER_SHARING, value)
     }
 }

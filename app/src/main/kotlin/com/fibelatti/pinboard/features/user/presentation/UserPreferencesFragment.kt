@@ -9,6 +9,7 @@ import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.DarkTheme
 import com.fibelatti.pinboard.core.android.LightTheme
 import com.fibelatti.pinboard.core.android.base.BaseFragment
@@ -43,30 +44,40 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
         setupLayout()
 
         viewLifecycleOwner.observe(appStateViewModel.userPreferencesContent) {
-            when (it.appearance) {
-                DarkTheme -> buttonAppearanceDark.isChecked = true
-                LightTheme -> buttonAppearanceLight.isChecked = true
-            }
-            buttonAppearanceDark.setOnClickListener {
-                userPreferencesViewModel.saveAppearance(DarkTheme)
-            }
-            buttonAppearanceLight.setOnClickListener {
-                userPreferencesViewModel.saveAppearance(LightTheme)
-            }
-
-            checkboxPrivateDefault.isChecked = it.defaultPrivate
-            checkboxPrivateDefault.setOnCheckedChangeListener { _, isChecked ->
-                userPreferencesViewModel.saveDefaultPrivate(isChecked)
-            }
-
-            checkboxReadLaterDefault.isChecked = it.defaultReadLater
-            checkboxReadLaterDefault.setOnCheckedChangeListener { _, isChecked ->
-                userPreferencesViewModel.saveDefaultReadLater(isChecked)
-            }
+            setupAppearance(it.appearance)
+            setupPrivateDefault(it.defaultPrivate)
+            setupReadLaterDefault(it.defaultReadLater)
         }
 
         viewLifecycleOwner.observeEvent(userPreferencesViewModel.appearanceChanged) {
             activity?.recreate()
+        }
+    }
+
+    private fun setupAppearance(appearance: Appearance) {
+        when (appearance) {
+            DarkTheme -> buttonAppearanceDark.isChecked = true
+            LightTheme -> buttonAppearanceLight.isChecked = true
+        }
+        buttonAppearanceDark.setOnClickListener {
+            userPreferencesViewModel.saveAppearance(DarkTheme)
+        }
+        buttonAppearanceLight.setOnClickListener {
+            userPreferencesViewModel.saveAppearance(LightTheme)
+        }
+    }
+
+    private fun setupPrivateDefault(value: Boolean) {
+        checkboxPrivateDefault.isChecked = value
+        checkboxPrivateDefault.setOnCheckedChangeListener { _, isChecked ->
+            userPreferencesViewModel.saveDefaultPrivate(isChecked)
+        }
+    }
+
+    private fun setupReadLaterDefault(value: Boolean) {
+        checkboxReadLaterDefault.isChecked = value
+        checkboxReadLaterDefault.setOnCheckedChangeListener { _, isChecked ->
+            userPreferencesViewModel.saveDefaultReadLater(isChecked)
         }
     }
 

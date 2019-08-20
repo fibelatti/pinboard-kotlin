@@ -80,7 +80,11 @@ data class NoteDetailContent(
 
 data class UserPreferencesContent(
     val appearance: Appearance,
+    val autoFillDescription: Boolean,
+    val showDescriptionInLists: Boolean,
+    val showDescriptionInDetails: Boolean,
     val defaultPrivate: Boolean,
     val defaultReadLater: Boolean,
+    val editAfterSharing: Boolean,
     override val previousContent: PostListContent
 ) : ContentWithHistory()

@@ -105,131 +105,259 @@ internal class UserDataSourceTest {
             userDataSource.getLoginState().currentValueShouldBe(LoginState.LoggedOut)
         }
 
-        @Test
-        fun `GIVEN loginState is not LoggedIn WHEN forceLogout is called THEN nothing happens`() {
-            // GIVEN
-            userDataSource.loginState.value = LoginState.LoggedOut
+        @Nested
+        inner class LoginStateTests {
 
-            // WHEN
-            runBlocking { userDataSource.forceLogout() }
+            @Test
+            fun `GIVEN loginState is not LoggedIn WHEN forceLogout is called THEN nothing happens`() {
+                // GIVEN
+                userDataSource.loginState.value = LoginState.LoggedOut
 
-            // THEN
-            verify(mockUserSharedPreferences, never()).setAuthToken(anyString())
-            verify(mockUserSharedPreferences, never()).setLastUpdate(anyString())
-            verify(mockPostsDao, never()).deleteAllPosts()
-            userDataSource.getLoginState().currentValueShouldBe(LoginState.LoggedOut)
+                // WHEN
+                runBlocking { userDataSource.forceLogout() }
+
+                // THEN
+                verify(mockUserSharedPreferences, never()).setAuthToken(anyString())
+                verify(mockUserSharedPreferences, never()).setLastUpdate(anyString())
+                verify(mockPostsDao, never()).deleteAllPosts()
+                userDataSource.getLoginState().currentValueShouldBe(LoginState.LoggedOut)
+            }
+
+            @Test
+            fun `GIVEN loginState is LoggedIn WHEN forceLogout is called THEN setAuthToken is set and setLastUpdate is set and loginState value is updated to Unauthorizerd`() {
+                // GIVEN
+                userDataSource.loginState.value = LoginState.LoggedIn
+
+                // WHEN
+                runBlocking { userDataSource.forceLogout() }
+
+                // THEN
+                verify(mockUserSharedPreferences).setAuthToken("")
+                verify(mockUserSharedPreferences).setLastUpdate("")
+                verify(mockPostsDao).deleteAllPosts()
+                userDataSource.getLoginState().currentValueShouldBe(LoginState.Unauthorized)
+            }
         }
 
-        @Test
-        fun `GIVEN loginState is LoggedIn WHEN forceLogout is called THEN setAuthToken is set and setLastUpdate is set and loginState value is updated to Unauthorizerd`() {
-            // GIVEN
-            userDataSource.loginState.value = LoginState.LoggedIn
+        @Nested
+        inner class LastUpdate {
 
-            // WHEN
-            runBlocking { userDataSource.forceLogout() }
+            @Test
+            fun `WHEN getLastUpdate is called THEN UserSharedPreferences is returned`() {
+                // GIVEN
+                given(mockUserSharedPreferences.getLastUpdate())
+                    .willReturn(mockTime)
 
-            // THEN
-            verify(mockUserSharedPreferences).setAuthToken("")
-            verify(mockUserSharedPreferences).setLastUpdate("")
-            verify(mockPostsDao).deleteAllPosts()
-            userDataSource.getLoginState().currentValueShouldBe(LoginState.Unauthorized)
+                // THEN
+                runBlocking { userDataSource.getLastUpdate() shouldBe mockTime }
+            }
+
+            @Test
+            fun `WHEN setLastUpdate is called THEN UserSharedPreferences is set`() {
+                // WHEN
+                runBlocking { userDataSource.setLastUpdate(mockTime) }
+
+                // THEN
+                verify(mockUserSharedPreferences).setLastUpdate(mockTime)
+            }
         }
 
-        @Test
-        fun `WHEN getLastUpdate is called THEN UserSharedPreferences is returned`() {
-            // GIVEN
-            given(mockUserSharedPreferences.getLastUpdate())
-                .willReturn(mockTime)
+        @Nested
+        inner class AppearanceTests {
 
-            // THEN
-            runBlocking { userDataSource.getLastUpdate() shouldBe mockTime }
+            @Test
+            fun `GIVEN set appearance is the light theme WHEN getAppearance is called THEN LightTheme is returned`() {
+                // GIVEN
+                given(mockUserSharedPreferences.getAppearance())
+                    .willReturn(LightTheme.value)
+
+                // WHEN
+                runBlocking { userDataSource.getAppearance() shouldBe LightTheme }
+            }
+
+            @Test
+            fun `GIVEN set appearance is not the light theme WHEN getAppearance is called THEN DarkTheme is returned`() {
+                // GIVEN
+                given(mockUserSharedPreferences.getAppearance())
+                    .willReturn("anything really")
+
+                // WHEN
+                runBlocking { userDataSource.getAppearance() shouldBe DarkTheme }
+            }
+
+            @Test
+            fun `WHEN setAppearance is called THEN UserSharedPreferences is set`() {
+                // GIVEN
+                val mockAppearance = mock<Appearance>()
+
+                // WHEN
+                runBlocking { userDataSource.setAppearance(mockAppearance) }
+
+                // THEN
+                verify(mockUserSharedPreferences).setAppearance(mockAppearance.value)
+            }
         }
 
-        @Test
-        fun `WHEN setLastUpdate is called THEN UserSharedPreferences is set`() {
-            // WHEN
-            runBlocking { userDataSource.setLastUpdate(mockTime) }
+        @Nested
+        inner class AutoFill {
 
-            // THEN
-            verify(mockUserSharedPreferences).setLastUpdate(mockTime)
+            @Test
+            fun `WHEN getAutoFillDescription is called THEN UserSharedPreferences is returned`() {
+                // GIVEN
+                val value = randomBoolean()
+                given(mockUserSharedPreferences.getAutoFillDescription())
+                    .willReturn(value)
+
+                // THEN
+                runBlocking { userDataSource.getAutoFillDescription() shouldBe value }
+            }
+
+            @Test
+            fun `WHEN setAutoFillDescription is called THEN UserSharedPreferences is set`() {
+                // GIVEN
+                val value = randomBoolean()
+
+                // WHEN
+                runBlocking { userDataSource.setAutoFillDescription(value) }
+
+                // THEN
+                verify(mockUserSharedPreferences).setAutoFillDescription(value)
+            }
         }
 
-        @Test
-        fun `GIVEN set appearance is the light theme WHEN getAppearance is called THEN LightTheme is returned`() {
-            // GIVEN
-            given(mockUserSharedPreferences.getAppearance())
-                .willReturn(LightTheme.value)
+        @Nested
+        inner class DescriptionInLists {
 
-            // WHEN
-            runBlocking { userDataSource.getAppearance() shouldBe LightTheme }
+            @Test
+            fun `WHEN getShowDescriptionInLists is called THEN UserSharedPreferences is returned`() {
+                // GIVEN
+                val value = randomBoolean()
+                given(mockUserSharedPreferences.getShowDescriptionInLists())
+                    .willReturn(value)
+
+                // THEN
+                runBlocking { userDataSource.getShowDescriptionInLists() shouldBe value }
+            }
+
+            @Test
+            fun `WHEN setShowDescriptionInLists is called THEN UserSharedPreferences is set`() {
+                // GIVEN
+                val value = randomBoolean()
+
+                // WHEN
+                runBlocking { userDataSource.setShowDescriptionInLists(value) }
+
+                // THEN
+                verify(mockUserSharedPreferences).setShowDescriptionInLists(value)
+            }
         }
 
-        @Test
-        fun `GIVEN set appearance is not the light theme WHEN getAppearance is called THEN DarkTheme is returned`() {
-            // GIVEN
-            given(mockUserSharedPreferences.getAppearance())
-                .willReturn("anything really")
+        @Nested
+        inner class DescriptionInDetails {
 
-            // WHEN
-            runBlocking { userDataSource.getAppearance() shouldBe DarkTheme }
+            @Test
+            fun `WHEN getShowDescriptionInDetails is called THEN UserSharedPreferences is returned`() {
+                // GIVEN
+                val value = randomBoolean()
+                given(mockUserSharedPreferences.getShowDescriptionInDetails())
+                    .willReturn(value)
+
+                // THEN
+                runBlocking { userDataSource.getShowDescriptionInDetails() shouldBe value }
+            }
+
+            @Test
+            fun `WHEN setShowDescriptionInDetails is called THEN UserSharedPreferences is set`() {
+                // GIVEN
+                val value = randomBoolean()
+
+                // WHEN
+                runBlocking { userDataSource.setShowDescriptionInDetails(value) }
+
+                // THEN
+                verify(mockUserSharedPreferences).setShowDescriptionInDetails(value)
+            }
         }
 
-        @Test
-        fun `WHEN setAppearance is called THEN UserSharedPreferences is set`() {
-            // GIVEN
-            val mockAppearance = mock<Appearance>()
+        @Nested
+        inner class DefaultPrivate {
 
-            // WHEN
-            runBlocking { userDataSource.setAppearance(mockAppearance) }
+            @Test
+            fun `WHEN getDefaultPrivate is called THEN UserSharedPreferences is returned`() {
+                // GIVEN
+                val value = randomBoolean()
+                given(mockUserSharedPreferences.getDefaultPrivate())
+                    .willReturn(value)
 
-            // THEN
-            verify(mockUserSharedPreferences).setAppearance(mockAppearance.value)
+                // THEN
+                runBlocking { userDataSource.getDefaultPrivate() shouldBe value }
+            }
+
+            @Test
+            fun `WHEN setDefaultPrivate is called THEN UserSharedPreferences is set`() {
+                // GIVEN
+                val value = randomBoolean()
+
+                // WHEN
+                runBlocking { userDataSource.setDefaultPrivate(value) }
+
+                // THEN
+                verify(mockUserSharedPreferences).setDefaultPrivate(value)
+            }
         }
 
-        @Test
-        fun `WHEN getDefaultPrivate is called THEN UserSharedPreferences is returned`() {
-            // GIVEN
-            val value = randomBoolean()
-            given(mockUserSharedPreferences.getDefaultPrivate())
-                .willReturn(value)
+        @Nested
+        inner class DefaultReadLater {
 
-            // THEN
-            runBlocking { userDataSource.getDefaultPrivate() shouldBe value }
+            @Test
+            fun `WHEN getDefaultReadLater is called THEN UserSharedPreferences is returned`() {
+                // GIVEN
+                val value = randomBoolean()
+                given(mockUserSharedPreferences.getDefaultReadLater())
+                    .willReturn(value)
+
+                // THEN
+                runBlocking { userDataSource.getDefaultReadLater() shouldBe value }
+            }
+
+            @Test
+            fun `WHEN setDefaultReadLater is called THEN UserSharedPreferences is set`() {
+                // GIVEN
+                val value = randomBoolean()
+
+                // WHEN
+                runBlocking { userDataSource.setDefaultReadLater(value) }
+
+                // THEN
+                verify(mockUserSharedPreferences).setDefaultReadLater(value)
+            }
         }
 
-        @Test
-        fun `WHEN setDefaultPrivate is called THEN UserSharedPreferences is set`() {
-            // GIVEN
-            val value = randomBoolean()
+        @Nested
+        inner class EditAfterSharing {
 
-            // WHEN
-            runBlocking { userDataSource.setDefaultPrivate(value) }
+            @Test
+            fun `WHEN getEditAfterSharing is called THEN UserSharedPreferences is returned`() {
+                // GIVEN
+                val value = randomBoolean()
+                given(mockUserSharedPreferences.getEditAfterSharing())
+                    .willReturn(value)
 
-            // THEN
-            verify(mockUserSharedPreferences).setDefaultPrivate(value)
-        }
+                // THEN
+                runBlocking { userDataSource.getEditAfterSharing() shouldBe value }
+            }
 
-        @Test
-        fun `WHEN getDefaultReadLater is called THEN UserSharedPreferences is returned`() {
-            // GIVEN
-            val value = randomBoolean()
-            given(mockUserSharedPreferences.getDefaultReadLater())
-                .willReturn(value)
+            @Test
+            fun `WHEN setEditAfterSharing is called THEN UserSharedPreferences is set`() {
+                // GIVEN
+                val value = randomBoolean()
 
-            // THEN
-            runBlocking { userDataSource.getDefaultReadLater() shouldBe value }
-        }
+                // WHEN
+                runBlocking { userDataSource.setEditAfterSharing(value) }
 
-        @Test
-        fun `WHEN setDefaultReadLater is called THEN UserSharedPreferences is set`() {
-            // GIVEN
-            val value = randomBoolean()
-
-            // WHEN
-            runBlocking { userDataSource.setDefaultReadLater(value) }
-
-            // THEN
-            verify(mockUserSharedPreferences).setDefaultReadLater(value)
+                // THEN
+                verify(mockUserSharedPreferences).setEditAfterSharing(value)
+            }
         }
     }
 }

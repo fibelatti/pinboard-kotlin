@@ -110,8 +110,12 @@ class NavigationActionHandler @Inject constructor(
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
             UserPreferencesContent(
                 appearance = userRepository.getAppearance(),
+                autoFillDescription = userRepository.getAutoFillDescription(),
+                showDescriptionInLists = userRepository.getShowDescriptionInLists(),
+                showDescriptionInDetails = userRepository.getShowDescriptionInDetails(),
                 defaultPrivate = userRepository.getDefaultPrivate().orFalse(),
                 defaultReadLater = userRepository.getDefaultReadLater().orFalse(),
+                editAfterSharing = userRepository.getEditAfterSharing(),
                 previousContent = it
             )
         }

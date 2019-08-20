@@ -22,6 +22,18 @@ interface UserRepository {
 
     suspend fun setAppearance(appearance: Appearance)
 
+    suspend fun getAutoFillDescription(): Boolean
+
+    suspend fun setAutoFillDescription(value: Boolean)
+
+    suspend fun getShowDescriptionInLists(): Boolean
+
+    suspend fun setShowDescriptionInLists(value: Boolean)
+
+    suspend fun getShowDescriptionInDetails(): Boolean
+
+    suspend fun setShowDescriptionInDetails(value: Boolean)
+
     suspend fun getDefaultPrivate(): Boolean?
 
     suspend fun setDefaultPrivate(value: Boolean)
@@ -29,4 +41,8 @@ interface UserRepository {
     suspend fun getDefaultReadLater(): Boolean?
 
     suspend fun setDefaultReadLater(value: Boolean)
+
+    suspend fun getEditAfterSharing(): Boolean
+
+    suspend fun setEditAfterSharing(value: Boolean)
 }

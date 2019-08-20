@@ -15,15 +15,21 @@ const val KEY_LAST_UPDATE = "LAST_UPDATE"
 @VisibleForTesting
 const val KEY_APPEARANCE = "APPEARANCE"
 @VisibleForTesting
+const val KEY_AUTO_FILL_DESCRIPTION = "AUTO_FILL_DESCRIPTION"
+@VisibleForTesting
+const val KEY_SHOW_DESCRIPTION_IN_LISTS = "SHOW_DESCRIPTION_IN_LISTS"
+@VisibleForTesting
+const val KEY_SHOW_DESCRIPTION_IN_DETAILS = "SHOW_DESCRIPTION_IN_DETAILS"
+@VisibleForTesting
 const val KEY_DEFAULT_PRIVATE = "DEFAULT_PRIVATE"
 @VisibleForTesting
 const val KEY_DEFAULT_READ_LATER = "DEFAULT_READ_LATER"
+@VisibleForTesting
+const val KEY_EDIT_AFTER_SHARING = "EDIT_AFTER_SHARING"
 
 fun Context.getUserPreferences() = getSharedPreferences("user_preferences")
 
-class UserSharedPreferences @Inject constructor(
-    private val sharedPreferences: SharedPreferences
-) {
+class UserSharedPreferences @Inject constructor(private val sharedPreferences: SharedPreferences) {
     fun getAuthToken(): String = sharedPreferences.get(KEY_AUTH_TOKEN, "")
 
     fun setAuthToken(authToken: String) {
@@ -40,6 +46,26 @@ class UserSharedPreferences @Inject constructor(
 
     fun setAppearance(value: String) {
         sharedPreferences.put(KEY_APPEARANCE, value)
+    }
+
+    fun getAutoFillDescription(): Boolean = sharedPreferences.get(KEY_AUTO_FILL_DESCRIPTION, false)
+
+    fun setAutoFillDescription(value: Boolean) {
+        sharedPreferences.put(KEY_AUTO_FILL_DESCRIPTION, value)
+    }
+
+    fun getShowDescriptionInLists(): Boolean =
+        sharedPreferences.get(KEY_SHOW_DESCRIPTION_IN_LISTS, false)
+
+    fun setShowDescriptionInLists(value: Boolean) {
+        sharedPreferences.put(KEY_SHOW_DESCRIPTION_IN_LISTS, value)
+    }
+
+    fun getShowDescriptionInDetails(): Boolean =
+        sharedPreferences.get(KEY_SHOW_DESCRIPTION_IN_DETAILS, false)
+
+    fun setShowDescriptionInDetails(value: Boolean) {
+        sharedPreferences.put(KEY_SHOW_DESCRIPTION_IN_DETAILS, value)
     }
 
     /***
@@ -66,5 +92,11 @@ class UserSharedPreferences @Inject constructor(
 
     fun setDefaultReadLater(value: Boolean) {
         sharedPreferences.put(KEY_DEFAULT_READ_LATER, value)
+    }
+
+    fun getEditAfterSharing(): Boolean = sharedPreferences.get(KEY_EDIT_AFTER_SHARING, false)
+
+    fun setEditAfterSharing(value: Boolean) {
+        sharedPreferences.put(KEY_EDIT_AFTER_SHARING, value)
     }
 }

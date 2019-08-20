@@ -11,6 +11,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import com.fibelatti.pinboard.randomBoolean
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -508,12 +509,17 @@ internal class NavigationActionHandlerTest {
             shouldLoad = ShouldLoadFirstPage
         )
         private val mockAppearance = mock<Appearance>()
+        private val mockRandomBoolean = randomBoolean()
 
         @BeforeEach
         fun setup() {
             givenSuspend { mockUserRepository.getAppearance() }.willReturn(mockAppearance)
-            givenSuspend { mockUserRepository.getDefaultPrivate() }.willReturn(true)
-            givenSuspend { mockUserRepository.getDefaultReadLater() }.willReturn(true)
+            givenSuspend { mockUserRepository.getAutoFillDescription() }.willReturn(mockRandomBoolean)
+            givenSuspend { mockUserRepository.getShowDescriptionInLists() }.willReturn(mockRandomBoolean)
+            givenSuspend { mockUserRepository.getShowDescriptionInDetails() }.willReturn(mockRandomBoolean)
+            givenSuspend { mockUserRepository.getDefaultPrivate() }.willReturn(mockRandomBoolean)
+            givenSuspend { mockUserRepository.getDefaultReadLater() }.willReturn(mockRandomBoolean)
+            givenSuspend { mockUserRepository.getEditAfterSharing() }.willReturn(mockRandomBoolean)
         }
 
         @Test
@@ -537,8 +543,12 @@ internal class NavigationActionHandlerTest {
             // THEN
             result shouldBe UserPreferencesContent(
                 appearance = mockAppearance,
-                defaultPrivate = true,
-                defaultReadLater = true,
+                defaultPrivate = mockRandomBoolean,
+                autoFillDescription = mockRandomBoolean,
+                showDescriptionInLists = mockRandomBoolean,
+                showDescriptionInDetails = mockRandomBoolean,
+                defaultReadLater = mockRandomBoolean,
+                editAfterSharing = mockRandomBoolean,
                 previousContent = initialContent
             )
         }
@@ -556,8 +566,12 @@ internal class NavigationActionHandlerTest {
             // THEN
             result shouldBe UserPreferencesContent(
                 appearance = mockAppearance,
+                autoFillDescription = mockRandomBoolean,
+                showDescriptionInLists = mockRandomBoolean,
+                showDescriptionInDetails = mockRandomBoolean,
                 defaultPrivate = false,
-                defaultReadLater = true,
+                defaultReadLater = mockRandomBoolean,
+                editAfterSharing = mockRandomBoolean,
                 previousContent = initialContent
             )
         }
@@ -575,8 +589,12 @@ internal class NavigationActionHandlerTest {
             // THEN
             result shouldBe UserPreferencesContent(
                 appearance = mockAppearance,
-                defaultPrivate = true,
+                autoFillDescription = mockRandomBoolean,
+                showDescriptionInLists = mockRandomBoolean,
+                showDescriptionInDetails = mockRandomBoolean,
+                defaultPrivate = mockRandomBoolean,
                 defaultReadLater = false,
+                editAfterSharing = mockRandomBoolean,
                 previousContent = initialContent
             )
         }

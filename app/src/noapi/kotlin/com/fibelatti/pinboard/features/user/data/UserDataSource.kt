@@ -46,6 +46,27 @@ class UserDataSource @Inject constructor(
         userSharedPreferences.setAppearance(appearance.value)
     }
 
+    override suspend fun getAutoFillDescription(): Boolean =
+        userSharedPreferences.getDescriptionAutoFill()
+
+    override suspend fun setAutoFillDescription(value: Boolean) {
+        userSharedPreferences.setDescriptionAutoFill(value)
+    }
+
+    override suspend fun getShowDescriptionInLists(): Boolean =
+        userSharedPreferences.getDescriptionVisibleInList()
+
+    override suspend fun setShowDescriptionInLists(value: Boolean) {
+        userSharedPreferences.setDescriptionVisibleInList(value)
+    }
+
+    override suspend fun getShowDescriptionInDetails(): Boolean =
+        userSharedPreferences.getDescriptionVisibleInDetail()
+
+    override suspend fun setShowDescriptionInDetails(value: Boolean) {
+        userSharedPreferences.setDescriptionVisibleInDetail(value)
+    }
+
     override suspend fun getDefaultPrivate(): Boolean? = null
 
     override suspend fun setDefaultPrivate(value: Boolean) {}
@@ -54,5 +75,11 @@ class UserDataSource @Inject constructor(
 
     override suspend fun setDefaultReadLater(value: Boolean) {
         userSharedPreferences.setDefaultReadLater(value)
+    }
+
+    override suspend fun getEditAfterSharing(): Boolean = userSharedPreferences.getEditAfterSharing()
+
+    override suspend fun setEditAfterSharing(value: Boolean) {
+        userSharedPreferences.setEditAfterSharing(value)
     }
 }
