@@ -33,11 +33,12 @@ class ShareReceiverViewModel @Inject constructor(
         launch {
             extractUrl(url)
                 .map { extractedUrl -> parseUrl(extractedUrl) }
-                .map { (finalUrl, title) ->
+                .map { (finalUrl, title, description) ->
                     addPost(
                         AddPost.Params(
                             url = finalUrl,
                             title = title,
+                            description = description,
                             private = userRepository.getDefaultPrivate(),
                             readLater = userRepository.getDefaultReadLater()
                         )
