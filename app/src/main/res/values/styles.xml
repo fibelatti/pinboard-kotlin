@@ -19,7 +19,6 @@
         <item name="android:navigationBarColor">@color/color_system_bar</item>
         <item name="android:fitsSystemWindows">true</item>
         <item name="android:windowAnimationStyle">@style/AppTheme.AppActivityAnimation</item>
-        <item name="android:alertDialogTheme">@style/AppTheme.AlertDialog</item>
         <item name="fontFamily">@font/opensansregular</item>
         <item name="buttonStyle">@style/AppTheme.Button</item>
         <item name="checkboxStyle">@style/AppTheme.Checkbox</item>
@@ -33,9 +32,9 @@
         <item name="android:background">@drawable/background_bottom_sheet</item>
     </style>
 
-    <style name="AppTheme.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
-        <item name="android:colorPrimary">@color/text_primary</item>
-        <item name="android:colorAccent">@color/color_primary</item>
+    <style name="AppTheme.AlertDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="colorPrimary">@color/color_primary</item>
     </style>
 
     <style name="AppTheme.BaseBottomSheetDialog" parent="@style/Theme.Design.BottomSheetDialog">
