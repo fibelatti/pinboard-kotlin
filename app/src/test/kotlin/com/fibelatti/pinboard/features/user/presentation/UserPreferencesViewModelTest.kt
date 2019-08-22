@@ -2,19 +2,22 @@ package com.fibelatti.pinboard.features.user.presentation
 
 import com.fibelatti.core.archcomponents.test.extension.currentEventShouldBe
 import com.fibelatti.core.test.extension.mock
-import com.fibelatti.core.test.extension.verifySuspend
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.core.android.Appearance
+import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito.verify
 
 internal class UserPreferencesViewModelTest : BaseViewModelTest() {
 
     private val mockUserRepository = mock<UserRepository>()
+    private val mockAppStateRepository = mock<AppStateRepository>()
 
     private val userPreferencesViewModel = UserPreferencesViewModel(
-        mockUserRepository
+        mockUserRepository,
+        mockAppStateRepository
     )
 
     @Test
@@ -26,8 +29,57 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         userPreferencesViewModel.saveAppearance(mockAppearance)
 
         // THEN
-        verifySuspend(mockUserRepository) { setAppearance(mockAppearance) }
+        verify(mockUserRepository).setAppearance(mockAppearance)
+        verify(mockAppStateRepository).reset()
         userPreferencesViewModel.appearanceChanged.currentEventShouldBe(mockAppearance)
+    }
+
+    @Test
+    fun `WHEN saveAutoFillDescription is called THEN repository is updated`() {
+        // GIVEN
+        val value = randomBoolean()
+
+        // WHEN
+        userPreferencesViewModel.saveAutoFillDescription(value)
+
+        // THEN
+        verify(mockUserRepository).setAutoFillDescription(value)
+    }
+
+    @Test
+    fun `WHEN saveShowDescriptionInLists is called THEN repository is updated`() {
+        // GIVEN
+        val value = randomBoolean()
+
+        // WHEN
+        userPreferencesViewModel.saveShowDescriptionInLists(value)
+
+        // THEN
+        verify(mockUserRepository).setShowDescriptionInLists(value)
+    }
+
+    @Test
+    fun `WHEN saveShowDescriptionInDetails is called THEN repository is updated`() {
+        // GIVEN
+        val value = randomBoolean()
+
+        // WHEN
+        userPreferencesViewModel.saveShowDescriptionInDetails(value)
+
+        // THEN
+        verify(mockUserRepository).setShowDescriptionInDetails(value)
+    }
+
+    @Test
+    fun `WHEN setEditAfterSharing is called THEN repository is updated`() {
+        // GIVEN
+        val value = randomBoolean()
+
+        // WHEN
+        userPreferencesViewModel.saveEditAfterSharing(value)
+
+        // THEN
+        verify(mockUserRepository).setEditAfterSharing(value)
     }
 
     @Test
@@ -39,7 +91,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         userPreferencesViewModel.saveDefaultPrivate(value)
 
         // THEN
-        verifySuspend(mockUserRepository) { setDefaultPrivate(value) }
+        verify(mockUserRepository).setDefaultPrivate(value)
     }
 
     @Test
@@ -51,6 +103,6 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         userPreferencesViewModel.saveDefaultReadLater(value)
 
         // THEN
-        verifySuspend(mockUserRepository) { setDefaultReadLater(value) }
+        verify(mockUserRepository).setDefaultReadLater(value)
     }
 }

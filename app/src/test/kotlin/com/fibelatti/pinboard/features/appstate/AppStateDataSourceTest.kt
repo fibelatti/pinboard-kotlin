@@ -6,10 +6,12 @@ import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.safeAny
+import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.InstantExecutorExtension
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.allSealedSubclasses
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.setMain
@@ -22,6 +24,7 @@ import org.junit.jupiter.api.fail
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito.willReturn
 import org.mockito.Mockito
 import org.mockito.Mockito.never
 import org.mockito.Mockito.spy
@@ -30,6 +33,7 @@ import org.mockito.Mockito.verify
 @ExtendWith(InstantExecutorExtension::class)
 internal class AppStateDataSourceTest {
 
+    private val mockUserRepository = mock<UserRepository>()
     private val mockResourceProvider = mock<ResourceProvider>()
     private val mockNavigationActionHandler = mock<NavigationActionHandler>()
     private val mockPostActionHandler = mock<PostActionHandler>()
@@ -45,6 +49,7 @@ internal class AppStateDataSourceTest {
         category = All,
         title = "R.string.posts_title_all",
         posts = null,
+        showDescription = false,
         sortType = NewestFirst,
         searchParameters = SearchParameters(),
         shouldLoad = ShouldLoadFirstPage,
@@ -63,6 +68,7 @@ internal class AppStateDataSourceTest {
 
         appStateDataSource = spy(
             AppStateDataSource(
+                mockUserRepository,
                 mockResourceProvider,
                 mockNavigationActionHandler,
                 mockPostActionHandler,
@@ -82,8 +88,16 @@ internal class AppStateDataSourceTest {
 
     @Test
     fun `reset should set currentContent to the initial value`() {
+        // GIVEN
+        willReturn(expectedInitialValue)
+            .given(appStateDataSource).getInitialContent()
+
+        // WHEN
         appStateDataSource.reset()
 
+        // THEN
+        verify(appStateDataSource).getInitialContent()
+        verify(appStateDataSource).updateContent(expectedInitialValue)
         appStateDataSource.getContent().currentValueShouldBe(expectedInitialValue)
     }
 
@@ -178,6 +192,7 @@ internal class AppStateDataSourceTest {
                             PostsDisplayed -> add(PostsDisplayed to ExpectedHandler.POST)
                             ToggleSorting -> add(ToggleSorting to ExpectedHandler.POST)
                             is EditPost -> add(mock<EditPost>() to ExpectedHandler.POST)
+                            is EditPostFromShare -> add(mock<EditPostFromShare>() to ExpectedHandler.POST)
                             is PostSaved -> add(mock<PostSaved>() to ExpectedHandler.POST)
                             PostDeleted -> add(PostDeleted to ExpectedHandler.POST)
 
@@ -261,6 +276,23 @@ internal class AppStateDataSourceTest {
             // THEN
             verify(appStateDataSource, never()).updateContent(safeAny())
         }
+    }
+
+    @Test
+    fun `WHEN getInitialContent is called THEN expected initial content is returned`() {
+        appStateDataSource.getInitialContent() shouldBe expectedInitialValue
+    }
+
+    @Test
+    fun `GIVEN updateContent is called THEN getContent should return that value`() {
+        // GIVEN
+        val mockContent = mock<Content>()
+
+        // WHEN
+        appStateDataSource.updateContent(mockContent)
+
+        // THEN
+        appStateDataSource.getContent().currentValueShouldBe(mockContent)
     }
 
     internal enum class ExpectedHandler {

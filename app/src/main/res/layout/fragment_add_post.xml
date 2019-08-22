@@ -20,7 +20,6 @@
     <include
         android:id="@+id/layoutAddPost"
         layout="@layout/layout_add_post"
-        android:layout_marginBottom="@dimen/margin_small"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

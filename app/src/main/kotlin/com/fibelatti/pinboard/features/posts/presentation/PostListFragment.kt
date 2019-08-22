@@ -121,18 +121,17 @@ class PostListFragment @Inject constructor(
         }
 
         recyclerViewPosts
+            .apply {
+                setPageSize(AppConfig.DEFAULT_PAGE_SIZE)
+                setMinDistanceToLastItem(AppConfig.DEFAULT_PAGE_SIZE / 2)
+                onShouldRequestNextPage = {
+                    progressBarNextPage.visible()
+                    appStateViewModel.runAction(GetNextPostPage)
+                }
+            }
             .withLinearLayoutManager()
             .withItemOffsetDecoration(R.dimen.padding_small)
             .adapter = postsAdapter
-
-        recyclerViewPosts.apply {
-            setPageSize(AppConfig.DEFAULT_PAGE_SIZE)
-            setMinDistanceToLastItem(AppConfig.DEFAULT_PAGE_SIZE / 2)
-            onShouldRequestNextPage = {
-                progressBarNextPage.visible()
-                appStateViewModel.runAction(GetNextPostPage)
-            }
-        }
 
         postsAdapter.onItemClicked = { appStateViewModel.runAction(ViewPost(it)) }
         postsAdapter.onTagClicked = { appStateViewModel.runAction(PostsForTag(it)) }
@@ -199,6 +198,7 @@ class PostListFragment @Inject constructor(
             setPostListTitle(content.title, content.totalCount, content.sortType)
         }
 
+        postsAdapter.showDescription = content.showDescription
         if (!content.posts.alreadyDisplayed || postsAdapter.itemCount == 0) {
             recyclerViewPosts.visible()
             layoutEmptyList.gone()

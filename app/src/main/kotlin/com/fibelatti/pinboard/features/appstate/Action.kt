@@ -40,6 +40,7 @@ data class SetNextPostPage(val posts: Pair<Int, List<Post>>?) : PostAction()
 object PostsDisplayed : PostAction()
 object ToggleSorting : PostAction()
 data class EditPost(val post: Post) : PostAction()
+data class EditPostFromShare(val post: Post) : PostAction()
 data class PostSaved(val post: Post) : PostAction()
 object PostDeleted : PostAction()
 // endregion

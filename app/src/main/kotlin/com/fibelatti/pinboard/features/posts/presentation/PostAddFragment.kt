@@ -12,6 +12,7 @@ import com.fibelatti.core.extension.clearError
 import com.fibelatti.core.extension.clearText
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.hideKeyboard
+import com.fibelatti.core.extension.invisible
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.onKeyboardSubmit
 import com.fibelatti.core.extension.setOnClickListener
@@ -23,10 +24,12 @@ import com.fibelatti.core.extension.withItemOffsetDecoration
 import com.fibelatti.core.extension.withLinearLayoutManager
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.showStyledDialog
 import com.fibelatti.pinboard.core.extension.toast
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.mainActivity
+import com.fibelatti.pinboard.features.posts.domain.model.Post
 import kotlinx.android.synthetic.main.fragment_add_post.*
 import kotlinx.android.synthetic.main.layout_add_description.*
 import kotlinx.android.synthetic.main.layout_add_post.*
@@ -43,15 +46,15 @@ class PostAddFragment @Inject constructor(
         val TAG: String = "PostAddFragment"
     }
 
-    private val appStateViewModel: AppStateViewModel by lazy {
-        viewModelFactory.get<AppStateViewModel>(this)
-    }
+    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(this) }
     private val postAddViewModel by lazy { viewModelFactory.get<PostAddViewModel>(this) }
 
     /**
      * Saved since different flavours have different visibilities
      */
     private var checkBoxPrivateVisibility: Int = View.VISIBLE
+
+    private var originalPost: Post? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -76,11 +79,23 @@ class PostAddFragment @Inject constructor(
     private fun setupLayout() {
         mainActivity?.updateTitleLayout {
             setTitle(R.string.posts_add_title)
-            setNavigateUp(R.drawable.ic_close) { navigateBack() }
+            setNavigateUp(R.drawable.ic_close) {
+                if (isContentUnchanged()) {
+                    navigateBack()
+                } else {
+                    context?.showStyledDialog {
+                        setMessage(R.string.alert_confirm_unsaved_changes)
+                        setPositiveButton(R.string.hint_yes) { _, _ -> navigateBack() }
+                        setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
+                    }
+                }
+            }
         }
 
         mainActivity?.updateViews { bottomAppBar, fab ->
-            bottomAppBar.gone()
+            // Using invisible() instead of gone() otherwise the fab will misbehave when
+            // starting this fragment from share
+            bottomAppBar.invisible()
             fab.run {
                 setImageResource(R.drawable.ic_done)
                 setOnClickListener {
@@ -93,6 +108,19 @@ class PostAddFragment @Inject constructor(
 
         setupDescriptionLayouts()
         setupTagLayouts()
+    }
+
+    private fun isContentUnchanged(): Boolean {
+        return originalPost
+            ?.run {
+                url == editTextUrl.textAsString() &&
+                    title == editTextTitle.textAsString() &&
+                    description == editTextDescription.textAsString() &&
+                    private == checkboxPrivate.isChecked &&
+                    readLater == checkboxReadLater.isChecked &&
+                    tags == chipGroupTags.getAllTags().takeIf { it.isNotEmpty() }
+            }
+            ?: true
     }
 
     private fun saveLink() {
@@ -250,11 +278,18 @@ class PostAddFragment @Inject constructor(
     }
 
     private fun showPostDetails(content: EditPostContent) {
+        originalPost = content.post
         with(content.post) {
             editTextUrl.setText(url)
             editTextTitle.setText(title)
             editTextDescription.setText(description)
+
             setupDescriptionLayouts()
+            if (content.showDescription) {
+                textInputUrlDescription.visible()
+                buttonEditDescription.gone()
+            }
+
             checkboxPrivate.isChecked = private
             checkboxReadLater.isChecked = readLater
 

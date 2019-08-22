@@ -7,6 +7,8 @@ import com.fibelatti.pinboard.MockDataProvider.createTag
 import com.fibelatti.pinboard.MockDataProvider.mockTitle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.pinboard.features.user.domain.UserRepository
+import com.fibelatti.pinboard.randomBoolean
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -16,10 +18,12 @@ import org.mockito.Mockito.verify
 
 internal class TagActionHandlerTest {
 
+    private val mockUserRepository = mock<UserRepository>()
     private val mockResourceProvider = mock<ResourceProvider>()
     private val mockConnectivityInfoProvider = mock<ConnectivityInfoProvider>()
 
     private val tagActionHandler = TagActionHandler(
+        mockUserRepository,
         mockResourceProvider,
         mockConnectivityInfoProvider
     )
@@ -28,6 +32,7 @@ internal class TagActionHandlerTest {
         category = All,
         title = mockTitle,
         posts = null,
+        showDescription = false,
         sortType = NewestFirst,
         searchParameters = SearchParameters(),
         shouldLoad = Loaded
@@ -116,6 +121,10 @@ internal class TagActionHandlerTest {
             given(mockConnectivityInfoProvider.isConnected())
                 .willReturn(true)
 
+            val randomBoolean = randomBoolean()
+            given(mockUserRepository.getShowDescriptionInLists())
+                .willReturn(randomBoolean)
+
             // WHEN
             val result = runBlocking {
                 tagActionHandler.runAction(PostsForTag(createTag()), initialContent)
@@ -126,6 +135,7 @@ internal class TagActionHandlerTest {
                 category = All,
                 title = mockTitle,
                 posts = null,
+                showDescription = randomBoolean,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(tags = listOf(createTag())),
                 shouldLoad = ShouldLoadFirstPage,

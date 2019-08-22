@@ -25,12 +25,8 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
         val TAG: String = "UserPreferencesFragment"
     }
 
-    private val appStateViewModel: AppStateViewModel by lazy {
-        viewModelFactory.get<AppStateViewModel>(this)
-    }
-    private val userPreferencesViewModel: UserPreferencesViewModel by lazy {
-        viewModelFactory.get<UserPreferencesViewModel>(this)
-    }
+    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(this) }
+    private val userPreferencesViewModel by lazy { viewModelFactory.get<UserPreferencesViewModel>(this) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,6 +41,10 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
 
         viewLifecycleOwner.observe(appStateViewModel.userPreferencesContent) {
             setupAppearance(it.appearance)
+            setupAutoFillDescription(it.autoFillDescription)
+            setupShowDescriptionInLists(it.showDescriptionInLists)
+            setupShowDescriptionInDetails(it.showDescriptionInDetails)
+            setupEditAfterSharing(it.editAfterSharing)
             setupPrivateDefault(it.defaultPrivate)
             setupReadLaterDefault(it.defaultReadLater)
         }
@@ -64,6 +64,34 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
         }
         buttonAppearanceLight.setOnClickListener {
             userPreferencesViewModel.saveAppearance(LightTheme)
+        }
+    }
+
+    private fun setupAutoFillDescription(value: Boolean) {
+        checkboxAutoFillDescription.isChecked = value
+        checkboxAutoFillDescription.setOnCheckedChangeListener { _, isChecked ->
+            userPreferencesViewModel.saveAutoFillDescription(isChecked)
+        }
+    }
+
+    private fun setupShowDescriptionInLists(value: Boolean) {
+        checkboxShowDescriptionInLists.isChecked = value
+        checkboxShowDescriptionInLists.setOnCheckedChangeListener { _, isChecked ->
+            userPreferencesViewModel.saveShowDescriptionInLists(isChecked)
+        }
+    }
+
+    private fun setupShowDescriptionInDetails(value: Boolean) {
+        checkboxShowDescriptionInDetails.isChecked = value
+        checkboxShowDescriptionInDetails.setOnCheckedChangeListener { _, isChecked ->
+            userPreferencesViewModel.saveShowDescriptionInDetails(isChecked)
+        }
+    }
+
+    private fun setupEditAfterSharing(value: Boolean) {
+        checkboxEditAfterSharing.isChecked = value
+        checkboxEditAfterSharing.setOnCheckedChangeListener { _, isChecked ->
+            userPreferencesViewModel.saveEditAfterSharing(isChecked)
         }
     }
 

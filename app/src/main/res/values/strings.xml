@@ -15,7 +15,8 @@
     <string name="hint_help">Help</string>
     <string name="hint_done">Done</string>
 
-    <string name="alert_confirm_deletion">Are you sure you want to remove this link?</string>
+    <string name="alert_confirm_deletion">Are you sure you want to delete this bookmark?</string>
+    <string name="alert_confirm_unsaved_changes">You have unsaved changes that will be lost, continue?</string>
 
     <string name="generic_log_error">Error in %1$s (%2$s)</string>
 
@@ -37,8 +38,8 @@
     <string name="menu_navigation_preferences">Preferences</string>
     <string name="menu_navigation_logout">Logout</string>
 
-    <string name="menu_link_delete">Remove link</string>
-    <string name="menu_link_edit">Edit link</string>
+    <string name="menu_link_delete">Remove bookmark</string>
+    <string name="menu_link_edit">Edit bookmark</string>
     <string name="menu_link_tags">Edit tags</string>
     <string name="menu_link_open_in_browser">Open in browser</string>
 
@@ -62,9 +63,9 @@
     <string name="posts_title_untagged">Untagged</string>
 
     <plurals name="posts_quantity">
-        <item quantity="zero">No links</item>
-        <item quantity="one">1 link</item>
-        <item quantity="other">%d links</item>
+        <item quantity="zero">No bookmarks</item>
+        <item quantity="one">1 bookmark</item>
+        <item quantity="other">%d bookmarks</item>
     </plurals>
 
     <string name="posts_sorting_newest_first">%s — Newest first</string>
@@ -80,14 +81,14 @@
     <string name="posts_open_with_file_viewer_error">Failed to open this URL</string>
 
     <string name="posts_empty_title">No pins in this board</string>
-    <string name="posts_empty_description">There aren\'t any links saved in the selected category</string>
+    <string name="posts_empty_description">There aren\'t any bookmarks saved in the selected category</string>
 
     <string name="posts_empty_filter_title">No pins for this filter</string>
-    <string name="posts_empty_filter_description">There aren\'t any links saved for this filter criteria</string>
+    <string name="posts_empty_filter_description">There aren\'t any bookmarks saved for this filter criteria</string>
 
-    <string name="posts_deleted_feedback">Link removed successfully!</string>
+    <string name="posts_deleted_feedback">Bookmark removed successfully!</string>
 
-    <string name="posts_add_title">Save link</string>
+    <string name="posts_add_title">Save bookmark</string>
     <string name="posts_add_url">URL</string>
     <string name="posts_add_url_title">Title</string>
     <string name="posts_add_url_description">Description</string>
@@ -102,13 +103,13 @@
     <string name="posts_add_tags_title">Tags</string>
     <string name="posts_add_tags_suggested">Suggested tags</string>
 
-    <string name="posts_saved_feedback">Link saved successfully!</string>
+    <string name="posts_saved_feedback">Bookmark saved successfully!</string>
 
     <string name="posts_item_private">Private</string>
     <string name="posts_item_read_later">Read later</string>
 
     <string name="posts_url_offline_error">It looks like you\'re offline. Please try again once you\'re back online</string>
-    <string name="posts_url_error">Unfortunately, Pinkt can\'t open this link. Try opening it in your default browser</string>
+    <string name="posts_url_error">Unfortunately, Pinkt can\'t open this bookmark. Try opening it in your default browser</string>
     <string name="posts_open_in_browser">Open in browser</string>
 
     <!-- Offline -->
@@ -121,7 +122,7 @@
     <string name="validation_error_empty_title">The title cannot be empty</string>
 
     <!-- Search -->
-    <string name="search_title">Filter links</string>
+    <string name="search_title">Filter bookmarks</string>
     <string name="search_term">Keywords</string>
     <string name="search_selected_tags">Selected tags (max. 3)</string>
     <string name="search_tags">Saved tags</string>
@@ -130,7 +131,7 @@
     <!-- Tags -->
     <string name="tags_title">Tags</string>
     <string name="tags_empty_title">No tags</string>
-    <string name="tags_empty_description">There are no tags for your saved links</string>
+    <string name="tags_empty_description">There are no tags for your saved bookmarks</string>
 
     <!-- Notes -->
     <string name="notes_title">Notes</string>
@@ -149,12 +150,21 @@
     <string name="user_preferences_appearance">Appearance</string>
     <string name="user_preferences_appearance_dark">Dark theme</string>
     <string name="user_preferences_appearance_light">Light theme</string>
+    <string name="user_preferences_description_title">Description behaviors</string>
+    <string name="user_preferences_description_auto_fill">Auto fill</string>
+    <string name="user_preferences_description_auto_fill_description">If checked, then Pinkt will attempt to extract the description from the website and fill it automatically</string>
+    <string name="user_preferences_description_visible_in_lists">Visible in lists</string>
+    <string name="user_preferences_description_visible_in_details">Visible in details</string>
+    <string name="user_preferences_description_visible_caveat">Show the first 5 lines of the description in lists</string>
     <string name="user_preferences_default_private">Private by default</string>
-    <string name="user_preferences_default_private_description">If checked, links shared to Pinkt will be saved as private, otherwise your default Pinboard preferences apply</string>
+    <string name="user_preferences_default_private_description">If checked, bookmarks shared to Pinkt will be saved as private, otherwise your default Pinboard preferences apply</string>
     <string name="user_preferences_default_read_later">Read later by default</string>
-    <string name="user_preferences_default_read_later_description">If checked, links shared to Pinkt will be saved as read later, otherwise your default Pinboard preferences apply</string>
+    <string name="user_preferences_default_read_later_description">If checked, bookmarks shared to Pinkt will be saved as read later, otherwise your default Pinboard preferences apply</string>
     <string name="user_preferences_default_tags">Default tags</string>
-    <string name="user_preferences_default_tags_description">Links will be have the selected tags by default</string>
+    <string name="user_preferences_default_tags_description">Bookmarks will be have the selected tags by default</string>
+    <string name="user_preferences_edit_after_sharing_title">Sharing behavior</string>
+    <string name="user_preferences_edit_after_sharing">Open the edit screen</string>
+    <string name="user_preferences_edit_after_sharing_description">If checked, the Edit screen will be displayed for further editing when a bookmark is successfully shared to Pinkt</string>
 
     <!-- About -->
     <string name="about_share">Share Pinkt</string>
@@ -173,5 +183,5 @@
     <string name="cd_empty_list_placeholder">Empty list placeholder image</string>
     <string name="cd_file">File icon</string>
     <string name="cd_warning">Warning</string>
-    <string name="cd_share_receiver_image">Adding link to pinboard</string>
+    <string name="cd_share_receiver_image">Adding bookmark to pinboard</string>
 </resources>

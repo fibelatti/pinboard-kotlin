@@ -34,7 +34,7 @@
             style="@style/AppTheme.Text.Detail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_regular"
+            android:layout_marginTop="@dimen/margin_small"
             android:layout_marginEnd="@dimen/margin_regular"
             android:drawablePadding="@dimen/padding_xsmall"
             android:gravity="center"
@@ -48,7 +48,7 @@
             style="@style/AppTheme.Text.Detail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_regular"
+            android:layout_marginTop="@dimen/margin_small"
             android:drawablePadding="@dimen/padding_xsmall"
             android:gravity="center"
             android:text="@string/posts_item_read_later"
@@ -61,8 +61,21 @@
         layout="@layout/layout_divider"
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_size"
-        android:layout_marginTop="@dimen/margin_xsmall"
+        android:layout_marginTop="@dimen/margin_small"
         android:layout_marginBottom="@dimen/margin_xsmall" />
+
+    <TextView
+        android:id="@+id/textViewDescription"
+        style="@style/AppTheme.Text.Detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_xsmall"
+        android:layout_marginTop="@dimen/margin_xsmall"
+        android:ellipsize="end"
+        android:maxLines="5"
+        android:visibility="gone"
+        tools:text="@tools:sample/lorem/random"
+        tools:visibility="visible" />
 
     <com.fibelatti.pinboard.features.posts.presentation.TagChipGroup
         android:id="@+id/chipGroupTags"

@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_small"
+        android:layout_marginBottom="@dimen/margin_small"
         android:hint="@string/posts_add_url_description"
         android:visibility="gone"
         tools:visibility="visible">
@@ -32,7 +33,6 @@
         style="@style/AppTheme.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_small"
         android:text="@string/posts_add_url_add_description" />
 
 </LinearLayout>

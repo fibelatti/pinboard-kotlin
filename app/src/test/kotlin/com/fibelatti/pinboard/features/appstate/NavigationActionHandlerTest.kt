@@ -7,6 +7,7 @@ import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.mockTitle
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.allSealedSubclasses
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -20,6 +21,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.BDDMockito.given
 import org.mockito.BDDMockito.verify
+import org.mockito.Mockito
 import org.mockito.Mockito.reset
 import org.mockito.Mockito.times
 
@@ -35,17 +37,19 @@ internal class NavigationActionHandlerTest {
         mockConnectivityInfoProvider
     )
 
-    @Nested
-    inner class NavigateBackTests {
+    private val previousContent = PostListContent(
+        category = All,
+        title = mockTitle,
+        posts = null,
+        showDescription = false,
+        sortType = NewestFirst,
+        searchParameters = SearchParameters(),
+        shouldLoad = ShouldLoadFirstPage
+    )
 
-        private val previousContent = PostListContent(
-            category = All,
-            title = mockTitle,
-            posts = null,
-            sortType = NewestFirst,
-            searchParameters = SearchParameters(),
-            shouldLoad = ShouldLoadFirstPage
-        )
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    inner class NavigateBackTests {
 
         @Test
         fun `WHEN currentContent is not ContentWithHistory THEN same content is returned`() {
@@ -61,50 +65,43 @@ internal class NavigationActionHandlerTest {
             result shouldBe content
         }
 
-        @Test
-        fun `WHEN currentContent is PostDetailContent THEN previousContent is returned`() {
+        @ParameterizedTest
+        @MethodSource("testCases")
+        fun `WHEN currentContent is ContentWithHistory THEN previousContent is returned`(contentWithHistory: ContentWithHistory) {
             // GIVEN
-            val mockPostDetail = mock<PostDetailContent>()
-            given(mockPostDetail.previousContent).willReturn(previousContent)
+            val returnedContent = if (contentWithHistory is NoteDetailContent) {
+                mock<NoteListContent>()
+            } else {
+                previousContent
+            }
+
+            given(contentWithHistory.previousContent)
+                .willReturn(returnedContent)
+
+            val randomBoolean = randomBoolean()
+            given(mockUserRepository.getShowDescriptionInLists())
+                .willReturn(randomBoolean)
 
             // WHEN
             val result = runBlocking {
-                navigationActionHandler.runAction(NavigateBack, mockPostDetail)
+                navigationActionHandler.runAction(NavigateBack, contentWithHistory)
             }
 
             // THEN
-            result shouldBe previousContent
-        }
-
-        @Test
-        fun `WHEN currentContent is SearchContent THEN previousContent is returned`() {
-            // GIVEN
-            val mockSearchView = mock<SearchContent>()
-            given(mockSearchView.previousContent).willReturn(previousContent)
-
-            // WHEN
-            val result = runBlocking {
-                navigationActionHandler.runAction(NavigateBack, mockSearchView)
+            if (contentWithHistory is UserPreferencesContent) {
+                result shouldBe previousContent.copy(showDescription = randomBoolean)
+            } else {
+                result shouldBe returnedContent
             }
-
-            // THEN
-            result shouldBe previousContent
         }
 
-        @Test
-        fun `WHEN currentContent is AddPostContent THEN previousContent is returned`() {
-            // GIVEN
-            val mockAddPostContent = mock<AddPostContent>()
-            given(mockAddPostContent.previousContent).willReturn(previousContent)
-
-            // WHEN
-            val result = runBlocking {
-                navigationActionHandler.runAction(NavigateBack, mockAddPostContent)
+        fun testCases(): List<ContentWithHistory> =
+            mutableListOf<ContentWithHistory>().apply {
+                ContentWithHistory::class.allSealedSubclasses
+                    .map {
+                        add(it.objectInstance ?: Mockito.mock(it.javaObjectType))
+                    }
             }
-
-            // THEN
-            result shouldBe previousContent
-        }
     }
 
     @Nested
@@ -123,6 +120,9 @@ internal class NavigationActionHandlerTest {
             val (category, stringId, resolvedString) = testCase
             given(mockResourceProvider.getString(stringId))
                 .willReturn(resolvedString)
+            val randomBoolean = randomBoolean()
+            given(mockUserRepository.getShowDescriptionInLists())
+                .willReturn(randomBoolean)
             given(mockConnectivityInfoProvider.isConnected())
                 .willReturn(false)
 
@@ -134,6 +134,7 @@ internal class NavigationActionHandlerTest {
                 category = category,
                 title = resolvedString,
                 posts = null,
+                showDescription = randomBoolean,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = ShouldLoadFirstPage,
@@ -216,23 +217,13 @@ internal class NavigationActionHandlerTest {
 
         @Test
         fun `WHEN currentContent is PostListContent THEN PostDetailContent is returned`() {
-            // GIVEN
-            val initialContent = PostListContent(
-                category = All,
-                title = mockTitle,
-                posts = null,
-                sortType = NewestFirst,
-                searchParameters = SearchParameters(),
-                shouldLoad = ShouldLoadFirstPage
-            )
-
             // WHEN
             val result = runBlocking {
-                navigationActionHandler.runAction(ViewPost(createPost()), initialContent)
+                navigationActionHandler.runAction(ViewPost(createPost()), previousContent)
             }
 
             // THEN
-            result shouldBe PostDetailContent(post = createPost(), previousContent = initialContent)
+            result shouldBe PostDetailContent(post = createPost(), previousContent = previousContent)
         }
     }
 
@@ -253,26 +244,16 @@ internal class NavigationActionHandlerTest {
 
         @Test
         fun `WHEN currentContent is PostListContent THEN SearchContent is returned`() {
-            // GIVEN
-            val initialContent = PostListContent(
-                category = All,
-                title = mockTitle,
-                posts = null,
-                sortType = NewestFirst,
-                searchParameters = SearchParameters(),
-                shouldLoad = ShouldLoadFirstPage
-            )
-
             // WHEN
             val result = runBlocking {
-                navigationActionHandler.runAction(ViewSearch, initialContent)
+                navigationActionHandler.runAction(ViewSearch, previousContent)
             }
 
             // THEN
             result shouldBe SearchContent(
-                initialContent.searchParameters,
+                previousContent.searchParameters,
                 shouldLoadTags = true,
-                previousContent = initialContent
+                previousContent = previousContent
             )
         }
     }
@@ -280,19 +261,15 @@ internal class NavigationActionHandlerTest {
     @Nested
     inner class AddPostTests {
 
-        private val initialContent = PostListContent(
-            category = All,
-            title = mockTitle,
-            posts = null,
-            sortType = NewestFirst,
-            searchParameters = SearchParameters(),
-            shouldLoad = ShouldLoadFirstPage
-        )
+        private val randomBoolean = randomBoolean()
 
         @BeforeEach
         fun setup() {
             given(mockUserRepository.getDefaultPrivate()).willReturn(true)
             given(mockUserRepository.getDefaultReadLater()).willReturn(true)
+
+            given(mockUserRepository.getShowDescriptionInDetails())
+                .willReturn(randomBoolean)
         }
 
         @Test
@@ -310,13 +287,14 @@ internal class NavigationActionHandlerTest {
         @Test
         fun `WHEN currentContent is PostListContent THEN AddPostContent is returned`() {
             // WHEN
-            val result = runBlocking { navigationActionHandler.runAction(AddPost, initialContent) }
+            val result = runBlocking { navigationActionHandler.runAction(AddPost, previousContent) }
 
             // THEN
             result shouldBe AddPostContent(
+                showDescription = randomBoolean,
                 defaultPrivate = true,
                 defaultReadLater = true,
-                previousContent = initialContent
+                previousContent = previousContent
             )
         }
 
@@ -327,13 +305,14 @@ internal class NavigationActionHandlerTest {
                 .willReturn(null)
 
             // WHEN
-            val result = runBlocking { navigationActionHandler.runAction(AddPost, initialContent) }
+            val result = runBlocking { navigationActionHandler.runAction(AddPost, previousContent) }
 
             // THEN
             result shouldBe AddPostContent(
+                showDescription = randomBoolean,
                 defaultPrivate = false,
                 defaultReadLater = true,
-                previousContent = initialContent
+                previousContent = previousContent
             )
         }
 
@@ -344,13 +323,14 @@ internal class NavigationActionHandlerTest {
                 .willReturn(null)
 
             // WHEN
-            val result = runBlocking { navigationActionHandler.runAction(AddPost, initialContent) }
+            val result = runBlocking { navigationActionHandler.runAction(AddPost, previousContent) }
 
             // THEN
             result shouldBe AddPostContent(
+                showDescription = randomBoolean,
                 defaultPrivate = true,
                 defaultReadLater = false,
-                previousContent = initialContent
+                previousContent = previousContent
             )
         }
     }
@@ -376,18 +356,9 @@ internal class NavigationActionHandlerTest {
             given(mockConnectivityInfoProvider.isConnected())
                 .willReturn(false)
 
-            val initialContent = PostListContent(
-                category = All,
-                title = mockTitle,
-                posts = null,
-                sortType = NewestFirst,
-                searchParameters = SearchParameters(),
-                shouldLoad = ShouldLoadFirstPage
-            )
-
             // WHEN
             val result = runBlocking {
-                navigationActionHandler.runAction(ViewTags, initialContent)
+                navigationActionHandler.runAction(ViewTags, previousContent)
             }
 
             // THEN
@@ -395,7 +366,7 @@ internal class NavigationActionHandlerTest {
                 tags = emptyList(),
                 shouldLoad = false,
                 isConnected = false,
-                previousContent = initialContent
+                previousContent = previousContent
             )
 
             verify(mockConnectivityInfoProvider, times(2)).isConnected()
@@ -423,18 +394,9 @@ internal class NavigationActionHandlerTest {
             given(mockConnectivityInfoProvider.isConnected())
                 .willReturn(false)
 
-            val initialContent = PostListContent(
-                category = All,
-                title = mockTitle,
-                posts = null,
-                sortType = NewestFirst,
-                searchParameters = SearchParameters(),
-                shouldLoad = ShouldLoadFirstPage
-            )
-
             // WHEN
             val result = runBlocking {
-                navigationActionHandler.runAction(ViewNotes, initialContent)
+                navigationActionHandler.runAction(ViewNotes, previousContent)
             }
 
             // THEN
@@ -442,7 +404,7 @@ internal class NavigationActionHandlerTest {
                 notes = emptyList(),
                 shouldLoad = false,
                 isConnected = false,
-                previousContent = initialContent
+                previousContent = previousContent
             )
 
             verify(mockConnectivityInfoProvider, times(2)).isConnected()
@@ -499,14 +461,6 @@ internal class NavigationActionHandlerTest {
     @Nested
     inner class ViewPreferencesTests {
 
-        private val initialContent = PostListContent(
-            category = All,
-            title = mockTitle,
-            posts = null,
-            sortType = NewestFirst,
-            searchParameters = SearchParameters(),
-            shouldLoad = ShouldLoadFirstPage
-        )
         private val mockAppearance = mock<Appearance>()
         private val mockRandomBoolean = randomBoolean()
 
@@ -537,7 +491,7 @@ internal class NavigationActionHandlerTest {
         fun `WHEN currentContent is PostListContent THEN UserPreferencesContent is returned`() {
             // WHEN
             val result =
-                runBlocking { navigationActionHandler.runAction(ViewPreferences, initialContent) }
+                runBlocking { navigationActionHandler.runAction(ViewPreferences, previousContent) }
 
             // THEN
             result shouldBe UserPreferencesContent(
@@ -548,7 +502,7 @@ internal class NavigationActionHandlerTest {
                 showDescriptionInDetails = mockRandomBoolean,
                 defaultReadLater = mockRandomBoolean,
                 editAfterSharing = mockRandomBoolean,
-                previousContent = initialContent
+                previousContent = previousContent
             )
         }
 
@@ -560,7 +514,7 @@ internal class NavigationActionHandlerTest {
 
             // WHEN
             val result =
-                runBlocking { navigationActionHandler.runAction(ViewPreferences, initialContent) }
+                runBlocking { navigationActionHandler.runAction(ViewPreferences, previousContent) }
 
             // THEN
             result shouldBe UserPreferencesContent(
@@ -571,7 +525,7 @@ internal class NavigationActionHandlerTest {
                 defaultPrivate = false,
                 defaultReadLater = mockRandomBoolean,
                 editAfterSharing = mockRandomBoolean,
-                previousContent = initialContent
+                previousContent = previousContent
             )
         }
 
@@ -583,7 +537,7 @@ internal class NavigationActionHandlerTest {
 
             // WHEN
             val result =
-                runBlocking { navigationActionHandler.runAction(ViewPreferences, initialContent) }
+                runBlocking { navigationActionHandler.runAction(ViewPreferences, previousContent) }
 
             // THEN
             result shouldBe UserPreferencesContent(
@@ -594,7 +548,7 @@ internal class NavigationActionHandlerTest {
                 defaultPrivate = mockRandomBoolean,
                 defaultReadLater = false,
                 editAfterSharing = mockRandomBoolean,
-                previousContent = initialContent
+                previousContent = previousContent
             )
         }
     }

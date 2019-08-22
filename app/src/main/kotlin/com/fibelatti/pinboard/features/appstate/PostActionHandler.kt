@@ -2,9 +2,11 @@ package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtilFactory
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
 
 class PostActionHandler @Inject constructor(
+    private val userRepository: UserRepository,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
     private val postListDiffUtilFactory: PostListDiffUtilFactory
 ) : ActionHandler<PostAction>() {
@@ -18,6 +20,7 @@ class PostActionHandler @Inject constructor(
             is PostsDisplayed -> postsDisplayed(currentContent)
             is ToggleSorting -> toggleSorting(currentContent)
             is EditPost -> editPost(action, currentContent)
+            is EditPostFromShare -> editPostFromShare(action)
             is PostSaved -> postSaved(action, currentContent)
             is PostDeleted -> postDeleted(currentContent)
         }
@@ -37,7 +40,11 @@ class PostActionHandler @Inject constructor(
     private fun setPosts(action: SetPosts, currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) { currentPostList ->
             val posts = action.posts?.let { (count, list) ->
-                PostList(count, list, postListDiffUtilFactory.create(currentPostList.currentList, list))
+                PostList(
+                    count,
+                    list,
+                    postListDiffUtilFactory.create(currentPostList.currentList, list)
+                )
             }
 
             currentPostList.copy(posts = posts, shouldLoad = Loaded)
@@ -60,7 +67,11 @@ class PostActionHandler @Inject constructor(
                 val currentList = currentPostList.currentList
                 val (updatedCount, newList) = action.posts
                 val updatedList = currentList.plus(newList)
-                val posts = PostList(updatedCount, updatedList, postListDiffUtilFactory.create(currentList, updatedList))
+                val posts = PostList(
+                    updatedCount,
+                    updatedList,
+                    postListDiffUtilFactory.create(currentList, updatedList)
+                )
 
                 currentPostList.copy(posts = posts, shouldLoad = Loaded)
             } else {
@@ -97,23 +108,34 @@ class PostActionHandler @Inject constructor(
         return runOnlyForCurrentContentOfType<PostDetailContent>(currentContent) {
             EditPostContent(
                 post = action.post,
+                showDescription = userRepository.getShowDescriptionInDetails(),
                 previousContent = it
             )
         }
     }
 
+    private fun editPostFromShare(action: EditPostFromShare): Content {
+        return EditPostContent(
+            post = action.post,
+            showDescription = userRepository.getShowDescriptionInDetails(),
+            previousContent = ExternalContent
+        )
+    }
+
     private fun postSaved(action: PostSaved, currentContent: Content): Content {
         return when (currentContent) {
-            is AddPostContent -> {
-                currentContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
-            }
+            is AddPostContent -> currentContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
             is EditPostContent -> {
-                val postDetail = currentContent.previousContent
+                if (currentContent.previousContent is PostDetailContent) {
+                    val postDetail = currentContent.previousContent
 
-                postDetail.copy(
-                    post = action.post,
-                    previousContent = postDetail.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
-                )
+                    postDetail.copy(
+                        post = action.post,
+                        previousContent = postDetail.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
+                    )
+                } else {
+                    currentContent.previousContent
+                }
             }
             else -> currentContent
         }

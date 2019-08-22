@@ -254,6 +254,7 @@ internal class SearchActionHandlerTest {
                 category = All,
                 title = mockTitle,
                 posts = null,
+                showDescription = false,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = ShouldLoadFirstPage
@@ -273,6 +274,7 @@ internal class SearchActionHandlerTest {
                 category = All,
                 title = mockTitle,
                 posts = null,
+                showDescription = false,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(term = "new term", tags = listOf(mockTag1)),
                 shouldLoad = ShouldLoadFirstPage
@@ -302,6 +304,7 @@ internal class SearchActionHandlerTest {
                 category = All,
                 title = mockTitle,
                 posts = null,
+                showDescription = false,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
                 shouldLoad = Loaded
@@ -315,6 +318,7 @@ internal class SearchActionHandlerTest {
                 category = All,
                 title = mockTitle,
                 posts = null,
+                showDescription = false,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = ShouldLoadFirstPage
@@ -328,6 +332,7 @@ internal class SearchActionHandlerTest {
                 category = All,
                 title = mockTitle,
                 posts = null,
+                showDescription = false,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
                 shouldLoad = Loaded
@@ -349,6 +354,7 @@ internal class SearchActionHandlerTest {
                 category = All,
                 title = mockTitle,
                 posts = null,
+                showDescription = false,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = ShouldLoadFirstPage

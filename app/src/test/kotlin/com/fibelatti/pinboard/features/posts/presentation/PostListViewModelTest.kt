@@ -71,6 +71,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                 category = mock(),
                 title = "",
                 posts = null,
+                showDescription = false,
                 sortType = mock(),
                 searchParameters = mock(),
                 shouldLoad = Loaded
@@ -187,6 +188,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                 category = category,
                 title = "",
                 posts = null,
+                showDescription = false,
                 sortType = mockSortType,
                 searchParameters = SearchParameters(term = mockSearchTerm, tags = mockTags),
                 shouldLoad = shouldLoad

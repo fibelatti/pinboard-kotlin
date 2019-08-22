@@ -22,7 +22,11 @@ class PostListAdapter @Inject constructor(
 ) : RecyclerView.Adapter<PostListAdapter.ViewHolder>() {
 
     private val items: MutableList<Post> = mutableListOf()
-
+    var showDescription: Boolean = false
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
     var onItemClicked: ((Post) -> Unit)? = null
     var onTagClicked: ((Tag) -> Unit)? = null
 
@@ -39,7 +43,16 @@ class PostListAdapter @Inject constructor(
         textViewReadLater.visibleIf(item.readLater, otherwiseVisibility = View.GONE)
 
         textViewLinkTitle.text = item.title
-        textViewLinkAddedDate.text = context.getString(R.string.posts_saved_on, dateFormatter.tzFormatToDisplayFormat(item.time))
+        textViewLinkAddedDate.text = context.getString(
+            R.string.posts_saved_on,
+            dateFormatter.tzFormatToDisplayFormat(item.time)
+        )
+
+        textViewDescription.text = item.description
+        textViewDescription.visibleIf(
+            showDescription && item.description.isNotBlank(),
+            otherwiseVisibility = View.GONE
+        )
 
         when {
             item.tags.isNullOrEmpty() -> {
@@ -86,6 +99,7 @@ class PostListAdapter @Inject constructor(
     inner class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         parent.inflate(R.layout.list_item_post)
     ) {
+
         fun bind(item: Post) = itemView.bindView(item)
     }
 }

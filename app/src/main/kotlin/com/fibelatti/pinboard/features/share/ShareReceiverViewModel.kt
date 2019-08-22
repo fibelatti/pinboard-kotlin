@@ -9,6 +9,8 @@ import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.appstate.EditPostFromShare
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.ExtractUrl
 import com.fibelatti.pinboard.features.posts.domain.usecase.ParseUrl
@@ -21,11 +23,14 @@ class ShareReceiverViewModel @Inject constructor(
     private val parseUrl: ParseUrl,
     private val addPost: AddPost,
     private val userRepository: UserRepository,
+    private val appStateRepository: AppStateRepository,
     private val resourceProvider: ResourceProvider
 ) : BaseViewModel() {
 
     val saved: LiveEvent<String> get() = _saved
     private val _saved = MutableLiveEvent<String>()
+    val edit: LiveEvent<String> get() = _edit
+    private val _edit = MutableLiveEvent<String>()
     val failed: LiveEvent<String> get() = _failed
     private val _failed = MutableLiveEvent<String>()
 
@@ -45,7 +50,12 @@ class ShareReceiverViewModel @Inject constructor(
                     )
                 }
                 .onSuccess {
-                    _saved.postEvent(resourceProvider.getString(R.string.posts_saved_feedback))
+                    if (userRepository.getEditAfterSharing()) {
+                        _edit.postEvent(resourceProvider.getString(R.string.posts_saved_feedback))
+                        appStateRepository.runAction(EditPostFromShare(it))
+                    } else {
+                        _saved.postEvent(resourceProvider.getString(R.string.posts_saved_feedback))
+                    }
                 }
                 .onFailure {
                     _failed.postEvent(resourceProvider.getString(R.string.generic_msg_error))

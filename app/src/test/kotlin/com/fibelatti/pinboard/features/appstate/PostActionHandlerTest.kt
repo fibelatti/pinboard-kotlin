@@ -8,6 +8,7 @@ import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtil
 import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtilFactory
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
@@ -18,19 +19,23 @@ import org.mockito.Mockito.times
 
 internal class PostActionHandlerTest {
 
+    private val mockUserRepository = mock<UserRepository>()
     private val mockConnectivityInfoProvider = mock<ConnectivityInfoProvider>()
-
     private val mockPostListDiffUtilFactory = mock<PostListDiffUtilFactory>()
 
     private val mockPost = mock<Post>()
 
-    private val postActionHandler =
-        PostActionHandler(mockConnectivityInfoProvider, mockPostListDiffUtilFactory)
+    private val postActionHandler = PostActionHandler(
+        mockUserRepository,
+        mockConnectivityInfoProvider,
+        mockPostListDiffUtilFactory
+    )
 
     private val initialContent = PostListContent(
         category = All,
         title = mockTitle,
         posts = null,
+        showDescription = false,
         sortType = NewestFirst,
         searchParameters = SearchParameters(),
         shouldLoad = Loaded,
@@ -39,6 +44,7 @@ internal class PostActionHandlerTest {
 
     @Nested
     inner class RefreshTests {
+
         @Test
         fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
             // GIVEN
@@ -149,6 +155,7 @@ internal class PostActionHandlerTest {
                 category = All,
                 title = mockTitle,
                 posts = null,
+                showDescription = false,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = ShouldLoadFirstPage,
@@ -165,6 +172,7 @@ internal class PostActionHandlerTest {
                 category = All,
                 title = mockTitle,
                 posts = PostList(1, listOf(createPost()), mockDiffUtil),
+                showDescription = false,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = Loaded,
@@ -206,6 +214,7 @@ internal class PostActionHandlerTest {
                 category = All,
                 title = mockTitle,
                 posts = PostList(1, listOf(mock()), mock()),
+                showDescription = false,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = Loaded,
@@ -246,6 +255,7 @@ internal class PostActionHandlerTest {
                 category = All,
                 title = mockTitle,
                 posts = null,
+                showDescription = false,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = Loaded,
@@ -271,6 +281,7 @@ internal class PostActionHandlerTest {
                 category = All,
                 title = mockTitle,
                 posts = PostList(1, listOf(createPost()), mock()),
+                showDescription = false,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = Loaded,
@@ -297,6 +308,7 @@ internal class PostActionHandlerTest {
                 category = All,
                 title = mockTitle,
                 posts = PostList(1, mockCurrentList, mock()),
+                showDescription = false,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = ShouldLoadFirstPage,
@@ -308,8 +320,7 @@ internal class PostActionHandlerTest {
                     mockCurrentList,
                     mockCurrentList.plus(mockNewList)
                 )
-            )
-                .willReturn(mockDiffUtil)
+            ).willReturn(mockDiffUtil)
 
             // WHEN
             val result = runBlocking {
@@ -321,6 +332,7 @@ internal class PostActionHandlerTest {
                 category = All,
                 title = mockTitle,
                 posts = PostList(2, mockCurrentList.plus(mockNewList), mockDiffUtil),
+                showDescription = false,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = Loaded,
@@ -353,6 +365,7 @@ internal class PostActionHandlerTest {
                 category = All,
                 title = mockTitle,
                 posts = mockPostList,
+                showDescription = false,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = Loaded,
@@ -369,6 +382,7 @@ internal class PostActionHandlerTest {
                 category = All,
                 title = mockTitle,
                 posts = mockPostList.copy(alreadyDisplayed = true),
+                showDescription = false,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = Loaded,
@@ -492,6 +506,9 @@ internal class PostActionHandlerTest {
         fun `WHEN currentContent is PostDetailContent THEN updated content is returned`() {
             // GIVEN
             val mockCurrentContent = mock<PostDetailContent>()
+            val randomBoolean = randomBoolean()
+            given(mockUserRepository.getShowDescriptionInDetails())
+                .willReturn(randomBoolean)
 
             // WHEN
             val result = runBlocking {
@@ -501,9 +518,31 @@ internal class PostActionHandlerTest {
             // THEN
             result shouldBe EditPostContent(
                 post = mockPost,
+                showDescription = randomBoolean,
                 previousContent = mockCurrentContent
             )
         }
+    }
+
+    @Test
+    fun `WHEN editPostFromShare is called THEN EditPostContent is returned`() {
+        // GIVEN
+        val mockCurrentContent = mock<PostDetailContent>()
+        val randomBoolean = randomBoolean()
+        given(mockUserRepository.getShowDescriptionInDetails())
+            .willReturn(randomBoolean)
+
+        // WHEN
+        val result = runBlocking {
+            postActionHandler.runAction(EditPostFromShare(mockPost), mockCurrentContent)
+        }
+
+        // THEN
+        result shouldBe EditPostContent(
+            post = mockPost,
+            showDescription = randomBoolean,
+            previousContent = ExternalContent
+        )
     }
 
     @Nested
@@ -528,6 +567,7 @@ internal class PostActionHandlerTest {
             // GIVEN
             val randomBoolean = randomBoolean()
             val currentContent = AddPostContent(
+                showDescription = randomBoolean,
                 defaultPrivate = randomBoolean,
                 defaultReadLater = randomBoolean,
                 previousContent = initialContent
@@ -539,26 +579,20 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe PostListContent(
-                category = All,
-                title = mockTitle,
-                posts = null,
-                sortType = NewestFirst,
-                searchParameters = SearchParameters(),
-                shouldLoad = ShouldLoadFirstPage,
-                isConnected = true
-            )
+            result shouldBe initialContent.copy(shouldLoad = ShouldLoadFirstPage)
         }
 
         @Test
-        fun `WHEN currentContent is EditPostContent THEN updated content is returned`() {
+        fun `GIVEN previousContent is PostDetailContent WHEN currentContent is EditPostContent THEN updated content is returned`() {
             // GIVEN
+            val randomBoolean = randomBoolean()
             val postDetail = PostDetailContent(
                 post = mockPost,
                 previousContent = initialContent
             )
             val currentContent = EditPostContent(
                 post = mockPost,
+                showDescription = randomBoolean,
                 previousContent = postDetail
             )
 
@@ -570,16 +604,27 @@ internal class PostActionHandlerTest {
             // THEN
             result shouldBe PostDetailContent(
                 post = mockPost,
-                previousContent = PostListContent(
-                    category = All,
-                    title = mockTitle,
-                    posts = null,
-                    sortType = NewestFirst,
-                    searchParameters = SearchParameters(),
-                    shouldLoad = ShouldLoadFirstPage,
-                    isConnected = true
-                )
+                previousContent = initialContent.copy(shouldLoad = ShouldLoadFirstPage)
             )
+        }
+
+        @Test
+        fun `GIVEN previousContent is not PostDetailContent WHEN currentContent is EditPostContent THEN updated content is returned`() {
+            // GIVEN
+            val randomBoolean = randomBoolean()
+            val currentContent = EditPostContent(
+                post = mockPost,
+                showDescription = randomBoolean,
+                previousContent = ExternalContent
+            )
+
+            // WHEN
+            val result = runBlocking {
+                postActionHandler.runAction(PostSaved(mockPost), currentContent)
+            }
+
+            // THEN
+            result shouldBe ExternalContent
         }
     }
 
@@ -612,15 +657,7 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe PostListContent(
-                category = All,
-                title = mockTitle,
-                posts = null,
-                sortType = NewestFirst,
-                searchParameters = SearchParameters(),
-                shouldLoad = ShouldLoadFirstPage,
-                isConnected = true
-            )
+            result shouldBe initialContent.copy(shouldLoad = ShouldLoadFirstPage)
         }
     }
 }

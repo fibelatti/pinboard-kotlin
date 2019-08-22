@@ -13,6 +13,7 @@ data class PostListContent(
     val category: ViewCategory,
     val title: String,
     val posts: PostList?,
+    val showDescription: Boolean,
     val sortType: SortType,
     val searchParameters: SearchParameters,
     val shouldLoad: ShouldLoad,
@@ -47,6 +48,7 @@ data class SearchContent(
 ) : ContentWithHistory()
 
 data class AddPostContent(
+    val showDescription: Boolean,
     val defaultPrivate: Boolean,
     val defaultReadLater: Boolean,
     override val previousContent: PostListContent
@@ -54,7 +56,8 @@ data class AddPostContent(
 
 data class EditPostContent(
     val post: Post,
-    override val previousContent: PostDetailContent
+    val showDescription: Boolean,
+    override val previousContent: Content
 ) : ContentWithHistory()
 
 data class TagListContent(
@@ -88,3 +91,9 @@ data class UserPreferencesContent(
     val editAfterSharing: Boolean,
     override val previousContent: PostListContent
 ) : ContentWithHistory()
+
+/**
+ * Used when sharing URLs to the app. It usually indicates that the app should be finished so that
+ * the user can return to the origin of the deeplink.
+ */
+object ExternalContent : Content()

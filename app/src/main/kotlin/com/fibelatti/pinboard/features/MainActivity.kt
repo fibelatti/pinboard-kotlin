@@ -1,10 +1,13 @@
 package com.fibelatti.pinboard.features
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import androidx.fragment.app.Fragment
+import com.fibelatti.core.android.IntentDelegate
+import com.fibelatti.core.android.base.BaseIntentBuilder
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.extension.exhaustive
 import com.fibelatti.core.extension.gone
@@ -24,6 +27,7 @@ import com.fibelatti.pinboard.features.appstate.AddPostContent
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPostContent
+import com.fibelatti.pinboard.features.appstate.ExternalContent
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.pinboard.features.appstate.NoteListContent
@@ -60,6 +64,7 @@ import kotlinx.android.synthetic.main.fragment_auth.imageViewAppLogo as authView
 import kotlinx.android.synthetic.main.fragment_splash.imageViewAppLogo as splashViewLogo
 
 val Fragment.mainActivity: MainActivity? get() = activity as? MainActivity
+var Intent.fromBuilder by IntentDelegate.Boolean("FROM_BUILDER", false)
 
 class MainActivity : BaseActivity() {
 
@@ -72,8 +77,10 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        inTransaction {
-            add(R.id.fragmentHost, createFragment<SplashFragment>())
+        if (!intent.fromBuilder) {
+            inTransaction {
+                add(R.id.fragmentHost, createFragment<SplashFragment>())
+            }
         }
 
         setupView()
@@ -92,12 +99,8 @@ class MainActivity : BaseActivity() {
     }
 
     private fun setupViewModels() {
-        with(authViewModel) {
-            observe(loginState, ::handleLoginState)
-            observe(error, ::handleError)
-        }
-
-        appStateViewModel.reset()
+        observe(authViewModel.loginState, ::handleLoginState)
+        observe(authViewModel.error, ::handleError)
         observe(appStateViewModel.content) { content ->
             when (content) {
                 is PostListContent -> showPostList()
@@ -109,6 +112,10 @@ class MainActivity : BaseActivity() {
                 is NoteListContent -> showNotes()
                 is NoteDetailContent -> showNoteDetail()
                 is UserPreferencesContent -> showPreferences()
+                is ExternalContent -> {
+                    appStateViewModel.reset()
+                    finish()
+                }
             }.exhaustive
         }
     }
@@ -209,7 +216,8 @@ class MainActivity : BaseActivity() {
         if (supportFragmentManager.findFragmentByTag(PostAddFragment.TAG) == null) {
             slideUp(
                 createFragment<PostAddFragment>(),
-                PostAddFragment.TAG
+                PostAddFragment.TAG,
+                addToBackStack = !intent.fromBuilder
             )
         }
     }
@@ -229,19 +237,27 @@ class MainActivity : BaseActivity() {
         when (loginState) {
             LoginState.Authorizing -> DoNothing
             LoginState.LoggedIn -> {
-                handler.postDelayed({
+                if (intent.fromBuilder) {
+                    return
+                }
+
+                val runnable = {
                     inTransaction {
-                        replace(R.id.fragmentHost, createFragment<PostListFragment>(), PostListFragment.TAG)
+                        replace(
+                            R.id.fragmentHost,
+                            createFragment<PostListFragment>(),
+                            PostListFragment.TAG
+                        )
                         authViewLogo?.let {
                             addSharedElement(it, SharedElementTransitionNames.APP_LOGO)
                         }
                     }
+                }
 
-                    showControls()
-                }, animTime)
+                handler.postDelayed(runnable, animTime)
             }
             LoginState.LoggedOut -> {
-                handler.postDelayed({
+                val runnable = {
                     inTransaction {
                         setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                         replace(R.id.fragmentHost, createFragment<AuthFragment>())
@@ -251,7 +267,9 @@ class MainActivity : BaseActivity() {
                     }
 
                     hideControls()
-                }, animTime)
+                }
+
+                handler.postDelayed(runnable, animTime)
             }
             LoginState.Unauthorized -> {
                 inTransaction {
@@ -273,12 +291,6 @@ class MainActivity : BaseActivity() {
         layoutTitle.gone()
         bottomAppBar.gone()
         fabMain.hide()
-    }
-
-    private fun showControls() {
-        layoutTitle.visible()
-        bottomAppBar.visible()
-        fabMain.show()
     }
 
     inner class NavigationCallback : NavigationDrawer.Callback {
@@ -336,6 +348,13 @@ class MainActivity : BaseActivity() {
                     setPackage("com.android.vending")
                 }
             )
+        }
+    }
+
+    class Builder(context: Context) : BaseIntentBuilder(context, MainActivity::class.java) {
+
+        init {
+            intent.fromBuilder = true
         }
     }
 }

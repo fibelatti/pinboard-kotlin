@@ -29,7 +29,15 @@ class NavigationActionHandler @Inject constructor(
     }
 
     private fun navigateBack(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType(currentContent, ContentWithHistory::previousContent)
+        return runOnlyForCurrentContentOfType<ContentWithHistory>(currentContent) {
+            if (currentContent is UserPreferencesContent) {
+                currentContent.previousContent.copy(
+                    showDescription = userRepository.getShowDescriptionInLists()
+                )
+            } else {
+                it.previousContent
+            }
+        }
     }
 
     private fun viewCategory(action: ViewCategory): Content {
@@ -44,6 +52,7 @@ class NavigationActionHandler @Inject constructor(
                 Untagged -> resourceProvider.getString(R.string.posts_title_untagged)
             },
             posts = null,
+            showDescription = userRepository.getShowDescriptionInLists(),
             sortType = NewestFirst,
             searchParameters = SearchParameters(),
             shouldLoad = ShouldLoadFirstPage,
@@ -66,6 +75,7 @@ class NavigationActionHandler @Inject constructor(
     private fun viewAddPost(currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
             AddPostContent(
+                showDescription = userRepository.getShowDescriptionInDetails(),
                 defaultPrivate = userRepository.getDefaultPrivate().orFalse(),
                 defaultReadLater = userRepository.getDefaultReadLater().orFalse(),
                 previousContent = it

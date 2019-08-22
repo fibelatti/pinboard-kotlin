@@ -13,6 +13,7 @@ internal class PostListContentTest {
         category = mock(),
         title = mockTitle,
         posts = null,
+        showDescription = false,
         sortType = mock(),
         searchParameters = mock(),
         shouldLoad = mock(),
@@ -28,6 +29,7 @@ internal class PostListContentTest {
             diffUtil = mock(),
             alreadyDisplayed = true
         ),
+        showDescription = false,
         sortType = mock(),
         searchParameters = mock(),
         shouldLoad = mock(),
