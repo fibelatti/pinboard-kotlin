@@ -17,7 +17,7 @@ import java.net.HttpURLConnection
 import javax.inject.Inject
 
 class AuthViewModel @Inject constructor(
-    private val login: Login,
+    private val loginUseCase: Login,
     private val userRepository: UserRepository,
     private val resourceProvider: ResourceProvider
 ) : BaseViewModel() {
@@ -29,7 +29,7 @@ class AuthViewModel @Inject constructor(
 
     fun login(apiToken: String) {
         launch {
-            login(Login.Params(apiToken))
+            loginUseCase(apiToken)
                 .onFailure {
                     val loginFailedCodes = listOf(
                         HttpURLConnection.HTTP_UNAUTHORIZED,

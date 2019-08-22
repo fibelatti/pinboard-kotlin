@@ -1209,4 +1209,17 @@ class PostsDataSourceTest {
             result.getOrNull() shouldBe mockSuggestedTags
         }
     }
+
+    @Nested
+    inner class ClearCache {
+
+        @Test
+        fun `WHEN clearCache is called THEN dao deleteAllPosts is called`() {
+            // WHEN
+            runBlocking { dataSource.clearCache() }
+
+            // THEN
+            verify(mockDao).deleteAllPosts()
+        }
+    }
 }

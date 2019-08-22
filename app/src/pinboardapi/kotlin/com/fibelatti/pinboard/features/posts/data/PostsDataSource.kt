@@ -242,6 +242,14 @@ class PostsDataSource @Inject constructor(
         }.mapCatching(suggestedTagDtoMapper::map)
     }
 
+    override suspend fun clearCache(): Result<Unit> {
+        return resultFrom {
+            withContext(Dispatchers.IO) {
+                postsDao.deleteAllPosts()
+            }
+        }
+    }
+
     private fun Result<GenericResponseDto>.throwErrorIfNotDone() =
         mapCatching {
             if (it.resultCode != ApiResultCodes.DONE.code) throw ApiException()

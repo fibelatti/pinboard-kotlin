@@ -38,4 +38,6 @@ interface PostsRepository {
     suspend fun searchExistingPostTag(tag: String): Result<List<String>>
 
     suspend fun getSuggestedTagsForUrl(url: String): Result<SuggestedTags>
+
+    suspend fun clearCache(): Result<Unit>
 }

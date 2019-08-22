@@ -194,4 +194,12 @@ class PostsDataSource @Inject constructor(
 
     override suspend fun getSuggestedTagsForUrl(url: String): Result<SuggestedTags> =
         Failure(IllegalStateException("getSuggestedTagsForUrl should not be called in this flavor"))
+
+    override suspend fun clearCache(): Result<Unit> {
+        return resultFrom {
+            withContext(Dispatchers.IO) {
+                postsDao.deleteAllPosts()
+            }
+        }
+    }
 }

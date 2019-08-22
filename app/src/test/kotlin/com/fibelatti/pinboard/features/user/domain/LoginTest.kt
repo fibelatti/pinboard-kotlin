@@ -30,11 +30,12 @@ class LoginTest {
             .willReturn(Failure(Exception()))
 
         // WHEN
-        val result = runBlocking { login(Login.Params(mockApiToken)) }
+        val result = runBlocking { login(mockApiToken) }
 
         // THEN
         result.shouldBeAnInstanceOf<Failure>()
         verifySuspend(mockUserRepository) { loginAttempt(mockApiToken) }
+        verifySuspend(mockPostsRepository, never()) { clearCache() }
         verifySuspend(mockUserRepository, never()) { loggedIn() }
     }
 
@@ -43,13 +44,16 @@ class LoginTest {
         // GIVEN
         givenSuspend { mockPostsRepository.update() }
             .willReturn(Success(mockTime))
+        givenSuspend { mockPostsRepository.clearCache() }
+            .willReturn(Success(Unit))
 
         // WHEN
-        val result = runBlocking { login(Login.Params(mockApiToken)) }
+        val result = runBlocking { login(mockApiToken) }
 
         // THEN
         result.shouldBeAnInstanceOf<Success<Unit>>()
         verifySuspend(mockUserRepository) { loginAttempt(mockApiToken) }
+        verifySuspend(mockPostsRepository) { clearCache() }
         verifySuspend(mockUserRepository) { loggedIn() }
     }
 }

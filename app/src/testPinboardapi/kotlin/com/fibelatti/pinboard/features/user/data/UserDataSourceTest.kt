@@ -10,10 +10,8 @@ import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.DarkTheme
 import com.fibelatti.pinboard.core.android.LightTheme
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
-import com.fibelatti.pinboard.features.posts.data.PostsDao
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.randomBoolean
-import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -30,7 +28,6 @@ internal class UserDataSourceTest {
     inner class InitialisationTests {
 
         private val mockUserSharedPreferences = mock<UserSharedPreferences>()
-        private val mockPostsDao = mock<PostsDao>()
 
         private lateinit var userDataSource: UserDataSource
 
@@ -40,7 +37,7 @@ internal class UserDataSourceTest {
             given(mockUserSharedPreferences.getAuthToken())
                 .willReturn(mockApiToken)
 
-            userDataSource = UserDataSource(mockUserSharedPreferences, mockPostsDao)
+            userDataSource = UserDataSource(mockUserSharedPreferences)
 
             // THEN
             userDataSource.getLoginState().currentValueShouldBe(LoginState.LoggedIn)
@@ -52,7 +49,7 @@ internal class UserDataSourceTest {
             given(mockUserSharedPreferences.getAuthToken())
                 .willReturn("")
 
-            userDataSource = UserDataSource(mockUserSharedPreferences, mockPostsDao)
+            userDataSource = UserDataSource(mockUserSharedPreferences)
 
             // THEN
             userDataSource.getLoginState().currentValueShouldBe(LoginState.LoggedOut)
@@ -63,7 +60,6 @@ internal class UserDataSourceTest {
     inner class Methods {
 
         private val mockUserSharedPreferences = mock<UserSharedPreferences>()
-        private val mockPostsDao = mock<PostsDao>()
 
         private lateinit var userDataSource: UserDataSource
 
@@ -71,13 +67,13 @@ internal class UserDataSourceTest {
         fun setup() {
             given(mockUserSharedPreferences.getAuthToken()).willReturn(mockApiToken)
 
-            userDataSource = UserDataSource(mockUserSharedPreferences, mockPostsDao)
+            userDataSource = UserDataSource(mockUserSharedPreferences)
         }
 
         @Test
         fun `WHEN loginAttempt is called THEN setAuthToken is called and loginState value is updated to Authorizing`() {
             // WHEN
-            runBlocking { userDataSource.loginAttempt(mockApiToken) }
+            userDataSource.loginAttempt(mockApiToken)
 
             // THEN
             verify(mockUserSharedPreferences).setAuthToken(mockApiToken)
@@ -87,7 +83,7 @@ internal class UserDataSourceTest {
         @Test
         fun `WHEN loggedIn is called THEN loginState value is updated to LoggedIn`() {
             // WHEN
-            runBlocking { userDataSource.loggedIn() }
+            userDataSource.loggedIn()
 
             // THEN
             userDataSource.getLoginState().currentValueShouldBe(LoginState.LoggedIn)
@@ -96,12 +92,11 @@ internal class UserDataSourceTest {
         @Test
         fun `WHEN logout is called THEN setAuthToken is set and setLastUpdate is set and loginState value is updated to LoggedOut`() {
             // WHEN
-            runBlocking { userDataSource.logout() }
+            userDataSource.logout()
 
             // THEN
             verify(mockUserSharedPreferences).setAuthToken("")
             verify(mockUserSharedPreferences).setLastUpdate("")
-            verify(mockPostsDao).deleteAllPosts()
             userDataSource.getLoginState().currentValueShouldBe(LoginState.LoggedOut)
         }
 
@@ -114,12 +109,11 @@ internal class UserDataSourceTest {
                 userDataSource.loginState.value = LoginState.LoggedOut
 
                 // WHEN
-                runBlocking { userDataSource.forceLogout() }
+                userDataSource.forceLogout()
 
                 // THEN
                 verify(mockUserSharedPreferences, never()).setAuthToken(anyString())
                 verify(mockUserSharedPreferences, never()).setLastUpdate(anyString())
-                verify(mockPostsDao, never()).deleteAllPosts()
                 userDataSource.getLoginState().currentValueShouldBe(LoginState.LoggedOut)
             }
 
@@ -129,12 +123,11 @@ internal class UserDataSourceTest {
                 userDataSource.loginState.value = LoginState.LoggedIn
 
                 // WHEN
-                runBlocking { userDataSource.forceLogout() }
+                userDataSource.forceLogout()
 
                 // THEN
                 verify(mockUserSharedPreferences).setAuthToken("")
                 verify(mockUserSharedPreferences).setLastUpdate("")
-                verify(mockPostsDao).deleteAllPosts()
                 userDataSource.getLoginState().currentValueShouldBe(LoginState.Unauthorized)
             }
         }
@@ -149,13 +142,13 @@ internal class UserDataSourceTest {
                     .willReturn(mockTime)
 
                 // THEN
-                runBlocking { userDataSource.getLastUpdate() shouldBe mockTime }
+                userDataSource.getLastUpdate() shouldBe mockTime
             }
 
             @Test
             fun `WHEN setLastUpdate is called THEN UserSharedPreferences is set`() {
                 // WHEN
-                runBlocking { userDataSource.setLastUpdate(mockTime) }
+                userDataSource.setLastUpdate(mockTime)
 
                 // THEN
                 verify(mockUserSharedPreferences).setLastUpdate(mockTime)
@@ -171,8 +164,8 @@ internal class UserDataSourceTest {
                 given(mockUserSharedPreferences.getAppearance())
                     .willReturn(LightTheme.value)
 
-                // WHEN
-                runBlocking { userDataSource.getAppearance() shouldBe LightTheme }
+                // THEN
+                userDataSource.getAppearance() shouldBe LightTheme
             }
 
             @Test
@@ -181,8 +174,8 @@ internal class UserDataSourceTest {
                 given(mockUserSharedPreferences.getAppearance())
                     .willReturn("anything really")
 
-                // WHEN
-                runBlocking { userDataSource.getAppearance() shouldBe DarkTheme }
+                // THEN
+                userDataSource.getAppearance() shouldBe DarkTheme
             }
 
             @Test
@@ -191,7 +184,7 @@ internal class UserDataSourceTest {
                 val mockAppearance = mock<Appearance>()
 
                 // WHEN
-                runBlocking { userDataSource.setAppearance(mockAppearance) }
+                userDataSource.setAppearance(mockAppearance)
 
                 // THEN
                 verify(mockUserSharedPreferences).setAppearance(mockAppearance.value)
@@ -209,7 +202,7 @@ internal class UserDataSourceTest {
                     .willReturn(value)
 
                 // THEN
-                runBlocking { userDataSource.getAutoFillDescription() shouldBe value }
+                userDataSource.getAutoFillDescription() shouldBe value
             }
 
             @Test
@@ -218,7 +211,7 @@ internal class UserDataSourceTest {
                 val value = randomBoolean()
 
                 // WHEN
-                runBlocking { userDataSource.setAutoFillDescription(value) }
+                userDataSource.setAutoFillDescription(value)
 
                 // THEN
                 verify(mockUserSharedPreferences).setAutoFillDescription(value)
@@ -236,7 +229,7 @@ internal class UserDataSourceTest {
                     .willReturn(value)
 
                 // THEN
-                runBlocking { userDataSource.getShowDescriptionInLists() shouldBe value }
+                userDataSource.getShowDescriptionInLists() shouldBe value
             }
 
             @Test
@@ -245,7 +238,7 @@ internal class UserDataSourceTest {
                 val value = randomBoolean()
 
                 // WHEN
-                runBlocking { userDataSource.setShowDescriptionInLists(value) }
+                userDataSource.setShowDescriptionInLists(value)
 
                 // THEN
                 verify(mockUserSharedPreferences).setShowDescriptionInLists(value)
@@ -263,7 +256,7 @@ internal class UserDataSourceTest {
                     .willReturn(value)
 
                 // THEN
-                runBlocking { userDataSource.getShowDescriptionInDetails() shouldBe value }
+                userDataSource.getShowDescriptionInDetails() shouldBe value
             }
 
             @Test
@@ -272,7 +265,7 @@ internal class UserDataSourceTest {
                 val value = randomBoolean()
 
                 // WHEN
-                runBlocking { userDataSource.setShowDescriptionInDetails(value) }
+                userDataSource.setShowDescriptionInDetails(value)
 
                 // THEN
                 verify(mockUserSharedPreferences).setShowDescriptionInDetails(value)
@@ -290,7 +283,7 @@ internal class UserDataSourceTest {
                     .willReturn(value)
 
                 // THEN
-                runBlocking { userDataSource.getDefaultPrivate() shouldBe value }
+                userDataSource.getDefaultPrivate() shouldBe value
             }
 
             @Test
@@ -299,7 +292,7 @@ internal class UserDataSourceTest {
                 val value = randomBoolean()
 
                 // WHEN
-                runBlocking { userDataSource.setDefaultPrivate(value) }
+                userDataSource.setDefaultPrivate(value)
 
                 // THEN
                 verify(mockUserSharedPreferences).setDefaultPrivate(value)
@@ -317,7 +310,7 @@ internal class UserDataSourceTest {
                     .willReturn(value)
 
                 // THEN
-                runBlocking { userDataSource.getDefaultReadLater() shouldBe value }
+                userDataSource.getDefaultReadLater() shouldBe value
             }
 
             @Test
@@ -326,7 +319,7 @@ internal class UserDataSourceTest {
                 val value = randomBoolean()
 
                 // WHEN
-                runBlocking { userDataSource.setDefaultReadLater(value) }
+                userDataSource.setDefaultReadLater(value)
 
                 // THEN
                 verify(mockUserSharedPreferences).setDefaultReadLater(value)
@@ -344,7 +337,7 @@ internal class UserDataSourceTest {
                     .willReturn(value)
 
                 // THEN
-                runBlocking { userDataSource.getEditAfterSharing() shouldBe value }
+                userDataSource.getEditAfterSharing() shouldBe value
             }
 
             @Test
@@ -353,7 +346,7 @@ internal class UserDataSourceTest {
                 val value = randomBoolean()
 
                 // WHEN
-                runBlocking { userDataSource.setEditAfterSharing(value) }
+                userDataSource.setEditAfterSharing(value)
 
                 // THEN
                 verify(mockUserSharedPreferences).setEditAfterSharing(value)

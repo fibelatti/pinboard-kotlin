@@ -2,7 +2,6 @@ package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.core.functional.Either
 import com.fibelatti.core.provider.ResourceProvider
-import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.MockDataProvider.createPost
@@ -292,8 +291,8 @@ internal class NavigationActionHandlerTest {
 
         @BeforeEach
         fun setup() {
-            givenSuspend { mockUserRepository.getDefaultPrivate() }.willReturn(true)
-            givenSuspend { mockUserRepository.getDefaultReadLater() }.willReturn(true)
+            given(mockUserRepository.getDefaultPrivate()).willReturn(true)
+            given(mockUserRepository.getDefaultReadLater()).willReturn(true)
         }
 
         @Test
@@ -324,7 +323,7 @@ internal class NavigationActionHandlerTest {
         @Test
         fun `WHEN getDefaultPrivate returns null THEN defaultPrivate is set to false`() {
             // GIVEN
-            givenSuspend { mockUserRepository.getDefaultPrivate() }
+            given(mockUserRepository.getDefaultPrivate())
                 .willReturn(null)
 
             // WHEN
@@ -341,7 +340,7 @@ internal class NavigationActionHandlerTest {
         @Test
         fun `WHEN getDefaultReadLater returns null THEN defaultReadLater is set to false`() {
             // GIVEN
-            givenSuspend { mockUserRepository.getDefaultReadLater() }
+            given(mockUserRepository.getDefaultReadLater())
                 .willReturn(null)
 
             // WHEN
@@ -513,13 +512,13 @@ internal class NavigationActionHandlerTest {
 
         @BeforeEach
         fun setup() {
-            givenSuspend { mockUserRepository.getAppearance() }.willReturn(mockAppearance)
-            givenSuspend { mockUserRepository.getAutoFillDescription() }.willReturn(mockRandomBoolean)
-            givenSuspend { mockUserRepository.getShowDescriptionInLists() }.willReturn(mockRandomBoolean)
-            givenSuspend { mockUserRepository.getShowDescriptionInDetails() }.willReturn(mockRandomBoolean)
-            givenSuspend { mockUserRepository.getDefaultPrivate() }.willReturn(mockRandomBoolean)
-            givenSuspend { mockUserRepository.getDefaultReadLater() }.willReturn(mockRandomBoolean)
-            givenSuspend { mockUserRepository.getEditAfterSharing() }.willReturn(mockRandomBoolean)
+            given(mockUserRepository.getAppearance()).willReturn(mockAppearance)
+            given(mockUserRepository.getAutoFillDescription()).willReturn(mockRandomBoolean)
+            given(mockUserRepository.getShowDescriptionInLists()).willReturn(mockRandomBoolean)
+            given(mockUserRepository.getShowDescriptionInDetails()).willReturn(mockRandomBoolean)
+            given(mockUserRepository.getDefaultPrivate()).willReturn(mockRandomBoolean)
+            given(mockUserRepository.getDefaultReadLater()).willReturn(mockRandomBoolean)
+            given(mockUserRepository.getEditAfterSharing()).willReturn(mockRandomBoolean)
         }
 
         @Test
@@ -556,7 +555,7 @@ internal class NavigationActionHandlerTest {
         @Test
         fun `WHEN getDefaultPrivate returns null THEN defaultPrivate is set to false`() {
             // GIVEN
-            givenSuspend { mockUserRepository.getDefaultPrivate() }
+            given(mockUserRepository.getDefaultPrivate())
                 .willReturn(null)
 
             // WHEN
@@ -579,7 +578,7 @@ internal class NavigationActionHandlerTest {
         @Test
         fun `WHEN getDefaultReadLater returns null THEN defaultReadLater is set to false`() {
             // GIVEN
-            givenSuspend { mockUserRepository.getDefaultReadLater() }
+            given(mockUserRepository.getDefaultReadLater())
                 .willReturn(null)
 
             // WHEN

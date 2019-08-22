@@ -63,7 +63,7 @@ class NavigationActionHandler @Inject constructor(
         }
     }
 
-    private suspend fun viewAddPost(currentContent: Content): Content {
+    private fun viewAddPost(currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
             AddPostContent(
                 defaultPrivate = userRepository.getDefaultPrivate().orFalse(),
@@ -106,7 +106,7 @@ class NavigationActionHandler @Inject constructor(
         }
     }
 
-    private suspend fun viewPreferences(currentContent: Content): Content {
+    private fun viewPreferences(currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
             UserPreferencesContent(
                 appearance = userRepository.getAppearance(),

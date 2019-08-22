@@ -56,7 +56,7 @@ class AuthViewModelTest : BaseViewModelTest() {
         @Test
         fun `GIVEN Login is successful WHEN login is called THEN nothing else happens`() {
             // GIVEN
-            givenSuspend { mockLogin(Login.Params(mockApiToken)) }
+            givenSuspend { mockLogin(mockApiToken) }
                 .willReturn(Success(Unit))
 
             // WHEN
@@ -77,7 +77,7 @@ class AuthViewModelTest : BaseViewModelTest() {
                 )
             )
 
-            givenSuspend { mockLogin(Login.Params(mockApiToken)) }
+            givenSuspend { mockLogin(mockApiToken) }
                 .willReturn(Failure(error))
             given(mockResourceProvider.getString(R.string.auth_token_error))
                 .willReturn("R.string.auth_token_error")
@@ -100,7 +100,7 @@ class AuthViewModelTest : BaseViewModelTest() {
                 )
             )
 
-            givenSuspend { mockLogin(Login.Params(mockApiToken)) }
+            givenSuspend { mockLogin(mockApiToken) }
                 .willReturn(Failure(error))
             given(mockResourceProvider.getString(R.string.auth_token_error))
                 .willReturn("R.string.auth_token_error")
@@ -117,7 +117,7 @@ class AuthViewModelTest : BaseViewModelTest() {
         fun `GIVEN Login fails WHEN login is called THEN error should receive a value`() {
             // GIVEN
             val error = Exception()
-            givenSuspend { mockLogin(Login.Params(mockApiToken)) }
+            givenSuspend { mockLogin(mockApiToken) }
                 .willReturn(Failure(error))
 
             // WHEN

@@ -22,19 +22,19 @@ class UserDataSource @Inject constructor(
 
     override fun getLoginState(): LiveData<LoginState> = loginState
 
-    override suspend fun loginAttempt(authToken: String) {}
+    override fun loginAttempt(authToken: String) {}
 
-    override suspend fun loggedIn() {}
+    override fun loggedIn() {}
 
-    override suspend fun logout() {}
+    override fun logout() {}
 
-    override suspend fun forceLogout() {}
+    override fun forceLogout() {}
 
-    override suspend fun getLastUpdate(): String = ""
+    override fun getLastUpdate(): String = ""
 
-    override suspend fun setLastUpdate(value: String) {}
+    override fun setLastUpdate(value: String) {}
 
-    override suspend fun getAppearance(): Appearance {
+    override fun getAppearance(): Appearance {
         return if (userSharedPreferences.getAppearance() == LightTheme.value) {
             LightTheme
         } else {
@@ -42,44 +42,44 @@ class UserDataSource @Inject constructor(
         }
     }
 
-    override suspend fun setAppearance(appearance: Appearance) {
+    override fun setAppearance(appearance: Appearance) {
         userSharedPreferences.setAppearance(appearance.value)
     }
 
-    override suspend fun getAutoFillDescription(): Boolean =
-        userSharedPreferences.getDescriptionAutoFill()
+    override fun getAutoFillDescription(): Boolean =
+        userSharedPreferences.getAutoFillDescription()
 
-    override suspend fun setAutoFillDescription(value: Boolean) {
-        userSharedPreferences.setDescriptionAutoFill(value)
+    override fun setAutoFillDescription(value: Boolean) {
+        userSharedPreferences.setAutoFillDescription(value)
     }
 
-    override suspend fun getShowDescriptionInLists(): Boolean =
-        userSharedPreferences.getDescriptionVisibleInList()
+    override fun getShowDescriptionInLists(): Boolean =
+        userSharedPreferences.getShowDescriptionInLists()
 
-    override suspend fun setShowDescriptionInLists(value: Boolean) {
-        userSharedPreferences.setDescriptionVisibleInList(value)
+    override fun setShowDescriptionInLists(value: Boolean) {
+        userSharedPreferences.setShowDescriptionInLists(value)
     }
 
-    override suspend fun getShowDescriptionInDetails(): Boolean =
-        userSharedPreferences.getDescriptionVisibleInDetail()
+    override fun getShowDescriptionInDetails(): Boolean =
+        userSharedPreferences.getShowDescriptionInDetails()
 
-    override suspend fun setShowDescriptionInDetails(value: Boolean) {
-        userSharedPreferences.setDescriptionVisibleInDetail(value)
+    override fun setShowDescriptionInDetails(value: Boolean) {
+        userSharedPreferences.setShowDescriptionInDetails(value)
     }
 
-    override suspend fun getDefaultPrivate(): Boolean? = null
+    override fun getDefaultPrivate(): Boolean? = null
 
-    override suspend fun setDefaultPrivate(value: Boolean) {}
+    override fun setDefaultPrivate(value: Boolean) {}
 
-    override suspend fun getDefaultReadLater(): Boolean? = userSharedPreferences.getDefaultReadLater()
+    override fun getDefaultReadLater(): Boolean? = userSharedPreferences.getDefaultReadLater()
 
-    override suspend fun setDefaultReadLater(value: Boolean) {
+    override fun setDefaultReadLater(value: Boolean) {
         userSharedPreferences.setDefaultReadLater(value)
     }
 
-    override suspend fun getEditAfterSharing(): Boolean = userSharedPreferences.getEditAfterSharing()
+    override fun getEditAfterSharing(): Boolean = userSharedPreferences.getEditAfterSharing()
 
-    override suspend fun setEditAfterSharing(value: Boolean) {
+    override fun setEditAfterSharing(value: Boolean) {
         userSharedPreferences.setEditAfterSharing(value)
     }
 }

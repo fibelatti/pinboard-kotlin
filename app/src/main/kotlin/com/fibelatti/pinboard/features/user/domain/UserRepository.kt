@@ -6,43 +6,43 @@ import com.fibelatti.pinboard.core.android.Appearance
 interface UserRepository {
     fun getLoginState(): LiveData<LoginState>
 
-    suspend fun loginAttempt(authToken: String)
+    fun loginAttempt(authToken: String)
 
-    suspend fun loggedIn()
+    fun loggedIn()
 
-    suspend fun logout()
+    fun logout()
 
-    suspend fun forceLogout()
+    fun forceLogout()
 
-    suspend fun getLastUpdate(): String
+    fun getLastUpdate(): String
 
-    suspend fun setLastUpdate(value: String)
+    fun setLastUpdate(value: String)
 
-    suspend fun getAppearance(): Appearance
+    fun getAppearance(): Appearance
 
-    suspend fun setAppearance(appearance: Appearance)
+    fun setAppearance(appearance: Appearance)
 
-    suspend fun getAutoFillDescription(): Boolean
+    fun getAutoFillDescription(): Boolean
 
-    suspend fun setAutoFillDescription(value: Boolean)
+    fun setAutoFillDescription(value: Boolean)
 
-    suspend fun getShowDescriptionInLists(): Boolean
+    fun getShowDescriptionInLists(): Boolean
 
-    suspend fun setShowDescriptionInLists(value: Boolean)
+    fun setShowDescriptionInLists(value: Boolean)
 
-    suspend fun getShowDescriptionInDetails(): Boolean
+    fun getShowDescriptionInDetails(): Boolean
 
-    suspend fun setShowDescriptionInDetails(value: Boolean)
+    fun setShowDescriptionInDetails(value: Boolean)
 
-    suspend fun getDefaultPrivate(): Boolean?
+    fun getDefaultPrivate(): Boolean?
 
-    suspend fun setDefaultPrivate(value: Boolean)
+    fun setDefaultPrivate(value: Boolean)
 
-    suspend fun getDefaultReadLater(): Boolean?
+    fun getDefaultReadLater(): Boolean?
 
-    suspend fun setDefaultReadLater(value: Boolean)
+    fun setDefaultReadLater(value: Boolean)
 
-    suspend fun getEditAfterSharing(): Boolean
+    fun getEditAfterSharing(): Boolean
 
-    suspend fun setEditAfterSharing(value: Boolean)
+    fun setEditAfterSharing(value: Boolean)
 }

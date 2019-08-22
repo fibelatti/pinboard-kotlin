@@ -1,9 +1,6 @@
 package com.fibelatti.pinboard.core.network
 
-import androidx.annotation.VisibleForTesting
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.net.HttpURLConnection
@@ -17,14 +14,9 @@ class UnauthorizedInterceptor @Inject constructor(
         val response = chain.proceed(chain.request())
 
         if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-            forceLogout()
+            userRepository.forceLogout()
         }
 
         return response
-    }
-
-    @VisibleForTesting
-    fun forceLogout() {
-        GlobalScope.launch { userRepository.forceLogout() }
     }
 }

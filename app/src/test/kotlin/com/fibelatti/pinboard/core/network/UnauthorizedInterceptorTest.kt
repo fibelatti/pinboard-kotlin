@@ -41,7 +41,7 @@ internal class UnauthorizedInterceptorTest {
         unauthorizedInterceptor.intercept(mockChain)
 
         // THEN
-        verify(unauthorizedInterceptor).forceLogout()
+        verify(mockUserRepository).forceLogout()
     }
 
     @Test
@@ -54,6 +54,6 @@ internal class UnauthorizedInterceptorTest {
         unauthorizedInterceptor.intercept(mockChain)
 
         // THEN
-        verify(unauthorizedInterceptor, never()).forceLogout()
+        verify(mockUserRepository, never()).forceLogout()
     }
 }
