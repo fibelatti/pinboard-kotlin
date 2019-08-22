@@ -113,9 +113,10 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun showPostList() {
+    // region Fragment transitions
+    private fun popTo(tag: String) {
         for (fragment in supportFragmentManager.fragments.reversed()) {
-            if (fragment.tag != PostListFragment.TAG) {
+            if (fragment.tag != tag) {
                 supportFragmentManager.popBackStack()
             } else {
                 break
@@ -123,129 +124,102 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    private fun slideFromTheRight(fragment: Fragment, tag: String, addToBackStack: Boolean = true) {
+        inTransaction {
+            setCustomAnimations(
+                R.anim.slide_right_in,
+                R.anim.slide_left_out,
+                R.anim.slide_left_in,
+                R.anim.slide_right_out
+            )
+            add(R.id.fragmentHost, fragment, tag)
+
+            if (addToBackStack) {
+                addToBackStack(tag)
+            }
+        }
+    }
+
+    private fun slideUp(fragment: Fragment, tag: String, addToBackStack: Boolean = true) {
+        inTransaction {
+            setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
+            add(R.id.fragmentHost, fragment, tag)
+
+            if (addToBackStack) {
+                addToBackStack(tag)
+            }
+        }
+    }
+    // endregion
+
+    private fun showPostList() {
+        popTo(PostListFragment.TAG)
+    }
+
     private fun showPostDetail() {
         if (supportFragmentManager.findFragmentByTag(PostDetailFragment.TAG) == null) {
-            inTransaction {
-                setCustomAnimations(
-                    R.anim.slide_right_in,
-                    R.anim.slide_left_out,
-                    R.anim.slide_left_in,
-                    R.anim.slide_right_out
-                )
-                add(R.id.fragmentHost, createFragment<PostDetailFragment>(), PostDetailFragment.TAG)
-                addToBackStack(PostDetailFragment.TAG)
-            }
+            slideFromTheRight(createFragment<PostDetailFragment>(), PostDetailFragment.TAG)
         } else {
-            for (fragment in supportFragmentManager.fragments.reversed()) {
-                if (fragment.tag != PostDetailFragment.TAG) {
-                    supportFragmentManager.popBackStack()
-                } else {
-                    break
-                }
-            }
+            popTo(PostDetailFragment.TAG)
         }
     }
 
     private fun showSearch() {
         if (supportFragmentManager.findFragmentByTag(PostSearchFragment.TAG) == null) {
-            inTransaction {
-                setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
-                add(R.id.fragmentHost, createFragment<PostSearchFragment>(), PostSearchFragment.TAG)
-                addToBackStack(PostSearchFragment.TAG)
-            }
+            slideUp(createFragment<PostSearchFragment>(), PostSearchFragment.TAG)
         }
     }
 
     private fun showAddPost() {
         if (supportFragmentManager.findFragmentByTag(PostAddFragment.TAG) == null) {
-            inTransaction {
-                setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
-                add(R.id.fragmentHost, createFragment<PostAddFragment>(), PostAddFragment.TAG)
-                addToBackStack(PostAddFragment.TAG)
-            }
+            slideUp(createFragment<PostAddFragment>(), PostAddFragment.TAG)
         }
     }
 
     private fun showTags() {
         if (supportFragmentManager.findFragmentByTag(TagsFragment.TAG) == null) {
-            inTransaction {
-                setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
-                add(R.id.fragmentHost, createFragment<TagsFragment>(), TagsFragment.TAG)
-                addToBackStack(TagsFragment.TAG)
-            }
+            slideUp(createFragment<TagsFragment>(), TagsFragment.TAG)
         }
     }
 
     private fun showNotes() {
         if (supportFragmentManager.findFragmentByTag(NoteListFragment.TAG) == null) {
-            inTransaction {
-                setCustomAnimations(
-                    R.anim.slide_right_in,
-                    R.anim.slide_left_out,
-                    R.anim.slide_left_in,
-                    R.anim.slide_right_out
-                )
-                add(R.id.fragmentHost, createFragment<NoteListFragment>(), NoteListFragment.TAG)
-                addToBackStack(NoteListFragment.TAG)
-            }
+            slideFromTheRight(createFragment<NoteListFragment>(), NoteListFragment.TAG)
         } else {
-            for (fragment in supportFragmentManager.fragments.reversed()) {
-                if (fragment.tag != NoteListFragment.TAG) {
-                    supportFragmentManager.popBackStack()
-                } else {
-                    break
-                }
-            }
+            popTo(NoteListFragment.TAG)
         }
     }
 
     private fun showNoteDetail() {
         if (supportFragmentManager.findFragmentByTag(NoteDetailsFragment.TAG) == null) {
-            inTransaction {
-                setCustomAnimations(
-                    R.anim.slide_right_in,
-                    R.anim.slide_left_out,
-                    R.anim.slide_left_in,
-                    R.anim.slide_right_out
-                )
-                add(R.id.fragmentHost, createFragment<NoteDetailsFragment>(), NoteDetailsFragment.TAG)
-                addToBackStack(NoteDetailsFragment.TAG)
-            }
+            slideFromTheRight(createFragment<NoteDetailsFragment>(), NoteDetailsFragment.TAG)
         }
     }
 
     private fun showPreferences() {
         if (supportFragmentManager.findFragmentByTag(UserPreferencesFragment.TAG) == null) {
-            inTransaction {
-                setCustomAnimations(
-                    R.anim.slide_right_in,
-                    R.anim.slide_left_out,
-                    R.anim.slide_left_in,
-                    R.anim.slide_right_out
-                )
-                add(R.id.fragmentHost, createFragment<UserPreferencesFragment>(), UserPreferencesFragment.TAG)
-                addToBackStack(UserPreferencesFragment.TAG)
-            }
+            slideFromTheRight(
+                createFragment<UserPreferencesFragment>(),
+                UserPreferencesFragment.TAG
+            )
         }
     }
 
     private fun showEditPost() {
         if (supportFragmentManager.findFragmentByTag(PostAddFragment.TAG) == null) {
-            inTransaction {
-                setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
-                add(R.id.fragmentHost, createFragment<PostAddFragment>(), PostAddFragment.TAG)
-                addToBackStack(PostAddFragment.TAG)
-            }
+            slideUp(
+                createFragment<PostAddFragment>(),
+                PostAddFragment.TAG
+            )
         }
     }
 
-    inline fun updateTitleLayout(titleUpdates: TitleLayout.() -> Unit) {
+    fun updateTitleLayout(titleUpdates: TitleLayout.() -> Unit) {
+        layoutTitle.visible()
         layoutTitle.run(titleUpdates)
     }
 
-    inline fun updateViews(
-        crossinline update: (BottomAppBar, FloatingActionButton) -> Unit = { _, _ -> }
-    ) {
+    fun updateViews(update: (BottomAppBar, FloatingActionButton) -> Unit = { _, _ -> }) {
         update(bottomAppBar, fabMain)
     }
 
