@@ -55,7 +55,7 @@ interface PostsDao {
     @Query("select * from $POST_TABLE_NAME where href = :url")
     fun getPost(url: String): PostDto
 
-    @Query("select tags from $POST_TABLE_NAME")
+    @Query("select tags from $POST_TABLE_NAME where tags != ''")
     fun getAllPostTags(): List<String>
 
     companion object {
