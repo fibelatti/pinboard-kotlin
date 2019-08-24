@@ -13,7 +13,6 @@ import com.fibelatti.core.extension.clearText
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.invisible
-import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.onKeyboardSubmit
 import com.fibelatti.core.extension.setOnClickListener
 import com.fibelatti.core.extension.showError
@@ -23,11 +22,13 @@ import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.core.extension.withItemOffsetDecoration
 import com.fibelatti.core.extension.withLinearLayoutManager
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.BackPressHandler
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.showStyledDialog
 import com.fibelatti.pinboard.core.extension.toast
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPostContent
+import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import kotlinx.android.synthetic.main.fragment_add_post.*
@@ -39,7 +40,7 @@ import javax.inject.Inject
 
 class PostAddFragment @Inject constructor(
     private val suggestedTagsAdapter: SuggestedTagsAdapter
-) : BaseFragment() {
+) : BaseFragment(), BackPressHandler {
 
     companion object {
         @JvmStatic
@@ -76,20 +77,33 @@ class PostAddFragment @Inject constructor(
         }
     }
 
+    override fun onBackPressed() {
+        val isContentUnchanged = originalPost?.run {
+            url == editTextUrl.textAsString() &&
+                title == editTextTitle.textAsString() &&
+                description == editTextDescription.textAsString() &&
+                private == checkboxPrivate.isChecked &&
+                readLater == checkboxReadLater.isChecked &&
+                tags == chipGroupTags.getAllTags().takeIf { it.isNotEmpty() }
+        } ?: true
+
+        if (isContentUnchanged) {
+            appStateViewModel.runAction(NavigateBack)
+        } else {
+            context?.showStyledDialog {
+                setMessage(R.string.alert_confirm_unsaved_changes)
+                setPositiveButton(R.string.hint_yes) { _, _ ->
+                    appStateViewModel.runAction(NavigateBack)
+                }
+                setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
+            }
+        }
+    }
+
     private fun setupLayout() {
         mainActivity?.updateTitleLayout {
             setTitle(R.string.posts_add_title)
-            setNavigateUp(R.drawable.ic_close) {
-                if (isContentUnchanged()) {
-                    navigateBack()
-                } else {
-                    context?.showStyledDialog {
-                        setMessage(R.string.alert_confirm_unsaved_changes)
-                        setPositiveButton(R.string.hint_yes) { _, _ -> navigateBack() }
-                        setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
-                    }
-                }
-            }
+            setNavigateUp(R.drawable.ic_close) { onBackPressed() }
         }
 
         mainActivity?.updateViews { bottomAppBar, fab ->
@@ -108,19 +122,6 @@ class PostAddFragment @Inject constructor(
 
         setupDescriptionLayouts()
         setupTagLayouts()
-    }
-
-    private fun isContentUnchanged(): Boolean {
-        return originalPost
-            ?.run {
-                url == editTextUrl.textAsString() &&
-                    title == editTextTitle.textAsString() &&
-                    description == editTextDescription.textAsString() &&
-                    private == checkboxPrivate.isChecked &&
-                    readLater == checkboxReadLater.isChecked &&
-                    tags == chipGroupTags.getAllTags().takeIf { it.isNotEmpty() }
-            }
-            ?: true
     }
 
     private fun saveLink() {

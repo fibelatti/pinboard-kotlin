@@ -16,6 +16,7 @@ import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig.MAIN_PACKAGE_NAME
 import com.fibelatti.pinboard.core.AppConfig.PLAY_STORE_BASE_URL
+import com.fibelatti.pinboard.core.android.BackPressHandler
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.customview.TitleLayout
@@ -88,8 +89,13 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        appStateViewModel.runAction(NavigateBack)
+        val currentFragment = supportFragmentManager.fragments.last()
+        if (currentFragment is BackPressHandler) {
+            currentFragment.onBackPressed()
+        } else {
+            super.onBackPressed()
+            appStateViewModel.runAction(NavigateBack)
+        }
     }
 
     private fun setupView() {
