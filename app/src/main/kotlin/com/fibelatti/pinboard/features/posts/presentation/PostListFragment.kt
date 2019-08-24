@@ -186,16 +186,16 @@ class PostListFragment @Inject constructor(
         progressBarNextPage.gone()
         recyclerViewPosts.onRequestNextPageCompleted()
 
+        mainActivity?.updateTitleLayout {
+            setPostListTitle(content.title, content.totalCount, content.sortType)
+        }
+
         if (content.posts == null) {
             showEmptyLayout(
                 title = R.string.posts_empty_title,
                 description = R.string.posts_empty_description
             )
             return
-        }
-
-        mainActivity?.updateTitleLayout {
-            setPostListTitle(content.title, content.totalCount, content.sortType)
         }
 
         postsAdapter.showDescription = content.showDescription
