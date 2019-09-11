@@ -1,9 +1,7 @@
 package com.fibelatti.pinboard.features.notes.presentation
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
@@ -18,7 +16,7 @@ import kotlinx.android.synthetic.main.fragment_note_detail.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
 import javax.inject.Inject
 
-class NoteDetailsFragment @Inject constructor() : BaseFragment() {
+class NoteDetailsFragment @Inject constructor() : BaseFragment(R.layout.fragment_note_detail) {
 
     companion object {
         @JvmStatic
@@ -31,12 +29,6 @@ class NoteDetailsFragment @Inject constructor() : BaseFragment() {
     private val noteDetailsViewModel: NoteDetailsViewModel by lazy {
         viewModelFactory.get<NoteDetailsViewModel>(this)
     }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_note_detail, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

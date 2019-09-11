@@ -3,6 +3,8 @@ package com.fibelatti.pinboard.core.android.base
 import android.os.Bundle
 import android.webkit.WebView
 import androidx.annotation.CallSuper
+import androidx.annotation.ContentView
+import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.FragmentFactory
@@ -15,7 +17,7 @@ import com.fibelatti.pinboard.core.extension.toast
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import javax.inject.Inject
 
-abstract class BaseActivity : AppCompatActivity() {
+abstract class BaseActivity : AppCompatActivity {
 
     private val injector
         get() = (application as App).appComponent
@@ -26,6 +28,11 @@ abstract class BaseActivity : AppCompatActivity() {
     lateinit var viewModelFactory: ViewModelFactory
     @Inject
     lateinit var userSharedPreferences: UserSharedPreferences
+
+    constructor() : super()
+
+    @ContentView
+    constructor(@LayoutRes contentLayoutId: Int) : super(contentLayoutId)
 
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {

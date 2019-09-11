@@ -1,9 +1,7 @@
 package com.fibelatti.pinboard.features.user.presentation
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.transition.TransitionInflater
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
@@ -23,7 +21,7 @@ import kotlinx.android.synthetic.main.fragment_auth.*
 import kotlinx.android.synthetic.main.layout_auth_form.*
 import javax.inject.Inject
 
-class AuthFragment @Inject constructor() : BaseFragment() {
+class AuthFragment @Inject constructor() : BaseFragment(R.layout.fragment_auth) {
 
     private val authViewModel: AuthViewModel by lazy { viewModelFactory.get<AuthViewModel>(this) }
 
@@ -33,12 +31,6 @@ class AuthFragment @Inject constructor() : BaseFragment() {
         sharedElementEnterTransition =
             TransitionInflater.from(context).inflateTransition(android.R.transition.move)
     }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_auth, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

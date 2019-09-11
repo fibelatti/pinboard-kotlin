@@ -1,9 +1,7 @@
 package com.fibelatti.pinboard.features.tags.presentation
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
@@ -26,7 +24,7 @@ import javax.inject.Inject
 
 class TagsFragment @Inject constructor(
     private val tagsAdapter: TagsAdapter
-) : BaseFragment() {
+) : BaseFragment(R.layout.fragment_tags) {
 
     companion object {
         @JvmStatic
@@ -37,12 +35,6 @@ class TagsFragment @Inject constructor(
         viewModelFactory.get<AppStateViewModel>(this)
     }
     private val tagsViewModel: TagsViewModel by lazy { viewModelFactory.get<TagsViewModel>(this) }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_tags, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

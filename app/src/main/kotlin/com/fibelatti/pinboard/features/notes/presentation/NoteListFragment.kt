@@ -1,9 +1,7 @@
 package com.fibelatti.pinboard.features.notes.presentation
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
@@ -24,7 +22,7 @@ import javax.inject.Inject
 
 class NoteListFragment @Inject constructor(
     private val noteListAdapter: NoteListAdapter
-) : BaseFragment() {
+) : BaseFragment(R.layout.fragment_note_list) {
 
     companion object {
         @JvmStatic
@@ -37,12 +35,6 @@ class NoteListFragment @Inject constructor(
     private val noteListViewModel: NoteListViewModel by lazy {
         viewModelFactory.get<NoteListViewModel>(this)
     }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_note_list, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

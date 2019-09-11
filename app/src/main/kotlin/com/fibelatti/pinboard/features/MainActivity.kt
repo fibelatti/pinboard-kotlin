@@ -67,7 +67,7 @@ import kotlinx.android.synthetic.main.fragment_splash.imageViewAppLogo as splash
 val Fragment.mainActivity: MainActivity? get() = activity as? MainActivity
 var Intent.fromBuilder by IntentDelegate.Boolean("FROM_BUILDER", false)
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(R.layout.activity_main) {
 
     private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(this) }
     private val authViewModel by lazy { viewModelFactory.get<AuthViewModel>(this) }
@@ -76,7 +76,6 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
         if (!intent.fromBuilder) {
             inTransaction {

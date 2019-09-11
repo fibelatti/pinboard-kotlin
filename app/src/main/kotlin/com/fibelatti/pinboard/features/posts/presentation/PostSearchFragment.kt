@@ -1,10 +1,8 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.applyAs
@@ -37,7 +35,7 @@ import javax.inject.Inject
 
 class PostSearchFragment @Inject constructor(
     private val tagsAdapter: TagsAdapter
-) : BaseFragment() {
+) : BaseFragment(R.layout.fragment_search_post) {
 
     companion object {
         @JvmStatic
@@ -48,12 +46,6 @@ class PostSearchFragment @Inject constructor(
         viewModelFactory.get<AppStateViewModel>(this)
     }
     private val tagsViewModel: TagsViewModel by lazy { viewModelFactory.get<TagsViewModel>(this) }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_search_post, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

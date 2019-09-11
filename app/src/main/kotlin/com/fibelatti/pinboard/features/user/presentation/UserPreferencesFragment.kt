@@ -1,9 +1,7 @@
 package com.fibelatti.pinboard.features.user.presentation
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.gone
@@ -18,7 +16,7 @@ import com.fibelatti.pinboard.features.mainActivity
 import kotlinx.android.synthetic.main.fragment_user_preferences.*
 import javax.inject.Inject
 
-class UserPreferencesFragment @Inject constructor() : BaseFragment() {
+class UserPreferencesFragment @Inject constructor() : BaseFragment(R.layout.fragment_user_preferences) {
 
     companion object {
         @JvmStatic
@@ -27,12 +25,6 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
 
     private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(this) }
     private val userPreferencesViewModel by lazy { viewModelFactory.get<UserPreferencesViewModel>(this) }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_user_preferences, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

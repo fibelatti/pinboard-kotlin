@@ -2,10 +2,8 @@ package com.fibelatti.pinboard.features.posts.presentation
 
 import android.os.Bundle
 import android.os.Handler
-import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
@@ -47,7 +45,7 @@ import javax.inject.Inject
 
 class PostListFragment @Inject constructor(
     private val postsAdapter: PostListAdapter
-) : BaseFragment() {
+) : BaseFragment(R.layout.fragment_post_list) {
 
     companion object {
         @JvmStatic
@@ -94,12 +92,6 @@ class PostListFragment @Inject constructor(
                     }
                 })
     }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_post_list, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

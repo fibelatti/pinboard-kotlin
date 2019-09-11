@@ -5,10 +5,8 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
@@ -44,7 +42,7 @@ import kotlinx.android.synthetic.main.layout_url_error.textViewUrlTitle as error
 
 class PostDetailFragment @Inject constructor(
     private val connectivityInfoProvider: ConnectivityInfoProvider
-) : BaseFragment() {
+) : BaseFragment(R.layout.fragment_post_detail) {
 
     companion object {
         @JvmStatic
@@ -70,12 +68,6 @@ class PostDetailFragment @Inject constructor(
             "gif", "jpg", "jpeg", "png", "svg",
             "mp4", "3gp", "mpg", "mpeg", "avi"
         )
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_post_detail, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
