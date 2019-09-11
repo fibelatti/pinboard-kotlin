@@ -44,21 +44,16 @@ android {
         }
     }
 
-    def buildTypeAppNameSuffix = ""
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
 
             minifyEnabled false
             testCoverageEnabled = true
-
-            buildTypeAppNameSuffix = " Dev"
         }
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-
-            buildTypeAppNameSuffix = ""
         }
     }
 
@@ -67,13 +62,22 @@ android {
         pinboardapi {
             dimension("api")
 
-            resValue("string", "app_name", "${AppInfo.appName}$buildTypeAppNameSuffix")
+            ext {
+                appNameSuffix = [debug: " Dev", release: ""]
+            }
         }
         noapi {
             dimension("api")
             applicationIdSuffix(".noapi")
 
-            resValue("string", "app_name", "${AppInfo.appName} NoApi $buildTypeAppNameSuffix")
+            ext {
+                appNameSuffix = [debug: " NoApi Dev", release: " NoApi"]
+            }
+        }
+
+        applicationVariants.all { variant ->
+            def flavor = variant.productFlavors[0]
+            variant.resValue("string", "app_name", "${AppInfo.appName}${flavor.ext.appNameSuffix[variant.buildType.name]}")
         }
     }
 
