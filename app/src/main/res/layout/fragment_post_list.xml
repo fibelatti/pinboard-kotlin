@@ -60,7 +60,7 @@
             tools:listitem="@layout/list_item_post" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <com.fibelatti.pinboard.core.android.customview.ProgressBar
+    <ProgressBar
         android:id="@+id/progressBarNextPage"
         style="@style/AppTheme.ProgressBarHorizontalStyle"
         android:layout_below="@+id/layoutOfflineAlert"

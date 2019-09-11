@@ -8,7 +8,7 @@
     android:descendantFocusability="blocksDescendants"
     android:focusable="true">
 
-    <com.fibelatti.pinboard.core.android.customview.ProgressBar
+    <ProgressBar
         android:id="@+id/progressBar"
         style="@style/AppTheme.ProgressBarStyle" />
 </FrameLayout>

@@ -53,7 +53,7 @@
         android:padding="@dimen/padding_small"
         android:text="@string/auth_button" />
 
-    <com.fibelatti.pinboard.core.android.customview.ProgressBar
+    <ProgressBar
         android:id="@+id/progressBar"
         style="@style/AppTheme.ProgressBarStyle"
         android:layout_width="wrap_content"

@@ -136,16 +136,20 @@
     </style>
 
     <style name="AppTheme.ProgressBarStyle" parent="Base.Widget.AppCompat.ProgressBar">
-        <item name="android:indeterminate">true</item>
         <item name="android:layout_height">@dimen/progress_bar_size</item>
         <item name="android:layout_width">@dimen/progress_bar_size</item>
         <item name="android:layout_gravity">center</item>
+        <item name="android:indeterminate">true</item>
+        <item name="android:indeterminateTintMode">src_in</item>
+        <item name="android:indeterminateTint">@color/color_primary</item>
     </style>
 
     <style name="AppTheme.ProgressBarHorizontalStyle" parent="Base.Widget.AppCompat.ProgressBar.Horizontal">
-        <item name="android:indeterminate">true</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
+        <item name="android:indeterminate">true</item>
+        <item name="android:indeterminateTintMode">src_in</item>
+        <item name="android:indeterminateTint">@color/color_primary</item>
     </style>
 
     <style name="AppTheme.Text" />
