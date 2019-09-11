@@ -105,12 +105,14 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun editPost(action: EditPost, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostDetailContent>(currentContent) {
+        return if (currentContent is PostListContent || currentContent is PostDetailContent) {
             EditPostContent(
                 post = action.post,
                 showDescription = userRepository.getShowDescriptionInDetails(),
-                previousContent = it
+                previousContent = currentContent
             )
+        } else {
+            currentContent
         }
     }
 

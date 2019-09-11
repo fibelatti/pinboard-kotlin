@@ -491,9 +491,9 @@ internal class PostActionHandlerTest {
     inner class EditPostTests {
 
         @Test
-        fun `WHEN currentContent is not PostDetailContent THEN same content is returned`() {
+        fun `WHEN currentContent is not PostDetailContent or PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostListContent>()
+            val content = mock<Content>()
 
             // WHEN
             val result = runBlocking { postActionHandler.runAction(EditPost(mockPost), content) }
@@ -506,6 +506,27 @@ internal class PostActionHandlerTest {
         fun `WHEN currentContent is PostDetailContent THEN updated content is returned`() {
             // GIVEN
             val mockCurrentContent = mock<PostDetailContent>()
+            val randomBoolean = randomBoolean()
+            given(mockUserRepository.getShowDescriptionInDetails())
+                .willReturn(randomBoolean)
+
+            // WHEN
+            val result = runBlocking {
+                postActionHandler.runAction(EditPost(mockPost), mockCurrentContent)
+            }
+
+            // THEN
+            result shouldBe EditPostContent(
+                post = mockPost,
+                showDescription = randomBoolean,
+                previousContent = mockCurrentContent
+            )
+        }
+
+        @Test
+        fun `WHEN currentContent is PostListContent THEN updated content is returned`() {
+            // GIVEN
+            val mockCurrentContent = mock<PostListContent>()
             val randomBoolean = randomBoolean()
             given(mockUserRepository.getShowDescriptionInDetails())
                 .willReturn(randomBoolean)

@@ -12,6 +12,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import kotlinx.android.synthetic.main.layout_quick_actions.view.*
 import kotlinx.android.synthetic.main.list_item_post.view.*
 import javax.inject.Inject
 
@@ -21,6 +22,13 @@ class PostListAdapter @Inject constructor(
     private val dateFormatter: DateFormatter
 ) : RecyclerView.Adapter<PostListAdapter.ViewHolder>() {
 
+    interface QuickActionsCallback {
+
+        fun onShareClicked(item: Post)
+
+        fun onEditClicked(item: Post)
+    }
+
     private val items: MutableList<Post> = mutableListOf()
     var showDescription: Boolean = false
         set(value) {
@@ -29,6 +37,7 @@ class PostListAdapter @Inject constructor(
         }
     var onItemClicked: ((Post) -> Unit)? = null
     var onTagClicked: ((Tag) -> Unit)? = null
+    var quickActionsCallback: QuickActionsCallback? = null
 
     override fun getItemCount(): Int = items.size
 
@@ -36,53 +45,6 @@ class PostListAdapter @Inject constructor(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(items[position])
-    }
-
-    fun View.bindView(item: Post) {
-        textViewPrivate.visibleIf(item.private, otherwiseVisibility = View.GONE)
-        textViewReadLater.visibleIf(item.readLater, otherwiseVisibility = View.GONE)
-
-        textViewLinkTitle.text = item.title
-        textViewLinkAddedDate.text = context.getString(
-            R.string.posts_saved_on,
-            dateFormatter.tzFormatToDisplayFormat(item.time)
-        )
-
-        textViewDescription.text = item.description
-        textViewDescription.visibleIf(
-            showDescription && item.description.isNotBlank(),
-            otherwiseVisibility = View.GONE
-        )
-
-        when {
-            item.tags.isNullOrEmpty() -> {
-                chipGroupTags.gone()
-                textViewOtherTagsAvailable.gone()
-            }
-            item.tags.size <= MAX_TAGS_PER_ITEM -> {
-                layoutTags(item.tags)
-                textViewOtherTagsAvailable.gone()
-            }
-            else -> {
-                val otherAmount = item.tags.size - MAX_TAGS_PER_ITEM
-
-                layoutTags(item.tags.take(MAX_TAGS_PER_ITEM))
-                textViewOtherTagsAvailable.visible(
-                    resources.getQuantityString(R.plurals.posts_tags_more, otherAmount, otherAmount)
-                )
-            }
-        }
-
-        setOnClickListener { onItemClicked?.invoke(item) }
-        chipGroupTags.onTagChipClicked = onTagClicked
-    }
-
-    private fun View.layoutTags(tags: List<Tag>) {
-        chipGroupTags.visible()
-        chipGroupTags.removeAllViews()
-        for (tag in tags) {
-            chipGroupTags.addValue(tag.name, showRemoveIcon = false)
-        }
     }
 
     fun addAll(newItems: List<Post>, diffResult: DiffUtil.DiffResult) {
@@ -100,6 +62,87 @@ class PostListAdapter @Inject constructor(
         parent.inflate(R.layout.list_item_post)
     ) {
 
+        var quickActionsVisible: Boolean = false
+
         fun bind(item: Post) = itemView.bindView(item)
+
+        private fun View.bindView(item: Post) {
+            textViewPrivate.visibleIf(item.private, otherwiseVisibility = View.GONE)
+            textViewReadLater.visibleIf(item.readLater, otherwiseVisibility = View.GONE)
+
+            textViewLinkTitle.text = item.title
+            textViewLinkAddedDate.text = context.getString(
+                R.string.posts_saved_on,
+                dateFormatter.tzFormatToDisplayFormat(item.time)
+            )
+
+            textViewDescription.text = item.description
+            textViewDescription.visibleIf(
+                showDescription && item.description.isNotBlank(),
+                otherwiseVisibility = View.GONE
+            )
+
+            when {
+                item.tags.isNullOrEmpty() -> {
+                    chipGroupTags.gone()
+                    textViewOtherTagsAvailable.gone()
+                }
+                item.tags.size <= MAX_TAGS_PER_ITEM -> {
+                    layoutTags(item.tags)
+                    textViewOtherTagsAvailable.gone()
+                }
+                else -> {
+                    val otherAmount = item.tags.size - MAX_TAGS_PER_ITEM
+
+                    layoutTags(item.tags.take(MAX_TAGS_PER_ITEM))
+                    textViewOtherTagsAvailable.visible(
+                        resources.getQuantityString(
+                            R.plurals.posts_tags_more,
+                            otherAmount,
+                            otherAmount
+                        )
+                    )
+                }
+            }
+
+            hideQuickActions()
+
+            setOnClickListener { onItemClicked?.invoke(item) }
+            setOnLongClickListener {
+                if (quickActionsCallback == null) {
+                    return@setOnLongClickListener false
+                }
+
+                if (!quickActionsVisible) {
+                    showQuickActions(item)
+                } else {
+                    hideQuickActions()
+                }
+
+                true
+            }
+            chipGroupTags.onTagChipClicked = onTagClicked
+        }
+
+        private fun View.layoutTags(tags: List<Tag>) {
+            chipGroupTags.visible()
+            chipGroupTags.removeAllViews()
+            for (tag in tags) {
+                chipGroupTags.addValue(tag.name, showRemoveIcon = false)
+            }
+        }
+
+        private fun View.showQuickActions(item: Post) {
+            quickActionsVisible = true
+            layoutQuickActions.visible()
+
+            buttonQuickActionEdit.setOnClickListener { quickActionsCallback?.onEditClicked(item) }
+            buttonQuickActionShare.setOnClickListener { quickActionsCallback?.onShareClicked(item) }
+        }
+
+        private fun View.hideQuickActions() {
+            quickActionsVisible = false
+            layoutQuickActions.gone()
+        }
     }
 }

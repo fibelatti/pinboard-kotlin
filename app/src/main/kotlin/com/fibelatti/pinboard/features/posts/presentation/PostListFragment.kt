@@ -20,10 +20,12 @@ import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.android.DefaultTransitionListener
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.shareText
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.features.appstate.AddPost
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ClearSearch
+import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.GetNextPostPage
 import com.fibelatti.pinboard.features.appstate.Loaded
 import com.fibelatti.pinboard.features.appstate.PostListContent
@@ -37,6 +39,7 @@ import com.fibelatti.pinboard.features.appstate.ToggleSorting
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.mainActivity
+import com.fibelatti.pinboard.features.posts.domain.model.Post
 import kotlinx.android.synthetic.main.fragment_post_list.*
 import kotlinx.android.synthetic.main.layout_offline_alert.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
@@ -127,6 +130,16 @@ class PostListFragment @Inject constructor(
 
         postsAdapter.onItemClicked = { appStateViewModel.runAction(ViewPost(it)) }
         postsAdapter.onTagClicked = { appStateViewModel.runAction(PostsForTag(it)) }
+        postsAdapter.quickActionsCallback = object : PostListAdapter.QuickActionsCallback {
+
+            override fun onShareClicked(item: Post) {
+                requireActivity().shareText(R.string.posts_share_title, item.url)
+            }
+
+            override fun onEditClicked(item: Post) {
+                appStateViewModel.runAction(EditPost(item))
+            }
+        }
     }
 
     private fun setupViewModels() {

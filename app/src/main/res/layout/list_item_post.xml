@@ -69,8 +69,8 @@
         style="@style/AppTheme.Text.Detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/margin_xsmall"
         android:layout_marginTop="@dimen/margin_xsmall"
+        android:layout_marginBottom="@dimen/margin_xsmall"
         android:ellipsize="end"
         android:maxLines="5"
         android:visibility="gone"
@@ -91,4 +91,10 @@
         android:layout_marginEnd="@dimen/margin_small"
         android:visibility="gone"
         tools:text="And 3 others" />
+
+    <include
+        android:id="@+id/layoutQuickActions"
+        layout="@layout/layout_quick_actions"
+        android:visibility="gone"
+        tools:visibility="visible" />
 </LinearLayout>

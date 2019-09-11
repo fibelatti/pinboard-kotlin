@@ -109,6 +109,16 @@
         <item name="android:focusable">true</item>
     </style>
 
+    <style name="AppTheme.QuickActionButton" parent="AppTheme.TextButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">@dimen/padding_regular</item>
+        <item name="iconSize">@dimen/quick_action_icon_size</item>
+    </style>
+
     <style name="AppTheme.ExtendedFab" parent="Widget.MaterialComponents.Button.TextButton.Icon">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">@dimen/extended_fab_height</item>
