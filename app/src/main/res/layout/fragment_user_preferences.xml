@@ -13,15 +13,15 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingStart="@dimen/padding_regular"
-        android:paddingBottom="@dimen/padding_large"
-        android:paddingEnd="@dimen/padding_regular">
+        android:paddingEnd="@dimen/padding_regular"
+        android:paddingBottom="@dimen/padding_large">
 
         <LinearLayout
             android:id="@+id/layoutAppearance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/layoutBookmarksDescription"
+            app:layout_constraintBottom_toTopOf="@+id/layoutPreferredDetailsView"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
@@ -62,12 +62,81 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/layoutPreferredDetailsView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/layoutBookmarksDescription"
+            app:layout_constraintTop_toBottomOf="@+id/layoutAppearance">
+
+            <TextView
+                style="@style/AppTheme.Text.SectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/user_preferences_preferred_details_view" />
+
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/buttonGroupPreferredDetailsView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                app:singleSelection="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonPreferredDetailsViewInApp"
+                    style="@style/AppTheme.GroupButtonItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/user_preferences_preferred_details_in_app_browser" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonPreferredDetailsViewExternal"
+                    style="@style/AppTheme.GroupButtonItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/user_preferences_preferred_details_external_browser" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonPreferredDetailsViewEdit"
+                    style="@style/AppTheme.GroupButtonItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/user_preferences_preferred_details_post_details" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            <TextView
+                android:id="@+id/textViewPreferredDetailsViewCaveat"
+                style="@style/AppTheme.Text.Detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:layout_marginBottom="@dimen/margin_small"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:text="@string/user_preferences_preferred_details_in_app_browser_caveat" />
+
+            <TextView
+                style="@style/AppTheme.Text.Detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:text="@string/user_preferences_preferred_details_view_caveat" />
+
+            <include
+                layout="@layout/layout_divider"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_size"
+                android:layout_marginTop="@dimen/margin_regular"
+                android:layout_marginBottom="@dimen/margin_regular" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/layoutBookmarksDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@+id/layoutEditAfterSharing"
-            app:layout_constraintTop_toBottomOf="@+id/layoutAppearance">
+            app:layout_constraintTop_toBottomOf="@+id/layoutPreferredDetailsView">
 
             <TextView
                 style="@style/AppTheme.Text.SectionTitle"

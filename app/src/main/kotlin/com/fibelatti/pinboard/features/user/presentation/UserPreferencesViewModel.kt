@@ -6,6 +6,7 @@ import com.fibelatti.core.archcomponents.MutableLiveEvent
 import com.fibelatti.core.archcomponents.postEvent
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,6 +24,12 @@ class UserPreferencesViewModel @Inject constructor(
             userRepository.setAppearance(appearance)
             appStateRepository.reset()
             _appearanceChanged.postEvent(appearance)
+        }
+    }
+
+    fun savePreferredDetailsView(preferredDetailsView: PreferredDetailsView) {
+        launch {
+            userRepository.setPreferredDetailsView(preferredDetailsView)
         }
     }
 

@@ -13,6 +13,7 @@ import com.fibelatti.pinboard.core.android.LightTheme
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.mainActivity
+import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import kotlinx.android.synthetic.main.fragment_user_preferences.*
 import javax.inject.Inject
 
@@ -33,6 +34,7 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(R.layout.frag
 
         viewLifecycleOwner.observe(appStateViewModel.userPreferencesContent) {
             setupAppearance(it.appearance)
+            setupPreferredDetailsView(it.preferredDetailsView)
             setupAutoFillDescription(it.autoFillDescription)
             setupShowDescriptionInLists(it.showDescriptionInLists)
             setupShowDescriptionInDetails(it.showDescriptionInDetails)
@@ -56,6 +58,36 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(R.layout.frag
         }
         buttonAppearanceLight.setOnClickListener {
             userPreferencesViewModel.saveAppearance(LightTheme)
+        }
+    }
+
+    private fun setupPreferredDetailsView(preferredDetailsView: PreferredDetailsView) {
+        when (preferredDetailsView) {
+            PreferredDetailsView.InAppBrowser -> {
+                buttonPreferredDetailsViewInApp.isChecked = true
+                textViewPreferredDetailsViewCaveat.setText(R.string.user_preferences_preferred_details_in_app_browser_caveat)
+            }
+            PreferredDetailsView.ExternalBrowser -> {
+                buttonPreferredDetailsViewExternal.isChecked = true
+                textViewPreferredDetailsViewCaveat.setText(R.string.user_preferences_preferred_details_external_browser_caveat)
+            }
+            PreferredDetailsView.Edit -> {
+                buttonPreferredDetailsViewEdit.isChecked = true
+                textViewPreferredDetailsViewCaveat.setText(R.string.user_preferences_preferred_details_post_details_caveat)
+            }
+        }
+
+        buttonPreferredDetailsViewInApp.setOnClickListener {
+            userPreferencesViewModel.savePreferredDetailsView(PreferredDetailsView.InAppBrowser)
+            textViewPreferredDetailsViewCaveat.setText(R.string.user_preferences_preferred_details_in_app_browser_caveat)
+        }
+        buttonPreferredDetailsViewExternal.setOnClickListener {
+            userPreferencesViewModel.savePreferredDetailsView(PreferredDetailsView.ExternalBrowser)
+            textViewPreferredDetailsViewCaveat.setText(R.string.user_preferences_preferred_details_external_browser_caveat)
+        }
+        buttonPreferredDetailsViewEdit.setOnClickListener {
+            userPreferencesViewModel.savePreferredDetailsView(PreferredDetailsView.Edit)
+            textViewPreferredDetailsViewCaveat.setText(R.string.user_preferences_preferred_details_post_details_caveat)
         }
     }
 

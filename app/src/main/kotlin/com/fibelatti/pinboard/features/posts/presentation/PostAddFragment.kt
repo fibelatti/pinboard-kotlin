@@ -1,7 +1,10 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.view.MenuItem
 import android.view.View
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
@@ -11,6 +14,7 @@ import com.fibelatti.core.extension.clearText
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.invisible
+import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.onKeyboardSubmit
 import com.fibelatti.core.extension.setOnClickListener
 import com.fibelatti.core.extension.showError
@@ -47,6 +51,7 @@ class PostAddFragment @Inject constructor(
 
     private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(this) }
     private val postAddViewModel by lazy { viewModelFactory.get<PostAddViewModel>(this) }
+    private val postDetailViewModel by lazy { viewModelFactory.get<PostDetailViewModel>(this) }
 
     /**
      * Saved since different flavours have different visibilities
@@ -268,6 +273,16 @@ class PostAddFragment @Inject constructor(
                 showFab()
             }
         }
+        with(postDetailViewModel) {
+            viewLifecycleOwner.observe(loading) {
+                layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE)
+            }
+            viewLifecycleOwner.observeEvent(deleted) {
+                mainActivity?.toast(getString(R.string.posts_deleted_feedback))
+                navigateBack()
+            }
+            viewLifecycleOwner.observe(error, ::handleError)
+        }
     }
 
     private fun showPostDetails(content: EditPostContent) {
@@ -289,6 +304,36 @@ class PostAddFragment @Inject constructor(
             chipGroupTags.removeAllViews()
             tags?.forEach { chipGroupTags.addTag(it) }
         }
+
+        mainActivity?.updateViews { bottomAppBar, _ ->
+            bottomAppBar.run {
+                navigationIcon = null
+                replaceMenu(R.menu.menu_details)
+                setOnMenuItemClickListener { item -> handleMenuClick(item, content.post) }
+                visible()
+            }
+        }
+    }
+
+    private fun handleMenuClick(item: MenuItem?, post: Post): Boolean {
+        when (item?.itemId) {
+            R.id.menuItemDelete -> deletePost(post)
+            R.id.menuItemOpenInBrowser -> openUrlInExternalBrowser(post)
+        }
+
+        return true
+    }
+
+    private fun deletePost(post: Post) {
+        context?.showStyledDialog {
+            setMessage(R.string.alert_confirm_deletion)
+            setPositiveButton(R.string.hint_yes) { _, _ -> postDetailViewModel.deletePost(post) }
+            setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
+        }
+    }
+
+    private fun openUrlInExternalBrowser(post: Post) {
+        startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(post.url) })
     }
 
     private fun handleInvalidUrlError(message: String) {

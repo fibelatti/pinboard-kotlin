@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menuItemDelete"
+        android:icon="@drawable/ic_delete"
+        android:title="@string/menu_link_delete"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menuItemOpenInBrowser"
+        android:icon="@drawable/ic_open_in_browser"
+        android:title="@string/menu_link_open_in_browser"
+        app:showAsAction="always" />
+</menu>

@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.user.domain
 
 import androidx.lifecycle.LiveData
 import com.fibelatti.pinboard.core.android.Appearance
+import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 
 interface UserRepository {
     fun getLoginState(): LiveData<LoginState>
@@ -21,6 +22,10 @@ interface UserRepository {
     fun getAppearance(): Appearance
 
     fun setAppearance(appearance: Appearance)
+
+    fun getPreferredDetailsView(): PreferredDetailsView
+
+    fun setPreferredDetailsView(preferredDetailsView: PreferredDetailsView)
 
     fun getAutoFillDescription(): Boolean
 

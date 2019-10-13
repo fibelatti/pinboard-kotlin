@@ -10,6 +10,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.allSealedSubclasses
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
 import kotlinx.coroutines.runBlocking
@@ -67,7 +68,9 @@ internal class NavigationActionHandlerTest {
 
         @ParameterizedTest
         @MethodSource("testCases")
-        fun `WHEN currentContent is ContentWithHistory THEN previousContent is returned`(contentWithHistory: ContentWithHistory) {
+        fun `WHEN currentContent is ContentWithHistory THEN previousContent is returned`(
+            contentWithHistory: ContentWithHistory
+        ) {
             // GIVEN
             val returnedContent = if (contentWithHistory is NoteDetailContent) {
                 mock<NoteListContent>()
@@ -216,14 +219,61 @@ internal class NavigationActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is PostListContent THEN PostDetailContent is returned`() {
+        fun `WHEN currentContent is PostListContent and PreferredDetailsView is InAppBrowser THEN PostDetailContent is returned`() {
+            // GIVEN
+            given(mockUserRepository.getPreferredDetailsView())
+                .willReturn(PreferredDetailsView.InAppBrowser)
+
             // WHEN
             val result = runBlocking {
                 navigationActionHandler.runAction(ViewPost(createPost()), previousContent)
             }
 
             // THEN
-            result shouldBe PostDetailContent(post = createPost(), previousContent = previousContent)
+            result shouldBe PostDetailContent(
+                post = createPost(),
+                previousContent = previousContent
+            )
+        }
+
+        @Test
+        fun `WHEN currentContent is PostListContent and PreferredDetailsView is ExternalBrowser THEN ExternalBrowserContent is returned`() {
+            // GIVEN
+            given(mockUserRepository.getPreferredDetailsView())
+                .willReturn(PreferredDetailsView.ExternalBrowser)
+
+            // WHEN
+            val result = runBlocking {
+                navigationActionHandler.runAction(ViewPost(createPost()), previousContent)
+            }
+
+            // THEN
+            result shouldBe ExternalBrowserContent(
+                post = createPost(),
+                previousContent = previousContent
+            )
+        }
+
+        @Test
+        fun `WHEN currentContent is PostListContent and PreferredDetailsView is Edit THEN EditPostContent is returned`() {
+            // GIVEN
+            given(mockUserRepository.getPreferredDetailsView())
+                .willReturn(PreferredDetailsView.Edit)
+            val mockRandomBoolean = randomBoolean()
+            given(mockUserRepository.getShowDescriptionInDetails())
+                .willReturn(mockRandomBoolean)
+
+            // WHEN
+            val result = runBlocking {
+                navigationActionHandler.runAction(ViewPost(createPost()), previousContent)
+            }
+
+            // THEN
+            result shouldBe EditPostContent(
+                post = createPost(),
+                showDescription = mockRandomBoolean,
+                previousContent = previousContent
+            )
         }
     }
 
@@ -462,11 +512,13 @@ internal class NavigationActionHandlerTest {
     inner class ViewPreferencesTests {
 
         private val mockAppearance = mock<Appearance>()
+        private val mockPreferredDetailsView = mock<PreferredDetailsView>()
         private val mockRandomBoolean = randomBoolean()
 
         @BeforeEach
         fun setup() {
             given(mockUserRepository.getAppearance()).willReturn(mockAppearance)
+            given(mockUserRepository.getPreferredDetailsView()).willReturn(mockPreferredDetailsView)
             given(mockUserRepository.getAutoFillDescription()).willReturn(mockRandomBoolean)
             given(mockUserRepository.getShowDescriptionInLists()).willReturn(mockRandomBoolean)
             given(mockUserRepository.getShowDescriptionInDetails()).willReturn(mockRandomBoolean)
@@ -496,6 +548,7 @@ internal class NavigationActionHandlerTest {
             // THEN
             result shouldBe UserPreferencesContent(
                 appearance = mockAppearance,
+                preferredDetailsView = mockPreferredDetailsView,
                 defaultPrivate = mockRandomBoolean,
                 autoFillDescription = mockRandomBoolean,
                 showDescriptionInLists = mockRandomBoolean,
@@ -519,6 +572,7 @@ internal class NavigationActionHandlerTest {
             // THEN
             result shouldBe UserPreferencesContent(
                 appearance = mockAppearance,
+                preferredDetailsView = mockPreferredDetailsView,
                 autoFillDescription = mockRandomBoolean,
                 showDescriptionInLists = mockRandomBoolean,
                 showDescriptionInDetails = mockRandomBoolean,
@@ -542,6 +596,7 @@ internal class NavigationActionHandlerTest {
             // THEN
             result shouldBe UserPreferencesContent(
                 appearance = mockAppearance,
+                preferredDetailsView = mockPreferredDetailsView,
                 autoFillDescription = mockRandomBoolean,
                 showDescriptionInLists = mockRandomBoolean,
                 showDescriptionInDetails = mockRandomBoolean,

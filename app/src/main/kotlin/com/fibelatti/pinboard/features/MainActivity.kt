@@ -28,6 +28,7 @@ import com.fibelatti.pinboard.features.appstate.AddPostContent
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPostContent
+import com.fibelatti.pinboard.features.appstate.ExternalBrowserContent
 import com.fibelatti.pinboard.features.appstate.ExternalContent
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.appstate.NoteDetailContent
@@ -48,6 +49,7 @@ import com.fibelatti.pinboard.features.appstate.ViewTags
 import com.fibelatti.pinboard.features.navigation.NavigationDrawer
 import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteListFragment
+import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.presentation.PostAddFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostDetailFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
@@ -110,6 +112,7 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
             when (content) {
                 is PostListContent -> showPostList()
                 is PostDetailContent -> showPostDetail()
+                is ExternalBrowserContent -> showPostInExternalBrowser(content.post)
                 is SearchContent -> showSearch()
                 is AddPostContent -> showAddPost()
                 is EditPostContent -> showEditPost()
@@ -174,6 +177,14 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
         } else {
             popTo(PostDetailFragment.TAG)
         }
+    }
+
+    private fun showPostInExternalBrowser(post: Post) {
+        startActivity(Intent(Intent.ACTION_VIEW).apply {
+            data = Uri.parse(post.url)
+        })
+        // Reset the app to its previous state
+        appStateViewModel.runAction(NavigateBack)
     }
 
     private fun showSearch() {

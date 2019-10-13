@@ -5,6 +5,7 @@ import com.fibelatti.core.test.extension.mock
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
 import org.junit.jupiter.api.Test
@@ -32,6 +33,18 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         verify(mockUserRepository).setAppearance(mockAppearance)
         verify(mockAppStateRepository).reset()
         userPreferencesViewModel.appearanceChanged.currentEventShouldBe(mockAppearance)
+    }
+
+    @Test
+    fun `WHEN savePreferredDetailsView is called THEN repository is updated`() {
+        // GIVEN
+        val preferredDetailsView = mock<PreferredDetailsView>()
+
+        // WHEN
+        userPreferencesViewModel.savePreferredDetailsView(preferredDetailsView)
+
+        // THEN
+        verify(mockUserRepository).setPreferredDetailsView(preferredDetailsView)
     }
 
     @Test

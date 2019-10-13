@@ -10,6 +10,7 @@ import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.DarkTheme
 import com.fibelatti.pinboard.core.android.LightTheme
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
+import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.randomBoolean
 import org.junit.jupiter.api.BeforeEach
@@ -182,12 +183,60 @@ internal class UserDataSourceTest {
             fun `WHEN setAppearance is called THEN UserSharedPreferences is set`() {
                 // GIVEN
                 val mockAppearance = mock<Appearance>()
+                given(mockAppearance.value).willReturn("random-value")
 
                 // WHEN
                 userDataSource.setAppearance(mockAppearance)
 
                 // THEN
-                verify(mockUserSharedPreferences).setAppearance(mockAppearance.value)
+                verify(mockUserSharedPreferences).setAppearance("random-value")
+            }
+        }
+
+        @Nested
+        inner class PreferredDetailsViewTests {
+
+            @Test
+            fun `GIVEN set preferred details view is external browser WHEN getPreferredDetailsView is called THEN ExternalBrowser is returned`() {
+                // GIVEN
+                given(mockUserSharedPreferences.getPreferredDetailsView())
+                    .willReturn(PreferredDetailsView.ExternalBrowser.value)
+
+                // THEN
+                userDataSource.getPreferredDetailsView() shouldBe PreferredDetailsView.ExternalBrowser
+            }
+
+            @Test
+            fun `GIVEN set preferred details view is edit WHEN getPreferredDetailsView is called THEN Edit is returned`() {
+                // GIVEN
+                given(mockUserSharedPreferences.getPreferredDetailsView())
+                    .willReturn(PreferredDetailsView.Edit.value)
+
+                // THEN
+                userDataSource.getPreferredDetailsView() shouldBe PreferredDetailsView.Edit
+            }
+
+            @Test
+            fun `GIVEN set preferred details view is not specifically handled WHEN getPreferredDetailsView is called THEN InAppBrowser is returned`() {
+                // GIVEN
+                given(mockUserSharedPreferences.getPreferredDetailsView())
+                    .willReturn("anything really")
+
+                // THEN
+                userDataSource.getPreferredDetailsView() shouldBe PreferredDetailsView.InAppBrowser
+            }
+
+            @Test
+            fun `WHEN setPreferredDetailsView is called THEN UserSharedPreferences is set`() {
+                // GIVEN
+                val mockPreferredDetailsView = mock<PreferredDetailsView>()
+                given(mockPreferredDetailsView.value).willReturn("random-value")
+
+                // WHEN
+                userDataSource.setPreferredDetailsView(mockPreferredDetailsView)
+
+                // THEN
+                verify(mockUserSharedPreferences).setPreferredDetailsView("random-value")
             }
         }
 

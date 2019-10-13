@@ -5,6 +5,7 @@ import com.fibelatti.core.functional.Either
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
 
@@ -62,7 +63,21 @@ class NavigationActionHandler @Inject constructor(
 
     private fun viewPost(action: ViewPost, currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
-            PostDetailContent(action.post, previousContent = it)
+            when (userRepository.getPreferredDetailsView()) {
+                PreferredDetailsView.InAppBrowser -> {
+                    PostDetailContent(action.post, previousContent = it)
+                }
+                PreferredDetailsView.ExternalBrowser -> {
+                    ExternalBrowserContent(action.post, previousContent = it)
+                }
+                PreferredDetailsView.Edit -> {
+                    EditPostContent(
+                        post = action.post,
+                        showDescription = userRepository.getShowDescriptionInDetails(),
+                        previousContent = currentContent
+                    )
+                }
+            }
         }
     }
 
@@ -120,6 +135,7 @@ class NavigationActionHandler @Inject constructor(
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
             UserPreferencesContent(
                 appearance = userRepository.getAppearance(),
+                preferredDetailsView = userRepository.getPreferredDetailsView(),
                 autoFillDescription = userRepository.getAutoFillDescription(),
                 showDescriptionInLists = userRepository.getShowDescriptionInLists(),
                 showDescriptionInDetails = userRepository.getShowDescriptionInDetails(),

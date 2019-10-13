@@ -7,6 +7,7 @@ import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.DarkTheme
 import com.fibelatti.pinboard.core.android.LightTheme
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
+import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
@@ -19,7 +20,11 @@ class UserDataSource @Inject constructor(
 
     @VisibleForTesting
     val loginState = MutableLiveData<LoginState>().apply {
-        value = if (userSharedPreferences.getAuthToken().isNotEmpty()) LoginState.LoggedIn else LoginState.LoggedOut
+        value = if (userSharedPreferences.getAuthToken().isNotEmpty()) {
+            LoginState.LoggedIn
+        } else {
+            LoginState.LoggedOut
+        }
     }
 
     override fun getLoginState(): LiveData<LoginState> = loginState
@@ -65,6 +70,18 @@ class UserDataSource @Inject constructor(
 
     override fun setAppearance(appearance: Appearance) {
         userSharedPreferences.setAppearance(appearance.value)
+    }
+
+    override fun getPreferredDetailsView(): PreferredDetailsView {
+        return when (userSharedPreferences.getPreferredDetailsView()) {
+            PreferredDetailsView.ExternalBrowser.value -> PreferredDetailsView.ExternalBrowser
+            PreferredDetailsView.Edit.value -> PreferredDetailsView.Edit
+            else -> PreferredDetailsView.InAppBrowser
+        }
+    }
+
+    override fun setPreferredDetailsView(preferredDetailsView: PreferredDetailsView) {
+        userSharedPreferences.setPreferredDetailsView(preferredDetailsView.value)
     }
 
     override fun getAutoFillDescription(): Boolean =

@@ -115,6 +115,35 @@ internal class UserSharedPreferencesTest {
     }
 
     @Test
+    fun `GIVEN KEY_PREFERRED_DETAILS_VIEW has no value WHEN getAppearance is called THEN empty string is returned`() {
+        // GIVEN
+        given(mockSharedPreferences.get(KEY_PREFERRED_DETAILS_VIEW, ""))
+            .willReturn("")
+
+        // THEN
+        userSharedPreferences.getPreferredDetailsView() shouldBe ""
+    }
+
+    @Test
+    fun `GIVEN KEY_PREFERRED_DETAILS_VIEW has value WHEN getAppearance is called THEN value is returned`() {
+        // GIVEN
+        given(mockSharedPreferences.get(KEY_PREFERRED_DETAILS_VIEW, ""))
+            .willReturn("some-value")
+
+        // THEN
+        userSharedPreferences.getPreferredDetailsView() shouldBe "some-value"
+    }
+
+    @Test
+    fun `WHEN setAppearance is called THEN KEY_PREFERRED_DETAILS_VIEW is set`() {
+        // WHEN
+        userSharedPreferences.setPreferredDetailsView("some-value")
+
+        // THEN
+        verify(mockEditor).putString(KEY_PREFERRED_DETAILS_VIEW, "some-value")
+    }
+
+    @Test
     fun `WHEN getDescriptionAutoFill is called THEN its value is returned`() {
         // GIVEN
         val value = randomBoolean()

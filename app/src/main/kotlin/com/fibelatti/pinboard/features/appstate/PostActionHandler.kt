@@ -144,8 +144,20 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun postDeleted(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostDetailContent>(currentContent) {
-            it.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
+        return if (currentContent is ContentWithHistory) {
+            when (val previousContent = currentContent.previousContent) {
+                is PostListContent -> {
+                    previousContent.copy(shouldLoad = ShouldLoadFirstPage)
+                }
+                is PostDetailContent -> {
+                    previousContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
+                }
+                else -> {
+                    previousContent
+                }
+            }
+        } else {
+            currentContent
         }
     }
 }

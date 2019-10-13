@@ -4,6 +4,7 @@ import com.fibelatti.core.extension.orZero
 import com.fibelatti.core.functional.Either
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.features.notes.domain.model.Note
+import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 
@@ -35,6 +36,11 @@ private interface ContentHistory {
 sealed class ContentWithHistory : Content(), ContentHistory
 
 data class PostDetailContent(
+    val post: Post,
+    override val previousContent: PostListContent
+) : ContentWithHistory()
+
+data class ExternalBrowserContent(
     val post: Post,
     override val previousContent: PostListContent
 ) : ContentWithHistory()
@@ -83,6 +89,7 @@ data class NoteDetailContent(
 
 data class UserPreferencesContent(
     val appearance: Appearance,
+    val preferredDetailsView: PreferredDetailsView,
     val autoFillDescription: Boolean,
     val showDescriptionInLists: Boolean,
     val showDescriptionInDetails: Boolean,

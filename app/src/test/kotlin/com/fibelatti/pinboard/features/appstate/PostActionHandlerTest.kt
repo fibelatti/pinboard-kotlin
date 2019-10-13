@@ -653,7 +653,7 @@ internal class PostActionHandlerTest {
     inner class PostDeletedTests {
 
         @Test
-        fun `WHEN currentContent is not PostDetailContent THEN same content is returned`() {
+        fun `WHEN currentContent is not ContentWithHistory THEN same content is returned`() {
             // GIVEN
             val content = mock<PostListContent>()
 
@@ -665,11 +665,21 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is PostDetailContent THEN updated content is returned`() {
+        fun `WHEN currentContent is ContentWithHistory and previous content is PostListContent THEN updated content is returned`() {
             // GIVEN
+            val previousContent = PostListContent(
+                category = All,
+                title = mockTitle,
+                posts = null,
+                showDescription = false,
+                sortType = NewestFirst,
+                searchParameters = SearchParameters(),
+                shouldLoad = Loaded,
+                isConnected = true
+            )
             val currentContent = PostDetailContent(
                 post = mockPost,
-                previousContent = initialContent
+                previousContent = previousContent
             )
 
             // WHEN
@@ -678,7 +688,53 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe initialContent.copy(shouldLoad = ShouldLoadFirstPage)
+            result shouldBe previousContent.copy(shouldLoad = ShouldLoadFirstPage)
+        }
+
+        @Test
+        fun `WHEN currentContent is ContentWithHistory and previous content is PostDetailContent THEN updated content is returned`() {
+            // GIVEN
+            val yetPreviousContent = PostListContent(
+                category = All,
+                title = mockTitle,
+                posts = null,
+                showDescription = false,
+                sortType = NewestFirst,
+                searchParameters = SearchParameters(),
+                shouldLoad = Loaded,
+                isConnected = true
+            )
+            val previousContent = mock<PostDetailContent>().also {
+                given(it.previousContent).willReturn(yetPreviousContent)
+            }
+            val currentContent = mock<EditPostContent>().also {
+                given(it.previousContent).willReturn(previousContent)
+            }
+
+            // WHEN
+            val result = runBlocking {
+                postActionHandler.runAction(PostDeleted, currentContent)
+            }
+
+            // THEN
+            result shouldBe yetPreviousContent.copy(shouldLoad = ShouldLoadFirstPage)
+        }
+
+        @Test
+        fun `WHEN currentContent is ContentWithHistory and it is not specifically handled THEN previous content is returned`() {
+            // GIVEN
+            val previousContent = mock<AddPostContent>()
+            val currentContent = mock<ContentWithHistory>().also {
+                given(it.previousContent).willReturn(previousContent)
+            }
+
+            // WHEN
+            val result = runBlocking {
+                postActionHandler.runAction(PostDeleted, currentContent)
+            }
+
+            // THEN
+            result shouldBe previousContent
         }
     }
 }

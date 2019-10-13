@@ -8,12 +8,15 @@ import com.fibelatti.core.extension.getSharedPreferences
 import com.fibelatti.core.extension.put
 import javax.inject.Inject
 
+// region Constants
 @VisibleForTesting
 const val KEY_AUTH_TOKEN = "AUTH_TOKEN"
 @VisibleForTesting
 const val KEY_LAST_UPDATE = "LAST_UPDATE"
 @VisibleForTesting
 const val KEY_APPEARANCE = "APPEARANCE"
+@VisibleForTesting
+const val KEY_PREFERRED_DETAILS_VIEW = "PREFERRED_DETAILS_VIEW"
 @VisibleForTesting
 const val KEY_AUTO_FILL_DESCRIPTION = "AUTO_FILL_DESCRIPTION"
 @VisibleForTesting
@@ -26,6 +29,7 @@ const val KEY_DEFAULT_PRIVATE = "DEFAULT_PRIVATE"
 const val KEY_DEFAULT_READ_LATER = "DEFAULT_READ_LATER"
 @VisibleForTesting
 const val KEY_EDIT_AFTER_SHARING = "EDIT_AFTER_SHARING"
+// endregion
 
 fun Context.getUserPreferences() = getSharedPreferences("user_preferences")
 
@@ -46,6 +50,12 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
 
     fun setAppearance(value: String) {
         sharedPreferences.put(KEY_APPEARANCE, value)
+    }
+
+    fun getPreferredDetailsView(): String = sharedPreferences.get(KEY_PREFERRED_DETAILS_VIEW, "")
+
+    fun setPreferredDetailsView(value: String) {
+        sharedPreferences.put(KEY_PREFERRED_DETAILS_VIEW, value)
     }
 
     fun getAutoFillDescription(): Boolean = sharedPreferences.get(KEY_AUTO_FILL_DESCRIPTION, false)

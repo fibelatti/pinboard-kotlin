@@ -151,6 +151,14 @@
     <string name="user_preferences_appearance">Appearance</string>
     <string name="user_preferences_appearance_dark">Dark theme</string>
     <string name="user_preferences_appearance_light">Light theme</string>
+    <string name="user_preferences_preferred_details_view">Preferred details view</string>
+    <string name="user_preferences_preferred_details_in_app_browser">In-app</string>
+    <string name="user_preferences_preferred_details_in_app_browser_caveat">Open bookmarks using the internal browser</string>
+    <string name="user_preferences_preferred_details_external_browser">External</string>
+    <string name="user_preferences_preferred_details_external_browser_caveat">Open bookmarks using the external browser</string>
+    <string name="user_preferences_preferred_details_post_details">Bookmark details</string>
+    <string name="user_preferences_preferred_details_post_details_caveat">Open bookmarks directly in the Edit screen</string>
+    <string name="user_preferences_preferred_details_view_caveat">You can long press each bookmark in lists for quick access to share and edit</string>
     <string name="user_preferences_description_title">Description behaviors</string>
     <string name="user_preferences_description_auto_fill">Auto fill</string>
     <string name="user_preferences_description_auto_fill_description">If checked, then Pinkt will attempt to extract the description from the website and fill it automatically</string>
