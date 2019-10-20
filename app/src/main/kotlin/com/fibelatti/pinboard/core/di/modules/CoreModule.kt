@@ -10,12 +10,16 @@ import com.fibelatti.core.di.ViewModelFactory
 import com.fibelatti.core.extension.getSystemService
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.App
+import com.fibelatti.pinboard.core.di.IoScope
 import com.fibelatti.pinboard.core.di.MultiBindingFragmentFactory
 import com.fibelatti.pinboard.core.persistence.getUserPreferences
 import com.google.gson.Gson
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import java.text.Collator
 import java.util.Locale
 import javax.inject.Singleton
@@ -45,6 +49,11 @@ abstract class CoreModule {
         @JvmStatic
         fun connectivityManager(context: Context): ConnectivityManager? =
             context.getSystemService<ConnectivityManager>()
+
+        @Provides
+        @IoScope
+        @JvmStatic
+        fun ioScope(): CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     }
 
     @Binds

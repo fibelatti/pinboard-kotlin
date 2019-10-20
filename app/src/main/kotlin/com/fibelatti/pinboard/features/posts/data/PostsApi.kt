@@ -30,7 +30,10 @@ interface PostsApi {
     suspend fun getPost(@Query("url") url: String): GetPostDto
 
     @GET("posts/all")
-    suspend fun getAllPosts(): List<PostDto>
+    suspend fun getAllPosts(
+        @Query("start") offset: Int? = null,
+        @Query("results") limit: Int? = null
+    ): List<PostDto>
 
     @GET("posts/suggest")
     suspend fun getSuggestedTagsForUrl(@Query("url") url: String): SuggestedTagsDto

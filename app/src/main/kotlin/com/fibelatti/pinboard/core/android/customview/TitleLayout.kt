@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
 import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.appstate.SortType
 import kotlinx.android.synthetic.main.layout_title.view.*
@@ -57,7 +58,8 @@ class TitleLayout @JvmOverloads constructor(
     }
 
     private fun setPostCount(count: Int, sortType: SortType) {
-        val countString = resources.getQuantityString(R.plurals.posts_quantity, count, count)
+        val countFormatArg = if (count % API_PAGE_SIZE == 0) "$count+" else count.toString()
+        val countString = resources.getQuantityString(R.plurals.posts_quantity, count, countFormatArg)
         val countWithSort = resources.getString(
             if (sortType == NewestFirst) {
                 R.string.posts_sorting_newest_first

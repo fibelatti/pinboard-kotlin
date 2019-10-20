@@ -29,6 +29,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockUrlTitle
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.TestRateLimitRunner
 import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.util.DateFormatter
@@ -41,6 +42,9 @@ import com.fibelatti.pinboard.features.posts.data.model.UpdateDto
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -53,11 +57,15 @@ import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.BDDMockito.anyString
 import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito.verifyNoMoreInteractions
+import org.mockito.BDDMockito.willDoNothing
 import org.mockito.BDDMockito.willReturn
 import org.mockito.Mockito.never
 import org.mockito.Mockito.reset
 import org.mockito.Mockito.spy
+import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
+import kotlin.coroutines.CoroutineContext
 
 class PostsDataSourceTest {
 
@@ -69,6 +77,9 @@ class PostsDataSourceTest {
     private val mockDateFormatter = mock<DateFormatter>()
     private val mockConnectivityInfoProvider = mock<ConnectivityInfoProvider>()
     private val mockRunner = TestRateLimitRunner()
+    private val mockIoScope = spy(CoroutineScope(Dispatchers.Unconfined))
+
+    private val mockCoroutineContext = mock<CoroutineContext>()
 
     private val mockListPostDto = listOf(mock<PostDto>())
     private val mockListPost = listOf(mock<Post>())
@@ -84,7 +95,8 @@ class PostsDataSourceTest {
             mockSuggestedTagsDtoMapper,
             mockDateFormatter,
             mockConnectivityInfoProvider,
-            mockRunner
+            mockRunner,
+            mockIoScope
         )
     )
 
@@ -394,6 +406,8 @@ class PostsDataSourceTest {
 
             @BeforeEach
             fun setup() {
+                given(mockIoScope.coroutineContext).willReturn(mockCoroutineContext)
+
                 given(mockConnectivityInfoProvider.isConnected())
                     .willReturn(true)
                 givenSuspend { mockUserRepository.getLastUpdate() }
@@ -455,7 +469,7 @@ class PostsDataSourceTest {
                     .willReturn("")
                 givenSuspend { mockApi.update() }
                     .willReturn(UpdateDto(mockFutureTime))
-                givenSuspend { mockApi.getAllPosts() }
+                givenSuspend { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                     .willReturn(mockListPostDto)
 
                 // WHEN
@@ -476,7 +490,8 @@ class PostsDataSourceTest {
 
                 // THEN
                 result.getOrThrow() shouldBe mockLocalData
-                verifySuspend(mockApi) { getAllPosts() }
+                verify(mockCoroutineContext).cancelChildren()
+                verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 verifySuspend(mockDao) { deleteAllPosts() }
                 verifySuspend(mockDao) { savePosts(mockListPostDto) }
                 verifySuspend(mockUserRepository) { setLastUpdate(mockFutureTime) }
@@ -517,7 +532,7 @@ class PostsDataSourceTest {
                 // GIVEN
                 givenSuspend { mockApi.update() }
                     .willReturn(UpdateDto(mockFutureTime))
-                givenSuspend { mockApi.getAllPosts() }
+                givenSuspend { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                     .will { throw Exception() }
 
                 // WHEN
@@ -538,7 +553,8 @@ class PostsDataSourceTest {
 
                 // THEN
                 result.shouldBeAnInstanceOf<Failure>()
-                verifySuspend(mockApi) { getAllPosts() }
+                verify(mockCoroutineContext).cancelChildren()
+                verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 verifySuspend(mockDao, never()) { deleteAllPosts() }
                 verifySuspend(mockDao, never()) { savePosts(safeAny()) }
                 verifySuspend(mockUserRepository, never()) { setLastUpdate(anyString()) }
@@ -549,7 +565,7 @@ class PostsDataSourceTest {
                 // GIVEN
                 givenSuspend { mockApi.update() }
                     .willReturn(UpdateDto(mockFutureTime))
-                givenSuspend { mockApi.getAllPosts() }
+                givenSuspend { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                     .willReturn(mockListPostDto)
                 given(mockDao.deleteAllPosts())
                     .will { throw Exception() }
@@ -572,7 +588,8 @@ class PostsDataSourceTest {
 
                 // THEN
                 result.shouldBeAnInstanceOf<Failure>()
-                verifySuspend(mockApi) { getAllPosts() }
+                verify(mockCoroutineContext).cancelChildren()
+                verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 verifySuspend(mockDao) { deleteAllPosts() }
                 verifySuspend(mockDao, never()) { savePosts(safeAny()) }
                 verifySuspend(mockUserRepository, never()) { setLastUpdate(anyString()) }
@@ -583,7 +600,7 @@ class PostsDataSourceTest {
                 // GIVEN
                 givenSuspend { mockApi.update() }
                     .willReturn(UpdateDto(mockFutureTime))
-                givenSuspend { mockApi.getAllPosts() }
+                givenSuspend { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                     .willReturn(mockListPostDto)
                 given(mockDao.savePosts(mockListPostDto))
                     .will { throw Exception() }
@@ -606,7 +623,8 @@ class PostsDataSourceTest {
 
                 // THEN
                 result.shouldBeAnInstanceOf<Failure>()
-                verifySuspend(mockApi) { getAllPosts() }
+                verify(mockCoroutineContext).cancelChildren()
+                verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 verifySuspend(mockDao) { deleteAllPosts() }
                 verifySuspend(mockDao) { savePosts(mockListPostDto) }
                 verifySuspend(mockUserRepository, never()) { setLastUpdate(anyString()) }
@@ -617,7 +635,7 @@ class PostsDataSourceTest {
                 // GIVEN
                 givenSuspend { mockApi.update() }
                     .willReturn(UpdateDto(mockFutureTime))
-                givenSuspend { mockApi.getAllPosts() }
+                givenSuspend { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                     .willReturn(mockListPostDto)
 
                 // WHEN
@@ -638,11 +656,91 @@ class PostsDataSourceTest {
 
                 // THEN
                 result.getOrThrow() shouldBe mockLocalData
-                verifySuspend(mockApi) { getAllPosts() }
+                verify(mockCoroutineContext).cancelChildren()
+                verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 verifySuspend(mockDao) { deleteAllPosts() }
                 verifySuspend(mockDao) { savePosts(mockListPostDto) }
                 verifySuspend(mockUserRepository) { setLastUpdate(mockFutureTime) }
             }
+
+            @Test
+            fun `WHEN first call result list has the same size as API_PAGE_SIZE THEN getAdditionalPages is called`() {
+                // GIVEN
+                val mockListPostDto = mock<List<PostDto>>()
+                givenSuspend { mockApi.update() }
+                    .willReturn(UpdateDto(mockFutureTime))
+                givenSuspend { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
+                    .willReturn(mockListPostDto)
+                given(mockListPostDto.size).willReturn(API_PAGE_SIZE)
+                willDoNothing().given(dataSource).getAdditionalPages()
+
+                // WHEN
+                val result = runBlocking {
+                    dataSource.getAllPosts(
+                        newestFirst = true,
+                        searchTerm = "",
+                        tags = null,
+                        untaggedOnly = false,
+                        publicPostsOnly = false,
+                        privatePostsOnly = false,
+                        readLaterOnly = false,
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0
+                    )
+                }
+
+                // THEN
+                result.getOrThrow() shouldBe mockLocalData
+                verify(mockCoroutineContext).cancelChildren()
+                verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
+                verifySuspend(mockDao) { deleteAllPosts() }
+                verifySuspend(mockDao) { savePosts(mockListPostDto) }
+                verify(dataSource).getAdditionalPages()
+                verifySuspend(mockUserRepository) { setLastUpdate(mockFutureTime) }
+            }
+        }
+    }
+
+    @Nested
+    inner class GetAdditionalPagesTest {
+
+        @Test
+        fun `getAdditionalPages should run at least once`() {
+            // GIVEN
+            val mockPosts = mock<List<PostDto>>()
+
+            givenSuspend { mockApi.getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
+                .willReturn(mockPosts)
+
+            // WHEN
+            dataSource.getAdditionalPages()
+
+            // THEN
+            verify(mockDao).savePosts(mockPosts)
+            verifySuspend(mockApi) { getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
+            verifyNoMoreInteractions(mockApi)
+        }
+
+        @Test
+        fun `getAdditionalPages should run again if the first time returned the same as the page size`() {
+            // GIVEN
+            val mockPosts = mock<List<PostDto>>()
+            given(mockPosts.size).willReturn(API_PAGE_SIZE, API_PAGE_SIZE, API_PAGE_SIZE - 1)
+
+            givenSuspend { mockApi.getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
+                .willReturn(mockPosts)
+            givenSuspend { mockApi.getAllPosts(offset = API_PAGE_SIZE * 2, limit = API_PAGE_SIZE) }
+                .willReturn(mockPosts)
+
+            // WHEN
+            dataSource.getAdditionalPages()
+
+            // THEN
+            verify(mockDao, times(2)).savePosts(mockPosts)
+            verifySuspend(mockApi) { getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
+            verifySuspend(mockApi) { getAllPosts(offset = API_PAGE_SIZE * 2, limit = API_PAGE_SIZE) }
+            verifyNoMoreInteractions(mockApi)
         }
     }
 

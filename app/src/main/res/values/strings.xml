@@ -68,7 +68,7 @@
     <plurals name="posts_quantity">
         <item quantity="zero">No bookmarks</item>
         <item quantity="one">1 bookmark</item>
-        <item quantity="other">%d bookmarks</item>
+        <item quantity="other">%s bookmarks</item>
     </plurals>
 
     <string name="posts_sorting_newest_first">%s — Newest first</string>

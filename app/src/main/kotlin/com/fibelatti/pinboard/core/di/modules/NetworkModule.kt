@@ -55,11 +55,13 @@ abstract class NetworkModule {
         fun httpLoggingInterceptor(): HttpLoggingInterceptor =
             HttpLoggingInterceptor()
                 .apply { if (BuildConfig.DEBUG) level = HttpLoggingInterceptor.Level.BODY }
+
+        @Provides
+        @Singleton
+        @JvmStatic
+        fun rateLimitRunner(): RateLimitRunner = ApiRateLimitRunner(AppConfig.API_THROTTLE_TIME)
     }
 
     @Binds
     abstract fun authInterceptor(headersInterceptor: HeadersInterceptor): Interceptor
-
-    @Binds
-    abstract fun rateLimitRunner(apiRateLimitRunner: ApiRateLimitRunner): RateLimitRunner
 }

@@ -6,9 +6,13 @@ import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.map
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onSuccess
+import com.fibelatti.pinboard.core.AppConfig.API_GET_ALL_THROTTLE_TIME
+import com.fibelatti.pinboard.core.AppConfig.API_MAX_EXTENDED_LENGTH
 import com.fibelatti.pinboard.core.AppConfig.API_MAX_LENGTH
+import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.pinboard.core.di.IoScope
 import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.RateLimitRunner
@@ -23,7 +27,10 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -35,7 +42,8 @@ class PostsDataSource @Inject constructor(
     private val suggestedTagDtoMapper: SuggestedTagDtoMapper,
     private val dateFormatter: DateFormatter,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
-    private val rateLimitRunner: RateLimitRunner
+    private val rateLimitRunner: RateLimitRunner,
+    @IoScope private val pagedRequestsScope: CoroutineScope
 ) : PostsRepository {
 
     override suspend fun update(): Result<String> {
@@ -61,7 +69,7 @@ class PostsDataSource @Inject constructor(
                 postsApi.add(
                     url = url,
                     title = title.take(API_MAX_LENGTH),
-                    description = description,
+                    description = description?.take(API_MAX_EXTENDED_LENGTH),
                     public = private?.let { if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES },
                     readLater = readLater?.let { if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO },
                     tags = tags?.joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST) { it.name }
@@ -119,9 +127,11 @@ class PostsDataSource @Inject constructor(
         }
 
         return resultFrom {
-            rateLimitRunner.run {
+            pagedRequestsScope.coroutineContext.cancelChildren()
+
+            rateLimitRunner.run(API_GET_ALL_THROTTLE_TIME) {
                 withContext(Dispatchers.IO) {
-                    postsApi.getAllPosts()
+                    postsApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE)
                 }
             }
         }.mapCatching { posts ->
@@ -129,10 +139,35 @@ class PostsDataSource @Inject constructor(
                 postsDao.deleteAllPosts()
                 postsDao.savePosts(posts)
             }
+
+            if (posts.size == API_PAGE_SIZE) {
+                getAdditionalPages()
+            }
         }.map {
             localData()
         }.onSuccess {
             userRepository.setLastUpdate(apiLastUpdate)
+        }
+    }
+
+    @VisibleForTesting
+    fun getAdditionalPages() {
+        pagedRequestsScope.launch {
+            var currentOffset = API_PAGE_SIZE
+
+            while (currentOffset != 0) {
+                val additionalPosts = rateLimitRunner.run(API_GET_ALL_THROTTLE_TIME) {
+                    postsApi.getAllPosts(offset = currentOffset, limit = API_PAGE_SIZE)
+                }
+
+                postsDao.savePosts(additionalPosts)
+
+                if (additionalPosts.size == API_PAGE_SIZE) {
+                    currentOffset += additionalPosts.size
+                } else {
+                    currentOffset = 0
+                }
+            }
         }
     }
 
