@@ -647,6 +647,50 @@ internal class PostActionHandlerTest {
             // THEN
             result shouldBe ExternalContent
         }
+
+        @Test
+        fun `WHEN currentContent is PopularPostDetailContent THEN updated content is returned`() {
+            // GIVEN
+            val randomBoolean = randomBoolean()
+            val currentContent = mock<PopularPostDetailContent>()
+
+            given(mockUserRepository.getShowDescriptionInDetails())
+                .willReturn(randomBoolean)
+
+            // WHEN
+            val result = runBlocking {
+                postActionHandler.runAction(PostSaved(mockPost), currentContent)
+            }
+
+            // THEN
+            result shouldBe EditPostContent(
+                post = mockPost,
+                showDescription = randomBoolean,
+                previousContent = currentContent
+            )
+        }
+
+        @Test
+        fun `WHEN currentContent is PopularPostsContent THEN updated content is returned`() {
+            // GIVEN
+            val randomBoolean = randomBoolean()
+            val currentContent = mock<PopularPostsContent>()
+
+            given(mockUserRepository.getShowDescriptionInDetails())
+                .willReturn(randomBoolean)
+
+            // WHEN
+            val result = runBlocking {
+                postActionHandler.runAction(PostSaved(mockPost), currentContent)
+            }
+
+            // THEN
+            result shouldBe EditPostContent(
+                post = mockPost,
+                showDescription = randomBoolean,
+                previousContent = currentContent
+            )
+        }
     }
 
     @Nested

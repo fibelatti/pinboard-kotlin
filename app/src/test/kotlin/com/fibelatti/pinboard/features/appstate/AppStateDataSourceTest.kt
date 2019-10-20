@@ -40,6 +40,7 @@ internal class AppStateDataSourceTest {
     private val mockSearchActionHandler = mock<SearchActionHandler>()
     private val mockTagActionHandler = mock<TagActionHandler>()
     private val mockNoteActionHandler = mock<NoteActionHandler>()
+    private val mockPopularActionHandler = mock<PopularActionHandler>()
     private val singleRunner = SingleRunner()
     private val mockConnectivityInfoProvider = mock<ConnectivityInfoProvider>()
 
@@ -75,6 +76,7 @@ internal class AppStateDataSourceTest {
                 mockSearchActionHandler,
                 mockTagActionHandler,
                 mockNoteActionHandler,
+                mockPopularActionHandler,
                 singleRunner,
                 mockConnectivityInfoProvider
             )
@@ -115,6 +117,7 @@ internal class AppStateDataSourceTest {
                 given(mockSearchActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
                 given(mockTagActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
                 given(mockNoteActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
+                given(mockPopularActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
 
                 val (action, expectedHandler) = testCase
 
@@ -158,6 +161,13 @@ internal class AppStateDataSourceTest {
                             fail { "Unexpected Action received" }
                         }
                     }
+                    ExpectedHandler.POPULAR -> {
+                        if (action is PopularAction) {
+                            verify(mockPopularActionHandler).runAction(action, expectedInitialValue)
+                        } else {
+                            fail { "Unexpected Action received" }
+                        }
+                    }
                 }.let { } // to make it exhaustive
             }
         }
@@ -182,6 +192,7 @@ internal class AppStateDataSourceTest {
                             ViewTags -> add(ViewTags to ExpectedHandler.NAVIGATION)
                             ViewNotes -> add(ViewNotes to ExpectedHandler.NAVIGATION)
                             is ViewNote -> add(mock<ViewNote>() to ExpectedHandler.NAVIGATION)
+                            ViewPopular -> add(ViewPopular to ExpectedHandler.NAVIGATION)
                             ViewPreferences -> add(ViewPreferences to ExpectedHandler.NAVIGATION)
 
                             // Post
@@ -213,6 +224,10 @@ internal class AppStateDataSourceTest {
                             RefreshNotes -> add(RefreshNotes to ExpectedHandler.NOTE)
                             is SetNotes -> add(mock<SetNotes>() to ExpectedHandler.NOTE)
                             is SetNote -> add(mock<SetNote>() to ExpectedHandler.NOTE)
+
+                            // Popular
+                            RefreshPopular -> add(RefreshPopular to ExpectedHandler.POPULAR)
+                            is SetPopularPosts -> add(mock<SetPopularPosts>() to ExpectedHandler.POPULAR)
                         }.let { } // to make it exhaustive
                     }
             }
@@ -276,6 +291,34 @@ internal class AppStateDataSourceTest {
             // THEN
             verify(appStateDataSource, never()).updateContent(safeAny())
         }
+
+        @Test
+        fun `WHEN NoteActionHandler return the same content THEN value is never updated`() {
+            // GIVEN
+            val mockAction = mock<NoteAction>()
+            givenSuspend { mockNoteActionHandler.runAction(mockAction, expectedInitialValue) }
+                .willReturn(expectedInitialValue)
+
+            // WHEN
+            runBlocking { appStateDataSource.runAction(mockAction) }
+
+            // THEN
+            verify(appStateDataSource, never()).updateContent(safeAny())
+        }
+
+        @Test
+        fun `WHEN PopularActionHandler return the same content THEN value is never updated`() {
+            // GIVEN
+            val mockAction = mock<PopularAction>()
+            givenSuspend { mockPopularActionHandler.runAction(mockAction, expectedInitialValue) }
+                .willReturn(expectedInitialValue)
+
+            // WHEN
+            runBlocking { appStateDataSource.runAction(mockAction) }
+
+            // THEN
+            verify(appStateDataSource, never()).updateContent(safeAny())
+        }
     }
 
     @Test
@@ -296,6 +339,6 @@ internal class AppStateDataSourceTest {
     }
 
     internal enum class ExpectedHandler {
-        NAVIGATION, POST, SEARCH, TAG, NOTE
+        NAVIGATION, POST, SEARCH, TAG, NOTE, POPULAR
     }
 }

@@ -58,6 +58,11 @@
                 style="@style/AppTheme.TextButton.Menu"
                 android:text="@string/menu_navigation_notes" />
 
+            <TextView
+                android:id="@+id/menuItemPopular"
+                style="@style/AppTheme.TextButton.Menu"
+                android:text="@string/menu_navigation_popular" />
+
             <include
                 layout="@layout/layout_divider"
                 android:layout_width="match_parent"

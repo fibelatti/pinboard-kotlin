@@ -35,6 +35,7 @@
     <string name="menu_navigation_untagged">Untagged</string>
     <string name="menu_navigation_tags">Tags</string>
     <string name="menu_navigation_notes">Notes</string>
+    <string name="menu_navigation_popular">Popular bookmarks</string>
 
     <string name="menu_navigation_preferences">Preferences</string>
     <string name="menu_navigation_logout">Logout</string>
@@ -42,6 +43,7 @@
     <string name="menu_link_delete">Remove bookmark</string>
     <string name="menu_link_edit">Edit bookmark</string>
     <string name="menu_link_tags">Edit tags</string>
+    <string name="menu_link_save">Save bookmark</string>
     <string name="menu_link_open_in_browser">Open in browser</string>
 
     <string name="menu_search_clear">Clear filter</string>
@@ -146,6 +148,9 @@
     <string name="notes_empty_title">No notes</string>
     <string name="notes_empty_description">You haven\'t saved any notes yet</string>
 
+    <!-- Popular -->
+    <string name="popular_title">Popular bookmarks</string>
+
     <!-- User Preferences -->
     <string name="user_preferences_title">Preferences</string>
     <string name="user_preferences_appearance">Appearance</string>
@@ -171,9 +176,9 @@
     <string name="user_preferences_default_read_later_description">If checked, bookmarks shared to Pinkt will be saved as read later, otherwise your default Pinboard preferences apply</string>
     <string name="user_preferences_default_tags">Default tags</string>
     <string name="user_preferences_default_tags_description">Bookmarks will be have the selected tags by default</string>
-    <string name="user_preferences_edit_after_sharing_title">Sharing behavior</string>
+    <string name="user_preferences_edit_after_sharing_title">Sharing &amp; Popular behavior</string>
     <string name="user_preferences_edit_after_sharing">Open the edit screen</string>
-    <string name="user_preferences_edit_after_sharing_description">If checked, the Edit screen will be displayed for further editing when a bookmark is successfully shared to Pinkt</string>
+    <string name="user_preferences_edit_after_sharing_description">If checked, the Edit screen will be displayed for further editing when a bookmark is successfully shared to Pinkt or saved from the list of popular bookmarks</string>
 
     <!-- About -->
     <string name="about_share">Share Pinkt</string>

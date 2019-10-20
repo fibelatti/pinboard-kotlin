@@ -20,6 +20,8 @@ class AppStateViewModel @Inject constructor(
     val tagListContent: LiveData<TagListContent> = mediatorLiveDataForContentType()
     val noteListContent: LiveData<NoteListContent> = mediatorLiveDataForContentType()
     val noteDetailContent: LiveData<NoteDetailContent> = mediatorLiveDataForContentType()
+    val popularPostsContent: LiveData<PopularPostsContent> = mediatorLiveDataForContentType()
+    val popularPostDetailContent: LiveData<PopularPostDetailContent> = mediatorLiveDataForContentType()
     val userPreferencesContent: LiveData<UserPreferencesContent> = mediatorLiveDataForContentType()
 
     fun reset() {

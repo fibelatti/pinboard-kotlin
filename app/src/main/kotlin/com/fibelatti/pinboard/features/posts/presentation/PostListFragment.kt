@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.MenuItem
 import android.view.View
-import androidx.annotation.StringRes
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
 import com.fibelatti.core.archcomponents.extension.observe
@@ -196,10 +195,7 @@ class PostListFragment @Inject constructor(
         }
 
         if (content.posts == null) {
-            showEmptyLayout(
-                title = R.string.posts_empty_title,
-                description = R.string.posts_empty_description
-            )
+            showEmptyLayout()
             return
         }
 
@@ -213,13 +209,13 @@ class PostListFragment @Inject constructor(
         }
     }
 
-    private fun showEmptyLayout(@StringRes title: Int, @StringRes description: Int) {
+    private fun showEmptyLayout() {
         mainActivity?.updateTitleLayout { hidePostCount() }
         recyclerViewPosts.gone()
         layoutEmptyList.apply {
             visible()
-            setTitle(title)
-            setDescription(description)
+            setTitle(R.string.posts_empty_title)
+            setDescription(R.string.posts_empty_description)
         }
     }
 

@@ -33,6 +33,8 @@ import com.fibelatti.pinboard.features.appstate.ExternalContent
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.pinboard.features.appstate.NoteListContent
+import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
+import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.Private
@@ -44,12 +46,14 @@ import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
 import com.fibelatti.pinboard.features.appstate.ViewNotes
+import com.fibelatti.pinboard.features.appstate.ViewPopular
 import com.fibelatti.pinboard.features.appstate.ViewPreferences
 import com.fibelatti.pinboard.features.appstate.ViewTags
 import com.fibelatti.pinboard.features.navigation.NavigationDrawer
 import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteListFragment
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.posts.presentation.PopularPostsFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostAddFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostDetailFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
@@ -119,6 +123,8 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
                 is TagListContent -> showTags()
                 is NoteListContent -> showNotes()
                 is NoteDetailContent -> showNoteDetail()
+                is PopularPostsContent -> showPopular()
+                is PopularPostDetailContent -> showPostDetail()
                 is UserPreferencesContent -> showPreferences()
                 is ExternalContent -> {
                     appStateViewModel.reset()
@@ -216,6 +222,14 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
     private fun showNoteDetail() {
         if (supportFragmentManager.findFragmentByTag(NoteDetailsFragment.TAG) == null) {
             slideFromTheRight(createFragment<NoteDetailsFragment>(), NoteDetailsFragment.TAG)
+        }
+    }
+
+    private fun showPopular() {
+        if (supportFragmentManager.findFragmentByTag(PopularPostsFragment.TAG) == null) {
+            slideFromTheRight(createFragment<PopularPostsFragment>(), PopularPostsFragment.TAG)
+        } else {
+            popTo(PopularPostsFragment.TAG)
         }
     }
 
@@ -340,6 +354,10 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
 
         override fun onNotesClicked() {
             appStateViewModel.runAction(ViewNotes)
+        }
+
+        override fun onPopularClicked() {
+            appStateViewModel.runAction(ViewPopular)
         }
 
         override fun onPreferencesClicked() {

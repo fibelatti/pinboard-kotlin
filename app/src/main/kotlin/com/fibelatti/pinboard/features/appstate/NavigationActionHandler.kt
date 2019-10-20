@@ -25,6 +25,7 @@ class NavigationActionHandler @Inject constructor(
             is ViewTags -> viewTags(currentContent)
             is ViewNotes -> viewNotes(currentContent)
             is ViewNote -> viewNote(action, currentContent)
+            is ViewPopular -> viewPopular(currentContent)
             is ViewPreferences -> viewPreferences(currentContent)
         }
     }
@@ -62,22 +63,34 @@ class NavigationActionHandler @Inject constructor(
     }
 
     private fun viewPost(action: ViewPost, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
-            when (userRepository.getPreferredDetailsView()) {
-                PreferredDetailsView.InAppBrowser -> {
-                    PostDetailContent(action.post, previousContent = it)
-                }
-                PreferredDetailsView.ExternalBrowser -> {
-                    ExternalBrowserContent(action.post, previousContent = it)
-                }
-                PreferredDetailsView.Edit -> {
-                    EditPostContent(
-                        post = action.post,
-                        showDescription = userRepository.getShowDescriptionInDetails(),
-                        previousContent = currentContent
-                    )
+        val preferredDetailsView = userRepository.getPreferredDetailsView()
+
+        return when (currentContent) {
+            is PostListContent -> {
+                when (preferredDetailsView) {
+                    PreferredDetailsView.InAppBrowser -> {
+                        PostDetailContent(action.post, previousContent = currentContent)
+                    }
+                    PreferredDetailsView.ExternalBrowser -> {
+                        ExternalBrowserContent(action.post, previousContent = currentContent)
+                    }
+                    PreferredDetailsView.Edit -> {
+                        EditPostContent(
+                            post = action.post,
+                            showDescription = userRepository.getShowDescriptionInDetails(),
+                            previousContent = currentContent
+                        )
+                    }
                 }
             }
+            is PopularPostsContent -> {
+                if (preferredDetailsView == PreferredDetailsView.ExternalBrowser) {
+                    ExternalBrowserContent(action.post, previousContent = currentContent)
+                } else {
+                    PopularPostDetailContent(action.post, previousContent = currentContent)
+                }
+            }
+            else -> currentContent
         }
     }
 
@@ -125,6 +138,17 @@ class NavigationActionHandler @Inject constructor(
             NoteDetailContent(
                 id = action.id,
                 note = Either.Left(connectivityInfoProvider.isConnected()),
+                isConnected = connectivityInfoProvider.isConnected(),
+                previousContent = it
+            )
+        }
+    }
+
+    private fun viewPopular(currentContent: Content): Content {
+        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
+            PopularPostsContent(
+                posts = emptyList(),
+                shouldLoad = connectivityInfoProvider.isConnected(),
                 isConnected = connectivityInfoProvider.isConnected(),
                 previousContent = it
             )

@@ -42,7 +42,7 @@ data class PostDetailContent(
 
 data class ExternalBrowserContent(
     val post: Post,
-    override val previousContent: PostListContent
+    override val previousContent: Content
 ) : ContentWithHistory()
 
 data class SearchContent(
@@ -85,6 +85,18 @@ data class NoteDetailContent(
     val note: Either<Boolean, Note>,
     val isConnected: Boolean = true,
     override val previousContent: NoteListContent
+) : ContentWithHistory()
+
+data class PopularPostsContent(
+    val posts: List<Post>,
+    val shouldLoad: Boolean,
+    val isConnected: Boolean = true,
+    override val previousContent: PostListContent
+) : ContentWithHistory()
+
+data class PopularPostDetailContent(
+    val post: Post,
+    override val previousContent: PopularPostsContent
 ) : ContentWithHistory()
 
 data class UserPreferencesContent(

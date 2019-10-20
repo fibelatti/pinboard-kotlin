@@ -72,10 +72,10 @@ internal class NavigationActionHandlerTest {
             contentWithHistory: ContentWithHistory
         ) {
             // GIVEN
-            val returnedContent = if (contentWithHistory is NoteDetailContent) {
-                mock<NoteListContent>()
-            } else {
-                previousContent
+            val returnedContent = when (contentWithHistory) {
+                is NoteDetailContent -> mock<NoteListContent>()
+                is PopularPostDetailContent -> mock<PopularPostsContent>()
+                else -> previousContent
             }
 
             given(contentWithHistory.previousContent)
@@ -273,6 +273,66 @@ internal class NavigationActionHandlerTest {
                 post = createPost(),
                 showDescription = mockRandomBoolean,
                 previousContent = previousContent
+            )
+        }
+
+        @Test
+        fun `WHEN currentContent is PopularPostsContent and PreferredDetailsView is InAppBrowser THEN PopularPostDetailContent is returned`() {
+            // GIVEN
+            val mockPopularPostsContent = mock<PopularPostsContent>()
+            given(mockUserRepository.getPreferredDetailsView())
+                .willReturn(PreferredDetailsView.InAppBrowser)
+
+            // WHEN
+            val result = runBlocking {
+                navigationActionHandler.runAction(ViewPost(createPost()), mockPopularPostsContent)
+            }
+
+            // THEN
+            result shouldBe PopularPostDetailContent(
+                post = createPost(),
+                previousContent = mockPopularPostsContent
+            )
+        }
+
+        @Test
+        fun `WHEN currentContent is PopularPostsContent and PreferredDetailsView is ExternalBrowser THEN ExternalBrowserContent is returned`() {
+            // GIVEN
+            val mockPopularPostsContent = mock<PopularPostsContent>()
+            given(mockUserRepository.getPreferredDetailsView())
+                .willReturn(PreferredDetailsView.ExternalBrowser)
+
+            // WHEN
+            val result = runBlocking {
+                navigationActionHandler.runAction(ViewPost(createPost()), mockPopularPostsContent)
+            }
+
+            // THEN
+            result shouldBe ExternalBrowserContent(
+                post = createPost(),
+                previousContent = mockPopularPostsContent
+            )
+        }
+
+        @Test
+        fun `WHEN currentContent is PopularPostsContent and PreferredDetailsView is Edit THEN PopularPostDetailContent is returned`() {
+            // GIVEN
+            val mockPopularPostsContent = mock<PopularPostsContent>()
+            given(mockUserRepository.getPreferredDetailsView())
+                .willReturn(PreferredDetailsView.Edit)
+            val mockRandomBoolean = randomBoolean()
+            given(mockUserRepository.getShowDescriptionInDetails())
+                .willReturn(mockRandomBoolean)
+
+            // WHEN
+            val result = runBlocking {
+                navigationActionHandler.runAction(ViewPost(createPost()), mockPopularPostsContent)
+            }
+
+            // THEN
+            result shouldBe PopularPostDetailContent(
+                post = createPost(),
+                previousContent = mockPopularPostsContent
             )
         }
     }
@@ -502,6 +562,48 @@ internal class NavigationActionHandlerTest {
                 note = Either.Left(false),
                 isConnected = false,
                 previousContent = initialContent
+            )
+
+            verify(mockConnectivityInfoProvider, times(2)).isConnected()
+        }
+    }
+
+    @Nested
+    inner class ViewPopularTests {
+
+        @Test
+        fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
+            // GIVEN
+            val content = mock<PostDetailContent>()
+
+            // WHEN
+            val result = runBlocking {
+                navigationActionHandler.runAction(ViewPopular, content)
+            }
+
+            // THEN
+            result shouldBe content
+        }
+
+        @Test
+        fun `WHEN currentContent is PostListContent THEN PopularPostsContent is returned`() {
+            // GIVEN
+            val mockCurrentContent = mock<PostListContent>()
+            val mockBoolean = randomBoolean()
+            given(mockConnectivityInfoProvider.isConnected())
+                .willReturn(mockBoolean)
+
+            // WHEN
+            val result = runBlocking {
+                navigationActionHandler.runAction(ViewPopular, mockCurrentContent)
+            }
+
+            // THEN
+            result shouldBe PopularPostsContent(
+                posts = emptyList(),
+                shouldLoad = mockBoolean,
+                isConnected = mockBoolean,
+                previousContent = mockCurrentContent
             )
 
             verify(mockConnectivityInfoProvider, times(2)).isConnected()

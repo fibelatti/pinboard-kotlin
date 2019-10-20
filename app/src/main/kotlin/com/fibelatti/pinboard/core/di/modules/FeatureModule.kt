@@ -17,6 +17,8 @@ import com.fibelatti.pinboard.features.notes.presentation.NoteListViewModel
 import com.fibelatti.pinboard.features.posts.data.PostsApi
 import com.fibelatti.pinboard.features.posts.data.PostsDataSource
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
+import com.fibelatti.pinboard.features.posts.presentation.PopularPostsFragment
+import com.fibelatti.pinboard.features.posts.presentation.PopularPostsViewModel
 import com.fibelatti.pinboard.features.posts.presentation.PostAddFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostAddViewModel
 import com.fibelatti.pinboard.features.posts.presentation.PostDetailFragment
@@ -156,6 +158,18 @@ abstract class FeatureModule {
     @IntoMap
     @FragmentKey(NoteDetailsFragment::class)
     abstract fun noteDetailsFragment(noteDetailsFragment: NoteDetailsFragment): Fragment
+    // endregion
+
+    // region Popular
+    @Binds
+    @IntoMap
+    @ViewModelKey(PopularPostsViewModel::class)
+    abstract fun popularPostsViewModel(popularPostsViewModel: PopularPostsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @FragmentKey(PopularPostsFragment::class)
+    abstract fun popularPostsFragment(popularPostsFragment: PopularPostsFragment): Fragment
     // endregion
 
     // region Preferences

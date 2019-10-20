@@ -20,6 +20,7 @@ object NavigationDrawer {
         fun onUntaggedClicked()
         fun onTagsClicked()
         fun onNotesClicked()
+        fun onPopularClicked()
         fun onPreferencesClicked()
         fun onLogoutClicked()
         fun onShareAppClicked()
@@ -76,6 +77,10 @@ object NavigationDrawer {
         }
         menuItemNotes.setOnClickListener {
             callback.onNotesClicked()
+            dismiss()
+        }
+        menuItemPopular.setOnClickListener {
+            callback.onPopularClicked()
             dismiss()
         }
         menuItemPreferences.setOnClickListener {

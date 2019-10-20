@@ -12,6 +12,7 @@ import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.annotation.MenuRes
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.gone
@@ -28,6 +29,8 @@ import com.fibelatti.pinboard.core.extension.showStyledDialog
 import com.fibelatti.pinboard.core.extension.toast
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPost
+import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
+import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import kotlinx.android.synthetic.main.fragment_post_detail.*
@@ -49,12 +52,9 @@ class PostDetailFragment @Inject constructor(
         val TAG: String = "PostDetailFragment"
     }
 
-    private val appStateViewModel: AppStateViewModel by lazy {
-        viewModelFactory.get<AppStateViewModel>(this)
-    }
-    private val postDetailViewModel: PostDetailViewModel by lazy {
-        viewModelFactory.get<PostDetailViewModel>(this)
-    }
+    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(this) }
+    private val postDetailViewModel by lazy { viewModelFactory.get<PostDetailViewModel>(this) }
+    private val popularPostsViewModel by lazy { viewModelFactory.get<PopularPostsViewModel>(this) }
 
     private val knownFileExtensions =
         listOf(
@@ -75,9 +75,9 @@ class PostDetailFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        viewLifecycleOwner.observe(appStateViewModel.postDetailContent) { content ->
-            updateViews(content.post)
-        }
+        viewLifecycleOwner.observe(appStateViewModel.postDetailContent, ::updateViews)
+        viewLifecycleOwner.observe(appStateViewModel.popularPostDetailContent, ::updateViews)
+
         with(postDetailViewModel) {
             viewLifecycleOwner.observe(loading) {
                 layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE)
@@ -88,9 +88,26 @@ class PostDetailFragment @Inject constructor(
             }
             viewLifecycleOwner.observe(error, ::handleError)
         }
+        with(popularPostsViewModel) {
+            viewLifecycleOwner.observe(loading) {
+                layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE)
+            }
+            viewLifecycleOwner.observe(saved) {
+                requireActivity().toast(getString(R.string.posts_saved_feedback))
+            }
+            viewLifecycleOwner.observe(error, ::handleError)
+        }
     }
 
-    private fun updateViews(post: Post) {
+    private fun updateViews(postDetailContent: PostDetailContent) {
+        updateViews(postDetailContent.post, R.menu.menu_link)
+    }
+
+    private fun updateViews(popularPostDetailContent: PopularPostDetailContent) {
+        updateViews(popularPostDetailContent.post, R.menu.menu_popular)
+    }
+
+    private fun updateViews(post: Post, @MenuRes menu: Int) {
         if (post.url.substringAfterLast(".") in knownFileExtensions) {
             showFileView(post)
         } else {
@@ -101,11 +118,13 @@ class PostDetailFragment @Inject constructor(
             setTitle("")
             setNavigateUp { navigateBack() }
         }
+
         mainActivity?.updateViews { bottomAppBar, fab ->
             bottomAppBar.run {
                 navigationIcon = null
-                replaceMenu(R.menu.menu_link)
+                replaceMenu(menu)
                 setOnMenuItemClickListener { item -> handleMenuClick(item, post) }
+                visible()
                 show()
             }
             fab.run {
@@ -177,6 +196,7 @@ class PostDetailFragment @Inject constructor(
         when (item?.itemId) {
             R.id.menuItemDelete -> deletePost(post)
             R.id.menuItemEditLink -> appStateViewModel.runAction(EditPost(post))
+            R.id.menuItemSave -> popularPostsViewModel.saveLink(post)
             R.id.menuItemOpenInBrowser -> openUrlInExternalBrowser(post)
         }
 

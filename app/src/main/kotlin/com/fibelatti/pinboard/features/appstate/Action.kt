@@ -18,6 +18,7 @@ object AddPost : NavigationAction()
 object ViewTags : NavigationAction()
 object ViewNotes : NavigationAction()
 data class ViewNote(val id: String) : NavigationAction()
+object ViewPopular : NavigationAction()
 object ViewPreferences : NavigationAction()
 
 // region ViewCategory
@@ -70,5 +71,12 @@ sealed class NoteAction : Action()
 object RefreshNotes : NoteAction()
 data class SetNotes(val notes: List<Note>) : NoteAction()
 data class SetNote(val note: Note) : NoteAction()
+// endregion
+
+// region PopularAction
+sealed class PopularAction : Action()
+
+object RefreshPopular : PopularAction()
+data class SetPopularPosts(val posts: List<Post>) : PopularAction()
 // endregion
 // endregion

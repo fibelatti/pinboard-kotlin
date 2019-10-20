@@ -139,6 +139,20 @@ class PostActionHandler @Inject constructor(
                     currentContent.previousContent
                 }
             }
+            is PopularPostDetailContent -> {
+                EditPostContent(
+                    post = action.post,
+                    showDescription = userRepository.getShowDescriptionInDetails(),
+                    previousContent = currentContent
+                )
+            }
+            is PopularPostsContent -> {
+                EditPostContent(
+                    post = action.post,
+                    showDescription = userRepository.getShowDescriptionInDetails(),
+                    previousContent = currentContent
+                )
+            }
             else -> currentContent
         }
     }

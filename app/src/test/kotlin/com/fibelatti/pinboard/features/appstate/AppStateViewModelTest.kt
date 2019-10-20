@@ -203,6 +203,40 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
 
         @ParameterizedTest
         @MethodSource("testCases")
+        fun `Only popular posts content should be emitted to popularPostsContent`(content: Content) {
+            // GIVEN
+            given(mockAppStateRepository.getContent())
+                .willReturn(content.asLiveData())
+
+            appStateViewModel = AppStateViewModel(mockAppStateRepository)
+
+            // THEN
+            if (content is PopularPostsContent) {
+                appStateViewModel.popularPostsContent.currentValueShouldBe(content)
+            } else {
+                appStateViewModel.popularPostsContent.shouldNeverReceiveValues()
+            }
+        }
+
+        @ParameterizedTest
+        @MethodSource("testCases")
+        fun `Only popular post details content should be emitted to popularPostDetailContent`(content: Content) {
+            // GIVEN
+            given(mockAppStateRepository.getContent())
+                .willReturn(content.asLiveData())
+
+            appStateViewModel = AppStateViewModel(mockAppStateRepository)
+
+            // THEN
+            if (content is PopularPostDetailContent) {
+                appStateViewModel.popularPostDetailContent.currentValueShouldBe(content)
+            } else {
+                appStateViewModel.popularPostDetailContent.shouldNeverReceiveValues()
+            }
+        }
+
+        @ParameterizedTest
+        @MethodSource("testCases")
         fun `Only user preferences content should be emitted to userPreferencesContent`(content: Content) {
             // GIVEN
             given(mockAppStateRepository.getContent())
