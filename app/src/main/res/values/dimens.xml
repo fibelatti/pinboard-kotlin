@@ -47,7 +47,7 @@
 
     <dimen name="title_layout_height">65dp</dimen>
 
-    <dimen name="recycler_view_with_fab_padding_bottom">100dp</dimen>
+    <dimen name="fab_offset_bottom">100dp</dimen>
 
     <dimen name="post_detail_icon_size">60dp</dimen>
     <dimen name="post_detail_tags_suggested_min_height">80dp</dimen>

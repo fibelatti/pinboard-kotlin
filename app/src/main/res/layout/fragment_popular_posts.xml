@@ -45,7 +45,7 @@
             android:clipToPadding="false"
             android:paddingStart="@dimen/padding_regular"
             android:paddingEnd="@dimen/padding_regular"
-            android:paddingBottom="@dimen/recycler_view_with_fab_padding_bottom"
+            android:paddingBottom="@dimen/fab_offset_bottom"
             tools:listitem="@layout/list_item_popular_post" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </RelativeLayout>
