@@ -1,32 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layoutRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
     android:background="@color/color_background"
     android:clickable="true"
-    android:focusable="true"
-    android:orientation="vertical"
-    android:paddingStart="@dimen/padding_regular"
-    android:paddingEnd="@dimen/padding_regular">
+    android:focusable="true">
 
-    <include
-        layout="@layout/layout_progress_bar"
-        android:visibility="gone"
-        tools:visibility="gone" />
-
-    <include
-        android:id="@+id/layoutAddPost"
-        layout="@layout/layout_add_post"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/padding_regular"
+        android:paddingEnd="@dimen/padding_regular">
 
-    <include
-        android:id="@+id/layoutAddTags"
-        layout="@layout/layout_add_tags"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        <include
+            layout="@layout/layout_progress_bar"
+            android:visibility="gone"
+            tools:visibility="gone" />
 
-</LinearLayout>
+        <include
+            android:id="@+id/layoutAddPost"
+            layout="@layout/layout_add_post" />
+
+        <include
+            android:id="@+id/layoutAddTags"
+            layout="@layout/layout_add_tags" />
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

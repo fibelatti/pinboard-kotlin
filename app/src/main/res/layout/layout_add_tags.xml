@@ -4,8 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginStart="@dimen/margin_regular"
-    android:layout_marginEnd="@dimen/margin_regular"
     android:animateLayoutChanges="true">
 
     <TextView
@@ -80,6 +78,7 @@
         style="@style/AppTheme.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/fab_offset_bottom"
         android:text="@string/posts_add_tags_edit"
         app:layout_constraintBottom_toTopOf="@+id/recyclerViewSuggestedTags"
         app:layout_constraintStart_toStartOf="parent"
