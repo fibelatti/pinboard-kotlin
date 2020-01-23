@@ -22,6 +22,7 @@ class ValidateUrlTest {
             add("$it://${MockDataProvider.mockUrlInvalid}")
         }
         add("https://bit.ly")
+        add("http://192.168.0.92/something")
     }
 
     fun invalidUrls(): List<String> = mutableListOf<String>().apply {
