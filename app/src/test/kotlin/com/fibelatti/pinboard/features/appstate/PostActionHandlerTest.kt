@@ -630,6 +630,25 @@ internal class PostActionHandlerTest {
         }
 
         @Test
+        fun `GIVEN previousContent is PostListContent WHEN currentContent is EditPostContent THEN updated content is returned`() {
+            // GIVEN
+            val randomBoolean = randomBoolean()
+            val currentContent = EditPostContent(
+                post = mockPost,
+                showDescription = randomBoolean,
+                previousContent = initialContent
+            )
+
+            // WHEN
+            val result = runBlocking {
+                postActionHandler.runAction(PostSaved(mockPost), currentContent)
+            }
+
+            // THEN
+            result shouldBe initialContent.copy(shouldLoad = ShouldLoadFirstPage)
+        }
+
+        @Test
         fun `GIVEN previousContent is not PostDetailContent WHEN currentContent is EditPostContent THEN updated content is returned`() {
             // GIVEN
             val randomBoolean = randomBoolean()

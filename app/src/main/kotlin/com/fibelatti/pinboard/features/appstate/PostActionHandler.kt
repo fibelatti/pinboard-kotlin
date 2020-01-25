@@ -128,15 +128,19 @@ class PostActionHandler @Inject constructor(
         return when (currentContent) {
             is AddPostContent -> currentContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
             is EditPostContent -> {
-                if (currentContent.previousContent is PostDetailContent) {
-                    val postDetail = currentContent.previousContent
+                when (currentContent.previousContent) {
+                    is PostDetailContent -> {
+                        val postDetail = currentContent.previousContent
 
-                    postDetail.copy(
-                        post = action.post,
-                        previousContent = postDetail.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
-                    )
-                } else {
-                    currentContent.previousContent
+                        postDetail.copy(
+                            post = action.post,
+                            previousContent = postDetail.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
+                        )
+                    }
+                    is PostListContent -> {
+                        currentContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
+                    }
+                    else -> currentContent.previousContent
                 }
             }
             is PopularPostDetailContent -> {
