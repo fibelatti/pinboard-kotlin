@@ -21,7 +21,6 @@ import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
 import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagDtoMapper
-import com.fibelatti.pinboard.features.posts.data.model.UpdateDto
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
@@ -50,10 +49,10 @@ class PostsDataSource @Inject constructor(
         return resultFrom {
             rateLimitRunner.run {
                 withContext(Dispatchers.IO) {
-                    postsApi.update()
+                    postsApi.update().updateTime
                 }
             }
-        }.mapCatching(UpdateDto::updateTime)
+        }
     }
 
     override suspend fun add(
@@ -72,7 +71,7 @@ class PostsDataSource @Inject constructor(
                     description = description?.take(API_MAX_EXTENDED_LENGTH),
                     public = private?.let { if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES },
                     readLater = readLater?.let { if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO },
-                    tags = tags?.joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST) { it.name }
+                    tags = tags?.joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST, transform = Tag::name)
                         ?.take(API_MAX_LENGTH)
                 )
             }
@@ -250,8 +249,8 @@ class PostsDataSource @Inject constructor(
         return resultFrom {
             withContext(Dispatchers.IO) {
                 postsApi.getPost(url)
-            }.posts.first()
-        }.mapCatching(postDtoMapper::map)
+            }.posts.first().let(postDtoMapper::map)
+        }
     }
 
     override suspend fun searchExistingPostTag(tag: String): Result<List<String>> {
@@ -273,8 +272,8 @@ class PostsDataSource @Inject constructor(
                 withContext(Dispatchers.IO) {
                     postsApi.getSuggestedTagsForUrl(url)
                 }
-            }
-        }.mapCatching(suggestedTagDtoMapper::map)
+            }.let(suggestedTagDtoMapper::map)
+        }
     }
 
     override suspend fun clearCache(): Result<Unit> {
