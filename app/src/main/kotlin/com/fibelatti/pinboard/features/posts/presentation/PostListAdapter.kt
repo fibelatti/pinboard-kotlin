@@ -62,7 +62,7 @@ class PostListAdapter @Inject constructor(
         parent.inflate(R.layout.list_item_post)
     ) {
 
-        var quickActionsVisible: Boolean = false
+        private var quickActionsVisible: Boolean = false
 
         fun bind(item: Post) = itemView.bindView(item)
 
@@ -71,10 +71,15 @@ class PostListAdapter @Inject constructor(
             textViewReadLater.visibleIf(item.readLater, otherwiseVisibility = View.GONE)
 
             textViewLinkTitle.text = item.title
-            textViewLinkAddedDate.text = context.getString(
-                R.string.posts_saved_on,
-                dateFormatter.tzFormatToDisplayFormat(item.time)
-            )
+
+            val addedDate = dateFormatter.tzFormatToDisplayFormat(item.time)
+            if (addedDate != null) {
+                textViewLinkAddedDate.visible()
+                textViewLinkAddedDate.text = context.getString(R.string.posts_saved_on, addedDate)
+            } else {
+                textViewLinkAddedDate.gone()
+            }
+
 
             textViewDescription.text = item.description
             textViewDescription.visibleIf(

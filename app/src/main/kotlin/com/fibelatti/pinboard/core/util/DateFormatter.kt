@@ -15,11 +15,11 @@ const val FORMAT_DISPLAY = "dd/MM/yy, HH:mm"
 
 class DateFormatter @Inject constructor() {
 
-    fun tzFormatToDisplayFormat(input: String): String =
-        getSimpleDateFormat(FORMAT_DISPLAY).format(getUtcFormat(FORMAT_TZ).parse(input))
+    fun tzFormatToDisplayFormat(input: String): String? =
+        getUtcFormat(FORMAT_TZ).parse(input)?.let(getSimpleDateFormat(FORMAT_DISPLAY)::format)
 
-    fun notesFormatToDisplayFormat(input: String): String =
-        getSimpleDateFormat(FORMAT_DISPLAY).format(getUtcFormat(FORMAT_NOTES).parse(input))
+    fun notesFormatToDisplayFormat(input: String): String? =
+        getUtcFormat(FORMAT_NOTES).parse(input)?.let(getSimpleDateFormat(FORMAT_DISPLAY)::format)
 
     fun nowAsTzFormat(): String = getUtcFormat(FORMAT_TZ).format(Date())
 
