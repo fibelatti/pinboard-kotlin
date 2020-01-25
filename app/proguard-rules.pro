@@ -37,6 +37,9 @@
 -keepclassmembernames class kotlinx.** {
     volatile <fields>;
 }
+-keepnames class kotlinx.coroutines.android.AndroidExceptionPreHandler {}
+-keepnames class kotlinx.coroutines.android.AndroidDispatcherFactory {}
+-dontwarn kotlinx.coroutines.flow.**inlined**
 
 # Material
 -dontnote com.google.android.material.**
