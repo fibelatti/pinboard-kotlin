@@ -80,7 +80,6 @@ class PostListAdapter @Inject constructor(
                 textViewLinkAddedDate.gone()
             }
 
-
             textViewDescription.text = item.description
             textViewDescription.visibleIf(
                 showDescription && item.description.isNotBlank(),
