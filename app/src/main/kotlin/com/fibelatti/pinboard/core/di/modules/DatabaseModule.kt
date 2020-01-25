@@ -14,12 +14,10 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    @JvmStatic
     fun providesDatabase(context: Context): AppDatabase =
         Room.databaseBuilder(context, AppDatabase::class.java, DATABASE_NAME)
             .build()
 
     @Provides
-    @JvmStatic
     fun postDao(appDatabase: AppDatabase): PostsDao = appDatabase.postDao()
 }
