@@ -1,7 +1,8 @@
 package com.fibelatti.pinboard.core.android
 
 import android.net.ConnectivityManager
-import android.net.NetworkInfo
+import android.net.Network
+import android.net.NetworkCapabilities
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBe
 import org.junit.jupiter.api.Test
@@ -9,7 +10,27 @@ import org.mockito.BDDMockito.given
 
 internal class ConnectivityInfoProviderTest {
 
-    private val mockConnectivityManager = mock<ConnectivityManager>()
+    private val mockNetworkA = mock<Network>()
+    private val mockNetworkB = mock<Network>()
+    private val mockNetworkC = mock<Network>()
+
+    private val mockNetworkACapabilities = mock<NetworkCapabilities>().also {
+        given(it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET))
+            .willReturn(true)
+    }
+    private val mockNetworkBCapabilities = mock<NetworkCapabilities>().also {
+        given(it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET))
+            .willReturn(false)
+    }
+
+    private val mockConnectivityManager = mock<ConnectivityManager>().also {
+        given(it.getNetworkCapabilities(mockNetworkA))
+            .willReturn(mockNetworkACapabilities)
+        given(it.getNetworkCapabilities(mockNetworkB))
+            .willReturn(mockNetworkBCapabilities)
+        given(it.getNetworkCapabilities(mockNetworkC))
+            .willReturn(null)
+    }
 
     private val connectivityInfoProvider = ConnectivityInfoProvider(mockConnectivityManager)
 
@@ -19,38 +40,34 @@ internal class ConnectivityInfoProviderTest {
     }
 
     @Test
-    fun `WHEN activeNetworkInfo is null THEN isConnected should return false`() {
-        // GIVEN
-        given(mockConnectivityManager.activeNetwork)
-            .willReturn(null)
+    fun `WHEN allNetworks returns empty THEN isConnected should return false`() {
+        given(mockConnectivityManager.allNetworks)
+            .willReturn(emptyArray())
 
-        // THEN
         connectivityInfoProvider.isConnected() shouldBe false
     }
 
     @Test
-    fun `WHEN activityNetworkInfo is not connected THEN isConnected should return false`() {
-        // GIVEN
-        val mockActiveNetworkInfo = mock<NetworkInfo>()
-        given(mockConnectivityManager.activeNetworkInfo)
-            .willReturn(mockActiveNetworkInfo)
-        given(mockActiveNetworkInfo.isConnected)
-            .willReturn(false)
+    fun `WHEN the network has no capabilities THEN isConnected should return false`() {
+        given(mockConnectivityManager.allNetworks)
+            .willReturn(arrayOf(mockNetworkC))
 
-        // THEN
         connectivityInfoProvider.isConnected() shouldBe false
     }
 
     @Test
-    fun `WHEN activityNetworkInfo is connected THEN isConnected should return true`() {
-        // GIVEN
-        val mockActiveNetworkInfo = mock<NetworkInfo>()
-        given(mockConnectivityManager.activeNetworkInfo)
-            .willReturn(mockActiveNetworkInfo)
-        given(mockActiveNetworkInfo.isConnected)
-            .willReturn(true)
+    fun `WHEN the network has no internet capability THEN isConnected should return false`() {
+        given(mockConnectivityManager.allNetworks)
+            .willReturn(arrayOf(mockNetworkB, mockNetworkC))
 
-        // THEN
+        connectivityInfoProvider.isConnected() shouldBe false
+    }
+
+    @Test
+    fun `WHEN at least one network has internet capability THEN isConnected should return true`() {
+        given(mockConnectivityManager.allNetworks)
+            .willReturn(arrayOf(mockNetworkA, mockNetworkB, mockNetworkC))
+
         connectivityInfoProvider.isConnected() shouldBe true
     }
 }
