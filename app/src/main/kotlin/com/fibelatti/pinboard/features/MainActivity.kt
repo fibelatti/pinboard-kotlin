@@ -5,6 +5,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.fibelatti.core.android.IntentDelegate
 import com.fibelatti.core.android.base.BaseIntentBuilder
@@ -21,6 +23,7 @@ import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.customview.TitleLayout
 import com.fibelatti.pinboard.core.extension.createFragment
+import com.fibelatti.pinboard.core.extension.doOnApplyWindowInsets
 import com.fibelatti.pinboard.core.extension.shareText
 import com.fibelatti.pinboard.core.extension.snackbar
 import com.fibelatti.pinboard.core.functional.DoNothing
@@ -104,6 +107,38 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
     }
 
     private fun setupView() {
+        window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+
+        layoutTitle?.doOnApplyWindowInsets { view, insets, _, initialMargin ->
+            view.layoutParams = (view.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                leftMargin = initialMargin.left
+                topMargin = initialMargin.top + insets.systemWindowInsetTop
+                rightMargin = initialMargin.right
+                bottomMargin = initialMargin.bottom
+            }
+        }
+
+        fabMain?.doOnApplyWindowInsets { view, insets, _, initialMargin ->
+            view.layoutParams = (view.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                leftMargin = initialMargin.left
+                topMargin = initialMargin.top
+                rightMargin = initialMargin.right
+                bottomMargin = resources.getDimensionPixelSize(R.dimen.margin_small) +
+                    insets.systemWindowInsetBottom
+            }
+        }
+
+        bottomAppBar?.doOnApplyWindowInsets { view, insets, padding, _ ->
+            view.setPadding(
+                padding.left,
+                padding.top,
+                padding.right,
+                padding.bottom + insets.systemWindowInsetBottom
+            )
+        }
+
         bottomAppBar?.setNavigationOnClickListener {
             NavigationDrawer.show(this, NavigationCallback())
         }

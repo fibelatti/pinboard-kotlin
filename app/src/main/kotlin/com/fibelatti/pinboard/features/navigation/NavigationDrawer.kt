@@ -1,6 +1,8 @@
 package com.fibelatti.pinboard.features.navigation
 
 import android.content.Context
+import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatDialog
 import com.fibelatti.core.extension.gone
@@ -34,13 +36,23 @@ object NavigationDrawer {
                 setupListeners(callback)
                 setupVersion()
                 setOnShowListener { dialog ->
-                    (dialog as? BottomSheetDialog)
-                        ?.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)
-                        ?.let {
-                            val behavior = BottomSheetBehavior.from(it)
-                            behavior.skipCollapsed = true
-                            behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                    (dialog as? BottomSheetDialog)?.apply {
+                        window?.let {
+                            it.decorView.systemUiVisibility = it.decorView.systemUiVisibility or
+                                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         }
+
+                        findViewById<ViewGroup>(com.google.android.material.R.id.container)
+                            ?.fitsSystemWindows = false
+
+                        findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)
+                            ?.let {
+                                val behavior = BottomSheetBehavior.from(it)
+                                behavior.skipCollapsed = true
+                                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                            }
+                    }
                 }
                 show()
             }

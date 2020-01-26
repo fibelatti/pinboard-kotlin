@@ -15,9 +15,8 @@
         <item name="android:windowBackground">@color/color_background</item>
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
-        <item name="android:statusBarColor">@color/color_system_bar</item>
-        <item name="android:navigationBarColor">@color/color_system_bar</item>
-        <item name="android:fitsSystemWindows">true</item>
+        <item name="android:statusBarColor">@color/color_status_bar</item>
+        <item name="android:navigationBarColor">@color/color_navigation_bar</item>
         <item name="android:windowAnimationStyle">@style/AppTheme.AppActivityAnimation</item>
         <item name="fontFamily">@font/opensansregular</item>
         <item name="buttonStyle">@style/AppTheme.Button</item>
@@ -51,7 +50,7 @@
 
     <style name="AppTheme.BaseBottomSheetDialog.BottomSheetDialog">
         <item name="android:statusBarColor">@color/color_transparent</item>
-        <item name="android:navigationBarColor">@color/color_system_bar</item>
+        <item name="android:navigationBarColor">@color/color_navigation_bar</item>
     </style>
 
     <style name="AppTheme.AppActivityAnimation" parent="@android:style/Animation.Activity">

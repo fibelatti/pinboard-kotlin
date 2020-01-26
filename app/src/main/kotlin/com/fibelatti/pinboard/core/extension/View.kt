@@ -3,8 +3,14 @@ package com.fibelatti.pinboard.core.extension
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowInsets
+import android.widget.ScrollView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.widget.NestedScrollView
+import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.fibelatti.core.extension.children
 import com.fibelatti.pinboard.R
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -50,3 +56,35 @@ fun FloatingActionButton.blink(onHidden: () -> Unit = {}) {
         }
     })
 }
+
+fun getViewToApplyInsets(view: View): View? {
+    return when (view) {
+        is ScrollView,
+        is NestedScrollView -> (view as? ViewGroup)?.children?.firstOrNull()
+        is SwipeRefreshLayout -> (view as? ViewGroup)?.children?.lastOrNull()
+        is RecyclerView -> view
+        is ViewGroup -> {
+            view.children.firstOrNull {
+                it is ScrollView || it is NestedScrollView || it is SwipeRefreshLayout || it is RecyclerView
+            }?.let(::getViewToApplyInsets)
+        }
+        else -> view
+    }
+}
+
+fun View.doOnApplyWindowInsets(f: (View, WindowInsets, InitialPadding, InitialMargin) -> Unit) {
+
+    val initialPadding = InitialPadding(paddingLeft, paddingTop, paddingRight, paddingBottom)
+    val initialMargin = (layoutParams as? ViewGroup.MarginLayoutParams)
+        ?.run { InitialMargin(leftMargin, topMargin, rightMargin, bottomMargin) }
+        ?: InitialMargin(0, 0, 0, 0)
+
+    setOnApplyWindowInsetsListener { v, insets ->
+        f(v, insets, initialPadding, initialMargin)
+        insets
+    }
+}
+
+data class InitialPadding(val left: Int, val top: Int, val right: Int, val bottom: Int)
+
+data class InitialMargin(val left: Int, val top: Int, val right: Int, val bottom: Int)

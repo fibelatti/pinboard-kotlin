@@ -19,10 +19,11 @@
             android:visibility="gone"
             tools:visibility="visible" />
 
-        <FrameLayout
+        <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragmentHost"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="0dp"
+            android:layout_weight="1" />
     </LinearLayout>
 
     <com.google.android.material.bottomappbar.BottomAppBar
@@ -34,7 +35,8 @@
         android:backgroundTint="@color/color_background_contrast"
         android:visibility="gone"
         app:hideOnScroll="true"
-        app:layout_scrollFlags="scroll|enterAlways" />
+        app:layout_scrollFlags="scroll|enterAlways"
+        tools:visibility="visible" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabMain"
@@ -42,6 +44,7 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         app:layout_anchor="@id/bottomAppBar"
-        app:srcCompat="@drawable/ic_pin" />
+        app:srcCompat="@drawable/ic_pin"
+        tools:visibility="visible" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

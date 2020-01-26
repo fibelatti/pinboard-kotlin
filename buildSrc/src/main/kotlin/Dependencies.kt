@@ -25,6 +25,7 @@ object Dependencies {
 
     const val supportLibrary = "androidx.appcompat:appcompat:1.1.0"
     const val materialDesign = "com.google.android.material:material:1.1.0-rc02"
+    const val fragments = "androidx.fragment:fragment:1.2.0"
     const val supportAnnotations = "androidx.annotation:annotation:1.0.0"
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.0-beta4"
 
