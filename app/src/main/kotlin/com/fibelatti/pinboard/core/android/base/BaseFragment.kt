@@ -36,6 +36,8 @@ abstract class BaseFragment : Fragment {
 
     open fun handleError(error: Throwable) {
         activity?.toast(getString(R.string.generic_msg_error))
-        if (BuildConfig.DEBUG) error.printStackTrace()
+        if (BuildConfig.DEBUG) {
+            error.printStackTrace()
+        }
     }
 }

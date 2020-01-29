@@ -44,7 +44,9 @@ abstract class BaseActivity : AppCompatActivity {
 
     fun handleError(error: Throwable) {
         toast(getString(R.string.generic_msg_error))
-        if (BuildConfig.DEBUG) error.printStackTrace()
+        if (BuildConfig.DEBUG) {
+            error.printStackTrace()
+        }
     }
 
     private fun setupTheme() {
