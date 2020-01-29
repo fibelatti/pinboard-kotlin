@@ -17,11 +17,11 @@
     <string name="hint_share">Share</string>
 
     <string name="alert_confirm_deletion">Are you sure you want to delete this bookmark?</string>
-    <string name="alert_confirm_unsaved_changes">You have unsaved changes that will be lost, continue?</string>
+    <string name="alert_confirm_unsaved_changes">You have unsaved changes that will be lost, continue without saving?</string>
 
     <string name="generic_log_error">Error in %1$s (%2$s)</string>
 
-    <string name="generic_msg_error">Oops! Something went wrong</string>
+    <string name="generic_msg_error">Oops, something went wrong</string>
 
     <!-- Menus -->
     <string name="menu_main_search">Search</string>
@@ -35,7 +35,7 @@
     <string name="menu_navigation_untagged">Untagged</string>
     <string name="menu_navigation_tags">Tags</string>
     <string name="menu_navigation_notes">Notes</string>
-    <string name="menu_navigation_popular">Popular bookmarks</string>
+    <string name="menu_navigation_popular">Popular</string>
 
     <string name="menu_navigation_preferences">Preferences</string>
     <string name="menu_navigation_logout">Logout</string>
@@ -54,7 +54,7 @@
     <string name="auth_button">Login</string>
     <string name="auth_token_title">Where can I find this?</string>
     <string name="auth_token_description">You can find your API token in the <a href="https://pinboard.in/settings/password">Pinboard Settings</a> page. It is composed by your username and an alphanumeric string\n(e.g. username:00F0D0FE123456789012)</string>
-    <string name="auth_token_error">Authentication failed. Please double check your API Token</string>
+    <string name="auth_token_error">Login failed. Please double check your API Token</string>
     <string name="auth_logged_out_feedback">Logged out</string>
 
     <!-- Posts -->
@@ -89,7 +89,7 @@
     <string name="posts_empty_filter_title">No pins for this filter</string>
     <string name="posts_empty_filter_description">There aren\'t any bookmarks saved for this filter criteria</string>
 
-    <string name="posts_deleted_feedback">Bookmark removed successfully!</string>
+    <string name="posts_deleted_feedback">Bookmark removed successfully</string>
 
     <string name="posts_add_title">Save bookmark</string>
     <string name="posts_add_url">URL</string>
@@ -156,7 +156,7 @@
     <string name="user_preferences_appearance">Appearance</string>
     <string name="user_preferences_appearance_dark">Dark theme</string>
     <string name="user_preferences_appearance_light">Light theme</string>
-    <string name="user_preferences_preferred_details_view">Preferred details view</string>
+    <string name="user_preferences_preferred_details_view">Viewing bookmarks</string>
     <string name="user_preferences_preferred_details_in_app_browser">In-app</string>
     <string name="user_preferences_preferred_details_in_app_browser_caveat">Open bookmarks using the internal browser</string>
     <string name="user_preferences_preferred_details_external_browser">External</string>
@@ -164,19 +164,19 @@
     <string name="user_preferences_preferred_details_post_details">Bookmark details</string>
     <string name="user_preferences_preferred_details_post_details_caveat">Open bookmarks directly in the Edit screen</string>
     <string name="user_preferences_preferred_details_view_caveat">You can long press each bookmark in lists for quick access to share and edit</string>
-    <string name="user_preferences_description_title">Description behaviors</string>
+    <string name="user_preferences_description_title">Bookmarks description</string>
     <string name="user_preferences_description_auto_fill">Auto fill</string>
     <string name="user_preferences_description_auto_fill_description">If checked, then Pinkt will attempt to extract the description from the website and fill it automatically</string>
     <string name="user_preferences_description_visible_in_lists">Visible in lists</string>
-    <string name="user_preferences_description_visible_in_details">Visible in details</string>
+    <string name="user_preferences_description_visible_in_details">Visible in the details screen</string>
     <string name="user_preferences_description_visible_caveat">Show the first 5 lines of the description in lists</string>
-    <string name="user_preferences_default_private">Private by default</string>
+    <string name="user_preferences_default_private">Private bookmarks</string>
+    <string name="user_preferences_default_private_label">Private by default</string>
     <string name="user_preferences_default_private_description">If checked, bookmarks shared to Pinkt will be saved as private, otherwise your default Pinboard preferences apply</string>
-    <string name="user_preferences_default_read_later">Read later by default</string>
+    <string name="user_preferences_default_read_later">Read later bookmarks</string>
+    <string name="user_preferences_default_read_later_label">Read later by default</string>
     <string name="user_preferences_default_read_later_description">If checked, bookmarks shared to Pinkt will be saved as read later, otherwise your default Pinboard preferences apply</string>
-    <string name="user_preferences_default_tags">Default tags</string>
-    <string name="user_preferences_default_tags_description">Bookmarks will be have the selected tags by default</string>
-    <string name="user_preferences_edit_after_sharing_title">Sharing &amp; Popular behavior</string>
+    <string name="user_preferences_edit_after_sharing_title">Sharing &amp; Popular</string>
     <string name="user_preferences_edit_after_sharing">Open the edit screen</string>
     <string name="user_preferences_edit_after_sharing_description">If checked, the Edit screen will be displayed for further editing when a bookmark is successfully shared to Pinkt or saved from the list of popular bookmarks</string>
 

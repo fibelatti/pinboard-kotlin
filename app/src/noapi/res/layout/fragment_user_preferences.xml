@@ -247,7 +247,7 @@
                 android:layout_marginTop="@dimen/margin_small"
                 android:drawableEnd="@drawable/ic_private"
                 android:drawablePadding="@dimen/padding_small"
-                android:text="@string/posts_add_private" />
+                android:text="@string/user_preferences_default_private_label" />
 
             <TextView
                 style="@style/AppTheme.Text.Detail"
@@ -285,7 +285,7 @@
                 android:layout_marginTop="@dimen/margin_small"
                 android:drawableEnd="@drawable/ic_read_later"
                 android:drawablePadding="@dimen/padding_small"
-                android:text="@string/posts_add_read_later" />
+                android:text="@string/user_preferences_default_read_later_label" />
 
             <TextView
                 style="@style/AppTheme.Text.Detail"
