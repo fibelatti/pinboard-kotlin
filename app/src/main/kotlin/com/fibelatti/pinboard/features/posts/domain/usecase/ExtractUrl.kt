@@ -9,7 +9,7 @@ import javax.inject.Inject
 class ExtractUrl @Inject constructor() : UseCaseWithParams<String, String>() {
 
     override suspend fun run(params: String): Result<String> {
-        val schemes = ValidUrlScheme.allSchemes().map { "$it://" }
+        val schemes = ValidUrlScheme.ALL_SCHEMES.map { "$it://" }
 
         for (scheme in schemes) {
             val index = params.indexOf(scheme)

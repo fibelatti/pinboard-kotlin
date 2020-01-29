@@ -9,8 +9,9 @@ enum class ValidUrlScheme(val scheme: String) {
     FILE("file");
 
     companion object {
+
         @JvmStatic
-        fun allSchemes() = listOf(
+        val ALL_SCHEMES = listOf(
             HTTP.scheme,
             HTTPS.scheme,
             JAVASCRIPT.scheme,

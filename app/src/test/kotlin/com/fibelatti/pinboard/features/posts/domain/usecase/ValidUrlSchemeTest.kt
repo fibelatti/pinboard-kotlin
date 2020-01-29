@@ -17,7 +17,7 @@ internal class ValidUrlSchemeTest {
 
     @Test
     fun `allSchemes should include all schemes`() {
-        ValidUrlScheme.allSchemes() shouldBe listOf(
+        ValidUrlScheme.ALL_SCHEMES shouldBe listOf(
             ValidUrlScheme.HTTP.scheme,
             ValidUrlScheme.HTTPS.scheme,
             ValidUrlScheme.JAVASCRIPT.scheme,

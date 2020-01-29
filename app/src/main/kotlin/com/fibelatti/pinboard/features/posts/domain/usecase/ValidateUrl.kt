@@ -12,5 +12,5 @@ class ValidateUrl @Inject constructor() : UseCaseWithParams<String, String>() {
         if (validate(params)) Success(params) else Failure(InvalidUrlException())
 
     private fun validate(url: String): Boolean =
-        url.substringBefore("://", "") in ValidUrlScheme.allSchemes()
+        url.substringBefore("://", "") in ValidUrlScheme.ALL_SCHEMES
 }

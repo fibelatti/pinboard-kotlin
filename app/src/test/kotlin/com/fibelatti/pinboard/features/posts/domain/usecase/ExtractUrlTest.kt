@@ -36,7 +36,7 @@ internal class ExtractUrlTest {
     }
 
     fun testCases(): List<Pair<String, Result<String>>> = mutableListOf<Pair<String, Result<String>>>().apply {
-        ValidUrlScheme.allSchemes().map {
+        ValidUrlScheme.ALL_SCHEMES.map {
             add("Check this awesome url $it://www.url.com" to Success("$it://www.url.com"))
         }
         add("Check this not so awesome url www.url.com" to Failure(InvalidUrlException()))
