@@ -11,15 +11,12 @@ import com.fibelatti.pinboard.core.extension.doOnApplyWindowInsets
 import com.fibelatti.pinboard.core.extension.getViewToApplyInsets
 import com.fibelatti.pinboard.core.extension.toast
 
-abstract class BaseFragment : Fragment {
+abstract class BaseFragment @ContentView constructor(
+    @LayoutRes contentLayoutId: Int
+) : Fragment(contentLayoutId) {
 
     protected val viewModelFactory
         get() = (activity as BaseActivity).viewModelFactory
-
-    constructor() : super()
-
-    @ContentView
-    constructor(@LayoutRes contentLayoutId: Int) : super(contentLayoutId)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
