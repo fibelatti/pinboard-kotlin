@@ -10,7 +10,8 @@ class AppStateViewModel @Inject constructor(
     private val appStateRepository: AppStateRepository
 ) : BaseViewModel() {
 
-    val content: LiveData<Content> = appStateRepository.getContent()
+    val content: LiveData<Content>
+        get() = appStateRepository.getContent()
 
     val postListContent: LiveData<PostListContent> = mediatorLiveDataForContentType()
     val postDetailContent: LiveData<PostDetailContent> = mediatorLiveDataForContentType()

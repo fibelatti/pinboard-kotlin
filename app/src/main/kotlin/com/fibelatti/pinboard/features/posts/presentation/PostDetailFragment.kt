@@ -52,7 +52,7 @@ class PostDetailFragment @Inject constructor(
         val TAG: String = "PostDetailFragment"
     }
 
-    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(this) }
+    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(requireActivity()) }
     private val postDetailViewModel by lazy { viewModelFactory.get<PostDetailViewModel>(this) }
     private val popularPostsViewModel by lazy { viewModelFactory.get<PopularPostsViewModel>(this) }
 

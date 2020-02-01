@@ -24,15 +24,14 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(R.layout.frag
         val TAG: String = "UserPreferencesFragment"
     }
 
-    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(this) }
+    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(requireActivity()) }
     private val userPreferencesViewModel by lazy { viewModelFactory.get<UserPreferencesViewModel>(this) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupLayout()
-
         viewLifecycleOwner.observe(appStateViewModel.userPreferencesContent) {
+            setupActivityViews()
             setupAppearance(it.appearance)
             setupPreferredDetailsView(it.preferredDetailsView)
             setupAutoFillDescription(it.autoFillDescription)
@@ -45,6 +44,21 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(R.layout.frag
 
         viewLifecycleOwner.observeEvent(userPreferencesViewModel.appearanceChanged) {
             activity?.recreate()
+        }
+    }
+
+    private fun setupActivityViews() {
+        mainActivity?.updateTitleLayout {
+            setTitle(R.string.user_preferences_title)
+            setNavigateUp { navigateBack() }
+        }
+        mainActivity?.updateViews { bottomAppBar, fab ->
+            bottomAppBar.run {
+                navigationIcon = null
+                menu.clear()
+                gone()
+            }
+            fab.hide()
         }
     }
 
@@ -130,21 +144,6 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(R.layout.frag
         checkboxReadLaterDefault.isChecked = value
         checkboxReadLaterDefault.setOnCheckedChangeListener { _, isChecked ->
             userPreferencesViewModel.saveDefaultReadLater(isChecked)
-        }
-    }
-
-    private fun setupLayout() {
-        mainActivity?.updateTitleLayout {
-            setTitle(R.string.user_preferences_title)
-            setNavigateUp { navigateBack() }
-        }
-        mainActivity?.updateViews { bottomAppBar, fab ->
-            bottomAppBar.run {
-                navigationIcon = null
-                menu.clear()
-                gone()
-            }
-            fab.hide()
         }
     }
 }

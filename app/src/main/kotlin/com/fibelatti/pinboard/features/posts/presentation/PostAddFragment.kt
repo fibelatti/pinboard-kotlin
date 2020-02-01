@@ -50,7 +50,7 @@ class PostAddFragment @Inject constructor(
         val TAG: String = "PostAddFragment"
     }
 
-    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(this) }
+    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(requireActivity()) }
     private val postAddViewModel by lazy { viewModelFactory.get<PostAddViewModel>(this) }
     private val postDetailViewModel by lazy { viewModelFactory.get<PostDetailViewModel>(this) }
 
@@ -99,25 +99,6 @@ class PostAddFragment @Inject constructor(
     }
 
     private fun setupLayout() {
-        mainActivity?.updateTitleLayout {
-            setTitle(R.string.posts_add_title)
-            setNavigateUp(R.drawable.ic_close) { onBackPressed() }
-        }
-
-        mainActivity?.updateViews { bottomAppBar, fab ->
-            // Using invisible() instead of gone() otherwise the fab will misbehave when
-            // starting this fragment from share
-            bottomAppBar.invisible()
-            fab.run {
-                setImageResource(R.drawable.ic_done)
-                setOnClickListener {
-                    saveLink()
-                    hide()
-                }
-                show()
-            }
-        }
-
         setupDescriptionLayouts()
         setupTagLayouts()
     }
@@ -257,6 +238,7 @@ class PostAddFragment @Inject constructor(
 
     private fun setupViewModels() {
         viewLifecycleOwner.observe(appStateViewModel.addPostContent) {
+            setupActivityViews()
             checkboxPrivate.isChecked = it.defaultPrivate
             checkboxReadLater.isChecked = it.defaultReadLater
         }
@@ -286,7 +268,29 @@ class PostAddFragment @Inject constructor(
         }
     }
 
+    private fun setupActivityViews() {
+        mainActivity?.updateTitleLayout {
+            setTitle(R.string.posts_add_title)
+            setNavigateUp(R.drawable.ic_close) { onBackPressed() }
+        }
+
+        mainActivity?.updateViews { bottomAppBar, fab ->
+            // Using invisible() instead of gone() otherwise the fab will misbehave when
+            // starting this fragment from share
+            bottomAppBar.invisible()
+            fab.run {
+                setImageResource(R.drawable.ic_done)
+                setOnClickListener {
+                    saveLink()
+                    hide()
+                }
+                show()
+            }
+        }
+    }
+
     private fun showPostDetails(content: EditPostContent) {
+        setupActivityViews()
         originalPost = content.post
         with(content.post) {
             editTextUrl.setText(url)

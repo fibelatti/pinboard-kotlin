@@ -11,7 +11,9 @@ import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.pinboard.features.mainActivity
+import com.fibelatti.pinboard.features.notes.domain.model.Note
 import kotlinx.android.synthetic.main.fragment_note_detail.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
 import javax.inject.Inject
@@ -23,21 +25,25 @@ class NoteDetailsFragment @Inject constructor() : BaseFragment(R.layout.fragment
         val TAG: String = "NoteDetailsFragment"
     }
 
-    private val appStateViewModel: AppStateViewModel by lazy {
-        viewModelFactory.get<AppStateViewModel>(this)
-    }
-    private val noteDetailsViewModel: NoteDetailsViewModel by lazy {
-        viewModelFactory.get<NoteDetailsViewModel>(this)
-    }
+    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(requireActivity()) }
+    private val noteDetailsViewModel by lazy { viewModelFactory.get<NoteDetailsViewModel>(this) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        setupLayout()
         setupViewModels()
     }
 
-    private fun setupLayout() {
+    private fun setupViewModels() {
+        viewLifecycleOwner.observe(appStateViewModel.noteDetailContent) { content ->
+            setupActivityViews()
+            layoutOfflineAlert.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
+
+            content.note.either({ getNoteDetails(content) }, ::showNote)
+        }
+        viewLifecycleOwner.observe(noteDetailsViewModel.error, ::handleError)
+    }
+
+    private fun setupActivityViews() {
         mainActivity?.updateTitleLayout {
             hideTitle()
             setNavigateUp { navigateBack() }
@@ -53,31 +59,23 @@ class NoteDetailsFragment @Inject constructor() : BaseFragment(R.layout.fragment
         }
     }
 
-    private fun setupViewModels() {
-        viewLifecycleOwner.observe(appStateViewModel.noteDetailContent) { content ->
-            layoutOfflineAlert.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
+    private fun getNoteDetails(content: NoteDetailContent) {
+        layoutProgressBar.visible()
+        layoutDetailsRoot.gone()
+        noteDetailsViewModel.getNoteDetails(content.id)
+    }
 
-            content.note.either(
-                {
-                    layoutProgressBar.visible()
-                    layoutDetailsRoot.gone()
-                    noteDetailsViewModel.getNoteDetails(content.id)
-                },
-                { note ->
-                    layoutProgressBar.gone()
-                    layoutDetailsRoot.visible()
+    private fun showNote(note: Note) {
+        layoutProgressBar.gone()
+        layoutDetailsRoot.visible()
 
-                    textViewNoteTitle.text = note.title
-                    textViewNoteSavedDate.text = getString(R.string.notes_saved_at, note.createdAt)
-                    textViewNoteUpdatedDate.visibleIf(
-                        predicate = note.updatedAt != note.createdAt,
-                        text = getString(R.string.notes_updated_at, note.updatedAt),
-                        otherwiseVisibility = View.GONE
-                    )
-                    textViewText.text = note.text
-                }
-            )
-        }
-        observe(noteDetailsViewModel.error, ::handleError)
+        textViewNoteTitle.text = note.title
+        textViewNoteSavedDate.text = getString(R.string.notes_saved_at, note.createdAt)
+        textViewNoteUpdatedDate.visibleIf(
+            predicate = note.updatedAt != note.createdAt,
+            text = getString(R.string.notes_updated_at, note.updatedAt),
+            otherwiseVisibility = View.GONE
+        )
+        textViewText.text = note.text
     }
 }

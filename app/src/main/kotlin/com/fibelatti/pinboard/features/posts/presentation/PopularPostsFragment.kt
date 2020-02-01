@@ -34,7 +34,7 @@ class PopularPostsFragment @Inject constructor(
         val TAG: String = "PopularPostsFragment"
     }
 
-    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(this) }
+    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(requireActivity()) }
     private val popularPostsViewModel by lazy { viewModelFactory.get<PopularPostsViewModel>(this) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 class AuthFragment @Inject constructor() : BaseFragment(R.layout.fragment_auth) {
 
-    private val authViewModel: AuthViewModel by lazy { viewModelFactory.get<AuthViewModel>(this) }
+    private val authViewModel by lazy { viewModelFactory.get<AuthViewModel>(requireActivity()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

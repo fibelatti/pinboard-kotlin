@@ -83,10 +83,13 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
 
     private val handler = Handler()
 
+    private var isRecreating: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        isRecreating = savedInstanceState != null
 
-        if (!intent.fromBuilder) {
+        if (!intent.fromBuilder && !isRecreating) {
             inTransaction {
                 add(R.id.fragmentHost, createFragment<SplashFragment>())
             }
@@ -148,6 +151,11 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
         observe(authViewModel.loginState, ::handleLoginState)
         observe(authViewModel.error, ::handleError)
         observe(appStateViewModel.content) { content ->
+            if (isRecreating) {
+                isRecreating = false
+                return@observe
+            }
+
             when (content) {
                 is PostListContent -> showPostList()
                 is PostDetailContent -> showPostDetail()
@@ -297,6 +305,10 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
     }
 
     private fun handleLoginState(loginState: LoginState) {
+        if (isRecreating) {
+            return
+        }
+
         val animTime = resources.getInteger(R.integer.anim_time_long).toLong()
 
         when (loginState) {

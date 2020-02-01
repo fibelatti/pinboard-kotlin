@@ -42,10 +42,8 @@ class PostSearchFragment @Inject constructor(
         val TAG: String = "PostSearchFragment"
     }
 
-    private val appStateViewModel: AppStateViewModel by lazy {
-        viewModelFactory.get<AppStateViewModel>(this)
-    }
-    private val tagsViewModel: TagsViewModel by lazy { viewModelFactory.get<TagsViewModel>(this) }
+    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(requireActivity()) }
+    private val tagsViewModel by lazy { viewModelFactory.get<TagsViewModel>(this) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -69,32 +67,11 @@ class PostSearchFragment @Inject constructor(
             .adapter = tagsAdapter
 
         tagsAdapter.onItemClicked = { appStateViewModel.runAction(AddSearchTag(it)) }
-
-        mainActivity?.updateTitleLayout {
-            setTitle(R.string.search_title)
-            setNavigateUp {
-                hideKeyboard()
-                navigateBack()
-            }
-        }
-
-        mainActivity?.updateViews { bottomAppBar, fab ->
-            bottomAppBar.run {
-                navigationIcon = null
-                replaceMenu(R.menu.menu_search)
-                setOnMenuItemClickListener { item: MenuItem? -> handleMenuClick(item) }
-            }
-            fab.run {
-                blink {
-                    setImageResource(R.drawable.ic_search)
-                    setOnClickListener { appStateViewModel.runAction(Search(editTextSearchTerm.textAsString())) }
-                }
-            }
-        }
     }
 
     private fun setupViewModels() {
         viewLifecycleOwner.observe(appStateViewModel.searchContent) { content ->
+            setupActivityViews()
             editTextSearchTerm.setText(content.searchParameters.term)
 
             if (content.searchParameters.tags.isNotEmpty()) {
@@ -117,7 +94,31 @@ class PostSearchFragment @Inject constructor(
                 showTags(content.availableTags)
             }
         }
-        observe(tagsViewModel.error, ::handleError)
+        viewLifecycleOwner.observe(tagsViewModel.error, ::handleError)
+    }
+
+    private fun setupActivityViews() {
+        mainActivity?.updateTitleLayout {
+            setTitle(R.string.search_title)
+            setNavigateUp {
+                hideKeyboard()
+                navigateBack()
+            }
+        }
+
+        mainActivity?.updateViews { bottomAppBar, fab ->
+            bottomAppBar.run {
+                navigationIcon = null
+                replaceMenu(R.menu.menu_search)
+                setOnMenuItemClickListener { item: MenuItem? -> handleMenuClick(item) }
+            }
+            fab.run {
+                blink {
+                    setImageResource(R.drawable.ic_search)
+                    setOnClickListener { appStateViewModel.runAction(Search(editTextSearchTerm.textAsString())) }
+                }
+            }
+        }
     }
 
     private fun handleLoading(loading: Boolean) {

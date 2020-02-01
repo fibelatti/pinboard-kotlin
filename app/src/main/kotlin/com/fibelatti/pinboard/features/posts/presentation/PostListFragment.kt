@@ -54,25 +54,20 @@ class PostListFragment @Inject constructor(
         val TAG: String = "PostListFragment"
     }
 
-    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(this) }
+    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(requireActivity()) }
     private val postListViewModel by lazy { viewModelFactory.get<PostListViewModel>(this) }
-
-    private var sharedTransitionFinished: Boolean = false
-    private var sharedTransitionInterrupted: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupSharedTransition()
-    }
 
-    override fun onResume() {
-        super.onResume()
-        imageViewAppLogo?.goneIf(sharedTransitionFinished or sharedTransitionInterrupted)
+        if (savedInstanceState == null) {
+            setupSharedTransition()
+        }
     }
 
     override fun onPause() {
         super.onPause()
-        sharedTransitionInterrupted = !sharedTransitionFinished
+        imageViewAppLogo?.gone()
     }
 
     @Suppress("MagicNumber")
@@ -80,23 +75,21 @@ class PostListFragment @Inject constructor(
         val animTime = requireContext().resources.getInteger(R.integer.anim_time_long).toLong()
         val delayMillis = 100L
 
-        sharedElementEnterTransition =
-            TransitionInflater.from(context).inflateTransition(android.R.transition.move)
-                .setDuration(animTime)
-                .addListener(object : Transition.TransitionListener by DefaultTransitionListener {
-                    override fun onTransitionEnd(transition: Transition) {
-                        // Changing the visibility immediately after the transition has finished
-                        // won't work, so delay it a bit
-                        Handler().postDelayed({
-                            imageViewAppLogo?.gone()
-                            sharedTransitionFinished = true
-                        }, delayMillis)
-                    }
-                })
+        sharedElementEnterTransition = TransitionInflater.from(context)
+            .inflateTransition(android.R.transition.move)
+            .setDuration(animTime)
+            .addListener(object : Transition.TransitionListener by DefaultTransitionListener {
+                override fun onTransitionEnd(transition: Transition) {
+                    // Changing the visibility immediately after the transition has finished
+                    // won't work, so delay it a bit
+                    Handler().postDelayed({ imageViewAppLogo?.gone() }, delayMillis)
+                }
+            })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        imageViewAppLogo?.goneIf(savedInstanceState != null)
         setupLayout()
         setupViewModels()
     }

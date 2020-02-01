@@ -29,12 +29,8 @@ class NoteListFragment @Inject constructor(
         val TAG: String = "NoteListFragment"
     }
 
-    private val appStateViewModel: AppStateViewModel by lazy {
-        viewModelFactory.get<AppStateViewModel>(this)
-    }
-    private val noteListViewModel: NoteListViewModel by lazy {
-        viewModelFactory.get<NoteListViewModel>(this)
-    }
+    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(requireActivity()) }
+    private val noteListViewModel by lazy { viewModelFactory.get<NoteListViewModel>(this) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,27 +50,11 @@ class NoteListFragment @Inject constructor(
             .adapter = noteListAdapter
 
         noteListAdapter.onNoteClicked = { appStateViewModel.runAction(ViewNote(it)) }
-
-        mainActivity?.updateTitleLayout {
-            setTitle(R.string.notes_title)
-            setNavigateUp { navigateBack() }
-        }
-
-        mainActivity?.updateViews { bottomAppBar, fab ->
-            bottomAppBar.run {
-                navigationIcon = null
-                menu.clear()
-                gone()
-            }
-            fab.hide()
-        }
     }
 
     private fun setupViewModels() {
         viewLifecycleOwner.observe(appStateViewModel.noteListContent) { content ->
-            // Reset the navigate up action here since navigation to another fragment messes it up
-            mainActivity?.updateTitleLayout { setNavigateUp { navigateBack() } }
-
+            setupActivityViews()
             handleLoading(content.shouldLoad)
 
             if (content.shouldLoad) {
@@ -86,6 +66,22 @@ class NoteListFragment @Inject constructor(
             layoutOfflineAlert.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
         }
         observe(noteListViewModel.error, ::handleError)
+    }
+
+    private fun setupActivityViews() {
+        // Reset the navigate up action here since navigation to another fragment messes it up
+        mainActivity?.updateTitleLayout {
+            setTitle(R.string.notes_title)
+            setNavigateUp { navigateBack() }
+        }
+        mainActivity?.updateViews { bottomAppBar, fab ->
+            bottomAppBar.run {
+                navigationIcon = null
+                menu.clear()
+                gone()
+            }
+            fab.hide()
+        }
     }
 
     private fun handleLoading(loading: Boolean) {
