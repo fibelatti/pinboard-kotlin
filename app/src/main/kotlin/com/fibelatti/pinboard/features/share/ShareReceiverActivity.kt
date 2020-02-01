@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.share
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseActivity
@@ -9,11 +10,14 @@ import com.fibelatti.pinboard.core.extension.toast
 import com.fibelatti.pinboard.features.MainActivity
 import kotlinx.android.synthetic.main.activity_share.*
 
-class ShareReceiverActivity : BaseActivity() {
+class ShareReceiverActivity : BaseActivity(R.layout.activity_share) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_share)
+
+        window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
 
         val shareReceiverViewModel = viewModelFactory.get<ShareReceiverViewModel>(this)
 
@@ -21,9 +25,7 @@ class ShareReceiverActivity : BaseActivity() {
         intent?.checkForExtraText(shareReceiverViewModel::saveUrl)
     }
 
-    private fun setupViewModels(
-        shareReceiverViewModel: ShareReceiverViewModel
-    ) {
+    private fun setupViewModels(shareReceiverViewModel: ShareReceiverViewModel) {
         with(shareReceiverViewModel) {
             observeEvent(saved) { message ->
                 imageViewFeedback.setImageResource(R.drawable.ic_url_saved)
