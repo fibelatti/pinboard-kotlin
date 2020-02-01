@@ -7,8 +7,6 @@ import com.fibelatti.pinboard.InstantExecutorExtension
 import com.fibelatti.pinboard.MockDataProvider.mockApiToken
 import com.fibelatti.pinboard.MockDataProvider.mockTime
 import com.fibelatti.pinboard.core.android.Appearance
-import com.fibelatti.pinboard.core.android.DarkTheme
-import com.fibelatti.pinboard.core.android.LightTheme
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.user.domain.LoginState
@@ -163,20 +161,30 @@ internal class UserDataSourceTest {
             fun `GIVEN set appearance is the light theme WHEN getAppearance is called THEN LightTheme is returned`() {
                 // GIVEN
                 given(mockUserSharedPreferences.getAppearance())
-                    .willReturn(LightTheme.value)
+                    .willReturn(Appearance.LightTheme.value)
 
                 // THEN
-                userDataSource.getAppearance() shouldBe LightTheme
+                userDataSource.getAppearance() shouldBe Appearance.LightTheme
             }
 
             @Test
-            fun `GIVEN set appearance is not the light theme WHEN getAppearance is called THEN DarkTheme is returned`() {
+            fun `GIVEN set appearance is the dark theme WHEN getAppearance is called THEN DarkTheme is returned`() {
+                // GIVEN
+                given(mockUserSharedPreferences.getAppearance())
+                    .willReturn(Appearance.LightTheme.value)
+
+                // THEN
+                userDataSource.getAppearance() shouldBe Appearance.LightTheme
+            }
+
+            @Test
+            fun `GIVEN set appearance is not set WHEN getAppearance is called THEN SystemDefault is returned`() {
                 // GIVEN
                 given(mockUserSharedPreferences.getAppearance())
                     .willReturn("anything really")
 
                 // THEN
-                userDataSource.getAppearance() shouldBe DarkTheme
+                userDataSource.getAppearance() shouldBe Appearance.SystemDefault
             }
 
             @Test

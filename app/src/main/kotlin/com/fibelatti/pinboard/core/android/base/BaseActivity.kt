@@ -12,9 +12,9 @@ import com.fibelatti.core.di.ViewModelFactory
 import com.fibelatti.pinboard.App
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.android.LightTheme
+import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.extension.toast
-import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
+import com.fibelatti.pinboard.features.user.data.UserDataSource
 import javax.inject.Inject
 
 abstract class BaseActivity @ContentView constructor(
@@ -29,7 +29,7 @@ abstract class BaseActivity @ContentView constructor(
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
     @Inject
-    lateinit var userSharedPreferences: UserSharedPreferences
+    lateinit var userDataSource: UserDataSource
 
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,10 +48,10 @@ abstract class BaseActivity @ContentView constructor(
 
     private fun setupTheme() {
         workaroundWebViewNightModeIssue()
-        if (userSharedPreferences.getAppearance() == LightTheme.value) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        when (userDataSource.getAppearance()) {
+            Appearance.DarkTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            Appearance.LightTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         }
     }
 

@@ -2,14 +2,13 @@ package com.fibelatti.pinboard.features.user.presentation
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatDelegate
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.Appearance
-import com.fibelatti.pinboard.core.android.DarkTheme
-import com.fibelatti.pinboard.core.android.LightTheme
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.mainActivity
@@ -42,8 +41,12 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(R.layout.frag
             setupReadLaterDefault(it.defaultReadLater)
         }
 
-        viewLifecycleOwner.observeEvent(userPreferencesViewModel.appearanceChanged) {
-            activity?.recreate()
+        viewLifecycleOwner.observeEvent(userPreferencesViewModel.appearanceChanged) { newAppearance ->
+            when (newAppearance) {
+                Appearance.DarkTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                Appearance.LightTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+            }
         }
     }
 
@@ -64,14 +67,18 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(R.layout.frag
 
     private fun setupAppearance(appearance: Appearance) {
         when (appearance) {
-            DarkTheme -> buttonAppearanceDark.isChecked = true
-            LightTheme -> buttonAppearanceLight.isChecked = true
+            Appearance.DarkTheme -> buttonAppearanceDark.isChecked = true
+            Appearance.LightTheme -> buttonAppearanceLight.isChecked = true
+            else -> buttonAppearanceSystemDefault.isChecked = true
         }
         buttonAppearanceDark.setOnClickListener {
-            userPreferencesViewModel.saveAppearance(DarkTheme)
+            userPreferencesViewModel.saveAppearance(Appearance.DarkTheme)
         }
         buttonAppearanceLight.setOnClickListener {
-            userPreferencesViewModel.saveAppearance(LightTheme)
+            userPreferencesViewModel.saveAppearance(Appearance.LightTheme)
+        }
+        buttonAppearanceSystemDefault.setOnClickListener {
+            userPreferencesViewModel.saveAppearance(Appearance.SystemDefault)
         }
     }
 

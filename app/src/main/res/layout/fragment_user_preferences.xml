@@ -50,6 +50,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/user_preferences_appearance_light" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonAppearanceSystemDefault"
+                    style="@style/AppTheme.GroupButtonItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/user_preferences_appearance_system_default" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
             <include

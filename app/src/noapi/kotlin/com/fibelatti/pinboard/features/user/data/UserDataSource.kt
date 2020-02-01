@@ -4,8 +4,6 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fibelatti.pinboard.core.android.Appearance
-import com.fibelatti.pinboard.core.android.DarkTheme
-import com.fibelatti.pinboard.core.android.LightTheme
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.user.domain.LoginState
@@ -36,10 +34,10 @@ class UserDataSource @Inject constructor(
     override fun setLastUpdate(value: String) {}
 
     override fun getAppearance(): Appearance {
-        return if (userSharedPreferences.getAppearance() == LightTheme.value) {
-            LightTheme
-        } else {
-            DarkTheme
+        return when (userSharedPreferences.getAppearance()) {
+            Appearance.LightTheme.value -> Appearance.LightTheme
+            Appearance.DarkTheme.value -> Appearance.DarkTheme
+            else -> Appearance.SystemDefault
         }
     }
 
