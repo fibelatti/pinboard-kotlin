@@ -22,7 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import java.text.Collator
 import java.util.Locale
-import javax.inject.Singleton
 
 @Module
 abstract class CoreModule {
@@ -47,8 +46,7 @@ abstract class CoreModule {
 
         @Provides
         @JvmStatic
-        fun connectivityManager(context: Context): ConnectivityManager? =
-            context.getSystemService<ConnectivityManager>()
+        fun connectivityManager(context: Context): ConnectivityManager? = context.getSystemService()
 
         @Provides
         @IoScope
@@ -63,7 +61,6 @@ abstract class CoreModule {
     abstract fun resourceProvider(appResourceProvider: AppResourceProvider): ResourceProvider
 
     @Binds
-    @Singleton
     abstract fun viewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
 
     @Binds
