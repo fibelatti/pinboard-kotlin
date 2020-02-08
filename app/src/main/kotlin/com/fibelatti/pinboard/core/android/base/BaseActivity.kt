@@ -8,12 +8,12 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.FragmentFactory
-import com.fibelatti.core.di.ViewModelFactory
+import com.fibelatti.core.archcomponents.ViewModelFactory
+import com.fibelatti.core.extension.toast
 import com.fibelatti.pinboard.App
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.Appearance
-import com.fibelatti.pinboard.core.extension.toast
 import com.fibelatti.pinboard.features.user.data.UserDataSource
 import javax.inject.Inject
 

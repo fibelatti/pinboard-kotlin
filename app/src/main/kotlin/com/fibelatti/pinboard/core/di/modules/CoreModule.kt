@@ -6,12 +6,12 @@ import android.net.ConnectivityManager
 import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.ViewModelProvider
 import com.fibelatti.core.android.AppResourceProvider
-import com.fibelatti.core.di.ViewModelFactory
+import com.fibelatti.core.android.MultiBindingFragmentFactory
+import com.fibelatti.core.archcomponents.ViewModelFactory
 import com.fibelatti.core.extension.getSystemService
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.App
 import com.fibelatti.pinboard.core.di.IoScope
-import com.fibelatti.pinboard.core.di.MultiBindingFragmentFactory
 import com.fibelatti.pinboard.core.persistence.getUserPreferences
 import com.google.gson.Gson
 import dagger.Binds

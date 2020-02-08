@@ -5,6 +5,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
+import com.fibelatti.core.archcomponents.get
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.pinboard.R

@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.view.View
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
+import com.fibelatti.core.archcomponents.get
 import com.fibelatti.core.extension.afterTextChanged
 import com.fibelatti.core.extension.clearError
 import com.fibelatti.core.extension.clearText
@@ -18,7 +19,9 @@ import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.onKeyboardSubmit
 import com.fibelatti.core.extension.setOnClickListener
 import com.fibelatti.core.extension.showError
+import com.fibelatti.core.extension.showStyledDialog
 import com.fibelatti.core.extension.textAsString
+import com.fibelatti.core.extension.toast
 import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.core.extension.withItemOffsetDecoration
@@ -27,8 +30,6 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.BackPressHandler
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.show
-import com.fibelatti.pinboard.core.extension.showStyledDialog
-import com.fibelatti.pinboard.core.extension.toast
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.NavigateBack
@@ -88,7 +89,10 @@ class PostAddFragment @Inject constructor(
         if (isContentUnchanged) {
             appStateViewModel.runAction(NavigateBack)
         } else {
-            context?.showStyledDialog {
+            context?.showStyledDialog(
+                dialogStyle = R.style.AppTheme_AlertDialog,
+                dialogBackground = R.drawable.background_contrast_rounded
+            ) {
                 setMessage(R.string.alert_confirm_unsaved_changes)
                 setPositiveButton(R.string.hint_yes) { _, _ ->
                     appStateViewModel.runAction(NavigateBack)
@@ -331,7 +335,10 @@ class PostAddFragment @Inject constructor(
     }
 
     private fun deletePost(post: Post) {
-        context?.showStyledDialog {
+        context?.showStyledDialog(
+            dialogStyle = R.style.AppTheme_AlertDialog,
+            dialogBackground = R.drawable.background_contrast_rounded
+        ) {
             setMessage(R.string.alert_confirm_deletion)
             setPositiveButton(R.string.hint_yes) { _, _ -> postDetailViewModel.deletePost(post) }
             setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
