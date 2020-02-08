@@ -51,7 +51,7 @@ class PostAddFragment @Inject constructor(
         val TAG: String = "PostAddFragment"
     }
 
-    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(requireActivity()) }
+    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(this) }
     private val postAddViewModel by lazy { viewModelFactory.get<PostAddViewModel>(this) }
     private val postDetailViewModel by lazy { viewModelFactory.get<PostDetailViewModel>(this) }
 
