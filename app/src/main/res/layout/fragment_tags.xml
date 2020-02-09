@@ -11,6 +11,13 @@
     android:orientation="vertical">
 
     <include
+        layout="@layout/layout_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        tools:visibility="gone" />
+
+    <include
         android:id="@+id/layoutOfflineAlert"
         layout="@layout/layout_offline_alert"
         android:layout_width="match_parent"
@@ -26,12 +33,5 @@
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/margin_regular"
         android:layout_marginEnd="@dimen/margin_regular" />
-
-    <include
-        layout="@layout/layout_progress_bar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        tools:visibility="gone" />
 
 </LinearLayout>

@@ -6,10 +6,10 @@ import androidx.annotation.ContentView
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import com.fibelatti.core.extension.doOnApplyWindowInsets
-import com.fibelatti.core.extension.getViewToApplyInsets
 import com.fibelatti.core.extension.toast
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.extension.getViewToApplyInsets
 
 abstract class BaseFragment @ContentView constructor(
     @LayoutRes contentLayoutId: Int
