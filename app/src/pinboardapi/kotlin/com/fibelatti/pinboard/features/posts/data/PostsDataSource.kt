@@ -13,12 +13,15 @@ import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.di.IoScope
+import com.fibelatti.pinboard.core.extension.containsHtmlChars
+import com.fibelatti.pinboard.core.extension.replaceHtmlChars
 import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.RateLimitRunner
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
+import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
 import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagDtoMapper
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
@@ -136,7 +139,7 @@ class PostsDataSource @Inject constructor(
         }.mapCatching { posts ->
             withContext(Dispatchers.IO) {
                 postsDao.deleteAllPosts()
-                postsDao.savePosts(posts)
+                savePosts(posts)
             }
 
             if (posts.size == API_PAGE_SIZE) {
@@ -159,7 +162,7 @@ class PostsDataSource @Inject constructor(
                     postsApi.getAllPosts(offset = currentOffset, limit = API_PAGE_SIZE)
                 }
 
-                postsDao.savePosts(additionalPosts)
+                savePosts(additionalPosts)
 
                 if (additionalPosts.size == API_PAGE_SIZE) {
                     currentOffset += additionalPosts.size
@@ -168,6 +171,18 @@ class PostsDataSource @Inject constructor(
                 }
             }
         }
+    }
+
+    @VisibleForTesting
+    fun savePosts(posts: List<PostDto>) {
+        val updatedPosts = posts.map { post ->
+            if (post.tags.containsHtmlChars()) {
+                post.copy(tags = post.tags.replaceHtmlChars())
+            } else {
+                post
+            }
+        }
+        postsDao.savePosts(updatedPosts)
     }
 
     @VisibleForTesting
@@ -259,7 +274,7 @@ class PostsDataSource @Inject constructor(
                 postsDao.searchExistingPostTag(PostsDao.preFormatTag(tag))
             }
 
-            concatenatedTags.flatMap { it.split(" ") }
+            concatenatedTags.flatMap { it.replaceHtmlChars().split(" ") }
                 .filter { it.startsWith(tag) }
                 .distinct()
                 .sorted()

@@ -16,7 +16,17 @@ internal class PostsDaoUnitTest {
     }
 
     @Test
+    fun `GIVEN term contained a double quote WHEN preFormatTerm is called THEN term formatted for the query is returned`() {
+        PostsDao.preFormatTerm("term\"") shouldBe "href: \"term*\" OR description: \"term*\" OR extended: \"term*\""
+    }
+
+    @Test
     fun `WHEN preFormatTag is called THEN tag formatted for the query is returned`() {
         PostsDao.preFormatTag("tag") shouldBe "\"tag*\""
+    }
+
+    @Test
+    fun `GIVEN tag contained a double quote WHEN preFormatTag is called THEN tag formatted for the query is returned`() {
+        PostsDao.preFormatTag("tag\"") shouldBe "\"tag*\""
     }
 }

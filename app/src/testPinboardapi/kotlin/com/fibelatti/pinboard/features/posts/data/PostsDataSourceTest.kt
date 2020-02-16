@@ -22,6 +22,8 @@ import com.fibelatti.pinboard.MockDataProvider.mockTag3
 import com.fibelatti.pinboard.MockDataProvider.mockTagString1
 import com.fibelatti.pinboard.MockDataProvider.mockTagString2
 import com.fibelatti.pinboard.MockDataProvider.mockTagString3
+import com.fibelatti.pinboard.MockDataProvider.mockTagStringHtml
+import com.fibelatti.pinboard.MockDataProvider.mockTagStringHtmlEscaped
 import com.fibelatti.pinboard.MockDataProvider.mockTags
 import com.fibelatti.pinboard.MockDataProvider.mockTagsRequest
 import com.fibelatti.pinboard.MockDataProvider.mockTime
@@ -31,6 +33,7 @@ import com.fibelatti.pinboard.TestRateLimitRunner
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.pinboard.core.extension.HTML_CHAR_MAP
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
@@ -58,6 +61,7 @@ import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.BDDMockito.anyString
 import org.mockito.BDDMockito.given
 import org.mockito.BDDMockito.verifyNoMoreInteractions
+import org.mockito.BDDMockito.will
 import org.mockito.BDDMockito.willDoNothing
 import org.mockito.BDDMockito.willReturn
 import org.mockito.Mockito.never
@@ -471,6 +475,7 @@ class PostsDataSourceTest {
                     .willReturn(UpdateDto(mockFutureTime))
                 givenSuspend { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                     .willReturn(mockListPostDto)
+                willDoNothing().given(dataSource).savePosts(safeAny())
 
                 // WHEN
                 val result = runBlocking {
@@ -493,7 +498,7 @@ class PostsDataSourceTest {
                 verify(mockCoroutineContext).cancelChildren()
                 verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 verifySuspend(mockDao) { deleteAllPosts() }
-                verifySuspend(mockDao) { savePosts(mockListPostDto) }
+                verify(dataSource).savePosts(mockListPostDto)
                 verifySuspend(mockUserRepository) { setLastUpdate(mockFutureTime) }
             }
 
@@ -602,8 +607,7 @@ class PostsDataSourceTest {
                     .willReturn(UpdateDto(mockFutureTime))
                 givenSuspend { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                     .willReturn(mockListPostDto)
-                given(mockDao.savePosts(mockListPostDto))
-                    .will { throw Exception() }
+                will { throw Exception() }.given(dataSource).savePosts(safeAny())
 
                 // WHEN
                 val result = runBlocking {
@@ -626,7 +630,7 @@ class PostsDataSourceTest {
                 verify(mockCoroutineContext).cancelChildren()
                 verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 verifySuspend(mockDao) { deleteAllPosts() }
-                verifySuspend(mockDao) { savePosts(mockListPostDto) }
+                verify(dataSource).savePosts(mockListPostDto)
                 verifySuspend(mockUserRepository, never()) { setLastUpdate(anyString()) }
             }
 
@@ -637,6 +641,7 @@ class PostsDataSourceTest {
                     .willReturn(UpdateDto(mockFutureTime))
                 givenSuspend { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                     .willReturn(mockListPostDto)
+                willDoNothing().given(dataSource).savePosts(safeAny())
 
                 // WHEN
                 val result = runBlocking {
@@ -659,7 +664,7 @@ class PostsDataSourceTest {
                 verify(mockCoroutineContext).cancelChildren()
                 verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 verifySuspend(mockDao) { deleteAllPosts() }
-                verifySuspend(mockDao) { savePosts(mockListPostDto) }
+                verify(dataSource).savePosts(mockListPostDto)
                 verifySuspend(mockUserRepository) { setLastUpdate(mockFutureTime) }
             }
 
@@ -673,6 +678,7 @@ class PostsDataSourceTest {
                     .willReturn(mockListPostDto)
                 given(mockListPostDto.size).willReturn(API_PAGE_SIZE)
                 willDoNothing().given(dataSource).getAdditionalPages()
+                willDoNothing().given(dataSource).savePosts(safeAny())
 
                 // WHEN
                 val result = runBlocking {
@@ -695,7 +701,7 @@ class PostsDataSourceTest {
                 verify(mockCoroutineContext).cancelChildren()
                 verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 verifySuspend(mockDao) { deleteAllPosts() }
-                verifySuspend(mockDao) { savePosts(mockListPostDto) }
+                verify(dataSource).savePosts(mockListPostDto)
                 verify(dataSource).getAdditionalPages()
                 verifySuspend(mockUserRepository) { setLastUpdate(mockFutureTime) }
             }
@@ -712,12 +718,13 @@ class PostsDataSourceTest {
 
             givenSuspend { mockApi.getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
                 .willReturn(mockPosts)
+            willDoNothing().given(dataSource).savePosts(safeAny())
 
             // WHEN
             dataSource.getAdditionalPages()
 
             // THEN
-            verify(mockDao).savePosts(mockPosts)
+            verify(dataSource).savePosts(mockPosts)
             verifySuspend(mockApi) { getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
             verifyNoMoreInteractions(mockApi)
         }
@@ -732,15 +739,37 @@ class PostsDataSourceTest {
                 .willReturn(mockPosts)
             givenSuspend { mockApi.getAllPosts(offset = API_PAGE_SIZE * 2, limit = API_PAGE_SIZE) }
                 .willReturn(mockPosts)
+            willDoNothing().given(dataSource).savePosts(safeAny())
 
             // WHEN
             dataSource.getAdditionalPages()
 
             // THEN
-            verify(mockDao, times(2)).savePosts(mockPosts)
+            verify(dataSource, times(2)).savePosts(mockPosts)
             verifySuspend(mockApi) { getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
-            verifySuspend(mockApi) { getAllPosts(offset = API_PAGE_SIZE * 2, limit = API_PAGE_SIZE) }
+            verifySuspend(mockApi) {
+                getAllPosts(
+                    offset = API_PAGE_SIZE * 2,
+                    limit = API_PAGE_SIZE
+                )
+            }
             verifyNoMoreInteractions(mockApi)
+        }
+    }
+
+    @Nested
+    inner class SavePostsTests {
+
+        @Test
+        fun `WHEN tags contain escaped html characters THEN tags are replaced`() {
+            val input = HTML_CHAR_MAP.keys.map { createPostDto(tags = it) }
+                .toMutableList().apply { add(createPostDto()) }
+            val expected = HTML_CHAR_MAP.values.map { createPostDto(tags = it) }
+                .toMutableList().apply { add(createPostDto()) }
+
+            dataSource.savePosts(input)
+
+            verifySuspend(mockDao) { savePosts(expected) }
         }
     }
 
@@ -1257,20 +1286,27 @@ class PostsDataSourceTest {
                     listOf(
                         mockTagString1,
                         "$mockTagString2 $mockTagString1",
-                        "$mockTagString1 $mockTagString2 $mockTagString3"
+                        "$mockTagString1 $mockTagString2 $mockTagString3",
+                        mockTagStringHtmlEscaped
                     )
                 )
 
             val commonPrefix = mockTagString1
                 .commonPrefixWith(mockTagString2)
                 .commonPrefixWith(mockTagString3)
+                .commonPrefixWith(mockTagStringHtmlEscaped)
 
             // WHEN
 
             val result = runBlocking { dataSource.searchExistingPostTag(commonPrefix) }
 
             // THEN
-            result.getOrNull() shouldBe listOf(mockTagString1, mockTagString2, mockTagString3)
+            result.getOrNull() shouldBe listOf(
+                mockTagString1,
+                mockTagString2,
+                mockTagString3,
+                mockTagStringHtml
+            )
         }
     }
 

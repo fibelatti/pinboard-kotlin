@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 import com.fibelatti.core.functional.TwoWayMapper
 import com.fibelatti.pinboard.core.AppConfig.API_ENCODING
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
+import com.fibelatti.pinboard.core.extension.replaceHtmlChars
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import java.net.URLDecoder
@@ -46,7 +47,10 @@ class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
             tags = if (tags.isBlank()) {
                 null
             } else {
-                tags.split(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE).sorted().map { Tag(it) }
+                tags.replaceHtmlChars()
+                    .split(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE)
+                    .sorted()
+                    .map(::Tag)
             }
         )
     }

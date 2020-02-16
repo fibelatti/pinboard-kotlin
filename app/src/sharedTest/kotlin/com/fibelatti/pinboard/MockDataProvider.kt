@@ -29,6 +29,8 @@ object MockDataProvider {
     const val mockTagString2 = "tag2"
     const val mockTagString3 = "tag3"
     const val mockTagString4 = "tag4"
+    const val mockTagStringHtml = "tag<>\"&"
+    const val mockTagStringHtmlEscaped = "tag&lt;&gt;&quot;&amp;"
 
     val mockTag1 = Tag(name = mockTagString1)
     val mockTag2 = Tag(name = mockTagString2)

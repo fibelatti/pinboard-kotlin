@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.fibelatti.core.extension.remove
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.features.posts.data.model.POST_FTS_TABLE_NAME
 import com.fibelatti.pinboard.features.posts.data.model.POST_TABLE_NAME
@@ -106,14 +107,12 @@ interface PostsDao {
 
         @JvmStatic
         fun preFormatTerm(term: String): String {
-            return if (term.isBlank()) {
-                ""
-            } else {
-                "href: \"$term*\" OR description: \"$term*\" OR extended: \"$term*\""
-            }
+            return term.remove("\"").takeIf(String::isNotBlank)
+                ?.let { "href: \"$it*\" OR description: \"$it*\" OR extended: \"$it*\"" }
+                .orEmpty()
         }
 
         @JvmStatic
-        fun preFormatTag(tag: String) = "\"$tag*\""
+        fun preFormatTag(tag: String) = "\"${tag.remove("\"")}*\""
     }
 }

@@ -4,6 +4,7 @@ import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.createPostDto
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
@@ -36,6 +37,11 @@ class PostDtoMapperTest {
         @Test
         fun `GIVEN tags is empty WHEN map is called THEN Post is returned AND tags is null`() {
             mapper.map(createPostDto(tags = "")) shouldBe createPost(tags = null)
+        }
+
+        @Test
+        fun `GIVEN tags contained html WHEN map is called THEN Post is returned AND tags is formatted`() {
+            mapper.map(createPostDto(tags = "&lt;&gt;&quot;&amp;")) shouldBe createPost(tags = listOf(Tag("<>\"&")))
         }
     }
 
