@@ -65,14 +65,14 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
     }
 
     fun getShowDescriptionInLists(): Boolean =
-        sharedPreferences.get(KEY_SHOW_DESCRIPTION_IN_LISTS, false)
+        sharedPreferences.get(KEY_SHOW_DESCRIPTION_IN_LISTS, true)
 
     fun setShowDescriptionInLists(value: Boolean) {
         sharedPreferences.put(KEY_SHOW_DESCRIPTION_IN_LISTS, value)
     }
 
     fun getShowDescriptionInDetails(): Boolean =
-        sharedPreferences.get(KEY_SHOW_DESCRIPTION_IN_DETAILS, false)
+        sharedPreferences.get(KEY_SHOW_DESCRIPTION_IN_DETAILS, true)
 
     fun setShowDescriptionInDetails(value: Boolean) {
         sharedPreferences.put(KEY_SHOW_DESCRIPTION_IN_DETAILS, value)

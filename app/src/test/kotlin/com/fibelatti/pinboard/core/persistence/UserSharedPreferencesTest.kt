@@ -168,7 +168,7 @@ internal class UserSharedPreferencesTest {
     fun `WHEN getDescriptionVisibleInList is called THEN its value is returned`() {
         // GIVEN
         val value = randomBoolean()
-        given(mockSharedPreferences.get(KEY_SHOW_DESCRIPTION_IN_LISTS, false))
+        given(mockSharedPreferences.get(KEY_SHOW_DESCRIPTION_IN_LISTS, true))
             .willReturn(value)
 
         // THEN
@@ -189,7 +189,7 @@ internal class UserSharedPreferencesTest {
     fun `WHEN getDescriptionVisibleInDetail is called THEN its value is returned`() {
         // GIVEN
         val value = randomBoolean()
-        given(mockSharedPreferences.get(KEY_SHOW_DESCRIPTION_IN_DETAILS, false))
+        given(mockSharedPreferences.get(KEY_SHOW_DESCRIPTION_IN_DETAILS, true))
             .willReturn(value)
 
         // THEN
