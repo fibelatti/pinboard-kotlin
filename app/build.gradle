@@ -94,7 +94,7 @@ android {
         testPinboardapi.java.srcDirs("src/test/kotlin", "src/sharedTest/kotlin", "src/testPinboardapi/kotlin")
 
         androidTest {
-            java.srcDirs("src/androidTest/kotlin", "src/sharedTest/kotlin", "src/test/resources")
+            java.srcDirs("src/androidTest/kotlin", "src/sharedTest/kotlin")
             assets.srcDirs += files("$projectDir/schemas")
         }
     }
@@ -186,7 +186,6 @@ dependencies {
     androidTestImplementation(TestDependencies.coreLibTest)
 
     androidTestImplementation(Dependencies.supportAnnotations)
-    androidTestImplementation(TestDependencies.mockitoAndroid)
     androidTestImplementation(TestDependencies.archComponentsTest)
     androidTestImplementation(TestDependencies.testRunner)
     androidTestImplementation(TestDependencies.kotlinTest)

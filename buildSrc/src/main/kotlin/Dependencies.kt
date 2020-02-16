@@ -71,6 +71,5 @@ object TestDependencies {
     const val kotlinTest = "org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlinVersion}"
     const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutinesVersion}"
     const val mockitoCore = "org.mockito:mockito-inline:3.2.4"
-    const val mockitoAndroid = "org.mockito:mockito-android:3.2.4"
     const val archComponentsTest = "android.arch.core:core-testing:${Versions.lifecycleVersion}"
 }
