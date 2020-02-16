@@ -42,7 +42,7 @@ object MockDataProvider {
     const val mockTime5 = "2019-01-14T08:20:10Z"
 
     val mockTagsString = listOf(mockTagString1, mockTagString2, mockTagString3, mockTagString4)
-    val mockTags = mockTagsString.map { Tag(it) }
+    val mockTags = mockTagsString.map(::Tag)
 
     val mockTagsResponse = mockTagsString.joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE)
     val mockTagsRequest = mockTagsString.joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST)

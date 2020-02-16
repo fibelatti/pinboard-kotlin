@@ -34,7 +34,7 @@ class TagChipGroup @JvmOverloads constructor(
         }
     }
 
-    private fun createTagsFromText(text: String): List<Tag> = text.trim().split(" ").map { Tag(it) }
+    private fun createTagsFromText(text: String): List<Tag> = text.trim().split(" ").map(::Tag)
 
     private fun addIfNotAlreadyAdded(tag: Tag, index: Int = -1, showRemoveIcon: Boolean) {
         if (children.none { (it as? TagChip)?.getValue() == tag }) {

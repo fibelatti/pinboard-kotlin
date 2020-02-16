@@ -16,8 +16,8 @@ class SuggestedTagDtoMapper @Inject constructor() : Mapper<SuggestedTagsDto, Sug
 
     override fun map(param: SuggestedTagsDto): SuggestedTags = with(param) {
         SuggestedTags(
-            popular = popular.map { Tag(it) },
-            recommended = recommended.map { Tag(it) }
+            popular = popular.map(::Tag),
+            recommended = recommended.map(::Tag)
         )
     }
 }
