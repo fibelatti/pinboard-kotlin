@@ -1,38 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:animateLayoutChanges="true">
-
-    <TextView
-        android:id="@+id/textViewTagsTitle"
-        style="@style/AppTheme.Text.SectionTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_small"
-        android:layout_marginBottom="@dimen/margin_small"
-        android:text="@string/posts_add_tags_title"
-        app:layout_constraintBottom_toTopOf="@+id/textInputLayoutTags"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:layout_constraintVertical_chainStyle="packed" />
+    android:animateLayoutChanges="true"
+    android:paddingBottom="@dimen/padding_xlarge">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutTags"
         style="@style/AppTheme.InputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_xsmall"
         android:hint="@string/posts_add_tags"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/buttonEditTags"
-        app:layout_constraintEnd_toStartOf="@+id/buttonTagsDone"
+        app:layout_constraintBottom_toTopOf="@+id/scrollViewSuggestedTags"
+        app:layout_constraintEnd_toStartOf="@+id/buttonTagsAdd"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewTagsTitle"
-        tools:visibility="visible">
+        app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextTags"
@@ -44,15 +28,31 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonTagsDone"
+        android:id="@+id/buttonTagsAdd"
         style="@style/AppTheme.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/posts_add_tags_done"
-        android:visibility="gone"
+        android:text="@string/posts_add_tags_add"
         app:layout_constraintBaseline_toBaselineOf="@+id/textInputLayoutTags"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:visibility="visible" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <HorizontalScrollView
+        android:id="@+id/scrollViewSuggestedTags"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_small"
+        app:layout_constraintBottom_toTopOf="@+id/scrollViewCurrentTags"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutTags">
+
+        <com.fibelatti.pinboard.features.posts.presentation.TagChipGroup
+            android:id="@+id/chipGroupSuggestedTags"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleLine="true" />
+    </HorizontalScrollView>
 
     <ScrollView
         android:id="@+id/scrollViewCurrentTags"
@@ -60,10 +60,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_small"
         app:layout_constrainedHeight="true"
-        app:layout_constraintBottom_toTopOf="@+id/buttonEditTags"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutTags"
+        app:layout_constraintTop_toBottomOf="@+id/scrollViewSuggestedTags"
         app:layout_constraintVertical_bias="0.0"
         app:layout_constraintVertical_chainStyle="packed">
 
@@ -73,30 +73,5 @@
             android:layout_height="wrap_content" />
     </ScrollView>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonEditTags"
-        style="@style/AppTheme.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/fab_offset_bottom"
-        android:text="@string/posts_add_tags_edit"
-        app:layout_constraintBottom_toTopOf="@+id/recyclerViewSuggestedTags"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scrollViewCurrentTags" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewSuggestedTags"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:clipToPadding="false"
-        android:paddingBottom="@dimen/padding_regular"
-        android:visibility="gone"
-        app:layout_constrainedHeight="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_min="@dimen/post_detail_tags_suggested_min_height"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonEditTags"
-        tools:listitem="@layout/list_item_tag_simple"
-        tools:visibility="visible" />
 </androidx.constraintlayout.widget.ConstraintLayout>

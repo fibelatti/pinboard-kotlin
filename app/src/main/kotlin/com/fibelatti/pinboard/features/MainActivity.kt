@@ -7,13 +7,13 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import com.fibelatti.core.android.IntentDelegate
 import com.fibelatti.core.android.base.BaseIntentBuilder
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.get
 import com.fibelatti.core.extension.createFragment
-import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.exhaustive
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.inTransaction
@@ -26,6 +26,7 @@ import com.fibelatti.pinboard.core.android.BackPressHandler
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.customview.TitleLayout
+import com.fibelatti.pinboard.core.extension.doOnApplyWindowInsets
 import com.fibelatti.pinboard.core.extension.shareText
 import com.fibelatti.pinboard.core.functional.DoNothing
 import com.fibelatti.pinboard.features.appstate.AddPostContent
@@ -132,15 +133,22 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
                 bottomMargin = resources.getDimensionPixelSize(R.dimen.margin_small) +
                     insets.systemWindowInsetBottom
             }
+
+            // Remove once we're done to prevent the Fab from appearing over the keyboard
+            view.doOnApplyWindowInsets { _, _, _, _ -> }
         }
 
         bottomAppBar?.doOnApplyWindowInsets { view, insets, padding, _ ->
-            view.setPadding(
-                padding.left,
+            ViewCompat.setPaddingRelative(
+                view,
+                padding.start,
                 padding.top,
-                padding.right,
+                padding.end,
                 padding.bottom + insets.systemWindowInsetBottom
             )
+
+            // Remove once we're done to prevent the BottomAppBar from appearing over the keyboard
+            view.doOnApplyWindowInsets { _, _, _, _ -> }
         }
 
         bottomAppBar?.setNavigationOnClickListener {

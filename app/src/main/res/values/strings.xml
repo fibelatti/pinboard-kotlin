@@ -101,10 +101,7 @@
     <string name="posts_add_read_later">Read later</string>
 
     <string name="posts_add_tags">New tag</string>
-    <string name="posts_add_tags_edit">Edit tags</string>
-    <string name="posts_add_tags_done">Done</string>
-    <string name="posts_add_tags_title">Tags</string>
-    <string name="posts_add_tags_suggested">Suggested tags</string>
+    <string name="posts_add_tags_add">Add tag</string>
 
     <string name="posts_saved_feedback">Bookmark saved successfully!</string>
 

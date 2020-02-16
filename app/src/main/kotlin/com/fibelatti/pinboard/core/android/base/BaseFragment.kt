@@ -4,11 +4,12 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.ContentView
 import androidx.annotation.LayoutRes
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
-import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.toast
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.extension.doOnApplyWindowInsets
 import com.fibelatti.pinboard.core.extension.getViewToApplyInsets
 
 abstract class BaseFragment @ContentView constructor(
@@ -22,10 +23,11 @@ abstract class BaseFragment @ContentView constructor(
         super.onViewCreated(view, savedInstanceState)
 
         getViewToApplyInsets(view).doOnApplyWindowInsets { viewToApply, insets, initialPadding, _ ->
-            viewToApply.setPadding(
-                initialPadding.left,
+            ViewCompat.setPaddingRelative(
+                viewToApply,
+                initialPadding.start,
                 initialPadding.top,
-                initialPadding.right,
+                initialPadding.end,
                 initialPadding.bottom + insets.systemWindowInsetBottom
             )
         }

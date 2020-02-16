@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -12,11 +13,14 @@ import com.fibelatti.core.archcomponents.get
 import com.fibelatti.core.extension.afterTextChanged
 import com.fibelatti.core.extension.clearError
 import com.fibelatti.core.extension.clearText
+import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.gone
+import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.invisible
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.onKeyboardSubmit
+import com.fibelatti.core.extension.orZero
 import com.fibelatti.core.extension.setOnClickListener
 import com.fibelatti.core.extension.showError
 import com.fibelatti.core.extension.showStyledDialog
@@ -24,8 +28,6 @@ import com.fibelatti.core.extension.textAsString
 import com.fibelatti.core.extension.toast
 import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
-import com.fibelatti.core.extension.withItemOffsetDecoration
-import com.fibelatti.core.extension.withLinearLayoutManager
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.BackPressHandler
 import com.fibelatti.pinboard.core.android.base.BaseFragment
@@ -42,9 +44,9 @@ import kotlinx.android.synthetic.main.layout_add_tags.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
 import javax.inject.Inject
 
-class PostAddFragment @Inject constructor(
-    private val suggestedTagsAdapter: SuggestedTagsAdapter
-) : BaseFragment(R.layout.fragment_add_post), BackPressHandler {
+class PostAddFragment @Inject constructor() : BaseFragment(
+    R.layout.fragment_add_post
+), BackPressHandler {
 
     companion object {
         @JvmStatic
@@ -55,6 +57,7 @@ class PostAddFragment @Inject constructor(
     private val postAddViewModel by lazy { viewModelFactory.get<PostAddViewModel>(this) }
     private val postDetailViewModel by lazy { viewModelFactory.get<PostDetailViewModel>(this) }
 
+    private var initialInsetBottomValue = -1
     /**
      * Saved since different flavours have different visibilities
      */
@@ -103,8 +106,52 @@ class PostAddFragment @Inject constructor(
     }
 
     private fun setupLayout() {
+        handleKeyboardVisibility()
         setupDescriptionLayouts()
         setupTagLayouts()
+    }
+
+    @Suppress("MagicNumber")
+    private fun handleKeyboardVisibility() {
+        layoutRoot.doOnApplyWindowInsets { view, windowInsets, _, _ ->
+            // This is the first pass, just save the initial inset value
+            if (initialInsetBottomValue == -1) {
+                initialInsetBottomValue = windowInsets.systemWindowInsetBottom
+                return@doOnApplyWindowInsets
+            }
+
+            // New inset is bigger, keyboard will appear
+            if (windowInsets.systemWindowInsetBottom > initialInsetBottomValue) {
+                // In case what's below the focused view is also important
+                val scrollOffset = resources.getDimensionPixelSize(R.dimen.scroll_offset)
+                // We want to scroll enough for the focused view to be fully visible
+                val focusedViewBottom = try {
+                    requireActivity().currentFocus?.let { focusedView ->
+                        val pos = IntArray(2)
+                        focusedView.getLocationOnScreen(pos).run {
+                            pos[1] + focusedView.measuredHeight + scrollOffset
+                        }
+                    }.orZero()
+                } catch (ignored: IllegalStateException) {
+                    // The activity is gone
+                    return@doOnApplyWindowInsets
+                }
+
+                if (focusedViewBottom <= windowInsets.systemWindowInsetBottom) {
+                    // View is already fully visible, there's no need to scroll
+                    return@doOnApplyWindowInsets
+                }
+
+                // Finally animate
+                ObjectAnimator.ofInt(view, "scrollY", focusedViewBottom)
+                    .setDuration(resources.getInteger(android.R.integer.config_mediumAnimTime).toLong())
+                    .apply {
+                        // Has to be delayed because keyboard is still appearing
+                        startDelay = 100L
+                    }
+                    .start()
+            }
+        }
     }
 
     private fun saveLink() {
@@ -157,49 +204,21 @@ class PostAddFragment @Inject constructor(
     }
 
     private fun setupTagLayouts() {
-        buttonEditTags.setOnClickListener { focusOnTags() }
-        buttonTagsDone.setOnClickListener { focusOnPost() }
-
         setupTagInput()
+        buttonTagsAdd.setOnClickListener {
+            editTextTags.textAsString().takeIf(String::isNotBlank)?.let {
+                chipGroupTags.addValue(it, index = 0)
+                editTextTags.clearText()
+            }
+        }
 
         chipGroupTags.onTagChipAdded = { updateSuggestedTags() }
         chipGroupTags.onTagChipRemoved = { updateSuggestedTags() }
 
-        recyclerViewSuggestedTags
-            .withLinearLayoutManager()
-            .withItemOffsetDecoration(R.dimen.padding_small)
-            .adapter = suggestedTagsAdapter
-
-        suggestedTagsAdapter.onTagClicked = {
-            chipGroupTags.addValue(it, index = 0)
+        chipGroupSuggestedTags.onTagChipClicked = {
+            chipGroupTags.addTag(it, index = 0)
             editTextTags.clearText()
         }
-    }
-
-    private fun focusOnTags() {
-        layoutAddPost.gone()
-
-        textViewTagsTitle.gone()
-        buttonEditTags.gone()
-
-        textInputLayoutTags.visible()
-        buttonTagsDone.visible()
-        recyclerViewSuggestedTags.visible()
-        hideFab()
-    }
-
-    private fun focusOnPost() {
-        layoutAddPost.visible()
-
-        textViewTagsTitle.visible()
-        buttonEditTags.visible()
-
-        textInputLayoutTags.gone()
-        buttonTagsDone.gone()
-        recyclerViewSuggestedTags.gone()
-
-        showFab()
-        delayedHideKeyboard()
     }
 
     private fun delayedHideKeyboard() {
@@ -220,7 +239,7 @@ class PostAddFragment @Inject constructor(
                     editTextTags.clearText()
                 }
                 text.isNotBlank() -> postAddViewModel.searchForTag(text, chipGroupTags.getAllTags())
-                else -> suggestedTagsAdapter.clearItems()
+                else -> chipGroupSuggestedTags.removeAllViews()
             }
         }
         editTextTags.onKeyboardSubmit {
@@ -235,7 +254,7 @@ class PostAddFragment @Inject constructor(
     }
 
     private fun updateSuggestedTags() {
-        editTextTags.textAsString().takeIf { it.isNotBlank() }?.let {
+        editTextTags.textAsString().takeIf(String::isNotBlank)?.let {
             postAddViewModel.searchForTag(it, chipGroupTags.getAllTags())
         }
     }
@@ -243,6 +262,8 @@ class PostAddFragment @Inject constructor(
     private fun setupViewModels() {
         viewLifecycleOwner.observe(appStateViewModel.addPostContent) {
             setupActivityViews()
+            textInputUrlDescription.visibleIf(it.showDescription)
+            buttonEditDescription.goneIf(it.showDescription)
             checkboxPrivate.isChecked = it.defaultPrivate
             checkboxReadLater.isChecked = it.defaultReadLater
         }
@@ -251,7 +272,10 @@ class PostAddFragment @Inject constructor(
             viewLifecycleOwner.observe(loading) {
                 layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE)
             }
-            viewLifecycleOwner.observe(suggestedTags, suggestedTagsAdapter::submitList)
+            viewLifecycleOwner.observe(suggestedTags) { tags ->
+                chipGroupSuggestedTags.removeAllViews()
+                tags.forEach { chipGroupSuggestedTags.addValue(it, showRemoveIcon = false) }
+            }
             viewLifecycleOwner.observeEvent(saved) { mainActivity?.toast(getString(R.string.posts_saved_feedback)) }
             viewLifecycleOwner.observe(invalidUrlError, ::handleInvalidUrlError)
             viewLifecycleOwner.observe(invalidUrlTitleError, ::handleInvalidTitleError)
