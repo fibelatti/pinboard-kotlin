@@ -187,6 +187,7 @@ dependencies {
 
     androidTestImplementation(Dependencies.supportAnnotations)
     androidTestImplementation(TestDependencies.archComponentsTest)
+    androidTestImplementation(TestDependencies.roomTest)
     androidTestImplementation(TestDependencies.testRunner)
     androidTestImplementation(TestDependencies.kotlinTest)
 }

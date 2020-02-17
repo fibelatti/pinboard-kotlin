@@ -1,0 +1,154 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "4c6ac8668a70b72e52e986833fd6f795",
+    "entities": [
+      {
+        "tableName": "Posts",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`href` TEXT NOT NULL, `description` TEXT NOT NULL, `extended` TEXT NOT NULL, `hash` TEXT NOT NULL, `time` TEXT NOT NULL, `shared` TEXT NOT NULL, `toread` TEXT NOT NULL, `tags` TEXT NOT NULL, `imageUrl` TEXT, PRIMARY KEY(`hash`))",
+        "fields": [
+          {
+            "fieldPath": "href",
+            "columnName": "href",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "extended",
+            "columnName": "extended",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hash",
+            "columnName": "hash",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "time",
+            "columnName": "time",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shared",
+            "columnName": "shared",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "toread",
+            "columnName": "toread",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tags",
+            "columnName": "tags",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imageUrl",
+            "columnName": "imageUrl",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "hash"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_Posts_shared",
+            "unique": false,
+            "columnNames": [
+              "shared"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Posts_shared` ON `${TABLE_NAME}` (`shared`)"
+          },
+          {
+            "name": "index_Posts_toread",
+            "unique": false,
+            "columnNames": [
+              "toread"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Posts_toread` ON `${TABLE_NAME}` (`toread`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "ftsVersion": "FTS4",
+        "ftsOptions": {
+          "tokenizer": "unicode61",
+          "tokenizerArgs": [
+            "tokenchars=._-=#@&"
+          ],
+          "contentTable": "Posts",
+          "languageIdColumnName": "",
+          "matchInfo": "FTS4",
+          "notIndexedColumns": [],
+          "prefixSizes": [],
+          "preferredOrder": "ASC"
+        },
+        "contentSyncTriggers": [
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_PostsFts_BEFORE_UPDATE BEFORE UPDATE ON `Posts` BEGIN DELETE FROM `PostsFts` WHERE `docid`=OLD.`rowid`; END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_PostsFts_BEFORE_DELETE BEFORE DELETE ON `Posts` BEGIN DELETE FROM `PostsFts` WHERE `docid`=OLD.`rowid`; END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_PostsFts_AFTER_UPDATE AFTER UPDATE ON `Posts` BEGIN INSERT INTO `PostsFts`(`docid`, `href`, `description`, `extended`, `tags`) VALUES (NEW.`rowid`, NEW.`href`, NEW.`description`, NEW.`extended`, NEW.`tags`); END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_PostsFts_AFTER_INSERT AFTER INSERT ON `Posts` BEGIN INSERT INTO `PostsFts`(`docid`, `href`, `description`, `extended`, `tags`) VALUES (NEW.`rowid`, NEW.`href`, NEW.`description`, NEW.`extended`, NEW.`tags`); END"
+        ],
+        "tableName": "PostsFts",
+        "createSql": "CREATE VIRTUAL TABLE IF NOT EXISTS `${TABLE_NAME}` USING FTS4(`href` TEXT NOT NULL, `description` TEXT NOT NULL, `extended` TEXT NOT NULL, `tags` TEXT NOT NULL, tokenize=unicode61 `tokenchars=._-=#@&`, content=`Posts`)",
+        "fields": [
+          {
+            "fieldPath": "href",
+            "columnName": "href",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "extended",
+            "columnName": "extended",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tags",
+            "columnName": "tags",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4c6ac8668a70b72e52e986833fd6f795')"
+    ]
+  }
+}

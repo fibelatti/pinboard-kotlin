@@ -202,7 +202,7 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getPostCount(tag1 = PostsDao.preFormatTag("-1"))
+        val result = postsDao.getPostCount(tag1 = PostsDao.preFormatTag(mockTagString1))
 
         // THEN
         result shouldBe 3
@@ -513,7 +513,7 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getAllPosts(tag1 = PostsDao.preFormatTag("-1"))
+        val result = postsDao.getAllPosts(tag1 = PostsDao.preFormatTag(mockTagString1))
 
         // THEN
         result shouldBe listOf(postWithOneTag, postWithTwoTags, postWithThreeTags)
@@ -775,7 +775,7 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.searchExistingPostTag(PostsDao.preFormatTag("-1"))
+        val result = postsDao.searchExistingPostTag(PostsDao.preFormatTag(mockTagString1))
 
         // THEN
         result shouldBe listOf(postWithOneTag.tags, postWithTwoTags.tags, postWithThreeTags.tags)

@@ -72,4 +72,5 @@ object TestDependencies {
     const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutinesVersion}"
     const val mockitoCore = "org.mockito:mockito-inline:3.2.4"
     const val archComponentsTest = "android.arch.core:core-testing:${Versions.lifecycleVersion}"
+    const val roomTest = "android.arch.persistence.room:testing:${Versions.roomVersion}"
 }

@@ -24,6 +24,8 @@ object MockDataProvider {
     const val mockUrlTitle = "Some url title"
     const val mockUrlDescription = "What the url is all about"
     const val mockHash = "7b7cc6c90a84124026569c84f2236ecb"
+    const val mockShared = "yes"
+    const val mockToRead = "no"
 
     const val mockTagString1 = "tag-1"
     const val mockTagString2 = "tag2"
