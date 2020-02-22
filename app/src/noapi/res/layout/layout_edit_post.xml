@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
-    tools:showIn="@layout/fragment_add_post">
+    tools:showIn="@layout/fragment_edit_post">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutUrl"
@@ -31,7 +31,7 @@
         style="@style/AppTheme.InputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_small"
+        android:layout_marginTop="@dimen/margin_regular"
         android:hint="@string/posts_add_url_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -49,7 +49,7 @@
 
     <include
         android:id="@+id/layoutDescription"
-        layout="@layout/layout_add_description"
+        layout="@layout/layout_edit_description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@+id/checkboxPrivate"
@@ -64,6 +64,7 @@
         android:drawableEnd="@drawable/ic_private"
         android:drawablePadding="@dimen/padding_small"
         android:text="@string/posts_add_private"
+        android:visibility="gone"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutDescription" />

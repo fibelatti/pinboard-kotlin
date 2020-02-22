@@ -20,7 +20,7 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class PostAddViewModel @Inject constructor(
+class EditPostViewModel @Inject constructor(
     private val appStateRepository: AppStateRepository,
     private val getSuggestedTags: GetSuggestedTags,
     private val addPost: AddPost,

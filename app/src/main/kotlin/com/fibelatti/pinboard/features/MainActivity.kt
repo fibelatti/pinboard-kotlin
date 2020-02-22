@@ -59,7 +59,7 @@ import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteListFragment
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.presentation.PopularPostsFragment
-import com.fibelatti.pinboard.features.posts.presentation.PostAddFragment
+import com.fibelatti.pinboard.features.posts.presentation.EditPostFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostDetailFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostSearchFragment
@@ -252,8 +252,8 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
     }
 
     private fun showAddPost() {
-        if (supportFragmentManager.findFragmentByTag(PostAddFragment.TAG) == null) {
-            slideUp(createFragment<PostAddFragment>(), PostAddFragment.TAG)
+        if (supportFragmentManager.findFragmentByTag(EditPostFragment.TAG) == null) {
+            slideUp(createFragment<EditPostFragment>(), EditPostFragment.TAG)
         }
     }
 
@@ -295,10 +295,10 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
     }
 
     private fun showEditPost() {
-        if (supportFragmentManager.findFragmentByTag(PostAddFragment.TAG) == null) {
+        if (supportFragmentManager.findFragmentByTag(EditPostFragment.TAG) == null) {
             slideUp(
-                createFragment<PostAddFragment>(),
-                PostAddFragment.TAG,
+                createFragment<EditPostFragment>(),
+                EditPostFragment.TAG,
                 addToBackStack = !intent.fromBuilder
             )
         }

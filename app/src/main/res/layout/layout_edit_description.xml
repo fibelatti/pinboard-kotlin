@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
     android:orientation="vertical"
-    tools:showIn="@layout/layout_add_post">
+    tools:showIn="@layout/layout_edit_post">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputUrlDescription"

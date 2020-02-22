@@ -37,24 +37,24 @@ import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import kotlinx.android.synthetic.main.fragment_add_post.*
-import kotlinx.android.synthetic.main.layout_add_description.*
-import kotlinx.android.synthetic.main.layout_add_post.*
-import kotlinx.android.synthetic.main.layout_add_tags.*
+import kotlinx.android.synthetic.main.fragment_edit_post.*
+import kotlinx.android.synthetic.main.layout_edit_description.*
+import kotlinx.android.synthetic.main.layout_edit_post.*
+import kotlinx.android.synthetic.main.layout_edit_tags.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
 import javax.inject.Inject
 
-class PostAddFragment @Inject constructor() : BaseFragment(
-    R.layout.fragment_add_post
+class EditPostFragment @Inject constructor() : BaseFragment(
+    R.layout.fragment_edit_post
 ), BackPressHandler {
 
     companion object {
         @JvmStatic
-        val TAG: String = "PostAddFragment"
+        val TAG: String = "EditPostFragment"
     }
 
     private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(this) }
-    private val postAddViewModel by lazy { viewModelFactory.get<PostAddViewModel>(this) }
+    private val editPostViewModel by lazy { viewModelFactory.get<EditPostViewModel>(this) }
     private val postDetailViewModel by lazy { viewModelFactory.get<PostDetailViewModel>(this) }
 
     private var initialInsetBottomValue = -1
@@ -155,7 +155,7 @@ class PostAddFragment @Inject constructor() : BaseFragment(
     }
 
     private fun saveLink() {
-        postAddViewModel.saveLink(
+        editPostViewModel.saveLink(
             editTextUrl.textAsString(),
             editTextTitle.textAsString(),
             editTextDescription.textAsString(),
@@ -238,7 +238,7 @@ class PostAddFragment @Inject constructor() : BaseFragment(
                     chipGroupTags.addValue(text, index = 0)
                     editTextTags.clearText()
                 }
-                text.isNotBlank() -> postAddViewModel.searchForTag(text, chipGroupTags.getAllTags())
+                text.isNotBlank() -> editPostViewModel.searchForTag(text, chipGroupTags.getAllTags())
                 else -> chipGroupSuggestedTags.removeAllViews()
             }
         }
@@ -255,7 +255,7 @@ class PostAddFragment @Inject constructor() : BaseFragment(
 
     private fun updateSuggestedTags() {
         editTextTags.textAsString().takeIf(String::isNotBlank)?.let {
-            postAddViewModel.searchForTag(it, chipGroupTags.getAllTags())
+            editPostViewModel.searchForTag(it, chipGroupTags.getAllTags())
         }
     }
 
@@ -268,7 +268,7 @@ class PostAddFragment @Inject constructor() : BaseFragment(
             checkboxReadLater.isChecked = it.defaultReadLater
         }
         viewLifecycleOwner.observe(appStateViewModel.editPostContent, ::showPostDetails)
-        with(postAddViewModel) {
+        with(editPostViewModel) {
             viewLifecycleOwner.observe(loading) {
                 layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE)
             }

@@ -33,14 +33,15 @@ import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.never
 
-internal class PostAddViewModelTest : BaseViewModelTest() {
+internal class EditPostViewModelTest : BaseViewModelTest() {
 
     private val mockAppStateRepository = mock<AppStateRepository>()
     private val mockGetSuggestedTags = mock<GetSuggestedTags>()
     private val mockAddPost = mock<AddPost>()
     private val mockResourceProvider = mock<ResourceProvider>()
 
-    private val postAddViewModel = PostAddViewModel(
+    private val editPostViewModel
+        = EditPostViewModel(
         mockAppStateRepository,
         mockGetSuggestedTags,
         mockAddPost,
@@ -64,10 +65,10 @@ internal class PostAddViewModelTest : BaseViewModelTest() {
             .willReturn(Failure(Exception()))
 
         // WHEN
-        postAddViewModel.searchForTag(mockTagString1, mock())
+        editPostViewModel.searchForTag(mockTagString1, mock())
 
         // THEN
-        postAddViewModel.suggestedTags.shouldNeverReceiveValues()
+        editPostViewModel.suggestedTags.shouldNeverReceiveValues()
     }
 
     @Test
@@ -78,16 +79,16 @@ internal class PostAddViewModelTest : BaseViewModelTest() {
             .willReturn(Success(result))
 
         // WHEN
-        postAddViewModel.searchForTag(mockTagString1, mock())
+        editPostViewModel.searchForTag(mockTagString1, mock())
 
         // THEN
-        postAddViewModel.suggestedTags.currentValueShouldBe(result)
+        editPostViewModel.suggestedTags.currentValueShouldBe(result)
     }
 
     @Test
     fun `GIVEN url is blank WHEN saveLink is called THEN invalidUrlError will receive a value`() {
         // WHEN
-        postAddViewModel.saveLink(
+        editPostViewModel.saveLink(
             url = "",
             title = mockUrlTitle,
             description = mockUrlDescription,
@@ -97,15 +98,15 @@ internal class PostAddViewModelTest : BaseViewModelTest() {
         )
 
         // THEN
-        postAddViewModel.invalidUrlError.currentValueShouldBe("R.string.validation_error_empty_url")
-        postAddViewModel.saved.shouldNeverReceiveValues()
+        editPostViewModel.invalidUrlError.currentValueShouldBe("R.string.validation_error_empty_url")
+        editPostViewModel.saved.shouldNeverReceiveValues()
         verifySuspend(mockAppStateRepository, never()) { runAction(safeAny()) }
     }
 
     @Test
     fun `GIVEN title is blank WHEN saveLink is called THEN invalidUrlTitleError will received a value`() {
         // WHEN
-        postAddViewModel.saveLink(
+        editPostViewModel.saveLink(
             url = mockUrlValid,
             title = "",
             description = mockUrlDescription,
@@ -115,8 +116,8 @@ internal class PostAddViewModelTest : BaseViewModelTest() {
         )
 
         // THEN
-        postAddViewModel.invalidUrlTitleError.currentValueShouldBe("R.string.validation_error_empty_title")
-        postAddViewModel.saved.shouldNeverReceiveValues()
+        editPostViewModel.invalidUrlTitleError.currentValueShouldBe("R.string.validation_error_empty_title")
+        editPostViewModel.saved.shouldNeverReceiveValues()
         verifySuspend(mockAppStateRepository, never()) { runAction(safeAny()) }
     }
 
@@ -134,10 +135,10 @@ internal class PostAddViewModelTest : BaseViewModelTest() {
             ))
         }.willReturn(Failure(InvalidUrlException()))
 
-        val loadingObserver = postAddViewModel.loading.prepareToReceiveMany()
+        val loadingObserver = editPostViewModel.loading.prepareToReceiveMany()
 
         // WHEN
-        postAddViewModel.saveLink(
+        editPostViewModel.saveLink(
             url = mockUrlInvalid,
             title = mockUrlTitle,
             description = mockUrlDescription,
@@ -147,10 +148,10 @@ internal class PostAddViewModelTest : BaseViewModelTest() {
         )
 
         // THEN
-        postAddViewModel.loading.shouldHaveReceived(loadingObserver, true, false)
-        postAddViewModel.invalidUrlError.currentValueShouldBe("R.string.validation_error_invalid_url")
-        postAddViewModel.invalidUrlTitleError.currentValueShouldBe(String.empty())
-        postAddViewModel.saved.shouldNeverReceiveValues()
+        editPostViewModel.loading.shouldHaveReceived(loadingObserver, true, false)
+        editPostViewModel.invalidUrlError.currentValueShouldBe("R.string.validation_error_invalid_url")
+        editPostViewModel.invalidUrlTitleError.currentValueShouldBe(String.empty())
+        editPostViewModel.saved.shouldNeverReceiveValues()
         verifySuspend(mockAppStateRepository, never()) { runAction(safeAny()) }
     }
 
@@ -169,10 +170,10 @@ internal class PostAddViewModelTest : BaseViewModelTest() {
             ))
         }.willReturn(Failure(error))
 
-        val loadingObserver = postAddViewModel.loading.prepareToReceiveMany()
+        val loadingObserver = editPostViewModel.loading.prepareToReceiveMany()
 
         // WHEN
-        postAddViewModel.saveLink(
+        editPostViewModel.saveLink(
             url = mockUrlValid,
             title = mockUrlTitle,
             description = mockUrlDescription,
@@ -182,11 +183,11 @@ internal class PostAddViewModelTest : BaseViewModelTest() {
         )
 
         // THEN
-        postAddViewModel.loading.shouldHaveReceived(loadingObserver, true, false)
-        postAddViewModel.invalidUrlError.currentValueShouldBe(String.empty())
-        postAddViewModel.invalidUrlTitleError.currentValueShouldBe(String.empty())
-        postAddViewModel.error.currentValueShouldBe(error)
-        postAddViewModel.saved.shouldNeverReceiveValues()
+        editPostViewModel.loading.shouldHaveReceived(loadingObserver, true, false)
+        editPostViewModel.invalidUrlError.currentValueShouldBe(String.empty())
+        editPostViewModel.invalidUrlTitleError.currentValueShouldBe(String.empty())
+        editPostViewModel.error.currentValueShouldBe(error)
+        editPostViewModel.saved.shouldNeverReceiveValues()
         verifySuspend(mockAppStateRepository, never()) { runAction(safeAny()) }
     }
 
@@ -205,10 +206,10 @@ internal class PostAddViewModelTest : BaseViewModelTest() {
             ))
         }.willReturn(Success(post))
 
-        val loadingObserver = postAddViewModel.loading.prepareToReceiveMany()
+        val loadingObserver = editPostViewModel.loading.prepareToReceiveMany()
 
         // WHEN
-        postAddViewModel.saveLink(
+        editPostViewModel.saveLink(
             url = mockUrlValid,
             title = mockUrlTitle,
             description = mockUrlDescription,
@@ -218,11 +219,11 @@ internal class PostAddViewModelTest : BaseViewModelTest() {
         )
 
         // THEN
-        postAddViewModel.loading.shouldHaveReceived(loadingObserver, true)
-        postAddViewModel.invalidUrlError.currentValueShouldBe(String.empty())
-        postAddViewModel.invalidUrlTitleError.currentValueShouldBe(String.empty())
-        postAddViewModel.error.shouldNeverReceiveValues()
-        postAddViewModel.saved.currentEventShouldBe(Unit)
+        editPostViewModel.loading.shouldHaveReceived(loadingObserver, true)
+        editPostViewModel.invalidUrlError.currentValueShouldBe(String.empty())
+        editPostViewModel.invalidUrlTitleError.currentValueShouldBe(String.empty())
+        editPostViewModel.error.shouldNeverReceiveValues()
+        editPostViewModel.saved.currentEventShouldBe(Unit)
         verifySuspend(mockAppStateRepository) { runAction(PostSaved(post)) }
     }
 }

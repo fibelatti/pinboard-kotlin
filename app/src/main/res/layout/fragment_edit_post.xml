@@ -22,11 +22,11 @@
 
             <include
                 android:id="@+id/layoutAddPost"
-                layout="@layout/layout_add_post" />
+                layout="@layout/layout_edit_post" />
 
             <include
                 android:id="@+id/layoutAddTags"
-                layout="@layout/layout_add_tags" />
+                layout="@layout/layout_edit_tags" />
         </LinearLayout>
 
         <include

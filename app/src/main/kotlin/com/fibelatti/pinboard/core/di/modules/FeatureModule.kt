@@ -17,10 +17,10 @@ import com.fibelatti.pinboard.features.notes.presentation.NoteListViewModel
 import com.fibelatti.pinboard.features.posts.data.PostsApi
 import com.fibelatti.pinboard.features.posts.data.PostsDataSource
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
+import com.fibelatti.pinboard.features.posts.presentation.EditPostFragment
+import com.fibelatti.pinboard.features.posts.presentation.EditPostViewModel
 import com.fibelatti.pinboard.features.posts.presentation.PopularPostsFragment
 import com.fibelatti.pinboard.features.posts.presentation.PopularPostsViewModel
-import com.fibelatti.pinboard.features.posts.presentation.PostAddFragment
-import com.fibelatti.pinboard.features.posts.presentation.PostAddViewModel
 import com.fibelatti.pinboard.features.posts.presentation.PostDetailFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostDetailViewModel
 import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
@@ -101,13 +101,13 @@ abstract class FeatureModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(PostAddViewModel::class)
-    abstract fun postAddViewModel(postAddViewModel: PostAddViewModel): ViewModel
+    @ViewModelKey(EditPostViewModel::class)
+    abstract fun editPostViewModel(editPostViewModel: EditPostViewModel): ViewModel
 
     @Binds
     @IntoMap
-    @FragmentKey(PostAddFragment::class)
-    abstract fun postAddFragment(postAddFragment: PostAddFragment): Fragment
+    @FragmentKey(EditPostFragment::class)
+    abstract fun editPostFragment(editPostFragment: EditPostFragment): Fragment
 
     @Binds
     @IntoMap
