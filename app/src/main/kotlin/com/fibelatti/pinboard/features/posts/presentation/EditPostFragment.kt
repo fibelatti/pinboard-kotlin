@@ -212,8 +212,11 @@ class EditPostFragment @Inject constructor() : BaseFragment(
             }
         }
 
-        chipGroupTags.onTagChipAdded = { updateSuggestedTags() }
-        chipGroupTags.onTagChipRemoved = { updateSuggestedTags() }
+        chipGroupTags.onTagChipRemoved = {
+            editTextTags.textAsString().takeIf(String::isNotBlank)?.let {
+                editPostViewModel.searchForTag(it, chipGroupTags.getAllTags())
+            }
+        }
 
         chipGroupSuggestedTags.onTagChipClicked = {
             chipGroupTags.addTag(it, index = 0)
@@ -250,12 +253,6 @@ class EditPostFragment @Inject constructor() : BaseFragment(
                     editTextTags.clearText()
                 }
             }
-        }
-    }
-
-    private fun updateSuggestedTags() {
-        editTextTags.textAsString().takeIf(String::isNotBlank)?.let {
-            editPostViewModel.searchForTag(it, chipGroupTags.getAllTags())
         }
     }
 
@@ -374,21 +371,21 @@ class EditPostFragment @Inject constructor() : BaseFragment(
     }
 
     private fun handleInvalidUrlError(message: String) {
-        textInputLayoutUrl.run {
-            message.takeIf(String::isNotEmpty)?.let {
-                showError(it)
+        message.takeIf(String::isNotEmpty)
+            ?.let {
+                textInputLayoutUrl.showError(it)
                 showFab()
-            } ?: clearError()
-        }
+            }
+            ?: textInputLayoutUrl.clearError()
     }
 
     private fun handleInvalidTitleError(message: String) {
-        textInputLayoutTitle.run {
-            message.takeIf(String::isNotEmpty)?.let {
-                showError(it)
+        message.takeIf(String::isNotEmpty)
+            ?.let {
+                textInputLayoutTitle.showError(it)
                 showFab()
-            } ?: clearError()
-        }
+            }
+            ?: textInputLayoutTitle.clearError()
     }
 
     private fun showFab() {
