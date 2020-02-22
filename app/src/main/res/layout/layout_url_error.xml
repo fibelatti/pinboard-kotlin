@@ -13,7 +13,6 @@
     android:paddingEnd="@dimen/padding_large">
 
     <ImageView
-        android:id="@+id/imageViewIcon"
         android:layout_width="@dimen/post_detail_icon_size"
         android:layout_height="@dimen/post_detail_icon_size"
         android:layout_gravity="center_horizontal"
@@ -21,7 +20,7 @@
         app:srcCompat="@drawable/ic_warning" />
 
     <TextView
-        android:id="@+id/textViewUrlTitle"
+        android:id="@+id/textViewErrorUrlTitle"
         style="@style/AppTheme.Text.SectionTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,7 +31,7 @@
         tools:text="Some url" />
 
     <TextView
-        android:id="@+id/textViewUrl"
+        android:id="@+id/textViewErrorUrl"
         style="@style/AppTheme.Text.Detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

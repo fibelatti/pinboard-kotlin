@@ -39,10 +39,6 @@ import kotlinx.android.synthetic.main.layout_file_view.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
 import kotlinx.android.synthetic.main.layout_url_error.*
 import javax.inject.Inject
-import kotlinx.android.synthetic.main.layout_file_view.textViewUrl as fileViewUrl
-import kotlinx.android.synthetic.main.layout_file_view.textViewUrlTitle as fileViewUrlTitle
-import kotlinx.android.synthetic.main.layout_url_error.textViewUrl as errorViewUrl
-import kotlinx.android.synthetic.main.layout_url_error.textViewUrlTitle as errorViewUrlTitle
 
 class PostDetailFragment @Inject constructor(
     private val connectivityInfoProvider: ConnectivityInfoProvider
@@ -143,8 +139,8 @@ class PostDetailFragment @Inject constructor(
         layoutScrollViewWeb.gone()
         layoutProgressBar.gone()
 
-        fileViewUrlTitle.text = post.title
-        fileViewUrl.text = post.url
+        textViewFileUrlTitle.text = post.title
+        textViewFileUrl.text = post.url
         buttonOpenInFileViewer.setOnClickListener { openUrlInFileViewer(post.url) }
     }
 
@@ -156,8 +152,8 @@ class PostDetailFragment @Inject constructor(
             layoutProgressBar.gone()
             layoutRootUrlError.visible()
 
-            errorViewUrlTitle.text = post.title
-            errorViewUrl.text = post.url
+            textViewErrorUrlTitle.text = post.title
+            textViewErrorUrl.text = post.url
             textViewErrorDescription.setText(R.string.posts_url_offline_error)
             buttonErrorAction.setOnClickListener(R.string.offline_retry) { showWebView(post) }
 
@@ -173,8 +169,8 @@ class PostDetailFragment @Inject constructor(
     private fun showErrorLayout(post: Post) {
         layoutRootUrlError.visible()
 
-        errorViewUrlTitle.text = post.title
-        errorViewUrl.text = post.url
+        textViewErrorUrlTitle.text = post.title
+        textViewErrorUrl.text = post.url
         buttonErrorAction.setOnClickListener { openUrlInExternalBrowser(post) }
     }
 
