@@ -90,23 +90,17 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonPreferredDetailsViewInApp"
-                    style="@style/AppTheme.GroupButtonItem"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="?attr/materialButtonOutlinedStyle"
                     android:text="@string/user_preferences_preferred_details_in_app_browser" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonPreferredDetailsViewExternal"
-                    style="@style/AppTheme.GroupButtonItem"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="?attr/materialButtonOutlinedStyle"
                     android:text="@string/user_preferences_preferred_details_external_browser" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonPreferredDetailsViewEdit"
-                    style="@style/AppTheme.GroupButtonItem"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="?attr/materialButtonOutlinedStyle"
                     android:text="@string/user_preferences_preferred_details_post_details" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
 

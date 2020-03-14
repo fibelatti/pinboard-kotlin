@@ -21,6 +21,7 @@
         <item name="fontFamily">@font/opensansregular</item>
         <item name="buttonStyle">@style/AppTheme.Button</item>
         <item name="checkboxStyle">@style/AppTheme.Checkbox</item>
+        <item name="materialButtonOutlinedStyle">@style/AppTheme.GroupButtonItem</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
@@ -96,8 +97,12 @@
     </style>
 
     <style name="AppTheme.GroupButtonItem" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textSize">@dimen/text_size_xsmall</item>
+        <item name="android:textColor">@color/text_secondary</item>\
+        <item name="strokeColor">@color/selector_group_item_stroke</item>
     </style>
 
     <style name="AppTheme.ClickableIcon">
