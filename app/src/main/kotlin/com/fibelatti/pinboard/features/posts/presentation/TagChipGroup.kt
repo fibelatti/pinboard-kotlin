@@ -2,10 +2,10 @@ package com.fibelatti.pinboard.features.posts.presentation
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.LayoutInflater
 import android.view.View
 import com.fibelatti.core.extension.applyAs
 import com.fibelatti.core.extension.children
+import com.fibelatti.core.extension.inflate
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.google.android.material.chip.ChipGroup
@@ -44,23 +44,21 @@ class TagChipGroup @JvmOverloads constructor(
     }
 
     private fun createTagChip(value: Tag, showRemoveIcon: Boolean): View {
-        return LayoutInflater.from(context)
-            .inflate(R.layout.list_item_chip, this, false)
-            .applyAs<View, TagChip> {
-                setValue(value)
+        return inflate(R.layout.list_item_chip).applyAs<View, TagChip> {
+            setValue(value)
 
-                setOnClickListener {
-                    onTagChipClicked?.invoke(value)
-                }
+            setOnClickListener {
+                onTagChipClicked?.invoke(value)
+            }
 
-                isCloseIconVisible = showRemoveIcon
+            isCloseIconVisible = showRemoveIcon
 
-                if (showRemoveIcon) {
-                    setOnCloseIconClickListener {
-                        removeView(this)
-                        onTagChipRemoved?.invoke()
-                    }
+            if (showRemoveIcon) {
+                setOnCloseIconClickListener {
+                    removeView(this)
+                    onTagChipRemoved?.invoke()
                 }
             }
+        }
     }
 }

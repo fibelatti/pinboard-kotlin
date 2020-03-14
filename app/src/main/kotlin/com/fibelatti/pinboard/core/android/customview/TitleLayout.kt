@@ -2,12 +2,12 @@ package com.fibelatti.pinboard.core.android.customview
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.LayoutInflater
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.fibelatti.core.extension.gone
+import com.fibelatti.core.extension.inflate
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
@@ -22,7 +22,7 @@ class TitleLayout @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.layout_title, this, true)
+        inflate(R.layout.layout_title, true)
     }
 
     fun setNavigateUp(@DrawableRes iconRes: Int = R.drawable.ic_back_arrow, navigateUp: () -> Unit) {

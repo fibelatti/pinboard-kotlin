@@ -9,6 +9,7 @@ import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.applyAs
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.hideKeyboard
+import com.fibelatti.core.extension.inflate
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.onKeyboardSubmit
 import com.fibelatti.core.extension.textAsString
@@ -119,7 +120,7 @@ class PostSearchFragment @Inject constructor(
     }
 
     private fun createTagChip(value: Tag): View {
-        return layoutInflater.inflate(R.layout.list_item_chip, chipGroupSelectedTags, false)
+        return chipGroupSelectedTags.inflate(R.layout.list_item_chip, false)
             .applyAs<View, TagChip> {
                 setValue(value)
                 setOnCloseIconClickListener { appStateViewModel.runAction(RemoveSearchTag(value)) }
