@@ -8,14 +8,11 @@ import com.fibelatti.core.archcomponents.get
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.applyAs
 import com.fibelatti.core.extension.gone
-import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.onKeyboardSubmit
 import com.fibelatti.core.extension.textAsString
 import com.fibelatti.core.extension.visible
-import com.fibelatti.core.extension.visibleIf
-import com.fibelatti.core.extension.withLinearLayoutManager
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.blink
@@ -30,8 +27,6 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagsAdapter
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
 import kotlinx.android.synthetic.main.fragment_search_post.*
-import kotlinx.android.synthetic.main.layout_progress_bar.*
-import kotlinx.android.synthetic.main.layout_tag_list.*
 import javax.inject.Inject
 
 class PostSearchFragment @Inject constructor(
@@ -58,16 +53,9 @@ class PostSearchFragment @Inject constructor(
 
         editTextSearchTerm.onKeyboardSubmit { editTextSearchTerm.hideKeyboard() }
 
-        swipeToRefresh.setOnRefreshListener {
-            swipeToRefresh.isRefreshing = false
-            appStateViewModel.runAction(RefreshSearchTags)
-        }
-
-        recyclerViewTags
-            .withLinearLayoutManager()
-            .adapter = tagsAdapter
-
-        tagsAdapter.onItemClicked = { appStateViewModel.runAction(AddSearchTag(it)) }
+        tagListLayout.setAdapter(tagsAdapter) { appStateViewModel.runAction(AddSearchTag(it)) }
+        tagListLayout.setOnRefreshListener { appStateViewModel.runAction(RefreshSearchTags) }
+        tagListLayout.setSortingClickListener(tagsViewModel::sortTags)
     }
 
     private fun setupViewModels() {
@@ -87,14 +75,14 @@ class PostSearchFragment @Inject constructor(
                 chipGroupSelectedTags.removeAllViews()
             }
 
-            handleLoading(content.shouldLoadTags)
-
             if (content.shouldLoadTags) {
+                tagListLayout.showLoading()
                 tagsViewModel.getAll(TagsViewModel.Source.SEARCH)
             } else {
-                showTags(content.availableTags)
+                tagsViewModel.sortTags(content.availableTags, tagListLayout.getCurrentTagSorting())
             }
         }
+        viewLifecycleOwner.observe(tagsViewModel.tags, tagListLayout::showTags)
         viewLifecycleOwner.observe(tagsViewModel.error, ::handleError)
     }
 
@@ -111,7 +99,7 @@ class PostSearchFragment @Inject constructor(
             bottomAppBar.run {
                 navigationIcon = null
                 replaceMenu(R.menu.menu_search)
-                setOnMenuItemClickListener { item: MenuItem? -> handleMenuClick(item) }
+                setOnMenuItemClickListener(::handleMenuClick)
             }
             fab.run {
                 blink {
@@ -119,33 +107,6 @@ class PostSearchFragment @Inject constructor(
                     setOnClickListener { appStateViewModel.runAction(Search(editTextSearchTerm.textAsString())) }
                 }
             }
-        }
-    }
-
-    private fun handleLoading(loading: Boolean) {
-        layoutProgressBar.visibleIf(loading, otherwiseVisibility = View.GONE)
-        recyclerViewTags.goneIf(loading)
-        layoutEmptyList.goneIf(loading)
-    }
-
-    private fun showTags(list: List<Tag>) {
-        if (list.isNotEmpty()) {
-            recyclerViewTags.visible()
-            layoutEmptyList.gone()
-
-            tagsAdapter.submitList(list)
-        } else {
-            showEmptyLayout()
-        }
-    }
-
-    private fun showEmptyLayout() {
-        recyclerViewTags.gone()
-        layoutEmptyList.apply {
-            setIcon(R.drawable.ic_tag)
-            setTitle(R.string.tags_empty_title)
-            setDescription(R.string.tags_empty_description)
-            visible()
         }
     }
 

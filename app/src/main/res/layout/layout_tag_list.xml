@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:showIn="@layout/fragment_tags">
 
     <include
         layout="@layout/layout_progress_bar"
@@ -15,6 +17,29 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone" />
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/buttonGroupTagSorting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:singleSelection="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonTagSortingAtoZ"
+            style="?attr/materialButtonOutlinedStyle"
+            android:text="@string/tags_sorting_a_to_z" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonTagSortingMoreFirst"
+            style="?attr/materialButtonOutlinedStyle"
+            android:text="@string/tags_sorting_more_first" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonTagSortingLessFirst"
+            style="?attr/materialButtonOutlinedStyle"
+            android:text="@string/tags_sorting_less_first" />
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeToRefresh"
@@ -29,4 +54,4 @@
             android:paddingBottom="@dimen/fab_offset_bottom"
             tools:listitem="@layout/list_item_tag" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-</FrameLayout>
+</merge>

@@ -11,13 +11,6 @@
     android:orientation="vertical">
 
     <include
-        layout="@layout/layout_progress_bar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        tools:visibility="gone" />
-
-    <include
         android:id="@+id/layoutOfflineAlert"
         layout="@layout/layout_offline_alert"
         android:layout_width="match_parent"
@@ -27,11 +20,11 @@
         android:visibility="gone"
         tools:visibility="visible" />
 
-    <include
-        layout="@layout/layout_tag_list"
+    <com.fibelatti.pinboard.features.tags.presentation.TagListLayout
+        android:id="@+id/tagListLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/margin_regular"
-        android:layout_marginEnd="@dimen/margin_regular" />
+        android:paddingStart="@dimen/padding_regular"
+        android:paddingEnd="@dimen/padding_regular" />
 
 </LinearLayout>
