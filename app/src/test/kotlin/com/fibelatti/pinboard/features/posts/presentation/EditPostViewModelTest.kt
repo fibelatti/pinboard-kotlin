@@ -40,8 +40,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
     private val mockAddPost = mock<AddPost>()
     private val mockResourceProvider = mock<ResourceProvider>()
 
-    private val editPostViewModel
-        = EditPostViewModel(
+    private val editPostViewModel = EditPostViewModel(
         mockAppStateRepository,
         mockGetSuggestedTags,
         mockAddPost,
