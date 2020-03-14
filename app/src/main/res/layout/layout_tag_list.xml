@@ -22,6 +22,8 @@
         android:id="@+id/buttonGroupTagSorting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_regular"
+        android:layout_marginEnd="@dimen/margin_regular"
         app:singleSelection="true">
 
         <com.google.android.material.button.MaterialButton
@@ -51,6 +53,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
+            android:paddingStart="@dimen/padding_regular"
+            android:paddingEnd="@dimen/padding_regular"
             android:paddingBottom="@dimen/fab_offset_bottom"
             tools:listitem="@layout/list_item_tag" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
