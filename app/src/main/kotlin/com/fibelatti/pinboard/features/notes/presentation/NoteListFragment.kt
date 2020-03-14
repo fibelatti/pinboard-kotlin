@@ -9,6 +9,7 @@ import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
+import com.fibelatti.core.extension.withItemOffsetDecoration
 import com.fibelatti.core.extension.withLinearLayoutManager
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
@@ -48,6 +49,7 @@ class NoteListFragment @Inject constructor(
 
         recyclerViewNotes
             .withLinearLayoutManager()
+            .withItemOffsetDecoration(R.dimen.padding_small)
             .adapter = noteListAdapter
 
         noteListAdapter.onNoteClicked = { appStateViewModel.runAction(ViewNote(it)) }
