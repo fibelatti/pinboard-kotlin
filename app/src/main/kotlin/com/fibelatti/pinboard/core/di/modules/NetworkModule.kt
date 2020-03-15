@@ -9,6 +9,7 @@ import com.fibelatti.pinboard.core.network.UnauthorizedInterceptor
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
+import okhttp3.ConnectionPool
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -16,14 +17,16 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
+@Suppress("MagicNumber")
 @Module
 object NetworkModule {
 
-    private const val DEFAULT_NETWORK_TIMEOUT_SECONDS = 60L
-
     @Provides
     @Singleton
-    fun retrofit(okHttpClient: OkHttpClient, gson: Gson): Retrofit =
+    fun retrofit(
+        okHttpClient: OkHttpClient,
+        gson: Gson
+    ): Retrofit =
         Retrofit.Builder()
             .baseUrl(AppConfig.API_BASE_URL)
             .client(okHttpClient)
@@ -37,7 +40,10 @@ object NetworkModule {
         loggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient =
         OkHttpClient.Builder()
-            .callTimeout(DEFAULT_NETWORK_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .connectionPool(ConnectionPool(0, 5, TimeUnit.MINUTES))
             .addInterceptor(apiInterceptor)
             .addInterceptor(unauthorizedInterceptor)
             .apply { if (BuildConfig.DEBUG) addInterceptor(loggingInterceptor) }
@@ -45,7 +51,7 @@ object NetworkModule {
 
     @Provides
     fun httpLoggingInterceptor(): HttpLoggingInterceptor = HttpLoggingInterceptor()
-        .apply { if (BuildConfig.DEBUG) level = HttpLoggingInterceptor.Level.BODY }
+        .apply { level = HttpLoggingInterceptor.Level.BODY }
 
     @Provides
     @Singleton
