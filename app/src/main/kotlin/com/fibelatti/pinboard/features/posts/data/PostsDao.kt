@@ -64,7 +64,9 @@ interface PostsDao {
 
         private const val MATCH_TERM = "case " +
             "when :term = '' then 1 " +
-            "else $POST_TABLE_NAME.rowid in (select rowid from $POST_FTS_TABLE_NAME where $POST_FTS_TABLE_NAME match :term) " +
+            "else $POST_TABLE_NAME.rowid in (" +
+            "select rowid from $POST_FTS_TABLE_NAME where $POST_FTS_TABLE_NAME match :term" +
+            ") " +
             "end"
 
         private const val MATCH_TAGS = "case " +

@@ -78,7 +78,9 @@ private fun View.requestApplyInsetsWhenAttached() {
                 ViewCompat.requestApplyInsets(view)
             }
 
-            override fun onViewDetachedFromWindow(v: View?) {}
+            override fun onViewDetachedFromWindow(v: View?) {
+                // Intentionally empty
+            }
         })
     }
 }

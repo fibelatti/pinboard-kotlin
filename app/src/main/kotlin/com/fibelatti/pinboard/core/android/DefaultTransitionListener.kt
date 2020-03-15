@@ -4,13 +4,23 @@ import androidx.transition.Transition
 
 object DefaultTransitionListener : Transition.TransitionListener {
 
-    override fun onTransitionEnd(transition: Transition) {}
+    override fun onTransitionEnd(transition: Transition) {
+        // Intentionally empty
+    }
 
-    override fun onTransitionResume(transition: Transition) {}
+    override fun onTransitionResume(transition: Transition) {
+        // Intentionally empty
+    }
 
-    override fun onTransitionPause(transition: Transition) {}
+    override fun onTransitionPause(transition: Transition) {
+        // Intentionally empty
+    }
 
-    override fun onTransitionCancel(transition: Transition) {}
+    override fun onTransitionCancel(transition: Transition) {
+        // Intentionally empty
+    }
 
-    override fun onTransitionStart(transition: Transition) {}
+    override fun onTransitionStart(transition: Transition) {
+        // Intentionally empty
+    }
 }

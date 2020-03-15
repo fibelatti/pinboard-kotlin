@@ -87,29 +87,41 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(R.layout.frag
         when (preferredDetailsView) {
             PreferredDetailsView.InAppBrowser -> {
                 buttonPreferredDetailsViewInApp.isChecked = true
-                textViewPreferredDetailsViewCaveat.setText(R.string.user_preferences_preferred_details_in_app_browser_caveat)
+                textViewPreferredDetailsViewCaveat.setText(
+                    R.string.user_preferences_preferred_details_in_app_browser_caveat
+                )
             }
             PreferredDetailsView.ExternalBrowser -> {
                 buttonPreferredDetailsViewExternal.isChecked = true
-                textViewPreferredDetailsViewCaveat.setText(R.string.user_preferences_preferred_details_external_browser_caveat)
+                textViewPreferredDetailsViewCaveat.setText(
+                    R.string.user_preferences_preferred_details_external_browser_caveat
+                )
             }
             PreferredDetailsView.Edit -> {
                 buttonPreferredDetailsViewEdit.isChecked = true
-                textViewPreferredDetailsViewCaveat.setText(R.string.user_preferences_preferred_details_post_details_caveat)
+                textViewPreferredDetailsViewCaveat.setText(
+                    R.string.user_preferences_preferred_details_post_details_caveat
+                )
             }
         }
 
         buttonPreferredDetailsViewInApp.setOnClickListener {
             userPreferencesViewModel.savePreferredDetailsView(PreferredDetailsView.InAppBrowser)
-            textViewPreferredDetailsViewCaveat.setText(R.string.user_preferences_preferred_details_in_app_browser_caveat)
+            textViewPreferredDetailsViewCaveat.setText(
+                R.string.user_preferences_preferred_details_in_app_browser_caveat
+            )
         }
         buttonPreferredDetailsViewExternal.setOnClickListener {
             userPreferencesViewModel.savePreferredDetailsView(PreferredDetailsView.ExternalBrowser)
-            textViewPreferredDetailsViewCaveat.setText(R.string.user_preferences_preferred_details_external_browser_caveat)
+            textViewPreferredDetailsViewCaveat.setText(
+                R.string.user_preferences_preferred_details_external_browser_caveat
+            )
         }
         buttonPreferredDetailsViewEdit.setOnClickListener {
             userPreferencesViewModel.savePreferredDetailsView(PreferredDetailsView.Edit)
-            textViewPreferredDetailsViewCaveat.setText(R.string.user_preferences_preferred_details_post_details_caveat)
+            textViewPreferredDetailsViewCaveat.setText(
+                R.string.user_preferences_preferred_details_post_details_caveat
+            )
         }
     }
 

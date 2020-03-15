@@ -1,5 +1,9 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+plugins {
+    id("io.gitlab.arturbosch.detekt").version("1.6.0")
+}
+
 apply {
     from("ktlint.gradle")
     from("detekt.gradle")

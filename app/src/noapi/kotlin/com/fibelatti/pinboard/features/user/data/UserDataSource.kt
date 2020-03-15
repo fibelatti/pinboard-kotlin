@@ -21,17 +21,27 @@ class UserDataSource @Inject constructor(
 
     override fun getLoginState(): LiveData<LoginState> = loginState
 
-    override fun loginAttempt(authToken: String) {}
+    override fun loginAttempt(authToken: String) {
+        // Intentionally empty
+    }
 
-    override fun loggedIn() {}
+    override fun loggedIn() {
+        // Intentionally empty
+    }
 
-    override fun logout() {}
+    override fun logout() {
+        // Intentionally empty
+    }
 
-    override fun forceLogout() {}
+    override fun forceLogout() {
+        // Intentionally empty
+    }
 
     override fun getLastUpdate(): String = ""
 
-    override fun setLastUpdate(value: String) {}
+    override fun setLastUpdate(value: String) {
+        // Intentionally empty
+    }
 
     override fun getAppearance(): Appearance {
         return when (userSharedPreferences.getAppearance()) {
@@ -80,7 +90,9 @@ class UserDataSource @Inject constructor(
 
     override fun getDefaultPrivate(): Boolean? = null
 
-    override fun setDefaultPrivate(value: Boolean) {}
+    override fun setDefaultPrivate(value: Boolean) {
+        // Intentionally empty
+    }
 
     override fun getDefaultReadLater(): Boolean? = userSharedPreferences.getDefaultReadLater()
 

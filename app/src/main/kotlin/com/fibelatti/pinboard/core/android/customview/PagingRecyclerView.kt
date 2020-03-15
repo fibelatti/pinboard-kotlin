@@ -37,7 +37,7 @@ class PagingRecyclerView @JvmOverloads constructor(
                             }
                         }
                         else -> {
-                            throw RuntimeException("PagingRecyclerView supports only " +
+                            throw IllegalStateException("PagingRecyclerView supports only " +
                                 "LinearLayoutManager and GridLayoutManager")
                         }
                     }
@@ -71,20 +71,20 @@ class PagingRecyclerView @JvmOverloads constructor(
         if (!scrollListenerSet) {
             super.addOnScrollListener(listener)
         } else {
-            throw RuntimeException("PagingRecyclerView doesn't support addOnScrollListener.")
+            throw IllegalStateException("PagingRecyclerView doesn't support addOnScrollListener.")
         }
     }
 
     override fun setOnScrollListener(listener: OnScrollListener?) {
-        throw RuntimeException("PagingRecyclerView doesn't support setOnScrollListener.")
+        throw IllegalStateException("PagingRecyclerView doesn't support setOnScrollListener.")
     }
 
     override fun removeOnScrollListener(listener: OnScrollListener) {
-        throw RuntimeException("PagingRecyclerView doesn't support removeOnScrollListener.")
+        throw IllegalStateException("PagingRecyclerView doesn't support removeOnScrollListener.")
     }
 
     override fun clearOnScrollListeners() {
-        throw RuntimeException("PagingRecyclerView doesn't support clearOnScrollListeners.")
+        throw IllegalStateException("PagingRecyclerView doesn't support clearOnScrollListeners.")
     }
     // endregion
 }

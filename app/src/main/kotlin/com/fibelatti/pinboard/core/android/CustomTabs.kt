@@ -15,15 +15,11 @@ import com.fibelatti.pinboard.R
 class CustomTabsURLSpan(url: String) : URLSpan(url) {
 
     override fun onClick(widget: View) {
-        try {
-            CustomTabsIntent.Builder()
-                .setShowTitle(true)
-                .setToolbarColor(ContextCompat.getColor(widget.context, R.color.color_background))
-                .build()
-                .launchUrl(widget.context, Uri.parse(url))
-        } catch (exception: Exception) {
-            super.onClick(widget)
-        }
+        CustomTabsIntent.Builder()
+            .setShowTitle(true)
+            .setToolbarColor(ContextCompat.getColor(widget.context, R.color.color_background))
+            .build()
+            .launchUrl(widget.context, Uri.parse(url))
     }
 }
 
@@ -61,5 +57,6 @@ class LinkTransformationMethod : TransformationMethod {
         direction: Int,
         previouslyFocusedRect: Rect?
     ) {
+        // Intentionally empty
     }
 }

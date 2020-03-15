@@ -1,21 +1,8 @@
-repositories {
-    jcenter()
+detekt {
+    failFast = true
+    buildUponDefaultConfig = true
+    input = files("$projectDir")
+    config = files("$projectDir/detekt.yml")
 }
 
-configurations {
-    detekt
-}
-
-task detekt(type: JavaExec) {
-    main = "io.gitlab.arturbosch.detekt.cli.Main"
-    classpath = configurations.detekt
-    def input = "$projectDir"
-    def config = "$projectDir/detekt.yml"
-    def filters = ".*/buildSrc/.*,.*test.*,.*/resources/.*,.*/tmp/.*"
-    def params = ['-i', input, '-c', config, '-f', filters]
-    args(params)
-}
-
-dependencies {
-    detekt 'io.gitlab.arturbosch.detekt:detekt-cli:1.0.0-RC14'
-}
+tasks.detekt.jvmTarget = "1.8"

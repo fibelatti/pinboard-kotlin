@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.navigation
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -117,7 +118,7 @@ object NavigationDrawer {
         try {
             val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
             menuItemVersion.text = context.getString(R.string.about_version, pInfo.versionName)
-        } catch (e: Exception) {
+        } catch (e: PackageManager.NameNotFoundException) {
             menuItemVersion.gone()
         }
     }
