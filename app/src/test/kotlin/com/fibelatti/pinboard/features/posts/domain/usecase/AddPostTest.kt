@@ -53,7 +53,8 @@ class AddPostTest {
                 description = anyString(),
                 private = anyBoolean(),
                 readLater = anyBoolean(),
-                tags = anyList()
+                tags = anyList(),
+                replace = anyBoolean()
             )
         }
     }
@@ -70,7 +71,8 @@ class AddPostTest {
                 params.description,
                 params.private,
                 params.readLater,
-                params.tags
+                params.tags,
+                params.replace
             )
         }.willReturn(Failure(ApiException()))
 
@@ -82,32 +84,6 @@ class AddPostTest {
         result.exceptionOrNull()?.shouldBeAnInstanceOf<ApiException>()
 
         verifySuspend(mockPostsRepository, never()) { getPost(anyString()) }
-    }
-
-    @Test
-    fun `GIVEN posts repository add succeeds but get post fails WHEN AddPost is called THEN Failure is returned`() {
-        // GIVEN
-        givenSuspend { mockValidateUrl(mockUrlValid) }
-            .willReturn(Success(mockUrlValid))
-        givenSuspend {
-            mockPostsRepository.add(
-                params.url,
-                params.title,
-                params.description,
-                params.private,
-                params.readLater,
-                params.tags
-            )
-        }.willReturn(Success(Unit))
-        givenSuspend { mockPostsRepository.getPost(params.url) }
-            .willReturn(Failure(ApiException()))
-
-        // WHEN
-        val result = runBlocking { addPost(AddPost.Params(mockUrlValid, mockUrlTitle)) }
-
-        // THEN
-        result.shouldBeAnInstanceOf<Failure>()
-        result.exceptionOrNull()?.shouldBeAnInstanceOf<ApiException>()
     }
 
     @Test
@@ -123,11 +99,10 @@ class AddPostTest {
                 params.description,
                 params.private,
                 params.readLater,
-                params.tags
+                params.tags,
+                params.replace
             )
-        }.willReturn(Success(Unit))
-        givenSuspend { mockPostsRepository.getPost(params.url) }
-            .willReturn(Success(mockPost))
+        }.willReturn(Success(mockPost))
 
         // WHEN
         val result = runBlocking { addPost(AddPost.Params(mockUrlValid, mockUrlTitle)) }

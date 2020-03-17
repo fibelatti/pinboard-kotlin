@@ -102,7 +102,8 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                     url = mockUrlValid,
                     title = mockUrlValid,
                     private = defaultPrivate,
-                    readLater = defaultReadLater
+                    readLater = defaultReadLater,
+                    replace = false
                 )
             )
         }.willReturn(Failure(Exception()))
@@ -137,7 +138,8 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                     url = mockUrlValid,
                     title = mockUrlValid,
                     private = defaultPrivate,
-                    readLater = defaultReadLater
+                    readLater = defaultReadLater,
+                    replace = false
                 )
             )
         }.willReturn(Success(createPost()))
@@ -176,7 +178,8 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                     url = mockUrlValid,
                     title = mockUrlValid,
                     private = defaultPrivate,
-                    readLater = defaultReadLater
+                    readLater = defaultReadLater,
+                    replace = false
                 )
             )
         }.willReturn(Success(post))

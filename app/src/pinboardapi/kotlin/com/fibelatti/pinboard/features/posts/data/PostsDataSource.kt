@@ -17,10 +17,10 @@ import com.fibelatti.pinboard.core.extension.containsHtmlChars
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
 import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.ApiException
+import com.fibelatti.pinboard.core.network.ApiResultCodes
+import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.core.network.RateLimitRunner
 import com.fibelatti.pinboard.core.util.DateFormatter
-import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
-import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
 import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagDtoMapper
@@ -64,29 +64,49 @@ class PostsDataSource @Inject constructor(
         description: String?,
         private: Boolean?,
         readLater: Boolean?,
-        tags: List<Tag>?
-    ): Result<Unit> {
+        tags: List<Tag>?,
+        replace: Boolean
+    ): Result<Post> {
         return resultFrom {
             withContext(Dispatchers.IO) {
-                postsApi.add(
+                val result = postsApi.add(
                     url = url,
                     title = title.take(API_MAX_LENGTH),
                     description = description?.take(API_MAX_EXTENDED_LENGTH),
                     public = private?.let { if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES },
                     readLater = readLater?.let { if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO },
-                    tags = tags?.joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST, transform = Tag::name)
-                        ?.take(API_MAX_LENGTH)
+                    tags = tags?.joinToString(
+                        PinboardApiLiterals.TAG_SEPARATOR_REQUEST,
+                        transform = Tag::name
+                    )?.take(API_MAX_LENGTH),
+                    replace = if (replace) PinboardApiLiterals.YES else PinboardApiLiterals.NO
                 )
+
+                when (result.resultCode) {
+                    ApiResultCodes.DONE.code -> {
+                        postsApi.getPost(url).posts.first().let(postDtoMapper::map)
+                    }
+                    ApiResultCodes.ITEM_ALREADY_EXISTS.code -> {
+                        (postsDao.getPost(url) ?: postsApi.getPost(url).posts.firstOrNull())
+                            ?.let(postDtoMapper::map)
+                            ?: throw InvalidRequestException()
+                    }
+                    else -> throw ApiException()
+                }
             }
-        }.throwErrorIfNotDone()
+        }
     }
 
     override suspend fun delete(url: String): Result<Unit> {
         return resultFrom {
-            withContext(Dispatchers.IO) {
+            val result = withContext(Dispatchers.IO) {
                 postsApi.delete(url)
             }
-        }.throwErrorIfNotDone()
+
+            if (result.resultCode != ApiResultCodes.DONE.code) {
+                throw ApiException()
+            }
+        }
     }
 
     override suspend fun getAllPosts(
@@ -263,8 +283,8 @@ class PostsDataSource @Inject constructor(
     override suspend fun getPost(url: String): Result<Post> {
         return resultFrom {
             withContext(Dispatchers.IO) {
-                postsApi.getPost(url)
-            }.posts.first().let(postDtoMapper::map)
+                postsDao.getPost(url) ?: postsApi.getPost(url).posts.firstOrNull()
+            }?.let(postDtoMapper::map) ?: throw InvalidRequestException()
         }
     }
 
@@ -298,9 +318,4 @@ class PostsDataSource @Inject constructor(
             }
         }
     }
-
-    private fun Result<GenericResponseDto>.throwErrorIfNotDone() =
-        mapCatching {
-            if (it.resultCode != ApiResultCodes.DONE.code) throw ApiException()
-        }
 }

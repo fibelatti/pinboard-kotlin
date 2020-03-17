@@ -6,9 +6,9 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.functional.resultFrom
+import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
@@ -18,7 +18,6 @@ import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.lang.IllegalStateException
 import java.util.UUID
 import javax.inject.Inject
 
@@ -36,8 +35,9 @@ class PostsDataSource @Inject constructor(
         description: String?,
         private: Boolean?,
         readLater: Boolean?,
-        tags: List<Tag>?
-    ): Result<Unit> {
+        tags: List<Tag>?,
+        replace: Boolean
+    ): Result<Post> {
         val existingPost = resultFrom {
             withContext(Dispatchers.IO) {
                 postsDao.getPost(url)
@@ -60,6 +60,8 @@ class PostsDataSource @Inject constructor(
             withContext(Dispatchers.IO) {
                 postsDao.savePosts(listOf(newPost))
             }
+
+            postDtoMapper.map(newPost)
         }
     }
 
@@ -175,8 +177,8 @@ class PostsDataSource @Inject constructor(
         return resultFrom {
             withContext(Dispatchers.IO) {
                 postsDao.getPost(url)
-            }
-        }.mapCatching(postDtoMapper::map)
+            }?.let(postDtoMapper::map) ?: throw InvalidRequestException()
+        }
     }
 
     override suspend fun searchExistingPostTag(tag: String): Result<List<String>> {

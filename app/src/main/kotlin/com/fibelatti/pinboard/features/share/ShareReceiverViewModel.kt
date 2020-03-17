@@ -45,7 +45,8 @@ class ShareReceiverViewModel @Inject constructor(
                             title = title,
                             description = description,
                             private = userRepository.getDefaultPrivate(),
-                            readLater = userRepository.getDefaultReadLater()
+                            readLater = userRepository.getDefaultReadLater(),
+                            replace = false
                         )
                     )
                 }

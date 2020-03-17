@@ -14,18 +14,17 @@ class AddPost @Inject constructor(
 ) : UseCaseWithParams<Post, AddPost.Params>() {
 
     override suspend fun run(params: Params): Result<Post> =
-        validateUrl(params.url)
-            .map {
-                postsRepository.add(
-                    url = params.url,
-                    title = params.title,
-                    description = params.description,
-                    private = params.private,
-                    readLater = params.readLater,
-                    tags = params.tags
-                )
-            }
-            .map { postsRepository.getPost(params.url) }
+        validateUrl(params.url).map {
+            postsRepository.add(
+                url = params.url,
+                title = params.title,
+                description = params.description,
+                private = params.private,
+                readLater = params.readLater,
+                tags = params.tags,
+                replace = params.replace
+            )
+        }
 
     data class Params(
         val url: String,
@@ -33,6 +32,7 @@ class AddPost @Inject constructor(
         val description: String? = null,
         val private: Boolean? = null,
         val readLater: Boolean? = null,
-        val tags: List<Tag>? = null
+        val tags: List<Tag>? = null,
+        val replace: Boolean = true
     )
 }

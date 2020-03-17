@@ -35,8 +35,9 @@ import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.extension.HTML_CHAR_MAP
 import com.fibelatti.pinboard.core.network.ApiException
+import com.fibelatti.pinboard.core.network.ApiResultCodes
+import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.core.util.DateFormatter
-import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
 import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagDtoMapper
@@ -85,8 +86,10 @@ class PostsDataSourceTest {
 
     private val mockCoroutineContext = mock<CoroutineContext>()
 
-    private val mockListPostDto = listOf(mock<PostDto>())
-    private val mockListPost = listOf(mock<Post>())
+    private val mockPostDto = mock<PostDto>()
+    private val mockListPostDto = listOf(mockPostDto)
+    private val mockPost = mock<Post>()
+    private val mockListPost = listOf(mockPost)
     private val mockSuggestedTagsDto = mock<SuggestedTagsDto>()
     private val mockSuggestedTags = mock<SuggestedTags>()
 
@@ -154,9 +157,10 @@ class PostsDataSourceTest {
                     description = null,
                     public = null,
                     readLater = null,
-                    tags = mockTagsRequest
+                    tags = mockTagsRequest,
+                    replace = AppConfig.PinboardApiLiterals.YES
                 )
-            }.willAnswer { throw Exception() }
+            }.will { throw Exception() }
 
             // WHEN
             val result = runBlocking {
@@ -166,7 +170,8 @@ class PostsDataSourceTest {
                     description = null,
                     private = null,
                     readLater = null,
-                    tags = mockTags
+                    tags = mockTags,
+                    replace = true
                 )
             }
 
@@ -185,7 +190,8 @@ class PostsDataSourceTest {
                     description = null,
                     public = null,
                     readLater = null,
-                    tags = mockTagsRequest
+                    tags = mockTagsRequest,
+                    replace = AppConfig.PinboardApiLiterals.YES
                 )
             }.willReturn(createGenericResponse(ApiResultCodes.MISSING_URL))
 
@@ -197,13 +203,132 @@ class PostsDataSourceTest {
                     description = null,
                     private = null,
                     readLater = null,
-                    tags = mockTags
+                    tags = mockTags,
+                    replace = true
                 )
             }
 
             // THEN
             result.shouldBeAnInstanceOf<Failure>()
             result.exceptionOrNull()?.shouldBeAnInstanceOf<ApiException>()
+        }
+
+        @Nested
+        @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+        inner class ItemAlreadyExists {
+
+            @Test
+            fun `GIVEN that the api returns 200 AND the result code is ITEM_ALREADY_EXISTS WHEN add is called THEN the db result is returned`() {
+                // GIVEN
+                givenSuspend {
+                    mockApi.add(
+                        url = mockUrlValid,
+                        title = mockUrlTitle,
+                        description = null,
+                        public = null,
+                        readLater = null,
+                        tags = mockTagsRequest,
+                        replace = AppConfig.PinboardApiLiterals.YES
+                    )
+                }.willReturn(createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS))
+                given(mockDao.getPost(mockUrlValid))
+                    .willReturn(mockPostDto)
+                given(mockPostDtoMapper.map(mockPostDto))
+                    .willReturn(mockPost)
+
+                // WHEN
+                val result = runBlocking {
+                    dataSource.add(
+                        url = mockUrlValid,
+                        title = mockUrlTitle,
+                        description = null,
+                        private = null,
+                        readLater = null,
+                        tags = mockTags,
+                        replace = true
+                    )
+                }
+
+                // THEN
+                result.shouldBeAnInstanceOf<Success<Post>>()
+                result.getOrNull() shouldBe mockPost
+            }
+
+            @Test
+            fun `GIVEN that the api returns 200 AND the result code is ITEM_ALREADY_EXISTS AND db has no data WHEN add is called THEN the api result is returned`() {
+                // GIVEN
+                givenSuspend {
+                    mockApi.add(
+                        url = mockUrlValid,
+                        title = mockUrlTitle,
+                        description = null,
+                        public = null,
+                        readLater = null,
+                        tags = mockTagsRequest,
+                        replace = AppConfig.PinboardApiLiterals.YES
+                    )
+                }.willReturn(createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS))
+                given(mockDao.getPost(mockUrlValid))
+                    .willReturn(null)
+                givenSuspend { mockApi.getPost(mockUrlValid) }
+                    .willReturn(createGetPostDto(posts = mockListPostDto))
+                given(mockPostDtoMapper.map(mockPostDto))
+                    .willReturn(mockPost)
+
+                // WHEN
+                val result = runBlocking {
+                    dataSource.add(
+                        url = mockUrlValid,
+                        title = mockUrlTitle,
+                        description = null,
+                        private = null,
+                        readLater = null,
+                        tags = mockTags,
+                        replace = true
+                    )
+                }
+
+                // THEN
+                result.shouldBeAnInstanceOf<Success<Post>>()
+                result.getOrNull() shouldBe mockPost
+            }
+
+            @Test
+            fun `GIVEN that the api returns 200 AND the result code is ITEM_ALREADY_EXISTS AND both gets fail WHEN add is called THEN failure returned`() {
+                // GIVEN
+                givenSuspend {
+                    mockApi.add(
+                        url = mockUrlValid,
+                        title = mockUrlTitle,
+                        description = null,
+                        public = null,
+                        readLater = null,
+                        tags = mockTagsRequest,
+                        replace = AppConfig.PinboardApiLiterals.YES
+                    )
+                }.willReturn(createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS))
+                given(mockDao.getPost(mockUrlValid))
+                    .willReturn(null)
+                givenSuspend { mockApi.getPost(mockUrlValid) }
+                    .willReturn(createGetPostDto(posts = emptyList()))
+
+                // WHEN
+                val result = runBlocking {
+                    dataSource.add(
+                        url = mockUrlValid,
+                        title = mockUrlTitle,
+                        description = null,
+                        private = null,
+                        readLater = null,
+                        tags = mockTags,
+                        replace = true
+                    )
+                }
+
+                // THEN
+                result.shouldBeAnInstanceOf<Failure>()
+                result.exceptionOrNull()?.shouldBeAnInstanceOf<InvalidRequestException>()
+            }
         }
 
         @Test
@@ -216,9 +341,14 @@ class PostsDataSourceTest {
                     description = null,
                     public = null,
                     readLater = null,
-                    tags = mockTagsRequest
+                    tags = mockTagsRequest,
+                    replace = AppConfig.PinboardApiLiterals.YES
                 )
             }.willReturn(createGenericResponse(ApiResultCodes.DONE))
+            givenSuspend { mockApi.getPost(mockUrlValid) }
+                .willReturn(createGetPostDto(posts = mockListPostDto))
+            given(mockPostDtoMapper.map(mockPostDto))
+                .willReturn(mockPost)
 
             // WHEN
             val result = runBlocking {
@@ -228,7 +358,8 @@ class PostsDataSourceTest {
                     description = null,
                     private = null,
                     readLater = null,
-                    tags = mockTags
+                    tags = mockTags,
+                    replace = true
                 )
             }
 
@@ -250,6 +381,11 @@ class PostsDataSourceTest {
                 false -> AppConfig.PinboardApiLiterals.NO
                 else -> null
             }
+            val expectedReplace = if (testCases.replace) {
+                AppConfig.PinboardApiLiterals.YES
+            } else {
+                AppConfig.PinboardApiLiterals.NO
+            }
 
             givenSuspend {
                 mockApi.add(
@@ -258,24 +394,25 @@ class PostsDataSourceTest {
                     description = null,
                     public = expectedPublic,
                     readLater = expectedReadLater,
-                    tags = mockTagsRequest
+                    tags = mockTagsRequest,
+                    replace = expectedReplace
                 )
             }.willReturn(createGenericResponse(ApiResultCodes.DONE))
 
             // WHEN
-            val result = runBlocking {
+            runBlocking {
                 dataSource.add(
                     mockUrlValid,
                     mockUrlTitle,
                     description = null,
                     private = testCases.private,
                     readLater = testCases.readLater,
-                    tags = mockTags
+                    tags = mockTags,
+                    replace = testCases.replace
                 )
             }
 
             // THEN
-            result.shouldBeAnInstanceOf<Success<Unit>>()
             verifySuspend(mockApi) {
                 add(
                     url = mockUrlValid,
@@ -283,7 +420,8 @@ class PostsDataSourceTest {
                     description = null,
                     public = expectedPublic,
                     readLater = expectedReadLater,
-                    tags = mockTagsRequest
+                    tags = mockTagsRequest,
+                    replace = expectedReplace
                 )
             }
         }
@@ -293,16 +431,19 @@ class PostsDataSourceTest {
 
             values.forEach { private ->
                 values.forEach { readLater ->
-                    add(Params(private, readLater))
+                    listOf(true, false).forEach { replace ->
+                        add(Params(private, readLater, replace))
+                    }
                 }
             }
         }
 
         inner class Params(
             val private: Boolean?,
-            val readLater: Boolean?
+            val readLater: Boolean?,
+            val replace: Boolean
         ) {
-            override fun toString(): String = "Params(private=$private, readLater=$readLater)"
+            override fun toString(): String = "Params(private=$private, readLater=$readLater, replace=$replace)"
         }
     }
 

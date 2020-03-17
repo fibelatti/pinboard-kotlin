@@ -4,6 +4,8 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.UseCaseWithParams
+import java.io.UnsupportedEncodingException
+import java.net.URLDecoder
 import javax.inject.Inject
 
 class ExtractUrl @Inject constructor() : UseCaseWithParams<String, String>() {
@@ -13,8 +15,15 @@ class ExtractUrl @Inject constructor() : UseCaseWithParams<String, String>() {
 
         for (scheme in schemes) {
             val index = params.indexOf(scheme)
-            if (index != -1) {
-                return Success(params.substring(index))
+
+            if (index == -1) {
+                continue
+            }
+
+            return try {
+                Success(URLDecoder.decode(params.substring(index), "UTF-8"))
+            } catch (exception: UnsupportedEncodingException) {
+                Failure(InvalidUrlException())
             }
         }
 

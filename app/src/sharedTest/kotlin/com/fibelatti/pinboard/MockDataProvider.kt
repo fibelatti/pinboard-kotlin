@@ -2,7 +2,7 @@ package com.fibelatti.pinboard
 
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
-import com.fibelatti.pinboard.features.posts.data.model.ApiResultCodes
+import com.fibelatti.pinboard.core.network.ApiResultCodes
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.GetPostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
