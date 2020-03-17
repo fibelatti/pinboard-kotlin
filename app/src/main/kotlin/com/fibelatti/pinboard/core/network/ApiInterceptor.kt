@@ -3,8 +3,6 @@ package com.fibelatti.pinboard.core.network
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import okhttp3.Interceptor
 import okhttp3.Response
-import java.io.IOException
-import java.net.SocketTimeoutException
 import javax.inject.Inject
 
 class ApiInterceptor @Inject constructor(
@@ -14,16 +12,12 @@ class ApiInterceptor @Inject constructor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val url = request.url().newBuilder()
-            .apply {
-                addQueryParameter("format", "json")
-                addEncodedQueryParameter("auth_token", userSharedPreferences.getAuthToken())
-            }
+            .addQueryParameter("format", "json")
+            .addEncodedQueryParameter("auth_token", userSharedPreferences.getAuthToken())
             .build()
 
-        return try {
-            chain.proceed(request.newBuilder().url(url).build())
-        } catch (exception: SocketTimeoutException) {
-            throw IOException("ApiInterceptor timed out.")
+        return catchingSocketTimeoutException(chain) {
+            request.newBuilder().url(url).build()
         }
     }
 }

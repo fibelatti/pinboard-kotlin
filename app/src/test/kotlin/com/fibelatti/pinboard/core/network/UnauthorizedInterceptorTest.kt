@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.core.network
 
 import com.fibelatti.core.test.extension.mock
+import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import okhttp3.Interceptor
 import okhttp3.Request
@@ -9,15 +10,15 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.never
-import org.mockito.Mockito.spy
 import org.mockito.Mockito.verify
 import java.net.HttpURLConnection
+import java.net.SocketTimeoutException
 
 internal class UnauthorizedInterceptorTest {
 
     private val mockUserRepository = mock<UserRepository>()
 
-    private val unauthorizedInterceptor = spy(UnauthorizedInterceptor(mockUserRepository))
+    private val unauthorizedInterceptor = UnauthorizedInterceptor(mockUserRepository)
 
     private val mockChain = mock<Interceptor.Chain>()
     private val mockRequest = mock<Request>()
@@ -55,5 +56,18 @@ internal class UnauthorizedInterceptorTest {
 
         // THEN
         verify(mockUserRepository, never()).forceLogout()
+    }
+
+    @Test
+    fun `WHEN a SocketTimeoutException happens THEN response code 408 is returned`() {
+        // GIVEN
+        given(mockChain.proceed(mockRequest))
+            .willThrow(SocketTimeoutException())
+
+        // WHEN
+        val result = unauthorizedInterceptor.intercept(mockChain)
+
+        // THEN
+        result.code() shouldBe 408
     }
 }
