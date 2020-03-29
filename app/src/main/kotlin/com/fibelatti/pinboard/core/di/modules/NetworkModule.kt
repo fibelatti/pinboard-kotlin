@@ -23,10 +23,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun retrofit(
-        okHttpClient: OkHttpClient,
-        gson: Gson
-    ): Retrofit =
+    fun retrofit(okHttpClient: OkHttpClient, gson: Gson): Retrofit =
         Retrofit.Builder()
             .baseUrl(AppConfig.API_BASE_URL)
             .client(okHttpClient)

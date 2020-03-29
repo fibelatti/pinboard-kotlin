@@ -45,18 +45,15 @@ import retrofit2.create
 @Module
 abstract class FeatureModule {
 
-    @Module
     companion object {
+
         @Provides
-        @JvmStatic
         fun postsApi(retrofit: Retrofit): PostsApi = retrofit.create()
 
         @Provides
-        @JvmStatic
         fun tagsApi(retrofit: Retrofit): TagsApi = retrofit.create()
 
         @Provides
-        @JvmStatic
         fun notesApi(retrofit: Retrofit): NotesApi = retrofit.create()
     }
 

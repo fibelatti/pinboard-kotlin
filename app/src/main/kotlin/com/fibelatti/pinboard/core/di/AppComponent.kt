@@ -1,11 +1,11 @@
 package com.fibelatti.pinboard.core.di
 
-import com.fibelatti.pinboard.App
+import android.app.Application
 import com.fibelatti.pinboard.core.di.modules.AuthModule
 import com.fibelatti.pinboard.core.di.modules.CoreModule
 import com.fibelatti.pinboard.core.di.modules.DatabaseModule
-import com.fibelatti.pinboard.core.di.modules.NetworkModule
 import com.fibelatti.pinboard.core.di.modules.FeatureModule
+import com.fibelatti.pinboard.core.di.modules.NetworkModule
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -27,6 +27,6 @@ interface AppComponent : Injector {
         fun build(): AppComponent
 
         @BindsInstance
-        fun application(application: App): Builder
+        fun application(application: Application): Builder
     }
 }

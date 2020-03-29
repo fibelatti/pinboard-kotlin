@@ -2,16 +2,16 @@ object Versions {
     const val minSdkVersion = 21
     const val targetSdkVersion = 29
     const val compileSdkVersion = 29
-    const val buildToolsVersion = "29.0.0"
+    const val buildToolsVersion = "29.0.2"
 
-    internal const val kotlinVersion = "1.3.61"
-    internal const val coroutinesVersion = "1.3.3"
+    internal const val kotlinVersion = "1.3.71"
+    internal const val coroutinesVersion = "1.3.5"
     internal const val lifecycleVersion = "2.2.0"
-    internal const val roomVersion = "2.2.3"
+    internal const val roomVersion = "2.2.5"
 }
 
 object Classpaths {
-    const val gradlePlugin = "com.android.tools.build:gradle:3.5.2"
+    const val gradlePlugin = "com.android.tools.build:gradle:3.6.0"
     const val kotlinPlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlinVersion}"
     const val jacocoPlugin = "org.jacoco:org.jacoco.core:0.8.1"
     const val dexCountPlugin = "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.2"
@@ -25,7 +25,7 @@ object Dependencies {
 
     const val supportLibrary = "androidx.appcompat:appcompat:1.1.0"
     const val materialDesign = "com.google.android.material:material:1.1.0"
-    const val fragments = "androidx.fragment:fragment:1.2.0"
+    const val fragments = "androidx.fragment:fragment:1.2.3"
     const val supportAnnotations = "androidx.annotation:annotation:1.0.0"
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.0-beta4"
 
@@ -40,14 +40,14 @@ object Dependencies {
 
     const val customTabs = "androidx.browser:browser:1.0.0"
 
-    private const val daggerVersion = "2.25.4"
+    private const val daggerVersion = "2.27"
 
     const val dagger = "com.google.dagger:dagger:$daggerVersion"
     const val daggerCompiler = "com.google.dagger:dagger-compiler:$daggerVersion"
 
     const val gson = "com.google.code.gson:gson:2.8.5"
 
-    private const val retrofitVersion = "2.7.1"
+    private const val retrofitVersion = "2.8.1"
 
     const val retrofit = "com.squareup.retrofit2:retrofit:$retrofitVersion"
     const val retrofitGsonConverter = "com.squareup.retrofit2:converter-gson:$retrofitVersion"
