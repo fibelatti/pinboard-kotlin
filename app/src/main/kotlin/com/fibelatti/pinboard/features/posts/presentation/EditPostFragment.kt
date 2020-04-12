@@ -73,6 +73,9 @@ class EditPostFragment @Inject constructor() : BaseFragment(
 
     override fun onDestroy() {
         super.onDestroy()
+        mainActivity?.updateTitleLayout {
+            hideActionButton()
+        }
         mainActivity?.updateViews { bottomAppBar, _ ->
             bottomAppBar.hideKeyboard()
             bottomAppBar.visible()
@@ -120,8 +123,15 @@ class EditPostFragment @Inject constructor() : BaseFragment(
                 return@doOnApplyWindowInsets
             }
 
-            // New inset is bigger, keyboard will appear
-            if (windowInsets.systemWindowInsetBottom > initialInsetBottomValue) {
+            val keyboardWillAppear = windowInsets.systemWindowInsetBottom > initialInsetBottomValue
+            if (keyboardWillAppear) {
+                mainActivity?.updateTitleLayout {
+                    handler?.postDelayed({
+                        // Has to be delayed because keyboard is still appearing
+                        setActionButton(R.string.hint_save, ::saveLink)
+                    }, 100L)
+                }
+
                 // In case what's below the focused view is also important
                 val scrollOffset = resources.getDimensionPixelSize(R.dimen.scroll_offset)
                 // We want to scroll enough for the focused view to be fully visible
@@ -150,11 +160,23 @@ class EditPostFragment @Inject constructor() : BaseFragment(
                         startDelay = 100L
                     }
                     .start()
+            } else {
+                mainActivity?.updateTitleLayout {
+                    hideActionButton()
+                }
             }
         }
     }
 
     private fun saveLink() {
+        mainActivity?.updateTitleLayout {
+            hideActionButton()
+        }
+        mainActivity?.updateViews { _, fab ->
+            fab.hide()
+        }
+        layoutRoot?.hideKeyboard()
+
         editPostViewModel.saveLink(
             editTextUrl.textAsString(),
             editTextTitle.textAsString(),
@@ -305,10 +327,7 @@ class EditPostFragment @Inject constructor() : BaseFragment(
             bottomAppBar.invisible()
             fab.run {
                 setImageResource(R.drawable.ic_done)
-                setOnClickListener {
-                    saveLink()
-                    hide()
-                }
+                setOnClickListener { saveLink() }
                 show()
             }
         }

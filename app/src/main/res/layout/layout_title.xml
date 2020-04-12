@@ -31,7 +31,7 @@
         android:gravity="center_vertical"
         android:maxLines="1"
         app:layout_constraintBottom_toTopOf="@+id/textViewCount"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonAction"
         app:layout_constraintStart_toEndOf="@+id/buttonNavigateBack"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Some title" />
@@ -44,10 +44,25 @@
         android:layout_marginStart="@dimen/margin_regular"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/textViewTitle"
         app:layout_constraintStart_toEndOf="@+id/buttonNavigateBack"
         app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
         tools:text="10 links - Newest first"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/buttonAction"
+        style="@style/AppTheme.Button.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_small"
+        android:layout_marginEnd="@dimen/margin_small"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewTitle"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Some action"
         tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -80,4 +80,14 @@ class TitleLayout @JvmOverloads constructor(
     fun hidePostCount() {
         textViewCount.gone()
     }
+
+    fun setActionButton(@StringRes stringRes: Int, onClick: () -> Unit) {
+        buttonAction.setOnClickListener { onClick() }
+        buttonAction.visible(stringRes)
+    }
+
+    fun hideActionButton() {
+        buttonAction.setOnClickListener(null)
+        buttonAction.gone()
+    }
 }
