@@ -93,7 +93,6 @@ COm7
 coM7
 cOM7
 COM7
-COM7
 com8
 Com8
 cOm8
@@ -172,7 +171,6 @@ lPt8
 LPt8
 lpT8
 LpT8
-LPT8
 LPT8
 lpt9
 Lpt9
