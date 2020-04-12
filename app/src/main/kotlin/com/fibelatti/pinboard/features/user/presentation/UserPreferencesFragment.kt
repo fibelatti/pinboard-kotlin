@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.user.presentation
 
 import android.os.Bundle
 import android.view.View
+import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatDelegate
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
@@ -34,12 +35,31 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(R.layout.frag
             setupActivityViews()
             setupAppearance(it.appearance)
             setupPreferredDetailsView(it.preferredDetailsView)
-            setupAutoFillDescription(it.autoFillDescription)
-            setupShowDescriptionInLists(it.showDescriptionInLists)
-            setupShowDescriptionInDetails(it.showDescriptionInDetails)
-            setupEditAfterSharing(it.editAfterSharing)
-            setupPrivateDefault(it.defaultPrivate)
-            setupReadLaterDefault(it.defaultReadLater)
+
+            checkboxAutoFillDescription.setValueAndChangeListener(
+                it.autoFillDescription,
+                userPreferencesViewModel::saveAutoFillDescription
+            )
+            checkboxShowDescriptionInLists.setValueAndChangeListener(
+                it.showDescriptionInLists,
+                userPreferencesViewModel::saveShowDescriptionInLists
+            )
+            checkboxShowDescriptionInDetails.setValueAndChangeListener(
+                it.showDescriptionInDetails,
+                userPreferencesViewModel::saveShowDescriptionInDetails
+            )
+            checkboxEditAfterSharing.setValueAndChangeListener(
+                it.editAfterSharing,
+                userPreferencesViewModel::saveEditAfterSharing
+            )
+            checkboxPrivateDefault.setValueAndChangeListener(
+                it.defaultPrivate,
+                userPreferencesViewModel::saveDefaultPrivate
+            )
+            checkboxReadLaterDefault.setValueAndChangeListener(
+                it.defaultReadLater,
+                userPreferencesViewModel::saveDefaultReadLater
+            )
         }
 
         viewLifecycleOwner.observeEvent(userPreferencesViewModel.appearanceChanged) { newAppearance ->
@@ -125,45 +145,11 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(R.layout.frag
         }
     }
 
-    private fun setupAutoFillDescription(value: Boolean) {
-        checkboxAutoFillDescription.isChecked = value
-        checkboxAutoFillDescription.setOnCheckedChangeListener { _, isChecked ->
-            userPreferencesViewModel.saveAutoFillDescription(isChecked)
-        }
-    }
-
-    private fun setupShowDescriptionInLists(value: Boolean) {
-        checkboxShowDescriptionInLists.isChecked = value
-        checkboxShowDescriptionInLists.setOnCheckedChangeListener { _, isChecked ->
-            userPreferencesViewModel.saveShowDescriptionInLists(isChecked)
-        }
-    }
-
-    private fun setupShowDescriptionInDetails(value: Boolean) {
-        checkboxShowDescriptionInDetails.isChecked = value
-        checkboxShowDescriptionInDetails.setOnCheckedChangeListener { _, isChecked ->
-            userPreferencesViewModel.saveShowDescriptionInDetails(isChecked)
-        }
-    }
-
-    private fun setupEditAfterSharing(value: Boolean) {
-        checkboxEditAfterSharing.isChecked = value
-        checkboxEditAfterSharing.setOnCheckedChangeListener { _, isChecked ->
-            userPreferencesViewModel.saveEditAfterSharing(isChecked)
-        }
-    }
-
-    private fun setupPrivateDefault(value: Boolean) {
-        checkboxPrivateDefault.isChecked = value
-        checkboxPrivateDefault.setOnCheckedChangeListener { _, isChecked ->
-            userPreferencesViewModel.saveDefaultPrivate(isChecked)
-        }
-    }
-
-    private fun setupReadLaterDefault(value: Boolean) {
-        checkboxReadLaterDefault.isChecked = value
-        checkboxReadLaterDefault.setOnCheckedChangeListener { _, isChecked ->
-            userPreferencesViewModel.saveDefaultReadLater(isChecked)
-        }
+    private fun CheckBox.setValueAndChangeListener(
+        initialValue: Boolean,
+        onCheckedChangeListener: (Boolean) -> Unit
+    ) {
+        isChecked = initialValue
+        setOnCheckedChangeListener { _, isChecked -> onCheckedChangeListener(isChecked) }
     }
 }
