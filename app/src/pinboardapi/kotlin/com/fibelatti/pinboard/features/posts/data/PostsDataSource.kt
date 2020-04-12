@@ -175,20 +175,24 @@ class PostsDataSource @Inject constructor(
     @VisibleForTesting
     fun getAdditionalPages() {
         pagedRequestsScope.launch {
-            var currentOffset = API_PAGE_SIZE
+            try {
+                var currentOffset = API_PAGE_SIZE
 
-            while (currentOffset != 0) {
-                val additionalPosts = rateLimitRunner.run(API_GET_ALL_THROTTLE_TIME) {
-                    postsApi.getAllPosts(offset = currentOffset, limit = API_PAGE_SIZE)
+                while (currentOffset != 0) {
+                    val additionalPosts = rateLimitRunner.run(API_GET_ALL_THROTTLE_TIME) {
+                        postsApi.getAllPosts(offset = currentOffset, limit = API_PAGE_SIZE)
+                    }
+
+                    savePosts(additionalPosts)
+
+                    if (additionalPosts.size == API_PAGE_SIZE) {
+                        currentOffset += additionalPosts.size
+                    } else {
+                        currentOffset = 0
+                    }
                 }
-
-                savePosts(additionalPosts)
-
-                if (additionalPosts.size == API_PAGE_SIZE) {
-                    currentOffset += additionalPosts.size
-                } else {
-                    currentOffset = 0
-                }
+            } catch (ignored: Exception) {
+                // If it fails it can be resumed later
             }
         }
     }

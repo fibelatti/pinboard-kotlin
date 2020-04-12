@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.core.network
 
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -22,6 +23,7 @@ interface RateLimitRunner {
 class ApiRateLimitRunner constructor(private val throttleTime: Long) : RateLimitRunner {
 
     private val mutex = Mutex()
+    private val supervisorScope = CoroutineScope(SupervisorJob())
 
     /**
      * Calls [body] applying this runner [throttleTime]
@@ -44,10 +46,10 @@ class ApiRateLimitRunner constructor(private val throttleTime: Long) : RateLimit
     /**
      * Unlocks [mutex] after delaying for [throttleTime].
      *
-     * Launched on [GlobalScope] specifically so it doesn't block its parent coroutine.
+     * Launched on [supervisorScope] specifically so it doesn't block its parent coroutine.
      */
     private suspend fun scheduleUnlock(throttleTime: Long) {
-        GlobalScope.launch {
+        supervisorScope.launch {
             delay(throttleTime)
             mutex.unlock()
         }
