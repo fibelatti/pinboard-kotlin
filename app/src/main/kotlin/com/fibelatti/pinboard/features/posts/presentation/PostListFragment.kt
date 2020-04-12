@@ -28,6 +28,7 @@ import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.GetNextPostPage
 import com.fibelatti.pinboard.features.appstate.Loaded
+import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.PostsDisplayed
 import com.fibelatti.pinboard.features.appstate.PostsForTag
@@ -35,6 +36,7 @@ import com.fibelatti.pinboard.features.appstate.Recent
 import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
 import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
+import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.appstate.ToggleSorting
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
@@ -185,7 +187,8 @@ class PostListFragment @Inject constructor(
         recyclerViewPosts.onRequestNextPageCompleted()
 
         mainActivity?.updateTitleLayout {
-            setPostListTitle(content.title, content.totalCount, content.sortType)
+            setTitle(content.title)
+            setSubTitle(buildPostCountSubTitle(content.totalCount, content.sortType))
         }
 
         if (content.posts == null) {
@@ -203,8 +206,21 @@ class PostListFragment @Inject constructor(
         }
     }
 
+    private fun buildPostCountSubTitle(count: Int, sortType: SortType): String {
+        val countFormatArg = if (count % AppConfig.API_PAGE_SIZE == 0) "$count+" else count.toString()
+        val countString = resources.getQuantityString(R.plurals.posts_quantity, count, countFormatArg)
+        return resources.getString(
+            if (sortType == NewestFirst) {
+                R.string.posts_sorting_newest_first
+            } else {
+                R.string.posts_sorting_oldest_first
+            },
+            countString
+        )
+    }
+
     private fun showEmptyLayout() {
-        mainActivity?.updateTitleLayout { hidePostCount() }
+        mainActivity?.updateTitleLayout { hideSubTitle() }
         recyclerViewPosts.gone()
         layoutEmptyList.apply {
             visible()

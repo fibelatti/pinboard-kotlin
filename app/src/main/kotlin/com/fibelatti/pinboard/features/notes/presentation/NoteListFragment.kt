@@ -99,7 +99,8 @@ class NoteListFragment @Inject constructor(
             layoutEmptyList.gone()
 
             mainActivity?.updateTitleLayout {
-                setNoteListTitle(getString(R.string.notes_title), list.size)
+                setTitle(getString(R.string.notes_title))
+                setSubTitle(resources.getQuantityString(R.plurals.notes_quantity, list.size, list.size))
             }
 
             noteListAdapter.submitList(list)

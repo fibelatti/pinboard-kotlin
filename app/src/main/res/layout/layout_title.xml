@@ -8,11 +8,12 @@
     android:minHeight="@dimen/title_layout_height"
     android:paddingBottom="@dimen/padding_small">
 
-    <ImageView
+    <ImageButton
         android:id="@+id/buttonNavigateBack"
-        style="@style/AppTheme.ClickableIcon"
-        android:layout_gravity="center_vertical"
+        android:layout_width="@dimen/clickable_area"
+        android:layout_height="@dimen/clickable_area"
         android:layout_marginTop="@dimen/margin_small"
+        android:background="@null"
         android:contentDescription="@string/cd_navigate_back"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,14 +31,14 @@
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:maxLines="1"
-        app:layout_constraintBottom_toTopOf="@+id/textViewCount"
+        app:layout_constraintBottom_toTopOf="@+id/textViewSubtitle"
         app:layout_constraintEnd_toStartOf="@+id/buttonAction"
         app:layout_constraintStart_toEndOf="@+id/buttonNavigateBack"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Some title" />
 
     <TextView
-        android:id="@+id/textViewCount"
+        android:id="@+id/textViewSubtitle"
         style="@style/AppTheme.Text.Detail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -47,7 +48,7 @@
         app:layout_constraintEnd_toEndOf="@+id/textViewTitle"
         app:layout_constraintStart_toEndOf="@+id/buttonNavigateBack"
         app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
-        tools:text="10 links - Newest first"
+        tools:text="Some subtitle"
         tools:visibility="visible" />
 
     <Button
