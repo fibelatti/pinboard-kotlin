@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import com.fibelatti.core.android.IntentDelegate
@@ -22,7 +23,6 @@ import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig.MAIN_PACKAGE_NAME
 import com.fibelatti.pinboard.core.AppConfig.PLAY_STORE_BASE_URL
-import com.fibelatti.pinboard.core.android.BackPressHandler
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.customview.TitleLayout
@@ -58,8 +58,8 @@ import com.fibelatti.pinboard.features.navigation.NavigationDrawer
 import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteListFragment
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.fibelatti.pinboard.features.posts.presentation.PopularPostsFragment
 import com.fibelatti.pinboard.features.posts.presentation.EditPostFragment
+import com.fibelatti.pinboard.features.posts.presentation.PopularPostsFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostDetailFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostSearchFragment
@@ -97,18 +97,17 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
             }
         }
 
+        setupBackNavigation()
         setupView()
         setupViewModels()
     }
 
-    override fun onBackPressed() {
-        val currentFragment = supportFragmentManager.fragments.last()
-        if (currentFragment is BackPressHandler) {
-            currentFragment.onBackPressed()
-        } else {
-            super.onBackPressed()
-            appStateViewModel.runAction(NavigateBack)
-        }
+    private fun setupBackNavigation() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                appStateViewModel.runAction(NavigateBack)
+            }
+        })
     }
 
     private fun setupView() {

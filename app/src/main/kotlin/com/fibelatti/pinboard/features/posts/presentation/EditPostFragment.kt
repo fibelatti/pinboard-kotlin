@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.archcomponents.get
@@ -29,7 +30,6 @@ import com.fibelatti.core.extension.toast
 import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.android.BackPressHandler
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -44,9 +44,7 @@ import kotlinx.android.synthetic.main.layout_edit_tags.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
 import javax.inject.Inject
 
-class EditPostFragment @Inject constructor() : BaseFragment(
-    R.layout.fragment_edit_post
-), BackPressHandler {
+class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_edit_post) {
 
     companion object {
         @JvmStatic
@@ -65,6 +63,15 @@ class EditPostFragment @Inject constructor() : BaseFragment(
 
     private var originalPost: Post? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                onBackPressed()
+            }
+        })
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupLayout()
@@ -82,7 +89,7 @@ class EditPostFragment @Inject constructor() : BaseFragment(
         }
     }
 
-    override fun onBackPressed() {
+    private fun onBackPressed() {
         val isContentUnchanged = originalPost?.run {
             url == editTextUrl.textAsString() &&
                 title == editTextTitle.textAsString() &&
