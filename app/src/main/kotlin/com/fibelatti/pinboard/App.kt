@@ -7,9 +7,7 @@ import com.fibelatti.pinboard.core.di.DaggerAppComponent
 class App : Application() {
 
     val appComponent: AppComponent by lazy(mode = LazyThreadSafetyMode.NONE) {
-        DaggerAppComponent
-            .builder()
-            .application(this)
-            .build()
+        DaggerAppComponent.factory()
+            .create(application = this)
     }
 }

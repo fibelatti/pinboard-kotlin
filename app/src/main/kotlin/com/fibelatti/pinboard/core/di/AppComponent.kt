@@ -22,11 +22,11 @@ import javax.inject.Singleton
 @Singleton
 interface AppComponent : Injector {
 
-    @Component.Builder
-    interface Builder {
-        fun build(): AppComponent
+    @Component.Factory
+    interface Factory {
 
-        @BindsInstance
-        fun application(application: Application): Builder
+        fun create(
+            @BindsInstance application: Application
+        ): AppComponent
     }
 }
