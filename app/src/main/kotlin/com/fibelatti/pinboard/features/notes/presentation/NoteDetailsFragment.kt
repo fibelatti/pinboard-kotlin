@@ -3,7 +3,6 @@ package com.fibelatti.pinboard.features.notes.presentation
 import android.os.Bundle
 import android.view.View
 import com.fibelatti.core.archcomponents.extension.observe
-import com.fibelatti.core.archcomponents.get
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.navigateBack
@@ -11,7 +10,8 @@ import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.core.extension.activityViewModel
+import com.fibelatti.pinboard.core.extension.viewModel
 import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.notes.domain.model.Note
@@ -26,8 +26,8 @@ class NoteDetailsFragment @Inject constructor() : BaseFragment(R.layout.fragment
         val TAG: String = "NoteDetailsFragment"
     }
 
-    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(requireActivity()) }
-    private val noteDetailsViewModel by lazy { viewModelFactory.get<NoteDetailsViewModel>(this) }
+    private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
+    private val noteDetailsViewModel by viewModel { viewModelProvider.noteDetailsViewModel() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -5,10 +5,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import androidx.fragment.app.FragmentFactory
-import androidx.lifecycle.ViewModelProvider
 import com.fibelatti.core.android.AppResourceProvider
 import com.fibelatti.core.android.MultiBindingFragmentFactory
-import com.fibelatti.core.archcomponents.ViewModelFactory
 import com.fibelatti.core.extension.getSystemService
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.core.di.IoScope
@@ -54,9 +52,6 @@ abstract class CoreModule {
 
     @Binds
     abstract fun resourceProvider(appResourceProvider: AppResourceProvider): ResourceProvider
-
-    @Binds
-    abstract fun viewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
 
     @Binds
     abstract fun fragmentFactory(factory: MultiBindingFragmentFactory): FragmentFactory

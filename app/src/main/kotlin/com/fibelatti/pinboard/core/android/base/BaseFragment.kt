@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import com.fibelatti.core.extension.toast
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.di.ViewModelProvider
 import com.fibelatti.pinboard.core.extension.doOnApplyWindowInsets
 import com.fibelatti.pinboard.core.extension.getViewToApplyInsets
 
@@ -16,8 +17,8 @@ abstract class BaseFragment @ContentView constructor(
     @LayoutRes contentLayoutId: Int
 ) : Fragment(contentLayoutId) {
 
-    protected val viewModelFactory
-        get() = (activity as BaseActivity).viewModelFactory
+    protected val viewModelProvider: ViewModelProvider
+        get() = (activity as BaseActivity).viewModelProvider
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

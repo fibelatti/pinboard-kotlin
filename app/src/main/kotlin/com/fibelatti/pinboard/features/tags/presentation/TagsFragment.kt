@@ -3,14 +3,14 @@ package com.fibelatti.pinboard.features.tags.presentation
 import android.os.Bundle
 import android.view.View
 import com.fibelatti.core.archcomponents.extension.observe
-import com.fibelatti.core.archcomponents.get
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.core.extension.activityViewModel
+import com.fibelatti.pinboard.core.extension.viewModel
 import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.RefreshTags
 import com.fibelatti.pinboard.features.mainActivity
@@ -26,8 +26,8 @@ class TagsFragment @Inject constructor(
         val TAG: String = "TagsFragment"
     }
 
-    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(requireActivity()) }
-    private val tagsViewModel by lazy { viewModelFactory.get<TagsViewModel>(this) }
+    private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
+    private val tagsViewModel by viewModel { viewModelProvider.tagsViewModel() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

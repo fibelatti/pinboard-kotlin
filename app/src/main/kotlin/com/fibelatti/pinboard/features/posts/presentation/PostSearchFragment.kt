@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import com.fibelatti.core.archcomponents.extension.observe
-import com.fibelatti.core.archcomponents.get
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.applyAs
 import com.fibelatti.core.extension.gone
@@ -16,9 +15,10 @@ import com.fibelatti.core.extension.textAsString
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.activityViewModel
 import com.fibelatti.pinboard.core.extension.blink
+import com.fibelatti.pinboard.core.extension.viewModel
 import com.fibelatti.pinboard.features.appstate.AddSearchTag
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.RefreshSearchTags
 import com.fibelatti.pinboard.features.appstate.RemoveSearchTag
@@ -39,8 +39,8 @@ class PostSearchFragment @Inject constructor(
         val TAG: String = "PostSearchFragment"
     }
 
-    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(requireActivity()) }
-    private val tagsViewModel by lazy { viewModelFactory.get<TagsViewModel>(this) }
+    private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
+    private val tagsViewModel by viewModel { viewModelProvider.tagsViewModel() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

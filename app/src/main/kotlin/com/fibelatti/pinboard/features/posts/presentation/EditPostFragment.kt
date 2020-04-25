@@ -10,7 +10,6 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
-import com.fibelatti.core.archcomponents.get
 import com.fibelatti.core.extension.afterTextChanged
 import com.fibelatti.core.extension.clearError
 import com.fibelatti.core.extension.clearText
@@ -31,8 +30,9 @@ import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.activityViewModel
 import com.fibelatti.pinboard.core.extension.show
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.core.extension.viewModel
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.mainActivity
@@ -51,9 +51,9 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
         val TAG: String = "EditPostFragment"
     }
 
-    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(this) }
-    private val editPostViewModel by lazy { viewModelFactory.get<EditPostViewModel>(this) }
-    private val postDetailViewModel by lazy { viewModelFactory.get<PostDetailViewModel>(this) }
+    private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
+    private val editPostViewModel by viewModel { viewModelProvider.editPostViewModel() }
+    private val postDetailViewModel by viewModel { viewModelProvider.postDetailsViewModel() }
 
     private var initialInsetBottomValue = -1
     /**

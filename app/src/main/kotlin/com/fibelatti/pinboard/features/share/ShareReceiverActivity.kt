@@ -4,10 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import com.fibelatti.core.archcomponents.extension.observeEvent
-import com.fibelatti.core.archcomponents.get
 import com.fibelatti.core.extension.toast
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseActivity
+import com.fibelatti.pinboard.core.extension.viewModel
 import com.fibelatti.pinboard.features.MainActivity
 import kotlinx.android.synthetic.main.activity_share.*
 
@@ -20,7 +20,7 @@ class ShareReceiverActivity : BaseActivity(R.layout.activity_share) {
             View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
             View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
 
-        val shareReceiverViewModel = viewModelFactory.get<ShareReceiverViewModel>(this)
+        val shareReceiverViewModel by viewModel { viewModelProvider.shareReceiverViewModel() }
 
         setupViewModels(shareReceiverViewModel)
         intent?.checkForExtraText(shareReceiverViewModel::saveUrl)

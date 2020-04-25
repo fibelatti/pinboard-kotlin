@@ -24,10 +24,11 @@ object Dependencies {
     const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutinesVersion}"
 
     const val supportLibrary = "androidx.appcompat:appcompat:1.1.0"
-    const val materialDesign = "com.google.android.material:material:1.1.0"
-    const val fragments = "androidx.fragment:fragment:1.2.3"
+    const val activity = "androidx.activity:activity-ktx:1.1.0"
+    const val fragments = "androidx.fragment:fragment-ktx:1.2.4"
     const val supportAnnotations = "androidx.annotation:annotation:1.0.0"
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.0-beta4"
+    const val materialDesign = "com.google.android.material:material:1.1.0"
 
     const val coreLib = "com.fibelatti.core:core:2.0.0-alpha3"
     const val coreLibArch = "com.fibelatti.core:arch-components:2.0.0-alpha3"

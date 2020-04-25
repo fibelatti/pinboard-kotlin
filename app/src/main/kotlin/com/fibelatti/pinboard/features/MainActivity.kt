@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment
 import com.fibelatti.core.android.IntentDelegate
 import com.fibelatti.core.android.base.BaseIntentBuilder
 import com.fibelatti.core.archcomponents.extension.observe
-import com.fibelatti.core.archcomponents.get
 import com.fibelatti.core.extension.createFragment
 import com.fibelatti.core.extension.exhaustive
 import com.fibelatti.core.extension.gone
@@ -28,10 +27,10 @@ import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.customview.TitleLayout
 import com.fibelatti.pinboard.core.extension.doOnApplyWindowInsets
 import com.fibelatti.pinboard.core.extension.shareText
+import com.fibelatti.pinboard.core.extension.viewModel
 import com.fibelatti.pinboard.core.functional.DoNothing
 import com.fibelatti.pinboard.features.appstate.AddPostContent
 import com.fibelatti.pinboard.features.appstate.All
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.ExternalBrowserContent
 import com.fibelatti.pinboard.features.appstate.ExternalContent
@@ -67,7 +66,6 @@ import com.fibelatti.pinboard.features.splash.presentation.SplashFragment
 import com.fibelatti.pinboard.features.tags.presentation.TagsFragment
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.presentation.AuthFragment
-import com.fibelatti.pinboard.features.user.presentation.AuthViewModel
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -80,8 +78,8 @@ var Intent.fromBuilder by IntentDelegate.Boolean("FROM_BUILDER", false)
 
 class MainActivity : BaseActivity(R.layout.activity_main) {
 
-    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(this) }
-    private val authViewModel by lazy { viewModelFactory.get<AuthViewModel>(this) }
+    private val appStateViewModel by viewModel { viewModelProvider.appStateViewModel() }
+    private val authViewModel by viewModel { viewModelProvider.authViewModel() }
 
     private val handler = Handler()
 

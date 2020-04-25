@@ -15,7 +15,6 @@ import android.webkit.WebViewClient
 import androidx.annotation.MenuRes
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
-import com.fibelatti.core.archcomponents.get
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.setOnClickListener
@@ -26,9 +25,10 @@ import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.activityViewModel
 import com.fibelatti.pinboard.core.extension.shareText
 import com.fibelatti.pinboard.core.extension.show
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.core.extension.viewModel
 import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
@@ -49,9 +49,9 @@ class PostDetailFragment @Inject constructor(
         val TAG: String = "PostDetailFragment"
     }
 
-    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(this) }
-    private val postDetailViewModel by lazy { viewModelFactory.get<PostDetailViewModel>(this) }
-    private val popularPostsViewModel by lazy { viewModelFactory.get<PopularPostsViewModel>(this) }
+    private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
+    private val postDetailViewModel by viewModel { viewModelProvider.postDetailsViewModel() }
+    private val popularPostsViewModel by viewModel { viewModelProvider.popularPostsViewModel() }
 
     private val knownFileExtensions =
         listOf(

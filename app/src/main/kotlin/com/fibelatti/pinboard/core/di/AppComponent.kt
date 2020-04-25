@@ -22,10 +22,10 @@ import javax.inject.Singleton
     ]
 )
 @Singleton
-interface AppComponent : Injector {
+interface AppComponent : ViewModelProvider {
 
-    val fragmentFactory: FragmentFactory
-    val userDataSource: UserDataSource
+    fun fragmentFactory(): FragmentFactory
+    fun userDataSource(): UserDataSource
 
     @Component.Factory
     interface Factory {
@@ -34,4 +34,8 @@ interface AppComponent : Injector {
             @BindsInstance application: Application
         ): AppComponent
     }
+}
+
+interface AppComponentProvider {
+    val appComponent: AppComponent
 }

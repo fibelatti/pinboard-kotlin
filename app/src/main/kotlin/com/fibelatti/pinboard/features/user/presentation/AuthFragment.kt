@@ -5,7 +5,6 @@ import android.view.View
 import androidx.transition.TransitionInflater
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
-import com.fibelatti.core.archcomponents.get
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.heightWrapContent
@@ -18,13 +17,14 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.LinkTransformationMethod
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.activityViewModel
 import kotlinx.android.synthetic.main.fragment_auth.*
 import kotlinx.android.synthetic.main.layout_auth_form.*
 import javax.inject.Inject
 
 class AuthFragment @Inject constructor() : BaseFragment(R.layout.fragment_auth) {
 
-    private val authViewModel by lazy { viewModelFactory.get<AuthViewModel>(requireActivity()) }
+    private val authViewModel by activityViewModel { viewModelProvider.authViewModel() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

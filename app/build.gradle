@@ -144,6 +144,7 @@ dependencies {
 
     // Android
     implementation(Dependencies.supportLibrary)
+    implementation(Dependencies.activity)
     implementation(Dependencies.fragments)
     implementation(Dependencies.materialDesign)
     implementation(Dependencies.constraintLayout)

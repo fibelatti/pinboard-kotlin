@@ -7,7 +7,6 @@ import android.view.View
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
 import com.fibelatti.core.archcomponents.extension.observe
-import com.fibelatti.core.archcomponents.get
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
@@ -20,10 +19,11 @@ import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.android.DefaultTransitionListener
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.activityViewModel
 import com.fibelatti.pinboard.core.extension.shareText
 import com.fibelatti.pinboard.core.extension.show
+import com.fibelatti.pinboard.core.extension.viewModel
 import com.fibelatti.pinboard.features.appstate.AddPost
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.GetNextPostPage
@@ -57,8 +57,8 @@ class PostListFragment @Inject constructor(
         val TAG: String = "PostListFragment"
     }
 
-    private val appStateViewModel by lazy { viewModelFactory.get<AppStateViewModel>(requireActivity()) }
-    private val postListViewModel by lazy { viewModelFactory.get<PostListViewModel>(this) }
+    private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
+    private val postListViewModel by viewModel { viewModelProvider.postListViewModel() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
