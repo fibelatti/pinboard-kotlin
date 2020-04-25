@@ -36,8 +36,7 @@ abstract class CoreModule {
         fun usCollator(): Collator = Collator.getInstance(Locale.US)
 
         @Provides
-        fun provideSharedPreferences(context: Context): SharedPreferences =
-            context.getUserPreferences()
+        fun sharedPreferences(context: Context): SharedPreferences = context.getUserPreferences()
 
         @Provides
         fun connectivityManager(context: Context): ConnectivityManager? = context.getSystemService()
