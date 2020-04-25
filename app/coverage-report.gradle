@@ -1,40 +1,48 @@
 apply plugin: 'jacoco'
 
 jacoco {
-    toolVersion = '0.8.0'
+    toolVersion = '0.8.2'
 }
 
-tasks.withType(Test) {
-    jacoco.includeNoLocationClasses = true
-}
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testPinboardapiDebugUnitTest']) {
 
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
+    group "Reporting"
+    description "Generate Jacoco coverage reports."
+
     reports {
-        xml.enabled = true
-        html.enabled = true
+        html {
+            enabled = true
+            destination = file("${rootProject.buildDir}/reports/coverage-report")
+        }
     }
 
-    def fileFilter = ['**/R.class',
-                      '**/R$*.class',
-                      '**/*$InjectAdapter*.*',
-                      '**/*Injector*.*',
-                      '**/*Module.*',
-                      '**/*Component.*',
-                      '**/*Injector*.*',
-                      '**/BuildConfig.*',
-                      '**/Manifest*.*',
-                      '**/*Activity*.*',
-                      '**/*Fragment*.*',
-                      '**/*Adapter.*',
-                      '**/*ViewHolder*.*',
-                      '**/*Layout.*',
-                      '**/*View.*',
-                      '**/*EditText.*',
-                      '**/*Entity.*',
-                      '**/*Dto.*',
-                      '**/*Errors.*',
-                      '**/*Test*.*',
-                      'android/**/*.*']
+    def fileFilter = [
+        '**/R.class',
+        '**/R$*.class',
+        '**/R2.class',
+
+        '**/BuildConfig.*',
+        '**/Manifest*.*',
+
+        'android/**/*.*',
+        '**/*Activity*.*',
+        '**/*Fragment*.*',
+        '**/*Adapter.*',
+        '**/*ViewHolder*.*',
+        '**/*Layout.*',
+        '**/*View.*',
+
+        '**/*Test*.*',
+
+        '**/*$InjectAdapter*.*',
+        '**/*Injector*.*',
+        '**/*Module.*',
+        '**/*Component.*',
+        '**/*Injector*.*',
+
+        '**/*Dto*.*'
+    ]
+
     def debugTree = fileTree(dir: "$project.buildDir/tmp/kotlin-classes/debug", excludes: fileFilter)
     def mainSrc = "$project.projectDir/src/main/kotlin"
 
@@ -43,6 +51,10 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'crea
     getExecutionData().setFrom(fileTree(dir: project.buildDir, includes: [
         'jacoco/testDebugUnitTest.exec', 'outputs/code-coverage/connected/*coverage.ec'
     ]))
+
+    doLast() {
+        print "file://${reports.html.destination}/index.html"
+    }
 }
 
 task copyTestClasses(type: Copy) {

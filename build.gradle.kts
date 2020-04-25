@@ -19,7 +19,6 @@ buildscript {
     dependencies {
         classpath(Classpaths.gradlePlugin)
         classpath(Classpaths.kotlinPlugin)
-        classpath(Classpaths.jacocoPlugin)
         classpath(Classpaths.dexCountPlugin)
     }
 }
@@ -33,6 +32,10 @@ allprojects {
             dirs("libs")
         }
     }
+}
+
+ext {
+    set("jacocoEnabled", System.getProperties().getProperty("jacocoEnabled") ?: "false")
 }
 
 tasks.getByName("clean") {
