@@ -3,6 +3,13 @@ detekt {
     buildUponDefaultConfig = true
     input = files("$projectDir")
     config = files("$projectDir/detekt.yml")
+
+    reports {
+        html {
+            enabled = true
+            destination = file("build/reports/detekt.html")
+        }
+    }
 }
 
 tasks.detekt.jvmTarget = "1.8"
