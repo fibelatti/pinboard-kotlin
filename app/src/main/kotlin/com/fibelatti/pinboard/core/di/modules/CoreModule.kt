@@ -36,10 +36,10 @@ abstract class CoreModule {
         fun usCollator(): Collator = Collator.getInstance(Locale.US)
 
         @Provides
-        fun sharedPreferences(context: Context): SharedPreferences = context.getUserPreferences()
+        fun Context.sharedPreferences(): SharedPreferences = getUserPreferences()
 
         @Provides
-        fun connectivityManager(context: Context): ConnectivityManager? = context.getSystemService()
+        fun Context.connectivityManager(): ConnectivityManager? = getSystemService()
 
         @Provides
         @IoScope
@@ -47,11 +47,11 @@ abstract class CoreModule {
     }
 
     @Binds
-    abstract fun context(app: Application): Context
+    abstract fun Application.context(): Context
 
     @Binds
-    abstract fun resourceProvider(appResourceProvider: AppResourceProvider): ResourceProvider
+    abstract fun AppResourceProvider.resourceProvider(): ResourceProvider
 
     @Binds
-    abstract fun fragmentFactory(factory: MultiBindingFragmentFactory): FragmentFactory
+    abstract fun MultiBindingFragmentFactory.fragmentFactory(): FragmentFactory
 }

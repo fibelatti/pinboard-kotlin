@@ -36,86 +36,86 @@ abstract class FeatureModule {
     companion object {
 
         @Provides
-        fun postsApi(retrofit: Retrofit): PostsApi = retrofit.create()
+        fun Retrofit.postsApi(): PostsApi = create()
 
         @Provides
-        fun tagsApi(retrofit: Retrofit): TagsApi = retrofit.create()
+        fun Retrofit.tagsApi(): TagsApi = create()
 
         @Provides
-        fun notesApi(retrofit: Retrofit): NotesApi = retrofit.create()
+        fun Retrofit.notesApi(): NotesApi = create()
     }
 
     @Binds
     @IntoMap
     @FragmentKey(SplashFragment::class)
-    abstract fun splashFragment(splashFragment: SplashFragment): Fragment
+    abstract fun SplashFragment.splashFragment(): Fragment
 
     // region State
     @Binds
-    abstract fun appStateRepository(appStateDataSource: AppStateDataSource): AppStateRepository
+    abstract fun AppStateDataSource.appStateRepository(): AppStateRepository
     // endregion
 
     // region Posts
     @Binds
-    abstract fun postsRepository(postsDataSource: PostsDataSource): PostsRepository
+    abstract fun PostsDataSource.postsRepository(): PostsRepository
 
     @Binds
     @IntoMap
     @FragmentKey(PostListFragment::class)
-    abstract fun postListFragment(postListFragment: PostListFragment): Fragment
+    abstract fun PostListFragment.postListFragment(): Fragment
 
     @Binds
     @IntoMap
     @FragmentKey(PostDetailFragment::class)
-    abstract fun postDetailFragment(postDetailFragment: PostDetailFragment): Fragment
+    abstract fun PostDetailFragment.postDetailFragment(): Fragment
 
     @Binds
     @IntoMap
     @FragmentKey(EditPostFragment::class)
-    abstract fun editPostFragment(editPostFragment: EditPostFragment): Fragment
+    abstract fun EditPostFragment.editPostFragment(): Fragment
 
     @Binds
     @IntoMap
     @FragmentKey(PostSearchFragment::class)
-    abstract fun postSearchFragment(postSearchFragment: PostSearchFragment): Fragment
+    abstract fun PostSearchFragment.postSearchFragment(): Fragment
     // endregion
 
     // region Tags
     @Binds
-    abstract fun tagsRepository(tagsDataSource: TagsDataSource): TagsRepository
+    abstract fun TagsDataSource.tagsRepository(): TagsRepository
 
     @Binds
     @IntoMap
     @FragmentKey(TagsFragment::class)
-    abstract fun tagsFragment(tagsFragment: TagsFragment): Fragment
+    abstract fun TagsFragment.tagsFragment(): Fragment
     // endregion
 
     // region Notes
     @Binds
-    abstract fun notesRepository(notesDataSource: NotesDataSource): NotesRepository
+    abstract fun NotesDataSource.notesRepository(): NotesRepository
 
     @Binds
     @IntoMap
     @FragmentKey(NoteListFragment::class)
-    abstract fun noteListFragment(noteListFragment: NoteListFragment): Fragment
+    abstract fun NoteListFragment.noteListFragment(): Fragment
 
     @Binds
     @IntoMap
     @FragmentKey(NoteDetailsFragment::class)
-    abstract fun noteDetailsFragment(noteDetailsFragment: NoteDetailsFragment): Fragment
+    abstract fun NoteDetailsFragment.fragment(): Fragment
     // endregion
 
     // region Popular
     @Binds
     @IntoMap
     @FragmentKey(PopularPostsFragment::class)
-    abstract fun popularPostsFragment(popularPostsFragment: PopularPostsFragment): Fragment
+    abstract fun PopularPostsFragment.popularPostFragment(): Fragment
     // endregion
 
     // region Preferences
     @Binds
     @IntoMap
     @FragmentKey(UserPreferencesFragment::class)
-    abstract fun userPreferencesFragment(userPreferencesFragment: UserPreferencesFragment): Fragment
+    abstract fun UserPreferencesFragment.userPreferencesFragment(): Fragment
     // endregion
 }

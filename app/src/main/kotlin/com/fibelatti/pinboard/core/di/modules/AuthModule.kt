@@ -13,10 +13,10 @@ import dagger.multibindings.IntoMap
 abstract class AuthModule {
 
     @Binds
-    abstract fun userRepository(userDataSource: UserDataSource): UserRepository
+    abstract fun UserDataSource.userRepository(): UserRepository
 
     @Binds
     @IntoMap
     @FragmentKey(AuthFragment::class)
-    abstract fun authFragment(authFragment: AuthFragment): Fragment
+    abstract fun AuthFragment.authFragment(): Fragment
 }
