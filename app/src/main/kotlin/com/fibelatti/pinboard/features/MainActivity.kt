@@ -167,6 +167,7 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
                 is PopularPostDetailContent -> showPostDetail()
                 is UserPreferencesContent -> showPreferences()
                 is ExternalContent -> {
+                    appStateViewModel.content.removeObservers(this)
                     appStateViewModel.reset()
                     finish()
                 }

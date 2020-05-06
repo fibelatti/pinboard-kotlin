@@ -718,7 +718,7 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is not ContentWithHistory THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostListContent>()
+            val content = mock<ExternalContent>()
 
             // WHEN
             val result = runBlocking { postActionHandler.runAction(PostDeleted, content) }

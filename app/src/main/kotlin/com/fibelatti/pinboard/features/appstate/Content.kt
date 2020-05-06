@@ -19,7 +19,9 @@ data class PostListContent(
     val searchParameters: SearchParameters,
     val shouldLoad: ShouldLoad,
     val isConnected: Boolean = true
-) : Content() {
+) : ContentWithHistory() {
+
+    override val previousContent: Content = ExternalContent
 
     val totalCount: Int
         get() = posts?.totalCount.orZero()
