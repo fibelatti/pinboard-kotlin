@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import com.fibelatti.core.android.IntentDelegate
 import com.fibelatti.core.android.base.BaseIntentBuilder
 import com.fibelatti.core.archcomponents.extension.observe
+import com.fibelatti.core.extension.applyAs
 import com.fibelatti.core.extension.createFragment
 import com.fibelatti.core.extension.exhaustive
 import com.fibelatti.core.extension.gone
@@ -20,17 +21,13 @@ import com.fibelatti.core.extension.inTransaction
 import com.fibelatti.core.extension.snackbar
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.AppConfig.MAIN_PACKAGE_NAME
-import com.fibelatti.pinboard.core.AppConfig.PLAY_STORE_BASE_URL
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.customview.TitleLayout
 import com.fibelatti.pinboard.core.extension.doOnApplyWindowInsets
-import com.fibelatti.pinboard.core.extension.shareText
 import com.fibelatti.pinboard.core.extension.viewModel
 import com.fibelatti.pinboard.core.functional.DoNothing
 import com.fibelatti.pinboard.features.appstate.AddPostContent
-import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.ExternalBrowserContent
 import com.fibelatti.pinboard.features.appstate.ExternalContent
@@ -41,19 +38,10 @@ import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostListContent
-import com.fibelatti.pinboard.features.appstate.Private
-import com.fibelatti.pinboard.features.appstate.Public
-import com.fibelatti.pinboard.features.appstate.Recent
 import com.fibelatti.pinboard.features.appstate.SearchContent
 import com.fibelatti.pinboard.features.appstate.TagListContent
-import com.fibelatti.pinboard.features.appstate.Unread
-import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
-import com.fibelatti.pinboard.features.appstate.ViewNotes
-import com.fibelatti.pinboard.features.appstate.ViewPopular
-import com.fibelatti.pinboard.features.appstate.ViewPreferences
-import com.fibelatti.pinboard.features.appstate.ViewTags
-import com.fibelatti.pinboard.features.navigation.NavigationDrawer
+import com.fibelatti.pinboard.features.navigation.NavigationMenuFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteListFragment
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -68,6 +56,7 @@ import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.presentation.AuthFragment
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
 import com.google.android.material.bottomappbar.BottomAppBar
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_auth.imageViewAppLogo as authViewLogo
@@ -149,7 +138,9 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
         }
 
         bottomAppBar?.setNavigationOnClickListener {
-            NavigationDrawer.show(this, NavigationCallback())
+            createFragment<NavigationMenuFragment>().applyAs<Fragment, BottomSheetDialogFragment> {
+                show(supportFragmentManager, NavigationMenuFragment.TAG)
+            }
         }
     }
 
@@ -379,68 +370,6 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
         layoutTitle.gone()
         bottomAppBar.gone()
         fabMain.hide()
-    }
-
-    inner class NavigationCallback : NavigationDrawer.Callback {
-        override fun onAllClicked() {
-            appStateViewModel.runAction(All)
-        }
-
-        override fun onRecentClicked() {
-            appStateViewModel.runAction(Recent)
-        }
-
-        override fun onPublicClicked() {
-            appStateViewModel.runAction(Public)
-        }
-
-        override fun onPrivateClicked() {
-            appStateViewModel.runAction(Private)
-        }
-
-        override fun onUnreadClicked() {
-            appStateViewModel.runAction(Unread)
-        }
-
-        override fun onUntaggedClicked() {
-            appStateViewModel.runAction(Untagged)
-        }
-
-        override fun onTagsClicked() {
-            appStateViewModel.runAction(ViewTags)
-        }
-
-        override fun onNotesClicked() {
-            appStateViewModel.runAction(ViewNotes)
-        }
-
-        override fun onPopularClicked() {
-            appStateViewModel.runAction(ViewPopular)
-        }
-
-        override fun onPreferencesClicked() {
-            appStateViewModel.runAction(ViewPreferences)
-        }
-
-        override fun onLogoutClicked() {
-            authViewModel.logout()
-        }
-
-        override fun onShareAppClicked() {
-            shareText(
-                R.string.share_title,
-                getString(R.string.share_text, "$PLAY_STORE_BASE_URL$MAIN_PACKAGE_NAME")
-            )
-        }
-
-        override fun onRateAppClicked() {
-            startActivity(
-                Intent(Intent.ACTION_VIEW).apply {
-                    data = Uri.parse("$PLAY_STORE_BASE_URL$MAIN_PACKAGE_NAME")
-                    setPackage("com.android.vending")
-                }
-            )
-        }
     }
 
     class Builder(context: Context) : BaseIntentBuilder(context, MainActivity::class.java) {

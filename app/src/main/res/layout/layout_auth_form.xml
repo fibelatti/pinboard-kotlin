@@ -31,8 +31,9 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutAuthToken"
         style="@style/AppTheme.InputLayout"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/max_input_width"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginTop="@dimen/margin_regular"
         android:hint="@string/auth_token_hint">
 

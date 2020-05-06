@@ -1,6 +1,8 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import android.content.Context
+import android.os.Bundle
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.View
 import com.fibelatti.core.extension.applyAs
@@ -15,6 +17,11 @@ class TagChipGroup @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.chipGroupStyle
 ) : ChipGroup(context, attrs, defStyleAttr) {
+
+    companion object {
+        private const val SUPER_STATE_KEY = "SUPER_STATE_KEY"
+        private const val DYNAMIC_TAGS_KEY = "DYNAMIC_TAGS_KEY"
+    }
 
     var onTagChipAdded: (() -> Unit)? = null
     var onTagChipRemoved: (() -> Unit)? = null
@@ -60,5 +67,21 @@ class TagChipGroup @JvmOverloads constructor(
                 }
             }
         }
+    }
+
+    override fun onSaveInstanceState(): Parcelable? = Bundle().apply {
+        putParcelable(SUPER_STATE_KEY, super.onSaveInstanceState())
+        putParcelableArrayList(DYNAMIC_TAGS_KEY, ArrayList(getAllTags()))
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        if (state !is Bundle) {
+            return
+        }
+
+        super.onRestoreInstanceState(state.getParcelable(SUPER_STATE_KEY))
+
+        val tags: List<Tag>? = state.getParcelableArrayList(DYNAMIC_TAGS_KEY)
+        tags?.forEach { addTag(it) }
     }
 }

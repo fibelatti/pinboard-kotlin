@@ -43,6 +43,8 @@
     <dimen name="app_icon_size_splash">160dp</dimen>
     <dimen name="app_icon_offset">50dp</dimen>
 
+    <dimen name="max_input_width">320dp</dimen>
+
     <dimen name="progress_bar_size">50dp</dimen>
 
     <dimen name="title_layout_height">65dp</dimen>

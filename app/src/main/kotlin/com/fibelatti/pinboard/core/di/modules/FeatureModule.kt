@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment
 import com.fibelatti.pinboard.core.di.mapkeys.FragmentKey
 import com.fibelatti.pinboard.features.appstate.AppStateDataSource
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.navigation.NavigationMenuFragment
 import com.fibelatti.pinboard.features.notes.data.NotesApi
 import com.fibelatti.pinboard.features.notes.data.NotesDataSource
 import com.fibelatti.pinboard.features.notes.domain.NotesRepository
@@ -117,5 +118,12 @@ abstract class FeatureModule {
     @IntoMap
     @FragmentKey(UserPreferencesFragment::class)
     abstract fun UserPreferencesFragment.userPreferencesFragment(): Fragment
+    // endregion
+
+    // region Menu
+    @Binds
+    @IntoMap
+    @FragmentKey(NavigationMenuFragment::class)
+    abstract fun NavigationMenuFragment.navigationMenuFragment(): Fragment
     // endregion
 }

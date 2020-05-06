@@ -20,13 +20,9 @@
             android:paddingStart="@dimen/padding_regular"
             android:paddingEnd="@dimen/padding_regular">
 
-            <include
-                android:id="@+id/layoutAddPost"
-                layout="@layout/layout_edit_post" />
+            <include layout="@layout/layout_edit_post" />
 
-            <include
-                android:id="@+id/layoutAddTags"
-                layout="@layout/layout_edit_tags" />
+            <include layout="@layout/layout_edit_tags" />
         </LinearLayout>
 
         <include

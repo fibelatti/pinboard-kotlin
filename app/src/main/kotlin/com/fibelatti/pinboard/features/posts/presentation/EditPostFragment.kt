@@ -56,26 +56,47 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
     private val postDetailViewModel by viewModel { viewModelProvider.postDetailsViewModel() }
 
     private var initialInsetBottomValue = -1
+
     /**
      * Saved since different flavours have different visibilities
      */
     private var checkBoxPrivateVisibility: Int = View.VISIBLE
 
+    private var isRecreating: Boolean = false
+
     private var originalPost: Post? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                onBackPressed()
-            }
-        })
+    /**
+     * This hackery is needed because [androidx.activity.OnBackPressedDispatcher] is misbehaving
+     * after a configuration change. In normal circumstances the callbacks are ordered correctly,
+     * but after a configuration change the activity callback is at the top so it is invoked first
+     * and the only way to solve it at this time is to also scope this callback to the activity.
+     *
+     * This would obviously result in a leak and/or crashes since the callback would outlive the
+     * fragment, which is why it is manually removed when [onDestroyView] is called to prevent
+     * such issues.
+     */
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            onBackPressed()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        isRecreating = savedInstanceState != null
+
+        // This should be using viewLifecycleOwner instead...
+        activity?.onBackPressedDispatcher?.addCallback(requireActivity(), onBackPressedCallback)
+
         setupLayout()
         setupViewModels()
+    }
+
+    override fun onDestroyView() {
+        // Needs to be manually removed because the activity is used as the lifecycleOwner
+        onBackPressedCallback.remove()
+        super.onDestroyView()
     }
 
     override fun onDestroy() {
@@ -290,8 +311,11 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
             setupActivityViews()
             textInputUrlDescription.visibleIf(it.showDescription)
             buttonEditDescription.goneIf(it.showDescription)
-            checkboxPrivate.isChecked = it.defaultPrivate
-            checkboxReadLater.isChecked = it.defaultReadLater
+
+            if (!isRecreating) {
+                checkboxPrivate.isChecked = it.defaultPrivate
+                checkboxReadLater.isChecked = it.defaultReadLater
+            }
         }
         viewLifecycleOwner.observe(appStateViewModel.editPostContent, ::showPostDetails)
         with(editPostViewModel) {
@@ -342,25 +366,6 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
 
     private fun showPostDetails(content: EditPostContent) {
         setupActivityViews()
-        originalPost = content.post
-        with(content.post) {
-            editTextUrl.setText(url)
-            editTextTitle.setText(title)
-            editTextDescription.setText(description)
-
-            setupDescriptionLayouts()
-            if (content.showDescription) {
-                textInputUrlDescription.visible()
-                buttonEditDescription.gone()
-            }
-
-            checkboxPrivate.isChecked = private
-            checkboxReadLater.isChecked = readLater
-
-            chipGroupTags.removeAllViews()
-            tags?.forEach { chipGroupTags.addTag(it) }
-        }
-
         mainActivity?.updateViews { bottomAppBar, _ ->
             bottomAppBar.run {
                 navigationIcon = null
@@ -369,6 +374,29 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
                 visible()
                 show()
             }
+        }
+
+        setupDescriptionLayouts()
+        if (content.showDescription) {
+            textInputUrlDescription.visible()
+            buttonEditDescription.gone()
+        }
+
+        originalPost = content.post
+
+        if (isRecreating) {
+            return
+        }
+
+        with(content.post) {
+            editTextUrl.setText(url)
+            editTextTitle.setText(title)
+            editTextDescription.setText(description)
+            checkboxPrivate.isChecked = private
+            checkboxReadLater.isChecked = readLater
+
+            chipGroupTags.removeAllViews()
+            tags?.forEach { chipGroupTags.addTag(it) }
         }
     }
 
