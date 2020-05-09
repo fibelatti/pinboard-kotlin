@@ -172,6 +172,8 @@ dependencies {
 
     implementation(Dependencies.jsoup)
 
+    implementation(Dependencies.playCore)
+
     debugImplementation(Dependencies.leakCanary)
 
     // Test

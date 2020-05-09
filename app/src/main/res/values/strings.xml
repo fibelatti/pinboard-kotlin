@@ -181,6 +181,10 @@
     <string name="user_preferences_edit_after_sharing">Open the edit screen</string>
     <string name="user_preferences_edit_after_sharing_description">If checked, the Edit screen will be displayed for further editing when a bookmark is successfully shared to Pinkt or saved from the list of popular bookmarks</string>
 
+    <!-- In-app Update -->
+    <string name="in_app_update_ready">An app update is ready to install</string>
+    <string name="in_app_update_install">RESTART</string>
+
     <!-- About -->
     <string name="about_share">Share Pinkt</string>
     <string name="about_rate">Rate Pinkt on Google Play</string>

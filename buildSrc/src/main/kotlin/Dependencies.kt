@@ -56,6 +56,8 @@ object Dependencies {
 
     const val jsoup = "org.jsoup:jsoup:1.11.3"
 
+    const val playCore = "com.google.android.play:core:1.6.5"
+
     const val leakCanary = "com.squareup.leakcanary:leakcanary-android:2.2"
 }
 

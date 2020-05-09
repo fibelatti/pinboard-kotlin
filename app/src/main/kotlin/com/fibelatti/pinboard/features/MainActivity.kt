@@ -8,6 +8,7 @@ import android.os.Handler
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import com.fibelatti.core.android.IntentDelegate
@@ -58,6 +59,7 @@ import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_auth.imageViewAppLogo as authViewLogo
 import kotlinx.android.synthetic.main.fragment_splash.imageViewAppLogo as splashViewLogo
@@ -67,12 +69,18 @@ var Intent.fromBuilder by IntentDelegate.Boolean("FROM_BUILDER", false)
 
 class MainActivity : BaseActivity(R.layout.activity_main) {
 
+    companion object {
+        private const val FLEXIBLE_UPDATE_REQUEST = 1001
+    }
+
     private val appStateViewModel by viewModel { viewModelProvider.appStateViewModel() }
     private val authViewModel by viewModel { viewModelProvider.authViewModel() }
 
     private val handler = Handler()
 
     private var isRecreating: Boolean = false
+
+    private var inAppUpdateManager: InAppUpdateManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,6 +95,28 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
         setupBackNavigation()
         setupView()
         setupViewModels()
+
+        inAppUpdateManager = appComponent.inAppUpdateManager().also {
+            it.checkForAvailableUpdates(this, FLEXIBLE_UPDATE_REQUEST, ::onUpdateDownloadComplete)
+        }
+    }
+
+    private fun onUpdateDownloadComplete() {
+        layoutRoot.snackbar(
+            message = getString(R.string.in_app_update_ready),
+            textColor = R.color.text_primary,
+            marginSize = R.dimen.margin_regular,
+            background = R.drawable.background_snackbar,
+            duration = Snackbar.LENGTH_LONG
+        ) {
+            setAction(R.string.in_app_update_install) { inAppUpdateManager?.completeUpdate() }
+            setActionTextColor(
+                ContextCompat.getColor(
+                    layoutRoot.context,
+                    R.color.color_on_background
+                )
+            )
+        }
     }
 
     private fun setupBackNavigation() {

@@ -19,7 +19,7 @@ abstract class BaseActivity @ContentView constructor(
     @LayoutRes contentLayoutId: Int
 ) : AppCompatActivity(contentLayoutId) {
 
-    private val appComponent: AppComponent
+    protected val appComponent: AppComponent
         get() = (application as AppComponentProvider).appComponent
     val viewModelProvider: ViewModelProvider
         get() = appComponent

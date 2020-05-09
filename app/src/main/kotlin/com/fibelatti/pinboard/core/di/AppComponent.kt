@@ -7,6 +7,7 @@ import com.fibelatti.pinboard.core.di.modules.CoreModule
 import com.fibelatti.pinboard.core.di.modules.DatabaseModule
 import com.fibelatti.pinboard.core.di.modules.FeatureModule
 import com.fibelatti.pinboard.core.di.modules.NetworkModule
+import com.fibelatti.pinboard.features.InAppUpdateManager
 import com.fibelatti.pinboard.features.user.data.UserDataSource
 import dagger.BindsInstance
 import dagger.Component
@@ -26,6 +27,7 @@ interface AppComponent : ViewModelProvider {
 
     fun fragmentFactory(): FragmentFactory
     fun userDataSource(): UserDataSource
+    fun inAppUpdateManager(): InAppUpdateManager
 
     @Component.Factory
     interface Factory {
