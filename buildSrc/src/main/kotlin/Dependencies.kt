@@ -55,6 +55,8 @@ object Dependencies {
     const val httpLoggingInterceptor = "com.squareup.okhttp3:logging-interceptor:3.10.0"
 
     const val jsoup = "org.jsoup:jsoup:1.11.3"
+
+    const val leakCanary = "com.squareup.leakcanary:leakcanary-android:2.2"
 }
 
 object TestDependencies {

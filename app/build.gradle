@@ -172,6 +172,8 @@ dependencies {
 
     implementation(Dependencies.jsoup)
 
+    debugImplementation(Dependencies.leakCanary)
+
     // Test
     testRuntimeOnly(TestDependencies.junit5Engine)
     testRuntimeOnly(TestDependencies.junitVintage)
