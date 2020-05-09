@@ -5,20 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/margin_regular"
-    android:layout_marginTop="@dimen/app_icon_offset"
     android:layout_marginEnd="@dimen/margin_regular"
     android:background="@drawable/background_contrast_rounded"
     android:orientation="vertical"
     android:paddingStart="@dimen/padding_regular"
-    android:paddingTop="@dimen/padding_large"
     android:paddingEnd="@dimen/padding_regular"
     android:paddingBottom="@dimen/padding_large"
     app:elevation="@dimen/elevation_regular"
-    app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="@+id/imageViewAppLogo"
-    app:layout_constraintVertical_bias="0.0">
+    app:layout_constraintTop_toBottomOf="@+id/imageViewAppLogo">
 
     <TextView
         style="@style/AppTheme.Text.Title"

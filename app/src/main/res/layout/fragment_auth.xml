@@ -14,14 +14,6 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.20" />
 
-    <include
-        layout="@layout/layout_auth_form"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageViewAppLogo"
-        app:layout_constraintVertical_bias="0.0" />
-
     <ImageView
         android:id="@+id/imageViewAppLogo"
         android:layout_width="@dimen/app_icon_size"
@@ -29,10 +21,14 @@
         android:contentDescription="@string/cd_app_logo"
         android:elevation="@dimen/elevation_high"
         android:src="@drawable/pinkt"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/guideline"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/guideline" />
+
+    <include
+        layout="@layout/layout_auth_form"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewAppLogo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
