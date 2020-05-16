@@ -65,10 +65,16 @@ class PostDetailFragment @Inject constructor(
             "gif", "jpg", "jpeg", "png", "svg",
             "mp4", "3gp", "mpg", "mpeg", "avi"
         )
+    private var postWebViewClient: PostWebViewClient? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupViewModels()
+    }
+
+    override fun onDestroyView() {
+        postWebViewClient?.callback = null
+        super.onDestroyView()
     }
 
     private fun setupViewModels() {
@@ -161,7 +167,22 @@ class PostDetailFragment @Inject constructor(
         }
 
         if (webView.url != post.url) {
-            webView.webViewClient = PostWebViewClient(post)
+            postWebViewClient = PostWebViewClient(object : PostWebViewClient.Callback {
+
+                override fun onPageStarted() {
+                    layoutProgressBar?.visible()
+                }
+
+                override fun onPageFinished() {
+                    layoutProgressBar?.gone()
+                    layoutRootUrlError?.gone()
+                }
+
+                override fun onError() {
+                    showErrorLayout(post)
+                }
+            }).also(webView::setWebViewClient)
+
             webView.loadUrl(post.url)
         }
     }
@@ -214,27 +235,36 @@ class PostDetailFragment @Inject constructor(
     private fun openUrlInExternalBrowser(post: Post) {
         startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(post.url) })
     }
+}
 
-    private inner class PostWebViewClient(private val post: Post) : WebViewClient() {
+private class PostWebViewClient(callback: Callback) : WebViewClient() {
 
-        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-            super.onPageStarted(view, url, favicon)
-            layoutProgressBar?.visible()
-        }
+    interface Callback {
+        fun onPageStarted()
 
-        override fun onPageFinished(view: WebView?, url: String?) {
-            super.onPageFinished(view, url)
-            layoutProgressBar?.gone()
-            layoutRootUrlError?.gone()
-        }
+        fun onPageFinished()
 
-        override fun onReceivedError(
-            view: WebView?,
-            request: WebResourceRequest?,
-            error: WebResourceError?
-        ) {
-            super.onReceivedError(view, request, error)
-            showErrorLayout(post)
-        }
+        fun onError()
+    }
+
+    var callback: Callback? = callback
+
+    override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+        super.onPageStarted(view, url, favicon)
+        callback?.onPageStarted()
+    }
+
+    override fun onPageFinished(view: WebView?, url: String?) {
+        super.onPageFinished(view, url)
+        callback?.onPageFinished()
+    }
+
+    override fun onReceivedError(
+        view: WebView?,
+        request: WebResourceRequest?,
+        error: WebResourceError?
+    ) {
+        super.onReceivedError(view, request, error)
+        callback?.onError()
     }
 }
