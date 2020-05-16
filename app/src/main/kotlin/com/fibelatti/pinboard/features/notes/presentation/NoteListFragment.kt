@@ -18,6 +18,7 @@ import com.fibelatti.pinboard.features.appstate.RefreshNotes
 import com.fibelatti.pinboard.features.appstate.ViewNote
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.notes.domain.model.Note
+import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
 import kotlinx.android.synthetic.main.fragment_note_list.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
 import javax.inject.Inject
@@ -42,6 +43,29 @@ class NoteListFragment @Inject constructor(
     }
 
     private fun setupLayout() {
+        buttonNoteSortingDateUpdatedDesc.isChecked = true
+
+        buttonNoteSortingDateUpdatedDesc.setOnClickListener {
+            buttonNoteSortingDateUpdatedDesc.isChecked = true
+            noteListAdapter.submitList(
+                noteListViewModel.sort(noteListAdapter.currentList, NoteSorting.ByDateUpdatedDesc)
+            )
+        }
+
+        buttonNoteSortingDateUpdatedAsc.setOnClickListener {
+            buttonNoteSortingDateUpdatedAsc.isChecked = true
+            noteListAdapter.submitList(
+                noteListViewModel.sort(noteListAdapter.currentList, NoteSorting.ByDateUpdatedAsc)
+            )
+        }
+
+        buttonNoteSortingAtoZ.setOnClickListener {
+            buttonNoteSortingAtoZ.isChecked = true
+            noteListAdapter.submitList(
+                noteListViewModel.sort(noteListAdapter.currentList, NoteSorting.AtoZ)
+            )
+        }
+
         swipeToRefresh.setOnRefreshListener {
             swipeToRefresh.isRefreshing = false
             appStateViewModel.runAction(RefreshNotes)
@@ -89,12 +113,14 @@ class NoteListFragment @Inject constructor(
 
     private fun handleLoading(loading: Boolean) {
         layoutProgressBar.visibleIf(loading, otherwiseVisibility = View.GONE)
+        buttonGroupNoteSorting.goneIf(loading)
         recyclerViewNotes.goneIf(loading)
         layoutEmptyList.goneIf(loading)
     }
 
     private fun showNotes(list: List<Note>) {
         if (list.isNotEmpty()) {
+            buttonGroupNoteSorting.visible()
             recyclerViewNotes.visible()
             layoutEmptyList.gone()
 
@@ -110,6 +136,7 @@ class NoteListFragment @Inject constructor(
     }
 
     private fun showEmptyLayout() {
+        buttonGroupNoteSorting.gone()
         recyclerViewNotes.gone()
         layoutEmptyList.apply {
             setIcon(R.drawable.ic_notes)

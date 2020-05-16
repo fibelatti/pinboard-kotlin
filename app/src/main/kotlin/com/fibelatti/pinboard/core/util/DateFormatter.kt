@@ -23,6 +23,8 @@ class DateFormatter @Inject constructor() {
 
     fun nowAsTzFormat(): String = getUtcFormat(FORMAT_TZ).format(Date())
 
+    fun displayFormatToMillis(input: String): Long? = getSimpleDateFormat(FORMAT_DISPLAY).parse(input)?.time
+
     @VisibleForTesting
     fun getUtcFormat(format: String) = getSimpleDateFormat(format, timeZone = TimeZone.getTimeZone("UTC"))
 

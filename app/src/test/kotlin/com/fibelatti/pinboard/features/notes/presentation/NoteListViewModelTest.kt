@@ -9,6 +9,7 @@ import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.safeAny
 import com.fibelatti.core.test.extension.verifySuspend
 import com.fibelatti.pinboard.BaseViewModelTest
+import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.SetNotes
 import com.fibelatti.pinboard.features.notes.domain.NotesRepository
@@ -20,10 +21,12 @@ internal class NoteListViewModelTest : BaseViewModelTest() {
 
     private val mockNotesRepository = mock<NotesRepository>()
     private val mockAppStateRepository = mock<AppStateRepository>()
+    private val mockDateFormatter = mock<DateFormatter>()
 
     private val noteListViewModel = NoteListViewModel(
         mockNotesRepository,
-        mockAppStateRepository
+        mockAppStateRepository,
+        mockDateFormatter
     )
 
     @Test

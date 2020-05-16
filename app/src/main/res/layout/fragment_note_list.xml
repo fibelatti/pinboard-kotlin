@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layoutRoot"
     android:layout_width="match_parent"
@@ -25,18 +26,44 @@
         android:visibility="gone"
         tools:visibility="visible" />
 
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/buttonGroupNoteSorting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layoutOfflineAlert"
+        android:layout_marginStart="@dimen/margin_regular"
+        android:layout_marginEnd="@dimen/margin_regular"
+        app:singleSelection="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonNoteSortingDateUpdatedDesc"
+            style="?attr/materialButtonOutlinedStyle"
+            android:text="@string/note_sorting_date_updated_desc" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonNoteSortingDateUpdatedAsc"
+            style="?attr/materialButtonOutlinedStyle"
+            android:text="@string/note_sorting_date_updated_asc" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonNoteSortingAtoZ"
+            style="?attr/materialButtonOutlinedStyle"
+            android:text="@string/note_sorting_a_to_z" />
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
     <com.fibelatti.pinboard.core.android.customview.EmptyListLayout
         android:id="@+id/layoutEmptyList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/layoutOfflineAlert"
+        android:layout_below="@+id/buttonGroupNoteSorting"
         android:visibility="gone" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeToRefresh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/layoutOfflineAlert">
+        android:layout_below="@+id/buttonGroupNoteSorting">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewNotes"
