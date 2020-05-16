@@ -18,7 +18,6 @@ import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.invisible
-import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.onKeyboardSubmit
 import com.fibelatti.core.extension.orZero
 import com.fibelatti.core.extension.setOnClickListener
@@ -340,7 +339,6 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
             }
             viewLifecycleOwner.observeEvent(deleted) {
                 mainActivity?.toast(getString(R.string.posts_deleted_feedback))
-                navigateBack()
             }
             viewLifecycleOwner.observe(error, ::handleError)
         }

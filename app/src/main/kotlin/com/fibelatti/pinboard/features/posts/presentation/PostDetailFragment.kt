@@ -87,7 +87,6 @@ class PostDetailFragment @Inject constructor(
             }
             viewLifecycleOwner.observeEvent(deleted) {
                 mainActivity?.toast(getString(R.string.posts_deleted_feedback))
-                navigateBack()
             }
             viewLifecycleOwner.observe(error, ::handleError)
         }
