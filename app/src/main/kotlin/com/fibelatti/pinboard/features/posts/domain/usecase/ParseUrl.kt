@@ -19,7 +19,7 @@ class ParseUrl @Inject constructor(
         return catching {
             val document = withContext(Dispatchers.IO) { Jsoup.connect(params).get() }
             val url = document.location()
-            val title = document.title()
+            val title = document.title().takeIf(String::isNotEmpty) ?: url
             val description: String? = document.getMetaProperty("og:description")
                 .takeIf { userRepository.getAutoFillDescription() }
             val imageUrl: String? = document.getMetaProperty("og:image")
