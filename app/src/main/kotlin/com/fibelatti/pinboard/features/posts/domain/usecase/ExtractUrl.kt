@@ -13,20 +13,13 @@ class ExtractUrl @Inject constructor() : UseCaseWithParams<String, String>() {
     override suspend fun run(params: String): Result<String> {
         val schemes = ValidUrlScheme.ALL_SCHEMES.map { "$it://" }
 
-        for (scheme in schemes) {
-            val index = params.indexOf(scheme)
+        val index = schemes.mapNotNull { scheme -> params.indexOf(scheme).takeIf { it >= 0 } }.min()
+            ?: return Failure(InvalidUrlException())
 
-            if (index == -1) {
-                continue
-            }
-
-            return try {
-                Success(URLDecoder.decode(params.substring(index), "UTF-8"))
-            } catch (exception: UnsupportedEncodingException) {
-                Failure(InvalidUrlException())
-            }
+        return try {
+            Success(URLDecoder.decode(params.substring(index), "UTF-8"))
+        } catch (exception: UnsupportedEncodingException) {
+            Failure(InvalidUrlException())
         }
-
-        return Failure(InvalidUrlException())
     }
 }

@@ -35,10 +35,12 @@ internal class ExtractUrlTest {
         }
     }
 
-    fun testCases(): List<Pair<String, Result<String>>> = mutableListOf<Pair<String, Result<String>>>().apply {
-        ValidUrlScheme.ALL_SCHEMES.map {
-            add("Check this awesome url $it://www.url.com" to Success("$it://www.url.com"))
+    fun testCases(): List<Pair<String, Result<String>>> =
+        mutableListOf<Pair<String, Result<String>>>().apply {
+            ValidUrlScheme.ALL_SCHEMES.map {
+                add("Check this awesome url $it://www.url.com" to Success("$it://www.url.com"))
+            }
+            add("https://web.archive.org/web/20111117040806/http://www.url.com" to Success("https://web.archive.org/web/20111117040806/http://www.url.com"))
+            add("Check this not so awesome url www.url.com" to Failure(InvalidUrlException()))
         }
-        add("Check this not so awesome url www.url.com" to Failure(InvalidUrlException()))
-    }
 }
