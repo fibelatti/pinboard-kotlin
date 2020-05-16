@@ -13,17 +13,17 @@ class AppStateViewModel @Inject constructor(
     val content: LiveData<Content>
         get() = appStateRepository.getContent()
 
-    val postListContent: LiveData<PostListContent> = mediatorLiveDataForContentType()
-    val postDetailContent: LiveData<PostDetailContent> = mediatorLiveDataForContentType()
-    val addPostContent: LiveData<AddPostContent> = mediatorLiveDataForContentType()
-    val editPostContent: LiveData<EditPostContent> = mediatorLiveDataForContentType()
-    val searchContent: LiveData<SearchContent> = mediatorLiveDataForContentType()
-    val tagListContent: LiveData<TagListContent> = mediatorLiveDataForContentType()
-    val noteListContent: LiveData<NoteListContent> = mediatorLiveDataForContentType()
-    val noteDetailContent: LiveData<NoteDetailContent> = mediatorLiveDataForContentType()
-    val popularPostsContent: LiveData<PopularPostsContent> = mediatorLiveDataForContentType()
-    val popularPostDetailContent: LiveData<PopularPostDetailContent> = mediatorLiveDataForContentType()
-    val userPreferencesContent: LiveData<UserPreferencesContent> = mediatorLiveDataForContentType()
+    val postListContent: LiveData<PostListContent> get() = mediatorLiveDataForContentType()
+    val postDetailContent: LiveData<PostDetailContent> get() = mediatorLiveDataForContentType()
+    val addPostContent: LiveData<AddPostContent> get() = mediatorLiveDataForContentType()
+    val editPostContent: LiveData<EditPostContent> get() = mediatorLiveDataForContentType()
+    val searchContent: LiveData<SearchContent> get() = mediatorLiveDataForContentType()
+    val tagListContent: LiveData<TagListContent> get() = mediatorLiveDataForContentType()
+    val noteListContent: LiveData<NoteListContent> get() = mediatorLiveDataForContentType()
+    val noteDetailContent: LiveData<NoteDetailContent> get() = mediatorLiveDataForContentType()
+    val popularPostsContent: LiveData<PopularPostsContent> get() = mediatorLiveDataForContentType()
+    val popularPostDetailContent: LiveData<PopularPostDetailContent> get() = mediatorLiveDataForContentType()
+    val userPreferencesContent: LiveData<UserPreferencesContent> get() = mediatorLiveDataForContentType()
 
     fun reset() {
         appStateRepository.reset()
