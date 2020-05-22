@@ -67,6 +67,7 @@ class NoteListFragment @Inject constructor(
         }
 
         swipeToRefresh.setOnRefreshListener {
+            buttonNoteSortingDateUpdatedDesc.isChecked = true
             swipeToRefresh.isRefreshing = false
             appStateViewModel.runAction(RefreshNotes)
         }
