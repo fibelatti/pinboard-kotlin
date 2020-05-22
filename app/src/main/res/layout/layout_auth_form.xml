@@ -26,7 +26,6 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutAuthToken"
-        style="@style/AppTheme.InputLayout"
         android:layout_width="@dimen/max_input_width"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -61,11 +60,13 @@
         android:layout_marginTop="@dimen/margin_regular"
         android:visibility="gone" />
 
-    <ImageView
+    <ImageButton
         android:id="@+id/imageViewAuthHelp"
-        style="@style/AppTheme.ClickableIcon"
+        android:layout_width="@dimen/clickable_area"
+        android:layout_height="@dimen/clickable_area"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/margin_regular"
+        android:background="@null"
         android:contentDescription="@string/hint_help"
         app:srcCompat="@drawable/ic_help" />
 

@@ -1,36 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="color_white">#FFFFFF</color>
-    <color name="color_white_opaque">#F5F5F5</color>
-    <color name="color_black">#000000</color>
-    <color name="color_black_70_transparency">#B3000000</color>
-    <color name="color_transparent">#00000000</color>
-
-    <color name="color_grey_light">#C2C2C2</color>
-    <color name="color_grey">#757575</color>
-    <color name="color_grey_dark">#424242</color>
-
-    <color name="color_primary">#3068F8</color>
-    <color name="color_secondary">#3068F8</color>
-    <color name="color_error">#F44336</color>
-
+    <!-- Only colors that change depending on the configuration should be defined here
+    everything else should be follow the style and use the query syntax (?attr/) -->
     <color name="color_status_bar">#C2C2C2</color>
     <color name="color_navigation_bar">#9E9E9E</color>
-    <color name="color_background">#E8E8E8</color>
-    <color name="color_background_contrast">#F5F5F5</color>
-    <color name="color_on_background">#424242</color>
-    <color name="color_icon">#282828</color>
 
-    <color name="color_divider">#C2C2C2</color>
+    <color name="color_background">#E8E8E8</color>
+    <color name="color_on_background">#808080</color>
+
+    <color name="color_surface">#F5F5F5</color>
+    <color name="color_on_surface">#808080</color>
+
+    <color name="color_icon">#424242</color>
 
     <color name="text_primary">#424242</color>
     <color name="text_secondary">#757575</color>
-    <color name="text_white">#F5F5F5</color>
-
-    <color name="auth_form_background">#E8E8E8</color>
 
     <color name="chip_background">#D6D6D6</color>
-    <color name="chip_foreground">#424242</color>
-
-    <color name="color_tag">#1976D2</color>
+    <color name="chip_foreground">#282828</color>
 </resources>

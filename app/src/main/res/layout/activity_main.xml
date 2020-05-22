@@ -32,7 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:backgroundTint="@color/color_background_contrast"
+        android:backgroundTint="?attr/colorSurface"
         android:visibility="gone"
         app:hideOnScroll="true"
         app:layout_scrollFlags="scroll|enterAlways"

@@ -10,7 +10,6 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutUrl"
-        style="@style/AppTheme.InputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/posts_add_url"
@@ -29,7 +28,6 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutTitle"
-        style="@style/AppTheme.InputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_small"
