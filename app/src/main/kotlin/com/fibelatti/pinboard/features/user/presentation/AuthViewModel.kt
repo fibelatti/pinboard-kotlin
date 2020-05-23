@@ -30,16 +30,16 @@ class AuthViewModel @Inject constructor(
     fun login(apiToken: String) {
         launch {
             loginUseCase(apiToken)
-                .onFailure {
+                .onFailure { error ->
                     val loginFailedCodes = listOf(
                         HttpURLConnection.HTTP_UNAUTHORIZED,
                         HttpURLConnection.HTTP_INTERNAL_ERROR
                     )
 
-                    if (it is HttpException && it.code() in loginFailedCodes) {
+                    if (error is HttpException && error.code() in loginFailedCodes) {
                         _apiTokenError.postEvent(resourceProvider.getString(R.string.auth_token_error))
                     } else {
-                        handleError(it)
+                        handleError(error)
                     }
                 }
         }

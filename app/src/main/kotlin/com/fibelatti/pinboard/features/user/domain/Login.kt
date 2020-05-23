@@ -13,7 +13,7 @@ class Login @Inject constructor(
 ) : UseCaseWithParams<Unit, String>() {
 
     override suspend fun run(params: String): Result<Unit> {
-        userRepository.loginAttempt(params)
+        userRepository.loginAttempt(params.trim())
 
         return postsRepository.update()
             .map { postsRepository.clearCache() }
