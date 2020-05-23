@@ -11,7 +11,7 @@ class ApiInterceptor @Inject constructor(
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
-        val url = request.url().newBuilder()
+        val url = request.url.newBuilder()
             .addQueryParameter("format", "json")
             .addEncodedQueryParameter("auth_token", userSharedPreferences.getAuthToken())
             .build()

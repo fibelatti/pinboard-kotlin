@@ -1,11 +1,11 @@
 package com.fibelatti.pinboard.core.network
 
 import okhttp3.Interceptor
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
-import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 import java.net.SocketTimeoutException
 
 class ApiException : Throwable()
@@ -33,7 +33,7 @@ inline fun catchingSocketTimeoutException(
             .request(chain.request())
             .code(408)
             .message(exception.message ?: "")
-            .body(ResponseBody.create(MediaType.parse("text/plain; charset=utf-8"), "{}"))
+            .body("{}".toResponseBody("text/plain; charset=utf-8".toMediaTypeOrNull()))
             .protocol(Protocol.HTTP_1_1)
             .build()
     }

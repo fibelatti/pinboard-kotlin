@@ -35,7 +35,7 @@ internal class UnauthorizedInterceptorTest {
     @Test
     fun `WHEN proceed code is HTTP_UNAUTHORIZED THEN forceLogout is called`() {
         // GIVEN
-        given(mockResponse.code())
+        given(mockResponse.code)
             .willReturn(HttpURLConnection.HTTP_UNAUTHORIZED)
 
         // WHEN
@@ -48,7 +48,7 @@ internal class UnauthorizedInterceptorTest {
     @Test
     fun `WHEN proceed code is not HTTP_UNAUTHORIZED THEN forceLogout is not called`() {
         // GIVEN
-        given(mockResponse.code())
+        given(mockResponse.code)
             .willReturn(HttpURLConnection.HTTP_OK)
 
         // WHEN
@@ -68,6 +68,6 @@ internal class UnauthorizedInterceptorTest {
         val result = unauthorizedInterceptor.intercept(mockChain)
 
         // THEN
-        result.code() shouldBe 408
+        result.code shouldBe 408
     }
 }

@@ -13,7 +13,7 @@ class UnauthorizedInterceptor @Inject constructor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val response = catchingSocketTimeoutException(chain, chain::request)
 
-        if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+        if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
             userRepository.forceLogout()
         }
 

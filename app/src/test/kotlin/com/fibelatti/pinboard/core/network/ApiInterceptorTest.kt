@@ -39,7 +39,7 @@ internal class ApiInterceptorTest {
             .willReturn(mockRequest)
         given(mockChain.proceed(mockRequest))
             .willReturn(mockResponse)
-        given(mockRequest.url())
+        given(mockRequest.url)
             .willReturn(mockUrl)
         given(mockUrl.newBuilder())
             .willReturn(mockUrlBuilder)
@@ -85,7 +85,7 @@ internal class ApiInterceptorTest {
         val result = apiInterceptor.intercept(mockChain)
 
         // THEN
-        result.code() shouldBe 408
+        result.code shouldBe 408
     }
 
     @Test

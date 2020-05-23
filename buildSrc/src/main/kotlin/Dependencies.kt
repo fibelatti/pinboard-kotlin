@@ -2,16 +2,15 @@ object Versions {
     const val minSdkVersion = 21
     const val targetSdkVersion = 29
     const val compileSdkVersion = 29
-    const val buildToolsVersion = "29.0.2"
 
     internal const val kotlinVersion = "1.3.71"
-    internal const val coroutinesVersion = "1.3.5"
+    internal const val coroutinesVersion = "1.3.7"
     internal const val lifecycleVersion = "2.2.0"
     internal const val roomVersion = "2.2.5"
 }
 
 object Classpaths {
-    const val gradlePlugin = "com.android.tools.build:gradle:3.6.0"
+    const val gradlePlugin = "com.android.tools.build:gradle:3.6.3"
     const val kotlinPlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlinVersion}"
     const val jacocoPlugin = "org.jacoco:org.jacoco.core:0.8.1"
     const val dexCountPlugin = "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.2"
@@ -26,9 +25,10 @@ object Dependencies {
     const val supportLibrary = "androidx.appcompat:appcompat:1.1.0"
     const val activity = "androidx.activity:activity-ktx:1.1.0"
     const val fragments = "androidx.fragment:fragment-ktx:1.2.4"
-    const val supportAnnotations = "androidx.annotation:annotation:1.0.0"
-    const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.0-beta4"
+    const val supportAnnotations = "androidx.annotation:annotation:1.1.0"
     const val materialDesign = "com.google.android.material:material:1.1.0"
+    const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.0-beta6"
+    const val swipeRefreshLayout = "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-rc01"
 
     const val coreLib = "com.fibelatti.core:core:2.0.0-alpha3"
     const val coreLibArch = "com.fibelatti.core:arch-components:2.0.0-alpha3"
@@ -39,7 +39,7 @@ object Dependencies {
     const val room = "androidx.room:room-runtime:${Versions.roomVersion}"
     const val roomCompiler = "androidx.room:room-compiler:${Versions.roomVersion}"
 
-    const val customTabs = "androidx.browser:browser:1.0.0"
+    const val customTabs = "androidx.browser:browser:1.2.0"
 
     private const val daggerVersion = "2.27"
 
@@ -48,13 +48,15 @@ object Dependencies {
 
     const val gson = "com.google.code.gson:gson:2.8.5"
 
-    private const val retrofitVersion = "2.8.1"
+    private const val okHttpVersion = "4.7.2"
+    const val okhttp = "com.squareup.okhttp3:okhttp:$okHttpVersion"
+    const val httpLoggingInterceptor = "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"
 
+    private const val retrofitVersion = "2.9.0"
     const val retrofit = "com.squareup.retrofit2:retrofit:$retrofitVersion"
     const val retrofitGsonConverter = "com.squareup.retrofit2:converter-gson:$retrofitVersion"
-    const val httpLoggingInterceptor = "com.squareup.okhttp3:logging-interceptor:3.10.0"
 
-    const val jsoup = "org.jsoup:jsoup:1.11.3"
+    const val jsoup = "org.jsoup:jsoup:1.13.1"
 
     const val playCore = "com.google.android.play:core:1.6.5"
 

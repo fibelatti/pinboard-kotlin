@@ -17,8 +17,8 @@ import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.user.domain.Login
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import okhttp3.MediaType
-import okhttp3.ResponseBody
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
@@ -73,7 +73,7 @@ class AuthViewModelTest : BaseViewModelTest() {
             val error = HttpException(
                 Response.error<GenericResponseDto>(
                     HttpURLConnection.HTTP_UNAUTHORIZED,
-                    ResponseBody.create(MediaType.parse("application/json"), "{}")
+                    "{}".toResponseBody("application/json".toMediaTypeOrNull())
                 )
             )
 
@@ -96,7 +96,7 @@ class AuthViewModelTest : BaseViewModelTest() {
             val error = HttpException(
                 Response.error<GenericResponseDto>(
                     HttpURLConnection.HTTP_INTERNAL_ERROR,
-                    ResponseBody.create(MediaType.parse("application/json"), "{}")
+                    "{}".toResponseBody("application/json".toMediaTypeOrNull())
                 )
             )
 

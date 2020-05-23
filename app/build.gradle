@@ -17,7 +17,6 @@ if (jacocoEnabled.toBoolean()) {
 
 android {
     compileSdkVersion(Versions.compileSdkVersion)
-    buildToolsVersion(Versions.buildToolsVersion)
 
     defaultConfig {
         applicationId = AppInfo.applicationId
@@ -151,6 +150,7 @@ dependencies {
     implementation(Dependencies.fragments)
     implementation(Dependencies.materialDesign)
     implementation(Dependencies.constraintLayout)
+    implementation(Dependencies.swipeRefreshLayout)
 
     implementation(Dependencies.archComponents)
     kapt(Dependencies.archComponentsCompiler)
@@ -166,6 +166,7 @@ dependencies {
 
     implementation(Dependencies.gson)
 
+    implementation(Dependencies.okhttp)
     implementation(Dependencies.retrofit)
     implementation(Dependencies.retrofitGsonConverter)
     implementation(Dependencies.httpLoggingInterceptor)
