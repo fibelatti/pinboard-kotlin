@@ -1,15 +1,6 @@
 build:
     maxIssues: 0
     weights:
-        comments: 0.5
-        complexity: 2
-        empty-blocks: 0.5
-        exceptions: 1
-        naming: 1
-        potential-bugs: 2
-        style: 1
-        formatting: 0.5
-        code-smell: 1
 
 processors:
     active: true

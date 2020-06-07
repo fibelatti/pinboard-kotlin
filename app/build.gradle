@@ -1,15 +1,12 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     id("com.android.application")
     id("kotlin-android")
     id("kotlin-android-extensions")
     id("kotlin-kapt")
-    id("com.getkeepsafe.dexcount")
 }
 
 if (jacocoEnabled.toBoolean()) {
-    project.logger.lifecycle("Applying coverage-report.gradle")
+    println("Applying coverage-report.gradle")
     apply {
         from("coverage-report.gradle")
     }
@@ -122,15 +119,6 @@ android {
                 useJUnitPlatform()
             }
         }
-    }
-}
-
-tasks.withType(KotlinCompile).all {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
 }
 

@@ -10,10 +10,8 @@ object Versions {
 }
 
 object Classpaths {
-    const val gradlePlugin = "com.android.tools.build:gradle:3.6.3"
+    const val gradlePlugin = "com.android.tools.build:gradle:4.0.0"
     const val kotlinPlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlinVersion}"
-    const val jacocoPlugin = "org.jacoco:org.jacoco.core:0.8.1"
-    const val dexCountPlugin = "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.2"
 }
 
 object Dependencies {

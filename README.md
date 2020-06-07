@@ -21,7 +21,6 @@ This project is used to study and demonstrate many topics related to Android dev
 - Room (with FTS)
 - DI with Dagger 2
 - Detekt
-- KtLint
 - Source Control Organisation
 - CI with CircleCI
 

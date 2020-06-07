@@ -1,15 +1,11 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-plugins {
-    id("io.gitlab.arturbosch.detekt").version("1.6.0")
-}
-
-apply {
-    from("ktlint.gradle")
-    from("detekt.gradle")
-}
+apply(from = "detekt.gradle")
 
 buildscript {
+    val jacocoEnabled: String? by project
+    extra["jacocoEnabled"] = jacocoEnabled?.toBoolean() ?: false
+
     repositories {
         google()
         jcenter()
@@ -19,7 +15,6 @@ buildscript {
     dependencies {
         classpath(Classpaths.gradlePlugin)
         classpath(Classpaths.kotlinPlugin)
-        classpath(Classpaths.dexCountPlugin)
     }
 }
 
@@ -28,26 +23,15 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
-        flatDir {
-            dirs("libs")
-        }
     }
 }
 
-ext {
-    set("jacocoEnabled", System.getProperties().getProperty("jacocoEnabled") ?: "false")
-}
-
-tasks.getByName("clean") {
-    delete(rootProject.buildDir)
-}
-
-gradle.projectsEvaluated {
-    subprojects {
+subprojects {
+    afterEvaluate {
         tasks.withType<KotlinCompile>().all {
             kotlinOptions.jvmTarget = "1.8"
         }
 
-        tasks.getByName("preBuild").dependsOn(":detekt", ":ktlint")
+        tasks.findByName("preBuild")?.dependsOn(":detekt")
     }
 }
