@@ -3,7 +3,7 @@ Pinkt
 
 [![Language](https://img.shields.io/badge/language-kotlin-brightgreen.svg)](https://www.github.com/fibelatti/pinboard-kotlin)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-![Build](https://github.com/fibelatti/pinboard-kotlin/workflows/.github/workflows/android-ci.yml/badge.svg)
+![Android CI](https://github.com/fibelatti/pinboard-kotlin/workflows/Android%20CI/badge.svg)
 
 Pinkt is an unofficial [Pinboard](http://pinboard.in/) Android client. Pinboard is a fast, no-nonsense bookmarking site for people who value privacy and speed.
 
@@ -23,12 +23,7 @@ This project is used to study and demonstrate many topics related to Android dev
 - DI with Dagger 2
 - Detekt
 - Source Control Organisation
-- CI with CircleCI
-
-Build Status
---------
-
-[![CircleCI](https://circleci.com/gh/fibelatti/pinboard-kotlin/tree/master.svg?style=svg)](https://circleci.com/gh/fibelatti/pinboard-kotlin/tree/master)
+- CI with GitHub Actions
 
 License
 --------
