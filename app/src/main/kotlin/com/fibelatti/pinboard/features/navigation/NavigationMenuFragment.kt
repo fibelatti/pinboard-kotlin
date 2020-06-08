@@ -86,7 +86,7 @@ class NavigationMenuFragment @Inject constructor() : BottomSheetDialogFragment()
         try {
             val pInfo = view.context.packageManager.getPackageInfo(view.context.packageName, 0)
             menuItemVersion.text = getString(R.string.about_version, pInfo.versionName)
-        } catch (e: PackageManager.NameNotFoundException) {
+        } catch (ignored: PackageManager.NameNotFoundException) {
             menuItemVersion.gone()
         }
 

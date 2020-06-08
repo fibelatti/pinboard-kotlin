@@ -204,7 +204,7 @@ class PostDetailFragment @Inject constructor(
 
         try {
             startActivity(newIntent)
-        } catch (e: ActivityNotFoundException) {
+        } catch (ignored: ActivityNotFoundException) {
             context?.toast(getString(R.string.posts_open_with_file_viewer_error))
         }
     }

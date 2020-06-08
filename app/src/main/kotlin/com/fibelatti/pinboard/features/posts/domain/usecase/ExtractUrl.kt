@@ -18,7 +18,7 @@ class ExtractUrl @Inject constructor() : UseCaseWithParams<String, String>() {
 
         return try {
             Success(URLDecoder.decode(params.substring(index), "UTF-8"))
-        } catch (exception: UnsupportedEncodingException) {
+        } catch (ignored: UnsupportedEncodingException) {
             Failure(InvalidUrlException())
         }
     }
