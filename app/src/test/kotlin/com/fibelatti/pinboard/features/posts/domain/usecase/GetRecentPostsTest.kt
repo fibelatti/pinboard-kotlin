@@ -9,6 +9,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_RECENT_QUANTITY
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -40,7 +41,7 @@ class GetRecentPostsTest {
                 pageLimit = anyInt(),
                 pageOffset = anyInt()
             )
-        }.willReturn(Success(mockResponse))
+        }.willReturn(flowOf(Success(mockResponse)))
     }
 
     @Test

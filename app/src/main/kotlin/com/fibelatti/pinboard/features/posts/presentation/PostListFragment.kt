@@ -44,7 +44,6 @@ import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import kotlinx.android.synthetic.main.fragment_post_list.*
 import kotlinx.android.synthetic.main.layout_offline_alert.*
-import kotlinx.android.synthetic.main.layout_progress_bar.*
 import kotlinx.android.synthetic.main.layout_search_active.*
 import javax.inject.Inject
 
@@ -163,7 +162,7 @@ class PostListFragment @Inject constructor(
             is ShouldLoadFirstPage -> {
                 mainActivity?.updateTitleLayout { setTitle(content.title) }
 
-                layoutProgressBar.visible()
+                progressBarNextPage.visible()
                 recyclerViewPosts.gone()
                 layoutEmptyList.gone()
 
@@ -182,7 +181,6 @@ class PostListFragment @Inject constructor(
     }
 
     private fun showPosts(content: PostListContent) {
-        layoutProgressBar.gone()
         progressBarNextPage.gone()
         recyclerViewPosts.onRequestNextPageCompleted()
 

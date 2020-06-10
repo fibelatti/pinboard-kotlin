@@ -17,6 +17,8 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.withContext
 import java.util.UUID
 import javax.inject.Inject
@@ -84,8 +86,8 @@ class PostsDataSource @Inject constructor(
         countLimit: Int,
         pageLimit: Int,
         pageOffset: Int
-    ): Result<Pair<Int, List<Post>>?> =
-        getLocalData(
+    ): Flow<Result<Pair<Int, List<Post>>?>> =
+        flowOf(getLocalData(
             newestFirst,
             searchTerm,
             tags,
@@ -96,7 +98,7 @@ class PostsDataSource @Inject constructor(
             countLimit,
             pageLimit,
             pageOffset
-        )
+        ))
 
     @VisibleForTesting
     suspend fun getLocalDataSize(

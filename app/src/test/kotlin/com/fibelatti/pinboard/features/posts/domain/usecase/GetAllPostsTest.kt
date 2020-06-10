@@ -11,6 +11,7 @@ import com.fibelatti.pinboard.features.appstate.OldestFirst
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -49,7 +50,7 @@ class GetAllPostsTest {
                 pageLimit = anyInt(),
                 pageOffset = anyInt()
             )
-        }.willReturn(Success(mockResponse))
+        }.willReturn(flowOf(Success(mockResponse)))
     }
 
     @Nested

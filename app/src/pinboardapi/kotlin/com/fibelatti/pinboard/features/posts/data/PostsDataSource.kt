@@ -3,13 +3,14 @@ package com.fibelatti.pinboard.features.posts.data
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.getOrDefault
+import com.fibelatti.core.functional.getOrThrow
 import com.fibelatti.core.functional.map
 import com.fibelatti.core.functional.mapCatching
-import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.core.AppConfig.API_GET_ALL_THROTTLE_TIME
 import com.fibelatti.pinboard.core.AppConfig.API_MAX_EXTENDED_LENGTH
 import com.fibelatti.pinboard.core.AppConfig.API_MAX_LENGTH
 import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
+import com.fibelatti.pinboard.core.AppConfig.API_UPDATE_THROTTLE_TIME
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.di.IoScope
@@ -32,6 +33,9 @@ import com.fibelatti.pinboard.features.user.domain.UserRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -50,7 +54,7 @@ class PostsDataSource @Inject constructor(
 
     override suspend fun update(): Result<String> {
         return resultFrom {
-            rateLimitRunner.run {
+            rateLimitRunner.run(API_UPDATE_THROTTLE_TIME) {
                 withContext(Dispatchers.IO) {
                     postsApi.update().updateTime
                 }
@@ -84,13 +88,11 @@ class PostsDataSource @Inject constructor(
 
                 when (result.resultCode) {
                     ApiResultCodes.DONE.code -> {
-                        postsApi.getPost(url).posts.first().let(postDtoMapper::map)
+                        postsApi.getPost(url).posts
+                            .also(postsDao::savePosts)
+                            .first().let(postDtoMapper::map)
                     }
-                    ApiResultCodes.ITEM_ALREADY_EXISTS.code -> {
-                        (postsDao.getPost(url) ?: postsApi.getPost(url).posts.firstOrNull())
-                            ?.let(postDtoMapper::map)
-                            ?: throw InvalidRequestException()
-                    }
+                    ApiResultCodes.ITEM_ALREADY_EXISTS.code -> getPost(url).getOrThrow()
                     else -> throw ApiException()
                 }
             }
@@ -103,7 +105,11 @@ class PostsDataSource @Inject constructor(
                 postsApi.delete(url)
             }
 
-            if (result.resultCode != ApiResultCodes.DONE.code) {
+            if (result.resultCode == ApiResultCodes.DONE.code) {
+                withContext(Dispatchers.IO) {
+                    postsDao.deletePost(url)
+                }
+            } else {
                 throw ApiException()
             }
         }
@@ -120,7 +126,7 @@ class PostsDataSource @Inject constructor(
         countLimit: Int,
         pageLimit: Int,
         pageOffset: Int
-    ): Result<Pair<Int, List<Post>>?> {
+    ): Flow<Result<Pair<Int, List<Post>>?>> {
         val isConnected = connectivityInfoProvider.isConnected()
         val localData = suspend {
             getLocalData(
@@ -138,37 +144,49 @@ class PostsDataSource @Inject constructor(
         }
 
         if (!isConnected) {
-            return localData()
+            return flowOf(localData())
         }
 
-        val userLastUpdate = userRepository.getLastUpdate().takeIf { it.isNotBlank() }
+        val userLastUpdate = userRepository.getLastUpdate().takeIf(String::isNotBlank)
         val apiLastUpdate = update().getOrDefault(dateFormatter.nowAsTzFormat())
 
         if (userLastUpdate != null && userLastUpdate == apiLastUpdate) {
-            return localData()
+            return flowOf(localData())
         }
 
-        return resultFrom {
-            pagedRequestsScope.coroutineContext.cancelChildren()
+        return getAllFromApi(localData, apiLastUpdate)
+    }
 
-            rateLimitRunner.run(API_GET_ALL_THROTTLE_TIME) {
-                withContext(Dispatchers.IO) {
-                    postsApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE)
+    @VisibleForTesting
+    fun getAllFromApi(
+        localData: suspend () -> Result<Pair<Int, List<Post>>?>,
+        apiLastUpdate: String
+    ): Flow<Result<Pair<Int, List<Post>>?>> {
+        pagedRequestsScope.coroutineContext.cancelChildren()
+        val apiData = suspend {
+            resultFrom {
+                rateLimitRunner.run {
+                    withContext(Dispatchers.IO) {
+                        postsApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE)
+                    }
                 }
-            }
-        }.mapCatching { posts ->
-            withContext(Dispatchers.IO) {
-                postsDao.deleteAllPosts()
-                savePosts(posts)
-            }
+            }.mapCatching { posts ->
+                withContext(Dispatchers.IO) {
+                    postsDao.deleteAllPosts()
+                    savePosts(posts)
+                }
 
-            if (posts.size == API_PAGE_SIZE) {
-                getAdditionalPages()
-            }
-        }.map {
-            localData()
-        }.onSuccess {
-            userRepository.setLastUpdate(apiLastUpdate)
+                userRepository.setLastUpdate(apiLastUpdate)
+
+                if (posts.size == API_PAGE_SIZE) {
+                    getAdditionalPages()
+                }
+            }.map { localData() }
+        }
+
+        return flow {
+            emit(localData())
+            emit(apiData())
         }
     }
 

@@ -10,11 +10,6 @@
     android:focusable="true">
 
     <include
-        layout="@layout/layout_progress_bar"
-        android:visibility="gone"
-        tools:visibility="gone" />
-
-    <include
         android:id="@+id/layoutSearchActive"
         layout="@layout/layout_search_active"
         android:layout_width="match_parent"

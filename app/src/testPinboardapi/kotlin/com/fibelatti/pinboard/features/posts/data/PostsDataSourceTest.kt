@@ -49,11 +49,14 @@ import com.fibelatti.pinboard.features.user.domain.UserRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.collectIndexed
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.fail
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.ArgumentMatchers.any
@@ -364,6 +367,7 @@ class PostsDataSourceTest {
             }
 
             // THEN
+            verify(mockDao).savePosts(mockListPostDto)
             result.shouldBeAnInstanceOf<Success<Unit>>()
         }
 
@@ -460,6 +464,7 @@ class PostsDataSourceTest {
             val result = runBlocking { dataSource.delete(mockUrlValid) }
 
             // THEN
+            verify(mockDao, never()).deletePost(mockUrlValid)
             result.shouldBeAnInstanceOf<Failure>()
             result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
         }
@@ -474,6 +479,7 @@ class PostsDataSourceTest {
             val result = runBlocking { dataSource.delete(mockUrlValid) }
 
             // THEN
+            verify(mockDao, never()).deletePost(mockUrlValid)
             result.shouldBeAnInstanceOf<Failure>()
             result.exceptionOrNull()?.shouldBeAnInstanceOf<ApiException>()
         }
@@ -488,6 +494,7 @@ class PostsDataSourceTest {
             val result = runBlocking { dataSource.delete(mockUrlValid) }
 
             // THEN
+            verify(mockDao).deletePost(mockUrlValid)
             result.shouldBeAnInstanceOf<Success<Unit>>()
         }
     }
@@ -508,8 +515,8 @@ class PostsDataSourceTest {
 
             @Test
             fun `GIVEN isConnected is false WHEN getAllPosts is called THEN local data is returned`() {
-                // GIVEN
                 runBlocking {
+                    // GIVEN
                     willReturn(Success(mockLocalData)).given(dataSource)
                         .getLocalData(
                             newestFirst = true,
@@ -523,11 +530,8 @@ class PostsDataSourceTest {
                             pageLimit = -1,
                             pageOffset = 0
                         )
-                }
-
-                // WHEN
-                val result = runBlocking {
-                    dataSource.getAllPosts(
+                    // WHEN
+                    val result = dataSource.getAllPosts(
                         newestFirst = true,
                         searchTerm = "",
                         tags = null,
@@ -539,10 +543,11 @@ class PostsDataSourceTest {
                         pageLimit = -1,
                         pageOffset = 0
                     )
+                    // THEN
+                    result.collectLatest {
+                        it.getOrThrow() shouldBe mockLocalData
+                    }
                 }
-
-                // THEN
-                result.getOrThrow() shouldBe mockLocalData
             }
         }
 
@@ -599,7 +604,11 @@ class PostsDataSourceTest {
                 }
 
                 // THEN
-                result.getOrThrow() shouldBe mockLocalData
+                runBlocking {
+                    result.collectLatest {
+                        it.getOrThrow() shouldBe mockLocalData
+                    }
+                }
                 verify(mockDateFormatter).nowAsTzFormat()
                 verifySuspend(mockApi, never()) { getAllPosts() }
                 verifySuspend(mockDao, never()) { deleteAllPosts() }
@@ -635,7 +644,16 @@ class PostsDataSourceTest {
                 }
 
                 // THEN
-                result.getOrThrow() shouldBe mockLocalData
+                runBlocking {
+                    result.collectIndexed { index, value ->
+                        when (index) {
+                            0 -> value.getOrNull() shouldBe mockLocalData
+                            1 -> value.getOrNull() shouldBe mockLocalData
+                            else -> fail("Unexpected number of collections")
+                        }
+                    }
+                }
+
                 verify(mockCoroutineContext).cancelChildren()
                 verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 verifySuspend(mockDao) { deleteAllPosts() }
@@ -666,7 +684,11 @@ class PostsDataSourceTest {
                 }
 
                 // THEN
-                result.getOrThrow() shouldBe mockLocalData
+                runBlocking {
+                    result.collectLatest {
+                        it.getOrThrow() shouldBe mockLocalData
+                    }
+                }
                 verifySuspend(mockApi, never()) { getAllPosts() }
                 verifySuspend(mockDao, never()) { deleteAllPosts() }
                 verifySuspend(mockDao, never()) { savePosts(safeAny()) }
@@ -698,7 +720,15 @@ class PostsDataSourceTest {
                 }
 
                 // THEN
-                result.shouldBeAnInstanceOf<Failure>()
+                runBlocking {
+                    result.collectIndexed { index, value ->
+                        when (index) {
+                            0 -> value.getOrNull() shouldBe mockLocalData
+                            1 -> value.shouldBeAnInstanceOf<Failure>()
+                            else -> fail("Unexpected number of collections")
+                        }
+                    }
+                }
                 verify(mockCoroutineContext).cancelChildren()
                 verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 verifySuspend(mockDao, never()) { deleteAllPosts() }
@@ -733,7 +763,15 @@ class PostsDataSourceTest {
                 }
 
                 // THEN
-                result.shouldBeAnInstanceOf<Failure>()
+                runBlocking {
+                    result.collectIndexed { index, value ->
+                        when (index) {
+                            0 -> value.getOrNull() shouldBe mockLocalData
+                            1 -> value.shouldBeAnInstanceOf<Failure>()
+                            else -> fail("Unexpected number of collections")
+                        }
+                    }
+                }
                 verify(mockCoroutineContext).cancelChildren()
                 verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 verifySuspend(mockDao) { deleteAllPosts() }
@@ -743,16 +781,16 @@ class PostsDataSourceTest {
 
             @Test
             fun `WHEN savePosts fails THEN Failure is returned`() {
-                // GIVEN
-                givenSuspend { mockApi.update() }
-                    .willReturn(UpdateDto(mockFutureTime))
-                givenSuspend { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
-                    .willReturn(mockListPostDto)
-                will { throw Exception() }.given(dataSource).savePosts(safeAny())
+                runBlocking {
+                    // GIVEN
+                    given(mockApi.update())
+                        .willReturn(UpdateDto(mockFutureTime))
+                    given(mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE))
+                        .willReturn(mockListPostDto)
+                    will { throw Exception() }.given(dataSource).savePosts(safeAny())
 
-                // WHEN
-                val result = runBlocking {
-                    dataSource.getAllPosts(
+                    // WHEN
+                    val result = dataSource.getAllPosts(
                         newestFirst = true,
                         searchTerm = "",
                         tags = null,
@@ -764,49 +802,21 @@ class PostsDataSourceTest {
                         pageLimit = -1,
                         pageOffset = 0
                     )
+
+                    // THEN
+                    result.collectIndexed { index, value ->
+                        when (index) {
+                            0 -> value.getOrNull() shouldBe mockLocalData
+                            1 -> value.shouldBeAnInstanceOf<Failure>()
+                        }
+                    }
+
+                    verify(mockCoroutineContext).cancelChildren()
+                    verify(mockApi).getAllPosts(offset = 0, limit = API_PAGE_SIZE)
+                    verify(mockDao).deleteAllPosts()
+                    verify(dataSource).savePosts(mockListPostDto)
+                    verify(mockUserRepository, never()).setLastUpdate(anyString())
                 }
-
-                // THEN
-                result.shouldBeAnInstanceOf<Failure>()
-                verify(mockCoroutineContext).cancelChildren()
-                verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
-                verifySuspend(mockDao) { deleteAllPosts() }
-                verify(dataSource).savePosts(mockListPostDto)
-                verifySuspend(mockUserRepository, never()) { setLastUpdate(anyString()) }
-            }
-
-            @Test
-            fun `WHEN all calls are successful THEN local data is returned`() {
-                // GIVEN
-                givenSuspend { mockApi.update() }
-                    .willReturn(UpdateDto(mockFutureTime))
-                givenSuspend { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
-                    .willReturn(mockListPostDto)
-                willDoNothing().given(dataSource).savePosts(safeAny())
-
-                // WHEN
-                val result = runBlocking {
-                    dataSource.getAllPosts(
-                        newestFirst = true,
-                        searchTerm = "",
-                        tags = null,
-                        untaggedOnly = false,
-                        publicPostsOnly = false,
-                        privatePostsOnly = false,
-                        readLaterOnly = false,
-                        countLimit = -1,
-                        pageLimit = -1,
-                        pageOffset = 0
-                    )
-                }
-
-                // THEN
-                result.getOrThrow() shouldBe mockLocalData
-                verify(mockCoroutineContext).cancelChildren()
-                verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
-                verifySuspend(mockDao) { deleteAllPosts() }
-                verify(dataSource).savePosts(mockListPostDto)
-                verifySuspend(mockUserRepository) { setLastUpdate(mockFutureTime) }
             }
 
             @Test
@@ -838,7 +848,15 @@ class PostsDataSourceTest {
                 }
 
                 // THEN
-                result.getOrThrow() shouldBe mockLocalData
+                runBlocking {
+                    result.collectIndexed { index, value ->
+                        when (index) {
+                            0 -> value.getOrNull() shouldBe mockLocalData
+                            1 -> value.getOrNull() shouldBe mockLocalData
+                            else -> fail("Unexpected number of collections")
+                        }
+                    }
+                }
                 verify(mockCoroutineContext).cancelChildren()
                 verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 verifySuspend(mockDao) { deleteAllPosts() }

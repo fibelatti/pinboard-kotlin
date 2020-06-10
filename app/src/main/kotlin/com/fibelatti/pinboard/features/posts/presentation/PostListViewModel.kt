@@ -22,6 +22,7 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.GetAllPosts
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPostParams
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -75,9 +76,11 @@ class PostListViewModel @Inject constructor(
     @VisibleForTesting
     fun getRecent(sorting: SortType, searchTerm: String, tags: List<Tag>) {
         launch {
-            getRecentPosts(GetPostParams(sorting, searchTerm, GetPostParams.Tags.Tagged(tags)))
-                .mapCatching { appStateRepository.runAction(SetPosts(it)) }
-                .onFailure(::handleError)
+            val params = GetPostParams(sorting, searchTerm, GetPostParams.Tags.Tagged(tags))
+            getRecentPosts(params).collect { result ->
+                result.mapCatching { appStateRepository.runAction(SetPosts(it)) }
+                    .onFailure(::handleError)
+            }
         }
     }
 
@@ -135,13 +138,12 @@ class PostListViewModel @Inject constructor(
     @VisibleForTesting
     fun launchGetAll(params: GetPostParams) {
         launch {
-            getAllPosts(params)
-                .mapCatching {
-                    appStateRepository.runAction(
-                        if (params.offset == 0) SetPosts(it) else SetNextPostPage(it)
-                    )
-                }
-                .onFailure(::handleError)
+            getAllPosts(params).collect { result ->
+                result.mapCatching {
+                    val action = if (params.offset == 0) SetPosts(it) else SetNextPostPage(it)
+                    appStateRepository.runAction(action)
+                }.onFailure(::handleError)
+            }
         }
     }
 }

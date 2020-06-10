@@ -31,6 +31,7 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetAllPosts
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPostParams
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
+import kotlinx.coroutines.flow.flowOf
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -214,7 +215,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
     @Test
     fun `GIVEN getRecentPosts will fail WHEN launchGetAll is called THEN repository won't run any actions`() {
         givenSuspend { mockGetRecentPosts(safeAny()) }
-            .willReturn(Failure(mockException))
+            .willReturn(flowOf(Failure(mockException)))
 
         postListViewModel.getRecent(mockSortType, mockSearchTerm, mockTags)
 
@@ -225,7 +226,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
     @Test
     fun `GIVEN getRecentPosts will succeed WHEN launchGetAll is called THEN repository will run SetPosts`() {
         givenSuspend { mockGetRecentPosts(safeAny()) }
-            .willReturn(Success(mockResponse))
+            .willReturn(flowOf(Success(mockResponse)))
 
         postListViewModel.getRecent(mockSortType, mockSearchTerm, mockTags)
 
@@ -301,7 +302,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
         @Test
         fun `GIVEN getAllPosts will fail WHEN launchGetAll is called THEN repository won't run any actions`() {
             givenSuspend { mockGetAllPosts(GetPostParams()) }
-                .willReturn(Failure(mockException))
+                .willReturn(flowOf(Failure(mockException)))
 
             postListViewModel.launchGetAll(GetPostParams())
 
@@ -314,7 +315,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
             // GIVEN
             val params = GetPostParams(offset = 0)
             givenSuspend { mockGetAllPosts(params) }
-                .willReturn(Success(mockResponse))
+                .willReturn(flowOf(Success(mockResponse)))
 
             // WHEN
             postListViewModel.launchGetAll(params)
@@ -329,7 +330,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
             // GIVEN
             val params = GetPostParams(offset = 1)
             givenSuspend { mockGetAllPosts(params) }
-                .willReturn(Success(mockResponse))
+                .willReturn(flowOf(Success(mockResponse)))
 
             // WHEN
             postListViewModel.launchGetAll(params)
