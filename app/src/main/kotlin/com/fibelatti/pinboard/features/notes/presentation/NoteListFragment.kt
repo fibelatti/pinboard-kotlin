@@ -50,6 +50,7 @@ class NoteListFragment @Inject constructor(
             noteListAdapter.submitList(
                 noteListViewModel.sort(noteListAdapter.currentList, NoteSorting.ByDateUpdatedDesc)
             )
+            recyclerViewNotes.scrollToPosition(0)
         }
 
         buttonNoteSortingDateUpdatedAsc.setOnClickListener {
@@ -57,6 +58,7 @@ class NoteListFragment @Inject constructor(
             noteListAdapter.submitList(
                 noteListViewModel.sort(noteListAdapter.currentList, NoteSorting.ByDateUpdatedAsc)
             )
+            recyclerViewNotes.scrollToPosition(0)
         }
 
         buttonNoteSortingAtoZ.setOnClickListener {
@@ -64,6 +66,7 @@ class NoteListFragment @Inject constructor(
             noteListAdapter.submitList(
                 noteListViewModel.sort(noteListAdapter.currentList, NoteSorting.AtoZ)
             )
+            recyclerViewNotes.scrollToPosition(0)
         }
 
         swipeToRefresh.setOnRefreshListener {

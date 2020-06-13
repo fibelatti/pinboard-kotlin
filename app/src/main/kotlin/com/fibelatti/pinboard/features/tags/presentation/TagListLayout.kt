@@ -55,14 +55,17 @@ class TagListLayout @JvmOverloads constructor(
         buttonTagSortingAtoZ.setOnClickListener {
             buttonTagSortingAtoZ.isChecked = true
             tagsAdapter?.let { onSortingSelected(it.getItems(), TagSorting.AtoZ) }
+            recyclerViewTags.scrollToPosition(0)
         }
         buttonTagSortingMoreFirst.setOnClickListener {
             buttonTagSortingMoreFirst.isChecked = true
             tagsAdapter?.let { onSortingSelected(it.getItems(), TagSorting.MoreFirst) }
+            recyclerViewTags.scrollToPosition(0)
         }
         buttonTagSortingLessFirst.setOnClickListener {
             buttonTagSortingLessFirst.isChecked = true
             tagsAdapter?.let { onSortingSelected(it.getItems(), TagSorting.LessFirst) }
+            recyclerViewTags.scrollToPosition(0)
         }
     }
 
