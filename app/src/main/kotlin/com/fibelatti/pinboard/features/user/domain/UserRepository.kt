@@ -4,7 +4,9 @@ import androidx.lifecycle.LiveData
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 
+@Suppress("ComplexInterface", "TooManyFunctions")
 interface UserRepository {
+
     fun getLoginState(): LiveData<LoginState>
 
     fun loginAttempt(authToken: String)
@@ -26,6 +28,10 @@ interface UserRepository {
     fun getPreferredDetailsView(): PreferredDetailsView
 
     fun setPreferredDetailsView(preferredDetailsView: PreferredDetailsView)
+
+    fun getMarkAsReadOnOpen(): Boolean
+
+    fun setMarkAsReadOnOpen(value: Boolean)
 
     fun getAutoFillDescription(): Boolean
 

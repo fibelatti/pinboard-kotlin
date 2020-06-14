@@ -3,16 +3,22 @@ package com.fibelatti.pinboard.features.appstate
 import com.fibelatti.core.functional.Either
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.core.test.extension.mock
+import com.fibelatti.core.test.extension.safeAny
 import com.fibelatti.core.test.extension.shouldBe
+import com.fibelatti.core.test.extension.verifySuspend
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.mockTitle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.allSealedSubclasses
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
+import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -22,21 +28,27 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.BDDMockito.given
 import org.mockito.BDDMockito.verify
+import org.mockito.BDDMockito.willReturn
 import org.mockito.Mockito
 import org.mockito.Mockito.reset
+import org.mockito.Mockito.spy
 import org.mockito.Mockito.times
 
 internal class NavigationActionHandlerTest {
 
     private val mockUserRepository = mock<UserRepository>()
+    private val mockPostsRepository = mock<PostsRepository>()
     private val mockResourceProvider = mock<ResourceProvider>()
     private val mockConnectivityInfoProvider = mock<ConnectivityInfoProvider>()
+    private val mockIoScope = Mockito.spy(CoroutineScope(Dispatchers.Unconfined))
 
-    private val navigationActionHandler = NavigationActionHandler(
+    private val navigationActionHandler = spy(NavigationActionHandler(
         mockUserRepository,
+        mockPostsRepository,
         mockResourceProvider,
-        mockConnectivityInfoProvider
-    )
+        mockConnectivityInfoProvider,
+        mockIoScope
+    ))
 
     private val previousContent = PostListContent(
         category = All,
@@ -204,6 +216,15 @@ internal class NavigationActionHandlerTest {
     @Nested
     inner class ViewPostTests {
 
+        private val randomBoolean = randomBoolean()
+        private val mockShouldLoad = mock<ShouldLoad>()
+
+        @BeforeEach
+        fun setup() {
+            willReturn(mockShouldLoad)
+                .given(navigationActionHandler).markAsRead(safeAny<Post>())
+        }
+
         @Test
         fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
             // GIVEN
@@ -222,7 +243,7 @@ internal class NavigationActionHandlerTest {
         fun `WHEN currentContent is PostListContent and PreferredDetailsView is InAppBrowser THEN PostDetailContent is returned`() {
             // GIVEN
             given(mockUserRepository.getPreferredDetailsView())
-                .willReturn(PreferredDetailsView.InAppBrowser)
+                .willReturn(PreferredDetailsView.InAppBrowser(randomBoolean))
 
             // WHEN
             val result = runBlocking {
@@ -230,9 +251,10 @@ internal class NavigationActionHandlerTest {
             }
 
             // THEN
+            verify(navigationActionHandler).markAsRead(safeAny<Post>())
             result shouldBe PostDetailContent(
                 post = createPost(),
-                previousContent = previousContent
+                previousContent = previousContent.copy(shouldLoad = mockShouldLoad)
             )
         }
 
@@ -240,7 +262,7 @@ internal class NavigationActionHandlerTest {
         fun `WHEN currentContent is PostListContent and PreferredDetailsView is ExternalBrowser THEN ExternalBrowserContent is returned`() {
             // GIVEN
             given(mockUserRepository.getPreferredDetailsView())
-                .willReturn(PreferredDetailsView.ExternalBrowser)
+                .willReturn(PreferredDetailsView.ExternalBrowser(randomBoolean))
 
             // WHEN
             val result = runBlocking {
@@ -248,9 +270,10 @@ internal class NavigationActionHandlerTest {
             }
 
             // THEN
+            verify(navigationActionHandler).markAsRead(safeAny<Post>())
             result shouldBe ExternalBrowserContent(
                 post = createPost(),
-                previousContent = previousContent
+                previousContent = previousContent.copy(shouldLoad = mockShouldLoad)
             )
         }
 
@@ -281,7 +304,7 @@ internal class NavigationActionHandlerTest {
             // GIVEN
             val mockPopularPostsContent = mock<PopularPostsContent>()
             given(mockUserRepository.getPreferredDetailsView())
-                .willReturn(PreferredDetailsView.InAppBrowser)
+                .willReturn(PreferredDetailsView.InAppBrowser(randomBoolean))
 
             // WHEN
             val result = runBlocking {
@@ -300,7 +323,7 @@ internal class NavigationActionHandlerTest {
             // GIVEN
             val mockPopularPostsContent = mock<PopularPostsContent>()
             given(mockUserRepository.getPreferredDetailsView())
-                .willReturn(PreferredDetailsView.ExternalBrowser)
+                .willReturn(PreferredDetailsView.ExternalBrowser(randomBoolean))
 
             // WHEN
             val result = runBlocking {
@@ -334,6 +357,73 @@ internal class NavigationActionHandlerTest {
                 post = createPost(),
                 previousContent = mockPopularPostsContent
             )
+        }
+    }
+
+    @Nested
+    inner class MarkAsReadTests {
+
+        private val post = createPost()
+
+        @Test
+        fun `WHEN post readLater is false THEN Loaded is returned`() {
+            // GIVEN
+            val notReadLater = post.copy(readLater = false)
+
+            // WHEN
+            val result = navigationActionHandler.markAsRead(notReadLater)
+
+            // THEN
+            result shouldBe Loaded
+        }
+
+        @Test
+        fun `WHEN user repository getMarkAsReadOnOpen returns false THEN Loaded is returned`() {
+            // GIVEN
+            val readLater = post.copy(readLater = true)
+            given(mockUserRepository.getMarkAsReadOnOpen()).willReturn(false)
+
+            // WHEN
+            val result = navigationActionHandler.markAsRead(readLater)
+
+            // THEN
+            result shouldBe Loaded
+        }
+
+        @Test
+        fun `WHEN post readLater is false AND user repository getMarkAsReadOnOpen returns true THEN posts repository add is called`() {
+            // GIVEN
+            val readLater = post.copy(readLater = true)
+            given(mockUserRepository.getMarkAsReadOnOpen()).willReturn(true)
+
+            // WHEN
+            navigationActionHandler.markAsRead(readLater)
+
+            // THEN
+            verifySuspend(mockPostsRepository) {
+                add(
+                    url = readLater.url,
+                    title = readLater.title,
+                    description = readLater.description,
+                    private = readLater.private,
+                    readLater = false,
+                    tags = readLater.tags,
+                    replace = true
+                )
+            }
+        }
+
+        @Test
+        fun `WHEN post readLater is false AND user repository getMarkAsReadOnOpen returns true THEN ShouldLoadFirstPage is returned`() {
+            // GIVEN
+            val readLater = post.copy(readLater = true)
+            given(mockUserRepository.getMarkAsReadOnOpen()).willReturn(true)
+
+            // WHEN
+            val result = navigationActionHandler.markAsRead(readLater)
+
+            // THEN
+            result shouldBe ShouldLoadFirstPage
         }
     }
 

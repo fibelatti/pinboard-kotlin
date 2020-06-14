@@ -135,12 +135,45 @@ internal class UserSharedPreferencesTest {
     }
 
     @Test
-    fun `WHEN setAppearance is called THEN KEY_PREFERRED_DETAILS_VIEW is set`() {
+    fun `WHEN setPreferredDetailsView is called THEN KEY_PREFERRED_DETAILS_VIEW is set`() {
         // WHEN
         userSharedPreferences.setPreferredDetailsView("some-value")
 
         // THEN
         verify(mockEditor).putString(KEY_PREFERRED_DETAILS_VIEW, "some-value")
+    }
+
+    @Test
+    fun `WHEN setMarkAsReadOnOpen is called THEN KEY_MARK_AS_READ_ON_OPEN is set`() {
+        val randomBoolean = randomBoolean()
+
+        // WHEN
+        userSharedPreferences.setMarkAsReadOnOpen(randomBoolean)
+
+        // THEN
+        verify(mockEditor).putBoolean(KEY_MARK_AS_READ_ON_OPEN, randomBoolean)
+    }
+
+    @Test
+    fun `GIVEN KEY_MARK_AS_READ_ON_OPEN has value WHEN getMarkAsReadOnOpen is called THEN value is returned`() {
+        // GIVEN
+        val value = randomBoolean()
+        given(mockSharedPreferences.get(KEY_MARK_AS_READ_ON_OPEN, false))
+            .willReturn(value)
+
+        // THEN
+        userSharedPreferences.getMarkAsReadOnOpen() shouldBe value
+    }
+
+    @Test
+    fun `GIVEN KEY_MARK_AS_READ_ON_OPEN has no value WHEN getMarkAsReadOnOpen is called THEN false is returned`() {
+        // GIVEN
+
+        given(mockSharedPreferences.get(KEY_MARK_AS_READ_ON_OPEN, false))
+            .willReturn(false)
+
+        // THEN
+        userSharedPreferences.getMarkAsReadOnOpen() shouldBe false
     }
 
     @Test

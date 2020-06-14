@@ -18,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.never
+import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 
 @ExtendWith(InstantExecutorExtension::class)
@@ -207,11 +208,15 @@ internal class UserDataSourceTest {
             @Test
             fun `GIVEN set preferred details view is external browser WHEN getPreferredDetailsView is called THEN ExternalBrowser is returned`() {
                 // GIVEN
+                val randomBoolean = randomBoolean()
                 given(mockUserSharedPreferences.getPreferredDetailsView())
-                    .willReturn(PreferredDetailsView.ExternalBrowser.value)
+                    .willReturn(PreferredDetailsView.ExternalBrowser(randomBoolean).value)
+                given(mockUserSharedPreferences.getMarkAsReadOnOpen())
+                    .willReturn(randomBoolean)
 
                 // THEN
-                userDataSource.getPreferredDetailsView() shouldBe PreferredDetailsView.ExternalBrowser
+                userDataSource.getPreferredDetailsView() shouldBe PreferredDetailsView.ExternalBrowser(randomBoolean)
+                verify(mockUserSharedPreferences).getMarkAsReadOnOpen()
             }
 
             @Test
@@ -227,11 +232,15 @@ internal class UserDataSourceTest {
             @Test
             fun `GIVEN set preferred details view is not specifically handled WHEN getPreferredDetailsView is called THEN InAppBrowser is returned`() {
                 // GIVEN
+                val randomBoolean = randomBoolean()
                 given(mockUserSharedPreferences.getPreferredDetailsView())
                     .willReturn("anything really")
+                given(mockUserSharedPreferences.getMarkAsReadOnOpen())
+                    .willReturn(randomBoolean)
 
                 // THEN
-                userDataSource.getPreferredDetailsView() shouldBe PreferredDetailsView.InAppBrowser
+                userDataSource.getPreferredDetailsView() shouldBe PreferredDetailsView.InAppBrowser(randomBoolean)
+                verify(mockUserSharedPreferences, times(2)).getMarkAsReadOnOpen()
             }
 
             @Test
@@ -245,6 +254,33 @@ internal class UserDataSourceTest {
 
                 // THEN
                 verify(mockUserSharedPreferences).setPreferredDetailsView("random-value")
+            }
+        }
+
+        @Nested
+        inner class MarkAsReadOnOpen {
+
+            @Test
+            fun `WHEN getMarkAsReadOnOpen is called THEN UserSharedPreferences is returned`() {
+                // GIVEN
+                val value = randomBoolean()
+                given(mockUserSharedPreferences.getMarkAsReadOnOpen())
+                    .willReturn(value)
+
+                // THEN
+                userDataSource.getMarkAsReadOnOpen() shouldBe value
+            }
+
+            @Test
+            fun `WHEN setMarkAsReadOnOpen is called THEN UserSharedPreferences is set`() {
+                // GIVEN
+                val value = randomBoolean()
+
+                // WHEN
+                userDataSource.setMarkAsReadOnOpen(value)
+
+                // THEN
+                verify(mockUserSharedPreferences).setMarkAsReadOnOpen(value)
             }
         }
 

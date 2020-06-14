@@ -11,6 +11,7 @@ import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
+@Suppress("TooManyFunctions")
 @Singleton
 class UserDataSource @Inject constructor(
     private val userSharedPreferences: UserSharedPreferences
@@ -56,10 +57,11 @@ class UserDataSource @Inject constructor(
     }
 
     override fun getPreferredDetailsView(): PreferredDetailsView {
+        val externalBrowser = PreferredDetailsView.ExternalBrowser(getMarkAsReadOnOpen())
         return when (userSharedPreferences.getPreferredDetailsView()) {
-            PreferredDetailsView.ExternalBrowser.value -> PreferredDetailsView.ExternalBrowser
+            externalBrowser.value -> externalBrowser
             PreferredDetailsView.Edit.value -> PreferredDetailsView.Edit
-            else -> PreferredDetailsView.InAppBrowser
+            else -> PreferredDetailsView.InAppBrowser(getMarkAsReadOnOpen())
         }
     }
 
@@ -67,8 +69,13 @@ class UserDataSource @Inject constructor(
         userSharedPreferences.setPreferredDetailsView(preferredDetailsView.value)
     }
 
-    override fun getAutoFillDescription(): Boolean =
-        userSharedPreferences.getAutoFillDescription()
+    override fun getMarkAsReadOnOpen(): Boolean = userSharedPreferences.getMarkAsReadOnOpen()
+
+    override fun setMarkAsReadOnOpen(value: Boolean) {
+        userSharedPreferences.setMarkAsReadOnOpen(value)
+    }
+
+    override fun getAutoFillDescription(): Boolean = userSharedPreferences.getAutoFillDescription()
 
     override fun setAutoFillDescription(value: Boolean) {
         userSharedPreferences.setAutoFillDescription(value)

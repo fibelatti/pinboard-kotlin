@@ -33,6 +33,12 @@ class UserPreferencesViewModel @Inject constructor(
         }
     }
 
+    fun saveMarkAsReadOnOpen(value: Boolean) {
+        launch {
+            userRepository.setMarkAsReadOnOpen(value)
+        }
+    }
+
     fun saveAutoFillDescription(value: Boolean) {
         launch {
             userRepository.setAutoFillDescription(value)

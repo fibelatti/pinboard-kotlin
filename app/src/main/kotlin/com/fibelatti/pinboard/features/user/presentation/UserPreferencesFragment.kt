@@ -8,6 +8,7 @@ import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.navigateBack
+import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.base.BaseFragment
@@ -104,19 +105,32 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(R.layout.frag
     }
 
     private fun setupPreferredDetailsView(preferredDetailsView: PreferredDetailsView) {
-        when (preferredDetailsView) {
-            PreferredDetailsView.InAppBrowser -> inAppSelected()
-            PreferredDetailsView.ExternalBrowser -> externalSelected()
-            PreferredDetailsView.Edit -> editSelected()
+        val markAsReadOnOpen: Boolean = when (preferredDetailsView) {
+            is PreferredDetailsView.InAppBrowser -> {
+                inAppSelected(preferredDetailsView.markAsReadOnOpen)
+                preferredDetailsView.markAsReadOnOpen
+            }
+            is PreferredDetailsView.ExternalBrowser -> {
+                externalSelected(preferredDetailsView.markAsReadOnOpen)
+                preferredDetailsView.markAsReadOnOpen
+            }
+            PreferredDetailsView.Edit -> {
+                editSelected()
+                false
+            }
         }
 
         buttonPreferredDetailsViewInApp.setOnClickListener {
-            userPreferencesViewModel.savePreferredDetailsView(PreferredDetailsView.InAppBrowser)
-            inAppSelected()
+            userPreferencesViewModel.savePreferredDetailsView(
+                PreferredDetailsView.InAppBrowser(checkboxMarkAsReadOnOpen.isChecked)
+            )
+            inAppSelected(markAsReadOnOpen)
         }
         buttonPreferredDetailsViewExternal.setOnClickListener {
-            userPreferencesViewModel.savePreferredDetailsView(PreferredDetailsView.ExternalBrowser)
-            externalSelected()
+            userPreferencesViewModel.savePreferredDetailsView(
+                PreferredDetailsView.ExternalBrowser(checkboxMarkAsReadOnOpen.isChecked)
+            )
+            externalSelected(markAsReadOnOpen)
         }
         buttonPreferredDetailsViewEdit.setOnClickListener {
             userPreferencesViewModel.savePreferredDetailsView(PreferredDetailsView.Edit)
@@ -124,18 +138,31 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(R.layout.frag
         }
     }
 
-    private fun inAppSelected() {
+    private fun inAppSelected(markAsReadOnOpen: Boolean) {
         buttonPreferredDetailsViewInApp.isChecked = true
         textViewPreferredDetailsViewCaveat.setText(
             R.string.user_preferences_preferred_details_in_app_browser_caveat
         )
+
+        checkboxMarkAsReadOnOpen.setValueAndChangeListener(
+            markAsReadOnOpen,
+            userPreferencesViewModel::saveMarkAsReadOnOpen
+        )
+        checkboxMarkAsReadOnOpen.visible()
+        checkboxMarkAsReadOnOpenCaveat.visible()
     }
 
-    private fun externalSelected() {
+    private fun externalSelected(markAsReadOnOpen: Boolean) {
         buttonPreferredDetailsViewExternal.isChecked = true
         textViewPreferredDetailsViewCaveat.setText(
             R.string.user_preferences_preferred_details_external_browser_caveat
         )
+        checkboxMarkAsReadOnOpen.setValueAndChangeListener(
+            markAsReadOnOpen,
+            userPreferencesViewModel::saveMarkAsReadOnOpen
+        )
+        checkboxMarkAsReadOnOpen.visible()
+        checkboxMarkAsReadOnOpenCaveat.visible()
     }
 
     private fun editSelected() {
@@ -143,6 +170,8 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(R.layout.frag
         textViewPreferredDetailsViewCaveat.setText(
             R.string.user_preferences_preferred_details_post_details_caveat
         )
+        checkboxMarkAsReadOnOpen.gone()
+        checkboxMarkAsReadOnOpenCaveat.gone()
     }
 
     private fun CheckBox.setValueAndChangeListener(

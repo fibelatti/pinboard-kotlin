@@ -122,6 +122,22 @@
                 android:layout_marginEnd="@dimen/margin_small"
                 android:text="@string/user_preferences_preferred_details_view_caveat" />
 
+            <CheckBox
+                android:id="@+id/checkboxMarkAsReadOnOpen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="@string/user_preferences_preferred_details_view_mark_as_read_on_open" />
+
+            <TextView
+                android:id="@+id/checkboxMarkAsReadOnOpenCaveat"
+                style="@style/AppTheme.Text.Detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:text="@string/user_preferences_preferred_details_view_mark_as_read_on_open_caveat" />
+
             <include
                 layout="@layout/layout_divider"
                 android:layout_width="match_parent"

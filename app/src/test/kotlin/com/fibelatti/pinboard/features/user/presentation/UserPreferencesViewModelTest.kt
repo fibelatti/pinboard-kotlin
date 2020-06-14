@@ -48,6 +48,18 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
     }
 
     @Test
+    fun `WHEN saveMarkAsReadOnOpen is called THEN repository is updated`() {
+        // GIVEN
+        val value = randomBoolean()
+
+        // WHEN
+        userPreferencesViewModel.saveMarkAsReadOnOpen(value)
+
+        // THEN
+        verify(mockUserRepository).setMarkAsReadOnOpen(value)
+    }
+
+    @Test
     fun `WHEN saveAutoFillDescription is called THEN repository is updated`() {
         // GIVEN
         val value = randomBoolean()

@@ -82,6 +82,9 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
 
     private var inAppUpdateManager: InAppUpdateManager? = null
 
+    // An action that will run once when the Activity is resumed and will be set to null afterwards
+    private var onResumeDelegate: (() -> Unit)? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         isRecreating = savedInstanceState != null
@@ -99,6 +102,12 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
         inAppUpdateManager = appComponent.inAppUpdateManager().also {
             it.checkForAvailableUpdates(this, FLEXIBLE_UPDATE_REQUEST, ::onUpdateDownloadComplete)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        onResumeDelegate?.invoke()
+        onResumeDelegate = null
     }
 
     private fun onUpdateDownloadComplete() {
@@ -259,9 +268,9 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
     private fun showPostInExternalBrowser(post: Post) {
         startActivity(Intent(Intent.ACTION_VIEW).apply {
             data = Uri.parse(post.url)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
         })
-        // Reset the app to its previous state
-        appStateViewModel.runAction(NavigateBack)
+        onResumeDelegate = { appStateViewModel.runAction(NavigateBack) }
     }
 
     private fun showSearch() {

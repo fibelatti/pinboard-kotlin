@@ -1,18 +1,27 @@
 package com.fibelatti.pinboard.features.appstate
 
+import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.extension.orFalse
 import com.fibelatti.core.functional.Either
+import com.fibelatti.core.functional.catching
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.pinboard.core.di.IoScope
+import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
+import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class NavigationActionHandler @Inject constructor(
     private val userRepository: UserRepository,
+    private val postsRepository: PostsRepository,
     private val resourceProvider: ResourceProvider,
-    private val connectivityInfoProvider: ConnectivityInfoProvider
+    private val connectivityInfoProvider: ConnectivityInfoProvider,
+    @IoScope private val markAsReadRequestScope: CoroutineScope
 ) : ActionHandler<NavigationAction>() {
 
     override suspend fun runAction(action: NavigationAction, currentContent: Content): Content {
@@ -68,11 +77,19 @@ class NavigationActionHandler @Inject constructor(
         return when (currentContent) {
             is PostListContent -> {
                 when (preferredDetailsView) {
-                    PreferredDetailsView.InAppBrowser -> {
-                        PostDetailContent(action.post, previousContent = currentContent)
+                    is PreferredDetailsView.InAppBrowser -> {
+                        val shouldLoad: ShouldLoad = markAsRead(action.post)
+                        PostDetailContent(
+                            action.post,
+                            previousContent = currentContent.copy(shouldLoad = shouldLoad)
+                        )
                     }
-                    PreferredDetailsView.ExternalBrowser -> {
-                        ExternalBrowserContent(action.post, previousContent = currentContent)
+                    is PreferredDetailsView.ExternalBrowser -> {
+                        val shouldLoad: ShouldLoad = markAsRead(action.post)
+                        ExternalBrowserContent(
+                            action.post,
+                            previousContent = currentContent.copy(shouldLoad = shouldLoad)
+                        )
                     }
                     PreferredDetailsView.Edit -> {
                         EditPostContent(
@@ -84,13 +101,35 @@ class NavigationActionHandler @Inject constructor(
                 }
             }
             is PopularPostsContent -> {
-                if (preferredDetailsView == PreferredDetailsView.ExternalBrowser) {
+                if (preferredDetailsView is PreferredDetailsView.ExternalBrowser) {
                     ExternalBrowserContent(action.post, previousContent = currentContent)
                 } else {
                     PopularPostDetailContent(action.post, previousContent = currentContent)
                 }
             }
             else -> currentContent
+        }
+    }
+
+    @VisibleForTesting
+    fun markAsRead(post: Post): ShouldLoad {
+        return if (post.readLater && userRepository.getMarkAsReadOnOpen()) {
+            markAsReadRequestScope.launch {
+                catching {
+                    postsRepository.add(
+                        url = post.url,
+                        title = post.title,
+                        description = post.description,
+                        private = post.private,
+                        readLater = false,
+                        tags = post.tags,
+                        replace = true
+                    )
+                }
+            }
+            ShouldLoadFirstPage
+        } else {
+            Loaded
         }
     }
 

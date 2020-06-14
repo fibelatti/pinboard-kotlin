@@ -168,6 +168,8 @@
     <string name="user_preferences_preferred_details_post_details">Bookmark details</string>
     <string name="user_preferences_preferred_details_post_details_caveat">Open bookmarks directly in the Edit screen</string>
     <string name="user_preferences_preferred_details_view_caveat">You can long press each bookmark in lists for quick access to share and edit</string>
+    <string name="user_preferences_preferred_details_view_mark_as_read_on_open">Mark as read on open</string>
+    <string name="user_preferences_preferred_details_view_mark_as_read_on_open_caveat">If checked, when you open a bookmark Pinkt will update it to mark it as read</string>
     <string name="user_preferences_description_title">Bookmarks description</string>
     <string name="user_preferences_description_auto_fill">Auto fill</string>
     <string name="user_preferences_description_auto_fill_description">If checked, then Pinkt will attempt to extract the description from the website and fill it automatically</string>

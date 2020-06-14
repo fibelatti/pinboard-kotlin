@@ -18,6 +18,8 @@ const val KEY_APPEARANCE = "APPEARANCE"
 @VisibleForTesting
 const val KEY_PREFERRED_DETAILS_VIEW = "PREFERRED_DETAILS_VIEW"
 @VisibleForTesting
+const val KEY_MARK_AS_READ_ON_OPEN = "MARK_AS_READ_ON_OPEN"
+@VisibleForTesting
 const val KEY_AUTO_FILL_DESCRIPTION = "AUTO_FILL_DESCRIPTION"
 @VisibleForTesting
 const val KEY_SHOW_DESCRIPTION_IN_LISTS = "SHOW_DESCRIPTION_IN_LISTS"
@@ -56,6 +58,12 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
 
     fun setPreferredDetailsView(value: String) {
         sharedPreferences.put(KEY_PREFERRED_DETAILS_VIEW, value)
+    }
+
+    fun getMarkAsReadOnOpen(): Boolean = sharedPreferences.get(KEY_MARK_AS_READ_ON_OPEN, false)
+
+    fun setMarkAsReadOnOpen(value: Boolean) {
+        sharedPreferences.put(KEY_MARK_AS_READ_ON_OPEN, value)
     }
 
     fun getAutoFillDescription(): Boolean = sharedPreferences.get(KEY_AUTO_FILL_DESCRIPTION, false)
