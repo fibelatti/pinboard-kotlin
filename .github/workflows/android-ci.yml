@@ -35,6 +35,12 @@ jobs:
       - run: .github/scripts/gradlew_recursive.sh androidDependencies
         if: steps.gradle-wrapper-cache.outputs.cache-hit != 'true' || steps.gradle-cache.outputs.cache-hit != 'true'
       - name: Build and Test
-        run: .github/scripts/gradlew_recursive.sh clean assembleDebug testNoapiDebugUnitTest testPinboardapiDebugUnitTest
-      - name: Stop Gradle
-        run: .github/scripts/gradlew_recursive.sh --stop
+        run: .github/scripts/gradlew_recursive.sh clean assembleDebug test
+      - name: Upload Pinboard API APK
+        uses: actions/upload-artifact@v2
+        with:
+          path: app/build/outputs/apk/pinboardapi/debug/app-pinboardapi-debug.apk
+      - name: Upload Test Reports
+        uses: actions/upload-artifact@v2
+        with:
+          path: app/build/reports/tests/
