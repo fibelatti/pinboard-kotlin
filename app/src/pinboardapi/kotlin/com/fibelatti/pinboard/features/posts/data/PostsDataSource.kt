@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.posts.data
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.getOrDefault
+import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.functional.getOrThrow
 import com.fibelatti.core.functional.map
 import com.fibelatti.core.functional.mapCatching
@@ -88,7 +89,8 @@ class PostsDataSource @Inject constructor(
 
                 when (result.resultCode) {
                     ApiResultCodes.DONE.code -> {
-                        postsApi.getPost(url).posts
+                        update().getOrNull()?.let(userRepository::setLastUpdate)
+                        rateLimitRunner.run { postsApi.getPost(url).posts }
                             .also(postsDao::savePosts)
                             .first().let(postDtoMapper::map)
                     }
@@ -102,7 +104,7 @@ class PostsDataSource @Inject constructor(
     override suspend fun delete(url: String): Result<Unit> {
         return resultFrom {
             val result = withContext(Dispatchers.IO) {
-                postsApi.delete(url)
+                rateLimitRunner.run { postsApi.delete(url) }
             }
 
             if (result.resultCode == ApiResultCodes.DONE.code) {
@@ -305,7 +307,9 @@ class PostsDataSource @Inject constructor(
     override suspend fun getPost(url: String): Result<Post> {
         return resultFrom {
             withContext(Dispatchers.IO) {
-                postsDao.getPost(url) ?: postsApi.getPost(url).posts.firstOrNull()
+                postsDao.getPost(url) ?: rateLimitRunner.run {
+                    postsApi.getPost(url).posts.firstOrNull()
+                }
             }?.let(postDtoMapper::map) ?: throw InvalidRequestException()
         }
     }

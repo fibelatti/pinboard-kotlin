@@ -337,6 +337,7 @@ class PostsDataSourceTest {
         @Test
         fun `GIVEN that the api returns 200 and the result code is DONE WHEN add is called THEN Success is returned`() {
             // GIVEN
+            givenSuspend { mockApi.update() }.willReturn(UpdateDto(mockFutureTime))
             givenSuspend {
                 mockApi.add(
                     url = mockUrlValid,
@@ -367,6 +368,7 @@ class PostsDataSourceTest {
             }
 
             // THEN
+            verify(mockUserRepository).setLastUpdate(mockFutureTime)
             verify(mockDao).savePosts(mockListPostDto)
             result.shouldBeAnInstanceOf<Success<Unit>>()
         }
