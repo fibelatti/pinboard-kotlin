@@ -7,6 +7,7 @@ import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.functional.getOrThrow
 import com.fibelatti.core.functional.map
 import com.fibelatti.core.functional.mapCatching
+import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.core.AppConfig.API_GET_ALL_THROTTLE_TIME
 import com.fibelatti.pinboard.core.AppConfig.API_MAX_EXTENDED_LENGTH
 import com.fibelatti.pinboard.core.AppConfig.API_MAX_LENGTH
@@ -114,7 +115,7 @@ class PostsDataSource @Inject constructor(
             } else {
                 throw ApiException()
             }
-        }
+        }.onSuccess { update().getOrNull()?.let(userRepository::setLastUpdate) }
     }
 
     override suspend fun getAllPosts(

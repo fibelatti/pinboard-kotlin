@@ -147,7 +147,7 @@ class PostsDataSourceTest {
 
         @BeforeEach
         fun setup() {
-            reset(mockApi)
+            reset(mockApi, mockUserRepository)
         }
 
         @Test
@@ -179,6 +179,7 @@ class PostsDataSourceTest {
             }
 
             // THEN
+            verify(mockUserRepository, never()).setLastUpdate(anyString())
             result.shouldBeAnInstanceOf<Failure>()
             result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
         }
@@ -212,6 +213,7 @@ class PostsDataSourceTest {
             }
 
             // THEN
+            verify(mockUserRepository, never()).setLastUpdate(anyString())
             result.shouldBeAnInstanceOf<Failure>()
             result.exceptionOrNull()?.shouldBeAnInstanceOf<ApiException>()
         }
@@ -253,6 +255,7 @@ class PostsDataSourceTest {
                 }
 
                 // THEN
+                verify(mockUserRepository, never()).setLastUpdate(anyString())
                 result.shouldBeAnInstanceOf<Success<Post>>()
                 result.getOrNull() shouldBe mockPost
             }
@@ -292,6 +295,7 @@ class PostsDataSourceTest {
                 }
 
                 // THEN
+                verify(mockUserRepository, never()).setLastUpdate(anyString())
                 result.shouldBeAnInstanceOf<Success<Post>>()
                 result.getOrNull() shouldBe mockPost
             }
@@ -329,6 +333,7 @@ class PostsDataSourceTest {
                 }
 
                 // THEN
+                verify(mockUserRepository, never()).setLastUpdate(anyString())
                 result.shouldBeAnInstanceOf<Failure>()
                 result.exceptionOrNull()?.shouldBeAnInstanceOf<InvalidRequestException>()
             }
@@ -467,6 +472,7 @@ class PostsDataSourceTest {
 
             // THEN
             verify(mockDao, never()).deletePost(mockUrlValid)
+            verify(mockUserRepository, never()).setLastUpdate(anyString())
             result.shouldBeAnInstanceOf<Failure>()
             result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
         }
@@ -482,6 +488,7 @@ class PostsDataSourceTest {
 
             // THEN
             verify(mockDao, never()).deletePost(mockUrlValid)
+            verify(mockUserRepository, never()).setLastUpdate(anyString())
             result.shouldBeAnInstanceOf<Failure>()
             result.exceptionOrNull()?.shouldBeAnInstanceOf<ApiException>()
         }
@@ -491,12 +498,14 @@ class PostsDataSourceTest {
             // GIVEN
             givenSuspend { mockApi.delete(mockUrlValid) }
                 .willReturn(createGenericResponse(ApiResultCodes.DONE))
+            givenSuspend { mockApi.update() }.willReturn(UpdateDto(mockFutureTime))
 
             // WHEN
             val result = runBlocking { dataSource.delete(mockUrlValid) }
 
             // THEN
             verify(mockDao).deletePost(mockUrlValid)
+            verify(mockUserRepository).setLastUpdate(mockFutureTime)
             result.shouldBeAnInstanceOf<Success<Unit>>()
         }
     }
