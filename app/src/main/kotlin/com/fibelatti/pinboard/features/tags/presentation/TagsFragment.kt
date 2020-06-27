@@ -62,6 +62,7 @@ class TagsFragment @Inject constructor(
     private fun setupActivityViews() {
         mainActivity?.updateTitleLayout {
             setTitle(R.string.tags_title)
+            hideSubTitle()
             setNavigateUp {
                 hideKeyboard()
                 navigateBack()

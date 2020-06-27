@@ -75,6 +75,7 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(R.layout.frag
     private fun setupActivityViews() {
         mainActivity?.updateTitleLayout {
             setTitle(R.string.user_preferences_title)
+            hideSubTitle()
             setNavigateUp { navigateBack() }
         }
         mainActivity?.updateViews { bottomAppBar, fab ->

@@ -74,6 +74,7 @@ class PopularPostsFragment @Inject constructor(
         viewLifecycleOwner.observe(appStateViewModel.popularPostsContent) { content ->
             mainActivity?.updateTitleLayout {
                 setTitle(R.string.popular_title)
+                hideSubTitle()
                 setNavigateUp { navigateBack() }
             }
 

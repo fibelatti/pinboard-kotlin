@@ -160,7 +160,10 @@ class PostListFragment @Inject constructor(
 
         when (content.shouldLoad) {
             is ShouldLoadFirstPage -> {
-                mainActivity?.updateTitleLayout { setTitle(content.title) }
+                mainActivity?.updateTitleLayout {
+                    setTitle(content.title)
+                    hideSubTitle()
+                }
 
                 progressBarNextPage.visible()
                 recyclerViewPosts.gone()

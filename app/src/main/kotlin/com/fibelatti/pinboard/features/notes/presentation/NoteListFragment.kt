@@ -103,6 +103,7 @@ class NoteListFragment @Inject constructor(
         // Reset the navigate up action here since navigation to another fragment messes it up
         mainActivity?.updateTitleLayout {
             setTitle(R.string.notes_title)
+            hideSubTitle()
             setNavigateUp { navigateBack() }
         }
         mainActivity?.updateViews { bottomAppBar, fab ->

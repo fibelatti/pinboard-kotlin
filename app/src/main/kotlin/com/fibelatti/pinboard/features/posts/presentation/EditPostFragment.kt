@@ -347,6 +347,7 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
     private fun setupActivityViews() {
         mainActivity?.updateTitleLayout {
             setTitle(R.string.posts_add_title)
+            hideSubTitle()
             setNavigateUp(R.drawable.ic_close) { onBackPressed() }
         }
 

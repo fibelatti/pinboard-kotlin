@@ -117,7 +117,8 @@ class PostDetailFragment @Inject constructor(
         }
 
         mainActivity?.updateTitleLayout {
-            setTitle("")
+            hideTitle()
+            hideSubTitle()
             setNavigateUp { navigateBack() }
         }
 

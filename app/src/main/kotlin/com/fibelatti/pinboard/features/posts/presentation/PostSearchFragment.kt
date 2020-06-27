@@ -90,6 +90,7 @@ class PostSearchFragment @Inject constructor(
     private fun setupActivityViews() {
         mainActivity?.updateTitleLayout {
             setTitle(R.string.search_title)
+            hideSubTitle()
             setNavigateUp {
                 hideKeyboard()
                 navigateBack()

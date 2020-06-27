@@ -41,12 +41,10 @@ class TitleLayout @JvmOverloads constructor(
 
     fun setTitle(title: String) {
         if (title.isNotEmpty()) textViewTitle.visible(title) else hideTitle()
-        textViewSubtitle.gone()
     }
 
     fun hideTitle() {
         textViewTitle.gone()
-        textViewSubtitle.gone()
     }
 
     fun setSubTitle(title: String) {
