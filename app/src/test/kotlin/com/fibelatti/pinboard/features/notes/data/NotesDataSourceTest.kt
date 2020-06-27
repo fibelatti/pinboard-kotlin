@@ -8,7 +8,6 @@ import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
 import com.fibelatti.pinboard.MockDataProvider.mockNoteId
-import com.fibelatti.pinboard.TestRateLimitRunner
 import com.fibelatti.pinboard.features.notes.data.model.NoteDto
 import com.fibelatti.pinboard.features.notes.data.model.NoteDtoMapper
 import com.fibelatti.pinboard.features.notes.data.model.NoteListDto
@@ -22,9 +21,8 @@ internal class NotesDataSourceTest {
 
     private val mockApi = mock<NotesApi>()
     private val mockNoteDtoMapper = mock<NoteDtoMapper>()
-    private val mockRunner = TestRateLimitRunner()
 
-    private val dataSource = NotesDataSource(mockApi, mockNoteDtoMapper, mockRunner)
+    private val dataSource = NotesDataSource(mockApi, mockNoteDtoMapper)
 
     @Nested
     inner class GetAllNotesTests {

@@ -8,11 +8,9 @@ import com.fibelatti.core.functional.getOrThrow
 import com.fibelatti.core.functional.map
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onSuccess
-import com.fibelatti.pinboard.core.AppConfig.API_GET_ALL_THROTTLE_TIME
 import com.fibelatti.pinboard.core.AppConfig.API_MAX_EXTENDED_LENGTH
 import com.fibelatti.pinboard.core.AppConfig.API_MAX_LENGTH
 import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
-import com.fibelatti.pinboard.core.AppConfig.API_UPDATE_THROTTLE_TIME
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.di.IoScope
@@ -23,6 +21,7 @@ import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.ApiResultCodes
 import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.core.network.RateLimitRunner
+import com.fibelatti.pinboard.core.network.resultFromNetwork
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
@@ -55,11 +54,9 @@ class PostsDataSource @Inject constructor(
 ) : PostsRepository {
 
     override suspend fun update(): Result<String> {
-        return resultFrom {
-            rateLimitRunner.run(API_UPDATE_THROTTLE_TIME) {
-                withContext(Dispatchers.IO) {
-                    postsApi.update().updateTime
-                }
+        return resultFromNetwork {
+            withContext(Dispatchers.IO) {
+                postsApi.update().updateTime
             }
         }
     }
@@ -73,7 +70,7 @@ class PostsDataSource @Inject constructor(
         tags: List<Tag>?,
         replace: Boolean
     ): Result<Post> {
-        return resultFrom {
+        return resultFromNetwork {
             withContext(Dispatchers.IO) {
                 val result = postsApi.add(
                     url = url,
@@ -91,7 +88,7 @@ class PostsDataSource @Inject constructor(
                 when (result.resultCode) {
                     ApiResultCodes.DONE.code -> {
                         update().getOrNull()?.let(userRepository::setLastUpdate)
-                        rateLimitRunner.run { postsApi.getPost(url).posts }
+                        postsApi.getPost(url).posts
                             .also(postsDao::savePosts)
                             .first().let(postDtoMapper::map)
                     }
@@ -103,9 +100,9 @@ class PostsDataSource @Inject constructor(
     }
 
     override suspend fun delete(url: String): Result<Unit> {
-        return resultFrom {
+        return resultFromNetwork {
             val result = withContext(Dispatchers.IO) {
-                rateLimitRunner.run { postsApi.delete(url) }
+                postsApi.delete(url)
             }
 
             if (result.resultCode == ApiResultCodes.DONE.code) {
@@ -167,11 +164,9 @@ class PostsDataSource @Inject constructor(
     ): Flow<Result<Pair<Int, List<Post>>?>> {
         pagedRequestsScope.coroutineContext.cancelChildren()
         val apiData = suspend {
-            resultFrom {
-                rateLimitRunner.run {
-                    withContext(Dispatchers.IO) {
-                        postsApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE)
-                    }
+            resultFromNetwork {
+                withContext(Dispatchers.IO) {
+                    postsApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE)
                 }
             }.mapCatching { posts ->
                 withContext(Dispatchers.IO) {
@@ -200,7 +195,7 @@ class PostsDataSource @Inject constructor(
                 var currentOffset = API_PAGE_SIZE
 
                 while (currentOffset != 0) {
-                    val additionalPosts = rateLimitRunner.run(API_GET_ALL_THROTTLE_TIME) {
+                    val additionalPosts = rateLimitRunner.run {
                         postsApi.getAllPosts(offset = currentOffset, limit = API_PAGE_SIZE)
                     }
 
@@ -306,17 +301,15 @@ class PostsDataSource @Inject constructor(
     }
 
     override suspend fun getPost(url: String): Result<Post> {
-        return resultFrom {
+        return resultFromNetwork {
             withContext(Dispatchers.IO) {
-                postsDao.getPost(url) ?: rateLimitRunner.run {
-                    postsApi.getPost(url).posts.firstOrNull()
-                }
+                postsDao.getPost(url) ?: postsApi.getPost(url).posts.firstOrNull()
             }?.let(postDtoMapper::map) ?: throw InvalidRequestException()
         }
     }
 
     override suspend fun searchExistingPostTag(tag: String): Result<List<String>> {
-        return resultFrom {
+        return resultFromNetwork {
             val concatenatedTags = withContext(Dispatchers.IO) {
                 postsDao.searchExistingPostTag(PostsDao.preFormatTag(tag))
             }
@@ -329,11 +322,9 @@ class PostsDataSource @Inject constructor(
     }
 
     override suspend fun getSuggestedTagsForUrl(url: String): Result<SuggestedTags> {
-        return resultFrom {
-            rateLimitRunner.run {
-                withContext(Dispatchers.IO) {
-                    postsApi.getSuggestedTagsForUrl(url)
-                }
+        return resultFromNetwork {
+            withContext(Dispatchers.IO) {
+                postsApi.getSuggestedTagsForUrl(url)
             }.let(suggestedTagDtoMapper::map)
         }
     }
