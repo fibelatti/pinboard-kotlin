@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.posts.domain
 
 import com.fibelatti.core.functional.Result
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.flow.Flow
@@ -33,7 +34,7 @@ interface PostsRepository {
         countLimit: Int,
         pageLimit: Int,
         pageOffset: Int
-    ): Flow<Result<Pair<Int, List<Post>>?>>
+    ): Flow<Result<PostListResult?>>
 
     suspend fun getPost(url: String): Result<Post>
 

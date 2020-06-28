@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.pinboard.features.notes.domain.model.Note
+import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 
@@ -35,9 +36,9 @@ object Untagged : ViewCategory()
 sealed class PostAction : Action()
 
 object Refresh : PostAction()
-data class SetPosts(val posts: Pair<Int, List<Post>>?) : PostAction()
+data class SetPosts(val postListResult: PostListResult?) : PostAction()
 object GetNextPostPage : PostAction()
-data class SetNextPostPage(val posts: Pair<Int, List<Post>>?) : PostAction()
+data class SetNextPostPage(val postListResult: PostListResult?) : PostAction()
 object PostsDisplayed : PostAction()
 object ToggleSorting : PostAction()
 data class EditPost(val post: Post) : PostAction()

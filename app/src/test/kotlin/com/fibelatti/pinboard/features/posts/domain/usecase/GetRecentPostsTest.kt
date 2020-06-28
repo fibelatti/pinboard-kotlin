@@ -8,7 +8,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockTags
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_RECENT_QUANTITY
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
-import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
@@ -20,7 +20,7 @@ import org.mockito.ArgumentMatchers.anyString
 
 class GetRecentPostsTest {
 
-    private val mockResponse = mock<Pair<Int, List<Post>>>()
+    private val mockResponse = mock<PostListResult>()
 
     private val mockPostsRepository = mock<PostsRepository>()
 

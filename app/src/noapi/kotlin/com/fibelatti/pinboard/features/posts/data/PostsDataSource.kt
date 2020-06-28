@@ -14,6 +14,7 @@ import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.Dispatchers
@@ -54,7 +55,8 @@ class PostsDataSource @Inject constructor(
             time = existingPost?.time ?: dateFormatter.nowAsTzFormat(),
             shared = if (private.orFalse()) AppConfig.PinboardApiLiterals.NO else AppConfig.PinboardApiLiterals.YES,
             toread = if (readLater.orFalse()) AppConfig.PinboardApiLiterals.YES else AppConfig.PinboardApiLiterals.NO,
-            tags = tags?.joinToString(AppConfig.PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name }.orEmpty(),
+            tags = tags?.joinToString(AppConfig.PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name }
+                .orEmpty(),
             imageUrl = null
         )
 
@@ -86,19 +88,21 @@ class PostsDataSource @Inject constructor(
         countLimit: Int,
         pageLimit: Int,
         pageOffset: Int
-    ): Flow<Result<Pair<Int, List<Post>>?>> =
-        flowOf(getLocalData(
-            newestFirst,
-            searchTerm,
-            tags,
-            untaggedOnly,
-            publicPostsOnly,
-            privatePostsOnly,
-            readLaterOnly,
-            countLimit,
-            pageLimit,
-            pageOffset
-        ))
+    ): Flow<Result<PostListResult?>> =
+        flowOf(
+            getLocalData(
+                newestFirst,
+                searchTerm,
+                tags,
+                untaggedOnly,
+                publicPostsOnly,
+                privatePostsOnly,
+                readLaterOnly,
+                countLimit,
+                pageLimit,
+                pageOffset
+            )
+        )
 
     @VisibleForTesting
     suspend fun getLocalDataSize(
@@ -135,7 +139,7 @@ class PostsDataSource @Inject constructor(
         countLimit: Int,
         pageLimit: Int,
         pageOffset: Int
-    ): Result<Pair<Int, List<Post>>?> {
+    ): Result<PostListResult?> {
         return resultFrom {
             val localDataSize = getLocalDataSize(
                 searchTerm,
@@ -164,7 +168,7 @@ class PostsDataSource @Inject constructor(
                     )
                 }.let(postDtoMapper::mapList)
 
-                localDataSize to localData
+                PostListResult(totalCount = localDataSize, posts = localData, upToDate = true)
             } else {
                 null
             }

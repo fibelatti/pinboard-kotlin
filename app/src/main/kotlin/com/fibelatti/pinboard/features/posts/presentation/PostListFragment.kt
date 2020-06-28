@@ -8,6 +8,7 @@ import androidx.transition.Transition
 import androidx.transition.TransitionInflater
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.extension.animateChangingTransitions
+import com.fibelatti.core.extension.exhaustive
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.visible
@@ -37,6 +38,7 @@ import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
 import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
 import com.fibelatti.pinboard.features.appstate.SortType
+import com.fibelatti.pinboard.features.appstate.Syncing
 import com.fibelatti.pinboard.features.appstate.ToggleSorting
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
@@ -114,7 +116,7 @@ class PostListFragment @Inject constructor(
                 setPageSize(AppConfig.DEFAULT_PAGE_SIZE)
                 setMinDistanceToLastItem(AppConfig.DEFAULT_PAGE_SIZE / 2)
                 onShouldRequestNextPage = {
-                    progressBarNextPage.visible()
+                    progressBar.visible()
                     appStateViewModel.runAction(GetNextPostPage)
                 }
             }
@@ -141,6 +143,11 @@ class PostListFragment @Inject constructor(
         viewLifecycleOwner.observe(appStateViewModel.postListContent, ::updateContent)
     }
 
+    override fun handleError(error: Throwable) {
+        super.handleError(error)
+        progressBar.gone()
+    }
+
     private fun updateContent(content: PostListContent) {
         mainActivity?.updateTitleLayout { hideNavigateUp() }
         mainActivity?.updateViews { bottomAppBar, fab ->
@@ -165,7 +172,7 @@ class PostListFragment @Inject constructor(
                     hideSubTitle()
                 }
 
-                progressBarNextPage.visible()
+                progressBar.visible()
                 recyclerViewPosts.gone()
                 layoutEmptyList.gone()
 
@@ -174,8 +181,9 @@ class PostListFragment @Inject constructor(
                 postListViewModel.loadContent(content)
             }
             is ShouldLoadNextPage -> postListViewModel.loadContent(content)
-            is Loaded -> showPosts(content)
-        }
+            is Syncing, is Loaded -> showPosts(content)
+        }.exhaustive
+
         layoutSearchActive.visibleIf(
             content.searchParameters.isActive(),
             otherwiseVisibility = View.GONE
@@ -184,7 +192,7 @@ class PostListFragment @Inject constructor(
     }
 
     private fun showPosts(content: PostListContent) {
-        progressBarNextPage.gone()
+        progressBar.goneIf(content.shouldLoad == Loaded)
         recyclerViewPosts.onRequestNextPageCompleted()
 
         mainActivity?.updateTitleLayout {
@@ -208,8 +216,12 @@ class PostListFragment @Inject constructor(
     }
 
     private fun buildPostCountSubTitle(count: Int, sortType: SortType): String {
-        val countFormatArg = if (count % AppConfig.API_PAGE_SIZE == 0) "$count+" else count.toString()
-        val countString = resources.getQuantityString(R.plurals.posts_quantity, count, countFormatArg)
+        val countFormatArg = if (count % AppConfig.API_PAGE_SIZE == 0) "$count+" else "$count"
+        val countString = resources.getQuantityString(
+            R.plurals.posts_quantity,
+            count,
+            countFormatArg
+        )
         return resources.getString(
             if (sortType == NewestFirst) {
                 R.string.posts_sorting_newest_first

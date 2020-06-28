@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.appstate
 
+import com.fibelatti.core.extension.orTrue
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtilFactory
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -39,15 +40,15 @@ class PostActionHandler @Inject constructor(
 
     private fun setPosts(action: SetPosts, currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) { currentPostList ->
-            val posts = action.posts?.let { (count, list) ->
+            val posts = action.postListResult?.let {
                 PostList(
-                    count,
-                    list,
-                    postListDiffUtilFactory.create(currentPostList.currentList, list)
+                    it.totalCount,
+                    it.posts,
+                    postListDiffUtilFactory.create(currentPostList.currentList, it.posts)
                 )
             }
-
-            currentPostList.copy(posts = posts, shouldLoad = Loaded)
+            val isUpToDate = action.postListResult?.upToDate.orTrue()
+            currentPostList.copy(posts = posts, shouldLoad = if (isUpToDate) Loaded else Syncing)
         }
     }
 
@@ -63,12 +64,11 @@ class PostActionHandler @Inject constructor(
 
     private fun setNextPostPage(action: SetNextPostPage, currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) { currentPostList ->
-            if (currentPostList.posts != null && action.posts != null) {
+            if (currentPostList.posts != null && action.postListResult != null) {
                 val currentList = currentPostList.currentList
-                val (updatedCount, newList) = action.posts
-                val updatedList = currentList.plus(newList)
+                val updatedList = currentList.plus(action.postListResult.posts)
                 val posts = PostList(
-                    updatedCount,
+                    action.postListResult.totalCount,
                     updatedList,
                     postListDiffUtilFactory.create(currentList, updatedList)
                 )

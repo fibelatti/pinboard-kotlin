@@ -44,8 +44,10 @@ import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagDtoMapper
 import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagsDto
 import com.fibelatti.pinboard.features.posts.data.model.UpdateDto
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import com.fibelatti.pinboard.randomBoolean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
@@ -539,7 +541,8 @@ class PostsDataSourceTest {
                             readLaterOnly = false,
                             countLimit = -1,
                             pageLimit = -1,
-                            pageOffset = 0
+                            pageOffset = 0,
+                            upToDate = true
                         )
                     // WHEN
                     val result = dataSource.getAllPosts(
@@ -585,7 +588,22 @@ class PostsDataSourceTest {
                             readLaterOnly = false,
                             countLimit = -1,
                             pageLimit = -1,
-                            pageOffset = 0
+                            pageOffset = 0,
+                            upToDate = false
+                        )
+                    willReturn(Success(mockLocalData)).given(dataSource)
+                        .getLocalData(
+                            newestFirst = true,
+                            searchTerm = "",
+                            tags = null,
+                            untaggedOnly = false,
+                            publicPostsOnly = false,
+                            privatePostsOnly = false,
+                            readLaterOnly = false,
+                            countLimit = -1,
+                            pageLimit = -1,
+                            pageOffset = 0,
+                            upToDate = true
                         )
                 }
             }
@@ -621,6 +639,21 @@ class PostsDataSourceTest {
                     }
                 }
                 verify(mockDateFormatter).nowAsTzFormat()
+                verifySuspend(dataSource) {
+                    getLocalData(
+                        newestFirst = true,
+                        searchTerm = "",
+                        tags = null,
+                        untaggedOnly = false,
+                        publicPostsOnly = false,
+                        privatePostsOnly = false,
+                        readLaterOnly = false,
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0,
+                        upToDate = true
+                    )
+                }
                 verifySuspend(mockApi, never()) { getAllPosts() }
                 verifySuspend(mockDao, never()) { deleteAllPosts() }
                 verifySuspend(mockDao, never()) { savePosts(safeAny()) }
@@ -669,6 +702,36 @@ class PostsDataSourceTest {
                 verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 verifySuspend(mockDao) { deleteAllPosts() }
                 verify(dataSource).savePosts(mockListPostDto)
+                verifySuspend(dataSource) {
+                    getLocalData(
+                        newestFirst = true,
+                        searchTerm = "",
+                        tags = null,
+                        untaggedOnly = false,
+                        publicPostsOnly = false,
+                        privatePostsOnly = false,
+                        readLaterOnly = false,
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0,
+                        upToDate = false
+                    )
+                }
+                verifySuspend(dataSource) {
+                    getLocalData(
+                        newestFirst = true,
+                        searchTerm = "",
+                        tags = null,
+                        untaggedOnly = false,
+                        publicPostsOnly = false,
+                        privatePostsOnly = false,
+                        readLaterOnly = false,
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0,
+                        upToDate = true
+                    )
+                }
                 verifySuspend(mockUserRepository) { setLastUpdate(mockFutureTime) }
             }
 
@@ -699,6 +762,21 @@ class PostsDataSourceTest {
                     result.collectLatest {
                         it.getOrThrow() shouldBe mockLocalData
                     }
+                }
+                verifySuspend(dataSource) {
+                    getLocalData(
+                        newestFirst = true,
+                        searchTerm = "",
+                        tags = null,
+                        untaggedOnly = false,
+                        publicPostsOnly = false,
+                        privatePostsOnly = false,
+                        readLaterOnly = false,
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0,
+                        upToDate = true
+                    )
                 }
                 verifySuspend(mockApi, never()) { getAllPosts() }
                 verifySuspend(mockDao, never()) { deleteAllPosts() }
@@ -739,6 +817,21 @@ class PostsDataSourceTest {
                             else -> fail("Unexpected number of collections")
                         }
                     }
+                }
+                verifySuspend(dataSource) {
+                    getLocalData(
+                        newestFirst = true,
+                        searchTerm = "",
+                        tags = null,
+                        untaggedOnly = false,
+                        publicPostsOnly = false,
+                        privatePostsOnly = false,
+                        readLaterOnly = false,
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0,
+                        upToDate = false
+                    )
                 }
                 verify(mockCoroutineContext).cancelChildren()
                 verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
@@ -783,6 +876,21 @@ class PostsDataSourceTest {
                         }
                     }
                 }
+                verifySuspend(dataSource) {
+                    getLocalData(
+                        newestFirst = true,
+                        searchTerm = "",
+                        tags = null,
+                        untaggedOnly = false,
+                        publicPostsOnly = false,
+                        privatePostsOnly = false,
+                        readLaterOnly = false,
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0,
+                        upToDate = false
+                    )
+                }
                 verify(mockCoroutineContext).cancelChildren()
                 verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 verifySuspend(mockDao) { deleteAllPosts() }
@@ -820,6 +928,21 @@ class PostsDataSourceTest {
                             0 -> value.getOrNull() shouldBe mockLocalData
                             1 -> value.shouldBeAnInstanceOf<Failure>()
                         }
+                    }
+                    verifySuspend(dataSource) {
+                        getLocalData(
+                            newestFirst = true,
+                            searchTerm = "",
+                            tags = null,
+                            untaggedOnly = false,
+                            publicPostsOnly = false,
+                            privatePostsOnly = false,
+                            readLaterOnly = false,
+                            countLimit = -1,
+                            pageLimit = -1,
+                            pageOffset = 0,
+                            upToDate = false
+                        )
                     }
 
                     verify(mockCoroutineContext).cancelChildren()
@@ -867,6 +990,36 @@ class PostsDataSourceTest {
                             else -> fail("Unexpected number of collections")
                         }
                     }
+                }
+                verifySuspend(dataSource) {
+                    getLocalData(
+                        newestFirst = true,
+                        searchTerm = "",
+                        tags = null,
+                        untaggedOnly = false,
+                        publicPostsOnly = false,
+                        privatePostsOnly = false,
+                        readLaterOnly = false,
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0,
+                        upToDate = false
+                    )
+                }
+                verifySuspend(dataSource) {
+                    getLocalData(
+                        newestFirst = true,
+                        searchTerm = "",
+                        tags = null,
+                        untaggedOnly = false,
+                        publicPostsOnly = false,
+                        privatePostsOnly = false,
+                        readLaterOnly = false,
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0,
+                        upToDate = true
+                    )
                 }
                 verify(mockCoroutineContext).cancelChildren()
                 verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
@@ -1130,6 +1283,7 @@ class PostsDataSourceTest {
     @Nested
     inner class GetLocalDataTests {
 
+        private val upToDate = randomBoolean()
         private val mockLocalDataSize = 42
 
         @BeforeEach
@@ -1195,7 +1349,8 @@ class PostsDataSourceTest {
                     readLaterOnly = false,
                     countLimit = -1,
                     pageLimit = -1,
-                    pageOffset = 0
+                    pageOffset = 0,
+                    upToDate = upToDate
                 )
             }
 
@@ -1217,7 +1372,8 @@ class PostsDataSourceTest {
                     readLaterOnly = false,
                     countLimit = -1,
                     pageLimit = -1,
-                    pageOffset = 0
+                    pageOffset = 0,
+                    upToDate = upToDate
                 )
             }
 
@@ -1235,7 +1391,7 @@ class PostsDataSourceTest {
                 limit = -1,
                 offset = 0
             )
-            result.getOrThrow() shouldBe Pair(mockLocalDataSize, mockListPost)
+            result.getOrThrow() shouldBe PostListResult(mockLocalDataSize, mockListPost, upToDate)
         }
 
         @Test
@@ -1252,7 +1408,8 @@ class PostsDataSourceTest {
                     readLaterOnly = false,
                     countLimit = -1,
                     pageLimit = -1,
-                    pageOffset = 0
+                    pageOffset = 0,
+                    upToDate = upToDate
                 )
             }
 
@@ -1270,7 +1427,7 @@ class PostsDataSourceTest {
                 limit = -1,
                 offset = 0
             )
-            result.getOrThrow() shouldBe Pair(mockLocalDataSize, mockListPost)
+            result.getOrThrow() shouldBe PostListResult(mockLocalDataSize, mockListPost, upToDate)
         }
 
         @Test
@@ -1287,7 +1444,8 @@ class PostsDataSourceTest {
                     readLaterOnly = false,
                     countLimit = -1,
                     pageLimit = -1,
-                    pageOffset = 0
+                    pageOffset = 0,
+                    upToDate = upToDate
                 )
             }
 
@@ -1305,7 +1463,7 @@ class PostsDataSourceTest {
                 limit = -1,
                 offset = 0
             )
-            result.getOrThrow() shouldBe Pair(mockLocalDataSize, mockListPost)
+            result.getOrThrow() shouldBe PostListResult(mockLocalDataSize, mockListPost, upToDate)
         }
 
         @Test
@@ -1322,7 +1480,8 @@ class PostsDataSourceTest {
                     readLaterOnly = false,
                     countLimit = -1,
                     pageLimit = -1,
-                    pageOffset = 0
+                    pageOffset = 0,
+                    upToDate = upToDate
                 )
             }
 
@@ -1340,7 +1499,7 @@ class PostsDataSourceTest {
                 limit = -1,
                 offset = 0
             )
-            result.getOrThrow() shouldBe Pair(mockLocalDataSize, mockListPost)
+            result.getOrThrow() shouldBe PostListResult(mockLocalDataSize, mockListPost, upToDate)
         }
 
         @Test
@@ -1374,7 +1533,8 @@ class PostsDataSourceTest {
                     readLaterOnly = false,
                     countLimit = -1,
                     pageLimit = -1,
-                    pageOffset = 0
+                    pageOffset = 0,
+                    upToDate = upToDate
                 )
             }
 

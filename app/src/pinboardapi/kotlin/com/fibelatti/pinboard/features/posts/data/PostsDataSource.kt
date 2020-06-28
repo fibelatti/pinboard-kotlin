@@ -28,6 +28,7 @@ import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
 import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagDtoMapper
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -126,32 +127,34 @@ class PostsDataSource @Inject constructor(
         countLimit: Int,
         pageLimit: Int,
         pageOffset: Int
-    ): Flow<Result<Pair<Int, List<Post>>?>> {
+    ): Flow<Result<PostListResult?>> {
         val isConnected = connectivityInfoProvider.isConnected()
-        val localData = suspend {
-            getLocalData(
-                newestFirst,
-                searchTerm,
-                tags,
-                untaggedOnly,
-                publicPostsOnly,
-                privatePostsOnly,
-                readLaterOnly,
-                countLimit,
-                pageLimit,
-                pageOffset
-            )
-        }
+        val localData: suspend (upToDate: Boolean) -> Result<PostListResult?> =
+            { upToDate: Boolean ->
+                getLocalData(
+                    newestFirst,
+                    searchTerm,
+                    tags,
+                    untaggedOnly,
+                    publicPostsOnly,
+                    privatePostsOnly,
+                    readLaterOnly,
+                    countLimit,
+                    pageLimit,
+                    pageOffset,
+                    upToDate
+                )
+            }
 
         if (!isConnected) {
-            return flowOf(localData())
+            return flowOf(localData(true))
         }
 
         val userLastUpdate = userRepository.getLastUpdate().takeIf(String::isNotBlank)
         val apiLastUpdate = update().getOrDefault(dateFormatter.nowAsTzFormat())
 
         if (userLastUpdate != null && userLastUpdate == apiLastUpdate) {
-            return flowOf(localData())
+            return flowOf(localData(true))
         }
 
         return getAllFromApi(localData, apiLastUpdate)
@@ -159,9 +162,9 @@ class PostsDataSource @Inject constructor(
 
     @VisibleForTesting
     fun getAllFromApi(
-        localData: suspend () -> Result<Pair<Int, List<Post>>?>,
+        localData: suspend (upToDate: Boolean) -> Result<PostListResult?>,
         apiLastUpdate: String
-    ): Flow<Result<Pair<Int, List<Post>>?>> {
+    ): Flow<Result<PostListResult?>> {
         pagedRequestsScope.coroutineContext.cancelChildren()
         val apiData = suspend {
             resultFromNetwork {
@@ -179,11 +182,11 @@ class PostsDataSource @Inject constructor(
                 if (posts.size == API_PAGE_SIZE) {
                     getAdditionalPages()
                 }
-            }.map { localData() }
+            }.map { localData(true) }
         }
 
         return flow {
-            emit(localData())
+            emit(localData(false))
             emit(apiData())
         }
     }
@@ -259,8 +262,9 @@ class PostsDataSource @Inject constructor(
         readLaterOnly: Boolean,
         countLimit: Int,
         pageLimit: Int,
-        pageOffset: Int
-    ): Result<Pair<Int, List<Post>>?> {
+        pageOffset: Int,
+        upToDate: Boolean
+    ): Result<PostListResult?> {
         return resultFrom {
             val localDataSize = getLocalDataSize(
                 searchTerm,
@@ -289,7 +293,7 @@ class PostsDataSource @Inject constructor(
                     )
                 }.let(postDtoMapper::mapList)
 
-                localDataSize to localData
+                PostListResult(totalCount = localDataSize, posts = localData, upToDate = upToDate)
             } else {
                 null
             }

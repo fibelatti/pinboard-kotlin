@@ -6,6 +6,7 @@ import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.mockTitle
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtil
 import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtilFactory
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -119,6 +120,7 @@ internal class PostActionHandlerTest {
 
     @Nested
     inner class SetPostsTests {
+
         @Test
         fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
             // GIVEN
@@ -145,7 +147,7 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is PostListContent and actions posts is not null THEN updated content is returned`() {
+        fun `WHEN currentContent is PostListContent and actions posts is not null and content is up to date THEN updated content is returned`() {
             // GIVEN
             val mockDiffUtil = mock<PostListDiffUtil>()
             given(mockPostListDiffUtilFactory.create(emptyList(), listOf(createPost())))
@@ -164,7 +166,16 @@ internal class PostActionHandlerTest {
 
             // WHEN
             val result = runBlocking {
-                postActionHandler.runAction(SetPosts(1 to listOf(createPost())), currentContent)
+                postActionHandler.runAction(
+                    SetPosts(
+                        PostListResult(
+                            totalCount = 1,
+                            posts = listOf(createPost()),
+                            upToDate = true
+                        )
+                    ),
+                    currentContent
+                )
             }
 
             // THEN
@@ -176,6 +187,51 @@ internal class PostActionHandlerTest {
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = Loaded,
+                isConnected = true
+            )
+        }
+
+        @Test
+        fun `WHEN currentContent is PostListContent and actions posts is not null and content is not up to date THEN updated content is returned with syncing`() {
+            // GIVEN
+            val mockDiffUtil = mock<PostListDiffUtil>()
+            given(mockPostListDiffUtilFactory.create(emptyList(), listOf(createPost())))
+                .willReturn(mockDiffUtil)
+
+            val currentContent = PostListContent(
+                category = All,
+                title = mockTitle,
+                posts = null,
+                showDescription = false,
+                sortType = NewestFirst,
+                searchParameters = SearchParameters(),
+                shouldLoad = ShouldLoadFirstPage,
+                isConnected = true
+            )
+
+            // WHEN
+            val result = runBlocking {
+                postActionHandler.runAction(
+                    SetPosts(
+                        PostListResult(
+                            totalCount = 1,
+                            posts = listOf(createPost()),
+                            upToDate = false
+                        )
+                    ),
+                    currentContent
+                )
+            }
+
+            // THEN
+            result shouldBe PostListContent(
+                category = All,
+                title = mockTitle,
+                posts = PostList(1, listOf(createPost()), mockDiffUtil),
+                showDescription = false,
+                sortType = NewestFirst,
+                searchParameters = SearchParameters(),
+                shouldLoad = Syncing,
                 isConnected = true
             )
         }
@@ -265,7 +321,13 @@ internal class PostActionHandlerTest {
             // WHEN
             val result = runBlocking {
                 postActionHandler.runAction(
-                    SetNextPostPage(posts = 1 to listOf(createPost())),
+                    SetNextPostPage(
+                        PostListResult(
+                            totalCount = 1,
+                            posts = listOf(createPost()),
+                            upToDate = randomBoolean()
+                        )
+                    ),
                     content
                 )
             }
@@ -290,7 +352,7 @@ internal class PostActionHandlerTest {
 
             // WHEN
             val result = runBlocking {
-                postActionHandler.runAction(SetNextPostPage(posts = null), content)
+                postActionHandler.runAction(SetNextPostPage(postListResult = null), content)
             }
 
             // THEN
@@ -324,7 +386,16 @@ internal class PostActionHandlerTest {
 
             // WHEN
             val result = runBlocking {
-                postActionHandler.runAction(SetNextPostPage(2 to mockNewList), currentContent)
+                postActionHandler.runAction(
+                    SetNextPostPage(
+                        PostListResult(
+                            totalCount = 2,
+                            posts = mockNewList,
+                            upToDate = randomBoolean()
+                        )
+                    ),
+                    currentContent
+                )
             }
 
             // THEN
@@ -393,6 +464,7 @@ internal class PostActionHandlerTest {
 
     @Nested
     inner class ToggleSortingTests {
+
         @Test
         fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
             // GIVEN

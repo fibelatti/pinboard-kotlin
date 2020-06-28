@@ -10,7 +10,7 @@ import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.appstate.OldestFirst
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
-import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
@@ -29,7 +29,7 @@ import org.mockito.ArgumentMatchers.isNull
 class GetAllPostsTest {
 
     // region Mock data
-    private val mockResponse = mock<Pair<Int, List<Post>>>()
+    private val mockResponse = mock<PostListResult>()
 
     private val mockPostsRepository = mock<PostsRepository>()
 

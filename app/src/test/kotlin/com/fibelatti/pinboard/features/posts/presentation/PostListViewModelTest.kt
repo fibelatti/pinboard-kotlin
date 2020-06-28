@@ -27,7 +27,7 @@ import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.appstate.ViewCategory
-import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetAllPosts
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPostParams
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
@@ -53,7 +53,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
     private val mockSearchTerm = "term"
     private val mockOffset = 12
 
-    private val mockResponse = mock<Pair<Int, List<Post>>>()
+    private val mockResponse = mock<PostListResult>()
     private val mockException = Exception()
 
     private val postListViewModel = spy(PostListViewModel(
