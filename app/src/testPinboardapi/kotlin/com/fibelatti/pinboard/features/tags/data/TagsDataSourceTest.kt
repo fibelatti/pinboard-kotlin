@@ -8,7 +8,6 @@ import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
-import com.fibelatti.pinboard.TestRateLimitRunner
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
@@ -17,9 +16,8 @@ import org.junit.jupiter.api.Test
 class TagsDataSourceTest {
 
     private val mockApi = mock<TagsApi>()
-    private val mockRunner = TestRateLimitRunner()
 
-    private val dataSource = TagsDataSource(mockApi, mockRunner)
+    private val dataSource = TagsDataSource(mockApi)
 
     @Nested
     inner class GetAllTagsTests {
