@@ -1,32 +1,21 @@
 package com.fibelatti.pinboard.features.notes.presentation
 
 import android.view.View
-import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
-import com.fibelatti.core.extension.inflate
+import com.fibelatti.core.android.base.BaseListAdapter
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import kotlinx.android.synthetic.main.list_item_note.view.*
 import javax.inject.Inject
 
-class NoteListAdapter @Inject constructor() :
-    ListAdapter<Note, NoteListAdapter.ViewHolder>(DIFF_UTIL) {
+class NoteListAdapter @Inject constructor() : BaseListAdapter<Note>(DIFF_UTIL) {
 
     var onNoteClicked: ((id: String) -> Unit)? = null
 
-    override fun getItemCount(): Int = currentList.size
+    override fun getLayoutRes(): Int = R.layout.list_item_note
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-        ViewHolder(parent)
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(currentList[position])
-    }
-
-    private fun View.bindView(item: Note) {
+    override fun View.bindView(item: Note, viewHolder: BaseListAdapter<Note>.ViewHolder) {
         textViewNoteTitle.text = item.title
         textViewNoteSavedDate.text = context.getString(R.string.notes_saved_at, item.createdAt)
 
@@ -37,12 +26,6 @@ class NoteListAdapter @Inject constructor() :
         )
 
         setOnClickListener { onNoteClicked?.invoke(item.id) }
-    }
-
-    inner class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-        parent.inflate(R.layout.list_item_note)
-    ) {
-        fun bind(item: Note) = itemView.bindView(item)
     }
 
     companion object {

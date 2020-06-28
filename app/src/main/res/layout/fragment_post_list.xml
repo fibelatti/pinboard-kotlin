@@ -44,7 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/layoutOfflineAlert">
 
-        <com.fibelatti.pinboard.core.android.customview.PagingRecyclerView
+        <com.fibelatti.core.android.recyclerview.PagingRecyclerView
             android:id="@+id/recyclerViewPosts"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

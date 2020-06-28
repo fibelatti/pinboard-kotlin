@@ -14,8 +14,10 @@ import androidx.fragment.app.Fragment
 import com.fibelatti.core.android.IntentDelegate
 import com.fibelatti.core.android.base.BaseIntentBuilder
 import com.fibelatti.core.archcomponents.extension.observe
+import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.applyAs
 import com.fibelatti.core.extension.createFragment
+import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.exhaustive
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.inTransaction
@@ -25,8 +27,6 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.customview.TitleLayout
-import com.fibelatti.pinboard.core.extension.doOnApplyWindowInsets
-import com.fibelatti.pinboard.core.extension.viewModel
 import com.fibelatti.pinboard.core.functional.DoNothing
 import com.fibelatti.pinboard.features.appstate.AddPostContent
 import com.fibelatti.pinboard.features.appstate.EditPostContent

@@ -3,7 +3,7 @@ object Versions {
     const val targetSdkVersion = 29
     const val compileSdkVersion = 29
 
-    internal const val kotlinVersion = "1.3.71"
+    internal const val kotlinVersion = "1.3.72"
     internal const val coroutinesVersion = "1.3.7"
     internal const val lifecycleVersion = "2.2.0"
     internal const val roomVersion = "2.2.5"
@@ -28,8 +28,8 @@ object Dependencies {
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.0-beta6"
     const val swipeRefreshLayout = "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-rc01"
 
-    const val coreLib = "com.fibelatti.core:core:2.0.0-alpha3"
-    const val coreLibArch = "com.fibelatti.core:arch-components:2.0.0-alpha3"
+    const val coreLib = "com.fibelatti.core:core:2.0.0-alpha4"
+    const val coreLibArch = "com.fibelatti.core:arch-components:2.0.0-alpha4"
 
     const val archComponents = "androidx.lifecycle:lifecycle-extensions:${Versions.lifecycleVersion}"
     const val archComponentsCompiler = "androidx.lifecycle:lifecycle-compiler:${Versions.lifecycleVersion}"

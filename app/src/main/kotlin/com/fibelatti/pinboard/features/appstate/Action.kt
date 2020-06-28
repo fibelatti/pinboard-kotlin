@@ -1,8 +1,8 @@
 package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.pinboard.features.notes.domain.model.Note
-import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 
 // region Action

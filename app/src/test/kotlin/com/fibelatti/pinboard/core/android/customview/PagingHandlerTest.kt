@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.core.android.customview
 
+import com.fibelatti.core.android.recyclerview.PagingHandler
 import com.fibelatti.core.test.extension.shouldBe
 import org.junit.jupiter.api.Test
 

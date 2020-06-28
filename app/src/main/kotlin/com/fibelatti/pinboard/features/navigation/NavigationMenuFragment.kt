@@ -9,14 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.fragment.app.DialogFragment
+import com.fibelatti.core.archcomponents.extension.activityViewModel
+import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.gone
+import com.fibelatti.core.extension.shareText
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.di.ViewModelProvider
-import com.fibelatti.pinboard.core.extension.activityViewModel
-import com.fibelatti.pinboard.core.extension.shareText
-import com.fibelatti.pinboard.core.extension.viewModel
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.Private
 import com.fibelatti.pinboard.features.appstate.Public

@@ -4,10 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import com.fibelatti.core.archcomponents.extension.observeEvent
+import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.toast
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseActivity
-import com.fibelatti.pinboard.core.extension.viewModel
 import com.fibelatti.pinboard.features.MainActivity
 import kotlinx.android.synthetic.main.activity_share.*
 
