@@ -47,6 +47,7 @@ class NoteDetailsFragment @Inject constructor() : BaseFragment(R.layout.fragment
     private fun setupActivityViews() {
         mainActivity?.updateTitleLayout {
             hideTitle()
+            hideSubTitle()
             setNavigateUp { navigateBack() }
         }
 
