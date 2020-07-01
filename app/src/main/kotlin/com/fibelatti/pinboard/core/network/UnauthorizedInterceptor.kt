@@ -10,10 +10,15 @@ class UnauthorizedInterceptor @Inject constructor(
     private val userRepository: UserRepository
 ) : Interceptor {
 
+    private val loginFailedCodes = listOf(
+        HttpURLConnection.HTTP_UNAUTHORIZED,
+        HttpURLConnection.HTTP_INTERNAL_ERROR
+    )
+
     override fun intercept(chain: Interceptor.Chain): Response {
         val response = catchingSocketTimeoutException(chain, chain::request)
 
-        if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
+        if (response.code in loginFailedCodes) {
             userRepository.forceLogout()
         }
 

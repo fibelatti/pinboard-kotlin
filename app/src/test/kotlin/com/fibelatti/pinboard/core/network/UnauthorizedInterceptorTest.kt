@@ -46,6 +46,19 @@ internal class UnauthorizedInterceptorTest {
     }
 
     @Test
+    fun `WHEN proceed code is HTTP_INTERNAL_ERROR THEN forceLogout is called`() {
+        // GIVEN
+        given(mockResponse.code)
+            .willReturn(HttpURLConnection.HTTP_INTERNAL_ERROR)
+
+        // WHEN
+        unauthorizedInterceptor.intercept(mockChain)
+
+        // THEN
+        verify(mockUserRepository).forceLogout()
+    }
+
+    @Test
     fun `WHEN proceed code is not HTTP_UNAUTHORIZED THEN forceLogout is not called`() {
         // GIVEN
         given(mockResponse.code)
