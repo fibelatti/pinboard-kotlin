@@ -8,6 +8,7 @@ import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.toast
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseActivity
+import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.features.MainActivity
 import kotlinx.android.synthetic.main.activity_share.*
 
@@ -39,10 +40,10 @@ class ShareReceiverActivity : BaseActivity(R.layout.activity_share) {
                 startActivity(MainActivity.Builder(this@ShareReceiverActivity).build())
                 finish()
             }
-            observeEvent(failed) { message ->
+            observeEvent(failed) { error ->
                 imageViewFeedback.setImageResource(R.drawable.ic_url_saved_error)
-                toast(message)
-                finish()
+
+                sendErrorReport(error) { finish() }
             }
         }
     }

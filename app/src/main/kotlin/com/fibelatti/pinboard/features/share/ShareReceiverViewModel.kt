@@ -31,8 +31,8 @@ class ShareReceiverViewModel @Inject constructor(
     private val _saved = MutableLiveEvent<String>()
     val edit: LiveEvent<String> get() = _edit
     private val _edit = MutableLiveEvent<String>()
-    val failed: LiveEvent<String> get() = _failed
-    private val _failed = MutableLiveEvent<String>()
+    val failed: LiveEvent<Throwable> get() = _failed
+    private val _failed = MutableLiveEvent<Throwable>()
 
     fun saveUrl(url: String) {
         launch {
@@ -59,7 +59,7 @@ class ShareReceiverViewModel @Inject constructor(
                     }
                 }
                 .onFailure {
-                    _failed.postEvent(resourceProvider.getString(R.string.generic_msg_error))
+                    _failed.postEvent(it)
                 }
         }
     }

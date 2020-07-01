@@ -201,6 +201,12 @@
     <string name="share_title">Sharing Pinkt</string>
     <string name="share_text">Check out Pinkt for Pinboard. Download for free at %s</string>
 
+    <!-- Error -->
+    <string name="error_send_email">Send email</string>
+    <string name="error_report_rationale">Looks like something went wrong. If you wish, you can click Report below to send me an email with the details of the error to help me fix it.</string>
+    <string name="error_report">Report</string>
+    <string name="error_ignore">Ignore</string>
+
     <!-- Content Descriptions -->
     <string name="cd_app_logo">App logo</string>
     <string name="cd_navigate_back">Navigate back</string>

@@ -35,6 +35,8 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     private val mockAppStateRepository = mock<AppStateRepository>()
     private val mockResourceProvider = mock<ResourceProvider>()
 
+    private val error = Exception()
+
     private val shareReceiverViewModel = ShareReceiverViewModel(
         mockExtractUrl,
         mockParseUrl,
@@ -48,21 +50,19 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     fun setup() {
         given(mockResourceProvider.getString(R.string.posts_saved_feedback))
             .willReturn("R.string.posts_saved_feedback")
-        given(mockResourceProvider.getString(R.string.generic_msg_error))
-            .willReturn("R.string.generic_msg_error")
     }
 
     @Test
     fun `WHEN ExtractUrl fails THEN failed should receive a value`() {
         // GIVEN
         givenSuspend { mockExtractUrl(mockUrlValid) }
-            .willReturn(Failure(Exception()))
+            .willReturn(Failure(error))
 
         // WHEN
         shareReceiverViewModel.saveUrl(mockUrlValid)
 
         // THEN
-        shareReceiverViewModel.failed.currentEventShouldBe("R.string.generic_msg_error")
+        shareReceiverViewModel.failed.currentEventShouldBe(error)
         verifySuspend(mockAddPost, never()) { invoke(safeAny()) }
     }
 
@@ -72,13 +72,13 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         givenSuspend { mockExtractUrl(mockUrlValid) }
             .willReturn(Success(mockUrlValid))
         givenSuspend { mockParseUrl(mockUrlValid) }
-            .willReturn(Failure(Exception()))
+            .willReturn(Failure(error))
 
         // WHEN
         shareReceiverViewModel.saveUrl(mockUrlValid)
 
         // THEN
-        shareReceiverViewModel.failed.currentEventShouldBe("R.string.generic_msg_error")
+        shareReceiverViewModel.failed.currentEventShouldBe(error)
         verifySuspend(mockAddPost, never()) { invoke(safeAny()) }
     }
 
@@ -106,7 +106,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                     replace = false
                 )
             )
-        }.willReturn(Failure(Exception()))
+        }.willReturn(Failure(error))
 
         // WHEN
         shareReceiverViewModel.saveUrl(mockUrlValid)
@@ -114,7 +114,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         // THEN
         verify(mockUserRepository).getDefaultPrivate()
         verify(mockUserRepository).getDefaultReadLater()
-        shareReceiverViewModel.failed.currentEventShouldBe("R.string.generic_msg_error")
+        shareReceiverViewModel.failed.currentEventShouldBe(error)
     }
 
     @Test
