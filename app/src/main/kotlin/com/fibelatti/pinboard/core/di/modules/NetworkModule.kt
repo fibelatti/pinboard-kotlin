@@ -9,7 +9,9 @@ import com.fibelatti.pinboard.core.network.UnauthorizedInterceptor
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
+import okhttp3.CipherSuite
 import okhttp3.ConnectionPool
+import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -35,8 +37,21 @@ object NetworkModule {
         apiInterceptor: ApiInterceptor,
         unauthorizedInterceptor: UnauthorizedInterceptor,
         loggingInterceptor: HttpLoggingInterceptor
-    ): OkHttpClient =
-        OkHttpClient.Builder()
+    ): OkHttpClient {
+        // These are the server preferred Ciphers + all the ones included in COMPATIBLE_TLS
+        val cipherSuites: List<CipherSuite> = listOf(
+            CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,
+            CipherSuite.TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,
+            CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+            CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        ) + ConnectionSpec.COMPATIBLE_TLS.cipherSuites.orEmpty()
+
+        val spec = ConnectionSpec.Builder(ConnectionSpec.COMPATIBLE_TLS)
+            .cipherSuites(*cipherSuites.toTypedArray())
+            .build()
+
+        return OkHttpClient.Builder()
+            .connectionSpecs(listOf(spec))
             .connectTimeout(60, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
@@ -45,6 +60,7 @@ object NetworkModule {
             .addInterceptor(unauthorizedInterceptor)
             .apply { if (BuildConfig.DEBUG) addInterceptor(loggingInterceptor) }
             .build()
+    }
 
     @Provides
     fun httpLoggingInterceptor(): HttpLoggingInterceptor = HttpLoggingInterceptor()
