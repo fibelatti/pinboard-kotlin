@@ -67,13 +67,15 @@ abstract class BaseActivity @ContentView constructor(
 
 fun FragmentActivity.sendErrorReport(
     throwable: Throwable,
+    altMessage: String = "",
     postAction: () -> Unit = {}
 ) {
     showStyledDialog(
         dialogStyle = R.style.AppTheme_AlertDialog,
         dialogBackground = R.drawable.background_contrast_rounded
     ) {
-        setMessage(R.string.error_report_rationale)
+        val message = altMessage.ifEmpty { getString(R.string.error_report_rationale) }
+        setMessage(message)
         setPositiveButton(R.string.error_report) { dialog, _ ->
             val sw = StringWriter()
             throwable.printStackTrace(PrintWriter(sw))

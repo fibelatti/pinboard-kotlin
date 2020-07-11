@@ -14,10 +14,12 @@ import com.fibelatti.core.extension.setupLinks
 import com.fibelatti.core.extension.showError
 import com.fibelatti.core.extension.textAsString
 import com.fibelatti.core.extension.visible
+import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.LinkTransformationMethod
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import kotlinx.android.synthetic.main.fragment_auth.*
 import kotlinx.android.synthetic.main.layout_auth_form.*
 import javax.inject.Inject
@@ -68,5 +70,12 @@ class AuthFragment @Inject constructor() : BaseFragment(R.layout.fragment_auth) 
         progressBar.gone()
         buttonAuth.visible()
         textInputLayoutAuthToken.showError(message)
+    }
+
+    override fun handleError(error: Throwable) {
+        activity?.sendErrorReport(error, altMessage = getString(R.string.auth_error))
+        if (BuildConfig.DEBUG) {
+            error.printStackTrace()
+        }
     }
 }

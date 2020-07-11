@@ -7,6 +7,7 @@ import com.fibelatti.core.extension.get
 import com.fibelatti.core.extension.getSharedPreferences
 import com.fibelatti.core.extension.put
 import javax.inject.Inject
+import javax.inject.Singleton
 
 // region Constants
 @VisibleForTesting
@@ -35,16 +36,23 @@ const val KEY_EDIT_AFTER_SHARING = "EDIT_AFTER_SHARING"
 
 fun Context.getUserPreferences() = getSharedPreferences("user_preferences")
 
+@Singleton
 class UserSharedPreferences @Inject constructor(private val sharedPreferences: SharedPreferences) {
-    fun getAuthToken(): String = sharedPreferences.get(KEY_AUTH_TOKEN, "")
+
+    private var currentAuthToken: String = ""
+    private var currentLastUpdate: String = ""
+
+    fun getAuthToken(): String = sharedPreferences.get(KEY_AUTH_TOKEN, currentAuthToken)
 
     fun setAuthToken(authToken: String) {
+        currentAuthToken = authToken
         sharedPreferences.put(KEY_AUTH_TOKEN, authToken)
     }
 
-    fun getLastUpdate(): String = sharedPreferences.get(KEY_LAST_UPDATE, "")
+    fun getLastUpdate(): String = sharedPreferences.get(KEY_LAST_UPDATE, currentLastUpdate)
 
     fun setLastUpdate(value: String) {
+        currentLastUpdate = value
         sharedPreferences.put(KEY_LAST_UPDATE, value)
     }
 
