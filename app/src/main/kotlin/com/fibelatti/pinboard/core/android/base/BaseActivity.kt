@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.webkit.WebView
+import android.widget.Toast
 import androidx.annotation.CallSuper
 import androidx.annotation.ContentView
 import androidx.annotation.LayoutRes
@@ -11,12 +12,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.FragmentActivity
 import com.fibelatti.core.extension.showStyledDialog
+import com.fibelatti.core.extension.toast
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.di.AppComponent
 import com.fibelatti.pinboard.core.di.AppComponentProvider
 import com.fibelatti.pinboard.core.di.ViewModelProvider
+import kotlinx.coroutines.TimeoutCancellationException
 import java.io.PrintWriter
 import java.io.StringWriter
 
@@ -37,9 +40,14 @@ abstract class BaseActivity @ContentView constructor(
     }
 
     fun handleError(error: Throwable) {
-        sendErrorReport(error)
         if (BuildConfig.DEBUG) {
             error.printStackTrace()
+        }
+
+        if (error is TimeoutCancellationException) {
+            toast(getString(R.string.server_timeout_error), duration = Toast.LENGTH_LONG)
+        } else {
+            sendErrorReport(error)
         }
     }
 

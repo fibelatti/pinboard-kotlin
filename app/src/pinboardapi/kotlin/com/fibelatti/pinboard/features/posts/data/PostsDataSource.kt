@@ -40,6 +40,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
 class PostsDataSource @Inject constructor(
@@ -54,10 +55,16 @@ class PostsDataSource @Inject constructor(
     @IoScope private val pagedRequestsScope: CoroutineScope
 ) : PostsRepository {
 
+    companion object {
+        private const val SERVER_DOWN_TIMEOUT = 10_000L
+    }
+
     override suspend fun update(): Result<String> {
         return resultFromNetwork {
             withContext(Dispatchers.IO) {
-                postsApi.update().updateTime
+                withTimeout(SERVER_DOWN_TIMEOUT) {
+                    postsApi.update().updateTime
+                }
             }
         }
     }
@@ -73,18 +80,24 @@ class PostsDataSource @Inject constructor(
     ): Result<Post> {
         return resultFromNetwork {
             withContext(Dispatchers.IO) {
-                val result = postsApi.add(
-                    url = url,
-                    title = title.take(API_MAX_LENGTH),
-                    description = description?.take(API_MAX_EXTENDED_LENGTH),
-                    public = private?.let { if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES },
-                    readLater = readLater?.let { if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO },
-                    tags = tags?.joinToString(
-                        PinboardApiLiterals.TAG_SEPARATOR_REQUEST,
-                        transform = Tag::name
-                    )?.take(API_MAX_LENGTH),
-                    replace = if (replace) PinboardApiLiterals.YES else PinboardApiLiterals.NO
-                )
+                val result = withTimeout(SERVER_DOWN_TIMEOUT) {
+                    postsApi.add(
+                        url = url,
+                        title = title.take(API_MAX_LENGTH),
+                        description = description?.take(API_MAX_EXTENDED_LENGTH),
+                        public = private?.let {
+                            if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES
+                        },
+                        readLater = readLater?.let {
+                            if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO
+                        },
+                        tags = tags?.joinToString(
+                            PinboardApiLiterals.TAG_SEPARATOR_REQUEST,
+                            transform = Tag::name
+                        )?.take(API_MAX_LENGTH),
+                        replace = if (replace) PinboardApiLiterals.YES else PinboardApiLiterals.NO
+                    )
+                }
 
                 when (result.resultCode) {
                     ApiResultCodes.DONE.code -> {

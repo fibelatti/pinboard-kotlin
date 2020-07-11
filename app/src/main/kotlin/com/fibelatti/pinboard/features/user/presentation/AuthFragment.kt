@@ -22,6 +22,7 @@ import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import kotlinx.android.synthetic.main.fragment_auth.*
 import kotlinx.android.synthetic.main.layout_auth_form.*
+import kotlinx.coroutines.TimeoutCancellationException
 import javax.inject.Inject
 
 class AuthFragment @Inject constructor() : BaseFragment(R.layout.fragment_auth) {
@@ -73,9 +74,17 @@ class AuthFragment @Inject constructor() : BaseFragment(R.layout.fragment_auth) 
     }
 
     override fun handleError(error: Throwable) {
-        activity?.sendErrorReport(error, altMessage = getString(R.string.auth_error))
         if (BuildConfig.DEBUG) {
             error.printStackTrace()
+        }
+
+        progressBar.gone()
+        buttonAuth.visible()
+
+        if (error is TimeoutCancellationException) {
+            textInputLayoutAuthToken.showError(getString(R.string.server_timeout_error))
+        } else {
+            activity?.sendErrorReport(error, altMessage = getString(R.string.auth_error))
         }
     }
 }

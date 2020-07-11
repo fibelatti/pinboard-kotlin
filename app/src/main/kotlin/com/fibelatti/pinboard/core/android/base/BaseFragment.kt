@@ -8,7 +8,6 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.getViewToApplyInsets
-import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.core.di.ViewModelProvider
 
 abstract class BaseFragment @ContentView constructor(
@@ -33,9 +32,6 @@ abstract class BaseFragment @ContentView constructor(
     }
 
     open fun handleError(error: Throwable) {
-        activity?.sendErrorReport(error)
-        if (BuildConfig.DEBUG) {
-            error.printStackTrace()
-        }
+        (activity as BaseActivity).handleError(error)
     }
 }

@@ -5,12 +5,14 @@ import android.os.Bundle
 import android.view.View
 import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.archcomponents.extension.viewModel
+import com.fibelatti.core.extension.showStyledDialog
 import com.fibelatti.core.extension.toast
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.features.MainActivity
 import kotlinx.android.synthetic.main.activity_share.*
+import kotlinx.coroutines.TimeoutCancellationException
 
 class ShareReceiverActivity : BaseActivity(R.layout.activity_share) {
 
@@ -43,7 +45,17 @@ class ShareReceiverActivity : BaseActivity(R.layout.activity_share) {
             observeEvent(failed) { error ->
                 imageViewFeedback.setImageResource(R.drawable.ic_url_saved_error)
 
-                sendErrorReport(error) { finish() }
+                if (error is TimeoutCancellationException) {
+                    showStyledDialog(
+                        dialogStyle = R.style.AppTheme_AlertDialog,
+                        dialogBackground = R.drawable.background_contrast_rounded
+                    ) {
+                        setMessage(R.string.server_timeout_error)
+                        setPositiveButton(R.string.hint_ok) { _, _ -> finish() }
+                    }
+                } else {
+                    sendErrorReport(error) { finish() }
+                }
             }
         }
     }
