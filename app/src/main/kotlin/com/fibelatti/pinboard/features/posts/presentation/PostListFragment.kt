@@ -200,18 +200,25 @@ class PostListFragment @Inject constructor(
             setSubTitle(buildPostCountSubTitle(content.totalCount, content.sortType))
         }
 
-        if (content.posts == null) {
-            showEmptyLayout()
-            return
-        }
+        when {
+            content.posts == null && content.shouldLoad == Loaded -> {
+                showEmptyLayout()
+                return
+            }
+            content.posts == null -> {
+                // Still syncing with the API
+                return
+            }
+            else -> {
+                postsAdapter.showDescription = content.showDescription
+                if (!content.posts.alreadyDisplayed || postsAdapter.itemCount == 0) {
+                    recyclerViewPosts.visible()
+                    layoutEmptyList.gone()
 
-        postsAdapter.showDescription = content.showDescription
-        if (!content.posts.alreadyDisplayed || postsAdapter.itemCount == 0) {
-            recyclerViewPosts.visible()
-            layoutEmptyList.gone()
-
-            postsAdapter.addAll(content.posts.list, content.posts.diffUtil.result)
-            appStateViewModel.runAction(PostsDisplayed)
+                    postsAdapter.addAll(content.posts.list, content.posts.diffUtil.result)
+                    appStateViewModel.runAction(PostsDisplayed)
+                }
+            }
         }
     }
 

@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.appstate
 
-import com.fibelatti.core.extension.orTrue
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtilFactory
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -47,7 +46,7 @@ class PostActionHandler @Inject constructor(
                     postListDiffUtilFactory.create(currentPostList.currentList, it.posts)
                 )
             }
-            val isUpToDate = action.postListResult?.upToDate.orTrue()
+            val isUpToDate = action.postListResult?.upToDate == true
             currentPostList.copy(posts = posts, shouldLoad = if (isUpToDate) Loaded else Syncing)
         }
     }

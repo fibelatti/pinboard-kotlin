@@ -143,7 +143,7 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe initialContent.copy(posts = null, shouldLoad = Loaded)
+            result shouldBe initialContent.copy(posts = null, shouldLoad = Syncing)
         }
 
         @Test
