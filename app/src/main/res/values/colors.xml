@@ -17,5 +17,5 @@
     <color name="text_secondary">#757575</color>
 
     <color name="chip_background">#D6D6D6</color>
-    <color name="chip_foreground">#282828</color>
+    <color name="chip_foreground">#1C1C1C</color>
 </resources>

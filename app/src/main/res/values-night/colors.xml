@@ -15,5 +15,5 @@
     <color name="text_secondary">#AFAFAF</color>
 
     <color name="chip_background">#535353</color>
-    <color name="chip_foreground">#F5F5F5</color>
+    <color name="chip_foreground">#FBFBFB</color>
 </resources>

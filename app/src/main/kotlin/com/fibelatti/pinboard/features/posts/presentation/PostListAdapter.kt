@@ -16,8 +16,6 @@ import kotlinx.android.synthetic.main.layout_quick_actions.view.*
 import kotlinx.android.synthetic.main.list_item_post.view.*
 import javax.inject.Inject
 
-private const val MAX_TAGS_PER_ITEM = 3
-
 class PostListAdapter @Inject constructor(
     private val dateFormatter: DateFormatter
 ) : RecyclerView.Adapter<PostListAdapter.ViewHolder>() {
@@ -86,27 +84,10 @@ class PostListAdapter @Inject constructor(
                 otherwiseVisibility = View.GONE
             )
 
-            when {
-                item.tags.isNullOrEmpty() -> {
-                    chipGroupTags.gone()
-                    textViewOtherTagsAvailable.gone()
-                }
-                item.tags.size <= MAX_TAGS_PER_ITEM -> {
-                    layoutTags(item.tags)
-                    textViewOtherTagsAvailable.gone()
-                }
-                else -> {
-                    val otherAmount = item.tags.size - MAX_TAGS_PER_ITEM
-
-                    layoutTags(item.tags.take(MAX_TAGS_PER_ITEM))
-                    textViewOtherTagsAvailable.visible(
-                        resources.getQuantityString(
-                            R.plurals.posts_tags_more,
-                            otherAmount,
-                            otherAmount
-                        )
-                    )
-                }
+            if (item.tags.isNullOrEmpty()) {
+                chipGroupTags.gone()
+            } else {
+                layoutTags(item.tags)
             }
 
             hideQuickActions()

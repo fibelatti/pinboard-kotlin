@@ -206,6 +206,6 @@
     </style>
 
     <style name="AppTheme.ChipTextAppearance" parent="TextAppearance.MaterialComponents.Chip">
-        <item name="android:textSize">@dimen/text_size_xsmall</item>
+        <item name="android:textSize">11sp</item>
     </style>
 </resources>
