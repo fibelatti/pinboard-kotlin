@@ -195,7 +195,7 @@ class PostsDataSource @Inject constructor(
 
             concatenatedTags.flatMap { it.split(" ") }
                 .distinct()
-                .filter { it.startsWith(tag) }
+                .filter { it.startsWith(tag, ignoreCase = true) }
                 .sorted()
         }
     }
