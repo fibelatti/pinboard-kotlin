@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:imeOptions="actionDone"
             android:inputType="textMultiLine"
-            android:maxLines="3"
+            android:maxLength="@integer/api_max_title_length"
             android:textSize="@dimen/text_size_small" />
     </com.google.android.material.textfield.TextInputLayout>
 
