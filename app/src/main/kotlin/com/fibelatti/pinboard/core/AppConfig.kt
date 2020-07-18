@@ -6,7 +6,8 @@ object AppConfig {
     const val API_BASE_URL = "https://api.pinboard.in/v1/"
     const val API_ENCODING = "UTF-8"
     const val API_MAX_LENGTH = 255
-    const val API_MAX_EXTENDED_LENGTH = 65536
+    const val API_MAX_URI_LENGTH = 2000
+    const val API_BASE_URL_LENGTH = 90
 
     const val API_PAGE_SIZE = 5000
 

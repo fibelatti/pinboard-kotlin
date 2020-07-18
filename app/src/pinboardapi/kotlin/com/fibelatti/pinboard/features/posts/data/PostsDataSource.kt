@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.posts.data
 
 import androidx.annotation.VisibleForTesting
+import com.fibelatti.core.extension.orZero
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.getOrNull
@@ -8,8 +9,9 @@ import com.fibelatti.core.functional.getOrThrow
 import com.fibelatti.core.functional.map
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onSuccess
-import com.fibelatti.pinboard.core.AppConfig.API_MAX_EXTENDED_LENGTH
+import com.fibelatti.pinboard.core.AppConfig.API_BASE_URL_LENGTH
 import com.fibelatti.pinboard.core.AppConfig.API_MAX_LENGTH
+import com.fibelatti.pinboard.core.AppConfig.API_MAX_URI_LENGTH
 import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
@@ -78,24 +80,36 @@ class PostsDataSource @Inject constructor(
         tags: List<Tag>?,
         replace: Boolean
     ): Result<Post> {
+
+        val trimmedTitle = title.take(API_MAX_LENGTH)
+        val privateLiteral = private?.let {
+            if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES
+        }
+        val readLaterLiteral = readLater?.let {
+            if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO
+        }
+        val trimmedTags = tags?.joinToString(
+            PinboardApiLiterals.TAG_SEPARATOR_REQUEST,
+            transform = Tag::name
+        )?.take(API_MAX_LENGTH)
+        val replaceLiteral = if (replace) PinboardApiLiterals.YES else PinboardApiLiterals.NO
+
+        // The API abuses GET, this aims to avoid getting 414 errors
+        val remainingLength = API_MAX_URI_LENGTH - API_BASE_URL_LENGTH - url.length -
+            trimmedTitle.length - privateLiteral?.length.orZero() - readLaterLiteral?.length.orZero() -
+            trimmedTags?.length.orZero() - replaceLiteral.length
+
         return resultFromNetwork {
             withContext(Dispatchers.IO) {
                 val result = withTimeout(SERVER_DOWN_TIMEOUT) {
                     postsApi.add(
                         url = url,
-                        title = title.take(API_MAX_LENGTH),
-                        description = description?.take(API_MAX_EXTENDED_LENGTH),
-                        public = private?.let {
-                            if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES
-                        },
-                        readLater = readLater?.let {
-                            if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO
-                        },
-                        tags = tags?.joinToString(
-                            PinboardApiLiterals.TAG_SEPARATOR_REQUEST,
-                            transform = Tag::name
-                        )?.take(API_MAX_LENGTH),
-                        replace = if (replace) PinboardApiLiterals.YES else PinboardApiLiterals.NO
+                        title = trimmedTitle,
+                        description = description?.take(remainingLength),
+                        public = privateLiteral,
+                        readLater = readLaterLiteral,
+                        tags = trimmedTags,
+                        replace = replaceLiteral
                     )
                 }
 
