@@ -25,8 +25,6 @@ const val KEY_AUTO_FILL_DESCRIPTION = "AUTO_FILL_DESCRIPTION"
 @VisibleForTesting
 const val KEY_SHOW_DESCRIPTION_IN_LISTS = "SHOW_DESCRIPTION_IN_LISTS"
 @VisibleForTesting
-const val KEY_SHOW_DESCRIPTION_IN_DETAILS = "SHOW_DESCRIPTION_IN_DETAILS"
-@VisibleForTesting
 const val KEY_DEFAULT_PRIVATE = "DEFAULT_PRIVATE"
 @VisibleForTesting
 const val KEY_DEFAULT_READ_LATER = "DEFAULT_READ_LATER"
@@ -85,13 +83,6 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
 
     fun setShowDescriptionInLists(value: Boolean) {
         sharedPreferences.put(KEY_SHOW_DESCRIPTION_IN_LISTS, value)
-    }
-
-    fun getShowDescriptionInDetails(): Boolean =
-        sharedPreferences.get(KEY_SHOW_DESCRIPTION_IN_DETAILS, true)
-
-    fun setShowDescriptionInDetails(value: Boolean) {
-        sharedPreferences.put(KEY_SHOW_DESCRIPTION_IN_DETAILS, value)
     }
 
     /***

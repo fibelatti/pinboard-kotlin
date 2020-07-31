@@ -51,12 +51,6 @@ class UserPreferencesViewModel @Inject constructor(
         }
     }
 
-    fun saveShowDescriptionInDetails(value: Boolean) {
-        launch {
-            userRepository.setShowDescriptionInDetails(value)
-        }
-    }
-
     fun saveEditAfterSharing(value: Boolean) {
         launch {
             userRepository.setEditAfterSharing(value)

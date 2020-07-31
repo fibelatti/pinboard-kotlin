@@ -88,13 +88,6 @@ class UserDataSource @Inject constructor(
         userSharedPreferences.setShowDescriptionInLists(value)
     }
 
-    override fun getShowDescriptionInDetails(): Boolean =
-        userSharedPreferences.getShowDescriptionInDetails()
-
-    override fun setShowDescriptionInDetails(value: Boolean) {
-        userSharedPreferences.setShowDescriptionInDetails(value)
-    }
-
     override fun getDefaultPrivate(): Boolean? = null
 
     override fun setDefaultPrivate(value: Boolean) {

@@ -45,10 +45,6 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(R.layout.frag
                 it.showDescriptionInLists,
                 userPreferencesViewModel::saveShowDescriptionInLists
             )
-            checkboxShowDescriptionInDetails.setValueAndChangeListener(
-                it.showDescriptionInDetails,
-                userPreferencesViewModel::saveShowDescriptionInDetails
-            )
             checkboxEditAfterSharing.setValueAndChangeListener(
                 it.editAfterSharing,
                 userPreferencesViewModel::saveEditAfterSharing

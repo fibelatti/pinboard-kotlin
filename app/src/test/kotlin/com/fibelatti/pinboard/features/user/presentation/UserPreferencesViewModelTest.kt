@@ -84,18 +84,6 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `WHEN saveShowDescriptionInDetails is called THEN repository is updated`() {
-        // GIVEN
-        val value = randomBoolean()
-
-        // WHEN
-        userPreferencesViewModel.saveShowDescriptionInDetails(value)
-
-        // THEN
-        verify(mockUserRepository).setShowDescriptionInDetails(value)
-    }
-
-    @Test
     fun `WHEN setEditAfterSharing is called THEN repository is updated`() {
         // GIVEN
         val value = randomBoolean()

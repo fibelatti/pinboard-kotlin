@@ -219,27 +219,6 @@ internal class UserSharedPreferencesTest {
     }
 
     @Test
-    fun `WHEN getDescriptionVisibleInDetail is called THEN its value is returned`() {
-        // GIVEN
-        val value = randomBoolean()
-        given(mockSharedPreferences.get(KEY_SHOW_DESCRIPTION_IN_DETAILS, true))
-            .willReturn(value)
-
-        // THEN
-        userSharedPreferences.getShowDescriptionInDetails() shouldBe value
-    }
-
-    @Test
-    fun `WHEN setDescriptionVisibleInDetail is called THEN KEY_DESCRIPTION_VISIBLE_DETAIL is set`() {
-        // WHEN
-        val value = randomBoolean()
-        userSharedPreferences.setShowDescriptionInDetails(value)
-
-        // THEN
-        verify(mockEditor).putBoolean(KEY_SHOW_DESCRIPTION_IN_DETAILS, value)
-    }
-
-    @Test
     fun `GIVEN KEY_DEFAULT_PRIVATE returns false THEN null is returned`() {
         // GIVEN
         given(mockSharedPreferences.get(KEY_DEFAULT_PRIVATE, false))

@@ -41,10 +41,6 @@ interface UserRepository {
 
     fun setShowDescriptionInLists(value: Boolean)
 
-    fun getShowDescriptionInDetails(): Boolean
-
-    fun setShowDescriptionInDetails(value: Boolean)
-
     fun getDefaultPrivate(): Boolean?
 
     fun setDefaultPrivate(value: Boolean)

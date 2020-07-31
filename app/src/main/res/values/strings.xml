@@ -172,7 +172,6 @@
     <string name="user_preferences_description_auto_fill">Auto fill</string>
     <string name="user_preferences_description_auto_fill_description">If checked, then Pinkt will attempt to extract the description from the website and fill it automatically</string>
     <string name="user_preferences_description_visible_in_lists">Visible in lists</string>
-    <string name="user_preferences_description_visible_in_details">Visible in the details screen</string>
     <string name="user_preferences_description_visible_caveat">Show the first 5 lines of the description in lists</string>
     <string name="user_preferences_default_private">Private bookmarks</string>
     <string name="user_preferences_default_private_label">Private by default</string>

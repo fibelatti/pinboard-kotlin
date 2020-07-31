@@ -190,13 +190,6 @@
                 android:layout_marginEnd="@dimen/margin_small"
                 android:text="@string/user_preferences_description_visible_caveat" />
 
-            <CheckBox
-                android:id="@+id/checkboxShowDescriptionInDetails"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"
-                android:text="@string/user_preferences_description_visible_in_details" />
-
             <include
                 layout="@layout/layout_divider"
                 android:layout_width="match_parent"

@@ -107,7 +107,6 @@ class PostActionHandler @Inject constructor(
         return if (currentContent is PostListContent || currentContent is PostDetailContent) {
             EditPostContent(
                 post = action.post,
-                showDescription = userRepository.getShowDescriptionInDetails(),
                 previousContent = currentContent
             )
         } else {
@@ -118,7 +117,6 @@ class PostActionHandler @Inject constructor(
     private fun editPostFromShare(action: EditPostFromShare): Content {
         return EditPostContent(
             post = action.post,
-            showDescription = userRepository.getShowDescriptionInDetails(),
             previousContent = ExternalContent
         )
     }
@@ -145,14 +143,12 @@ class PostActionHandler @Inject constructor(
             is PopularPostDetailContent -> {
                 EditPostContent(
                     post = action.post,
-                    showDescription = userRepository.getShowDescriptionInDetails(),
                     previousContent = currentContent
                 )
             }
             is PopularPostsContent -> {
                 EditPostContent(
                     post = action.post,
-                    showDescription = userRepository.getShowDescriptionInDetails(),
                     previousContent = currentContent
                 )
             }

@@ -339,33 +339,6 @@ internal class UserDataSourceTest {
         }
 
         @Nested
-        inner class DescriptionInDetails {
-
-            @Test
-            fun `WHEN getShowDescriptionInDetails is called THEN UserSharedPreferences is returned`() {
-                // GIVEN
-                val value = randomBoolean()
-                given(mockUserSharedPreferences.getShowDescriptionInDetails())
-                    .willReturn(value)
-
-                // THEN
-                userDataSource.getShowDescriptionInDetails() shouldBe value
-            }
-
-            @Test
-            fun `WHEN setShowDescriptionInDetails is called THEN UserSharedPreferences is set`() {
-                // GIVEN
-                val value = randomBoolean()
-
-                // WHEN
-                userDataSource.setShowDescriptionInDetails(value)
-
-                // THEN
-                verify(mockUserSharedPreferences).setShowDescriptionInDetails(value)
-            }
-        }
-
-        @Nested
         inner class DefaultPrivate {
 
             @Test

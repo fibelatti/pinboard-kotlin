@@ -94,7 +94,6 @@ class NavigationActionHandler @Inject constructor(
                     PreferredDetailsView.Edit -> {
                         EditPostContent(
                             post = action.post,
-                            showDescription = userRepository.getShowDescriptionInDetails(),
                             previousContent = currentContent
                         )
                     }
@@ -142,7 +141,6 @@ class NavigationActionHandler @Inject constructor(
     private fun viewAddPost(currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
             AddPostContent(
-                showDescription = userRepository.getShowDescriptionInDetails(),
                 defaultPrivate = userRepository.getDefaultPrivate().orFalse(),
                 defaultReadLater = userRepository.getDefaultReadLater().orFalse(),
                 previousContent = it
@@ -201,7 +199,6 @@ class NavigationActionHandler @Inject constructor(
                 preferredDetailsView = userRepository.getPreferredDetailsView(),
                 autoFillDescription = userRepository.getAutoFillDescription(),
                 showDescriptionInLists = userRepository.getShowDescriptionInLists(),
-                showDescriptionInDetails = userRepository.getShowDescriptionInDetails(),
                 defaultPrivate = userRepository.getDefaultPrivate().orFalse(),
                 defaultReadLater = userRepository.getDefaultReadLater().orFalse(),
                 editAfterSharing = userRepository.getEditAfterSharing(),

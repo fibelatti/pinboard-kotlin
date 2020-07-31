@@ -16,13 +16,10 @@ import com.fibelatti.core.extension.afterTextChanged
 import com.fibelatti.core.extension.clearError
 import com.fibelatti.core.extension.clearText
 import com.fibelatti.core.extension.doOnApplyWindowInsets
-import com.fibelatti.core.extension.gone
-import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.invisible
 import com.fibelatti.core.extension.onKeyboardSubmit
 import com.fibelatti.core.extension.orZero
-import com.fibelatti.core.extension.setOnClickListener
 import com.fibelatti.core.extension.showError
 import com.fibelatti.core.extension.showStyledDialog
 import com.fibelatti.core.extension.textAsString
@@ -37,7 +34,6 @@ import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import kotlinx.android.synthetic.main.fragment_edit_post.*
-import kotlinx.android.synthetic.main.layout_edit_description.*
 import kotlinx.android.synthetic.main.layout_edit_post.*
 import kotlinx.android.synthetic.main.layout_edit_tags.*
 import kotlinx.android.synthetic.main.layout_progress_bar.*
@@ -55,11 +51,6 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
     private val postDetailViewModel by viewModel { viewModelProvider.postDetailsViewModel() }
 
     private var initialInsetBottomValue = -1
-
-    /**
-     * Saved since different flavours have different visibilities
-     */
-    private var checkBoxPrivateVisibility: Int = View.VISIBLE
 
     private var isRecreating: Boolean = false
 
@@ -137,7 +128,6 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
 
     private fun setupLayout() {
         handleKeyboardVisibility()
-        setupDescriptionLayouts()
         setupTagLayouts()
     }
 
@@ -214,44 +204,6 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
         )
     }
 
-    private fun setupDescriptionLayouts() {
-        checkBoxPrivateVisibility = checkboxPrivate.visibility
-
-        buttonEditDescription.setText(
-            if (editTextDescription.textAsString().isBlank()) {
-                R.string.posts_add_url_add_description
-            } else {
-                R.string.posts_add_url_edit_description
-            }
-        )
-        buttonEditDescription.setOnClickListener { focusOnDescription() }
-    }
-
-    private fun focusOnDescription() {
-        textInputLayoutUrl.gone()
-        textInputLayoutTitle.gone()
-        textInputUrlDescription.visible()
-        checkboxPrivate.gone()
-        checkboxReadLater.gone()
-        layoutAddTags.gone()
-
-        buttonEditDescription.setOnClickListener(R.string.hint_done) { dismissDescriptionFocus() }
-        hideFab()
-    }
-
-    private fun dismissDescriptionFocus() {
-        textInputLayoutUrl.visible()
-        textInputLayoutTitle.visible()
-        textInputUrlDescription.gone()
-        checkboxPrivate.visibility = checkBoxPrivateVisibility
-        checkboxReadLater.visible()
-        layoutAddTags.visible()
-
-        setupDescriptionLayouts()
-        showFab()
-        delayedHideKeyboard()
-    }
-
     private fun setupTagLayouts() {
         setupTagInput()
         buttonTagsAdd.setOnClickListener {
@@ -308,8 +260,6 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
     private fun setupViewModels() {
         viewLifecycleOwner.observe(appStateViewModel.addPostContent) {
             setupActivityViews()
-            textInputUrlDescription.visibleIf(it.showDescription)
-            buttonEditDescription.goneIf(it.showDescription)
 
             if (!isRecreating) {
                 checkboxPrivate.isChecked = it.defaultPrivate
@@ -375,12 +325,6 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
             }
         }
 
-        setupDescriptionLayouts()
-        if (content.showDescription) {
-            textInputUrlDescription.visible()
-            buttonEditDescription.gone()
-        }
-
         originalPost = content.post
 
         if (isRecreating) {
@@ -443,9 +387,5 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
 
     private fun showFab() {
         mainActivity?.updateViews { _, fab -> fab.show() }
-    }
-
-    private fun hideFab() {
-        mainActivity?.updateViews { _, fab -> fab.hide() }
     }
 }

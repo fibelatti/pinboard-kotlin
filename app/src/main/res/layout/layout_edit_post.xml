@@ -46,15 +46,27 @@
             android:textSize="@dimen/text_size_small" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <include
-        android:id="@+id/layoutDescription"
-        layout="@layout/layout_edit_description"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputUrlDescription"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_small"
+        android:layout_marginBottom="@dimen/margin_small"
+        android:hint="@string/posts_add_url_description"
         app:layout_constraintBottom_toTopOf="@+id/checkboxPrivate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutTitle">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:inputType="textMultiLine"
+            android:maxLength="@integer/api_max_description_length"
+            android:textSize="@dimen/text_size_small" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <CheckBox
         android:id="@+id/checkboxPrivate"
@@ -65,7 +77,7 @@
         android:text="@string/posts_add_private"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutDescription" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputUrlDescription" />
 
     <CheckBox
         android:id="@+id/checkboxReadLater"
@@ -77,6 +89,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/checkboxPrivate"
-        app:layout_constraintTop_toBottomOf="@+id/layoutDescription" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputUrlDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

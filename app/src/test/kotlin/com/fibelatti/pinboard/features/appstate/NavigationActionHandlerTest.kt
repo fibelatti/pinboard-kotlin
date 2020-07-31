@@ -40,7 +40,7 @@ internal class NavigationActionHandlerTest {
     private val mockPostsRepository = mock<PostsRepository>()
     private val mockResourceProvider = mock<ResourceProvider>()
     private val mockConnectivityInfoProvider = mock<ConnectivityInfoProvider>()
-    private val mockIoScope = Mockito.spy(CoroutineScope(Dispatchers.Unconfined))
+    private val mockIoScope = spy(CoroutineScope(Dispatchers.Unconfined))
 
     private val navigationActionHandler = spy(NavigationActionHandler(
         mockUserRepository,
@@ -283,8 +283,6 @@ internal class NavigationActionHandlerTest {
             given(mockUserRepository.getPreferredDetailsView())
                 .willReturn(PreferredDetailsView.Edit)
             val mockRandomBoolean = randomBoolean()
-            given(mockUserRepository.getShowDescriptionInDetails())
-                .willReturn(mockRandomBoolean)
 
             // WHEN
             val result = runBlocking {
@@ -294,7 +292,6 @@ internal class NavigationActionHandlerTest {
             // THEN
             result shouldBe EditPostContent(
                 post = createPost(),
-                showDescription = mockRandomBoolean,
                 previousContent = previousContent
             )
         }
@@ -344,8 +341,6 @@ internal class NavigationActionHandlerTest {
             given(mockUserRepository.getPreferredDetailsView())
                 .willReturn(PreferredDetailsView.Edit)
             val mockRandomBoolean = randomBoolean()
-            given(mockUserRepository.getShowDescriptionInDetails())
-                .willReturn(mockRandomBoolean)
 
             // WHEN
             val result = runBlocking {
@@ -461,15 +456,10 @@ internal class NavigationActionHandlerTest {
     @Nested
     inner class AddPostTests {
 
-        private val randomBoolean = randomBoolean()
-
         @BeforeEach
         fun setup() {
             given(mockUserRepository.getDefaultPrivate()).willReturn(true)
             given(mockUserRepository.getDefaultReadLater()).willReturn(true)
-
-            given(mockUserRepository.getShowDescriptionInDetails())
-                .willReturn(randomBoolean)
         }
 
         @Test
@@ -491,7 +481,6 @@ internal class NavigationActionHandlerTest {
 
             // THEN
             result shouldBe AddPostContent(
-                showDescription = randomBoolean,
                 defaultPrivate = true,
                 defaultReadLater = true,
                 previousContent = previousContent
@@ -509,7 +498,6 @@ internal class NavigationActionHandlerTest {
 
             // THEN
             result shouldBe AddPostContent(
-                showDescription = randomBoolean,
                 defaultPrivate = false,
                 defaultReadLater = true,
                 previousContent = previousContent
@@ -527,7 +515,6 @@ internal class NavigationActionHandlerTest {
 
             // THEN
             result shouldBe AddPostContent(
-                showDescription = randomBoolean,
                 defaultPrivate = true,
                 defaultReadLater = false,
                 previousContent = previousContent
@@ -713,7 +700,6 @@ internal class NavigationActionHandlerTest {
             given(mockUserRepository.getPreferredDetailsView()).willReturn(mockPreferredDetailsView)
             given(mockUserRepository.getAutoFillDescription()).willReturn(mockRandomBoolean)
             given(mockUserRepository.getShowDescriptionInLists()).willReturn(mockRandomBoolean)
-            given(mockUserRepository.getShowDescriptionInDetails()).willReturn(mockRandomBoolean)
             given(mockUserRepository.getDefaultPrivate()).willReturn(mockRandomBoolean)
             given(mockUserRepository.getDefaultReadLater()).willReturn(mockRandomBoolean)
             given(mockUserRepository.getEditAfterSharing()).willReturn(mockRandomBoolean)
@@ -744,7 +730,6 @@ internal class NavigationActionHandlerTest {
                 defaultPrivate = mockRandomBoolean,
                 autoFillDescription = mockRandomBoolean,
                 showDescriptionInLists = mockRandomBoolean,
-                showDescriptionInDetails = mockRandomBoolean,
                 defaultReadLater = mockRandomBoolean,
                 editAfterSharing = mockRandomBoolean,
                 previousContent = previousContent
@@ -767,7 +752,6 @@ internal class NavigationActionHandlerTest {
                 preferredDetailsView = mockPreferredDetailsView,
                 autoFillDescription = mockRandomBoolean,
                 showDescriptionInLists = mockRandomBoolean,
-                showDescriptionInDetails = mockRandomBoolean,
                 defaultPrivate = false,
                 defaultReadLater = mockRandomBoolean,
                 editAfterSharing = mockRandomBoolean,
@@ -791,7 +775,6 @@ internal class NavigationActionHandlerTest {
                 preferredDetailsView = mockPreferredDetailsView,
                 autoFillDescription = mockRandomBoolean,
                 showDescriptionInLists = mockRandomBoolean,
-                showDescriptionInDetails = mockRandomBoolean,
                 defaultPrivate = mockRandomBoolean,
                 defaultReadLater = false,
                 editAfterSharing = mockRandomBoolean,

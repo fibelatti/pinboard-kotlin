@@ -578,9 +578,6 @@ internal class PostActionHandlerTest {
         fun `WHEN currentContent is PostDetailContent THEN updated content is returned`() {
             // GIVEN
             val mockCurrentContent = mock<PostDetailContent>()
-            val randomBoolean = randomBoolean()
-            given(mockUserRepository.getShowDescriptionInDetails())
-                .willReturn(randomBoolean)
 
             // WHEN
             val result = runBlocking {
@@ -590,7 +587,6 @@ internal class PostActionHandlerTest {
             // THEN
             result shouldBe EditPostContent(
                 post = mockPost,
-                showDescription = randomBoolean,
                 previousContent = mockCurrentContent
             )
         }
@@ -599,9 +595,6 @@ internal class PostActionHandlerTest {
         fun `WHEN currentContent is PostListContent THEN updated content is returned`() {
             // GIVEN
             val mockCurrentContent = mock<PostListContent>()
-            val randomBoolean = randomBoolean()
-            given(mockUserRepository.getShowDescriptionInDetails())
-                .willReturn(randomBoolean)
 
             // WHEN
             val result = runBlocking {
@@ -611,7 +604,6 @@ internal class PostActionHandlerTest {
             // THEN
             result shouldBe EditPostContent(
                 post = mockPost,
-                showDescription = randomBoolean,
                 previousContent = mockCurrentContent
             )
         }
@@ -621,9 +613,6 @@ internal class PostActionHandlerTest {
     fun `WHEN editPostFromShare is called THEN EditPostContent is returned`() {
         // GIVEN
         val mockCurrentContent = mock<PostDetailContent>()
-        val randomBoolean = randomBoolean()
-        given(mockUserRepository.getShowDescriptionInDetails())
-            .willReturn(randomBoolean)
 
         // WHEN
         val result = runBlocking {
@@ -633,7 +622,6 @@ internal class PostActionHandlerTest {
         // THEN
         result shouldBe EditPostContent(
             post = mockPost,
-            showDescription = randomBoolean,
             previousContent = ExternalContent
         )
     }
@@ -660,7 +648,6 @@ internal class PostActionHandlerTest {
             // GIVEN
             val randomBoolean = randomBoolean()
             val currentContent = AddPostContent(
-                showDescription = randomBoolean,
                 defaultPrivate = randomBoolean,
                 defaultReadLater = randomBoolean,
                 previousContent = initialContent
@@ -678,14 +665,12 @@ internal class PostActionHandlerTest {
         @Test
         fun `GIVEN previousContent is PostDetailContent WHEN currentContent is EditPostContent THEN updated content is returned`() {
             // GIVEN
-            val randomBoolean = randomBoolean()
             val postDetail = PostDetailContent(
                 post = mockPost,
                 previousContent = initialContent
             )
             val currentContent = EditPostContent(
                 post = mockPost,
-                showDescription = randomBoolean,
                 previousContent = postDetail
             )
 
@@ -704,10 +689,8 @@ internal class PostActionHandlerTest {
         @Test
         fun `GIVEN previousContent is PostListContent WHEN currentContent is EditPostContent THEN updated content is returned`() {
             // GIVEN
-            val randomBoolean = randomBoolean()
             val currentContent = EditPostContent(
                 post = mockPost,
-                showDescription = randomBoolean,
                 previousContent = initialContent
             )
 
@@ -723,10 +706,8 @@ internal class PostActionHandlerTest {
         @Test
         fun `GIVEN previousContent is not PostDetailContent WHEN currentContent is EditPostContent THEN updated content is returned`() {
             // GIVEN
-            val randomBoolean = randomBoolean()
             val currentContent = EditPostContent(
                 post = mockPost,
-                showDescription = randomBoolean,
                 previousContent = ExternalContent
             )
 
@@ -742,11 +723,7 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is PopularPostDetailContent THEN updated content is returned`() {
             // GIVEN
-            val randomBoolean = randomBoolean()
             val currentContent = mock<PopularPostDetailContent>()
-
-            given(mockUserRepository.getShowDescriptionInDetails())
-                .willReturn(randomBoolean)
 
             // WHEN
             val result = runBlocking {
@@ -756,7 +733,6 @@ internal class PostActionHandlerTest {
             // THEN
             result shouldBe EditPostContent(
                 post = mockPost,
-                showDescription = randomBoolean,
                 previousContent = currentContent
             )
         }
@@ -764,11 +740,7 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is PopularPostsContent THEN updated content is returned`() {
             // GIVEN
-            val randomBoolean = randomBoolean()
             val currentContent = mock<PopularPostsContent>()
-
-            given(mockUserRepository.getShowDescriptionInDetails())
-                .willReturn(randomBoolean)
 
             // WHEN
             val result = runBlocking {
@@ -778,7 +750,6 @@ internal class PostActionHandlerTest {
             // THEN
             result shouldBe EditPostContent(
                 post = mockPost,
-                showDescription = randomBoolean,
                 previousContent = currentContent
             )
         }

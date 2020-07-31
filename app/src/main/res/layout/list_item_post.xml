@@ -62,15 +62,14 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_size"
         android:layout_marginTop="@dimen/margin_small"
-        android:layout_marginBottom="@dimen/margin_xsmall" />
+        android:layout_marginBottom="@dimen/margin_small" />
 
     <TextView
         android:id="@+id/textViewDescription"
         style="@style/AppTheme.Text.Detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_xsmall"
-        android:layout_marginBottom="@dimen/margin_xsmall"
+        android:layout_marginBottom="@dimen/margin_small"
         android:ellipsize="end"
         android:maxLines="5"
         android:visibility="gone"

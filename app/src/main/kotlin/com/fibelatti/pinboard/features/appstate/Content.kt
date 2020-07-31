@@ -56,7 +56,6 @@ data class SearchContent(
 ) : ContentWithHistory()
 
 data class AddPostContent(
-    val showDescription: Boolean,
     val defaultPrivate: Boolean,
     val defaultReadLater: Boolean,
     override val previousContent: PostListContent
@@ -64,7 +63,6 @@ data class AddPostContent(
 
 data class EditPostContent(
     val post: Post,
-    val showDescription: Boolean,
     override val previousContent: Content
 ) : ContentWithHistory()
 
@@ -106,7 +104,6 @@ data class UserPreferencesContent(
     val preferredDetailsView: PreferredDetailsView,
     val autoFillDescription: Boolean,
     val showDescriptionInLists: Boolean,
-    val showDescriptionInDetails: Boolean,
     val defaultPrivate: Boolean,
     val defaultReadLater: Boolean,
     val editAfterSharing: Boolean,
