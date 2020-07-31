@@ -37,7 +37,10 @@ class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
 
     override fun map(param: PostDto): Post = with(param) {
         Post(
-            url = URLDecoder.decode(href, API_ENCODING),
+            url = URLDecoder.decode(
+                href.replace("%(?![0-9a-fA-F]{2})".toRegex(), "%25"),
+                API_ENCODING
+            ),
             title = description,
             description = extended,
             hash = hash,

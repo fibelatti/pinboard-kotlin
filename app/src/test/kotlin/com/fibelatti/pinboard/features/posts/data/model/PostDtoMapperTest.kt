@@ -14,6 +14,15 @@ class PostDtoMapperTest {
 
     @Nested
     inner class MapTests {
+
+        @Test
+        fun `GIVEN url has unescaped % characters THEN Post is returned AND the url is fixed`() {
+            val url = "http://example.com/test?q=%1$"
+
+            mapper.map(createPostDto(href = url)) shouldBe createPost(url = url)
+        }
+
+
         @Test
         fun `GIVEN shared is no WHEN map is called THEN Post is returned AND private is true`() {
             mapper.map(createPostDto(shared = "no")) shouldBe createPost(private = true)
