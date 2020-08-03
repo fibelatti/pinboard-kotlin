@@ -26,6 +26,9 @@ class PostDetailViewModel @Inject constructor(
     val deleted: LiveEvent<Unit> get() = _deleted
     private val _deleted = MutableLiveEvent<Unit>()
 
+    val deleteError: LiveEvent<Throwable> get() = _deleteError
+    private val _deleteError = MutableLiveEvent<Throwable>()
+
     fun deletePost(post: Post) {
         launch {
             _loading.postValue(true)
@@ -36,7 +39,7 @@ class PostDetailViewModel @Inject constructor(
                 }
                 .onFailure {
                     _loading.postValue(false)
-                    handleError(it)
+                    _deleteError.postEvent(it)
                 }
         }
     }

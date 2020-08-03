@@ -28,6 +28,7 @@ import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
@@ -45,6 +46,7 @@ class PostDetailFragment @Inject constructor(
 ) : BaseFragment(R.layout.fragment_post_detail) {
 
     companion object {
+
         @JvmStatic
         val TAG: String = "PostDetailFragment"
     }
@@ -87,6 +89,12 @@ class PostDetailFragment @Inject constructor(
             }
             viewLifecycleOwner.observeEvent(deleted) {
                 mainActivity?.toast(getString(R.string.posts_deleted_feedback))
+            }
+            viewLifecycleOwner.observeEvent(deleteError) { error ->
+                activity?.sendErrorReport(
+                    error,
+                    altMessage = getString(R.string.posts_deleted_error)
+                )
             }
             viewLifecycleOwner.observe(error, ::handleError)
         }
@@ -240,6 +248,7 @@ class PostDetailFragment @Inject constructor(
 private class PostWebViewClient(callback: Callback) : WebViewClient() {
 
     interface Callback {
+
         fun onPageStarted()
 
         fun onPageFinished()

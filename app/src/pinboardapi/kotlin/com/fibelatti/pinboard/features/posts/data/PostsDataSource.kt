@@ -58,6 +58,7 @@ class PostsDataSource @Inject constructor(
 ) : PostsRepository {
 
     companion object {
+
         private const val SERVER_DOWN_TIMEOUT = 10_000L
     }
 
@@ -129,14 +130,10 @@ class PostsDataSource @Inject constructor(
 
     override suspend fun delete(url: String): Result<Unit> {
         return resultFromNetwork {
-            val result = withContext(Dispatchers.IO) {
-                postsApi.delete(url)
-            }
-
+            withContext(Dispatchers.IO) { postsApi.delete(url) }
+        }.mapCatching { result ->
             if (result.resultCode == ApiResultCodes.DONE.code) {
-                withContext(Dispatchers.IO) {
-                    postsDao.deletePost(url)
-                }
+                withContext(Dispatchers.IO) { postsDao.deletePost(url) }
             } else {
                 throw ApiException()
             }

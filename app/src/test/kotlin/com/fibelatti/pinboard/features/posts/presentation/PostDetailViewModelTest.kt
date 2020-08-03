@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import com.fibelatti.core.archcomponents.test.extension.currentEventShouldBe
-import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
 import com.fibelatti.core.archcomponents.test.extension.shouldNeverReceiveValues
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
@@ -31,7 +30,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
     )
 
     @Test
-    fun `WHEN deletePost fails THEN error should receive a value`() {
+    fun `WHEN deletePost fails THEN deleteError should receive a value`() {
         // GIVEN
         val error = Exception()
         givenSuspend { mockDeletePost(mockPost.url) }
@@ -44,7 +43,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
 
         // THEN
         postDetailViewModel.loading.shouldHaveReceived(loadingObserver, true, false)
-        postDetailViewModel.error.currentValueShouldBe(error)
+        postDetailViewModel.deleteError.currentEventShouldBe(error)
         postDetailViewModel.deleted.shouldNeverReceiveValues()
 
         verifySuspend(mockAppStateRepository, never()) { runAction(PostDeleted) }
