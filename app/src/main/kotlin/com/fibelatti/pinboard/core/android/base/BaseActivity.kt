@@ -88,7 +88,9 @@ fun FragmentActivity.sendErrorReport(
             val sw = StringWriter()
             throwable.printStackTrace(PrintWriter(sw))
 
-            val emailBody = "Hi, can you please look into this report?\n\n$sw"
+            val emailBody = "Hi, can you please look into this report?" +
+                "\n\nMy app version is ${BuildConfig.VERSION_NAME}" +
+                "\n\n$sw"
             val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
                 data = Uri.parse("mailto:")
                 putExtra(Intent.EXTRA_EMAIL, arrayOf("fibelatti+dev@gmail.com"))
