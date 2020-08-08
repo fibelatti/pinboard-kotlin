@@ -1,20 +1,16 @@
 package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.core.functional.Either
-import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.safeAny
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.core.test.extension.verifySuspend
 import com.fibelatti.pinboard.MockDataProvider.createPost
-import com.fibelatti.pinboard.MockDataProvider.mockTitle
-import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.allSealedSubclasses
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
-import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
 import kotlinx.coroutines.CoroutineScope
@@ -38,21 +34,20 @@ internal class NavigationActionHandlerTest {
 
     private val mockUserRepository = mock<UserRepository>()
     private val mockPostsRepository = mock<PostsRepository>()
-    private val mockResourceProvider = mock<ResourceProvider>()
     private val mockConnectivityInfoProvider = mock<ConnectivityInfoProvider>()
     private val mockIoScope = spy(CoroutineScope(Dispatchers.Unconfined))
 
-    private val navigationActionHandler = spy(NavigationActionHandler(
-        mockUserRepository,
-        mockPostsRepository,
-        mockResourceProvider,
-        mockConnectivityInfoProvider,
-        mockIoScope
-    ))
+    private val navigationActionHandler = spy(
+        NavigationActionHandler(
+            mockUserRepository,
+            mockPostsRepository,
+            mockConnectivityInfoProvider,
+            mockIoScope
+        )
+    )
 
     private val previousContent = PostListContent(
         category = All,
-        title = mockTitle,
         posts = null,
         showDescription = false,
         sortType = NewestFirst,
@@ -130,11 +125,8 @@ internal class NavigationActionHandlerTest {
 
         @ParameterizedTest
         @MethodSource("testCases")
-        fun `WHEN action is ViewCategory THEN a PostListContent is returned`(testCase: Triple<ViewCategory, Int, String>) {
+        fun `WHEN action is ViewCategory THEN a PostListContent is returned`(category: ViewCategory) {
             // GIVEN
-            val (category, stringId, resolvedString) = testCase
-            given(mockResourceProvider.getString(stringId))
-                .willReturn(resolvedString)
             val randomBoolean = randomBoolean()
             given(mockUserRepository.getShowDescriptionInLists())
                 .willReturn(randomBoolean)
@@ -147,7 +139,6 @@ internal class NavigationActionHandlerTest {
             // THEN
             result shouldBe PostListContent(
                 category = category,
-                title = resolvedString,
                 posts = null,
                 showDescription = randomBoolean,
                 sortType = NewestFirst,
@@ -159,58 +150,9 @@ internal class NavigationActionHandlerTest {
             verify(mockConnectivityInfoProvider).isConnected()
         }
 
-        fun testCases(): List<Triple<ViewCategory, Int, String>> =
-            mutableListOf<Triple<ViewCategory, Int, String>>().apply {
-                ViewCategory::class.sealedSubclasses.map { it.objectInstance as ViewCategory }
-                    .forEach { category ->
-                        when (category) {
-                            All -> add(
-                                Triple(
-                                    category,
-                                    R.string.posts_title_all,
-                                    "R.string.posts_title_all"
-                                )
-                            )
-                            Recent -> add(
-                                Triple(
-                                    category,
-                                    R.string.posts_title_recent,
-                                    "R.string.posts_title_recent"
-                                )
-                            )
-                            Public -> add(
-                                Triple(
-                                    category,
-                                    R.string.posts_title_public,
-                                    "R.string.posts_title_public"
-                                )
-                            )
-                            Private -> add(
-                                Triple(
-                                    category,
-                                    R.string.posts_title_private,
-                                    "R.string.posts_title_private"
-                                )
-                            )
-                            Unread -> add(
-                                Triple(
-                                    category,
-                                    R.string.posts_title_unread,
-                                    "R.string.posts_title_unread"
-                                )
-                            )
-                            Untagged -> {
-                                add(
-                                    Triple(
-                                        category,
-                                        R.string.posts_title_untagged,
-                                        "R.string.posts_title_untagged"
-                                    )
-                                )
-                            }
-                        }.let { }
-                    }
-            }
+        fun testCases(): List<ViewCategory> = ViewCategory::class.sealedSubclasses.map {
+            it.objectInstance as ViewCategory
+        }
     }
 
     @Nested
@@ -222,7 +164,7 @@ internal class NavigationActionHandlerTest {
         @BeforeEach
         fun setup() {
             willReturn(mockShouldLoad)
-                .given(navigationActionHandler).markAsRead(safeAny<Post>())
+                .given(navigationActionHandler).markAsRead(safeAny())
         }
 
         @Test
@@ -251,7 +193,7 @@ internal class NavigationActionHandlerTest {
             }
 
             // THEN
-            verify(navigationActionHandler).markAsRead(safeAny<Post>())
+            verify(navigationActionHandler).markAsRead(safeAny())
             result shouldBe PostDetailContent(
                 post = createPost(),
                 previousContent = previousContent.copy(shouldLoad = mockShouldLoad)
@@ -270,7 +212,7 @@ internal class NavigationActionHandlerTest {
             }
 
             // THEN
-            verify(navigationActionHandler).markAsRead(safeAny<Post>())
+            verify(navigationActionHandler).markAsRead(safeAny())
             result shouldBe ExternalBrowserContent(
                 post = createPost(),
                 previousContent = previousContent.copy(shouldLoad = mockShouldLoad)

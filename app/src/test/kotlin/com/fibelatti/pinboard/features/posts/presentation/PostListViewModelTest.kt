@@ -70,7 +70,6 @@ internal class PostListViewModelTest : BaseViewModelTest() {
             // GIVEN
             val contentToLoad = PostListContent(
                 category = mock(),
-                title = "",
                 posts = null,
                 showDescription = false,
                 sortType = mock(),
@@ -187,7 +186,6 @@ internal class PostListViewModelTest : BaseViewModelTest() {
         private fun createContent(category: ViewCategory, shouldLoad: ShouldLoad): PostListContent =
             PostListContent(
                 category = category,
-                title = "",
                 posts = null,
                 showDescription = false,
                 sortType = mockSortType,

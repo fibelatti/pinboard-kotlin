@@ -3,7 +3,6 @@ package com.fibelatti.pinboard.features.appstate
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.MockDataProvider.createPost
-import com.fibelatti.pinboard.MockDataProvider.mockTitle
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import org.junit.jupiter.api.Test
 
@@ -11,7 +10,6 @@ internal class PostListContentTest {
 
     private val nullContent = PostListContent(
         category = mock(),
-        title = mockTitle,
         posts = null,
         showDescription = false,
         sortType = mock(),
@@ -22,7 +20,6 @@ internal class PostListContentTest {
 
     private val nonNullContent = PostListContent(
         category = mock(),
-        title = mockTitle,
         posts = PostList(
             totalCount = 42,
             list = listOf(createPost()),

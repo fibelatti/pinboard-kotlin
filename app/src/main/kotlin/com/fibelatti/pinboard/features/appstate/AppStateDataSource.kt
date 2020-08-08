@@ -4,8 +4,6 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fibelatti.core.functional.SingleRunner
-import com.fibelatti.core.provider.ResourceProvider
-import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
@@ -14,7 +12,6 @@ import javax.inject.Singleton
 @Singleton
 class AppStateDataSource @Inject constructor(
     private val userRepository: UserRepository,
-    private val resourceProvider: ResourceProvider,
     private val navigationActionHandler: NavigationActionHandler,
     private val postActionHandler: PostActionHandler,
     private val searchActionHandler: SearchActionHandler,
@@ -60,7 +57,6 @@ class AppStateDataSource @Inject constructor(
     fun getInitialContent(): Content {
         return PostListContent(
             category = All,
-            title = resourceProvider.getString(R.string.posts_title_all),
             posts = null,
             showDescription = userRepository.getShowDescriptionInLists(),
             sortType = NewestFirst,

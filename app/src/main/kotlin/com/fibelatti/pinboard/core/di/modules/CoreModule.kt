@@ -1,25 +1,29 @@
 package com.fibelatti.pinboard.core.di.modules
 
-import android.app.Application
-import android.content.Context
-import android.content.SharedPreferences
-import android.net.ConnectivityManager
-import androidx.fragment.app.FragmentFactory
-import com.fibelatti.core.android.AppResourceProvider
-import com.fibelatti.core.android.MultiBindingFragmentFactory
-import com.fibelatti.core.extension.getSystemService
-import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.core.di.IoScope
-import com.fibelatti.pinboard.core.persistence.getUserPreferences
-import com.google.gson.Gson
+import com.fibelatti.pinboard.core.persistence.database.AppDatabase
+import com.fibelatti.pinboard.features.appstate.AppStateDataSource
+import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.notes.data.NotesApi
+import com.fibelatti.pinboard.features.notes.data.NotesDataSource
+import com.fibelatti.pinboard.features.notes.domain.NotesRepository
+import com.fibelatti.pinboard.features.posts.data.PostsApi
+import com.fibelatti.pinboard.features.posts.data.PostsDao
+import com.fibelatti.pinboard.features.posts.data.PostsDataSource
+import com.fibelatti.pinboard.features.posts.domain.PostsRepository
+import com.fibelatti.pinboard.features.tags.data.TagsApi
+import com.fibelatti.pinboard.features.tags.data.TagsDataSource
+import com.fibelatti.pinboard.features.tags.domain.TagsRepository
+import com.fibelatti.pinboard.features.user.data.UserDataSource
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import java.text.Collator
-import java.util.Locale
+import retrofit2.Retrofit
+import retrofit2.create
 
 @Module
 abstract class CoreModule {
@@ -27,31 +31,34 @@ abstract class CoreModule {
     companion object {
 
         @Provides
-        fun gson(): Gson = Gson()
-
-        @Provides
-        fun localeDefault(): Locale = Locale.getDefault()
-
-        @Provides
-        fun usCollator(): Collator = Collator.getInstance(Locale.US)
-
-        @Provides
-        fun Context.sharedPreferences(): SharedPreferences = getUserPreferences()
-
-        @Provides
-        fun Context.connectivityManager(): ConnectivityManager? = getSystemService()
-
-        @Provides
         @IoScope
         fun ioScope(): CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+        @Provides
+        fun Retrofit.postsApi(): PostsApi = create()
+
+        @Provides
+        fun AppDatabase.postsDao(): PostsDao = postDao()
+
+        @Provides
+        fun Retrofit.tagsApi(): TagsApi = create()
+
+        @Provides
+        fun Retrofit.notesApi(): NotesApi = create()
     }
 
     @Binds
-    abstract fun Application.context(): Context
+    abstract fun AppStateDataSource.appStateRepository(): AppStateRepository
 
     @Binds
-    abstract fun AppResourceProvider.resourceProvider(): ResourceProvider
+    abstract fun UserDataSource.userRepository(): UserRepository
 
     @Binds
-    abstract fun MultiBindingFragmentFactory.fragmentFactory(): FragmentFactory
+    abstract fun PostsDataSource.postsRepository(): PostsRepository
+
+    @Binds
+    abstract fun TagsDataSource.tagsRepository(): TagsRepository
+
+    @Binds
+    abstract fun NotesDataSource.notesRepository(): NotesRepository
 }

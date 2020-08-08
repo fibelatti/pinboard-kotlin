@@ -6,7 +6,6 @@ import com.fibelatti.pinboard.MockDataProvider.mockTag1
 import com.fibelatti.pinboard.MockDataProvider.mockTag2
 import com.fibelatti.pinboard.MockDataProvider.mockTag3
 import com.fibelatti.pinboard.MockDataProvider.mockTag4
-import com.fibelatti.pinboard.MockDataProvider.mockTitle
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
@@ -252,7 +251,6 @@ internal class SearchActionHandlerTest {
             // GIVEN
             val mockPreviousContent = PostListContent(
                 category = All,
-                title = mockTitle,
                 posts = null,
                 showDescription = false,
                 sortType = NewestFirst,
@@ -272,7 +270,6 @@ internal class SearchActionHandlerTest {
             // THEN
             result shouldBe PostListContent(
                 category = All,
-                title = mockTitle,
                 posts = null,
                 showDescription = false,
                 sortType = NewestFirst,
@@ -302,7 +299,6 @@ internal class SearchActionHandlerTest {
             // GIVEN
             val initialContent = PostListContent(
                 category = All,
-                title = mockTitle,
                 posts = null,
                 showDescription = false,
                 sortType = NewestFirst,
@@ -316,7 +312,6 @@ internal class SearchActionHandlerTest {
             // THEN
             result shouldBe PostListContent(
                 category = All,
-                title = mockTitle,
                 posts = null,
                 showDescription = false,
                 sortType = NewestFirst,
@@ -330,7 +325,6 @@ internal class SearchActionHandlerTest {
             // GIVEN
             val previousContent = PostListContent(
                 category = All,
-                title = mockTitle,
                 posts = null,
                 showDescription = false,
                 sortType = NewestFirst,
@@ -352,7 +346,6 @@ internal class SearchActionHandlerTest {
             // THEN
             result shouldBe PostListContent(
                 category = All,
-                title = mockTitle,
                 posts = null,
                 showDescription = false,
                 sortType = NewestFirst,

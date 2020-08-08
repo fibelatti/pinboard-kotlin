@@ -2,13 +2,11 @@ package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
 import com.fibelatti.core.functional.SingleRunner
-import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.core.test.extension.givenSuspend
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.safeAny
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.InstantExecutorExtension
-import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.allSealedSubclasses
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -34,7 +32,6 @@ import org.mockito.Mockito.verify
 internal class AppStateDataSourceTest {
 
     private val mockUserRepository = mock<UserRepository>()
-    private val mockResourceProvider = mock<ResourceProvider>()
     private val mockNavigationActionHandler = mock<NavigationActionHandler>()
     private val mockPostActionHandler = mock<PostActionHandler>()
     private val mockSearchActionHandler = mock<SearchActionHandler>()
@@ -48,7 +45,6 @@ internal class AppStateDataSourceTest {
 
     private val expectedInitialValue = PostListContent(
         category = All,
-        title = "R.string.posts_title_all",
         posts = null,
         showDescription = false,
         sortType = NewestFirst,
@@ -61,16 +57,12 @@ internal class AppStateDataSourceTest {
     fun setup() {
         Dispatchers.setMain(Dispatchers.Unconfined)
 
-        given(mockResourceProvider.getString(R.string.posts_title_all))
-            .willReturn("R.string.posts_title_all")
-
         given(mockConnectivityInfoProvider.isConnected())
             .willReturn(false)
 
         appStateDataSource = spy(
             AppStateDataSource(
                 mockUserRepository,
-                mockResourceProvider,
                 mockNavigationActionHandler,
                 mockPostActionHandler,
                 mockSearchActionHandler,

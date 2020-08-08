@@ -2,7 +2,6 @@ package com.fibelatti.pinboard.features
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
@@ -48,19 +47,10 @@ import com.fibelatti.pinboard.features.appstate.SearchContent
 import com.fibelatti.pinboard.features.appstate.TagListContent
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
 import com.fibelatti.pinboard.features.navigation.NavigationMenuFragment
-import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsFragment
-import com.fibelatti.pinboard.features.notes.presentation.NoteListFragment
-import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.fibelatti.pinboard.features.posts.presentation.EditPostFragment
-import com.fibelatti.pinboard.features.posts.presentation.PopularPostsFragment
-import com.fibelatti.pinboard.features.posts.presentation.PostDetailFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
-import com.fibelatti.pinboard.features.posts.presentation.PostSearchFragment
 import com.fibelatti.pinboard.features.splash.presentation.SplashFragment
-import com.fibelatti.pinboard.features.tags.presentation.TagsFragment
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.presentation.AuthFragment
-import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -72,7 +62,6 @@ import kotlinx.android.synthetic.main.fragment_splash.imageViewAppLogo as splash
 val Fragment.mainActivity: MainActivity? get() = activity as? MainActivity
 var Intent.fromBuilder by IntentDelegate.Boolean("FROM_BUILDER", false)
 
-@Suppress("TooManyFunctions", "MagicNumber")
 class MainActivity : BaseActivity(R.layout.activity_main) {
 
     companion object {
@@ -81,6 +70,8 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
 
     private val appStateViewModel by viewModel { viewModelProvider.appStateViewModel() }
     private val authViewModel by viewModel { viewModelProvider.authViewModel() }
+
+    private val featureFragments get() = activityComponent.featureFragments()
 
     private val handler = Handler()
 
@@ -105,7 +96,7 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
         setupView()
         setupViewModels()
 
-        inAppUpdateManager = appComponent.inAppUpdateManager().also {
+        inAppUpdateManager = activityComponent.inAppUpdateManager().also {
             it.checkForAvailableUpdates(this, FLEXIBLE_UPDATE_REQUEST, ::onUpdateDownloadComplete)
         }
     }
@@ -199,142 +190,27 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
             }
 
             when (content) {
-                is PostListContent -> showPostList()
-                is PostDetailContent -> showPostDetail()
-                is ExternalBrowserContent -> showPostInExternalBrowser(content.post)
-                is SearchContent -> showSearch()
-                is AddPostContent -> showAddPost()
-                is EditPostContent -> showEditPost()
-                is TagListContent -> showTags()
-                is NoteListContent -> showNotes()
-                is NoteDetailContent -> showNoteDetail()
-                is PopularPostsContent -> showPopular()
-                is PopularPostDetailContent -> showPostDetail()
-                is UserPreferencesContent -> showPreferences()
+                is PostListContent -> featureFragments.showPostList()
+                is PostDetailContent -> featureFragments.showPostDetail()
+                is ExternalBrowserContent -> {
+                    featureFragments.showPostInExternalBrowser(content.post)
+                    onResumeDelegate = { appStateViewModel.runAction(NavigateBack) }
+                }
+                is SearchContent -> featureFragments.showSearch()
+                is AddPostContent -> featureFragments.showAddPost()
+                is EditPostContent -> featureFragments.showEditPost()
+                is TagListContent -> featureFragments.showTags()
+                is NoteListContent -> featureFragments.showNotes()
+                is NoteDetailContent -> featureFragments.showNoteDetails()
+                is PopularPostsContent -> featureFragments.showPopular()
+                is PopularPostDetailContent -> featureFragments.showPostDetail()
+                is UserPreferencesContent -> featureFragments.showPreferences()
                 is ExternalContent -> {
                     appStateViewModel.content.removeObservers(this)
                     appStateViewModel.reset()
                     finish()
                 }
             }.exhaustive
-        }
-    }
-
-    // region Fragment transitions
-    private fun popTo(tag: String) {
-        for (fragment in supportFragmentManager.fragments.reversed()) {
-            if (fragment.tag != tag) {
-                supportFragmentManager.popBackStack()
-            } else {
-                break
-            }
-        }
-    }
-
-    private fun slideFromTheRight(fragment: Fragment, tag: String, addToBackStack: Boolean = true) {
-        inTransaction {
-            setCustomAnimations(
-                R.anim.slide_right_in,
-                R.anim.slide_left_out,
-                R.anim.slide_left_in,
-                R.anim.slide_right_out
-            )
-            add(R.id.fragmentHost, fragment, tag)
-
-            if (addToBackStack) {
-                addToBackStack(tag)
-            }
-        }
-    }
-
-    private fun slideUp(fragment: Fragment, tag: String, addToBackStack: Boolean = true) {
-        inTransaction {
-            setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
-            add(R.id.fragmentHost, fragment, tag)
-
-            if (addToBackStack) {
-                addToBackStack(tag)
-            }
-        }
-    }
-    // endregion
-
-    private fun showPostList() {
-        popTo(PostListFragment.TAG)
-    }
-
-    private fun showPostDetail() {
-        if (supportFragmentManager.findFragmentByTag(PostDetailFragment.TAG) == null) {
-            slideFromTheRight(createFragment<PostDetailFragment>(), PostDetailFragment.TAG)
-        } else {
-            popTo(PostDetailFragment.TAG)
-        }
-    }
-
-    private fun showPostInExternalBrowser(post: Post) {
-        startActivity(Intent(Intent.ACTION_VIEW).apply {
-            data = Uri.parse(post.url)
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        })
-        onResumeDelegate = { appStateViewModel.runAction(NavigateBack) }
-    }
-
-    private fun showSearch() {
-        if (supportFragmentManager.findFragmentByTag(PostSearchFragment.TAG) == null) {
-            slideUp(createFragment<PostSearchFragment>(), PostSearchFragment.TAG)
-        }
-    }
-
-    private fun showAddPost() {
-        if (supportFragmentManager.findFragmentByTag(EditPostFragment.TAG) == null) {
-            slideUp(createFragment<EditPostFragment>(), EditPostFragment.TAG)
-        }
-    }
-
-    private fun showTags() {
-        if (supportFragmentManager.findFragmentByTag(TagsFragment.TAG) == null) {
-            slideUp(createFragment<TagsFragment>(), TagsFragment.TAG)
-        }
-    }
-
-    private fun showNotes() {
-        if (supportFragmentManager.findFragmentByTag(NoteListFragment.TAG) == null) {
-            slideFromTheRight(createFragment<NoteListFragment>(), NoteListFragment.TAG)
-        } else {
-            popTo(NoteListFragment.TAG)
-        }
-    }
-
-    private fun showNoteDetail() {
-        if (supportFragmentManager.findFragmentByTag(NoteDetailsFragment.TAG) == null) {
-            slideFromTheRight(createFragment<NoteDetailsFragment>(), NoteDetailsFragment.TAG)
-        }
-    }
-
-    private fun showPopular() {
-        if (supportFragmentManager.findFragmentByTag(PopularPostsFragment.TAG) == null) {
-            slideFromTheRight(createFragment<PopularPostsFragment>(), PopularPostsFragment.TAG)
-        } else {
-            popTo(PopularPostsFragment.TAG)
-        }
-    }
-
-    private fun showPreferences() {
-        if (supportFragmentManager.findFragmentByTag(UserPreferencesFragment.TAG) == null) {
-            slideFromTheRight(
-                createFragment<UserPreferencesFragment>(),
-                UserPreferencesFragment.TAG
-            )
-        }
-    }
-
-    private fun showEditPost() {
-        if (supportFragmentManager.findFragmentByTag(EditPostFragment.TAG) == null) {
-            slideUp(
-                createFragment<EditPostFragment>(),
-                EditPostFragment.TAG,
-                addToBackStack = !intent.fromBuilder
-            )
         }
     }
 
@@ -418,6 +294,7 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
         fabMain.hide()
     }
 
+    @Suppress("MagicNumber")
     fun showBanner(message: String) {
         val banner = layoutInflater.inflate(R.layout.layout_feedback_banner, null)
             .apply { findViewById<TextView>(R.id.textViewFeedback).text = message }

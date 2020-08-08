@@ -16,6 +16,7 @@ import com.fibelatti.core.extension.toast
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.Appearance
+import com.fibelatti.pinboard.core.di.ActivityComponent
 import com.fibelatti.pinboard.core.di.AppComponent
 import com.fibelatti.pinboard.core.di.AppComponentProvider
 import com.fibelatti.pinboard.core.di.ViewModelProvider
@@ -29,12 +30,14 @@ abstract class BaseActivity @ContentView constructor(
 
     protected val appComponent: AppComponent
         get() = (application as AppComponentProvider).appComponent
+    val activityComponent: ActivityComponent
+        get() = appComponent.activityComponentFactory().create(this)
     val viewModelProvider: ViewModelProvider
-        get() = appComponent
+        get() = activityComponent
 
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
-        supportFragmentManager.fragmentFactory = appComponent.fragmentFactory()
+        supportFragmentManager.fragmentFactory = activityComponent.fragmentFactory()
         setupTheme()
         super.onCreate(savedInstanceState)
     }
@@ -53,7 +56,7 @@ abstract class BaseActivity @ContentView constructor(
 
     private fun setupTheme() {
         workaroundWebViewNightModeIssue()
-        when (appComponent.userDataSource().getAppearance()) {
+        when (appComponent.userRepository().getAppearance()) {
             Appearance.DarkTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             Appearance.LightTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)

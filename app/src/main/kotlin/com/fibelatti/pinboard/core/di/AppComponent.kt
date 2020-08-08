@@ -1,43 +1,37 @@
 package com.fibelatti.pinboard.core.di
 
 import android.app.Application
-import androidx.fragment.app.FragmentFactory
-import com.fibelatti.pinboard.core.di.modules.AuthModule
+import com.fibelatti.pinboard.core.di.modules.AndroidModule
 import com.fibelatti.pinboard.core.di.modules.CoreModule
 import com.fibelatti.pinboard.core.di.modules.DatabaseModule
-import com.fibelatti.pinboard.core.di.modules.FeatureModule
 import com.fibelatti.pinboard.core.di.modules.NetworkModule
-import com.fibelatti.pinboard.features.InAppUpdateManager
-import com.fibelatti.pinboard.features.user.data.UserDataSource
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
 
 @Component(
     modules = [
-        CoreModule::class,
         NetworkModule::class,
         DatabaseModule::class,
-        AuthModule::class,
-        FeatureModule::class
+        CoreModule::class,
+        AndroidModule::class
     ]
 )
 @Singleton
-interface AppComponent : ViewModelProvider {
+interface AppComponent {
 
-    fun fragmentFactory(): FragmentFactory
-    fun userDataSource(): UserDataSource
-    fun inAppUpdateManager(): InAppUpdateManager
+    fun activityComponentFactory(): ActivityComponent.Factory
+    fun userRepository(): UserRepository
 
     @Component.Factory
     interface Factory {
 
-        fun create(
-            @BindsInstance application: Application
-        ): AppComponent
+        fun create(@BindsInstance application: Application): AppComponent
     }
 }
 
 interface AppComponentProvider {
+
     val appComponent: AppComponent
 }

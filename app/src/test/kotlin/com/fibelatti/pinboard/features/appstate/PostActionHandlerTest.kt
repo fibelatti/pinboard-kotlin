@@ -3,7 +3,6 @@ package com.fibelatti.pinboard.features.appstate
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.MockDataProvider.createPost
-import com.fibelatti.pinboard.MockDataProvider.mockTitle
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
@@ -34,7 +33,6 @@ internal class PostActionHandlerTest {
 
     private val initialContent = PostListContent(
         category = All,
-        title = mockTitle,
         posts = null,
         showDescription = false,
         sortType = NewestFirst,
@@ -155,7 +153,6 @@ internal class PostActionHandlerTest {
 
             val currentContent = PostListContent(
                 category = All,
-                title = mockTitle,
                 posts = null,
                 showDescription = false,
                 sortType = NewestFirst,
@@ -181,7 +178,6 @@ internal class PostActionHandlerTest {
             // THEN
             result shouldBe PostListContent(
                 category = All,
-                title = mockTitle,
                 posts = PostList(1, listOf(createPost()), mockDiffUtil),
                 showDescription = false,
                 sortType = NewestFirst,
@@ -200,7 +196,6 @@ internal class PostActionHandlerTest {
 
             val currentContent = PostListContent(
                 category = All,
-                title = mockTitle,
                 posts = null,
                 showDescription = false,
                 sortType = NewestFirst,
@@ -226,7 +221,6 @@ internal class PostActionHandlerTest {
             // THEN
             result shouldBe PostListContent(
                 category = All,
-                title = mockTitle,
                 posts = PostList(1, listOf(createPost()), mockDiffUtil),
                 showDescription = false,
                 sortType = NewestFirst,
@@ -268,7 +262,6 @@ internal class PostActionHandlerTest {
             // GIVEN
             val currentContent = PostListContent(
                 category = All,
-                title = mockTitle,
                 posts = PostList(1, listOf(mock()), mock()),
                 showDescription = false,
                 sortType = NewestFirst,
@@ -309,7 +302,6 @@ internal class PostActionHandlerTest {
             // GIVEN
             val content = PostListContent(
                 category = All,
-                title = mockTitle,
                 posts = null,
                 showDescription = false,
                 sortType = NewestFirst,
@@ -341,7 +333,6 @@ internal class PostActionHandlerTest {
             // GIVEN
             val content = PostListContent(
                 category = All,
-                title = mockTitle,
                 posts = PostList(1, listOf(createPost()), mock()),
                 showDescription = false,
                 sortType = NewestFirst,
@@ -368,7 +359,6 @@ internal class PostActionHandlerTest {
 
             val currentContent = PostListContent(
                 category = All,
-                title = mockTitle,
                 posts = PostList(1, mockCurrentList, mock()),
                 showDescription = false,
                 sortType = NewestFirst,
@@ -401,7 +391,6 @@ internal class PostActionHandlerTest {
             // THEN
             result shouldBe PostListContent(
                 category = All,
-                title = mockTitle,
                 posts = PostList(2, mockCurrentList.plus(mockNewList), mockDiffUtil),
                 showDescription = false,
                 sortType = NewestFirst,
@@ -434,7 +423,6 @@ internal class PostActionHandlerTest {
 
             val currentContent = PostListContent(
                 category = All,
-                title = mockTitle,
                 posts = mockPostList,
                 showDescription = false,
                 sortType = NewestFirst,
@@ -451,7 +439,6 @@ internal class PostActionHandlerTest {
             // THEN
             result shouldBe PostListContent(
                 category = All,
-                title = mockTitle,
                 posts = mockPostList.copy(alreadyDisplayed = true),
                 showDescription = false,
                 sortType = NewestFirst,
@@ -775,7 +762,6 @@ internal class PostActionHandlerTest {
             // GIVEN
             val previousContent = PostListContent(
                 category = All,
-                title = mockTitle,
                 posts = null,
                 showDescription = false,
                 sortType = NewestFirst,
@@ -802,7 +788,6 @@ internal class PostActionHandlerTest {
             // GIVEN
             val yetPreviousContent = PostListContent(
                 category = All,
-                title = mockTitle,
                 posts = null,
                 showDescription = false,
                 sortType = NewestFirst,

@@ -12,7 +12,6 @@ sealed class Content
 
 data class PostListContent(
     val category: ViewCategory,
-    val title: String,
     val posts: PostList?,
     val showDescription: Boolean,
     val sortType: SortType,

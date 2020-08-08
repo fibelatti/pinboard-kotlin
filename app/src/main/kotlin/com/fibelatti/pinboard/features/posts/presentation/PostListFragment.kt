@@ -25,6 +25,7 @@ import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.features.appstate.AddPost
+import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.GetNextPostPage
@@ -33,6 +34,8 @@ import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.PostsDisplayed
 import com.fibelatti.pinboard.features.appstate.PostsForTag
+import com.fibelatti.pinboard.features.appstate.Private
+import com.fibelatti.pinboard.features.appstate.Public
 import com.fibelatti.pinboard.features.appstate.Recent
 import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
@@ -40,6 +43,9 @@ import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.appstate.Syncing
 import com.fibelatti.pinboard.features.appstate.ToggleSorting
+import com.fibelatti.pinboard.features.appstate.Unread
+import com.fibelatti.pinboard.features.appstate.Untagged
+import com.fibelatti.pinboard.features.appstate.ViewCategory
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.mainActivity
@@ -168,7 +174,7 @@ class PostListFragment @Inject constructor(
         when (content.shouldLoad) {
             is ShouldLoadFirstPage -> {
                 mainActivity?.updateTitleLayout {
-                    setTitle(content.title)
+                    setTitle(getCategoryTitle(content.category))
                     hideSubTitle()
                 }
 
@@ -191,12 +197,23 @@ class PostListFragment @Inject constructor(
         layoutOfflineAlert.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
     }
 
+    private fun getCategoryTitle(category: ViewCategory): String {
+        return when (category) {
+            All -> getString(R.string.posts_title_all)
+            Recent -> getString(R.string.posts_title_recent)
+            Public -> getString(R.string.posts_title_public)
+            Private -> getString(R.string.posts_title_private)
+            Unread -> getString(R.string.posts_title_unread)
+            Untagged -> getString(R.string.posts_title_untagged)
+        }
+    }
+
     private fun showPosts(content: PostListContent) {
         progressBar.goneIf(content.shouldLoad == Loaded)
         recyclerViewPosts.onRequestNextPageCompleted()
 
         mainActivity?.updateTitleLayout {
-            setTitle(content.title)
+            setTitle(getCategoryTitle(content.category))
             setSubTitle(buildPostCountSubTitle(content.totalCount, content.sortType))
         }
 

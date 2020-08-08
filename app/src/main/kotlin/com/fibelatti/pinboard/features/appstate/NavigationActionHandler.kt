@@ -4,8 +4,6 @@ import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.extension.orFalse
 import com.fibelatti.core.functional.Either
 import com.fibelatti.core.functional.catching
-import com.fibelatti.core.provider.ResourceProvider
-import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.di.IoScope
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
@@ -19,7 +17,6 @@ import javax.inject.Inject
 class NavigationActionHandler @Inject constructor(
     private val userRepository: UserRepository,
     private val postsRepository: PostsRepository,
-    private val resourceProvider: ResourceProvider,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
     @IoScope private val markAsReadRequestScope: CoroutineScope
 ) : ActionHandler<NavigationAction>() {
@@ -54,14 +51,6 @@ class NavigationActionHandler @Inject constructor(
     private fun viewCategory(action: ViewCategory): Content {
         return PostListContent(
             category = action,
-            title = when (action) {
-                All -> resourceProvider.getString(R.string.posts_title_all)
-                Recent -> resourceProvider.getString(R.string.posts_title_recent)
-                Public -> resourceProvider.getString(R.string.posts_title_public)
-                Private -> resourceProvider.getString(R.string.posts_title_private)
-                Unread -> resourceProvider.getString(R.string.posts_title_unread)
-                Untagged -> resourceProvider.getString(R.string.posts_title_untagged)
-            },
             posts = null,
             showDescription = userRepository.getShowDescriptionInLists(),
             sortType = NewestFirst,

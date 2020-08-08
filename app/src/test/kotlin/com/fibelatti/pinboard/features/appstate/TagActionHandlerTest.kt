@@ -1,11 +1,8 @@
 package com.fibelatti.pinboard.features.appstate
 
-import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.MockDataProvider.createTag
-import com.fibelatti.pinboard.MockDataProvider.mockTitle
-import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
@@ -19,18 +16,15 @@ import org.mockito.Mockito.verify
 internal class TagActionHandlerTest {
 
     private val mockUserRepository = mock<UserRepository>()
-    private val mockResourceProvider = mock<ResourceProvider>()
     private val mockConnectivityInfoProvider = mock<ConnectivityInfoProvider>()
 
     private val tagActionHandler = TagActionHandler(
         mockUserRepository,
-        mockResourceProvider,
         mockConnectivityInfoProvider
     )
 
     val mockPreviousContent = PostListContent(
         category = All,
-        title = mockTitle,
         posts = null,
         showDescription = false,
         sortType = NewestFirst,
@@ -116,8 +110,6 @@ internal class TagActionHandlerTest {
         @Test
         fun `WHEN postsForTag is called THEN PostListContent is returned and search parameters contains the tag`() {
             // GIVEN
-            given(mockResourceProvider.getString(R.string.posts_title_all))
-                .willReturn(mockTitle)
             given(mockConnectivityInfoProvider.isConnected())
                 .willReturn(true)
 
@@ -133,7 +125,6 @@ internal class TagActionHandlerTest {
             // THEN
             result shouldBe PostListContent(
                 category = All,
-                title = mockTitle,
                 posts = null,
                 showDescription = randomBoolean,
                 sortType = NewestFirst,
