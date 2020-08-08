@@ -9,7 +9,6 @@ import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.shareText
-import com.fibelatti.core.extension.toast
 import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.core.extension.withItemOffsetDecoration
@@ -104,7 +103,7 @@ class PopularPostsFragment @Inject constructor(
                 recyclerViewPosts.goneIf(it, otherwiseVisibility = View.VISIBLE)
             }
             viewLifecycleOwner.observe(saved) {
-                requireActivity().toast(getString(R.string.posts_saved_feedback))
+                mainActivity?.showBanner(getString(R.string.posts_saved_feedback))
             }
             viewLifecycleOwner.observe(error, ::handleError)
         }

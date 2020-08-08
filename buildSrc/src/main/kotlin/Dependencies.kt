@@ -24,7 +24,7 @@ object Dependencies {
     const val activity = "androidx.activity:activity-ktx:1.1.0"
     const val fragments = "androidx.fragment:fragment-ktx:1.2.4"
     const val supportAnnotations = "androidx.annotation:annotation:1.1.0"
-    const val materialDesign = "com.google.android.material:material:1.1.0"
+    const val materialDesign = "com.google.android.material:material:1.2.0"
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.0-beta6"
     const val swipeRefreshLayout = "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-rc01"
 

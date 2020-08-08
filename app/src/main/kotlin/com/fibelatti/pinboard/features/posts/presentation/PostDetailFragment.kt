@@ -22,7 +22,6 @@ import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.setOnClickListener
 import com.fibelatti.core.extension.shareText
 import com.fibelatti.core.extension.showStyledDialog
-import com.fibelatti.core.extension.toast
 import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
@@ -88,7 +87,7 @@ class PostDetailFragment @Inject constructor(
                 layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE)
             }
             viewLifecycleOwner.observeEvent(deleted) {
-                mainActivity?.toast(getString(R.string.posts_deleted_feedback))
+                mainActivity?.showBanner(getString(R.string.posts_deleted_feedback))
             }
             viewLifecycleOwner.observeEvent(deleteError) { error ->
                 activity?.sendErrorReport(
@@ -103,7 +102,7 @@ class PostDetailFragment @Inject constructor(
                 layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE)
             }
             viewLifecycleOwner.observe(saved) {
-                requireActivity().toast(getString(R.string.posts_saved_feedback))
+                mainActivity?.showBanner(getString(R.string.posts_saved_feedback))
             }
             viewLifecycleOwner.observe(error, ::handleError)
         }
@@ -214,7 +213,7 @@ class PostDetailFragment @Inject constructor(
         try {
             startActivity(newIntent)
         } catch (ignored: ActivityNotFoundException) {
-            context?.toast(getString(R.string.posts_open_with_file_viewer_error))
+            mainActivity?.showBanner(getString(R.string.posts_open_with_file_viewer_error))
         }
     }
 

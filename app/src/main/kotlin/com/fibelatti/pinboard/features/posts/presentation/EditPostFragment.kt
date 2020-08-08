@@ -23,7 +23,6 @@ import com.fibelatti.core.extension.orZero
 import com.fibelatti.core.extension.showError
 import com.fibelatti.core.extension.showStyledDialog
 import com.fibelatti.core.extension.textAsString
-import com.fibelatti.core.extension.toast
 import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
@@ -171,7 +170,9 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
 
                 // Finally animate
                 ObjectAnimator.ofInt(view, "scrollY", focusedViewBottom)
-                    .setDuration(resources.getInteger(android.R.integer.config_mediumAnimTime).toLong())
+                    .setDuration(
+                        resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
+                    )
                     .apply {
                         // Has to be delayed because keyboard is still appearing
                         startDelay = 100L
@@ -242,7 +243,10 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
                     chipGroupTags.addValue(text, index = 0)
                     editTextTags.clearText()
                 }
-                text.isNotBlank() -> editPostViewModel.searchForTag(text, chipGroupTags.getAllTags())
+                text.isNotBlank() -> editPostViewModel.searchForTag(
+                    text,
+                    chipGroupTags.getAllTags()
+                )
                 else -> chipGroupSuggestedTags.removeAllViews()
             }
         }
@@ -275,7 +279,9 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
                 chipGroupSuggestedTags.removeAllViews()
                 tags.forEach { chipGroupSuggestedTags.addValue(it, showRemoveIcon = false) }
             }
-            viewLifecycleOwner.observeEvent(saved) { mainActivity?.toast(getString(R.string.posts_saved_feedback)) }
+            viewLifecycleOwner.observeEvent(saved) {
+                mainActivity?.showBanner(getString(R.string.posts_saved_feedback))
+            }
             viewLifecycleOwner.observe(invalidUrlError, ::handleInvalidUrlError)
             viewLifecycleOwner.observe(invalidUrlTitleError, ::handleInvalidTitleError)
             viewLifecycleOwner.observe(error) {
@@ -288,7 +294,7 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
                 layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE)
             }
             viewLifecycleOwner.observeEvent(deleted) {
-                mainActivity?.toast(getString(R.string.posts_deleted_feedback))
+                mainActivity?.showBanner(getString(R.string.posts_deleted_feedback))
             }
             viewLifecycleOwner.observe(error, ::handleError)
         }

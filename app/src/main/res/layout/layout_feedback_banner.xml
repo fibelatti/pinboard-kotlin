@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutBanner"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/margin_regular"
+    android:background="@drawable/background_snackbar"
+    android:elevation="@dimen/elevation_high">
+
+    <TextView
+        android:id="@+id/textViewFeedback"
+        style="@style/AppTheme.Text.Detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_regular"
+        tools:text="@tools:sample/lorem/random" />
+
+</FrameLayout>

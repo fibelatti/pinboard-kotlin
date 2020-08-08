@@ -7,7 +7,11 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
@@ -24,6 +28,7 @@ import com.fibelatti.core.extension.inTransaction
 import com.fibelatti.core.extension.snackbar
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.DefaultAnimationListener
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.customview.TitleLayout
@@ -67,6 +72,7 @@ import kotlinx.android.synthetic.main.fragment_splash.imageViewAppLogo as splash
 val Fragment.mainActivity: MainActivity? get() = activity as? MainActivity
 var Intent.fromBuilder by IntentDelegate.Boolean("FROM_BUILDER", false)
 
+@Suppress("TooManyFunctions", "MagicNumber")
 class MainActivity : BaseActivity(R.layout.activity_main) {
 
     companion object {
@@ -410,6 +416,54 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
         layoutTitle.gone()
         bottomAppBar.gone()
         fabMain.hide()
+    }
+
+    fun showBanner(message: String) {
+        val banner = layoutInflater.inflate(R.layout.layout_feedback_banner, null)
+            .apply { findViewById<TextView>(R.id.textViewFeedback).text = message }
+            .also(layoutContent::addView)
+
+        ConstraintSet()
+            .apply {
+                clone(layoutContent)
+                connect(banner.id, ConstraintSet.TOP, layoutTitle.id, ConstraintSet.BOTTOM, 16)
+                connect(
+                    banner.id,
+                    ConstraintSet.START,
+                    ConstraintSet.PARENT_ID,
+                    ConstraintSet.START,
+                    16
+                )
+                connect(
+                    banner.id,
+                    ConstraintSet.END,
+                    ConstraintSet.PARENT_ID,
+                    ConstraintSet.END,
+                    16
+                )
+            }
+            .applyTo(layoutContent)
+
+        val disappearAnimation = AlphaAnimation(1F, 0F).apply {
+            duration = 500L
+            startOffset = 2_500L
+            setAnimationListener(object : DefaultAnimationListener() {
+                override fun onAnimationEnd(animation: Animation?) {
+                    layoutContent?.removeView(banner)
+                }
+            })
+        }
+
+        val appearAnimation = AlphaAnimation(0F, 1F).apply {
+            duration = 500L
+            setAnimationListener(object : DefaultAnimationListener() {
+                override fun onAnimationEnd(animation: Animation?) {
+                    banner?.startAnimation(disappearAnimation)
+                }
+            })
+        }
+
+        banner.startAnimation(appearAnimation)
     }
 
     class Builder(context: Context) : BaseIntentBuilder(context, MainActivity::class.java) {
