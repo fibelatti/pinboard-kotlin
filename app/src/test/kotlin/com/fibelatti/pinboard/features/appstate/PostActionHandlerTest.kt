@@ -8,7 +8,6 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtil
 import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtilFactory
-import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
@@ -19,14 +18,12 @@ import org.mockito.Mockito.times
 
 internal class PostActionHandlerTest {
 
-    private val mockUserRepository = mock<UserRepository>()
     private val mockConnectivityInfoProvider = mock<ConnectivityInfoProvider>()
     private val mockPostListDiffUtilFactory = mock<PostListDiffUtilFactory>()
 
     private val mockPost = mock<Post>()
 
     private val postActionHandler = PostActionHandler(
-        mockUserRepository,
         mockConnectivityInfoProvider,
         mockPostListDiffUtilFactory
     )
@@ -755,6 +752,28 @@ internal class PostActionHandlerTest {
 
             // THEN
             result shouldBe content
+        }
+
+        @Test
+        fun `WHEN currentContent is PostListContent THEN updated content is returned`() {
+            // GIVEN
+            val currentContent = PostListContent(
+                category = All,
+                posts = null,
+                showDescription = false,
+                sortType = NewestFirst,
+                searchParameters = SearchParameters(),
+                shouldLoad = Loaded,
+                isConnected = true
+            )
+
+            // WHEN
+            val result = runBlocking {
+                postActionHandler.runAction(PostDeleted, currentContent)
+            }
+
+            // THEN
+            result shouldBe currentContent.copy(shouldLoad = ShouldLoadFirstPage)
         }
 
         @Test

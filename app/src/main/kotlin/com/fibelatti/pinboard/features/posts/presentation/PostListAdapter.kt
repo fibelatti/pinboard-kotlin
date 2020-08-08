@@ -25,6 +25,8 @@ class PostListAdapter @Inject constructor(
         fun onShareClicked(item: Post)
 
         fun onEditClicked(item: Post)
+
+        fun onDeleteClicked(item: Post)
     }
 
     private val items: MutableList<Post> = mutableListOf()
@@ -123,6 +125,7 @@ class PostListAdapter @Inject constructor(
 
             buttonQuickActionEdit.setOnClickListener { quickActionsCallback?.onEditClicked(item) }
             buttonQuickActionShare.setOnClickListener { quickActionsCallback?.onShareClicked(item) }
+            buttonQuickActionDelete.setOnClickListener { quickActionsCallback?.onDeleteClicked(item) }
         }
 
         private fun View.hideQuickActions() {

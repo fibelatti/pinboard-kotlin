@@ -9,12 +9,14 @@ import androidx.transition.TransitionInflater
 import com.fibelatti.core.android.DefaultTransitionListener
 import com.fibelatti.core.archcomponents.extension.activityViewModel
 import com.fibelatti.core.archcomponents.extension.observe
+import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.exhaustive
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.shareText
+import com.fibelatti.core.extension.showStyledDialog
 import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.core.extension.withItemOffsetDecoration
@@ -23,6 +25,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.features.appstate.AddPost
 import com.fibelatti.pinboard.features.appstate.All
@@ -60,12 +63,14 @@ class PostListFragment @Inject constructor(
 ) : BaseFragment(R.layout.fragment_post_list) {
 
     companion object {
+
         @JvmStatic
         val TAG: String = "PostListFragment"
     }
 
     private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
     private val postListViewModel by viewModel { viewModelProvider.postListViewModel() }
+    private val postDetailViewModel by viewModel { viewModelProvider.postDetailsViewModel() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -141,12 +146,42 @@ class PostListFragment @Inject constructor(
             override fun onEditClicked(item: Post) {
                 appStateViewModel.runAction(EditPost(item))
             }
+
+            override fun onDeleteClicked(item: Post) {
+                deletePost(item)
+            }
+        }
+    }
+
+    private fun deletePost(post: Post) {
+        context?.showStyledDialog(
+            dialogStyle = R.style.AppTheme_AlertDialog,
+            dialogBackground = R.drawable.background_contrast_rounded
+        ) {
+            setMessage(R.string.alert_confirm_deletion)
+            setPositiveButton(R.string.hint_yes) { _, _ -> postDetailViewModel.deletePost(post) }
+            setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
         }
     }
 
     private fun setupViewModels() {
         viewLifecycleOwner.observe(postListViewModel.error, ::handleError)
         viewLifecycleOwner.observe(appStateViewModel.postListContent, ::updateContent)
+        with(postDetailViewModel) {
+            viewLifecycleOwner.observe(loading) {
+                progressBar.visibleIf(it, otherwiseVisibility = View.GONE)
+            }
+            viewLifecycleOwner.observeEvent(deleted) {
+                mainActivity?.showBanner(getString(R.string.posts_deleted_feedback))
+            }
+            viewLifecycleOwner.observeEvent(deleteError) { error ->
+                activity?.sendErrorReport(
+                    error,
+                    altMessage = getString(R.string.posts_deleted_error)
+                )
+            }
+            viewLifecycleOwner.observe(error, ::handleError)
+        }
     }
 
     override fun handleError(error: Throwable) {

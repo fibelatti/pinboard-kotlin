@@ -2,11 +2,9 @@ package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtilFactory
-import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
 
 class PostActionHandler @Inject constructor(
-    private val userRepository: UserRepository,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
     private val postListDiffUtilFactory: PostListDiffUtilFactory
 ) : ActionHandler<PostAction>() {
@@ -158,16 +156,18 @@ class PostActionHandler @Inject constructor(
 
     private fun postDeleted(currentContent: Content): Content {
         return if (currentContent is ContentWithHistory) {
-            when (val previousContent = currentContent.previousContent) {
-                is PostListContent -> {
+            val previousContent = currentContent.previousContent
+            when {
+                currentContent is PostListContent -> {
+                    currentContent.copy(shouldLoad = ShouldLoadFirstPage)
+                }
+                previousContent is PostListContent -> {
                     previousContent.copy(shouldLoad = ShouldLoadFirstPage)
                 }
-                is PostDetailContent -> {
+                previousContent is PostDetailContent -> {
                     previousContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
                 }
-                else -> {
-                    previousContent
-                }
+                else -> previousContent
             }
         } else {
             currentContent
