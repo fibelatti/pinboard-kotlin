@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.bundleOf
 import com.fibelatti.core.archcomponents.extension.activityViewModel
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
@@ -19,9 +20,12 @@ import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import kotlinx.android.synthetic.main.fragment_user_preferences.*
 import javax.inject.Inject
 
-class UserPreferencesFragment @Inject constructor() : BaseFragment(R.layout.fragment_user_preferences) {
+class UserPreferencesFragment @Inject constructor() : BaseFragment(
+    R.layout.fragment_user_preferences
+) {
 
     companion object {
+
         @JvmStatic
         val TAG: String = "UserPreferencesFragment"
     }
@@ -66,6 +70,11 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(R.layout.frag
                 else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
             }
         }
+    }
+
+    override fun onDestroy() {
+        activity?.supportFragmentManager?.setFragmentResult(TAG, bundleOf())
+        super.onDestroy()
     }
 
     private fun setupActivityViews() {

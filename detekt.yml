@@ -178,7 +178,7 @@ exceptions:
   ThrowingNewInstanceOfSameException:
     active: false
   TooGenericExceptionCaught:
-    active: true
+    active: false
     excludes: "**/test/**,**/*Test/**,**/test*/**"
     exceptionNames:
       - ArrayIndexOutOfBoundsException

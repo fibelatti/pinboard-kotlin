@@ -15,8 +15,9 @@ import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import javax.inject.Inject
 
-class InAppUpdateManager @Inject constructor(context: Context) : InstallStateUpdatedListener,
-    LifecycleEventObserver {
+class InAppUpdateManager @Inject constructor(
+    context: Context
+) : InstallStateUpdatedListener, LifecycleEventObserver {
 
     private val inAppUpdateManager: AppUpdateManager = AppUpdateManagerFactory.create(context)
 
@@ -28,7 +29,7 @@ class InAppUpdateManager @Inject constructor(context: Context) : InstallStateUpd
         requestCode: Int,
         onDownloadComplete: () -> Unit
     ) {
-        inAppUpdateManager.appUpdateInfo?.addOnSuccessListener { appUpdateInfo ->
+        inAppUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
                 appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
             ) {
@@ -51,8 +52,8 @@ class InAppUpdateManager @Inject constructor(context: Context) : InstallStateUpd
         inAppUpdateManager.completeUpdate()
     }
 
-    override fun onStateUpdate(state: InstallState?) {
-        if (state?.installStatus() == InstallStatus.DOWNLOADED) {
+    override fun onStateUpdate(state: InstallState) {
+        if (state.installStatus() == InstallStatus.DOWNLOADED) {
             onDownloadComplete?.invoke()
         }
     }
@@ -60,7 +61,7 @@ class InAppUpdateManager @Inject constructor(context: Context) : InstallStateUpd
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
             Lifecycle.Event.ON_RESUME -> {
-                inAppUpdateManager.appUpdateInfo?.addOnSuccessListener { appUpdateInfo ->
+                inAppUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
                     if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
                         onDownloadComplete?.invoke()
                     }

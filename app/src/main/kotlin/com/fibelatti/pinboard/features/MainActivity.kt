@@ -65,6 +65,7 @@ var Intent.fromBuilder by IntentDelegate.Boolean("FROM_BUILDER", false)
 class MainActivity : BaseActivity(R.layout.activity_main) {
 
     companion object {
+
         private const val FLEXIBLE_UPDATE_REQUEST = 1001
     }
 
@@ -72,12 +73,11 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
     private val authViewModel by viewModel { viewModelProvider.authViewModel() }
 
     private val featureFragments get() = activityComponent.featureFragments()
+    private val inAppUpdateManager get() = activityComponent.inAppUpdateManager()
 
     private val handler = Handler()
 
     private var isRecreating: Boolean = false
-
-    private var inAppUpdateManager: InAppUpdateManager? = null
 
     // An action that will run once when the Activity is resumed and will be set to null afterwards
     private var onResumeDelegate: (() -> Unit)? = null
@@ -96,9 +96,11 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
         setupView()
         setupViewModels()
 
-        inAppUpdateManager = activityComponent.inAppUpdateManager().also {
-            it.checkForAvailableUpdates(this, FLEXIBLE_UPDATE_REQUEST, ::onUpdateDownloadComplete)
-        }
+        inAppUpdateManager.checkForAvailableUpdates(
+            this,
+            FLEXIBLE_UPDATE_REQUEST,
+            ::onUpdateDownloadComplete
+        )
     }
 
     override fun onResume() {
@@ -115,7 +117,7 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
             background = R.drawable.background_snackbar,
             duration = Snackbar.LENGTH_LONG
         ) {
-            setAction(R.string.in_app_update_install) { inAppUpdateManager?.completeUpdate() }
+            setAction(R.string.in_app_update_install) { inAppUpdateManager.completeUpdate() }
             setActionTextColor(
                 ContextCompat.getColor(
                     layoutRoot.context,

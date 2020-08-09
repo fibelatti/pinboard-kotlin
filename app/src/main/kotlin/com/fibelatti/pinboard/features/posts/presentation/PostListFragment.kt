@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.MenuItem
 import android.view.View
+import androidx.fragment.app.FragmentResultListener
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
 import com.fibelatti.core.android.DefaultTransitionListener
@@ -27,6 +28,7 @@ import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.extension.show
+import com.fibelatti.pinboard.features.InAppReviewManager
 import com.fibelatti.pinboard.features.appstate.AddPost
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.ClearSearch
@@ -53,13 +55,15 @@ import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
 import kotlinx.android.synthetic.main.fragment_post_list.*
 import kotlinx.android.synthetic.main.layout_offline_alert.*
 import kotlinx.android.synthetic.main.layout_search_active.*
 import javax.inject.Inject
 
 class PostListFragment @Inject constructor(
-    private val postsAdapter: PostListAdapter
+    private val postsAdapter: PostListAdapter,
+    private val inAppReviewManager: InAppReviewManager
 ) : BaseFragment(R.layout.fragment_post_list) {
 
     companion object {
@@ -78,6 +82,14 @@ class PostListFragment @Inject constructor(
         if (savedInstanceState == null) {
             setupSharedTransition()
         }
+
+        activity?.supportFragmentManager?.setFragmentResultListener(
+            UserPreferencesFragment.TAG,
+            this,
+            FragmentResultListener { _, _ ->
+                activity?.let(inAppReviewManager::checkForPlayStoreReview)
+            }
+        )
     }
 
     override fun onPause() {

@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentFactory
 import com.fibelatti.pinboard.core.di.modules.ActivityModule
 import com.fibelatti.pinboard.core.di.modules.FeatureModule
 import com.fibelatti.pinboard.features.FeatureFragments
+import com.fibelatti.pinboard.features.InAppReviewManager
 import com.fibelatti.pinboard.features.InAppUpdateManager
 import dagger.BindsInstance
 import dagger.Subcomponent
@@ -22,6 +23,7 @@ interface ActivityComponent : ViewModelProvider {
     fun fragmentFactory(): FragmentFactory
     fun featureFragments(): FeatureFragments
     fun inAppUpdateManager(): InAppUpdateManager
+    fun inAppReviewManager(): InAppReviewManager
 
     @Subcomponent.Factory
     interface Factory {

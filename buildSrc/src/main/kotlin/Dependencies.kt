@@ -22,7 +22,7 @@ object Dependencies {
 
     const val supportLibrary = "androidx.appcompat:appcompat:1.1.0"
     const val activity = "androidx.activity:activity-ktx:1.1.0"
-    const val fragments = "androidx.fragment:fragment-ktx:1.2.4"
+    const val fragments = "androidx.fragment:fragment-ktx:1.3.0-alpha07"
     const val supportAnnotations = "androidx.annotation:annotation:1.1.0"
     const val materialDesign = "com.google.android.material:material:1.2.0"
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.0-beta6"
@@ -56,7 +56,7 @@ object Dependencies {
 
     const val jsoup = "org.jsoup:jsoup:1.13.1"
 
-    const val playCore = "com.google.android.play:core:1.6.5"
+    const val playCore = "com.google.android.play:core-ktx:1.8.1"
 
     const val leakCanary = "com.squareup.leakcanary:leakcanary-android:2.2"
 }
