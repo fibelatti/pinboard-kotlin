@@ -13,6 +13,8 @@ import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.features.MainActivity
 import kotlinx.android.synthetic.main.activity_share.*
 import kotlinx.coroutines.TimeoutCancellationException
+import retrofit2.HttpException
+import java.net.HttpURLConnection
 
 class ShareReceiverActivity : BaseActivity(R.layout.activity_share) {
 
@@ -45,16 +47,30 @@ class ShareReceiverActivity : BaseActivity(R.layout.activity_share) {
             observeEvent(failed) { error ->
                 imageViewFeedback.setImageResource(R.drawable.ic_url_saved_error)
 
-                if (error is TimeoutCancellationException) {
-                    showStyledDialog(
-                        dialogStyle = R.style.AppTheme_AlertDialog,
-                        dialogBackground = R.drawable.background_contrast_rounded
-                    ) {
-                        setMessage(R.string.server_timeout_error)
-                        setPositiveButton(R.string.hint_ok) { _, _ -> finish() }
+                val loginFailedCodes = listOf(
+                    HttpURLConnection.HTTP_UNAUTHORIZED,
+                    HttpURLConnection.HTTP_INTERNAL_ERROR
+                )
+                when {
+                    error is TimeoutCancellationException -> {
+                        showStyledDialog(
+                            dialogStyle = R.style.AppTheme_AlertDialog,
+                            dialogBackground = R.drawable.background_contrast_rounded
+                        ) {
+                            setMessage(R.string.server_timeout_error)
+                            setPositiveButton(R.string.hint_ok) { _, _ -> finish() }
+                        }
                     }
-                } else {
-                    sendErrorReport(error) { finish() }
+                    error is HttpException && error.code() in loginFailedCodes -> {
+                        showStyledDialog(
+                            dialogStyle = R.style.AppTheme_AlertDialog,
+                            dialogBackground = R.drawable.background_contrast_rounded
+                        ) {
+                            setMessage(R.string.auth_logged_out_feedback)
+                            setPositiveButton(R.string.hint_ok) { _, _ -> finish() }
+                        }
+                    }
+                    else -> sendErrorReport(error) { finish() }
                 }
             }
         }

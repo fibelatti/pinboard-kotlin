@@ -274,18 +274,14 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
                     for (fragment in supportFragmentManager.fragments) {
                         remove(fragment)
                     }
+
                     setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                     add(R.id.fragmentHost, createFragment<AuthFragment>())
                 }
 
                 hideControls()
 
-                layoutRoot.snackbar(
-                    message = getString(R.string.auth_logged_out_feedback),
-                    textColor = R.color.text_primary,
-                    marginSize = R.dimen.margin_regular,
-                    background = R.drawable.background_snackbar
-                )
+                showBanner(message = getString(R.string.auth_logged_out_feedback))
             }
         }
     }
