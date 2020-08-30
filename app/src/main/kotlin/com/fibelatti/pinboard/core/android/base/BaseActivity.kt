@@ -20,7 +20,7 @@ import com.fibelatti.pinboard.core.di.ActivityComponent
 import com.fibelatti.pinboard.core.di.AppComponent
 import com.fibelatti.pinboard.core.di.AppComponentProvider
 import com.fibelatti.pinboard.core.di.ViewModelProvider
-import kotlinx.coroutines.TimeoutCancellationException
+import com.fibelatti.pinboard.core.extension.isServerDownException
 import java.io.PrintWriter
 import java.io.StringWriter
 
@@ -47,7 +47,7 @@ abstract class BaseActivity @ContentView constructor(
             error.printStackTrace()
         }
 
-        if (error is TimeoutCancellationException) {
+        if (error.isServerDownException()) {
             toast(getString(R.string.server_timeout_error), duration = Toast.LENGTH_LONG)
         } else {
             sendErrorReport(error)

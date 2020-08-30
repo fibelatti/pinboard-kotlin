@@ -20,9 +20,9 @@ import com.fibelatti.pinboard.core.android.LinkTransformationMethod
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
+import com.fibelatti.pinboard.core.extension.isServerDownException
 import kotlinx.android.synthetic.main.fragment_auth.*
 import kotlinx.android.synthetic.main.layout_auth_form.*
-import kotlinx.coroutines.TimeoutCancellationException
 import javax.inject.Inject
 
 class AuthFragment @Inject constructor() : BaseFragment(R.layout.fragment_auth) {
@@ -81,7 +81,7 @@ class AuthFragment @Inject constructor() : BaseFragment(R.layout.fragment_auth) 
         progressBar.gone()
         buttonAuth.visible()
 
-        if (error is TimeoutCancellationException) {
+        if (error.isServerDownException()) {
             textInputLayoutAuthToken.showError(getString(R.string.server_timeout_error))
         } else {
             activity?.sendErrorReport(error, altMessage = getString(R.string.auth_error))

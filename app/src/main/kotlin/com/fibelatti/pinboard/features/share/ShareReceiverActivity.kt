@@ -10,9 +10,9 @@ import com.fibelatti.core.extension.toast
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
+import com.fibelatti.pinboard.core.extension.isServerDownException
 import com.fibelatti.pinboard.features.MainActivity
 import kotlinx.android.synthetic.main.activity_share.*
-import kotlinx.coroutines.TimeoutCancellationException
 import retrofit2.HttpException
 import java.net.HttpURLConnection
 
@@ -54,7 +54,7 @@ class ShareReceiverActivity : BaseActivity(R.layout.activity_share) {
                     HttpURLConnection.HTTP_INTERNAL_ERROR
                 )
                 when {
-                    error is TimeoutCancellationException -> {
+                    error.isServerDownException() -> {
                         showStyledDialog(
                             dialogStyle = R.style.AppTheme_AlertDialog,
                             dialogBackground = R.drawable.background_contrast_rounded
