@@ -1,10 +1,13 @@
 package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtilFactory
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
 
 class PostActionHandler @Inject constructor(
+    private val userRepository: UserRepository,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
     private val postListDiffUtilFactory: PostListDiffUtilFactory
 ) : ActionHandler<PostAction>() {
@@ -139,16 +142,32 @@ class PostActionHandler @Inject constructor(
                 }
             }
             is PopularPostDetailContent -> {
-                EditPostContent(
-                    post = action.post,
-                    previousContent = currentContent
+                val updatedCurrentContent = currentContent.copy(
+                    previousContent = currentContent.previousContent.copy(
+                        previousContent = currentContent.previousContent.previousContent.copy(
+                            shouldLoad = ShouldLoadFirstPage
+                        )
+                    )
                 )
+
+                if (userRepository.getEditAfterSharing() is EditAfterSharing.AfterSaving) {
+                    EditPostContent(post = action.post, previousContent = updatedCurrentContent)
+                } else {
+                    updatedCurrentContent
+                }
             }
             is PopularPostsContent -> {
-                EditPostContent(
-                    post = action.post,
-                    previousContent = currentContent
+                val updatedCurrentContent = currentContent.copy(
+                    previousContent = currentContent.previousContent.copy(
+                        shouldLoad = ShouldLoadFirstPage
+                    )
                 )
+
+                if (userRepository.getEditAfterSharing() is EditAfterSharing.AfterSaving) {
+                    EditPostContent(post = action.post, previousContent = updatedCurrentContent)
+                } else {
+                    updatedCurrentContent
+                }
             }
             else -> currentContent
         }

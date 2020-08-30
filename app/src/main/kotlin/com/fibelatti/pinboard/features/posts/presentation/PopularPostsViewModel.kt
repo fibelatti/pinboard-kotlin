@@ -60,10 +60,7 @@ class PopularPostsViewModel @Inject constructor(
             .onSuccess {
                 _loading.postValue(false)
                 _saved.postEvent(Unit)
-
-                if (userRepository.getEditAfterSharing() is EditAfterSharing.AfterSaving) {
-                    appStateRepository.runAction(PostSaved(it))
-                }
+                appStateRepository.runAction(PostSaved(it))
             }
             .onFailure { error ->
                 _loading.postValue(false)

@@ -107,38 +107,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `WHEN saveLink is called AND add post is successful AND edit after sharing is SkipEdit THEN saved should receive a value`() {
-        // GIVEN
-        val post = createPost()
-        val randomBoolean = randomBoolean()
-        val params = AddPost.Params(
-            url = post.url,
-            title = post.title,
-            description = post.description,
-            tags = post.tags,
-            private = randomBoolean,
-            readLater = randomBoolean,
-        )
-        given(mockUserRepository.getEditAfterSharing()).willReturn(EditAfterSharing.SkipEdit)
-        given(mockUserRepository.getDefaultPrivate()).willReturn(randomBoolean)
-        given(mockUserRepository.getDefaultReadLater()).willReturn(randomBoolean)
-        givenSuspend { mockAddPost(params) }.willReturn(Success(post))
-
-        val loadingObserver = popularPostsViewModel.loading.prepareToReceiveMany()
-
-        // WHEN
-        popularPostsViewModel.saveLink(post)
-
-        // THEN
-        popularPostsViewModel.loading.shouldHaveReceived(loadingObserver, true, false)
-        popularPostsViewModel.saved.currentEventShouldBe(Unit)
-        popularPostsViewModel.error.shouldNeverReceiveValues()
-
-        verifySuspend(mockAppStateRepository, never()) { runAction(safeAny<PostSaved>()) }
-    }
-
-    @Test
-    fun `WHEN saveLink is called AND add post is successful AND edit after sharing is AfterSaving THEN saved should receive a value and PostSave should be run`() {
+    fun `WHEN saveLink is called AND add post is successful THEN saved should receive a value and PostSave should be run`() {
         // GIVEN
         val post = createPost()
         val randomBoolean = randomBoolean()
@@ -150,7 +119,6 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
             private = randomBoolean,
             readLater = randomBoolean
         )
-        given(mockUserRepository.getEditAfterSharing()).willReturn(EditAfterSharing.AfterSaving)
         given(mockUserRepository.getDefaultPrivate()).willReturn(randomBoolean)
         given(mockUserRepository.getDefaultReadLater()).willReturn(randomBoolean)
         givenSuspend { mockAddPost(params) }.willReturn(Success(post))
