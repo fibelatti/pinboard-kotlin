@@ -16,6 +16,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.features.mainActivity
+import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import kotlinx.android.synthetic.main.fragment_user_preferences.*
 import javax.inject.Inject
@@ -49,10 +50,9 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(
                 it.showDescriptionInLists,
                 userPreferencesViewModel::saveShowDescriptionInLists
             )
-            checkboxEditAfterSharing.setValueAndChangeListener(
-                it.editAfterSharing,
-                userPreferencesViewModel::saveEditAfterSharing
-            )
+
+            setupEditAfterSharing(it.editAfterSharing)
+
             checkboxPrivateDefault.setValueAndChangeListener(
                 it.defaultPrivate,
                 userPreferencesViewModel::saveDefaultPrivate
@@ -141,6 +141,23 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(
         buttonPreferredDetailsViewEdit.setOnClickListener {
             userPreferencesViewModel.savePreferredDetailsView(PreferredDetailsView.Edit)
             editSelected()
+        }
+    }
+
+    private fun setupEditAfterSharing(editAfterSharing: EditAfterSharing) {
+        when (editAfterSharing) {
+            EditAfterSharing.BeforeSaving -> buttonBeforeSaving.isChecked = true
+            EditAfterSharing.AfterSaving -> buttonAfterSaving.isChecked = true
+            EditAfterSharing.SkipEdit -> buttonSkipEditing.isChecked = true
+        }
+        buttonBeforeSaving.setOnClickListener {
+            userPreferencesViewModel.saveEditAfterSharing(EditAfterSharing.BeforeSaving)
+        }
+        buttonAfterSaving.setOnClickListener {
+            userPreferencesViewModel.saveEditAfterSharing(EditAfterSharing.AfterSaving)
+        }
+        buttonSkipEditing.setOnClickListener {
+            userPreferencesViewModel.saveEditAfterSharing(EditAfterSharing.SkipEdit)
         }
     }
 

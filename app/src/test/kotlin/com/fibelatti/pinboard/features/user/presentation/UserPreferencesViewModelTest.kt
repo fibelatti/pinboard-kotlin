@@ -5,6 +5,7 @@ import com.fibelatti.core.test.extension.mock
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
@@ -86,7 +87,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
     @Test
     fun `WHEN setEditAfterSharing is called THEN repository is updated`() {
         // GIVEN
-        val value = randomBoolean()
+        val value = mock<EditAfterSharing>()
 
         // WHEN
         userPreferencesViewModel.saveEditAfterSharing(value)

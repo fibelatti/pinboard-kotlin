@@ -6,6 +6,7 @@ import com.fibelatti.core.archcomponents.MutableLiveEvent
 import com.fibelatti.core.archcomponents.postEvent
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import kotlinx.coroutines.launch
@@ -51,9 +52,9 @@ class UserPreferencesViewModel @Inject constructor(
         }
     }
 
-    fun saveEditAfterSharing(value: Boolean) {
+    fun saveEditAfterSharing(editAfterSharing: EditAfterSharing) {
         launch {
-            userRepository.setEditAfterSharing(value)
+            userRepository.setEditAfterSharing(editAfterSharing)
         }
     }
 

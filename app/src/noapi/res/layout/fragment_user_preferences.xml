@@ -212,12 +212,34 @@
                 android:layout_height="wrap_content"
                 android:text="@string/user_preferences_edit_after_sharing_title" />
 
-            <CheckBox
-                android:id="@+id/checkboxEditAfterSharing"
-                android:layout_width="wrap_content"
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/buttonGroupEditAfterSharing"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
-                android:text="@string/user_preferences_edit_after_sharing" />
+                app:singleSelection="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonBeforeSaving"
+                    style="@style/AppTheme.GroupButtonItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/user_preferences_edit_after_sharing_before_saving" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonAfterSaving"
+                    style="@style/AppTheme.GroupButtonItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/user_preferences_edit_after_sharing_after_saving" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonSkipEditing"
+                    style="@style/AppTheme.GroupButtonItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/user_preferences_edit_after_sharing_skip" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
 
             <TextView
                 style="@style/AppTheme.Text.Detail"

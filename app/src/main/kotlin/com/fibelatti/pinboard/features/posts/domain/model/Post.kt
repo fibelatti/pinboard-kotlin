@@ -6,9 +6,9 @@ data class Post(
     val url: String,
     val title: String,
     val description: String,
-    val hash: String,
-    val time: String,
+    val hash: String = "",
+    val time: String = "",
     val private: Boolean,
     val readLater: Boolean,
-    val tags: List<Tag>?
+    val tags: List<Tag>? = null
 )

@@ -29,7 +29,13 @@ const val KEY_DEFAULT_PRIVATE = "DEFAULT_PRIVATE"
 @VisibleForTesting
 const val KEY_DEFAULT_READ_LATER = "DEFAULT_READ_LATER"
 @VisibleForTesting
+@Deprecated(
+    message = "Use KEY_NEW_EDIT_AFTER_SHARING instead.",
+    replaceWith = ReplaceWith(expression = "KEY_NEW_EDIT_AFTER_SHARING", imports = emptyArray())
+)
 const val KEY_EDIT_AFTER_SHARING = "EDIT_AFTER_SHARING"
+@VisibleForTesting
+const val KEY_NEW_EDIT_AFTER_SHARING = "NEW_EDIT_AFTER_SHARING"
 // endregion
 
 fun Context.getUserPreferences() = getSharedPreferences("user_preferences")
@@ -111,9 +117,16 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
         sharedPreferences.put(KEY_DEFAULT_READ_LATER, value)
     }
 
-    fun getEditAfterSharing(): Boolean = sharedPreferences.get(KEY_EDIT_AFTER_SHARING, false)
+    fun getEditAfterSharing(): String {
+        val defaultValue = if (sharedPreferences.get(KEY_EDIT_AFTER_SHARING, false)) {
+            "AFTER_SAVING"
+        } else {
+            "SKIP_EDIT"
+        }
+        return sharedPreferences.get(KEY_NEW_EDIT_AFTER_SHARING, defaultValue)
+    }
 
-    fun setEditAfterSharing(value: Boolean) {
-        sharedPreferences.put(KEY_EDIT_AFTER_SHARING, value)
+    fun setEditAfterSharing(value: String) {
+        sharedPreferences.put(KEY_NEW_EDIT_AFTER_SHARING, value)
     }
 }

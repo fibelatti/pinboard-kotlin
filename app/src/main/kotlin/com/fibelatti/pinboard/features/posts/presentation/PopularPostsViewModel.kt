@@ -11,6 +11,7 @@ import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostSaved
 import com.fibelatti.pinboard.features.appstate.SetPopularPosts
+import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPopularPosts
@@ -41,24 +42,32 @@ class PopularPostsViewModel @Inject constructor(
 
     fun saveLink(post: Post) {
         launch {
-            val params = AddPost.Params(url = post.url, title = post.title, tags = post.tags)
-
-            _loading.postValue(true)
-            addPost(params)
-                .onSuccess {
-                    _loading.postValue(false)
-
-                    if (userRepository.getEditAfterSharing()) {
-                        _saved.postEvent(Unit)
-                        appStateRepository.runAction(PostSaved(it))
-                    } else {
-                        _saved.postEvent(Unit)
-                    }
-                }
-                .onFailure { error ->
-                    _loading.postValue(false)
-                    handleError(error)
-                }
+            val newPost = post.copy(
+                private = userRepository.getDefaultPrivate() ?: false,
+                readLater = userRepository.getDefaultReadLater() ?: false,
+            )
+            if (userRepository.getEditAfterSharing() is EditAfterSharing.BeforeSaving) {
+                appStateRepository.runAction(PostSaved(newPost))
+            } else {
+                addBookmark(post = newPost)
+            }
         }
+    }
+
+    private suspend fun addBookmark(post: Post) {
+        _loading.postValue(true)
+        addPost(AddPost.Params(post))
+            .onSuccess {
+                _loading.postValue(false)
+                _saved.postEvent(Unit)
+
+                if (userRepository.getEditAfterSharing() is EditAfterSharing.AfterSaving) {
+                    appStateRepository.runAction(PostSaved(it))
+                }
+            }
+            .onFailure { error ->
+                _loading.postValue(false)
+                handleError(error)
+            }
     }
 }

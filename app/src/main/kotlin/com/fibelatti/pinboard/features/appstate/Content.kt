@@ -4,6 +4,7 @@ import com.fibelatti.core.extension.orZero
 import com.fibelatti.core.functional.Either
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.features.notes.domain.model.Note
+import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -105,7 +106,7 @@ data class UserPreferencesContent(
     val showDescriptionInLists: Boolean,
     val defaultPrivate: Boolean,
     val defaultReadLater: Boolean,
-    val editAfterSharing: Boolean,
+    val editAfterSharing: EditAfterSharing,
     override val previousContent: PostListContent
 ) : ContentWithHistory()
 

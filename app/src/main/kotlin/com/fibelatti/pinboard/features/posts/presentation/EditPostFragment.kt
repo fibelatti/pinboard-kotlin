@@ -41,6 +41,7 @@ import javax.inject.Inject
 class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_edit_post) {
 
     companion object {
+
         @JvmStatic
         val TAG: String = "EditPostFragment"
     }
@@ -101,7 +102,8 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
 
     private fun onBackPressed() {
         val isContentUnchanged = originalPost?.run {
-            url == editTextUrl.textAsString() &&
+            hash.isNotEmpty() &&
+                url == editTextUrl.textAsString() &&
                 title == editTextTitle.textAsString() &&
                 description == editTextDescription.textAsString() &&
                 private == checkboxPrivate.isChecked &&

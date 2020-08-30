@@ -39,8 +39,10 @@ class ShareReceiverActivity : BaseActivity(R.layout.activity_share) {
                 finish()
             }
             observeEvent(edit) { message ->
-                imageViewFeedback.setImageResource(R.drawable.ic_url_saved)
-                toast(message)
+                if (message.isNotEmpty()) {
+                    imageViewFeedback.setImageResource(R.drawable.ic_url_saved)
+                    toast(message)
+                }
                 startActivity(MainActivity.Builder(this@ShareReceiverActivity).build())
                 finish()
             }

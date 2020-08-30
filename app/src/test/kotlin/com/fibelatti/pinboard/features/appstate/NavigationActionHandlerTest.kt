@@ -9,6 +9,7 @@ import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.allSealedSubclasses
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -635,6 +636,7 @@ internal class NavigationActionHandlerTest {
         private val mockAppearance = mock<Appearance>()
         private val mockPreferredDetailsView = mock<PreferredDetailsView>()
         private val mockRandomBoolean = randomBoolean()
+        private val mockEditAfterSharing = mock<EditAfterSharing>()
 
         @BeforeEach
         fun setup() {
@@ -644,7 +646,7 @@ internal class NavigationActionHandlerTest {
             given(mockUserRepository.getShowDescriptionInLists()).willReturn(mockRandomBoolean)
             given(mockUserRepository.getDefaultPrivate()).willReturn(mockRandomBoolean)
             given(mockUserRepository.getDefaultReadLater()).willReturn(mockRandomBoolean)
-            given(mockUserRepository.getEditAfterSharing()).willReturn(mockRandomBoolean)
+            given(mockUserRepository.getEditAfterSharing()).willReturn(mockEditAfterSharing)
         }
 
         @Test
@@ -673,7 +675,7 @@ internal class NavigationActionHandlerTest {
                 autoFillDescription = mockRandomBoolean,
                 showDescriptionInLists = mockRandomBoolean,
                 defaultReadLater = mockRandomBoolean,
-                editAfterSharing = mockRandomBoolean,
+                editAfterSharing = mockEditAfterSharing,
                 previousContent = previousContent
             )
         }
@@ -696,7 +698,7 @@ internal class NavigationActionHandlerTest {
                 showDescriptionInLists = mockRandomBoolean,
                 defaultPrivate = false,
                 defaultReadLater = mockRandomBoolean,
-                editAfterSharing = mockRandomBoolean,
+                editAfterSharing = mockEditAfterSharing,
                 previousContent = previousContent
             )
         }
@@ -719,7 +721,7 @@ internal class NavigationActionHandlerTest {
                 showDescriptionInLists = mockRandomBoolean,
                 defaultPrivate = mockRandomBoolean,
                 defaultReadLater = false,
-                editAfterSharing = mockRandomBoolean,
+                editAfterSharing = mockEditAfterSharing,
                 previousContent = previousContent
             )
         }

@@ -34,5 +34,15 @@ class AddPost @Inject constructor(
         val readLater: Boolean? = null,
         val tags: List<Tag>? = null,
         val replace: Boolean = true
-    )
+    ) {
+
+        constructor(post: Post) : this(
+            url = post.url,
+            title = post.title,
+            description = post.description,
+            private = post.private,
+            readLater = post.readLater,
+            tags = post.tags
+        )
+    }
 }

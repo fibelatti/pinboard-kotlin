@@ -4,7 +4,7 @@ object Versions {
     const val compileSdkVersion = 29
 
     internal const val kotlinVersion = "1.4.0"
-    internal const val coroutinesVersion = "1.3.8"
+    internal const val coroutinesVersion = "1.3.9"
     internal const val lifecycleVersion = "2.2.0"
     internal const val roomVersion = "2.2.5"
 }
@@ -25,7 +25,7 @@ object Dependencies {
     const val fragments = "androidx.fragment:fragment-ktx:1.3.0-alpha07"
     const val supportAnnotations = "androidx.annotation:annotation:1.1.0"
     const val materialDesign = "com.google.android.material:material:1.2.0"
-    const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.0-rc1"
+    const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.1"
     const val swipeRefreshLayout = "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
     const val coreLib = "com.fibelatti.core:core:2.0.0-alpha4"

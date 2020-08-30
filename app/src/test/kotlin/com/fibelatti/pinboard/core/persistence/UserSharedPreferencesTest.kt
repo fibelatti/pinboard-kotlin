@@ -7,6 +7,7 @@ import com.fibelatti.core.test.extension.mock
 import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.MockDataProvider.mockApiToken
 import com.fibelatti.pinboard.MockDataProvider.mockTime
+import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.randomBoolean
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -283,23 +284,43 @@ internal class UserSharedPreferencesTest {
     }
 
     @Test
-    fun `WHEN getEditAfterSharing is called THEN its value is returned`() {
+    fun `WHEN getEditAfterSharing had the legacy value set THEN the correct value is returned`() {
         // GIVEN
-        val value = randomBoolean()
         given(mockSharedPreferences.get(KEY_EDIT_AFTER_SHARING, false))
-            .willReturn(value)
+            .willReturn(true)
 
         // THEN
-        userSharedPreferences.getEditAfterSharing() shouldBe value
+        userSharedPreferences.getEditAfterSharing() shouldBe EditAfterSharing.AfterSaving.value
     }
 
     @Test
-    fun `WHEN setEditAfterSharing is called THEN KEY_EDIT_AFTER_SHARING is set`() {
-        // WHEN
-        val value = randomBoolean()
-        userSharedPreferences.setEditAfterSharing(value)
+    fun `WHEN getEditAfterSharing had no legacy value set THEN the default value is returned`() {
+        // GIVEN
+        given(mockSharedPreferences.get(KEY_EDIT_AFTER_SHARING, false))
+            .willReturn(false)
 
         // THEN
-        verify(mockEditor).putBoolean(KEY_EDIT_AFTER_SHARING, value)
+        userSharedPreferences.getEditAfterSharing() shouldBe EditAfterSharing.SkipEdit.value
+    }
+
+    @Test
+    fun `WHEN getEditAfterSharing is called THEN its value is returned`() {
+        // GIVEN
+        given(mockSharedPreferences.get(KEY_EDIT_AFTER_SHARING, false))
+            .willReturn(false)
+        given(mockSharedPreferences.get(KEY_NEW_EDIT_AFTER_SHARING, "SKIP_EDIT"))
+            .willReturn("BEFORE_SAVING")
+
+        // THEN
+        userSharedPreferences.getEditAfterSharing() shouldBe "BEFORE_SAVING"
+    }
+
+    @Test
+    fun `WHEN setEditAfterSharing is called THEN KEY_NEW_EDIT_AFTER_SHARING is set`() {
+        // WHEN
+        userSharedPreferences.setEditAfterSharing("BEFORE_SAVING")
+
+        // THEN
+        verify(mockEditor).putString(KEY_NEW_EDIT_AFTER_SHARING, "BEFORE_SAVING")
     }
 }

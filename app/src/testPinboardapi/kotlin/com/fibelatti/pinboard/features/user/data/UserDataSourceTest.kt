@@ -8,6 +8,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockApiToken
 import com.fibelatti.pinboard.MockDataProvider.mockTime
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
+import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.randomBoolean
@@ -393,29 +394,49 @@ internal class UserDataSourceTest {
         }
 
         @Nested
-        inner class EditAfterSharing {
+        inner class EditAfterSharingTests {
 
             @Test
-            fun `WHEN getEditAfterSharing is called THEN UserSharedPreferences is returned`() {
+            fun `GIVEN set EditAfterSharing is the BeforeSaving value WHEN getEditAfterSharing is called THEN BeforeSaving is returned`() {
                 // GIVEN
-                val value = randomBoolean()
                 given(mockUserSharedPreferences.getEditAfterSharing())
-                    .willReturn(value)
+                    .willReturn(EditAfterSharing.BeforeSaving.value)
 
                 // THEN
-                userDataSource.getEditAfterSharing() shouldBe value
+                userDataSource.getEditAfterSharing() shouldBe EditAfterSharing.BeforeSaving
+            }
+
+            @Test
+            fun `GIVEN set EditAfterSharing is the AfterSaving value WHEN getEditAfterSharing is called THEN AfterSaving is returned`() {
+                // GIVEN
+                given(mockUserSharedPreferences.getEditAfterSharing())
+                    .willReturn(EditAfterSharing.AfterSaving.value)
+
+                // THEN
+                userDataSource.getEditAfterSharing() shouldBe EditAfterSharing.AfterSaving
+            }
+
+            @Test
+            fun `GIVEN not EditAfterSharing is set WHEN getEditAfterSharing is called THEN SkipEdit is returned`() {
+                // GIVEN
+                given(mockUserSharedPreferences.getEditAfterSharing())
+                    .willReturn("anything really")
+
+                // THEN
+                userDataSource.getEditAfterSharing() shouldBe EditAfterSharing.SkipEdit
             }
 
             @Test
             fun `WHEN setEditAfterSharing is called THEN UserSharedPreferences is set`() {
                 // GIVEN
-                val value = randomBoolean()
+                val mockEditAfterSharing = mock<EditAfterSharing>()
+                given(mockEditAfterSharing.value).willReturn("random-value")
 
                 // WHEN
-                userDataSource.setEditAfterSharing(value)
+                userDataSource.setEditAfterSharing(mockEditAfterSharing)
 
                 // THEN
-                verify(mockUserSharedPreferences).setEditAfterSharing(value)
+                verify(mockUserSharedPreferences).setAppearance("random-value")
             }
         }
     }

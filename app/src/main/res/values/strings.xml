@@ -180,9 +180,11 @@
     <string name="user_preferences_default_read_later">Read later bookmarks</string>
     <string name="user_preferences_default_read_later_label">Read later by default</string>
     <string name="user_preferences_default_read_later_description">If checked, bookmarks shared to Pinkt will be saved as read later, otherwise your default Pinboard preferences apply</string>
-    <string name="user_preferences_edit_after_sharing_title">Sharing &amp; Popular</string>
-    <string name="user_preferences_edit_after_sharing">Open the edit screen</string>
-    <string name="user_preferences_edit_after_sharing_description">If checked, the Edit screen will be displayed for further editing when a bookmark is successfully shared to Pinkt or saved from the list of popular bookmarks</string>
+    <string name="user_preferences_edit_after_sharing_title">Editing — Sharing &amp; Popular</string>
+    <string name="user_preferences_edit_after_sharing_before_saving">Before saving</string>
+    <string name="user_preferences_edit_after_sharing_after_saving">After saving</string>
+    <string name="user_preferences_edit_after_sharing_skip">Skip editing</string>
+    <string name="user_preferences_edit_after_sharing_description">The edit screen can be displayed after a bookmark is shared to Pinkt or saved from the list of popular bookmarks.\n\nUse this preference to control when the bookmark is saved to Pinboard.</string>
 
     <!-- In-app Update -->
     <string name="in_app_update_ready">An app update is ready to install</string>

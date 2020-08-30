@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
+import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -115,9 +116,15 @@ class UserDataSource @Inject constructor(
         userSharedPreferences.setDefaultReadLater(value)
     }
 
-    override fun getEditAfterSharing(): Boolean = userSharedPreferences.getEditAfterSharing()
+    override fun getEditAfterSharing(): EditAfterSharing {
+        return when (userSharedPreferences.getEditAfterSharing()) {
+            EditAfterSharing.BeforeSaving.value -> EditAfterSharing.BeforeSaving
+            EditAfterSharing.AfterSaving.value -> EditAfterSharing.AfterSaving
+            else -> EditAfterSharing.SkipEdit
+        }
+    }
 
-    override fun setEditAfterSharing(value: Boolean) {
-        userSharedPreferences.setEditAfterSharing(value)
+    override fun setEditAfterSharing(editAfterSharing: EditAfterSharing) {
+        userSharedPreferences.setEditAfterSharing(editAfterSharing.value)
     }
 }

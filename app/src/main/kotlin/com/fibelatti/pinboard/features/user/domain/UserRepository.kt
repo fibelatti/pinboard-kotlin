@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.user.domain
 
 import androidx.lifecycle.LiveData
 import com.fibelatti.pinboard.core.android.Appearance
+import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 
 @Suppress("ComplexInterface", "TooManyFunctions")
@@ -49,7 +50,7 @@ interface UserRepository {
 
     fun setDefaultReadLater(value: Boolean)
 
-    fun getEditAfterSharing(): Boolean
+    fun getEditAfterSharing(): EditAfterSharing
 
-    fun setEditAfterSharing(value: Boolean)
+    fun setEditAfterSharing(editAfterSharing: EditAfterSharing)
 }
