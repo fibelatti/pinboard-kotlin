@@ -436,7 +436,7 @@ internal class UserDataSourceTest {
                 userDataSource.setEditAfterSharing(mockEditAfterSharing)
 
                 // THEN
-                verify(mockUserSharedPreferences).setAppearance("random-value")
+                verify(mockUserSharedPreferences).setEditAfterSharing("random-value")
             }
         }
     }

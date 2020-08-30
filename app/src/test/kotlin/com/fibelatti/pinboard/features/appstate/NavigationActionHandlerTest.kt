@@ -225,7 +225,6 @@ internal class NavigationActionHandlerTest {
             // GIVEN
             given(mockUserRepository.getPreferredDetailsView())
                 .willReturn(PreferredDetailsView.Edit)
-            val mockRandomBoolean = randomBoolean()
 
             // WHEN
             val result = runBlocking {
@@ -283,7 +282,6 @@ internal class NavigationActionHandlerTest {
             val mockPopularPostsContent = mock<PopularPostsContent>()
             given(mockUserRepository.getPreferredDetailsView())
                 .willReturn(PreferredDetailsView.Edit)
-            val mockRandomBoolean = randomBoolean()
 
             // WHEN
             val result = runBlocking {
