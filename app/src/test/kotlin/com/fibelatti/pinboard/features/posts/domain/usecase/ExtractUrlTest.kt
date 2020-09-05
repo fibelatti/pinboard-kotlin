@@ -4,11 +4,9 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
-import com.fibelatti.core.test.extension.shouldBe
-import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
+import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.fail
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
@@ -28,10 +26,9 @@ internal class ExtractUrlTest {
 
         // THEN
         if (result is Success) {
-            result shouldBe expectedResult
+            assertThat(result).isEqualTo(expectedResult)
         } else {
-            result.exceptionOrNull()?.shouldBeAnInstanceOf<InvalidUrlException>()
-                ?: fail("The expected error was not received")
+            assertThat(result.exceptionOrNull()).isInstanceOf(InvalidUrlException::class.java)
         }
     }
 

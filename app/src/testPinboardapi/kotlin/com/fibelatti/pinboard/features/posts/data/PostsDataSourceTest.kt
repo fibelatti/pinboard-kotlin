@@ -1,16 +1,9 @@
 package com.fibelatti.pinboard.features.posts.data
 
-import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.functional.getOrThrow
-import com.fibelatti.core.test.extension.givenSuspend
-import com.fibelatti.core.test.extension.mock
-import com.fibelatti.core.test.extension.safeAny
-import com.fibelatti.core.test.extension.shouldBe
-import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
-import com.fibelatti.core.test.extension.verifySuspend
 import com.fibelatti.pinboard.MockDataProvider.createGenericResponse
 import com.fibelatti.pinboard.MockDataProvider.createGetPostDto
 import com.fibelatti.pinboard.MockDataProvider.createPost
@@ -48,12 +41,22 @@ import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancelChildren
+import com.google.common.truth.Truth.assertThat
+import io.mockk.Runs
+import io.mockk.clearMocks
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.spyk
+import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -61,44 +64,28 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.fail
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import org.mockito.ArgumentMatchers.any
-import org.mockito.ArgumentMatchers.anyBoolean
-import org.mockito.ArgumentMatchers.anyInt
-import org.mockito.BDDMockito.anyString
-import org.mockito.BDDMockito.given
-import org.mockito.BDDMockito.verifyNoMoreInteractions
-import org.mockito.BDDMockito.will
-import org.mockito.BDDMockito.willDoNothing
-import org.mockito.BDDMockito.willReturn
-import org.mockito.Mockito.never
-import org.mockito.Mockito.reset
-import org.mockito.Mockito.spy
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
-import kotlin.coroutines.CoroutineContext
 
+@ExperimentalCoroutinesApi
 class PostsDataSourceTest {
 
-    private val mockUserRepository = mock<UserRepository>()
-    private val mockApi = mock<PostsApi>()
-    private val mockDao = mock<PostsDao>()
-    private val mockPostDtoMapper = mock<PostDtoMapper>()
-    private val mockSuggestedTagsDtoMapper = mock<SuggestedTagDtoMapper>()
-    private val mockDateFormatter = mock<DateFormatter>()
-    private val mockConnectivityInfoProvider = mock<ConnectivityInfoProvider>()
+    private val mockUserRepository = mockk<UserRepository>(relaxed = true)
+    private val mockApi = mockk<PostsApi>()
+    private val mockDao = mockk<PostsDao>(relaxUnitFun = true)
+    private val mockPostDtoMapper = mockk<PostDtoMapper>()
+    private val mockSuggestedTagsDtoMapper = mockk<SuggestedTagDtoMapper>()
+    private val mockDateFormatter = mockk<DateFormatter>(relaxed = true)
+    private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider>()
     private val mockRunner = TestRateLimitRunner()
-    private val mockIoScope = spy(CoroutineScope(Dispatchers.Unconfined))
+    private val mockIoScope = TestCoroutineScope(TestCoroutineDispatcher())
 
-    private val mockCoroutineContext = mock<CoroutineContext>()
-
-    private val mockPostDto = mock<PostDto>()
+    private val mockPostDto = mockk<PostDto>()
     private val mockListPostDto = listOf(mockPostDto)
-    private val mockPost = mock<Post>()
+    private val mockPost = mockk<Post>()
     private val mockListPost = listOf(mockPost)
-    private val mockSuggestedTagsDto = mock<SuggestedTagsDto>()
-    private val mockSuggestedTags = mock<SuggestedTags>()
+    private val mockSuggestedTagsDto = mockk<SuggestedTagsDto>()
+    private val mockSuggestedTags = mockk<SuggestedTags>()
 
-    private val dataSource = spy(
+    private val dataSource = spyk(
         PostsDataSource(
             mockUserRepository,
             mockApi,
@@ -114,32 +101,29 @@ class PostsDataSourceTest {
 
     @Nested
     inner class UpdateTests {
+
         @Test
         fun `GIVEN that the api returns an error WHEN update is called THEN Failure is returned`() {
             // GIVEN
-            givenSuspend { mockApi.update() }
-                .willAnswer { throw Exception() }
+            coEvery { mockApi.update() } throws Exception()
 
             // WHEN
             val result = runBlocking { dataSource.update() }
 
             // THEN
-            result.shouldBeAnInstanceOf<Failure>()
-            result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
+            assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
         }
 
         @Test
         fun `WHEN update is called THEN Success is returned`() {
             // GIVEN
-            givenSuspend { mockApi.update() }
-                .willReturn(UpdateDto(mockTime))
+            coEvery { mockApi.update() } returns UpdateDto(mockTime)
 
             // WHEN
             val result = runBlocking { dataSource.update() }
 
             // THEN
-            result.shouldBeAnInstanceOf<Success<String>>()
-            result.getOrNull() shouldBe mockTime
+            assertThat(result.getOrNull()).isEqualTo(mockTime)
         }
     }
 
@@ -149,13 +133,13 @@ class PostsDataSourceTest {
 
         @BeforeEach
         fun setup() {
-            reset(mockApi, mockUserRepository)
+            clearMocks(mockApi, mockUserRepository)
         }
 
         @Test
         fun `GIVEN that the api returns an error WHEN add is called THEN Failure is returned`() {
             // GIVEN
-            givenSuspend {
+            coEvery {
                 mockApi.add(
                     url = mockUrlValid,
                     title = mockUrlTitle,
@@ -165,7 +149,7 @@ class PostsDataSourceTest {
                     tags = mockTagsRequest,
                     replace = AppConfig.PinboardApiLiterals.YES
                 )
-            }.will { throw Exception() }
+            } throws Exception()
 
             // WHEN
             val result = runBlocking {
@@ -181,15 +165,14 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify(mockUserRepository, never()).setLastUpdate(anyString())
-            result.shouldBeAnInstanceOf<Failure>()
-            result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
+            verify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
+            assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
         }
 
         @Test
         fun `GIVEN that the api returns 200 but the result code is not DONE WHEN add is called THEN Failure is returned`() {
             // GIVEN
-            givenSuspend {
+            coEvery {
                 mockApi.add(
                     url = mockUrlValid,
                     title = mockUrlTitle,
@@ -199,7 +182,7 @@ class PostsDataSourceTest {
                     tags = mockTagsRequest,
                     replace = AppConfig.PinboardApiLiterals.YES
                 )
-            }.willReturn(createGenericResponse(ApiResultCodes.MISSING_URL))
+            } returns createGenericResponse(ApiResultCodes.MISSING_URL)
 
             // WHEN
             val result = runBlocking {
@@ -215,9 +198,8 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify(mockUserRepository, never()).setLastUpdate(anyString())
-            result.shouldBeAnInstanceOf<Failure>()
-            result.exceptionOrNull()?.shouldBeAnInstanceOf<ApiException>()
+            verify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
+            assertThat(result.exceptionOrNull()).isInstanceOf(ApiException::class.java)
         }
 
         @Nested
@@ -227,7 +209,7 @@ class PostsDataSourceTest {
             @Test
             fun `GIVEN that the api returns 200 AND the result code is ITEM_ALREADY_EXISTS WHEN add is called THEN the db result is returned`() {
                 // GIVEN
-                givenSuspend {
+                coEvery {
                     mockApi.add(
                         url = mockUrlValid,
                         title = mockUrlTitle,
@@ -237,11 +219,9 @@ class PostsDataSourceTest {
                         tags = mockTagsRequest,
                         replace = AppConfig.PinboardApiLiterals.YES
                     )
-                }.willReturn(createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS))
-                given(mockDao.getPost(mockUrlValid))
-                    .willReturn(mockPostDto)
-                given(mockPostDtoMapper.map(mockPostDto))
-                    .willReturn(mockPost)
+                } returns createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS)
+                every { mockDao.getPost(mockUrlValid) } returns mockPostDto
+                every { mockPostDtoMapper.map(mockPostDto) } returns mockPost
 
                 // WHEN
                 val result = runBlocking {
@@ -257,15 +237,14 @@ class PostsDataSourceTest {
                 }
 
                 // THEN
-                verify(mockUserRepository, never()).setLastUpdate(anyString())
-                result.shouldBeAnInstanceOf<Success<Post>>()
-                result.getOrNull() shouldBe mockPost
+                verify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
+                assertThat(result.getOrNull()).isEqualTo(mockPost)
             }
 
             @Test
             fun `GIVEN that the api returns 200 AND the result code is ITEM_ALREADY_EXISTS AND db has no data WHEN add is called THEN the api result is returned`() {
                 // GIVEN
-                givenSuspend {
+                coEvery {
                     mockApi.add(
                         url = mockUrlValid,
                         title = mockUrlTitle,
@@ -275,13 +254,10 @@ class PostsDataSourceTest {
                         tags = mockTagsRequest,
                         replace = AppConfig.PinboardApiLiterals.YES
                     )
-                }.willReturn(createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS))
-                given(mockDao.getPost(mockUrlValid))
-                    .willReturn(null)
-                givenSuspend { mockApi.getPost(mockUrlValid) }
-                    .willReturn(createGetPostDto(posts = mockListPostDto))
-                given(mockPostDtoMapper.map(mockPostDto))
-                    .willReturn(mockPost)
+                } returns createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS)
+                every { mockDao.getPost(mockUrlValid) } returns null
+                coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto(posts = mockListPostDto)
+                every { mockPostDtoMapper.map(mockPostDto) } returns mockPost
 
                 // WHEN
                 val result = runBlocking {
@@ -297,15 +273,14 @@ class PostsDataSourceTest {
                 }
 
                 // THEN
-                verify(mockUserRepository, never()).setLastUpdate(anyString())
-                result.shouldBeAnInstanceOf<Success<Post>>()
-                result.getOrNull() shouldBe mockPost
+                verify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
+                assertThat(result.getOrNull()).isEqualTo(mockPost)
             }
 
             @Test
             fun `GIVEN that the api returns 200 AND the result code is ITEM_ALREADY_EXISTS AND both gets fail WHEN add is called THEN failure returned`() {
                 // GIVEN
-                givenSuspend {
+                coEvery {
                     mockApi.add(
                         url = mockUrlValid,
                         title = mockUrlTitle,
@@ -315,11 +290,9 @@ class PostsDataSourceTest {
                         tags = mockTagsRequest,
                         replace = AppConfig.PinboardApiLiterals.YES
                     )
-                }.willReturn(createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS))
-                given(mockDao.getPost(mockUrlValid))
-                    .willReturn(null)
-                givenSuspend { mockApi.getPost(mockUrlValid) }
-                    .willReturn(createGetPostDto(posts = emptyList()))
+                } returns createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS)
+                every { mockDao.getPost(mockUrlValid) } returns null
+                coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto(posts = emptyList())
 
                 // WHEN
                 val result = runBlocking {
@@ -335,17 +308,17 @@ class PostsDataSourceTest {
                 }
 
                 // THEN
-                verify(mockUserRepository, never()).setLastUpdate(anyString())
-                result.shouldBeAnInstanceOf<Failure>()
-                result.exceptionOrNull()?.shouldBeAnInstanceOf<InvalidRequestException>()
+                verify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
+
+                assertThat(result.exceptionOrNull()).isInstanceOf(InvalidRequestException::class.java)
             }
         }
 
         @Test
         fun `GIVEN that the api returns 200 and the result code is DONE WHEN add is called THEN Success is returned`() {
             // GIVEN
-            givenSuspend { mockApi.update() }.willReturn(UpdateDto(mockFutureTime))
-            givenSuspend {
+            coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
+            coEvery {
                 mockApi.add(
                     url = mockUrlValid,
                     title = mockUrlTitle,
@@ -355,11 +328,10 @@ class PostsDataSourceTest {
                     tags = mockTagsRequest,
                     replace = AppConfig.PinboardApiLiterals.YES
                 )
-            }.willReturn(createGenericResponse(ApiResultCodes.DONE))
-            givenSuspend { mockApi.getPost(mockUrlValid) }
-                .willReturn(createGetPostDto(posts = mockListPostDto))
-            given(mockPostDtoMapper.map(mockPostDto))
-                .willReturn(mockPost)
+            } returns createGenericResponse(ApiResultCodes.DONE)
+            coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto(posts = mockListPostDto)
+            every { mockDao.savePosts(mockListPostDto) } just Runs
+            every { mockPostDtoMapper.map(mockPostDto) } returns mockPost
 
             // WHEN
             val result = runBlocking {
@@ -375,9 +347,9 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify(mockUserRepository).setLastUpdate(mockFutureTime)
-            verify(mockDao).savePosts(mockListPostDto)
-            result.shouldBeAnInstanceOf<Success<Unit>>()
+            verify { mockUserRepository.setLastUpdate(mockFutureTime) }
+            verify { mockDao.savePosts(mockListPostDto) }
+            assertThat(result.getOrNull()).isEqualTo(mockPost)
         }
 
         @ParameterizedTest
@@ -400,7 +372,7 @@ class PostsDataSourceTest {
                 AppConfig.PinboardApiLiterals.NO
             }
 
-            givenSuspend {
+            coEvery {
                 mockApi.add(
                     mockUrlValid,
                     mockUrlTitle,
@@ -410,7 +382,7 @@ class PostsDataSourceTest {
                     tags = mockTagsRequest,
                     replace = expectedReplace
                 )
-            }.willReturn(createGenericResponse(ApiResultCodes.DONE))
+            } returns createGenericResponse(ApiResultCodes.DONE)
 
             // WHEN
             runBlocking {
@@ -426,8 +398,8 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verifySuspend(mockApi) {
-                add(
+            coVerify {
+                mockApi.add(
                     url = mockUrlValid,
                     title = mockUrlTitle,
                     description = null,
@@ -456,7 +428,9 @@ class PostsDataSourceTest {
             val readLater: Boolean?,
             val replace: Boolean
         ) {
-            override fun toString(): String = "Params(private=$private, readLater=$readLater, replace=$replace)"
+
+            override fun toString(): String =
+                "Params(private=$private, readLater=$readLater, replace=$replace)"
         }
     }
 
@@ -466,72 +440,69 @@ class PostsDataSourceTest {
         @Test
         fun `GIVEN that the api returns an error WHEN delete is called THEN Failure is returned`() {
             // GIVEN
-            givenSuspend { mockApi.delete(mockUrlValid) }
-                .willAnswer { throw Exception() }
+            coEvery { mockApi.delete(mockUrlValid) } throws Exception()
 
             // WHEN
             val result = runBlocking { dataSource.delete(mockUrlValid) }
 
             // THEN
-            verify(mockDao, never()).deletePost(mockUrlValid)
-            verify(mockUserRepository, never()).setLastUpdate(anyString())
-            result.shouldBeAnInstanceOf<Failure>()
-            result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
+            verify(exactly = 0) { mockDao.deletePost(mockUrlValid) }
+            verify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
+
+            assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
         }
 
         @Test
         fun `GIVEN that the api returns 200 but the result code is not DONE WHEN delete is called THEN Failure is returned`() {
             // GIVEN
-            givenSuspend { mockApi.delete(mockUrlValid) }
-                .willReturn(createGenericResponse(ApiResultCodes.MISSING_URL))
+            coEvery { mockApi.delete(mockUrlValid) } returns createGenericResponse(ApiResultCodes.MISSING_URL)
 
             // WHEN
             val result = runBlocking { dataSource.delete(mockUrlValid) }
 
             // THEN
-            verify(mockDao, never()).deletePost(mockUrlValid)
-            verify(mockUserRepository, never()).setLastUpdate(anyString())
-            result.shouldBeAnInstanceOf<Failure>()
-            result.exceptionOrNull()?.shouldBeAnInstanceOf<ApiException>()
+            verify(exactly = 0) { mockDao.deletePost(mockUrlValid) }
+            verify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
+
+            assertThat(result.exceptionOrNull()).isInstanceOf(ApiException::class.java)
         }
 
         @Test
         fun `GIVEN that the api returns 200 and the result code is DONE WHEN delete is called THEN Success is returned`() {
             // GIVEN
-            givenSuspend { mockApi.delete(mockUrlValid) }
-                .willReturn(createGenericResponse(ApiResultCodes.DONE))
-            givenSuspend { mockApi.update() }.willReturn(UpdateDto(mockFutureTime))
+            coEvery { mockApi.delete(mockUrlValid) } returns createGenericResponse(ApiResultCodes.DONE)
+            coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
+            every { mockDao.deletePost(mockUrlValid) } just Runs
 
             // WHEN
             val result = runBlocking { dataSource.delete(mockUrlValid) }
 
             // THEN
-            verify(mockDao).deletePost(mockUrlValid)
-            verify(mockUserRepository).setLastUpdate(mockFutureTime)
-            result.shouldBeAnInstanceOf<Success<Unit>>()
+            verify { mockDao.deletePost(mockUrlValid) }
+            verify { mockUserRepository.setLastUpdate(mockFutureTime) }
+            assertThat(result.getOrNull()).isEqualTo(Unit)
         }
     }
 
     @Nested
     inner class GetAllPostsTests {
 
-        private val mockLocalData = mock<Pair<Int, List<Post>>>()
+        private val mockLocalData: PostListResult? = mockk()
 
         @Nested
         inner class NoConnectionTest {
 
             @BeforeEach
             fun setup() {
-                given(mockConnectivityInfoProvider.isConnected())
-                    .willReturn(false)
+                every { mockConnectivityInfoProvider.isConnected() } returns false
             }
 
             @Test
             fun `GIVEN isConnected is false WHEN getAllPosts is called THEN local data is returned`() {
                 runBlocking {
                     // GIVEN
-                    willReturn(Success(mockLocalData)).given(dataSource)
-                        .getLocalData(
+                    coEvery {
+                        dataSource.getLocalData(
                             newestFirst = true,
                             searchTerm = "",
                             tags = null,
@@ -544,6 +515,8 @@ class PostsDataSourceTest {
                             pageOffset = 0,
                             upToDate = true
                         )
+                    } returns Success(mockLocalData)
+
                     // WHEN
                     val result = dataSource.getAllPosts(
                         newestFirst = true,
@@ -559,7 +532,7 @@ class PostsDataSourceTest {
                     )
                     // THEN
                     result.collectLatest {
-                        it.getOrThrow() shouldBe mockLocalData
+                        assertThat(it.getOrThrow()).isEqualTo(mockLocalData)
                     }
                 }
             }
@@ -570,51 +543,45 @@ class PostsDataSourceTest {
 
             @BeforeEach
             fun setup() {
-                given(mockIoScope.coroutineContext).willReturn(mockCoroutineContext)
-
-                given(mockConnectivityInfoProvider.isConnected())
-                    .willReturn(true)
-                givenSuspend { mockUserRepository.getLastUpdate() }
-                    .willReturn(mockTime)
-                runBlocking {
-                    willReturn(Success(mockLocalData)).given(dataSource)
-                        .getLocalData(
-                            newestFirst = true,
-                            searchTerm = "",
-                            tags = null,
-                            untaggedOnly = false,
-                            publicPostsOnly = false,
-                            privatePostsOnly = false,
-                            readLaterOnly = false,
-                            countLimit = -1,
-                            pageLimit = -1,
-                            pageOffset = 0,
-                            upToDate = false
-                        )
-                    willReturn(Success(mockLocalData)).given(dataSource)
-                        .getLocalData(
-                            newestFirst = true,
-                            searchTerm = "",
-                            tags = null,
-                            untaggedOnly = false,
-                            publicPostsOnly = false,
-                            privatePostsOnly = false,
-                            readLaterOnly = false,
-                            countLimit = -1,
-                            pageLimit = -1,
-                            pageOffset = 0,
-                            upToDate = true
-                        )
-                }
+                every { mockConnectivityInfoProvider.isConnected() } returns true
+                coEvery { mockUserRepository.getLastUpdate() } returns mockTime
+                coEvery {
+                    dataSource.getLocalData(
+                        newestFirst = true,
+                        searchTerm = "",
+                        tags = null,
+                        untaggedOnly = false,
+                        publicPostsOnly = false,
+                        privatePostsOnly = false,
+                        readLaterOnly = false,
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0,
+                        upToDate = false
+                    )
+                } returns Success(mockLocalData)
+                coEvery {
+                    dataSource.getLocalData(
+                        newestFirst = true,
+                        searchTerm = "",
+                        tags = null,
+                        untaggedOnly = false,
+                        publicPostsOnly = false,
+                        privatePostsOnly = false,
+                        readLaterOnly = false,
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0,
+                        upToDate = true
+                    )
+                } returns Success(mockLocalData)
             }
 
             @Test
             fun `WHEN update fails THEN nowAsTzFormat is used instead`() {
                 // GIVEN
-                givenSuspend { mockApi.update() }
-                    .will { throw Exception() }
-                given(mockDateFormatter.nowAsTzFormat())
-                    .willReturn(mockTime)
+                coEvery { mockApi.update() } throws Exception()
+                every { mockDateFormatter.nowAsTzFormat() } returns mockTime
 
                 // WHEN
                 val result = runBlocking {
@@ -635,12 +602,12 @@ class PostsDataSourceTest {
                 // THEN
                 runBlocking {
                     result.collectLatest {
-                        it.getOrThrow() shouldBe mockLocalData
+                        assertThat(it.getOrThrow()).isEqualTo(mockLocalData)
                     }
                 }
-                verify(mockDateFormatter).nowAsTzFormat()
-                verifySuspend(dataSource) {
-                    getLocalData(
+                verify { mockDateFormatter.nowAsTzFormat() }
+                coVerify {
+                    dataSource.getLocalData(
                         newestFirst = true,
                         searchTerm = "",
                         tags = null,
@@ -654,22 +621,24 @@ class PostsDataSourceTest {
                         upToDate = true
                     )
                 }
-                verifySuspend(mockApi, never()) { getAllPosts() }
-                verifySuspend(mockDao, never()) { deleteAllPosts() }
-                verifySuspend(mockDao, never()) { savePosts(safeAny()) }
-                verifySuspend(mockUserRepository, never()) { setLastUpdate(anyString()) }
+                coVerify(exactly = 0) { mockApi.getAllPosts() }
+                coVerify(exactly = 0) { mockDao.deleteAllPosts() }
+                coVerify(exactly = 0) { mockDao.savePosts(any()) }
+                coVerify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
             }
 
             @Test
             fun `WHEN user last update is null THEN api should be called`() {
                 // GIVEN
-                givenSuspend { mockUserRepository.getLastUpdate() }
-                    .willReturn("")
-                givenSuspend { mockApi.update() }
-                    .willReturn(UpdateDto(mockFutureTime))
-                givenSuspend { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
-                    .willReturn(mockListPostDto)
-                willDoNothing().given(dataSource).savePosts(safeAny())
+                coEvery { mockUserRepository.getLastUpdate() } returns ""
+                coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
+                coEvery {
+                    mockApi.getAllPosts(
+                        offset = 0,
+                        limit = API_PAGE_SIZE
+                    )
+                } returns mockListPostDto
+                every { dataSource.savePosts(any()) } returns Unit
 
                 // WHEN
                 val result = runBlocking {
@@ -691,19 +660,18 @@ class PostsDataSourceTest {
                 runBlocking {
                     result.collectIndexed { index, value ->
                         when (index) {
-                            0 -> value.getOrNull() shouldBe mockLocalData
-                            1 -> value.getOrNull() shouldBe mockLocalData
+                            0 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
+                            1 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
                             else -> fail("Unexpected number of collections")
                         }
                     }
                 }
 
-                verify(mockCoroutineContext).cancelChildren()
-                verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
-                verifySuspend(mockDao) { deleteAllPosts() }
-                verify(dataSource).savePosts(mockListPostDto)
-                verifySuspend(dataSource) {
-                    getLocalData(
+                coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
+                coVerify { mockDao.deleteAllPosts() }
+                verify { dataSource.savePosts(mockListPostDto) }
+                coVerify {
+                    dataSource.getLocalData(
                         newestFirst = true,
                         searchTerm = "",
                         tags = null,
@@ -717,8 +685,8 @@ class PostsDataSourceTest {
                         upToDate = false
                     )
                 }
-                verifySuspend(dataSource) {
-                    getLocalData(
+                coVerify {
+                    dataSource.getLocalData(
                         newestFirst = true,
                         searchTerm = "",
                         tags = null,
@@ -732,14 +700,13 @@ class PostsDataSourceTest {
                         upToDate = true
                     )
                 }
-                verifySuspend(mockUserRepository) { setLastUpdate(mockFutureTime) }
+                coVerify { mockUserRepository.setLastUpdate(mockFutureTime) }
             }
 
             @Test
             fun `WHEN update time stamps match THEN local data is returned`() {
                 // GIVEN
-                givenSuspend { mockApi.update() }
-                    .willReturn(UpdateDto(mockTime))
+                coEvery { mockApi.update() } returns UpdateDto(mockTime)
 
                 // WHEN
                 val result = runBlocking {
@@ -760,11 +727,11 @@ class PostsDataSourceTest {
                 // THEN
                 runBlocking {
                     result.collectLatest {
-                        it.getOrThrow() shouldBe mockLocalData
+                        assertThat(it.getOrThrow()).isEqualTo(mockLocalData)
                     }
                 }
-                verifySuspend(dataSource) {
-                    getLocalData(
+                coVerify {
+                    dataSource.getLocalData(
                         newestFirst = true,
                         searchTerm = "",
                         tags = null,
@@ -778,19 +745,22 @@ class PostsDataSourceTest {
                         upToDate = true
                     )
                 }
-                verifySuspend(mockApi, never()) { getAllPosts() }
-                verifySuspend(mockDao, never()) { deleteAllPosts() }
-                verifySuspend(mockDao, never()) { savePosts(safeAny()) }
-                verifySuspend(mockUserRepository, never()) { setLastUpdate(anyString()) }
+                coVerify(exactly = 0) { mockApi.getAllPosts() }
+                coVerify(exactly = 0) { mockDao.deleteAllPosts() }
+                coVerify(exactly = 0) { mockDao.savePosts(any()) }
+                coVerify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
             }
 
             @Test
             fun `WHEN getAllPosts fails THEN Failure is returned`() {
                 // GIVEN
-                givenSuspend { mockApi.update() }
-                    .willReturn(UpdateDto(mockFutureTime))
-                givenSuspend { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
-                    .will { throw Exception() }
+                coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
+                coEvery {
+                    mockApi.getAllPosts(
+                        offset = 0,
+                        limit = API_PAGE_SIZE
+                    )
+                } throws Exception()
 
                 // WHEN
                 val result = runBlocking {
@@ -812,14 +782,14 @@ class PostsDataSourceTest {
                 runBlocking {
                     result.collectIndexed { index, value ->
                         when (index) {
-                            0 -> value.getOrNull() shouldBe mockLocalData
-                            1 -> value.shouldBeAnInstanceOf<Failure>()
+                            0 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
+                            1 -> assertThat(value.exceptionOrNull()).isInstanceOf(Exception::class.java)
                             else -> fail("Unexpected number of collections")
                         }
                     }
                 }
-                verifySuspend(dataSource) {
-                    getLocalData(
+                coVerify {
+                    dataSource.getLocalData(
                         newestFirst = true,
                         searchTerm = "",
                         tags = null,
@@ -833,22 +803,23 @@ class PostsDataSourceTest {
                         upToDate = false
                     )
                 }
-                verify(mockCoroutineContext).cancelChildren()
-                verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
-                verifySuspend(mockDao, never()) { deleteAllPosts() }
-                verifySuspend(mockDao, never()) { savePosts(safeAny()) }
-                verifySuspend(mockUserRepository, never()) { setLastUpdate(anyString()) }
+                coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
+                coVerify(exactly = 0) { mockDao.deleteAllPosts() }
+                coVerify(exactly = 0) { mockDao.savePosts(any()) }
+                coVerify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
             }
 
             @Test
             fun `WHEN deleteAllPosts fails THEN Failure is returned`() {
                 // GIVEN
-                givenSuspend { mockApi.update() }
-                    .willReturn(UpdateDto(mockFutureTime))
-                givenSuspend { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
-                    .willReturn(mockListPostDto)
-                given(mockDao.deleteAllPosts())
-                    .will { throw Exception() }
+                coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
+                coEvery {
+                    mockApi.getAllPosts(
+                        offset = 0,
+                        limit = API_PAGE_SIZE
+                    )
+                } returns mockListPostDto
+                every { mockDao.deleteAllPosts() } throws Exception()
 
                 // WHEN
                 val result = runBlocking {
@@ -870,14 +841,14 @@ class PostsDataSourceTest {
                 runBlocking {
                     result.collectIndexed { index, value ->
                         when (index) {
-                            0 -> value.getOrNull() shouldBe mockLocalData
-                            1 -> value.shouldBeAnInstanceOf<Failure>()
+                            0 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
+                            1 -> assertThat(value.exceptionOrNull()).isInstanceOf(Exception::class.java)
                             else -> fail("Unexpected number of collections")
                         }
                     }
                 }
-                verifySuspend(dataSource) {
-                    getLocalData(
+                coVerify {
+                    dataSource.getLocalData(
                         newestFirst = true,
                         searchTerm = "",
                         tags = null,
@@ -891,22 +862,24 @@ class PostsDataSourceTest {
                         upToDate = false
                     )
                 }
-                verify(mockCoroutineContext).cancelChildren()
-                verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
-                verifySuspend(mockDao) { deleteAllPosts() }
-                verifySuspend(mockDao, never()) { savePosts(safeAny()) }
-                verifySuspend(mockUserRepository, never()) { setLastUpdate(anyString()) }
+                coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
+                coVerify { mockDao.deleteAllPosts() }
+                verify(exactly = 0) { mockDao.savePosts(any()) }
+                coVerify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
             }
 
             @Test
             fun `WHEN savePosts fails THEN Failure is returned`() {
                 runBlocking {
                     // GIVEN
-                    given(mockApi.update())
-                        .willReturn(UpdateDto(mockFutureTime))
-                    given(mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE))
-                        .willReturn(mockListPostDto)
-                    will { throw Exception() }.given(dataSource).savePosts(safeAny())
+                    coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
+                    coEvery {
+                        mockApi.getAllPosts(
+                            offset = 0,
+                            limit = API_PAGE_SIZE
+                        )
+                    } returns mockListPostDto
+                    every { dataSource.savePosts(any()) } throws Exception()
 
                     // WHEN
                     val result = dataSource.getAllPosts(
@@ -925,12 +898,12 @@ class PostsDataSourceTest {
                     // THEN
                     result.collectIndexed { index, value ->
                         when (index) {
-                            0 -> value.getOrNull() shouldBe mockLocalData
-                            1 -> value.shouldBeAnInstanceOf<Failure>()
+                            0 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
+                            1 -> assertThat(value.exceptionOrNull()).isInstanceOf(Exception::class.java)
                         }
                     }
-                    verifySuspend(dataSource) {
-                        getLocalData(
+                    coVerify {
+                        dataSource.getLocalData(
                             newestFirst = true,
                             searchTerm = "",
                             tags = null,
@@ -945,25 +918,27 @@ class PostsDataSourceTest {
                         )
                     }
 
-                    verify(mockCoroutineContext).cancelChildren()
-                    verify(mockApi).getAllPosts(offset = 0, limit = API_PAGE_SIZE)
-                    verify(mockDao).deleteAllPosts()
-                    verify(dataSource).savePosts(mockListPostDto)
-                    verify(mockUserRepository, never()).setLastUpdate(anyString())
+                    coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
+                    verify { mockDao.deleteAllPosts() }
+                    verify { dataSource.savePosts(mockListPostDto) }
+                    verify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
                 }
             }
 
             @Test
             fun `WHEN first call result list has the same size as API_PAGE_SIZE THEN getAdditionalPages is called`() {
                 // GIVEN
-                val mockListPostDto = mock<List<PostDto>>()
-                givenSuspend { mockApi.update() }
-                    .willReturn(UpdateDto(mockFutureTime))
-                givenSuspend { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
-                    .willReturn(mockListPostDto)
-                given(mockListPostDto.size).willReturn(API_PAGE_SIZE)
-                willDoNothing().given(dataSource).getAdditionalPages()
-                willDoNothing().given(dataSource).savePosts(safeAny())
+                val mockListPostDto = mockk<List<PostDto>>()
+                coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
+                coEvery {
+                    mockApi.getAllPosts(
+                        offset = 0,
+                        limit = API_PAGE_SIZE
+                    )
+                } returns mockListPostDto
+                every { mockListPostDto.size } returns API_PAGE_SIZE
+                every { dataSource.getAdditionalPages() } returns Unit
+                every { dataSource.savePosts(any()) } returns Unit
 
                 // WHEN
                 val result = runBlocking {
@@ -985,14 +960,14 @@ class PostsDataSourceTest {
                 runBlocking {
                     result.collectIndexed { index, value ->
                         when (index) {
-                            0 -> value.getOrNull() shouldBe mockLocalData
-                            1 -> value.getOrNull() shouldBe mockLocalData
+                            0 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
+                            1 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
                             else -> fail("Unexpected number of collections")
                         }
                     }
                 }
-                verifySuspend(dataSource) {
-                    getLocalData(
+                coVerify {
+                    dataSource.getLocalData(
                         newestFirst = true,
                         searchTerm = "",
                         tags = null,
@@ -1006,8 +981,8 @@ class PostsDataSourceTest {
                         upToDate = false
                     )
                 }
-                verifySuspend(dataSource) {
-                    getLocalData(
+                coVerify {
+                    dataSource.getLocalData(
                         newestFirst = true,
                         searchTerm = "",
                         tags = null,
@@ -1021,12 +996,11 @@ class PostsDataSourceTest {
                         upToDate = true
                     )
                 }
-                verify(mockCoroutineContext).cancelChildren()
-                verifySuspend(mockApi) { getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
-                verifySuspend(mockDao) { deleteAllPosts() }
-                verify(dataSource).savePosts(mockListPostDto)
-                verify(dataSource).getAdditionalPages()
-                verifySuspend(mockUserRepository) { setLastUpdate(mockFutureTime) }
+                coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
+                coVerify { mockDao.deleteAllPosts() }
+                verify { dataSource.savePosts(mockListPostDto) }
+                verify { dataSource.getAdditionalPages() }
+                coVerify { mockUserRepository.setLastUpdate(mockFutureTime) }
             }
         }
     }
@@ -1037,46 +1011,55 @@ class PostsDataSourceTest {
         @Test
         fun `getAdditionalPages should run at least once`() {
             // GIVEN
-            val mockPosts = mock<List<PostDto>>()
+            val mockPosts = mockk<List<PostDto>>()
 
-            givenSuspend { mockApi.getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
-                .willReturn(mockPosts)
-            willDoNothing().given(dataSource).savePosts(safeAny())
+            coEvery {
+                mockApi.getAllPosts(
+                    offset = API_PAGE_SIZE,
+                    limit = API_PAGE_SIZE
+                )
+            } returns mockPosts
+            every { dataSource.savePosts(any()) } returns Unit
 
             // WHEN
             dataSource.getAdditionalPages()
 
             // THEN
-            verify(dataSource).savePosts(mockPosts)
-            verifySuspend(mockApi) { getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
-            verifyNoMoreInteractions(mockApi)
+            verify { dataSource.savePosts(mockPosts) }
+            coVerify { mockApi.getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
         }
 
         @Test
         fun `getAdditionalPages should run again if the first time returned the same as the page size`() {
             // GIVEN
-            val mockPosts = mock<List<PostDto>>()
-            given(mockPosts.size).willReturn(API_PAGE_SIZE, API_PAGE_SIZE, API_PAGE_SIZE - 1)
+            val mockPosts = mockk<List<PostDto>>()
+            every { mockPosts.size } returnsMany listOf(
+                API_PAGE_SIZE,
+                API_PAGE_SIZE,
+                API_PAGE_SIZE - 1
+            )
 
-            givenSuspend { mockApi.getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
-                .willReturn(mockPosts)
-            givenSuspend { mockApi.getAllPosts(offset = API_PAGE_SIZE * 2, limit = API_PAGE_SIZE) }
-                .willReturn(mockPosts)
-            willDoNothing().given(dataSource).savePosts(safeAny())
+            coEvery {
+                mockApi.getAllPosts(
+                    offset = API_PAGE_SIZE,
+                    limit = API_PAGE_SIZE
+                )
+            } returns mockPosts
+            coEvery {
+                mockApi.getAllPosts(
+                    offset = API_PAGE_SIZE * 2,
+                    limit = API_PAGE_SIZE
+                )
+            } returns mockPosts
+            every { dataSource.savePosts(any()) } returns Unit
 
             // WHEN
             dataSource.getAdditionalPages()
 
             // THEN
-            verify(dataSource, times(2)).savePosts(mockPosts)
-            verifySuspend(mockApi) { getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
-            verifySuspend(mockApi) {
-                getAllPosts(
-                    offset = API_PAGE_SIZE * 2,
-                    limit = API_PAGE_SIZE
-                )
-            }
-            verifyNoMoreInteractions(mockApi)
+            verify(exactly = 2) { dataSource.savePosts(mockPosts) }
+            coVerify { mockApi.getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
+            coVerify { mockApi.getAllPosts(offset = API_PAGE_SIZE * 2, limit = API_PAGE_SIZE) }
         }
     }
 
@@ -1089,10 +1072,11 @@ class PostsDataSourceTest {
                 .toMutableList().apply { add(createPostDto()) }
             val expected = HTML_CHAR_MAP.values.map { createPostDto(tags = it) }
                 .toMutableList().apply { add(createPostDto()) }
+            every { mockDao.savePosts(expected) } just Runs
 
             dataSource.savePosts(input)
 
-            verifySuspend(mockDao) { savePosts(expected) }
+            coVerify { mockDao.savePosts(expected) }
         }
     }
 
@@ -1102,19 +1086,19 @@ class PostsDataSourceTest {
         @Test
         fun `WHEN tags is empty THEN tag1 tag2 and tag3 are sent as empty`() {
             // GIVEN
-            given(
+            every {
                 mockDao.getPostCount(
-                    anyString(),
-                    anyString(),
-                    anyString(),
-                    anyString(),
-                    anyBoolean(),
-                    anyBoolean(),
-                    anyBoolean(),
-                    anyBoolean(),
-                    anyInt()
+                    term = any(),
+                    tag1 = any(),
+                    tag2 = any(),
+                    tag3 = any(),
+                    untaggedOnly = any(),
+                    publicPostsOnly = any(),
+                    privatePostsOnly = any(),
+                    readLaterOnly = any(),
+                    limit = any()
                 )
-            ).willReturn(0)
+            } returns 0
 
             // WHEN
             val result = runBlocking {
@@ -1130,36 +1114,38 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify(mockDao).getPostCount(
-                term = PostsDao.preFormatTerm(mockUrlTitle),
-                tag1 = "",
-                tag2 = "",
-                tag3 = "",
-                untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
-                readLaterOnly = false,
-                limit = -1
-            )
-            result shouldBe 0
+            verify {
+                mockDao.getPostCount(
+                    term = PostsDao.preFormatTerm(mockUrlTitle),
+                    tag1 = "",
+                    tag2 = "",
+                    tag3 = "",
+                    untaggedOnly = false,
+                    publicPostsOnly = false,
+                    privatePostsOnly = false,
+                    readLaterOnly = false,
+                    limit = -1
+                )
+            }
+            assertThat(result).isEqualTo(0)
         }
 
         @Test
         fun `WHEN tags size is 1 THEN tag2 and tag3 are sent as empty`() {
             // GIVEN
-            given(
+            every {
                 mockDao.getPostCount(
-                    anyString(),
-                    anyString(),
-                    anyString(),
-                    anyString(),
-                    anyBoolean(),
-                    anyBoolean(),
-                    anyBoolean(),
-                    anyBoolean(),
-                    anyInt()
+                    term = any(),
+                    tag1 = any(),
+                    tag2 = any(),
+                    tag3 = any(),
+                    untaggedOnly = any(),
+                    publicPostsOnly = any(),
+                    privatePostsOnly = any(),
+                    readLaterOnly = any(),
+                    limit = any()
                 )
-            ).willReturn(0)
+            } returns 0
 
             // WHEN
             val result = runBlocking {
@@ -1175,36 +1161,38 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify(mockDao).getPostCount(
-                term = PostsDao.preFormatTerm(mockUrlTitle),
-                tag1 = PostsDao.preFormatTag(mockTag1.name),
-                tag2 = "",
-                tag3 = "",
-                untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
-                readLaterOnly = false,
-                limit = -1
-            )
-            result shouldBe 0
+            verify {
+                mockDao.getPostCount(
+                    term = PostsDao.preFormatTerm(mockUrlTitle),
+                    tag1 = PostsDao.preFormatTag(mockTag1.name),
+                    tag2 = "",
+                    tag3 = "",
+                    untaggedOnly = false,
+                    publicPostsOnly = false,
+                    privatePostsOnly = false,
+                    readLaterOnly = false,
+                    limit = -1
+                )
+            }
+            assertThat(result).isEqualTo(0)
         }
 
         @Test
         fun `WHEN tags size is 2 THEN tag3 is sent as empty`() {
             // GIVEN
-            given(
+            every {
                 mockDao.getPostCount(
-                    anyString(),
-                    anyString(),
-                    anyString(),
-                    anyString(),
-                    anyBoolean(),
-                    anyBoolean(),
-                    anyBoolean(),
-                    anyBoolean(),
-                    anyInt()
+                    term = any(),
+                    tag1 = any(),
+                    tag2 = any(),
+                    tag3 = any(),
+                    untaggedOnly = any(),
+                    publicPostsOnly = any(),
+                    privatePostsOnly = any(),
+                    readLaterOnly = any(),
+                    limit = any()
                 )
-            ).willReturn(0)
+            } returns 0
 
             // WHEN
             val result = runBlocking {
@@ -1220,36 +1208,38 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify(mockDao).getPostCount(
-                term = PostsDao.preFormatTerm(mockUrlTitle),
-                tag1 = PostsDao.preFormatTag(mockTag1.name),
-                tag2 = PostsDao.preFormatTag(mockTag2.name),
-                tag3 = "",
-                untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
-                readLaterOnly = false,
-                limit = -1
-            )
-            result shouldBe 0
+            verify {
+                mockDao.getPostCount(
+                    term = PostsDao.preFormatTerm(mockUrlTitle),
+                    tag1 = PostsDao.preFormatTag(mockTag1.name),
+                    tag2 = PostsDao.preFormatTag(mockTag2.name),
+                    tag3 = "",
+                    untaggedOnly = false,
+                    publicPostsOnly = false,
+                    privatePostsOnly = false,
+                    readLaterOnly = false,
+                    limit = -1
+                )
+            }
+            assertThat(result).isEqualTo(0)
         }
 
         @Test
         fun `WHEN tags size is 3 THEN all tags are sent`() {
             // GIVEN
-            given(
+            every {
                 mockDao.getPostCount(
-                    anyString(),
-                    anyString(),
-                    anyString(),
-                    anyString(),
-                    anyBoolean(),
-                    anyBoolean(),
-                    anyBoolean(),
-                    anyBoolean(),
-                    anyInt()
+                    term = any(),
+                    tag1 = any(),
+                    tag2 = any(),
+                    tag3 = any(),
+                    untaggedOnly = any(),
+                    publicPostsOnly = any(),
+                    privatePostsOnly = any(),
+                    readLaterOnly = any(),
+                    limit = any()
                 )
-            ).willReturn(0)
+            } returns 0
 
             // WHEN
             val result = runBlocking {
@@ -1265,18 +1255,20 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify(mockDao).getPostCount(
-                term = PostsDao.preFormatTerm(mockUrlTitle),
-                tag1 = PostsDao.preFormatTag(mockTag1.name),
-                tag2 = PostsDao.preFormatTag(mockTag2.name),
-                tag3 = PostsDao.preFormatTag(mockTag3.name),
-                untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
-                readLaterOnly = false,
-                limit = -1
-            )
-            result shouldBe 0
+            verify {
+                mockDao.getPostCount(
+                    term = PostsDao.preFormatTerm(mockUrlTitle),
+                    tag1 = PostsDao.preFormatTag(mockTag1.name),
+                    tag2 = PostsDao.preFormatTag(mockTag2.name),
+                    tag3 = PostsDao.preFormatTag(mockTag3.name),
+                    untaggedOnly = false,
+                    publicPostsOnly = false,
+                    privatePostsOnly = false,
+                    readLaterOnly = false,
+                    limit = -1
+                )
+            }
+            assertThat(result).isEqualTo(0)
         }
     }
 
@@ -1288,54 +1280,51 @@ class PostsDataSourceTest {
 
         @BeforeEach
         fun setup() {
-            runBlocking {
-                willReturn(mockLocalDataSize).given(dataSource)
-                    .getLocalDataSize(
-                        searchTerm = anyString(),
-                        tags = any(),
-                        untaggedOnly = anyBoolean(),
-                        publicPostsOnly = anyBoolean(),
-                        privatePostsOnly = anyBoolean(),
-                        readLaterOnly = anyBoolean(),
-                        countLimit = anyInt()
-                    )
-            }
-
-            given(
-                mockDao.getAllPosts(
-                    anyBoolean(),
-                    anyString(),
-                    anyString(),
-                    anyString(),
-                    anyString(),
-                    anyBoolean(),
-                    anyBoolean(),
-                    anyBoolean(),
-                    anyBoolean(),
-                    anyInt(),
-                    anyInt()
+            coEvery {
+                dataSource.getLocalDataSize(
+                    searchTerm = any(),
+                    tags = any(),
+                    untaggedOnly = any(),
+                    publicPostsOnly = any(),
+                    privatePostsOnly = any(),
+                    readLaterOnly = any(),
+                    countLimit = any()
                 )
-            ).willReturn(mockListPostDto)
+            } returns mockLocalDataSize
 
-            given(mockPostDtoMapper.mapList(mockListPostDto))
-                .willReturn(mockListPost)
+            every {
+                mockDao.getAllPosts(
+                    newestFirst = any(),
+                    term = any(),
+                    tag1 = any(),
+                    tag2 = any(),
+                    tag3 = any(),
+                    untaggedOnly = any(),
+                    publicPostsOnly = any(),
+                    privatePostsOnly = any(),
+                    readLaterOnly = any(),
+                    limit = any(),
+                    offset = any()
+                )
+            } returns mockListPostDto
+
+            every { mockPostDtoMapper.mapList(mockListPostDto) } returns mockListPost
         }
 
         @Test
         fun `WHEN local data size is 0 THEN null is returned and getAllPosts is not called`() {
             // GIVEN
-            runBlocking {
-                willReturn(0).given(dataSource)
-                    .getLocalDataSize(
-                        searchTerm = anyString(),
-                        tags = any(),
-                        untaggedOnly = anyBoolean(),
-                        publicPostsOnly = anyBoolean(),
-                        privatePostsOnly = anyBoolean(),
-                        readLaterOnly = anyBoolean(),
-                        countLimit = anyInt()
-                    )
-            }
+            coEvery {
+                dataSource.getLocalDataSize(
+                    searchTerm = any(),
+                    tags = any(),
+                    untaggedOnly = any(),
+                    publicPostsOnly = any(),
+                    privatePostsOnly = any(),
+                    readLaterOnly = any(),
+                    countLimit = any()
+                )
+            } returns 0
 
             // WHEN
             val result = runBlocking {
@@ -1355,7 +1344,7 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            result.getOrThrow() shouldBe null
+            assertThat(result.getOrThrow()).isEqualTo(null)
         }
 
         @Test
@@ -1378,20 +1367,28 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify(mockDao).getAllPosts(
-                newestFirst = true,
-                term = PostsDao.preFormatTerm(mockUrlTitle),
-                tag1 = "",
-                tag2 = "",
-                tag3 = "",
-                untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
-                readLaterOnly = false,
-                limit = -1,
-                offset = 0
+            verify {
+                mockDao.getAllPosts(
+                    newestFirst = true,
+                    term = PostsDao.preFormatTerm(mockUrlTitle),
+                    tag1 = "",
+                    tag2 = "",
+                    tag3 = "",
+                    untaggedOnly = false,
+                    publicPostsOnly = false,
+                    privatePostsOnly = false,
+                    readLaterOnly = false,
+                    limit = -1,
+                    offset = 0
+                )
+            }
+            assertThat(result.getOrThrow()).isEqualTo(
+                PostListResult(
+                    mockLocalDataSize,
+                    mockListPost,
+                    upToDate
+                )
             )
-            result.getOrThrow() shouldBe PostListResult(mockLocalDataSize, mockListPost, upToDate)
         }
 
         @Test
@@ -1414,20 +1411,28 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify(mockDao).getAllPosts(
-                newestFirst = true,
-                term = PostsDao.preFormatTerm(mockUrlTitle),
-                tag1 = PostsDao.preFormatTag(mockTag1.name),
-                tag2 = "",
-                tag3 = "",
-                untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
-                readLaterOnly = false,
-                limit = -1,
-                offset = 0
+            verify {
+                mockDao.getAllPosts(
+                    newestFirst = true,
+                    term = PostsDao.preFormatTerm(mockUrlTitle),
+                    tag1 = PostsDao.preFormatTag(mockTag1.name),
+                    tag2 = "",
+                    tag3 = "",
+                    untaggedOnly = false,
+                    publicPostsOnly = false,
+                    privatePostsOnly = false,
+                    readLaterOnly = false,
+                    limit = -1,
+                    offset = 0
+                )
+            }
+            assertThat(result.getOrThrow()).isEqualTo(
+                PostListResult(
+                    mockLocalDataSize,
+                    mockListPost,
+                    upToDate
+                )
             )
-            result.getOrThrow() shouldBe PostListResult(mockLocalDataSize, mockListPost, upToDate)
         }
 
         @Test
@@ -1450,20 +1455,28 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify(mockDao).getAllPosts(
-                newestFirst = true,
-                term = PostsDao.preFormatTerm(mockUrlTitle),
-                tag1 = PostsDao.preFormatTag(mockTag1.name),
-                tag2 = PostsDao.preFormatTag(mockTag2.name),
-                tag3 = "",
-                untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
-                readLaterOnly = false,
-                limit = -1,
-                offset = 0
+            verify {
+                mockDao.getAllPosts(
+                    newestFirst = true,
+                    term = PostsDao.preFormatTerm(mockUrlTitle),
+                    tag1 = PostsDao.preFormatTag(mockTag1.name),
+                    tag2 = PostsDao.preFormatTag(mockTag2.name),
+                    tag3 = "",
+                    untaggedOnly = false,
+                    publicPostsOnly = false,
+                    privatePostsOnly = false,
+                    readLaterOnly = false,
+                    limit = -1,
+                    offset = 0
+                )
+            }
+            assertThat(result.getOrThrow()).isEqualTo(
+                PostListResult(
+                    mockLocalDataSize,
+                    mockListPost,
+                    upToDate
+                )
             )
-            result.getOrThrow() shouldBe PostListResult(mockLocalDataSize, mockListPost, upToDate)
         }
 
         @Test
@@ -1486,40 +1499,48 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify(mockDao).getAllPosts(
-                newestFirst = true,
-                term = PostsDao.preFormatTerm(mockUrlTitle),
-                tag1 = PostsDao.preFormatTag(mockTag1.name),
-                tag2 = PostsDao.preFormatTag(mockTag2.name),
-                tag3 = PostsDao.preFormatTag(mockTag3.name),
-                untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
-                readLaterOnly = false,
-                limit = -1,
-                offset = 0
+            verify {
+                mockDao.getAllPosts(
+                    newestFirst = true,
+                    term = PostsDao.preFormatTerm(mockUrlTitle),
+                    tag1 = PostsDao.preFormatTag(mockTag1.name),
+                    tag2 = PostsDao.preFormatTag(mockTag2.name),
+                    tag3 = PostsDao.preFormatTag(mockTag3.name),
+                    untaggedOnly = false,
+                    publicPostsOnly = false,
+                    privatePostsOnly = false,
+                    readLaterOnly = false,
+                    limit = -1,
+                    offset = 0
+                )
+            }
+            assertThat(result.getOrThrow()).isEqualTo(
+                PostListResult(
+                    mockLocalDataSize,
+                    mockListPost,
+                    upToDate
+                )
             )
-            result.getOrThrow() shouldBe PostListResult(mockLocalDataSize, mockListPost, upToDate)
         }
 
         @Test
         fun `WHEN getGetAll posts fails THEN Failure is returned`() {
             // GIVEN
-            given(
+            every {
                 mockDao.getAllPosts(
-                    anyBoolean(),
-                    anyString(),
-                    anyString(),
-                    anyString(),
-                    anyString(),
-                    anyBoolean(),
-                    anyBoolean(),
-                    anyBoolean(),
-                    anyBoolean(),
-                    anyInt(),
-                    anyInt()
+                    newestFirst = any(),
+                    term = any(),
+                    tag1 = any(),
+                    tag2 = any(),
+                    tag3 = any(),
+                    untaggedOnly = any(),
+                    publicPostsOnly = any(),
+                    privatePostsOnly = any(),
+                    readLaterOnly = any(),
+                    limit = any(),
+                    offset = any()
                 )
-            ).will { throw Exception() }
+            } throws Exception()
 
             // WHEN
             val result = runBlocking {
@@ -1539,37 +1560,35 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            result.shouldBeAnInstanceOf<Failure>()
+            assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
         }
     }
 
     @Nested
     inner class GetPostTests {
+
         @Test
         fun `GIVEN that the api returns an error WHEN getPost is called THEN Failure is returned`() {
             // GIVEN
-            givenSuspend { mockApi.getPost(mockUrlValid) }
-                .willAnswer { throw Exception() }
+            coEvery { mockApi.getPost(mockUrlValid) } throws Exception()
 
             // WHEN
             val result = runBlocking { dataSource.getPost(mockUrlValid) }
 
             // THEN
-            result.shouldBeAnInstanceOf<Failure>()
-            result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
+            assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
         }
 
         @Test
         fun `GIVEN the list is empty WHEN getPost is called THEN Failure is returned`() {
             // GIVEN
-            givenSuspend { mockApi.getPost(mockUrlValid) }
-                .willReturn(createGetPostDto(posts = emptyList()))
+            coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto(posts = emptyList())
 
             // WHEN
             val result = runBlocking { dataSource.getPost(mockUrlValid) }
 
             // THEN
-            result.shouldBeAnInstanceOf<Failure>()
+            assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
         }
 
         @Test
@@ -1577,17 +1596,15 @@ class PostsDataSourceTest {
             // GIVEN
             val post = createPost()
 
-            givenSuspend { mockApi.getPost(mockUrlValid) }
-                .willReturn(createGetPostDto())
-            given(mockPostDtoMapper.map(createPostDto()))
-                .willReturn(post)
+            every { mockDao.getPost(mockUrlValid) } returns null
+            coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto()
+            every { mockPostDtoMapper.map(createPostDto()) } returns post
 
             // WHEN
             val result = runBlocking { dataSource.getPost(mockUrlValid) }
 
             // THEN
-            result.shouldBeAnInstanceOf<Success<Post>>()
-            result.getOrNull() shouldBe post
+            assertThat(result.getOrNull()).isEqualTo(post)
         }
     }
 
@@ -1597,28 +1614,24 @@ class PostsDataSourceTest {
         @Test
         fun `WHEN the db call fails THEN Failure is returned`() {
             // GIVEN
-            given(mockDao.searchExistingPostTag(anyString()))
-                .will { throw Exception() }
+            every { mockDao.searchExistingPostTag(any()) } throws Exception()
 
             // WHEN
-
             val result = runBlocking { dataSource.searchExistingPostTag(mockTagString1) }
 
             // THEN
-            result.shouldBeAnInstanceOf<Failure>()
+            assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
         }
 
         @Test
         fun `WHEN the db call succeeds THEN distinct and sorted values are returned`() {
             // GIVEN
-            given(mockDao.searchExistingPostTag(anyString()))
-                .willReturn(
-                    listOf(
-                        mockTagString1,
-                        "$mockTagString2 $mockTagString1",
-                        "$mockTagString1 $mockTagString2 $mockTagString3",
-                        mockTagStringHtmlEscaped
-                    )
+            every { mockDao.searchExistingPostTag(any()) } returns
+                listOf(
+                    mockTagString1,
+                    "$mockTagString2 $mockTagString1",
+                    "$mockTagString1 $mockTagString2 $mockTagString3",
+                    mockTagStringHtmlEscaped
                 )
 
             val commonPrefix = mockTagString1
@@ -1631,11 +1644,13 @@ class PostsDataSourceTest {
             val result = runBlocking { dataSource.searchExistingPostTag(commonPrefix) }
 
             // THEN
-            result.getOrNull() shouldBe listOf(
-                mockTagString1,
-                mockTagString2,
-                mockTagString3,
-                mockTagStringHtml
+            assertThat(result.getOrNull()).isEqualTo(
+                listOf(
+                    mockTagString1,
+                    mockTagString2,
+                    mockTagString3,
+                    mockTagStringHtml
+                )
             )
         }
     }
@@ -1646,31 +1661,26 @@ class PostsDataSourceTest {
         @Test
         fun `GIVEN that the api returns an error WHEN getSuggestedTagsForUrl is called THEN Failure is returned`() {
             // GIVEN
-            givenSuspend { mockApi.getSuggestedTagsForUrl(mockUrlValid) }
-                .willAnswer { throw Exception() }
+            coEvery { mockApi.getSuggestedTagsForUrl(mockUrlValid) } throws Exception()
 
             // WHEN
             val result = runBlocking { dataSource.getSuggestedTagsForUrl(mockUrlValid) }
 
             // THEN
-            result.shouldBeAnInstanceOf<Failure>()
-            result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
+            assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
         }
 
         @Test
         fun `WHEN getSuggestedTagsForUrl is called THEN Success is returned`() {
             // GIVEN
-            givenSuspend { mockApi.getSuggestedTagsForUrl(mockUrlValid) }
-                .willReturn(mockSuggestedTagsDto)
-            given(mockSuggestedTagsDtoMapper.map(mockSuggestedTagsDto))
-                .willReturn(mockSuggestedTags)
+            coEvery { mockApi.getSuggestedTagsForUrl(mockUrlValid) } returns mockSuggestedTagsDto
+            every { mockSuggestedTagsDtoMapper.map(mockSuggestedTagsDto) } returns mockSuggestedTags
 
             // WHEN
             val result = runBlocking { dataSource.getSuggestedTagsForUrl(mockUrlValid) }
 
             // THEN
-            result.shouldBeAnInstanceOf<Success<SuggestedTags>>()
-            result.getOrNull() shouldBe mockSuggestedTags
+            assertThat(result.getOrNull()).isEqualTo(mockSuggestedTags)
         }
     }
 
@@ -1683,7 +1693,7 @@ class PostsDataSourceTest {
             runBlocking { dataSource.clearCache() }
 
             // THEN
-            verify(mockDao).deleteAllPosts()
+            verify { mockDao.deleteAllPosts() }
         }
     }
 }

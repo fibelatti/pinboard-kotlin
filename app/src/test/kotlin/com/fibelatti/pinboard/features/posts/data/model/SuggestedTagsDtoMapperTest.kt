@@ -1,8 +1,8 @@
 package com.fibelatti.pinboard.features.posts.data.model
 
-import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.MockDataProvider.createSuggestedTags
 import com.fibelatti.pinboard.MockDataProvider.createSuggestedTagsDto
+import com.google.common.truth.Truth.assertThat
 import org.junit.jupiter.api.Test
 
 class SuggestedTagsDtoMapperTest {
@@ -11,6 +11,6 @@ class SuggestedTagsDtoMapperTest {
 
     @Test
     fun `WHEN map is called THEN SuggestedTags is returned`() {
-        mapper.map(createSuggestedTagsDto()) shouldBe createSuggestedTags()
+        assertThat(mapper.map(createSuggestedTagsDto())).isEqualTo(createSuggestedTags())
     }
 }

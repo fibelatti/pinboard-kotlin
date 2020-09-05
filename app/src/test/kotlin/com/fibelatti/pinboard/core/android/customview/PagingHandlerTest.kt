@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.core.android.customview
 
 import com.fibelatti.core.android.recyclerview.PagingHandler
-import com.fibelatti.core.test.extension.shouldBe
+import com.google.common.truth.Truth.assertThat
 import org.junit.jupiter.api.Test
 
 internal class PagingHandlerTest {
@@ -15,7 +15,8 @@ internal class PagingHandlerTest {
         pagingHandler.setMinDistanceToLastItem(50)
 
         // THEN
-        pagingHandler.shouldHandlePaging(itemCount = 100, firstVisibleItemPosition = 51) shouldBe false
+        assertThat(pagingHandler.shouldHandlePaging(itemCount = 100, firstVisibleItemPosition = 51))
+            .isFalse()
     }
 
     @Test
@@ -25,7 +26,8 @@ internal class PagingHandlerTest {
         pagingHandler.setMinDistanceToLastItem(0)
 
         // THEN
-        pagingHandler.shouldHandlePaging(itemCount = 100, firstVisibleItemPosition = 51) shouldBe false
+        assertThat(pagingHandler.shouldHandlePaging(itemCount = 100, firstVisibleItemPosition = 51))
+            .isFalse()
     }
 
     @Test
@@ -35,7 +37,8 @@ internal class PagingHandlerTest {
         pagingHandler.setMinDistanceToLastItem(50)
 
         // THEN
-        pagingHandler.shouldHandlePaging(itemCount = 0, firstVisibleItemPosition = 0) shouldBe false
+        assertThat(pagingHandler.shouldHandlePaging(itemCount = 0, firstVisibleItemPosition = 0))
+            .isFalse()
     }
 
     @Test
@@ -45,7 +48,12 @@ internal class PagingHandlerTest {
         pagingHandler.setMinDistanceToLastItem(50)
 
         // THEN
-        pagingHandler.shouldHandlePaging(itemCount = 106, firstVisibleItemPosition = 105) shouldBe false
+        assertThat(
+            pagingHandler.shouldHandlePaging(
+                itemCount = 106,
+                firstVisibleItemPosition = 105
+            )
+        ).isFalse()
     }
 
     @Test
@@ -55,7 +63,8 @@ internal class PagingHandlerTest {
         pagingHandler.setMinDistanceToLastItem(50)
 
         // THEN
-        pagingHandler.shouldHandlePaging(itemCount = 100, firstVisibleItemPosition = 49) shouldBe false
+        assertThat(pagingHandler.shouldHandlePaging(itemCount = 100, firstVisibleItemPosition = 49))
+            .isFalse()
     }
 
     @Test
@@ -66,7 +75,8 @@ internal class PagingHandlerTest {
         pagingHandler.setRequestingNextPage(true)
 
         // THEN
-        pagingHandler.shouldHandlePaging(itemCount = 100, firstVisibleItemPosition = 52) shouldBe false
+        assertThat(pagingHandler.shouldHandlePaging(itemCount = 100, firstVisibleItemPosition = 52))
+            .isFalse()
     }
 
     @Test
@@ -76,6 +86,7 @@ internal class PagingHandlerTest {
         pagingHandler.setMinDistanceToLastItem(50)
 
         // THEN
-        pagingHandler.shouldHandlePaging(itemCount = 100, firstVisibleItemPosition = 51) shouldBe true
+        assertThat(pagingHandler.shouldHandlePaging(itemCount = 100, firstVisibleItemPosition = 51))
+            .isTrue()
     }
 }

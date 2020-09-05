@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.features.user.presentation
 
 import com.fibelatti.core.archcomponents.test.extension.currentEventShouldBe
-import com.fibelatti.core.test.extension.mock
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
@@ -9,13 +8,14 @@ import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.verify
 
 internal class UserPreferencesViewModelTest : BaseViewModelTest() {
 
-    private val mockUserRepository = mock<UserRepository>()
-    private val mockAppStateRepository = mock<AppStateRepository>()
+    private val mockUserRepository = mockk<UserRepository>(relaxed = true)
+    private val mockAppStateRepository = mockk<AppStateRepository>(relaxed = true)
 
     private val userPreferencesViewModel = UserPreferencesViewModel(
         mockUserRepository,
@@ -25,27 +25,27 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
     @Test
     fun `WHEN saveAppearance is called THEN repository is updated`() {
         // GIVEN
-        val mockAppearance = mock<Appearance>()
+        val mockAppearance = mockk<Appearance>()
 
         // WHEN
         userPreferencesViewModel.saveAppearance(mockAppearance)
 
         // THEN
-        verify(mockUserRepository).setAppearance(mockAppearance)
-        verify(mockAppStateRepository).reset()
+        verify { mockUserRepository.setAppearance(mockAppearance) }
+        verify { mockAppStateRepository.reset() }
         userPreferencesViewModel.appearanceChanged.currentEventShouldBe(mockAppearance)
     }
 
     @Test
     fun `WHEN savePreferredDetailsView is called THEN repository is updated`() {
         // GIVEN
-        val preferredDetailsView = mock<PreferredDetailsView>()
+        val preferredDetailsView = mockk<PreferredDetailsView>()
 
         // WHEN
         userPreferencesViewModel.savePreferredDetailsView(preferredDetailsView)
 
         // THEN
-        verify(mockUserRepository).setPreferredDetailsView(preferredDetailsView)
+        verify { mockUserRepository.setPreferredDetailsView(preferredDetailsView) }
     }
 
     @Test
@@ -57,7 +57,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         userPreferencesViewModel.saveMarkAsReadOnOpen(value)
 
         // THEN
-        verify(mockUserRepository).setMarkAsReadOnOpen(value)
+        verify { mockUserRepository.setMarkAsReadOnOpen(value) }
     }
 
     @Test
@@ -69,7 +69,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         userPreferencesViewModel.saveAutoFillDescription(value)
 
         // THEN
-        verify(mockUserRepository).setAutoFillDescription(value)
+        verify { mockUserRepository.setAutoFillDescription(value) }
     }
 
     @Test
@@ -81,19 +81,19 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         userPreferencesViewModel.saveShowDescriptionInLists(value)
 
         // THEN
-        verify(mockUserRepository).setShowDescriptionInLists(value)
+        verify { mockUserRepository.setShowDescriptionInLists(value) }
     }
 
     @Test
     fun `WHEN setEditAfterSharing is called THEN repository is updated`() {
         // GIVEN
-        val value = mock<EditAfterSharing>()
+        val value = mockk<EditAfterSharing>()
 
         // WHEN
         userPreferencesViewModel.saveEditAfterSharing(value)
 
         // THEN
-        verify(mockUserRepository).setEditAfterSharing(value)
+        verify { mockUserRepository.setEditAfterSharing(value) }
     }
 
     @Test
@@ -105,7 +105,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         userPreferencesViewModel.saveDefaultPrivate(value)
 
         // THEN
-        verify(mockUserRepository).setDefaultPrivate(value)
+        verify { mockUserRepository.setDefaultPrivate(value) }
     }
 
     @Test
@@ -117,6 +117,6 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         userPreferencesViewModel.saveDefaultReadLater(value)
 
         // THEN
-        verify(mockUserRepository).setDefaultReadLater(value)
+        verify { mockUserRepository.setDefaultReadLater(value) }
     }
 }

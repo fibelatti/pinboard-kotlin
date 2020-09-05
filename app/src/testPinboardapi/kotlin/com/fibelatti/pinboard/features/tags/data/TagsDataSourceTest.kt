@@ -1,21 +1,18 @@
 package com.fibelatti.pinboard.features.tags.data
 
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.core.test.extension.givenSuspend
-import com.fibelatti.core.test.extension.mock
-import com.fibelatti.core.test.extension.shouldBe
-import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import com.google.common.truth.Truth.assertThat
+import io.mockk.coEvery
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 class TagsDataSourceTest {
 
-    private val mockApi = mock<TagsApi>()
+    private val mockApi = mockk<TagsApi>()
 
     private val dataSource = TagsDataSource(mockApi)
 
@@ -25,57 +22,48 @@ class TagsDataSourceTest {
         @Test
         fun `GIVEN getTags returns an error WHEN getAllTags is called THEN Failure is returned`() {
             // GIVEN
-            givenSuspend { mockApi.getTags() }
-                .willAnswer { throw Exception() }
+            coEvery { mockApi.getTags() } throws Exception()
 
             // WHEN
             val result = runBlocking { dataSource.getAllTags() }
 
             // THEN
-            result.shouldBeAnInstanceOf<Failure>()
-            result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
+            assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
         }
 
         @Test
         fun `GIVEN getTags returns a map with an invalid value WHEN getAllTags is called THEN Failure is returned`() {
             // GIVEN
-            givenSuspend { mockApi.getTags() }
-                .willReturn(mapOf("tag" to "a"))
+            coEvery { mockApi.getTags() } returns mapOf("tag" to "a")
 
             // WHEN
             val result = runBlocking { dataSource.getAllTags() }
 
             // THEN
-            result.shouldBeAnInstanceOf<Failure>()
-            result.exceptionOrNull()?.shouldBeAnInstanceOf<NumberFormatException>()
+            assertThat(result.exceptionOrNull()).isInstanceOf(NumberFormatException::class.java)
         }
 
         @Test
         fun `GIVEN getTags returns an empty map WHEN getAllTags is called THEN Success is returned`() {
             // GIVEN
-            givenSuspend { mockApi.getTags() }
-                .willReturn(emptyMap())
+            coEvery { mockApi.getTags() } returns emptyMap()
 
             // WHEN
             val result = runBlocking { dataSource.getAllTags() }
 
             // THEN
-            result.shouldBeAnInstanceOf<Success<*>>()
-            result.getOrNull() shouldBe emptyList<Tag>()
+            assertThat(result.getOrNull()).isEqualTo(emptyList<Tag>())
         }
 
         @Test
         fun `WHEN getAllTags is called THEN Success is returned`() {
             // GIVEN
-            givenSuspend { mockApi.getTags() }
-                .willReturn(mapOf("tag" to "1"))
+            coEvery { mockApi.getTags() } returns mapOf("tag" to "1")
 
             // WHEN
             val result = runBlocking { dataSource.getAllTags() }
 
-            // THEN
-            result.shouldBeAnInstanceOf<Success<*>>()
-            result.getOrNull() shouldBe listOf(Tag("tag", 1))
+            assertThat(result.getOrNull()).isEqualTo(listOf(Tag("tag", 1)))
         }
     }
 }

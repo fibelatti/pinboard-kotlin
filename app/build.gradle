@@ -165,26 +165,27 @@ dependencies {
     debugImplementation(Dependencies.leakCanary)
 
     // Test
+    testCompileOnly(TestDependencies.junit)
     testRuntimeOnly(TestDependencies.junit5Engine)
     testRuntimeOnly(TestDependencies.junitVintage)
+    testImplementation(TestDependencies.junit5)
+    testImplementation(TestDependencies.junit5Params)
 
-    testCompileOnly(TestDependencies.junit)
-
-    testImplementation(Dependencies.kotlinReflect)
     testImplementation(TestDependencies.coreLibTest)
     testImplementation(TestDependencies.coreLibArchTest)
 
-    testImplementation(TestDependencies.junit5)
-    testImplementation(TestDependencies.junit5Params)
-    testImplementation(TestDependencies.mockitoCore)
+    testImplementation(Dependencies.kotlinReflect)
+
+    testImplementation(TestDependencies.googleTruth)
+    testImplementation(TestDependencies.mockk)
     testImplementation(TestDependencies.coroutinesTest)
     testImplementation(TestDependencies.archComponentsTest)
 
-    androidTestImplementation(TestDependencies.coreLibTest)
-
+    androidTestImplementation(TestDependencies.googleTruth)
     androidTestImplementation(Dependencies.supportAnnotations)
+    androidTestImplementation(TestDependencies.testRunner)
+    androidTestImplementation(TestDependencies.coreLibTest)
+    androidTestImplementation(TestDependencies.kotlinTest)
     androidTestImplementation(TestDependencies.archComponentsTest)
     androidTestImplementation(TestDependencies.roomTest)
-    androidTestImplementation(TestDependencies.testRunner)
-    androidTestImplementation(TestDependencies.kotlinTest)
 }

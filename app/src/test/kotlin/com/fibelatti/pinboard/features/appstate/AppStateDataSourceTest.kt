@@ -2,14 +2,18 @@ package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
 import com.fibelatti.core.functional.SingleRunner
-import com.fibelatti.core.test.extension.givenSuspend
-import com.fibelatti.core.test.extension.mock
-import com.fibelatti.core.test.extension.safeAny
-import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.InstantExecutorExtension
 import com.fibelatti.pinboard.allSealedSubclasses
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import com.google.common.truth.Truth.assertThat
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkClass
+import io.mockk.spyk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.setMain
@@ -21,25 +25,19 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.fail
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import org.mockito.BDDMockito.given
-import org.mockito.BDDMockito.willReturn
-import org.mockito.Mockito
-import org.mockito.Mockito.never
-import org.mockito.Mockito.spy
-import org.mockito.Mockito.verify
 
 @ExtendWith(InstantExecutorExtension::class)
 internal class AppStateDataSourceTest {
 
-    private val mockUserRepository = mock<UserRepository>()
-    private val mockNavigationActionHandler = mock<NavigationActionHandler>()
-    private val mockPostActionHandler = mock<PostActionHandler>()
-    private val mockSearchActionHandler = mock<SearchActionHandler>()
-    private val mockTagActionHandler = mock<TagActionHandler>()
-    private val mockNoteActionHandler = mock<NoteActionHandler>()
-    private val mockPopularActionHandler = mock<PopularActionHandler>()
+    private val mockUserRepository = mockk<UserRepository>(relaxed = true)
+    private val mockNavigationActionHandler = mockk<NavigationActionHandler>()
+    private val mockPostActionHandler = mockk<PostActionHandler>()
+    private val mockSearchActionHandler = mockk<SearchActionHandler>()
+    private val mockTagActionHandler = mockk<TagActionHandler>()
+    private val mockNoteActionHandler = mockk<NoteActionHandler>()
+    private val mockPopularActionHandler = mockk<PopularActionHandler>()
     private val singleRunner = SingleRunner()
-    private val mockConnectivityInfoProvider = mock<ConnectivityInfoProvider>()
+    private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider>()
 
     private lateinit var appStateDataSource: AppStateDataSource
 
@@ -57,10 +55,9 @@ internal class AppStateDataSourceTest {
     fun setup() {
         Dispatchers.setMain(Dispatchers.Unconfined)
 
-        given(mockConnectivityInfoProvider.isConnected())
-            .willReturn(false)
+        every { mockConnectivityInfoProvider.isConnected() } returns false
 
-        appStateDataSource = spy(
+        appStateDataSource = spyk(
             AppStateDataSource(
                 mockUserRepository,
                 mockNavigationActionHandler,
@@ -83,15 +80,14 @@ internal class AppStateDataSourceTest {
     @Test
     fun `reset should set currentContent to the initial value`() {
         // GIVEN
-        willReturn(expectedInitialValue)
-            .given(appStateDataSource).getInitialContent()
+        coEvery { appStateDataSource.getInitialContent() } returns expectedInitialValue
 
         // WHEN
         appStateDataSource.reset()
 
         // THEN
-        verify(appStateDataSource).getInitialContent()
-        verify(appStateDataSource).updateContent(expectedInitialValue)
+        verify { appStateDataSource.getInitialContent() }
+        verify { appStateDataSource.updateContent(expectedInitialValue) }
         appStateDataSource.getContent().currentValueShouldBe(expectedInitialValue)
     }
 
@@ -104,12 +100,42 @@ internal class AppStateDataSourceTest {
         fun `WHEN runAction is called THEN expected action handler is called`(testCase: Pair<Action, ExpectedHandler>) {
             runBlocking {
                 // GIVEN
-                given(mockNavigationActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
-                given(mockPostActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
-                given(mockSearchActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
-                given(mockTagActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
-                given(mockNoteActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
-                given(mockPopularActionHandler.runAction(safeAny(), safeAny())).willReturn(expectedInitialValue)
+                coEvery {
+                    mockNavigationActionHandler.runAction(
+                        any(),
+                        any()
+                    )
+                } returns expectedInitialValue
+                coEvery {
+                    mockPostActionHandler.runAction(
+                        any(),
+                        any()
+                    )
+                } returns expectedInitialValue
+                coEvery {
+                    mockSearchActionHandler.runAction(
+                        any(),
+                        any()
+                    )
+                } returns expectedInitialValue
+                coEvery {
+                    mockTagActionHandler.runAction(
+                        any(),
+                        any()
+                    )
+                } returns expectedInitialValue
+                coEvery {
+                    mockNoteActionHandler.runAction(
+                        any(),
+                        any()
+                    )
+                } returns expectedInitialValue
+                coEvery {
+                    mockPopularActionHandler.runAction(
+                        any(),
+                        any()
+                    )
+                } returns expectedInitialValue
 
                 val (action, expectedHandler) = testCase
 
@@ -120,42 +146,72 @@ internal class AppStateDataSourceTest {
                 when (expectedHandler) {
                     ExpectedHandler.NAVIGATION -> {
                         if (action is NavigationAction) {
-                            verify(mockNavigationActionHandler).runAction(action, expectedInitialValue)
+                            coVerify {
+                                mockNavigationActionHandler.runAction(
+                                    action,
+                                    expectedInitialValue
+                                )
+                            }
                         } else {
                             fail { "Unexpected Action received" }
                         }
                     }
                     ExpectedHandler.POST -> {
                         if (action is PostAction) {
-                            verify(mockPostActionHandler).runAction(action, expectedInitialValue)
+                            coVerify {
+                                mockPostActionHandler.runAction(
+                                    action,
+                                    expectedInitialValue
+                                )
+                            }
                         } else {
                             fail { "Unexpected Action received" }
                         }
                     }
                     ExpectedHandler.SEARCH -> {
                         if (action is SearchAction) {
-                            verify(mockSearchActionHandler).runAction(action, expectedInitialValue)
+                            coVerify {
+                                mockSearchActionHandler.runAction(
+                                    action,
+                                    expectedInitialValue
+                                )
+                            }
                         } else {
                             fail { "Unexpected Action received" }
                         }
                     }
                     ExpectedHandler.TAG -> {
                         if (action is TagAction) {
-                            verify(mockTagActionHandler).runAction(action, expectedInitialValue)
+                            coVerify {
+                                mockTagActionHandler.runAction(
+                                    action,
+                                    expectedInitialValue
+                                )
+                            }
                         } else {
                             fail { "Unexpected Action received" }
                         }
                     }
                     ExpectedHandler.NOTE -> {
                         if (action is NoteAction) {
-                            verify(mockNoteActionHandler).runAction(action, expectedInitialValue)
+                            coVerify {
+                                mockNoteActionHandler.runAction(
+                                    action,
+                                    expectedInitialValue
+                                )
+                            }
                         } else {
                             fail { "Unexpected Action received" }
                         }
                     }
                     ExpectedHandler.POPULAR -> {
                         if (action is PopularAction) {
-                            verify(mockPopularActionHandler).runAction(action, expectedInitialValue)
+                            coVerify {
+                                mockPopularActionHandler.runAction(
+                                    action,
+                                    expectedInitialValue
+                                )
+                            }
                         } else {
                             fail { "Unexpected Action received" }
                         }
@@ -167,7 +223,7 @@ internal class AppStateDataSourceTest {
         fun testCases(): List<Pair<Action, ExpectedHandler>> =
             mutableListOf<Pair<Action, ExpectedHandler>>().apply {
                 Action::class.allSealedSubclasses
-                    .map { it.objectInstance ?: Mockito.mock(it.javaObjectType) }
+                    .map { it.objectInstance ?: mockkClass(it) }
                     .forEach { action ->
                         when (action) {
                             // Navigation
@@ -178,48 +234,48 @@ internal class AppStateDataSourceTest {
                             Private -> add(Private to ExpectedHandler.NAVIGATION)
                             Unread -> add(Unread to ExpectedHandler.NAVIGATION)
                             Untagged -> add(Untagged to ExpectedHandler.NAVIGATION)
-                            is ViewPost -> add(mock<ViewPost>() to ExpectedHandler.NAVIGATION)
+                            is ViewPost -> add(mockk<ViewPost>() to ExpectedHandler.NAVIGATION)
                             ViewSearch -> add(ViewSearch to ExpectedHandler.NAVIGATION)
                             AddPost -> add(AddPost to ExpectedHandler.NAVIGATION)
                             ViewTags -> add(ViewTags to ExpectedHandler.NAVIGATION)
                             ViewNotes -> add(ViewNotes to ExpectedHandler.NAVIGATION)
-                            is ViewNote -> add(mock<ViewNote>() to ExpectedHandler.NAVIGATION)
+                            is ViewNote -> add(mockk<ViewNote>() to ExpectedHandler.NAVIGATION)
                             ViewPopular -> add(ViewPopular to ExpectedHandler.NAVIGATION)
                             ViewPreferences -> add(ViewPreferences to ExpectedHandler.NAVIGATION)
 
                             // Post
                             Refresh -> add(Refresh to ExpectedHandler.POST)
-                            is SetPosts -> add(mock<SetPosts>() to ExpectedHandler.POST)
+                            is SetPosts -> add(mockk<SetPosts>() to ExpectedHandler.POST)
                             GetNextPostPage -> add(GetNextPostPage to ExpectedHandler.POST)
-                            is SetNextPostPage -> add(mock<SetNextPostPage>() to ExpectedHandler.POST)
+                            is SetNextPostPage -> add(mockk<SetNextPostPage>() to ExpectedHandler.POST)
                             PostsDisplayed -> add(PostsDisplayed to ExpectedHandler.POST)
                             ToggleSorting -> add(ToggleSorting to ExpectedHandler.POST)
-                            is EditPost -> add(mock<EditPost>() to ExpectedHandler.POST)
-                            is EditPostFromShare -> add(mock<EditPostFromShare>() to ExpectedHandler.POST)
-                            is PostSaved -> add(mock<PostSaved>() to ExpectedHandler.POST)
+                            is EditPost -> add(mockk<EditPost>() to ExpectedHandler.POST)
+                            is EditPostFromShare -> add(mockk<EditPostFromShare>() to ExpectedHandler.POST)
+                            is PostSaved -> add(mockk<PostSaved>() to ExpectedHandler.POST)
                             PostDeleted -> add(PostDeleted to ExpectedHandler.POST)
 
                             // Search
                             RefreshSearchTags -> add(RefreshSearchTags to ExpectedHandler.SEARCH)
-                            is SetSearchTags -> add(mock<SetSearchTags>() to ExpectedHandler.SEARCH)
-                            is AddSearchTag -> add(mock<AddSearchTag>() to ExpectedHandler.SEARCH)
-                            is RemoveSearchTag -> add(mock<RemoveSearchTag>() to ExpectedHandler.SEARCH)
-                            is Search -> add(mock<Search>() to ExpectedHandler.SEARCH)
+                            is SetSearchTags -> add(mockk<SetSearchTags>() to ExpectedHandler.SEARCH)
+                            is AddSearchTag -> add(mockk<AddSearchTag>() to ExpectedHandler.SEARCH)
+                            is RemoveSearchTag -> add(mockk<RemoveSearchTag>() to ExpectedHandler.SEARCH)
+                            is Search -> add(mockk<Search>() to ExpectedHandler.SEARCH)
                             ClearSearch -> add(ClearSearch to ExpectedHandler.SEARCH)
 
                             // Tag
                             RefreshTags -> add(RefreshTags to ExpectedHandler.TAG)
-                            is SetTags -> add(mock<SetTags>() to ExpectedHandler.TAG)
-                            is PostsForTag -> add(mock<PostsForTag>() to ExpectedHandler.TAG)
+                            is SetTags -> add(mockk<SetTags>() to ExpectedHandler.TAG)
+                            is PostsForTag -> add(mockk<PostsForTag>() to ExpectedHandler.TAG)
 
                             // Notes
                             RefreshNotes -> add(RefreshNotes to ExpectedHandler.NOTE)
-                            is SetNotes -> add(mock<SetNotes>() to ExpectedHandler.NOTE)
-                            is SetNote -> add(mock<SetNote>() to ExpectedHandler.NOTE)
+                            is SetNotes -> add(mockk<SetNotes>() to ExpectedHandler.NOTE)
+                            is SetNote -> add(mockk<SetNote>() to ExpectedHandler.NOTE)
 
                             // Popular
                             RefreshPopular -> add(RefreshPopular to ExpectedHandler.POPULAR)
-                            is SetPopularPosts -> add(mock<SetPopularPosts>() to ExpectedHandler.POPULAR)
+                            is SetPopularPosts -> add(mockk<SetPopularPosts>() to ExpectedHandler.POPULAR)
                         }.let { } // to make it exhaustive
                     }
             }
@@ -231,97 +287,121 @@ internal class AppStateDataSourceTest {
         @Test
         fun `WHEN NavigationActionHandler return the same content THEN value is never updated`() {
             // GIVEN
-            val mockAction = mock<NavigationAction>()
-            givenSuspend { mockNavigationActionHandler.runAction(mockAction, expectedInitialValue) }
-                .willReturn(expectedInitialValue)
+            val mockAction = mockk<NavigationAction>()
+            coEvery {
+                mockNavigationActionHandler.runAction(
+                    mockAction,
+                    expectedInitialValue
+                )
+            } returns expectedInitialValue
 
             // WHEN
             runBlocking { appStateDataSource.runAction(mockAction) }
 
             // THEN
-            verify(appStateDataSource, never()).updateContent(safeAny())
+            coVerify(exactly = 0) { appStateDataSource.updateContent(any()) }
         }
 
         @Test
         fun `WHEN PostActionHandler return the same content THEN value is never updated`() {
             // GIVEN
-            val mockAction = mock<PostAction>()
-            givenSuspend { mockPostActionHandler.runAction(mockAction, expectedInitialValue) }
-                .willReturn(expectedInitialValue)
+            val mockAction = mockk<PostAction>()
+            coEvery {
+                mockPostActionHandler.runAction(
+                    mockAction,
+                    expectedInitialValue
+                )
+            } returns expectedInitialValue
 
             // WHEN
             runBlocking { appStateDataSource.runAction(mockAction) }
 
             // THEN
-            verify(appStateDataSource, never()).updateContent(safeAny())
+            coVerify(exactly = 0) { appStateDataSource.updateContent(any()) }
         }
 
         @Test
         fun `WHEN SearchActionHandler return the same content THEN value is never updated`() {
             // GIVEN
-            val mockAction = mock<SearchAction>()
-            givenSuspend { mockSearchActionHandler.runAction(mockAction, expectedInitialValue) }
-                .willReturn(expectedInitialValue)
+            val mockAction = mockk<SearchAction>()
+            coEvery {
+                mockSearchActionHandler.runAction(
+                    mockAction,
+                    expectedInitialValue
+                )
+            } returns expectedInitialValue
 
             // WHEN
             runBlocking { appStateDataSource.runAction(mockAction) }
 
             // THEN
-            verify(appStateDataSource, never()).updateContent(safeAny())
+            coVerify(exactly = 0) { appStateDataSource.updateContent(any()) }
         }
 
         @Test
         fun `WHEN TagActionHandler return the same content THEN value is never updated`() {
             // GIVEN
-            val mockAction = mock<TagAction>()
-            givenSuspend { mockTagActionHandler.runAction(mockAction, expectedInitialValue) }
-                .willReturn(expectedInitialValue)
+            val mockAction = mockk<TagAction>()
+            coEvery {
+                mockTagActionHandler.runAction(
+                    mockAction,
+                    expectedInitialValue
+                )
+            } returns expectedInitialValue
 
             // WHEN
             runBlocking { appStateDataSource.runAction(mockAction) }
 
             // THEN
-            verify(appStateDataSource, never()).updateContent(safeAny())
+            coVerify(exactly = 0) { appStateDataSource.updateContent(any()) }
         }
 
         @Test
         fun `WHEN NoteActionHandler return the same content THEN value is never updated`() {
             // GIVEN
-            val mockAction = mock<NoteAction>()
-            givenSuspend { mockNoteActionHandler.runAction(mockAction, expectedInitialValue) }
-                .willReturn(expectedInitialValue)
+            val mockAction = mockk<NoteAction>()
+            coEvery {
+                mockNoteActionHandler.runAction(
+                    mockAction,
+                    expectedInitialValue
+                )
+            } returns expectedInitialValue
 
             // WHEN
             runBlocking { appStateDataSource.runAction(mockAction) }
 
             // THEN
-            verify(appStateDataSource, never()).updateContent(safeAny())
+            coVerify(exactly = 0) { appStateDataSource.updateContent(any()) }
         }
 
         @Test
         fun `WHEN PopularActionHandler return the same content THEN value is never updated`() {
             // GIVEN
-            val mockAction = mock<PopularAction>()
-            givenSuspend { mockPopularActionHandler.runAction(mockAction, expectedInitialValue) }
-                .willReturn(expectedInitialValue)
+            val mockAction = mockk<PopularAction>()
+            coEvery {
+                mockPopularActionHandler.runAction(
+                    mockAction,
+                    expectedInitialValue
+                )
+            } returns expectedInitialValue
 
             // WHEN
             runBlocking { appStateDataSource.runAction(mockAction) }
 
             // THEN
-            verify(appStateDataSource, never()).updateContent(safeAny())
+            coVerify(exactly = 0) { appStateDataSource.updateContent(any()) }
         }
     }
 
     @Test
     fun `WHEN getInitialContent is called THEN expected initial content is returned`() {
-        appStateDataSource.getInitialContent() shouldBe expectedInitialValue
+        assertThat(appStateDataSource.getInitialContent()).isEqualTo(expectedInitialValue)
     }
 
     @Test
     fun `GIVEN updateContent is called THEN getContent should return that value`() {
         // GIVEN
-        val mockContent = mock<Content>()
+        val mockContent = mockk<Content>()
 
         // WHEN
         appStateDataSource.updateContent(mockContent)

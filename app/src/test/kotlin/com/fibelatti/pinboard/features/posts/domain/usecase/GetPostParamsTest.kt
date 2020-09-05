@@ -1,8 +1,8 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
-import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_PAGE_SIZE
 import com.fibelatti.pinboard.features.appstate.NewestFirst
+import com.google.common.truth.Truth.assertThat
 import org.junit.jupiter.api.Test
 
 internal class GetPostParamsTest {
@@ -11,12 +11,12 @@ internal class GetPostParamsTest {
     fun `GetPostParams default values should be set`() {
         val params = GetPostParams()
 
-        params.sorting shouldBe NewestFirst
-        params.searchTerm shouldBe ""
-        params.tagParams shouldBe GetPostParams.Tags.None
-        params.visibilityParams shouldBe GetPostParams.Visibility.None
-        params.readLater shouldBe false
-        params.limit shouldBe DEFAULT_PAGE_SIZE
-        params.offset shouldBe 0
+        assertThat(params.sorting).isEqualTo(NewestFirst)
+        assertThat(params.searchTerm).isEmpty()
+        assertThat(params.tagParams).isEqualTo(GetPostParams.Tags.None)
+        assertThat(params.visibilityParams).isEqualTo(GetPostParams.Visibility.None)
+        assertThat(params.readLater).isFalse()
+        assertThat(params.limit).isEqualTo(DEFAULT_PAGE_SIZE)
+        assertThat(params.offset).isEqualTo(0)
     }
 }

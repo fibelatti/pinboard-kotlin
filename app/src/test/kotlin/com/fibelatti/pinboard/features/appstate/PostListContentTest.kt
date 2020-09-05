@@ -1,65 +1,65 @@
 package com.fibelatti.pinboard.features.appstate
 
-import com.fibelatti.core.test.extension.mock
-import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.google.common.truth.Truth.assertThat
+import io.mockk.mockk
 import org.junit.jupiter.api.Test
 
 internal class PostListContentTest {
 
     private val nullContent = PostListContent(
-        category = mock(),
+        category = mockk(),
         posts = null,
         showDescription = false,
-        sortType = mock(),
-        searchParameters = mock(),
-        shouldLoad = mock(),
+        sortType = mockk(),
+        searchParameters = mockk(),
+        shouldLoad = mockk(),
         isConnected = true
     )
 
     private val nonNullContent = PostListContent(
-        category = mock(),
+        category = mockk(),
         posts = PostList(
             totalCount = 42,
             list = listOf(createPost()),
-            diffUtil = mock(),
+            diffUtil = mockk(),
             alreadyDisplayed = true
         ),
         showDescription = false,
-        sortType = mock(),
-        searchParameters = mock(),
-        shouldLoad = mock(),
+        sortType = mockk(),
+        searchParameters = mockk(),
+        shouldLoad = mockk(),
         isConnected = true
     )
 
     @Test
     fun `WHEN posts is null THEN totalCount should return 0`() {
-        nullContent.totalCount shouldBe 0
+        assertThat(nullContent.totalCount).isEqualTo(0)
     }
 
     @Test
     fun `WHEN posts is not null THEN totalCount should return its values`() {
-        nonNullContent.totalCount shouldBe 42
+        assertThat(nonNullContent.totalCount).isEqualTo(42)
     }
 
     @Test
     fun `WHEN posts is null THEN currentCount should return 0`() {
-        nullContent.currentCount shouldBe 0
+        assertThat(nullContent.currentCount).isEqualTo(0)
     }
 
     @Test
     fun `WHEN posts is not null THEN currentCount should return its values`() {
-        nonNullContent.currentCount shouldBe 1
+        assertThat(nonNullContent.currentCount).isEqualTo(1)
     }
 
     @Test
     fun `WHEN posts is null THEN currentList should return an emptyList`() {
-        nullContent.currentList shouldBe emptyList<Post>()
+        assertThat(nullContent.currentList).isEqualTo(emptyList<Post>())
     }
 
     @Test
     fun `WHEN posts is not null THEN currentList should return its values`() {
-        nonNullContent.currentList shouldBe listOf(createPost())
+        assertThat(nonNullContent.currentList).isEqualTo(listOf(createPost()))
     }
 }

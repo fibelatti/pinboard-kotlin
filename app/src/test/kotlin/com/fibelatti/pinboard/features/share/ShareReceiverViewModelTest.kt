@@ -4,10 +4,6 @@ import com.fibelatti.core.archcomponents.test.extension.currentEventShouldBe
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.provider.ResourceProvider
-import com.fibelatti.core.test.extension.givenSuspend
-import com.fibelatti.core.test.extension.mock
-import com.fibelatti.core.test.extension.safeAny
-import com.fibelatti.core.test.extension.verifySuspend
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
@@ -22,20 +18,23 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.ParseUrl
 import com.fibelatti.pinboard.features.posts.domain.usecase.RichUrl
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
-import org.junit.jupiter.api.BeforeEach
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito.given
-import org.mockito.Mockito.never
-import org.mockito.Mockito.verify
 
 internal class ShareReceiverViewModelTest : BaseViewModelTest() {
 
-    private val mockExtractUrl = mock<ExtractUrl>()
-    private val mockParseUrl = mock<ParseUrl>()
-    private val mockAddPost = mock<AddPost>()
-    private val mockUserRepository = mock<UserRepository>()
-    private val mockAppStateRepository = mock<AppStateRepository>()
-    private val mockResourceProvider = mock<ResourceProvider>()
+    private val mockExtractUrl = mockk<ExtractUrl>()
+    private val mockParseUrl = mockk<ParseUrl>()
+    private val mockAddPost = mockk<AddPost>()
+    private val mockUserRepository = mockk<UserRepository>()
+    private val mockAppStateRepository = mockk<AppStateRepository>()
+    private val mockResourceProvider = mockk<ResourceProvider> {
+        every { getString(R.string.posts_saved_feedback) } returns "R.string.posts_saved_feedback"
+    }
 
     private val error = Exception()
 
@@ -48,40 +47,31 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         mockResourceProvider
     )
 
-    @BeforeEach
-    fun setup() {
-        given(mockResourceProvider.getString(R.string.posts_saved_feedback))
-            .willReturn("R.string.posts_saved_feedback")
-    }
-
     @Test
     fun `WHEN ExtractUrl fails THEN failed should receive a value`() {
         // GIVEN
-        givenSuspend { mockExtractUrl(mockUrlValid) }
-            .willReturn(Failure(error))
+        coEvery { mockExtractUrl(mockUrlValid) } returns Failure(error)
 
         // WHEN
         shareReceiverViewModel.saveUrl(mockUrlValid)
 
         // THEN
         shareReceiverViewModel.failed.currentEventShouldBe(error)
-        verifySuspend(mockAddPost, never()) { invoke(safeAny()) }
+        coVerify(exactly = 0) { mockAddPost.invoke(any()) }
     }
 
     @Test
     fun `WHEN ParseUrl fails THEN failed should receive a value`() {
         // GIVEN
-        givenSuspend { mockExtractUrl(mockUrlValid) }
-            .willReturn(Success(mockUrlValid))
-        givenSuspend { mockParseUrl(mockUrlValid) }
-            .willReturn(Failure(error))
+        coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
+        coEvery { mockParseUrl(mockUrlValid) } returns Failure(error)
 
         // WHEN
         shareReceiverViewModel.saveUrl(mockUrlValid)
 
         // THEN
         shareReceiverViewModel.failed.currentEventShouldBe(error)
-        verifySuspend(mockAddPost, never()) { invoke(safeAny()) }
+        coVerify(exactly = 0) { mockAddPost.invoke(any()) }
     }
 
     @Test
@@ -90,12 +80,11 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         val defaultPrivate = randomBoolean()
         val defaultReadLater = randomBoolean()
 
-        givenSuspend { mockExtractUrl(mockUrlValid) }.willReturn(Success(mockUrlValid))
-        givenSuspend { mockParseUrl(mockUrlValid) }
-            .willReturn(Success(RichUrl(mockUrlValid, mockUrlValid)))
-        given(mockUserRepository.getDefaultPrivate()).willReturn(defaultPrivate)
-        given(mockUserRepository.getDefaultReadLater()).willReturn(defaultReadLater)
-        given(mockUserRepository.getEditAfterSharing()).willReturn(EditAfterSharing.BeforeSaving)
+        coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
+        coEvery { mockParseUrl(mockUrlValid) } returns Success(RichUrl(mockUrlValid, mockUrlValid))
+        every { mockUserRepository.getDefaultPrivate() } returns defaultPrivate
+        every { mockUserRepository.getDefaultReadLater() } returns defaultReadLater
+        every { mockUserRepository.getEditAfterSharing() } returns EditAfterSharing.BeforeSaving
 
         val expectedPost = Post(
             url = mockUrlValid,
@@ -109,11 +98,11 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         shareReceiverViewModel.saveUrl(mockUrlValid)
 
         // THEN
-        verify(mockUserRepository).getDefaultPrivate()
-        verify(mockUserRepository).getDefaultReadLater()
+        verify { mockUserRepository.getDefaultPrivate() }
+        verify { mockUserRepository.getDefaultReadLater() }
         shareReceiverViewModel.edit.currentEventShouldBe("")
-        verifySuspend(mockAppStateRepository) { runAction(EditPostFromShare(expectedPost)) }
-        verifySuspend(mockAddPost, never()) { invoke(safeAny()) }
+        coVerify { mockAppStateRepository.runAction(EditPostFromShare(expectedPost)) }
+        coVerify(exactly = 0) { mockAddPost.invoke(any()) }
     }
 
     @Test
@@ -122,13 +111,12 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         val defaultPrivate = randomBoolean()
         val defaultReadLater = randomBoolean()
 
-        givenSuspend { mockExtractUrl(mockUrlValid) }.willReturn(Success(mockUrlValid))
-        givenSuspend { mockParseUrl(mockUrlValid) }
-            .willReturn(Success(RichUrl(mockUrlValid, mockUrlValid)))
-        given(mockUserRepository.getDefaultPrivate()).willReturn(defaultPrivate)
-        given(mockUserRepository.getDefaultReadLater()).willReturn(defaultReadLater)
-        given(mockUserRepository.getEditAfterSharing()).willReturn(mock())
-        givenSuspend {
+        coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
+        coEvery { mockParseUrl(mockUrlValid) } returns Success(RichUrl(mockUrlValid, mockUrlValid))
+        every { mockUserRepository.getDefaultPrivate() } returns defaultPrivate
+        every { mockUserRepository.getDefaultReadLater() } returns defaultReadLater
+        every { mockUserRepository.getEditAfterSharing() } returns mockk()
+        coEvery {
             mockAddPost(
                 AddPost.Params(
                     url = mockUrlValid,
@@ -138,14 +126,14 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                     replace = false
                 )
             )
-        }.willReturn(Failure(error))
+        } returns Failure(error)
 
         // WHEN
         shareReceiverViewModel.saveUrl(mockUrlValid)
 
         // THEN
-        verify(mockUserRepository).getDefaultPrivate()
-        verify(mockUserRepository).getDefaultReadLater()
+        verify { mockUserRepository.getDefaultPrivate() }
+        verify { mockUserRepository.getDefaultReadLater() }
         shareReceiverViewModel.failed.currentEventShouldBe(error)
     }
 
@@ -155,14 +143,13 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         val defaultPrivate = randomBoolean()
         val defaultReadLater = randomBoolean()
 
-        givenSuspend { mockExtractUrl(mockUrlValid) }.willReturn(Success(mockUrlValid))
-        givenSuspend { mockParseUrl(mockUrlValid) }
-            .willReturn(Success(RichUrl(mockUrlValid, mockUrlValid)))
-        given(mockUserRepository.getDefaultPrivate()).willReturn(defaultPrivate)
-        given(mockUserRepository.getDefaultReadLater()).willReturn(defaultReadLater)
-        given(mockUserRepository.getEditAfterSharing()).willReturn(EditAfterSharing.SkipEdit)
+        coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
+        coEvery { mockParseUrl(mockUrlValid) } returns Success(RichUrl(mockUrlValid, mockUrlValid))
+        every { mockUserRepository.getDefaultPrivate() } returns defaultPrivate
+        every { mockUserRepository.getDefaultReadLater() } returns defaultReadLater
+        every { mockUserRepository.getEditAfterSharing() } returns EditAfterSharing.SkipEdit
 
-        givenSuspend {
+        coEvery {
             mockAddPost(
                 AddPost.Params(
                     url = mockUrlValid,
@@ -172,14 +159,14 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                     replace = false
                 )
             )
-        }.willReturn(Success(createPost()))
+        } returns Success(createPost())
 
         // WHEN
         shareReceiverViewModel.saveUrl(mockUrlValid)
 
         // THEN
-        verify(mockUserRepository).getDefaultPrivate()
-        verify(mockUserRepository).getDefaultReadLater()
+        verify { mockUserRepository.getDefaultPrivate() }
+        verify { mockUserRepository.getDefaultReadLater() }
         shareReceiverViewModel.saved.currentEventShouldBe("R.string.posts_saved_feedback")
     }
 
@@ -189,15 +176,14 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         val defaultPrivate = randomBoolean()
         val defaultReadLater = randomBoolean()
 
-        givenSuspend { mockExtractUrl(mockUrlValid) }.willReturn(Success(mockUrlValid))
-        givenSuspend { mockParseUrl(mockUrlValid) }
-            .willReturn(Success(RichUrl(mockUrlValid, mockUrlValid)))
-        given(mockUserRepository.getDefaultPrivate()).willReturn(defaultPrivate)
-        given(mockUserRepository.getDefaultReadLater()).willReturn(defaultReadLater)
-        given(mockUserRepository.getEditAfterSharing()).willReturn(EditAfterSharing.AfterSaving)
+        coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
+        coEvery { mockParseUrl(mockUrlValid) } returns Success(RichUrl(mockUrlValid, mockUrlValid))
+        every { mockUserRepository.getDefaultPrivate() } returns defaultPrivate
+        every { mockUserRepository.getDefaultReadLater() } returns defaultReadLater
+        every { mockUserRepository.getEditAfterSharing() } returns EditAfterSharing.AfterSaving
 
         val post = createPost()
-        givenSuspend {
+        coEvery {
             mockAddPost(
                 AddPost.Params(
                     url = mockUrlValid,
@@ -207,15 +193,15 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                     replace = false
                 )
             )
-        }.willReturn(Success(post))
+        } returns Success(post)
 
         // WHEN
         shareReceiverViewModel.saveUrl(mockUrlValid)
 
         // THEN
-        verify(mockUserRepository).getDefaultPrivate()
-        verify(mockUserRepository).getDefaultReadLater()
+        verify { mockUserRepository.getDefaultPrivate() }
+        verify { mockUserRepository.getDefaultReadLater() }
         shareReceiverViewModel.edit.currentEventShouldBe("R.string.posts_saved_feedback")
-        verifySuspend(mockAppStateRepository) { runAction(EditPostFromShare(post)) }
+        coVerify { mockAppStateRepository.runAction(EditPostFromShare(post)) }
     }
 }

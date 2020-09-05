@@ -1,18 +1,16 @@
 package com.fibelatti.pinboard.core.util
 
-import com.fibelatti.core.test.extension.safeAny
-import com.fibelatti.core.test.extension.shouldBe
+import com.google.common.truth.Truth.assertThat
+import io.mockk.every
+import io.mockk.spyk
+import io.mockk.verify
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.anyString
-import org.mockito.BDDMockito.willReturn
-import org.mockito.Mockito.spy
-import org.mockito.Mockito.verify
 import java.text.SimpleDateFormat
 import java.util.TimeZone
 
 internal class DateFormatterTest {
 
-    private val dateFormatter = spy(DateFormatter())
+    private val dateFormatter = spyk(DateFormatter())
 
     @Test
     fun `WHEN tzFormatToDisplayFormat is called THEN FORMAT_DISPLAY is returned`() {
@@ -21,10 +19,13 @@ internal class DateFormatterTest {
             timeZone = TimeZone.getTimeZone("UTC")
         )
 
-        willReturn(displayFormatAsUtc)
-            .given(dateFormatter).getSimpleDateFormat(FORMAT_DISPLAY, timeZone = null)
 
-        dateFormatter.tzFormatToDisplayFormat("1991-08-20T11:00:00Z") shouldBe "20/08/91, 11:00"
+        every {
+            dateFormatter.getSimpleDateFormat(FORMAT_DISPLAY, timeZone = null)
+        } returns displayFormatAsUtc
+
+        assertThat(dateFormatter.tzFormatToDisplayFormat("1991-08-20T11:00:00Z"))
+            .isEqualTo("20/08/91, 11:00")
     }
 
     @Test
@@ -34,10 +35,12 @@ internal class DateFormatterTest {
             timeZone = TimeZone.getTimeZone("UTC")
         )
 
-        willReturn(displayFormatAsUtc)
-            .given(dateFormatter).getSimpleDateFormat(FORMAT_DISPLAY, timeZone = null)
+        every {
+            dateFormatter.getSimpleDateFormat(FORMAT_DISPLAY, timeZone = null)
+        } returns displayFormatAsUtc
 
-        dateFormatter.notesFormatToDisplayFormat("1991-08-20 11:00:00") shouldBe "20/08/91, 11:00"
+        assertThat(dateFormatter.notesFormatToDisplayFormat("1991-08-20 11:00:00"))
+            .isEqualTo("20/08/91, 11:00")
     }
 
     @Test
@@ -45,16 +48,15 @@ internal class DateFormatterTest {
         val result = "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$".toRegex()
             .matches(dateFormatter.nowAsTzFormat())
 
-        result shouldBe true
+        assertThat(result).isTrue()
     }
 
     @Test
     fun `getUtcFormat should call getSimpleDateFormat and the timezone should be UTC`() {
-        willReturn(SimpleDateFormat())
-            .given(dateFormatter).getSimpleDateFormat(anyString(), safeAny())
+        every { dateFormatter.getSimpleDateFormat(any(), any()) } returns SimpleDateFormat()
 
         dateFormatter.getUtcFormat("any")
 
-        verify(dateFormatter).getSimpleDateFormat("any", TimeZone.getTimeZone("UTC"))
+        verify { dateFormatter.getSimpleDateFormat("any", TimeZone.getTimeZone("UTC")) }
     }
 }

@@ -4,11 +4,6 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.core.test.extension.givenSuspend
-import com.fibelatti.core.test.extension.mock
-import com.fibelatti.core.test.extension.shouldBe
-import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
-import com.fibelatti.core.test.extension.verifySuspend
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.mockUrlTitle
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
@@ -16,18 +11,18 @@ import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.google.common.truth.Truth.assertThat
+import io.mockk.Called
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertEquals
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.anyBoolean
-import org.mockito.Mockito.anyList
-import org.mockito.Mockito.anyString
-import org.mockito.Mockito.never
 
 class AddPostTest {
 
-    private val mockPostsRepository = mock<PostsRepository>()
-    private val mockValidateUrl = mock<ValidateUrl>()
+    private val mockPostsRepository = mockk<PostsRepository>()
+    private val mockValidateUrl = mockk<ValidateUrl>()
 
     private val params = AddPost.Params(mockUrlValid, mockUrlTitle)
 
@@ -39,34 +34,21 @@ class AddPostTest {
     @Test
     fun `GIVEN ValidateUrl fails WHEN AddPost is called THEN Failure is returned`() {
         // GIVEN
-        givenSuspend { mockValidateUrl(mockUrlValid) }
-            .willReturn(Failure(InvalidRequestException()))
+        coEvery { mockValidateUrl(mockUrlValid) } returns Failure(InvalidRequestException())
 
         // WHEN
         val result = runBlocking { addPost(params) }
 
         // THEN
-        result.shouldBeAnInstanceOf<Failure>()
-        result.exceptionOrNull()?.shouldBeAnInstanceOf<InvalidRequestException>()
-        verifySuspend(mockPostsRepository, never()) {
-            add(
-                url = anyString(),
-                title = anyString(),
-                description = anyString(),
-                private = anyBoolean(),
-                readLater = anyBoolean(),
-                tags = anyList(),
-                replace = anyBoolean()
-            )
-        }
+        assertThat(result.exceptionOrNull()).isInstanceOf(InvalidRequestException::class.java)
+        coVerify { mockPostsRepository wasNot Called }
     }
 
     @Test
     fun `GIVEN posts repository add fails WHEN AddPost is called THEN Failure is returned`() {
         // GIVEN
-        givenSuspend { mockValidateUrl(mockUrlValid) }
-            .willReturn(Success(mockUrlValid))
-        givenSuspend {
+        coEvery { mockValidateUrl(mockUrlValid) } returns Success(mockUrlValid)
+        coEvery {
             mockPostsRepository.add(
                 params.url,
                 params.title,
@@ -76,25 +58,22 @@ class AddPostTest {
                 params.tags,
                 params.replace
             )
-        }.willReturn(Failure(ApiException()))
+        } returns Failure(ApiException())
 
         // WHEN
         val result = runBlocking { addPost(AddPost.Params(mockUrlValid, mockUrlTitle)) }
 
         // THEN
-        result.shouldBeAnInstanceOf<Failure>()
-        result.exceptionOrNull()?.shouldBeAnInstanceOf<ApiException>()
-
-        verifySuspend(mockPostsRepository, never()) { getPost(anyString()) }
+        assertThat(result.exceptionOrNull()).isInstanceOf(ApiException::class.java)
+        coVerify(exactly = 0) { mockPostsRepository.getPost(any()) }
     }
 
     @Test
     fun `GIVEN posts repository add succeeds WHEN AddPost is called THEN Success is returned`() {
         // GIVEN
-        val mockPost = mock<Post>()
-        givenSuspend { mockValidateUrl(mockUrlValid) }
-            .willReturn(Success(mockUrlValid))
-        givenSuspend {
+        val mockPost = mockk<Post>()
+        coEvery { mockValidateUrl(mockUrlValid) } returns Success(mockUrlValid)
+        coEvery {
             mockPostsRepository.add(
                 params.url,
                 params.title,
@@ -104,14 +83,13 @@ class AddPostTest {
                 params.tags,
                 params.replace
             )
-        }.willReturn(Success(mockPost))
+        } returns Success(mockPost)
 
         // WHEN
         val result = runBlocking { addPost(AddPost.Params(mockUrlValid, mockUrlTitle)) }
 
         // THEN
-        result.shouldBeAnInstanceOf<Success<Post>>()
-        result.getOrNull() shouldBe mockPost
+        assertThat(result.getOrNull()).isEqualTo(mockPost)
     }
 
     @Test
@@ -120,11 +98,11 @@ class AddPostTest {
 
         val params = AddPost.Params(testPost)
 
-        assertEquals(testPost.url, params.url)
-        assertEquals(testPost.title, params.title)
-        assertEquals(testPost.description, params.description)
-        assertEquals(testPost.private, params.private)
-        assertEquals(testPost.readLater, params.readLater)
-        assertEquals(testPost.tags, params.tags)
+        assertThat(testPost.url).isEqualTo(params.url)
+        assertThat(testPost.title).isEqualTo(params.title)
+        assertThat(testPost.description).isEqualTo(params.description)
+        assertThat(testPost.private).isEqualTo(params.private)
+        assertThat(testPost.readLater).isEqualTo(params.readLater)
+        assertThat(testPost.tags).isEqualTo(params.tags)
     }
 }

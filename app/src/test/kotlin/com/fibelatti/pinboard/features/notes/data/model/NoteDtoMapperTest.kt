@@ -1,19 +1,18 @@
 package com.fibelatti.pinboard.features.notes.data.model
 
 import com.fibelatti.core.extension.empty
-import com.fibelatti.core.test.extension.mock
-import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.MockDataProvider.mockNoteId
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.notes.domain.model.Note
+import com.google.common.truth.Truth.assertThat
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito.given
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
 
 internal class NoteDtoMapperTest {
 
-    private val mockDateFormatter = mock<DateFormatter>()
+    private val mockDateFormatter = mockk<DateFormatter>()
 
     private val mapper = NoteDtoMapper(mockDateFormatter)
 
@@ -31,7 +30,7 @@ internal class NoteDtoMapperTest {
         )
 
         // THEN
-        result.title shouldBe String.empty()
+        assertThat(result.title).isEqualTo(String.empty())
     }
 
     @Test
@@ -48,7 +47,7 @@ internal class NoteDtoMapperTest {
         )
 
         // THEN
-        result.createdAt shouldBe String.empty()
+        assertThat(result.createdAt).isEqualTo(String.empty())
     }
 
     @Test
@@ -65,7 +64,7 @@ internal class NoteDtoMapperTest {
         )
 
         // THEN
-        result.updatedAt shouldBe String.empty()
+        assertThat(result.updatedAt).isEqualTo(String.empty())
     }
 
     @Test
@@ -82,7 +81,7 @@ internal class NoteDtoMapperTest {
         )
 
         // THEN
-        result.text shouldBe String.empty()
+        assertThat(result.text).isEqualTo(String.empty())
     }
 
     @Test
@@ -93,8 +92,7 @@ internal class NoteDtoMapperTest {
         val mockTitle = "Some title"
         val mockText = "Some text"
 
-        given(mockDateFormatter.notesFormatToDisplayFormat(inputDate))
-            .willReturn(outputDate)
+        every { mockDateFormatter.notesFormatToDisplayFormat(inputDate) } returns outputDate
 
         // WHEN
         val result = mapper.map(
@@ -108,14 +106,16 @@ internal class NoteDtoMapperTest {
         )
 
         // THEN
-        result shouldBe Note(
-            id = mockNoteId,
-            title = mockTitle,
-            createdAt = outputDate,
-            updatedAt = outputDate,
-            text = mockText
+        assertThat(result).isEqualTo(
+            Note(
+                id = mockNoteId,
+                title = mockTitle,
+                createdAt = outputDate,
+                updatedAt = outputDate,
+                text = mockText
+            )
         )
 
-        verify(mockDateFormatter, times(2)).notesFormatToDisplayFormat(inputDate)
+        verify(exactly = 2) { mockDateFormatter.notesFormatToDisplayFormat(inputDate) }
     }
 }

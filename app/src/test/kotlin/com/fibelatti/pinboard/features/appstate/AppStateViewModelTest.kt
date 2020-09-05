@@ -2,33 +2,31 @@ package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.core.archcomponents.extension.asLiveData
 import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
-import com.fibelatti.core.archcomponents.test.extension.shouldNeverReceiveValues
-import com.fibelatti.core.test.extension.mock
-import com.fibelatti.core.test.extension.verifySuspend
+import com.fibelatti.pinboard.shouldNeverReceiveValues
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.allSealedSubclasses
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import org.mockito.BDDMockito.given
-import org.mockito.BDDMockito.verify
-import org.mockito.Mockito
 
 internal class AppStateViewModelTest : BaseViewModelTest() {
 
-    private val mockAppStateRepository = mock<AppStateRepository>()
+    private val mockAppStateRepository = mockk<AppStateRepository>(relaxUnitFun = true)
 
     private lateinit var appStateViewModel: AppStateViewModel
 
     @Test
     fun `WHEN getContent is called THEN repository content should be returned`() {
         // GIVEN
-        val mockContent = mock<Content>()
+        val mockContent = mockk<Content>()
 
-        given(mockAppStateRepository.getContent())
-            .willReturn(mockContent.asLiveData())
+        every { mockAppStateRepository.getContent() } returns mockContent.asLiveData()
 
         appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
@@ -44,13 +42,13 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         appStateViewModel.reset()
 
         // THEN
-        verify(mockAppStateRepository).reset()
+        verify { mockAppStateRepository.reset() }
     }
 
     @Test
     fun `WHEN runAction is called THEN repository should runAction`() {
         // GIVEN
-        val mockAction = mock<Action>()
+        val mockAction = mockk<Action>()
 
         appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
@@ -58,7 +56,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         appStateViewModel.runAction(mockAction)
 
         // THEN
-        verifySuspend(mockAppStateRepository) { runAction(mockAction) }
+        coVerify { mockAppStateRepository.runAction(mockAction) }
     }
 
     @Nested
@@ -69,8 +67,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         @MethodSource("testCases")
         fun `Only post list content should be emitted to postListContent`(content: Content) {
             // GIVEN
-            given(mockAppStateRepository.getContent())
-                .willReturn(content.asLiveData())
+            every { mockAppStateRepository.getContent() } returns content.asLiveData()
 
             appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
@@ -86,8 +83,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         @MethodSource("testCases")
         fun `Only post detail content should be emitted to postDetailContent`(content: Content) {
             // GIVEN
-            given(mockAppStateRepository.getContent())
-                .willReturn(content.asLiveData())
+            every { mockAppStateRepository.getContent() } returns content.asLiveData()
 
             appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
@@ -103,8 +99,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         @MethodSource("testCases")
         fun `Only add post content should be emitted to addPostContent`(content: Content) {
             // GIVEN
-            given(mockAppStateRepository.getContent())
-                .willReturn(content.asLiveData())
+            every { mockAppStateRepository.getContent() } returns content.asLiveData()
 
             appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
@@ -120,8 +115,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         @MethodSource("testCases")
         fun `Only edit post content should be emitted to editPostContent`(content: Content) {
             // GIVEN
-            given(mockAppStateRepository.getContent())
-                .willReturn(content.asLiveData())
+            every { mockAppStateRepository.getContent() } returns content.asLiveData()
 
             appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
@@ -137,8 +131,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         @MethodSource("testCases")
         fun `Only search content should be emitted to searchContent`(content: Content) {
             // GIVEN
-            given(mockAppStateRepository.getContent())
-                .willReturn(content.asLiveData())
+            every { mockAppStateRepository.getContent() } returns content.asLiveData()
 
             appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
@@ -154,8 +147,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         @MethodSource("testCases")
         fun `Only tag list content should be emitted to tagListContent`(content: Content) {
             // GIVEN
-            given(mockAppStateRepository.getContent())
-                .willReturn(content.asLiveData())
+            every { mockAppStateRepository.getContent() } returns content.asLiveData()
 
             appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
@@ -171,8 +163,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         @MethodSource("testCases")
         fun `Only note list content should be emitted to noteListContent`(content: Content) {
             // GIVEN
-            given(mockAppStateRepository.getContent())
-                .willReturn(content.asLiveData())
+            every { mockAppStateRepository.getContent() } returns content.asLiveData()
 
             appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
@@ -188,8 +179,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         @MethodSource("testCases")
         fun `Only note detail content should be emitted to noteDetailContent`(content: Content) {
             // GIVEN
-            given(mockAppStateRepository.getContent())
-                .willReturn(content.asLiveData())
+            every { mockAppStateRepository.getContent() } returns content.asLiveData()
 
             appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
@@ -205,8 +195,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         @MethodSource("testCases")
         fun `Only popular posts content should be emitted to popularPostsContent`(content: Content) {
             // GIVEN
-            given(mockAppStateRepository.getContent())
-                .willReturn(content.asLiveData())
+            every { mockAppStateRepository.getContent() } returns content.asLiveData()
 
             appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
@@ -220,10 +209,11 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
 
         @ParameterizedTest
         @MethodSource("testCases")
-        fun `Only popular post details content should be emitted to popularPostDetailContent`(content: Content) {
+        fun `Only popular post details content should be emitted to popularPostDetailContent`(
+            content: Content
+        ) {
             // GIVEN
-            given(mockAppStateRepository.getContent())
-                .willReturn(content.asLiveData())
+            every { mockAppStateRepository.getContent() } returns content.asLiveData()
 
             appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
@@ -239,8 +229,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         @MethodSource("testCases")
         fun `Only user preferences content should be emitted to userPreferencesContent`(content: Content) {
             // GIVEN
-            given(mockAppStateRepository.getContent())
-                .willReturn(content.asLiveData())
+            every { mockAppStateRepository.getContent() } returns content.asLiveData()
 
             appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
@@ -254,7 +243,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
 
         fun testCases(): List<Content> = mutableListOf<Content>().apply {
             Content::class.allSealedSubclasses
-                .map { it.objectInstance ?: Mockito.mock(it.javaObjectType) }
+                .map { it.objectInstance ?: mockk() }
                 .forEach { add(it) }
         }
     }

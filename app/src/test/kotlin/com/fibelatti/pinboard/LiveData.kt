@@ -1,8 +1,10 @@
-package com.fibelatti.pinboard.features
+package com.fibelatti.pinboard
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import org.junit.Assert
+import com.google.common.truth.Truth.assertThat
+import io.mockk.spyk
+import io.mockk.verify
 
 /**
  * An [Observer] only starts to receive data once it becomes active. To test that a given [LiveData]
@@ -25,7 +27,7 @@ fun <T> LiveData<T>.prepareToReceiveMany(): ListObserver<T> {
  * Asserts that the receiver type received the same values as the [observer].
  */
 fun <T> LiveData<T>.shouldHaveReceived(observer: ListObserver<T>, vararg expectedValues: T) {
-    Assert.assertEquals(expectedValues.toList(), observer.getReceivedValues())
+    assertThat(expectedValues.toList()).isEqualTo(observer.getReceivedValues())
     removeObserver(observer)
 }
 
@@ -42,4 +44,14 @@ class ListObserver<T> : Observer<T> {
     }
 
     fun getReceivedValues(): List<T> = receivedValues
+}
+
+/**
+ * Shorthand to assert that target [LiveData] never received any events.
+ */
+inline fun <reified T> LiveData<T>.shouldNeverReceiveValues() {
+    val observer = spyk(Observer<T> {})
+    observeForever(observer)
+    verify(exactly = 0) { observer.onChanged(any()) }
+    removeObserver(observer)
 }

@@ -1,23 +1,23 @@
 package com.fibelatti.pinboard.core.extension
 
-import com.fibelatti.core.test.extension.shouldBe
+import com.google.common.truth.Truth.assertThat
 import org.junit.jupiter.api.Test
 
 internal class StringTest {
 
     @Test
     fun `containsHtmlChars should return true for known html characters`() {
-        "&lt;".containsHtmlChars() shouldBe true
-        "&gt;".containsHtmlChars() shouldBe true
-        "&quot;".containsHtmlChars() shouldBe true
-        "&amp;".containsHtmlChars() shouldBe true
-        "no html chars".containsHtmlChars() shouldBe false
+        assertThat("&lt;".containsHtmlChars()).isTrue()
+        assertThat("&gt;".containsHtmlChars()).isTrue()
+        assertThat("&quot;".containsHtmlChars()).isTrue()
+        assertThat("&amp;".containsHtmlChars()).isTrue()
+        assertThat("no html chars".containsHtmlChars()).isFalse()
     }
 
     @Test
     fun `replaceHtmlChars should replace known html characters`() {
         val result = "&lt;&gt;&quot;&amp;".replaceHtmlChars()
 
-        result shouldBe "<>\"&"
+        assertThat(result).isEqualTo("<>\"&")
     }
 }

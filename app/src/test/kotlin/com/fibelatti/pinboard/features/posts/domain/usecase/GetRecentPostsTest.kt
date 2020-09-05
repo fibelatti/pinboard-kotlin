@@ -1,47 +1,41 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
 import com.fibelatti.core.functional.Success
-import com.fibelatti.core.test.extension.givenSuspend
-import com.fibelatti.core.test.extension.mock
-import com.fibelatti.core.test.extension.verifySuspend
 import com.fibelatti.pinboard.MockDataProvider.mockTags
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_RECENT_QUANTITY
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.any
-import org.mockito.ArgumentMatchers.anyBoolean
-import org.mockito.ArgumentMatchers.anyInt
-import org.mockito.ArgumentMatchers.anyString
 
 class GetRecentPostsTest {
 
-    private val mockResponse = mock<PostListResult>()
+    private val mockResponse = mockk<PostListResult>()
 
-    private val mockPostsRepository = mock<PostsRepository>()
+    private val mockPostsRepository = mockk<PostsRepository>(relaxed = true)
 
     private val getRecentPosts = GetRecentPosts(mockPostsRepository)
 
-    @BeforeEach
     fun setup() {
-        givenSuspend {
+        coEvery {
             mockPostsRepository.getAllPosts(
-                newestFirst = anyBoolean(),
-                searchTerm = anyString(),
+                newestFirst = any(),
+                searchTerm = any(),
                 tags = any(),
-                untaggedOnly = anyBoolean(),
-                publicPostsOnly = anyBoolean(),
-                privatePostsOnly = anyBoolean(),
-                readLaterOnly = anyBoolean(),
-                countLimit = anyInt(),
-                pageLimit = anyInt(),
-                pageOffset = anyInt()
+                untaggedOnly = any(),
+                publicPostsOnly = any(),
+                privatePostsOnly = any(),
+                readLaterOnly = any(),
+                countLimit = any(),
+                pageLimit = any(),
+                pageOffset = any()
             )
-        }.willReturn(flowOf(Success(mockResponse)))
+        } returns flowOf(Success(mockResponse))
     }
 
     @Test
@@ -53,8 +47,8 @@ class GetRecentPostsTest {
         runBlocking { getRecentPosts(params) }
 
         // THEN
-        verifySuspend(mockPostsRepository) {
-            getAllPosts(
+        coVerify {
+            mockPostsRepository.getAllPosts(
                 newestFirst = true,
                 searchTerm = mockUrlValid,
                 tags = null,
@@ -78,8 +72,8 @@ class GetRecentPostsTest {
         runBlocking { getRecentPosts(params) }
 
         // THEN
-        verifySuspend(mockPostsRepository) {
-            getAllPosts(
+        coVerify {
+            mockPostsRepository.getAllPosts(
                 newestFirst = true,
                 searchTerm = "",
                 tags = null,
@@ -103,8 +97,8 @@ class GetRecentPostsTest {
         runBlocking { getRecentPosts(params) }
 
         // THEN
-        verifySuspend(mockPostsRepository) {
-            getAllPosts(
+        coVerify {
+            mockPostsRepository.getAllPosts(
                 newestFirst = true,
                 searchTerm = "",
                 tags = null,
@@ -128,8 +122,8 @@ class GetRecentPostsTest {
         runBlocking { getRecentPosts(params) }
 
         // THEN
-        verifySuspend(mockPostsRepository) {
-            getAllPosts(
+        coVerify {
+            mockPostsRepository.getAllPosts(
                 newestFirst = true,
                 searchTerm = "",
                 tags = mockTags,

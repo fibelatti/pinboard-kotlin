@@ -1,22 +1,21 @@
 package com.fibelatti.pinboard.features.appstate
 
-import com.fibelatti.core.test.extension.mock
-import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.MockDataProvider.createTag
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
+import com.google.common.truth.Truth.assertThat
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito.given
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
 
 internal class TagActionHandlerTest {
 
-    private val mockUserRepository = mock<UserRepository>()
-    private val mockConnectivityInfoProvider = mock<ConnectivityInfoProvider>()
+    private val mockUserRepository = mockk<UserRepository>()
+    private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider>()
 
     private val tagActionHandler = TagActionHandler(
         mockUserRepository,
@@ -40,35 +39,37 @@ internal class TagActionHandlerTest {
 
     @Nested
     inner class RefreshTagsTests {
+
         @Test
         fun `WHEN currentContent is not TagListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostListContent>()
+            val content = mockk<PostListContent>()
 
             // WHEN
             val result = runBlocking { tagActionHandler.runAction(RefreshTags, content) }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
         fun `WHEN currentContent is TagListContent THEN updated content is returned`() {
             // GIVEN
-            given(mockConnectivityInfoProvider.isConnected())
-                .willReturn(false)
+            every { mockConnectivityInfoProvider.isConnected() } returns false
 
             // WHEN
             val result = runBlocking { tagActionHandler.runAction(RefreshTags, initialContent) }
 
             // THEN
-            result shouldBe TagListContent(
-                tags = emptyList(),
-                shouldLoad = false,
-                isConnected = false,
-                previousContent = mockPreviousContent
+            assertThat(result).isEqualTo(
+                TagListContent(
+                    tags = emptyList(),
+                    shouldLoad = false,
+                    isConnected = false,
+                    previousContent = mockPreviousContent
+                )
             )
-            verify(mockConnectivityInfoProvider, times(2)).isConnected()
+            verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
         }
     }
 
@@ -78,13 +79,13 @@ internal class TagActionHandlerTest {
         @Test
         fun `WHEN currentContent is not TagListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostListContent>()
+            val content = mockk<PostListContent>()
 
             // WHEN
-            val result = runBlocking { tagActionHandler.runAction(mock<SetTags>(), content) }
+            val result = runBlocking { tagActionHandler.runAction(mockk<SetTags>(), content) }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
@@ -95,11 +96,13 @@ internal class TagActionHandlerTest {
             }
 
             // THEN
-            result shouldBe TagListContent(
-                tags = listOf(createTag()),
-                shouldLoad = false,
-                isConnected = true,
-                previousContent = mockPreviousContent
+            assertThat(result).isEqualTo(
+                TagListContent(
+                    tags = listOf(createTag()),
+                    shouldLoad = false,
+                    isConnected = true,
+                    previousContent = mockPreviousContent
+                )
             )
         }
     }
@@ -110,12 +113,10 @@ internal class TagActionHandlerTest {
         @Test
         fun `WHEN postsForTag is called THEN PostListContent is returned and search parameters contains the tag`() {
             // GIVEN
-            given(mockConnectivityInfoProvider.isConnected())
-                .willReturn(true)
+            every { mockConnectivityInfoProvider.isConnected() } returns true
 
             val randomBoolean = randomBoolean()
-            given(mockUserRepository.getShowDescriptionInLists())
-                .willReturn(randomBoolean)
+            every { mockUserRepository.getShowDescriptionInLists() } returns randomBoolean
 
             // WHEN
             val result = runBlocking {
@@ -123,14 +124,16 @@ internal class TagActionHandlerTest {
             }
 
             // THEN
-            result shouldBe PostListContent(
-                category = All,
-                posts = null,
-                showDescription = randomBoolean,
-                sortType = NewestFirst,
-                searchParameters = SearchParameters(tags = listOf(createTag())),
-                shouldLoad = ShouldLoadFirstPage,
-                isConnected = true
+            assertThat(result).isEqualTo(
+                PostListContent(
+                    category = All,
+                    posts = null,
+                    showDescription = randomBoolean,
+                    sortType = NewestFirst,
+                    searchParameters = SearchParameters(tags = listOf(createTag())),
+                    shouldLoad = ShouldLoadFirstPage,
+                    isConnected = true
+                )
             )
         }
     }

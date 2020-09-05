@@ -1,9 +1,6 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
 import com.fibelatti.core.functional.Success
-import com.fibelatti.core.test.extension.givenSuspend
-import com.fibelatti.core.test.extension.mock
-import com.fibelatti.core.test.extension.verifySuspend
 import com.fibelatti.pinboard.MockDataProvider.mockTags
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.features.appstate.NewestFirst
@@ -11,6 +8,9 @@ import com.fibelatti.pinboard.features.appstate.OldestFirst
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
@@ -19,38 +19,32 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import org.mockito.ArgumentMatchers.any
-import org.mockito.ArgumentMatchers.anyBoolean
-import org.mockito.ArgumentMatchers.anyInt
-import org.mockito.ArgumentMatchers.anyString
-import org.mockito.ArgumentMatchers.eq
-import org.mockito.ArgumentMatchers.isNull
 
 class GetAllPostsTest {
 
     // region Mock data
-    private val mockResponse = mock<PostListResult>()
+    private val mockResponse = mockk<PostListResult>()
 
-    private val mockPostsRepository = mock<PostsRepository>()
+    private val mockPostsRepository = mockk<PostsRepository>()
 
     private val getAllPosts = GetAllPosts(mockPostsRepository)
 
     @BeforeEach
     fun setup() {
-        givenSuspend {
+        coEvery {
             mockPostsRepository.getAllPosts(
-                newestFirst = anyBoolean(),
-                searchTerm = anyString(),
+                newestFirst = any(),
+                searchTerm = any(),
                 tags = any(),
-                untaggedOnly = anyBoolean(),
-                publicPostsOnly = anyBoolean(),
-                privatePostsOnly = anyBoolean(),
-                readLaterOnly = anyBoolean(),
-                countLimit = anyInt(),
-                pageLimit = anyInt(),
-                pageOffset = anyInt()
+                untaggedOnly = any(),
+                publicPostsOnly = any(),
+                privatePostsOnly = any(),
+                readLaterOnly = any(),
+                countLimit = any(),
+                pageLimit = any(),
+                pageOffset = any()
             )
-        }.willReturn(flowOf(Success(mockResponse)))
+        } returns flowOf(Success(mockResponse))
     }
 
     @Nested
@@ -59,7 +53,9 @@ class GetAllPostsTest {
 
         @ParameterizedTest
         @MethodSource("testCases")
-        fun `GIVEN sorting was set in the params WHEN getAllPosts is called THEN repository is called with the expected params`(sorting: SortType) {
+        fun `GIVEN sorting was set in the params WHEN getAllPosts is called THEN repository is called with the expected params`(
+            sorting: SortType
+        ) {
             // GIVEN
             val params = GetPostParams(sorting = sorting)
 
@@ -67,18 +63,18 @@ class GetAllPostsTest {
             runBlocking { getAllPosts(params) }
 
             // THEN
-            verifySuspend(mockPostsRepository) {
-                getAllPosts(
-                    newestFirst = eq(sorting == NewestFirst),
-                    searchTerm = anyString(),
+            coVerify {
+                mockPostsRepository.getAllPosts(
+                    newestFirst = sorting == NewestFirst,
+                    searchTerm = any(),
                     tags = any(),
-                    untaggedOnly = anyBoolean(),
-                    publicPostsOnly = anyBoolean(),
-                    privatePostsOnly = anyBoolean(),
-                    readLaterOnly = anyBoolean(),
-                    countLimit = eq(-1),
-                    pageLimit = anyInt(),
-                    pageOffset = anyInt()
+                    untaggedOnly = any(),
+                    publicPostsOnly = any(),
+                    privatePostsOnly = any(),
+                    readLaterOnly = any(),
+                    countLimit = -1,
+                    pageLimit = any(),
+                    pageOffset = any()
                 )
             }
         }
@@ -95,8 +91,8 @@ class GetAllPostsTest {
         runBlocking { getAllPosts(params) }
 
         // THEN
-        verifySuspend(mockPostsRepository) {
-            getAllPosts(
+        coVerify {
+            mockPostsRepository.getAllPosts(
                 newestFirst = true,
                 searchTerm = mockUrlValid,
                 tags = null,
@@ -120,18 +116,18 @@ class GetAllPostsTest {
         runBlocking { getAllPosts(params) }
 
         // THEN
-        verifySuspend(mockPostsRepository) {
-            getAllPosts(
-                newestFirst = anyBoolean(),
-                searchTerm = anyString(),
+        coVerify {
+            mockPostsRepository.getAllPosts(
+                newestFirst = any(),
+                searchTerm = any(),
                 tags = isNull(),
-                untaggedOnly = anyBoolean(),
-                publicPostsOnly = anyBoolean(),
-                privatePostsOnly = anyBoolean(),
-                readLaterOnly = anyBoolean(),
-                countLimit = eq(-1),
-                pageLimit = anyInt(),
-                pageOffset = anyInt()
+                untaggedOnly = any(),
+                publicPostsOnly = any(),
+                privatePostsOnly = any(),
+                readLaterOnly = any(),
+                countLimit = -1,
+                pageLimit = any(),
+                pageOffset = any()
             )
         }
     }
@@ -145,18 +141,18 @@ class GetAllPostsTest {
         runBlocking { getAllPosts(params) }
 
         // THEN
-        verifySuspend(mockPostsRepository) {
-            getAllPosts(
-                newestFirst = anyBoolean(),
-                searchTerm = anyString(),
+        coVerify {
+            mockPostsRepository.getAllPosts(
+                newestFirst = any(),
+                searchTerm = any(),
                 tags = any(),
-                untaggedOnly = eq(true),
-                publicPostsOnly = anyBoolean(),
-                privatePostsOnly = anyBoolean(),
-                readLaterOnly = anyBoolean(),
-                countLimit = eq(-1),
-                pageLimit = anyInt(),
-                pageOffset = anyInt()
+                untaggedOnly = true,
+                publicPostsOnly = any(),
+                privatePostsOnly = any(),
+                readLaterOnly = any(),
+                countLimit = -1,
+                pageLimit = any(),
+                pageOffset = any()
             )
         }
     }
@@ -170,18 +166,18 @@ class GetAllPostsTest {
         runBlocking { getAllPosts(params) }
 
         // THEN
-        verifySuspend(mockPostsRepository) {
-            getAllPosts(
-                newestFirst = anyBoolean(),
-                searchTerm = anyString(),
-                tags = eq(mockTags),
-                untaggedOnly = anyBoolean(),
-                publicPostsOnly = anyBoolean(),
-                privatePostsOnly = anyBoolean(),
-                readLaterOnly = anyBoolean(),
-                countLimit = eq(-1),
-                pageLimit = anyInt(),
-                pageOffset = anyInt()
+        coVerify {
+            mockPostsRepository.getAllPosts(
+                newestFirst = any(),
+                searchTerm = any(),
+                tags = mockTags,
+                untaggedOnly = any(),
+                publicPostsOnly = any(),
+                privatePostsOnly = any(),
+                readLaterOnly = any(),
+                countLimit = -1,
+                pageLimit = any(),
+                pageOffset = any()
             )
         }
     }
@@ -195,18 +191,18 @@ class GetAllPostsTest {
         runBlocking { getAllPosts(params) }
 
         // THEN
-        verifySuspend(mockPostsRepository) {
-            getAllPosts(
-                newestFirst = anyBoolean(),
-                searchTerm = anyString(),
+        coVerify {
+            mockPostsRepository.getAllPosts(
+                newestFirst = any(),
+                searchTerm = any(),
                 tags = any(),
-                untaggedOnly = anyBoolean(),
-                publicPostsOnly = eq(false),
-                privatePostsOnly = eq(false),
-                readLaterOnly = anyBoolean(),
-                countLimit = eq(-1),
-                pageLimit = anyInt(),
-                pageOffset = anyInt()
+                untaggedOnly = any(),
+                publicPostsOnly = false,
+                privatePostsOnly = false,
+                readLaterOnly = any(),
+                countLimit = -1,
+                pageLimit = any(),
+                pageOffset = any()
             )
         }
     }
@@ -220,18 +216,18 @@ class GetAllPostsTest {
         runBlocking { getAllPosts(params) }
 
         // THEN
-        verifySuspend(mockPostsRepository) {
-            getAllPosts(
-                newestFirst = anyBoolean(),
-                searchTerm = anyString(),
+        coVerify {
+            mockPostsRepository.getAllPosts(
+                newestFirst = any(),
+                searchTerm = any(),
                 tags = any(),
-                untaggedOnly = anyBoolean(),
-                publicPostsOnly = eq(true),
-                privatePostsOnly = eq(false),
-                readLaterOnly = anyBoolean(),
-                countLimit = eq(-1),
-                pageLimit = anyInt(),
-                pageOffset = anyInt()
+                untaggedOnly = any(),
+                publicPostsOnly = true,
+                privatePostsOnly = false,
+                readLaterOnly = any(),
+                countLimit = -1,
+                pageLimit = any(),
+                pageOffset = any()
             )
         }
     }
@@ -245,18 +241,18 @@ class GetAllPostsTest {
         runBlocking { getAllPosts(params) }
 
         // THEN
-        verifySuspend(mockPostsRepository) {
-            getAllPosts(
-                newestFirst = anyBoolean(),
-                searchTerm = anyString(),
+        coVerify {
+            mockPostsRepository.getAllPosts(
+                newestFirst = any(),
+                searchTerm = any(),
                 tags = any(),
-                untaggedOnly = anyBoolean(),
-                publicPostsOnly = eq(false),
-                privatePostsOnly = eq(true),
-                readLaterOnly = anyBoolean(),
-                countLimit = eq(-1),
-                pageLimit = anyInt(),
-                pageOffset = anyInt()
+                untaggedOnly = any(),
+                publicPostsOnly = false,
+                privatePostsOnly = true,
+                readLaterOnly = any(),
+                countLimit = -1,
+                pageLimit = any(),
+                pageOffset = any()
             )
         }
     }
@@ -270,18 +266,18 @@ class GetAllPostsTest {
         runBlocking { getAllPosts(params) }
 
         // THEN
-        verifySuspend(mockPostsRepository) {
-            getAllPosts(
-                newestFirst = anyBoolean(),
-                searchTerm = anyString(),
+        coVerify {
+            mockPostsRepository.getAllPosts(
+                newestFirst = any(),
+                searchTerm = any(),
                 tags = any(),
-                untaggedOnly = anyBoolean(),
-                publicPostsOnly = anyBoolean(),
-                privatePostsOnly = anyBoolean(),
-                readLaterOnly = eq(true),
-                countLimit = eq(-1),
-                pageLimit = anyInt(),
-                pageOffset = anyInt()
+                untaggedOnly = any(),
+                publicPostsOnly = any(),
+                privatePostsOnly = any(),
+                readLaterOnly = true,
+                countLimit = -1,
+                pageLimit = any(),
+                pageOffset = any()
             )
         }
     }
@@ -295,18 +291,18 @@ class GetAllPostsTest {
         runBlocking { getAllPosts(params) }
 
         // THEN
-        verifySuspend(mockPostsRepository) {
-            getAllPosts(
-                newestFirst = anyBoolean(),
-                searchTerm = anyString(),
+        coVerify {
+            mockPostsRepository.getAllPosts(
+                newestFirst = any(),
+                searchTerm = any(),
                 tags = any(),
-                untaggedOnly = anyBoolean(),
-                publicPostsOnly = anyBoolean(),
-                privatePostsOnly = anyBoolean(),
-                readLaterOnly = eq(false),
-                countLimit = eq(-1),
-                pageLimit = anyInt(),
-                pageOffset = anyInt()
+                untaggedOnly = any(),
+                publicPostsOnly = any(),
+                privatePostsOnly = any(),
+                readLaterOnly = false,
+                countLimit = -1,
+                pageLimit = any(),
+                pageOffset = any()
             )
         }
     }
@@ -320,18 +316,18 @@ class GetAllPostsTest {
         runBlocking { getAllPosts(params) }
 
         // THEN
-        verifySuspend(mockPostsRepository) {
-            getAllPosts(
-                newestFirst = anyBoolean(),
-                searchTerm = anyString(),
+        coVerify {
+            mockPostsRepository.getAllPosts(
+                newestFirst = any(),
+                searchTerm = any(),
                 tags = any(),
-                untaggedOnly = anyBoolean(),
-                publicPostsOnly = anyBoolean(),
-                privatePostsOnly = anyBoolean(),
-                readLaterOnly = anyBoolean(),
-                countLimit = eq(-1),
-                pageLimit = eq(100),
-                pageOffset = anyInt()
+                untaggedOnly = any(),
+                publicPostsOnly = any(),
+                privatePostsOnly = any(),
+                readLaterOnly = any(),
+                countLimit = -1,
+                pageLimit = 100,
+                pageOffset = any()
             )
         }
     }
@@ -345,18 +341,18 @@ class GetAllPostsTest {
         runBlocking { getAllPosts(params) }
 
         // THEN
-        verifySuspend(mockPostsRepository) {
-            getAllPosts(
-                newestFirst = anyBoolean(),
-                searchTerm = anyString(),
+        coVerify {
+            mockPostsRepository.getAllPosts(
+                newestFirst = any(),
+                searchTerm = any(),
                 tags = any(),
-                untaggedOnly = anyBoolean(),
-                publicPostsOnly = anyBoolean(),
-                privatePostsOnly = anyBoolean(),
-                readLaterOnly = anyBoolean(),
-                countLimit = eq(-1),
-                pageLimit = anyInt(),
-                pageOffset = eq(100)
+                untaggedOnly = any(),
+                publicPostsOnly = any(),
+                privatePostsOnly = any(),
+                readLaterOnly = any(),
+                countLimit = -1,
+                pageLimit = any(),
+                pageOffset = 100
             )
         }
     }

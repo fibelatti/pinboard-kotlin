@@ -1,26 +1,24 @@
 package com.fibelatti.pinboard.features.notes.data
 
-import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.core.test.extension.givenSuspend
-import com.fibelatti.core.test.extension.mock
-import com.fibelatti.core.test.extension.shouldBe
-import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
 import com.fibelatti.pinboard.MockDataProvider.mockNoteId
 import com.fibelatti.pinboard.features.notes.data.model.NoteDto
 import com.fibelatti.pinboard.features.notes.data.model.NoteDtoMapper
 import com.fibelatti.pinboard.features.notes.data.model.NoteListDto
 import com.fibelatti.pinboard.features.notes.domain.model.Note
+import com.google.common.truth.Truth.assertThat
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito.given
 
 internal class NotesDataSourceTest {
 
-    private val mockApi = mock<NotesApi>()
-    private val mockNoteDtoMapper = mock<NoteDtoMapper>()
+    private val mockApi = mockk<NotesApi>()
+    private val mockNoteDtoMapper = mockk<NoteDtoMapper>()
 
     private val dataSource = NotesDataSource(mockApi, mockNoteDtoMapper)
 
@@ -30,36 +28,31 @@ internal class NotesDataSourceTest {
         @Test
         fun `GIVEN api returns an error WHEN getAllNotes is called THEN Failure is returned`() {
             // GIVEN
-            givenSuspend { mockApi.getAllNotes() }
-                .willAnswer { throw Exception() }
+            coEvery { mockApi.getAllNotes() } throws Exception()
 
             // WHEN
             val result = runBlocking { dataSource.getAllNotes() }
 
             // THEN
-            result.shouldBeAnInstanceOf<Failure>()
-            result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
+            assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
         }
 
         @Test
         fun `GIVEN api returns successfully WHEN getAllNotes is called THEN Success is returned`() {
             // GIVEN
-            val mockNoteListDto = mock<NoteListDto>()
-            val mockNotesDto = mock<List<NoteDto>>()
-            val mockNotes = mock<List<Note>>()
+            val mockNoteListDto = mockk<NoteListDto>()
+            val mockNotesDto = mockk<List<NoteDto>>()
+            val mockNotes = mockk<List<Note>>()
 
-            given(mockNoteListDto.notes)
-                .willReturn(mockNotesDto)
-            givenSuspend { mockApi.getAllNotes() }
-                .willReturn(mockNoteListDto)
-            given(mockNoteDtoMapper.mapList(mockNotesDto))
-                .willReturn(mockNotes)
+            every { mockNoteListDto.notes } returns mockNotesDto
+            coEvery { mockApi.getAllNotes() } returns mockNoteListDto
+            every { mockNoteDtoMapper.mapList(mockNotesDto) } returns mockNotes
 
             // WHEN
             val result = runBlocking { dataSource.getAllNotes() }
 
             // THEN
-            result.getOrNull() shouldBe mockNotes
+            assertThat(result.getOrNull()).isEqualTo(mockNotes)
         }
     }
 
@@ -69,33 +62,29 @@ internal class NotesDataSourceTest {
         @Test
         fun `GIVEN api returns an error WHEN getNote is called THEN Failure is returned`() {
             // GIVEN
-            givenSuspend { mockApi.getNote(mockNoteId) }
-                .willAnswer { throw Exception() }
+            coEvery { mockApi.getNote(mockNoteId) } throws Exception()
 
             // WHEN
             val result = runBlocking { dataSource.getNote(mockNoteId) }
 
             // THEN
-            result.shouldBeAnInstanceOf<Failure>()
-            result.exceptionOrNull()?.shouldBeAnInstanceOf<Exception>()
+            assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
         }
 
         @Test
         fun `GIVEN api returns successfully WHEN getNote is called THEN Success is returned`() {
             // GIVEN
-            val mockNoteDto = mock<NoteDto>()
-            val mockNote = mock<Note>()
+            val mockNoteDto = mockk<NoteDto>()
+            val mockNote = mockk<Note>()
 
-            givenSuspend { mockApi.getNote(mockNoteId) }
-                .willReturn(mockNoteDto)
-            given(mockNoteDtoMapper.map(mockNoteDto))
-                .willReturn(mockNote)
+            coEvery { mockApi.getNote(mockNoteId) } returns mockNoteDto
+            every { mockNoteDtoMapper.map(mockNoteDto) } returns mockNote
 
             // WHEN
             val result = runBlocking { dataSource.getNote(mockNoteId) }
 
             // THEN
-            result.getOrNull() shouldBe mockNote
+            assertThat(result.getOrNull()).isEqualTo(mockNote)
         }
     }
 }

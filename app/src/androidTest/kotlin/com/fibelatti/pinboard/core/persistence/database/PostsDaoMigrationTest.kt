@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.core.persistence.database
 
-import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.MockDataProvider.mockHash
 import com.fibelatti.pinboard.MockDataProvider.mockShared
 import com.fibelatti.pinboard.MockDataProvider.mockTime
@@ -11,11 +10,13 @@ import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.features.posts.data.PostsDao
 import com.fibelatti.pinboard.features.posts.data.model.POST_TABLE_NAME
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
+import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
 class PostsDaoMigrationTest : BaseRoomMigrationTest() {
 
     companion object {
+
         private const val mockTagWithHyphen = "android-studio"
         private const val mockAnotherTagWithHyphen = "another-tag"
     }
@@ -58,7 +59,7 @@ class PostsDaoMigrationTest : BaseRoomMigrationTest() {
         val result = getMigratedRoomDatabase().postDao().getAllPosts()
 
         // THEN
-        result shouldBe listOf(postFromQuery)
+        assertThat(result).isEqualTo(listOf(postFromQuery))
     }
 
     @Test
@@ -75,7 +76,7 @@ class PostsDaoMigrationTest : BaseRoomMigrationTest() {
             .firstOrNull()
 
         // THEN
-        result shouldBe postFromQuery
+        assertThat(result).isEqualTo(postFromQuery)
     }
 
     @Test
@@ -96,6 +97,6 @@ class PostsDaoMigrationTest : BaseRoomMigrationTest() {
             .firstOrNull()
 
         // THEN
-        result shouldBe updatedPost
+        assertThat(result).isEqualTo(updatedPost)
     }
 }

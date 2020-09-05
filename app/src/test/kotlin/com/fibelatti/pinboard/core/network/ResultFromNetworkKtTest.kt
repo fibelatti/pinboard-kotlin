@@ -1,9 +1,9 @@
 package com.fibelatti.pinboard.core.network
 
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.test.extension.shouldBe
-import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
+import com.fibelatti.core.functional.Result
+import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
+import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.runBlocking
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -35,27 +35,27 @@ internal class ResultFromNetworkKtTest {
     fun `resultFromNetwork should retry HttpExceptions`() {
         runBlocking { resultFromNetwork { httpExceptionBlock() } }
 
-        httpExceptionBlockExecutionCounter shouldBe 3
+        assertThat(httpExceptionBlockExecutionCounter).isEqualTo(3)
     }
 
     @Test
     fun `resultFromNetwork should return a Failure when an HttpException happens`() {
-        val result = runBlocking { resultFromNetwork { httpExceptionBlock() } }
+        val result: Result<Any> = runBlocking { resultFromNetwork { httpExceptionBlock() } }
 
-        result.shouldBeAnInstanceOf<Failure>()
+        assertThat(result.exceptionOrNull()).isInstanceOf(HttpException::class.java)
     }
 
     @Test
     fun `resultFromNetwork should retry IOExceptions`() {
         runBlocking { resultFromNetwork { ioExceptionBlock() } }
 
-        ioExceptionBlockExecutionCounter shouldBe 5
+        assertThat(ioExceptionBlockExecutionCounter).isEqualTo(5)
     }
 
     @Test
     fun `resultFromNetwork should return a Failure when an IOException happens`() {
-        val result = runBlocking { resultFromNetwork { ioExceptionBlock() } }
+        val result: Result<Any> = runBlocking { resultFromNetwork { ioExceptionBlock() } }
 
-        result.shouldBeAnInstanceOf<Failure>()
+        assertThat(result.exceptionOrNull()).isInstanceOf(IOException::class.java)
     }
 }

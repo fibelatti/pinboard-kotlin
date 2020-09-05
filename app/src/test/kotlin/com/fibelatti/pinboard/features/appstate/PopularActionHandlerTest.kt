@@ -1,20 +1,19 @@
 package com.fibelatti.pinboard.features.appstate
 
-import com.fibelatti.core.test.extension.mock
-import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.randomBoolean
+import com.google.common.truth.Truth.assertThat
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito.given
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
 
 internal class PopularActionHandlerTest {
 
-    private val mockConnectivityInfoProvider = mock<ConnectivityInfoProvider>()
+    private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider>()
 
     private val popularActionHandler = PopularActionHandler(
         mockConnectivityInfoProvider
@@ -22,10 +21,10 @@ internal class PopularActionHandlerTest {
 
     private val mockBoolean = randomBoolean()
     private val initialContent = PopularPostsContent(
-        posts = mock(),
+        posts = mockk(),
         shouldLoad = mockBoolean,
         isConnected = mockBoolean,
-        previousContent = mock()
+        previousContent = mockk()
     )
 
     @Nested
@@ -34,32 +33,35 @@ internal class PopularActionHandlerTest {
         @Test
         fun `WHEN currentContent is not PopularPostsContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostListContent>()
+            val content = mockk<PostListContent>()
 
             // WHEN
             val result = runBlocking { popularActionHandler.runAction(RefreshPopular, content) }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
         fun `WHEN currentContent is PopularPostsContent THEN updated content is returned`() {
             // GIVEN
-            given(mockConnectivityInfoProvider.isConnected())
-                .willReturn(true)
+            every { mockConnectivityInfoProvider.isConnected() } returns true
 
             // WHEN
-            val result = runBlocking { popularActionHandler.runAction(RefreshPopular, initialContent) }
+            val result = runBlocking {
+                popularActionHandler.runAction(RefreshPopular, initialContent)
+            }
 
             // THEN
-            result shouldBe PopularPostsContent(
-                posts = initialContent.posts,
-                shouldLoad = true,
-                isConnected = true,
-                previousContent = initialContent.previousContent
+            assertThat(result).isEqualTo(
+                PopularPostsContent(
+                    posts = initialContent.posts,
+                    shouldLoad = true,
+                    isConnected = true,
+                    previousContent = initialContent.previousContent
+                )
             )
-            verify(mockConnectivityInfoProvider, times(2)).isConnected()
+            verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
         }
     }
 
@@ -69,33 +71,36 @@ internal class PopularActionHandlerTest {
         @Test
         fun `WHEN currentContent is not PopularPostsContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostListContent>()
+            val content = mockk<PostListContent>()
 
             // WHEN
-            val result = runBlocking { popularActionHandler.runAction(mock<SetPopularPosts>(), content) }
+            val result = runBlocking {
+                popularActionHandler.runAction(mockk<SetPopularPosts>(), content)
+            }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
         fun `WHEN currentContent is PopularPostsContent THEN updated content is returned`() {
             // GIVEN
-            given(mockConnectivityInfoProvider.isConnected())
-                .willReturn(true)
+            every { mockConnectivityInfoProvider.isConnected() } returns true
 
             // WHEN
-            val newPosts: List<Post> = mock()
+            val newPosts: List<Post> = mockk()
             val result = runBlocking {
                 popularActionHandler.runAction(SetPopularPosts(newPosts), initialContent)
             }
 
             // THEN
-            result shouldBe PopularPostsContent(
-                posts = newPosts,
-                shouldLoad = false,
-                isConnected = initialContent.isConnected,
-                previousContent = initialContent.previousContent
+            assertThat(result).isEqualTo(
+                PopularPostsContent(
+                    posts = newPosts,
+                    shouldLoad = false,
+                    isConnected = initialContent.isConnected,
+                    previousContent = initialContent.previousContent
+                )
             )
         }
     }

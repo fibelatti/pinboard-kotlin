@@ -62,20 +62,24 @@ object Dependencies {
 }
 
 object TestDependencies {
-    private const val junit5Version = "5.6.2"
 
     const val coreLibTest = "com.fibelatti.core:core-test:2.0.0-alpha4"
     const val coreLibArchTest = "com.fibelatti.core:arch-components-test:2.0.0-alpha4"
 
+    private const val junit5Version = "5.6.2"
     const val junit = "junit:junit:4.13"
     const val junit5 = "org.junit.jupiter:junit-jupiter-api:$junit5Version"
     const val junit5Engine = "org.junit.jupiter:junit-jupiter-engine:$junit5Version"
     const val junit5Params = "org.junit.jupiter:junit-jupiter-params:$junit5Version"
     const val junitVintage = "org.junit.vintage:junit-vintage-engine:$junit5Version"
+
     const val testRunner = "androidx.test:runner:1.2.0"
+
+    const val googleTruth = "com.google.truth:truth:1.0.1"
+    const val mockk = "io.mockk:mockk:1.10.0"
+
     const val kotlinTest = "org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlinVersion}"
     const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutinesVersion}"
-    const val mockitoCore = "org.mockito:mockito-inline:3.2.4"
     const val archComponentsTest = "android.arch.core:core-testing:${Versions.lifecycleVersion}"
     const val roomTest = "android.arch.persistence.room:testing:${Versions.roomVersion}"
 }

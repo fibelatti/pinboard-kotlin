@@ -2,15 +2,11 @@ package com.fibelatti.pinboard.features.posts.presentation
 
 import com.fibelatti.core.archcomponents.test.extension.currentEventShouldBe
 import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
-import com.fibelatti.core.archcomponents.test.extension.shouldNeverReceiveValues
+import com.fibelatti.pinboard.shouldNeverReceiveValues
 import com.fibelatti.core.extension.empty
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.provider.ResourceProvider
-import com.fibelatti.core.test.extension.givenSuspend
-import com.fibelatti.core.test.extension.mock
-import com.fibelatti.core.test.extension.safeAny
-import com.fibelatti.core.test.extension.verifySuspend
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.mockTagString1
@@ -26,19 +22,24 @@ import com.fibelatti.pinboard.features.appstate.PostSaved
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetSuggestedTags
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
-import com.fibelatti.pinboard.features.prepareToReceiveMany
-import com.fibelatti.pinboard.features.shouldHaveReceived
-import org.junit.jupiter.api.BeforeEach
+import com.fibelatti.pinboard.prepareToReceiveMany
+import com.fibelatti.pinboard.shouldHaveReceived
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito.given
-import org.mockito.Mockito.never
 
 internal class EditPostViewModelTest : BaseViewModelTest() {
 
-    private val mockAppStateRepository = mock<AppStateRepository>()
-    private val mockGetSuggestedTags = mock<GetSuggestedTags>()
-    private val mockAddPost = mock<AddPost>()
-    private val mockResourceProvider = mock<ResourceProvider>()
+    private val mockAppStateRepository = mockk<AppStateRepository>()
+    private val mockGetSuggestedTags = mockk<GetSuggestedTags>()
+    private val mockAddPost = mockk<AddPost>()
+    private val mockResourceProvider = mockk<ResourceProvider> {
+        every { getString(R.string.validation_error_invalid_url) } returns "R.string.validation_error_invalid_url"
+        every { getString(R.string.validation_error_empty_url) } returns "R.string.validation_error_empty_url"
+        every { getString(R.string.validation_error_empty_title) } returns "R.string.validation_error_empty_title"
+    }
 
     private val editPostViewModel = EditPostViewModel(
         mockAppStateRepository,
@@ -47,24 +48,13 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         mockResourceProvider
     )
 
-    @BeforeEach
-    fun setup() {
-        given(mockResourceProvider.getString(R.string.validation_error_invalid_url))
-            .willReturn("R.string.validation_error_invalid_url")
-        given(mockResourceProvider.getString(R.string.validation_error_empty_url))
-            .willReturn("R.string.validation_error_empty_url")
-        given(mockResourceProvider.getString(R.string.validation_error_empty_title))
-            .willReturn("R.string.validation_error_empty_title")
-    }
-
     @Test
     fun `GIVEN getSuggestedTags will fail WHEN searchForTag is called THEN suggestedTags should never receive values`() {
         // GIVEN
-        givenSuspend { mockGetSuggestedTags(safeAny()) }
-            .willReturn(Failure(Exception()))
+        coEvery { mockGetSuggestedTags(any()) } returns Failure(Exception())
 
         // WHEN
-        editPostViewModel.searchForTag(mockTagString1, mock())
+        editPostViewModel.searchForTag(mockTagString1, mockk())
 
         // THEN
         editPostViewModel.suggestedTags.shouldNeverReceiveValues()
@@ -74,11 +64,10 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
     fun `GIVEN getSuggestedTags will succeed WHEN searchForTag is called THEN suggestedTags should receive its response`() {
         // GIVEN
         val result = listOf(mockTagString1, mockTagString2)
-        givenSuspend { mockGetSuggestedTags(safeAny()) }
-            .willReturn(Success(result))
+        coEvery { mockGetSuggestedTags(any()) } returns Success(result)
 
         // WHEN
-        editPostViewModel.searchForTag(mockTagString1, mock())
+        editPostViewModel.searchForTag(mockTagString1, mockk())
 
         // THEN
         editPostViewModel.suggestedTags.currentValueShouldBe(result)
@@ -99,7 +88,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         // THEN
         editPostViewModel.invalidUrlError.currentValueShouldBe("R.string.validation_error_empty_url")
         editPostViewModel.saved.shouldNeverReceiveValues()
-        verifySuspend(mockAppStateRepository, never()) { runAction(safeAny()) }
+        coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 
     @Test
@@ -117,22 +106,24 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         // THEN
         editPostViewModel.invalidUrlTitleError.currentValueShouldBe("R.string.validation_error_empty_title")
         editPostViewModel.saved.shouldNeverReceiveValues()
-        verifySuspend(mockAppStateRepository, never()) { runAction(safeAny()) }
+        coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 
     @Test
     fun `GIVEN addPost returns InvalidUrlException WHEN saveLink is called THEN invalidUrlError will receive a value`() {
         // GIVEN
-        givenSuspend {
-            mockAddPost(AddPost.Params(
-                url = mockUrlInvalid,
-                title = mockUrlTitle,
-                description = mockUrlDescription,
-                private = true,
-                readLater = true,
-                tags = mockTags
-            ))
-        }.willReturn(Failure(InvalidUrlException()))
+        coEvery {
+            mockAddPost(
+                AddPost.Params(
+                    url = mockUrlInvalid,
+                    title = mockUrlTitle,
+                    description = mockUrlDescription,
+                    private = true,
+                    readLater = true,
+                    tags = mockTags
+                )
+            )
+        } returns Failure(InvalidUrlException())
 
         val loadingObserver = editPostViewModel.loading.prepareToReceiveMany()
 
@@ -151,23 +142,25 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         editPostViewModel.invalidUrlError.currentValueShouldBe("R.string.validation_error_invalid_url")
         editPostViewModel.invalidUrlTitleError.currentValueShouldBe(String.empty())
         editPostViewModel.saved.shouldNeverReceiveValues()
-        verifySuspend(mockAppStateRepository, never()) { runAction(safeAny()) }
+        coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 
     @Test
     fun `GIVEN addPost returns an error WHEN saveLink is called THEN error will receive a value`() {
         // GIVEN
         val error = Exception()
-        givenSuspend {
-            mockAddPost(AddPost.Params(
-                url = mockUrlValid,
-                title = mockUrlTitle,
-                description = mockUrlDescription,
-                private = true,
-                readLater = true,
-                tags = mockTags
-            ))
-        }.willReturn(Failure(error))
+        coEvery {
+            mockAddPost(
+                AddPost.Params(
+                    url = mockUrlValid,
+                    title = mockUrlTitle,
+                    description = mockUrlDescription,
+                    private = true,
+                    readLater = true,
+                    tags = mockTags
+                )
+            )
+        } returns Failure(error)
 
         val loadingObserver = editPostViewModel.loading.prepareToReceiveMany()
 
@@ -187,23 +180,25 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         editPostViewModel.invalidUrlTitleError.currentValueShouldBe(String.empty())
         editPostViewModel.error.currentValueShouldBe(error)
         editPostViewModel.saved.shouldNeverReceiveValues()
-        verifySuspend(mockAppStateRepository, never()) { runAction(safeAny()) }
+        coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 
     @Test
     fun `GIVEN addPost is successful WHEN saveLink is called THEN AppStateRepository should run PostSaved`() {
         // GIVEN
         val post = createPost()
-        givenSuspend {
-            mockAddPost(AddPost.Params(
-                url = mockUrlValid,
-                title = mockUrlTitle,
-                description = mockUrlDescription,
-                private = true,
-                readLater = true,
-                tags = mockTags
-            ))
-        }.willReturn(Success(post))
+        coEvery {
+            mockAddPost(
+                AddPost.Params(
+                    url = mockUrlValid,
+                    title = mockUrlTitle,
+                    description = mockUrlDescription,
+                    private = true,
+                    readLater = true,
+                    tags = mockTags
+                )
+            )
+        } returns Success(post)
 
         val loadingObserver = editPostViewModel.loading.prepareToReceiveMany()
 
@@ -223,6 +218,6 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         editPostViewModel.invalidUrlTitleError.currentValueShouldBe(String.empty())
         editPostViewModel.error.shouldNeverReceiveValues()
         editPostViewModel.saved.currentEventShouldBe(Unit)
-        verifySuspend(mockAppStateRepository) { runAction(PostSaved(post)) }
+        coVerify { mockAppStateRepository.runAction(PostSaved(post)) }
     }
 }

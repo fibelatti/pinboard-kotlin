@@ -1,12 +1,9 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.core.test.extension.shouldBe
-import com.fibelatti.core.test.extension.shouldBeAnInstanceOf
 import com.fibelatti.pinboard.MockDataProvider
+import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
@@ -38,18 +35,18 @@ class ValidateUrlTest {
         val result = runBlocking { validateUrl(url) }
 
         // THEN
-        result.shouldBeAnInstanceOf<Success<Unit>>()
-        result.getOrNull() shouldBe url
+        assertThat(result.getOrNull()).isEqualTo(url)
     }
 
     @ParameterizedTest
     @MethodSource("invalidUrls")
-    fun `GIVEN that an invalid url is received WHEN validateUrl is called THEN Failure is returned`(invalidUrl: String) {
+    fun `GIVEN that an invalid url is received WHEN validateUrl is called THEN Failure is returned`(
+        invalidUrl: String
+    ) {
         // WHEN
         val result = runBlocking { validateUrl(invalidUrl) }
 
         // THEN
-        result.shouldBeAnInstanceOf<Failure>()
-        result.exceptionOrNull()?.shouldBeAnInstanceOf<InvalidUrlException>()
+        assertThat(result.exceptionOrNull()).isInstanceOf(InvalidUrlException::class.java)
     }
 }

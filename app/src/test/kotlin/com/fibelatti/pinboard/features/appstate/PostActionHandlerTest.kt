@@ -1,7 +1,5 @@
 package com.fibelatti.pinboard.features.appstate
 
-import com.fibelatti.core.test.extension.mock
-import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
@@ -11,20 +9,21 @@ import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtil
 import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtilFactory
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
+import com.google.common.truth.Truth.assertThat
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito.given
-import org.mockito.BDDMockito.verify
-import org.mockito.Mockito.times
 
 internal class PostActionHandlerTest {
 
-    private val mockUserRepository = mock<UserRepository>()
-    private val mockConnectivityInfoProvider = mock<ConnectivityInfoProvider>()
-    private val mockPostListDiffUtilFactory = mock<PostListDiffUtilFactory>()
+    private val mockUserRepository = mockk<UserRepository>()
+    private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider>()
+    private val mockPostListDiffUtilFactory = mockk<PostListDiffUtilFactory>()
 
-    private val mockPost = mock<Post>()
+    private val mockPost = mockk<Post>()
 
     private val postActionHandler = PostActionHandler(
         mockUserRepository,
@@ -48,60 +47,63 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostDetailContent>()
+            val content = mockk<PostDetailContent>()
 
             // WHEN
             val result = runBlocking { postActionHandler.runAction(Refresh, content) }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
         fun `GIVEN shouldLoad is ShouldLoadFirstPage WHEN currentContent is PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostListContent>()
-            given(content.shouldLoad).willReturn(ShouldLoadFirstPage)
+            val content = mockk<PostListContent>()
+            every { content.shouldLoad } returns ShouldLoadFirstPage
 
             // WHEN
             val result = runBlocking { postActionHandler.runAction(Refresh, content) }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
         fun `GIVEN shouldLoad is ShouldLoadNextPage WHEN currentContent is PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostListContent>()
-            given(content.shouldLoad).willReturn(ShouldLoadNextPage(0))
+            val content = mockk<PostListContent>()
+            every { content.shouldLoad } returns ShouldLoadNextPage(0)
 
             // WHEN
             val result = runBlocking { postActionHandler.runAction(Refresh, content) }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
         fun `WHEN currentContent is PostListContent and is connected is false THEN updated content is returned`() {
             // GIVEN
-            given(mockConnectivityInfoProvider.isConnected())
-                .willReturn(false)
+            every { mockConnectivityInfoProvider.isConnected() } returns false
 
             // WHEN
             val result = runBlocking { postActionHandler.runAction(Refresh, initialContent) }
 
             // THEN
-            result shouldBe initialContent.copy(shouldLoad = Loaded, isConnected = false)
-            verify(mockConnectivityInfoProvider, times(2)).isConnected()
+            assertThat(result).isEqualTo(
+                initialContent.copy(
+                    shouldLoad = Loaded,
+                    isConnected = false
+                )
+            )
+            verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
         }
 
         @Test
         fun `WHEN currentContent is PostListContent and is connected is true THEN updated content is returned`() {
             // GIVEN
-            given(mockConnectivityInfoProvider.isConnected())
-                .willReturn(true)
+            every { mockConnectivityInfoProvider.isConnected() } returns true
 
             // WHEN
             val result = runBlocking {
@@ -109,11 +111,13 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe initialContent.copy(
-                shouldLoad = ShouldLoadFirstPage,
-                isConnected = true
+            assertThat(result).isEqualTo(
+                initialContent.copy(
+                    shouldLoad = ShouldLoadFirstPage,
+                    isConnected = true
+                )
             )
-            verify(mockConnectivityInfoProvider, times(2)).isConnected()
+            verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
         }
     }
 
@@ -123,15 +127,15 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostDetailContent>()
+            val content = mockk<PostDetailContent>()
 
             // WHEN
             val result = runBlocking {
-                postActionHandler.runAction(SetPosts(mock()), content)
+                postActionHandler.runAction(SetPosts(mockk()), content)
             }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
@@ -142,15 +146,19 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe initialContent.copy(posts = null, shouldLoad = Syncing)
+            assertThat(result).isEqualTo(initialContent.copy(posts = null, shouldLoad = Syncing))
         }
 
         @Test
         fun `WHEN currentContent is PostListContent and actions posts is not null and content is up to date THEN updated content is returned`() {
             // GIVEN
-            val mockDiffUtil = mock<PostListDiffUtil>()
-            given(mockPostListDiffUtilFactory.create(emptyList(), listOf(createPost())))
-                .willReturn(mockDiffUtil)
+            val mockDiffUtil = mockk<PostListDiffUtil>()
+            every {
+                mockPostListDiffUtilFactory.create(
+                    emptyList(),
+                    listOf(createPost())
+                )
+            } returns mockDiffUtil
 
             val currentContent = PostListContent(
                 category = All,
@@ -177,23 +185,29 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe PostListContent(
-                category = All,
-                posts = PostList(1, listOf(createPost()), mockDiffUtil),
-                showDescription = false,
-                sortType = NewestFirst,
-                searchParameters = SearchParameters(),
-                shouldLoad = Loaded,
-                isConnected = true
+            assertThat(result).isEqualTo(
+                PostListContent(
+                    category = All,
+                    posts = PostList(1, listOf(createPost()), mockDiffUtil),
+                    showDescription = false,
+                    sortType = NewestFirst,
+                    searchParameters = SearchParameters(),
+                    shouldLoad = Loaded,
+                    isConnected = true
+                )
             )
         }
 
         @Test
         fun `WHEN currentContent is PostListContent and actions posts is not null and content is not up to date THEN updated content is returned with syncing`() {
             // GIVEN
-            val mockDiffUtil = mock<PostListDiffUtil>()
-            given(mockPostListDiffUtilFactory.create(emptyList(), listOf(createPost())))
-                .willReturn(mockDiffUtil)
+            val mockDiffUtil = mockk<PostListDiffUtil>()
+            every {
+                mockPostListDiffUtilFactory.create(
+                    emptyList(),
+                    listOf(createPost())
+                )
+            } returns mockDiffUtil
 
             val currentContent = PostListContent(
                 category = All,
@@ -220,14 +234,16 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe PostListContent(
-                category = All,
-                posts = PostList(1, listOf(createPost()), mockDiffUtil),
-                showDescription = false,
-                sortType = NewestFirst,
-                searchParameters = SearchParameters(),
-                shouldLoad = Syncing,
-                isConnected = true
+            assertThat(result).isEqualTo(
+                PostListContent(
+                    category = All,
+                    posts = PostList(1, listOf(createPost()), mockDiffUtil),
+                    showDescription = false,
+                    sortType = NewestFirst,
+                    searchParameters = SearchParameters(),
+                    shouldLoad = Syncing,
+                    isConnected = true
+                )
             )
         }
     }
@@ -238,13 +254,13 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostDetailContent>()
+            val content = mockk<PostDetailContent>()
 
             // WHEN
             val result = runBlocking { postActionHandler.runAction(GetNextPostPage, content) }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
@@ -255,7 +271,7 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe initialContent
+            assertThat(result).isEqualTo(initialContent)
         }
 
         @Test
@@ -263,7 +279,7 @@ internal class PostActionHandlerTest {
             // GIVEN
             val currentContent = PostListContent(
                 category = All,
-                posts = PostList(1, listOf(mock()), mock()),
+                posts = PostList(1, listOf(mockk()), mockk()),
                 showDescription = false,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
@@ -277,7 +293,7 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe currentContent.copy(shouldLoad = ShouldLoadNextPage(offset = 1))
+            assertThat(result).isEqualTo(currentContent.copy(shouldLoad = ShouldLoadNextPage(offset = 1)))
         }
     }
 
@@ -287,15 +303,15 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostDetailContent>()
+            val content = mockk<PostDetailContent>()
 
             // WHEN
             val result = runBlocking {
-                postActionHandler.runAction(SetNextPostPage(mock()), content)
+                postActionHandler.runAction(SetNextPostPage(mockk()), content)
             }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
@@ -326,7 +342,7 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
@@ -334,7 +350,7 @@ internal class PostActionHandlerTest {
             // GIVEN
             val content = PostListContent(
                 category = All,
-                posts = PostList(1, listOf(createPost()), mock()),
+                posts = PostList(1, listOf(createPost()), mockk()),
                 showDescription = false,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
@@ -348,19 +364,19 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
         fun `WHEN currentContent is PostListContent and posts are not null THEN updated content is returned`() {
             // GIVEN
-            val mockCurrentList = listOf(mock<Post>())
-            val mockNewList = listOf(mock<Post>())
-            val mockDiffUtil = mock<PostListDiffUtil>()
+            val mockCurrentList = listOf(mockk<Post>())
+            val mockNewList = listOf(mockk<Post>())
+            val mockDiffUtil = mockk<PostListDiffUtil>()
 
             val currentContent = PostListContent(
                 category = All,
-                posts = PostList(1, mockCurrentList, mock()),
+                posts = PostList(1, mockCurrentList, mockk()),
                 showDescription = false,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
@@ -368,12 +384,12 @@ internal class PostActionHandlerTest {
                 isConnected = true
             )
 
-            given(
+            every {
                 mockPostListDiffUtilFactory.create(
                     mockCurrentList,
                     mockCurrentList.plus(mockNewList)
                 )
-            ).willReturn(mockDiffUtil)
+            } returns mockDiffUtil
 
             // WHEN
             val result = runBlocking {
@@ -390,14 +406,16 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe PostListContent(
-                category = All,
-                posts = PostList(2, mockCurrentList.plus(mockNewList), mockDiffUtil),
-                showDescription = false,
-                sortType = NewestFirst,
-                searchParameters = SearchParameters(),
-                shouldLoad = Loaded,
-                isConnected = true
+            assertThat(result).isEqualTo(
+                PostListContent(
+                    category = All,
+                    posts = PostList(2, mockCurrentList.plus(mockNewList), mockDiffUtil),
+                    showDescription = false,
+                    sortType = NewestFirst,
+                    searchParameters = SearchParameters(),
+                    shouldLoad = Loaded,
+                    isConnected = true
+                )
             )
         }
     }
@@ -408,19 +426,19 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostDetailContent>()
+            val content = mockk<PostDetailContent>()
 
             // WHEN
             val result = runBlocking { postActionHandler.runAction(PostsDisplayed, content) }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
         fun `WHEN currentContent is PostListContent THEN the updated content is returned`() {
             // GIVEN
-            val mockPostList = PostList(1, mock(), mock(), alreadyDisplayed = false)
+            val mockPostList = PostList(1, mockk(), mockk(), alreadyDisplayed = false)
 
             val currentContent = PostListContent(
                 category = All,
@@ -438,14 +456,16 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe PostListContent(
-                category = All,
-                posts = mockPostList.copy(alreadyDisplayed = true),
-                showDescription = false,
-                sortType = NewestFirst,
-                searchParameters = SearchParameters(),
-                shouldLoad = Loaded,
-                isConnected = true
+            assertThat(result).isEqualTo(
+                PostListContent(
+                    category = All,
+                    posts = mockPostList.copy(alreadyDisplayed = true),
+                    showDescription = false,
+                    sortType = NewestFirst,
+                    searchParameters = SearchParameters(),
+                    shouldLoad = Loaded,
+                    isConnected = true
+                )
             )
         }
     }
@@ -456,59 +476,57 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostDetailContent>()
+            val content = mockk<PostDetailContent>()
 
             // WHEN
             val result = runBlocking { postActionHandler.runAction(ToggleSorting, content) }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
         fun `GIVEN shouldLoad is ShouldLoadFirstPage WHEN currentContent is PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostListContent>()
-            given(content.shouldLoad).willReturn(ShouldLoadFirstPage)
+            val content = mockk<PostListContent>()
+            every { content.shouldLoad } returns ShouldLoadFirstPage
 
             // WHEN
             val result = runBlocking { postActionHandler.runAction(Refresh, content) }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
         fun `GIVEN shouldLoad is ShouldLoadNextPage WHEN currentContent is PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostListContent>()
-            given(content.shouldLoad).willReturn(ShouldLoadNextPage(0))
+            val content = mockk<PostListContent>()
+            every { content.shouldLoad } returns ShouldLoadNextPage(0)
 
             // WHEN
             val result = runBlocking { postActionHandler.runAction(Refresh, content) }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
         fun `GIVEN isConnected is false WHEN currentContent is PostListContent THEN same content is returned`() {
             // GIVEN
-            given(mockConnectivityInfoProvider.isConnected())
-                .willReturn(false)
+            every { mockConnectivityInfoProvider.isConnected() } returns false
 
             // WHEN
             val result = runBlocking { postActionHandler.runAction(ToggleSorting, initialContent) }
 
             // THEN
-            result shouldBe initialContent.copy(isConnected = false)
+            assertThat(result).isEqualTo(initialContent.copy(isConnected = false))
         }
 
         @Test
         fun `GIVEN sortType is NewestFirst WHEN currentContent is PostListContent THEN updated content is returned`() {
             // GIVEN
-            given(mockConnectivityInfoProvider.isConnected())
-                .willReturn(true)
+            every { mockConnectivityInfoProvider.isConnected() } returns true
 
             // WHEN
             val result = runBlocking {
@@ -519,17 +537,18 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe initialContent.copy(
-                sortType = OldestFirst,
-                shouldLoad = ShouldLoadFirstPage
+            assertThat(result).isEqualTo(
+                initialContent.copy(
+                    sortType = OldestFirst,
+                    shouldLoad = ShouldLoadFirstPage
+                )
             )
         }
 
         @Test
         fun `GIVEN sortType is OldestFirst WHEN currentContent is PostListContent THEN updated content is returned`() {
             // GIVEN
-            given(mockConnectivityInfoProvider.isConnected())
-                .willReturn(true)
+            every { mockConnectivityInfoProvider.isConnected() } returns true
 
             // WHEN
             val result = runBlocking {
@@ -540,9 +559,11 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe initialContent.copy(
-                sortType = NewestFirst,
-                shouldLoad = ShouldLoadFirstPage
+            assertThat(result).isEqualTo(
+                initialContent.copy(
+                    sortType = NewestFirst,
+                    shouldLoad = ShouldLoadFirstPage
+                )
             )
         }
     }
@@ -553,19 +574,19 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is not PostDetailContent or PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<Content>()
+            val content = mockk<Content>()
 
             // WHEN
             val result = runBlocking { postActionHandler.runAction(EditPost(mockPost), content) }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
         fun `WHEN currentContent is PostDetailContent THEN updated content is returned`() {
             // GIVEN
-            val mockCurrentContent = mock<PostDetailContent>()
+            val mockCurrentContent = mockk<PostDetailContent>()
 
             // WHEN
             val result = runBlocking {
@@ -573,16 +594,18 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe EditPostContent(
-                post = mockPost,
-                previousContent = mockCurrentContent
+            assertThat(result).isEqualTo(
+                EditPostContent(
+                    post = mockPost,
+                    previousContent = mockCurrentContent
+                )
             )
         }
 
         @Test
         fun `WHEN currentContent is PostListContent THEN updated content is returned`() {
             // GIVEN
-            val mockCurrentContent = mock<PostListContent>()
+            val mockCurrentContent = mockk<PostListContent>()
 
             // WHEN
             val result = runBlocking {
@@ -590,9 +613,11 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe EditPostContent(
-                post = mockPost,
-                previousContent = mockCurrentContent
+            assertThat(result).isEqualTo(
+                EditPostContent(
+                    post = mockPost,
+                    previousContent = mockCurrentContent
+                )
             )
         }
     }
@@ -600,7 +625,7 @@ internal class PostActionHandlerTest {
     @Test
     fun `WHEN editPostFromShare is called THEN EditPostContent is returned`() {
         // GIVEN
-        val mockCurrentContent = mock<PostDetailContent>()
+        val mockCurrentContent = mockk<PostDetailContent>()
 
         // WHEN
         val result = runBlocking {
@@ -608,9 +633,11 @@ internal class PostActionHandlerTest {
         }
 
         // THEN
-        result shouldBe EditPostContent(
-            post = mockPost,
-            previousContent = ExternalContent
+        assertThat(result).isEqualTo(
+            EditPostContent(
+                post = mockPost,
+                previousContent = ExternalContent
+            )
         )
     }
 
@@ -620,7 +647,7 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is not AddPostContent or EditPostContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostDetailContent>()
+            val content = mockk<PostDetailContent>()
 
             // WHEN
             val result = runBlocking {
@@ -628,7 +655,7 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
@@ -647,7 +674,7 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe initialContent.copy(shouldLoad = ShouldLoadFirstPage)
+            assertThat(result).isEqualTo(initialContent.copy(shouldLoad = ShouldLoadFirstPage))
         }
 
         @Test
@@ -668,9 +695,11 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe PostDetailContent(
-                post = mockPost,
-                previousContent = initialContent.copy(shouldLoad = ShouldLoadFirstPage)
+            assertThat(result).isEqualTo(
+                PostDetailContent(
+                    post = mockPost,
+                    previousContent = initialContent.copy(shouldLoad = ShouldLoadFirstPage)
+                )
             )
         }
 
@@ -688,7 +717,7 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe initialContent.copy(shouldLoad = ShouldLoadFirstPage)
+            assertThat(result).isEqualTo(initialContent.copy(shouldLoad = ShouldLoadFirstPage))
         }
 
         @Test
@@ -705,17 +734,17 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe ExternalContent
+            assertThat(result).isEqualTo(ExternalContent)
         }
 
         @Test
         fun `WHEN currentContent is PopularPostDetailContent AND getEditAfterSharing is AfterSaving THEN updated content is returned`() {
             // GIVEN
-            given(mockUserRepository.getEditAfterSharing()).willReturn(EditAfterSharing.AfterSaving)
+            every { mockUserRepository.getEditAfterSharing() } returns EditAfterSharing.AfterSaving
             val currentContent = PopularPostDetailContent(
-                post = mock(),
+                post = mockk(),
                 previousContent = PopularPostsContent(
-                    posts = mock(),
+                    posts = mockk(),
                     shouldLoad = false,
                     previousContent = initialContent
                 )
@@ -733,20 +762,22 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe EditPostContent(
-                post = mockPost,
-                previousContent = expectedContent
+            assertThat(result).isEqualTo(
+                EditPostContent(
+                    post = mockPost,
+                    previousContent = expectedContent
+                )
             )
         }
 
         @Test
         fun `WHEN currentContent is PopularPostDetailContent AND getEditAfterSharing is not AfterSaving THEN updated content is returned`() {
             // GIVEN
-            given(mockUserRepository.getEditAfterSharing()).willReturn(mock())
+            every { mockUserRepository.getEditAfterSharing() } returns mockk()
             val currentContent = PopularPostDetailContent(
-                post = mock(),
+                post = mockk(),
                 previousContent = PopularPostsContent(
-                    posts = mock(),
+                    posts = mockk(),
                     shouldLoad = false,
                     previousContent = initialContent
                 )
@@ -764,15 +795,15 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe expectedContent
+            assertThat(result).isEqualTo(expectedContent)
         }
 
         @Test
         fun `WHEN currentContent is PopularPostsContent AND getEditAfterSharing is AfterSaving THEN updated content is returned`() {
             // GIVEN
-            given(mockUserRepository.getEditAfterSharing()).willReturn(EditAfterSharing.AfterSaving)
+            every { mockUserRepository.getEditAfterSharing() } returns EditAfterSharing.AfterSaving
             val currentContent = PopularPostsContent(
-                posts = mock(),
+                posts = mockk(),
                 shouldLoad = false,
                 previousContent = initialContent
             )
@@ -786,18 +817,20 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe EditPostContent(
-                post = mockPost,
-                previousContent = expectedContent
+            assertThat(result).isEqualTo(
+                EditPostContent(
+                    post = mockPost,
+                    previousContent = expectedContent
+                )
             )
         }
 
         @Test
         fun `WHEN currentContent is PopularPostsContent AND getEditAfterSharing is not AfterSaving THEN updated content is returned`() {
             // GIVEN
-            given(mockUserRepository.getEditAfterSharing()).willReturn(mock())
+            every { mockUserRepository.getEditAfterSharing() } returns mockk()
             val currentContent = PopularPostsContent(
-                posts = mock(),
+                posts = mockk(),
                 shouldLoad = false,
                 previousContent = initialContent
             )
@@ -811,7 +844,7 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe expectedContent
+            assertThat(result).isEqualTo(expectedContent)
         }
     }
 
@@ -821,13 +854,13 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is not ContentWithHistory THEN same content is returned`() {
             // GIVEN
-            val content = mock<ExternalContent>()
+            val content = mockk<ExternalContent>()
 
             // WHEN
             val result = runBlocking { postActionHandler.runAction(PostDeleted, content) }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
@@ -849,7 +882,7 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe currentContent.copy(shouldLoad = ShouldLoadFirstPage)
+            assertThat(result).isEqualTo(currentContent.copy(shouldLoad = ShouldLoadFirstPage))
         }
 
         @Test
@@ -875,7 +908,7 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe previousContent.copy(shouldLoad = ShouldLoadFirstPage)
+            assertThat(result).isEqualTo(previousContent.copy(shouldLoad = ShouldLoadFirstPage))
         }
 
         @Test
@@ -890,11 +923,11 @@ internal class PostActionHandlerTest {
                 shouldLoad = Loaded,
                 isConnected = true
             )
-            val previousContent = mock<PostDetailContent>().also {
-                given(it.previousContent).willReturn(yetPreviousContent)
+            val previousContent = mockk<PostDetailContent>().also {
+                every { it.previousContent } returns yetPreviousContent
             }
-            val currentContent = mock<EditPostContent>().also {
-                given(it.previousContent).willReturn(previousContent)
+            val currentContent = mockk<EditPostContent>().also {
+                every { it.previousContent } returns previousContent
             }
 
             // WHEN
@@ -903,15 +936,15 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe yetPreviousContent.copy(shouldLoad = ShouldLoadFirstPage)
+            assertThat(result).isEqualTo(yetPreviousContent.copy(shouldLoad = ShouldLoadFirstPage))
         }
 
         @Test
         fun `WHEN currentContent is ContentWithHistory and it is not specifically handled THEN previous content is returned`() {
             // GIVEN
-            val previousContent = mock<AddPostContent>()
-            val currentContent = mock<ContentWithHistory>().also {
-                given(it.previousContent).willReturn(previousContent)
+            val previousContent = mockk<AddPostContent>()
+            val currentContent = mockk<ContentWithHistory>().also {
+                every { it.previousContent } returns previousContent
             }
 
             // WHEN
@@ -920,7 +953,7 @@ internal class PostActionHandlerTest {
             }
 
             // THEN
-            result shouldBe previousContent
+            assertThat(result).isEqualTo(previousContent)
         }
     }
 }

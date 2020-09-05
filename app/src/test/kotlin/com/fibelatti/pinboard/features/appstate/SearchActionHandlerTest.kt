@@ -1,12 +1,12 @@
 package com.fibelatti.pinboard.features.appstate
 
-import com.fibelatti.core.test.extension.mock
-import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.MockDataProvider.mockTag1
 import com.fibelatti.pinboard.MockDataProvider.mockTag2
 import com.fibelatti.pinboard.MockDataProvider.mockTag3
 import com.fibelatti.pinboard.MockDataProvider.mockTag4
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
+import com.google.common.truth.Truth.assertThat
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -21,19 +21,19 @@ internal class SearchActionHandlerTest {
         @Test
         fun `WHEN currentContent is not SearchContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostDetailContent>()
+            val content = mockk<PostDetailContent>()
 
             // WHEN
             val result = runBlocking { searchActionHandler.runAction(RefreshSearchTags, content) }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
         fun `WHEN currentContent is SearchContent THEN an updated SearchContent is returned`() {
             // GIVEN
-            val mockPreviousContent = mock<PostListContent>()
+            val mockPreviousContent = mockk<PostListContent>()
             val initialContent = SearchContent(
                 searchParameters = SearchParameters(),
                 shouldLoadTags = false,
@@ -46,10 +46,12 @@ internal class SearchActionHandlerTest {
             }
 
             // THEN
-            result shouldBe SearchContent(
-                searchParameters = SearchParameters(),
-                shouldLoadTags = true,
-                previousContent = mockPreviousContent
+            assertThat(result).isEqualTo(
+                SearchContent(
+                    searchParameters = SearchParameters(),
+                    shouldLoadTags = true,
+                    previousContent = mockPreviousContent
+                )
             )
         }
     }
@@ -60,21 +62,21 @@ internal class SearchActionHandlerTest {
         @Test
         fun `WHEN currentContent is not SearchContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostDetailContent>()
+            val content = mockk<PostDetailContent>()
 
             // WHEN
             val result = runBlocking {
-                searchActionHandler.runAction(mock<SetSearchTags>(), content)
+                searchActionHandler.runAction(mockk<SetSearchTags>(), content)
             }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
         fun `WHEN currentContent is SearchContent THEN an updated SearchContent is returned`() {
             // GIVEN
-            val mockPreviousContent = mock<PostListContent>()
+            val mockPreviousContent = mockk<PostListContent>()
             val initialContent = SearchContent(
                 searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
                 previousContent = mockPreviousContent
@@ -89,12 +91,17 @@ internal class SearchActionHandlerTest {
             }
 
             // THEN
-            result shouldBe SearchContent(
-                searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
-                availableTags = listOf(mockTag2, mockTag3),
-                allTags = listOf(mockTag1, mockTag2, mockTag3),
-                shouldLoadTags = false,
-                previousContent = mockPreviousContent
+            assertThat(result).isEqualTo(
+                SearchContent(
+                    searchParameters = SearchParameters(
+                        term = mockUrlValid,
+                        tags = listOf(mockTag1)
+                    ),
+                    availableTags = listOf(mockTag2, mockTag3),
+                    allTags = listOf(mockTag1, mockTag2, mockTag3),
+                    shouldLoadTags = false,
+                    previousContent = mockPreviousContent
+                )
             )
         }
     }
@@ -105,21 +112,21 @@ internal class SearchActionHandlerTest {
         @Test
         fun `WHEN currentContent is not SearchContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostDetailContent>()
+            val content = mockk<PostDetailContent>()
 
             // WHEN
             val result = runBlocking {
-                searchActionHandler.runAction(mock<AddSearchTag>(), content)
+                searchActionHandler.runAction(mockk<AddSearchTag>(), content)
             }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
         fun `GIVEN the tag is already included in the current SearchContent WHEN currentContent is SearchContent THEN same content is returned`() {
             // GIVEN
-            val mockPreviousContent = mock<PostListContent>()
+            val mockPreviousContent = mockk<PostListContent>()
             val initialContent = SearchContent(
                 searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
                 availableTags = listOf(mockTag2, mockTag3),
@@ -133,13 +140,13 @@ internal class SearchActionHandlerTest {
             }
 
             // THEN
-            result shouldBe initialContent
+            assertThat(result).isEqualTo(initialContent)
         }
 
         @Test
         fun `GIVEN the max amount of tags has been reached SearchContent WHEN currentContent is SearchContent THEN same content is returned`() {
             // GIVEN
-            val mockPreviousContent = mock<PostListContent>()
+            val mockPreviousContent = mockk<PostListContent>()
             val initialContent = SearchContent(
                 searchParameters = SearchParameters(
                     term = mockUrlValid,
@@ -156,13 +163,13 @@ internal class SearchActionHandlerTest {
             }
 
             // THEN
-            result shouldBe initialContent
+            assertThat(result).isEqualTo(initialContent)
         }
 
         @Test
         fun `WHEN currentContent is SearchContent THEN an updated SearchContent is returned`() {
             // GIVEN
-            val mockPreviousContent = mock<PostListContent>()
+            val mockPreviousContent = mockk<PostListContent>()
             val initialContent = SearchContent(
                 searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
                 availableTags = listOf(mockTag2, mockTag3),
@@ -176,14 +183,16 @@ internal class SearchActionHandlerTest {
             }
 
             // THEN
-            result shouldBe SearchContent(
-                searchParameters = SearchParameters(
-                    term = mockUrlValid,
-                    tags = listOf(mockTag1, mockTag2)
-                ),
-                availableTags = listOf(mockTag3),
-                allTags = listOf(mockTag1, mockTag2, mockTag3),
-                previousContent = mockPreviousContent
+            assertThat(result).isEqualTo(
+                SearchContent(
+                    searchParameters = SearchParameters(
+                        term = mockUrlValid,
+                        tags = listOf(mockTag1, mockTag2)
+                    ),
+                    availableTags = listOf(mockTag3),
+                    allTags = listOf(mockTag1, mockTag2, mockTag3),
+                    previousContent = mockPreviousContent
+                )
             )
         }
     }
@@ -194,21 +203,21 @@ internal class SearchActionHandlerTest {
         @Test
         fun `WHEN currentContent is not SearchContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostDetailContent>()
+            val content = mockk<PostDetailContent>()
 
             // WHEN
             val result = runBlocking {
-                searchActionHandler.runAction(mock<RemoveSearchTag>(), content)
+                searchActionHandler.runAction(mockk<RemoveSearchTag>(), content)
             }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
         fun `WHEN currentContent is SearchContent THEN an updated SearchContent is returned`() {
             // GIVEN
-            val mockPreviousContent = mock<PostListContent>()
+            val mockPreviousContent = mockk<PostListContent>()
             val initialContent = SearchContent(
                 searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
                 availableTags = listOf(mockTag2, mockTag3),
@@ -222,11 +231,15 @@ internal class SearchActionHandlerTest {
             }
 
             // THEN
-            result shouldBe SearchContent(
-                searchParameters = SearchParameters(term = mockUrlValid, tags = emptyList()),
-                availableTags = listOf(mockTag1, mockTag2, mockTag3),
-                allTags = listOf(mockTag1, mockTag2, mockTag3),
-                previousContent = mockPreviousContent
+            assertThat(result).isEqualTo(
+                SearchContent(
+                    searchParameters = SearchParameters(
+                        term = mockUrlValid, tags = emptyList()
+                    ),
+                    availableTags = listOf(mockTag1, mockTag2, mockTag3),
+                    allTags = listOf(mockTag1, mockTag2, mockTag3),
+                    previousContent = mockPreviousContent
+                )
             )
         }
     }
@@ -237,13 +250,13 @@ internal class SearchActionHandlerTest {
         @Test
         fun `WHEN currentContent is not SearchContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostDetailContent>()
+            val content = mockk<PostDetailContent>()
 
             // WHEN
-            val result = runBlocking { searchActionHandler.runAction(mock<Search>(), content) }
+            val result = runBlocking { searchActionHandler.runAction(mockk<Search>(), content) }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
@@ -268,13 +281,15 @@ internal class SearchActionHandlerTest {
             }
 
             // THEN
-            result shouldBe PostListContent(
-                category = All,
-                posts = null,
-                showDescription = false,
-                sortType = NewestFirst,
-                searchParameters = SearchParameters(term = "new term", tags = listOf(mockTag1)),
-                shouldLoad = ShouldLoadFirstPage
+            assertThat(result).isEqualTo(
+                PostListContent(
+                    category = All,
+                    posts = null,
+                    showDescription = false,
+                    sortType = NewestFirst,
+                    searchParameters = SearchParameters(term = "new term", tags = listOf(mockTag1)),
+                    shouldLoad = ShouldLoadFirstPage
+                )
             )
         }
     }
@@ -285,13 +300,13 @@ internal class SearchActionHandlerTest {
         @Test
         fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
             // GIVEN
-            val content = mock<PostDetailContent>()
+            val content = mockk<PostDetailContent>()
 
             // WHEN
             val result = runBlocking { searchActionHandler.runAction(ClearSearch, content) }
 
             // THEN
-            result shouldBe content
+            assertThat(result).isEqualTo(content)
         }
 
         @Test
@@ -310,13 +325,15 @@ internal class SearchActionHandlerTest {
             val result = runBlocking { searchActionHandler.runAction(ClearSearch, initialContent) }
 
             // THEN
-            result shouldBe PostListContent(
-                category = All,
-                posts = null,
-                showDescription = false,
-                sortType = NewestFirst,
-                searchParameters = SearchParameters(),
-                shouldLoad = ShouldLoadFirstPage
+            assertThat(result).isEqualTo(
+                PostListContent(
+                    category = All,
+                    posts = null,
+                    showDescription = false,
+                    sortType = NewestFirst,
+                    searchParameters = SearchParameters(),
+                    shouldLoad = ShouldLoadFirstPage
+                )
             )
         }
 
@@ -344,13 +361,15 @@ internal class SearchActionHandlerTest {
             }
 
             // THEN
-            result shouldBe PostListContent(
-                category = All,
-                posts = null,
-                showDescription = false,
-                sortType = NewestFirst,
-                searchParameters = SearchParameters(),
-                shouldLoad = ShouldLoadFirstPage
+            assertThat(result).isEqualTo(
+                PostListContent(
+                    category = All,
+                    posts = null,
+                    showDescription = false,
+                    sortType = NewestFirst,
+                    searchParameters = SearchParameters(),
+                    shouldLoad = ShouldLoadFirstPage
+                )
             )
         }
     }

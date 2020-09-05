@@ -3,71 +3,66 @@ package com.fibelatti.pinboard.core.android
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
-import com.fibelatti.core.test.extension.mock
-import com.fibelatti.core.test.extension.shouldBe
+import com.google.common.truth.Truth.assertThat
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.jupiter.api.Test
-import org.mockito.BDDMockito.given
 
 internal class ConnectivityInfoProviderTest {
 
-    private val mockNetworkA = mock<Network>()
-    private val mockNetworkB = mock<Network>()
-    private val mockNetworkC = mock<Network>()
+    private val mockNetworkA = mockk<Network>()
+    private val mockNetworkB = mockk<Network>()
+    private val mockNetworkC = mockk<Network>()
 
-    private val mockNetworkACapabilities = mock<NetworkCapabilities>().also {
-        given(it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET))
-            .willReturn(true)
+    private val mockNetworkACapabilities = mockk<NetworkCapabilities>().also {
+        every { it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) } returns true
     }
-    private val mockNetworkBCapabilities = mock<NetworkCapabilities>().also {
-        given(it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET))
-            .willReturn(false)
+    private val mockNetworkBCapabilities = mockk<NetworkCapabilities>().also {
+        every { it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) } returns false
     }
 
-    private val mockConnectivityManager = mock<ConnectivityManager>().also {
-        given(it.getNetworkCapabilities(mockNetworkA))
-            .willReturn(mockNetworkACapabilities)
-        given(it.getNetworkCapabilities(mockNetworkB))
-            .willReturn(mockNetworkBCapabilities)
-        given(it.getNetworkCapabilities(mockNetworkC))
-            .willReturn(null)
+    private val mockConnectivityManager = mockk<ConnectivityManager>().also {
+        every { it.getNetworkCapabilities(mockNetworkA) } returns mockNetworkACapabilities
+        every { it.getNetworkCapabilities(mockNetworkB) } returns mockNetworkBCapabilities
+        every { it.getNetworkCapabilities(mockNetworkC) } returns null
     }
 
     private val connectivityInfoProvider = ConnectivityInfoProvider(mockConnectivityManager)
 
     @Test
     fun `WHEN ConnectivityManager is null THEN isConnected should return false`() {
-        ConnectivityInfoProvider(connectivityManager = null).isConnected() shouldBe false
+        assertThat(ConnectivityInfoProvider(connectivityManager = null).isConnected()).isFalse()
     }
 
     @Test
     fun `WHEN allNetworks returns empty THEN isConnected should return false`() {
-        given(mockConnectivityManager.allNetworks)
-            .willReturn(emptyArray())
+        every { mockConnectivityManager.allNetworks } returns emptyArray()
 
-        connectivityInfoProvider.isConnected() shouldBe false
+        assertThat(connectivityInfoProvider.isConnected()).isFalse()
     }
 
     @Test
     fun `WHEN the network has no capabilities THEN isConnected should return false`() {
-        given(mockConnectivityManager.allNetworks)
-            .willReturn(arrayOf(mockNetworkC))
+        every { mockConnectivityManager.allNetworks } returns arrayOf(mockNetworkC)
 
-        connectivityInfoProvider.isConnected() shouldBe false
+        assertThat(connectivityInfoProvider.isConnected()).isFalse()
     }
 
     @Test
     fun `WHEN the network has no internet capability THEN isConnected should return false`() {
-        given(mockConnectivityManager.allNetworks)
-            .willReturn(arrayOf(mockNetworkB, mockNetworkC))
+        every { mockConnectivityManager.allNetworks } returns arrayOf(mockNetworkB, mockNetworkC)
 
-        connectivityInfoProvider.isConnected() shouldBe false
+        assertThat(connectivityInfoProvider.isConnected()).isFalse()
     }
 
     @Test
     fun `WHEN at least one network has internet capability THEN isConnected should return true`() {
-        given(mockConnectivityManager.allNetworks)
-            .willReturn(arrayOf(mockNetworkA, mockNetworkB, mockNetworkC))
+        every { mockConnectivityManager.allNetworks } returns arrayOf(
+            mockNetworkA,
+            mockNetworkB,
+            mockNetworkC
+        )
 
-        connectivityInfoProvider.isConnected() shouldBe true
+        assertThat(connectivityInfoProvider.isConnected()).isTrue()
     }
 }

@@ -1,9 +1,5 @@
 package com.fibelatti.pinboard.features.posts.data
 
-import androidx.test.runner.AndroidJUnit4
-import com.fibelatti.core.test.extension.shouldBe
-import com.fibelatti.core.test.extension.shouldContain
-import com.fibelatti.core.test.extension.sizeShouldBe
 import com.fibelatti.pinboard.BaseDbTest
 import com.fibelatti.pinboard.MockDataProvider.createPostDto
 import com.fibelatti.pinboard.MockDataProvider.mockHash
@@ -16,55 +12,72 @@ import com.fibelatti.pinboard.MockDataProvider.mockTime3
 import com.fibelatti.pinboard.MockDataProvider.mockTime4
 import com.fibelatti.pinboard.MockDataProvider.mockTime5
 import com.fibelatti.pinboard.core.AppConfig
-import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import org.junit.runner.RunWith
 import java.util.UUID
 
-@RunWith(AndroidJUnit4::class)
 class PostsDaoTest : BaseDbTest() {
 
     // region Data
     private val mockTerm = "ter" // Intentionally incomplete to test wildcard matching
 
-    private val postWithoutTerm =
-        createPostDto(hash = randomHash(), href = "", description = "", extended = "")
-    private val postWithTermInTheHref =
-        createPostDto(hash = randomHash(), href = "term", description = "", extended = "")
+    private val postWithoutTerm = createPostDto(
+        hash = randomHash(),
+        href = "",
+        description = "",
+        extended = ""
+    )
+    private val postWithTermInTheHref = createPostDto(
+        hash = randomHash(),
+        href = "term",
+        description = "",
+        extended = ""
+    )
     private val postWithTermInTheDescription = createPostDto(
         hash = randomHash(),
         href = "",
         description = "term-with-hyphen",
         extended = ""
     )
-    private val postWithTermInTheExtended =
-        createPostDto(hash = randomHash(), href = "", description = "", extended = "term")
+    private val postWithTermInTheExtended = createPostDto(
+        hash = randomHash(),
+        href = "",
+        description = "",
+        extended = "term"
+    )
 
     private val postWithNoTags = createPostDto(hash = randomHash(), tags = "")
     private val postWithOneTag = createPostDto(hash = randomHash(), tags = mockTagString1)
     private val postWithTwoTags = createPostDto(
         hash = randomHash(),
-        tags = listOf(
-            mockTagString1,
-            mockTagString2
-        ).shuffled().joinToString(separator = " ") // Intentionally shuffled because the order shouldn't matter
+        tags = listOf(mockTagString1, mockTagString2)
+            .shuffled() // Intentionally shuffled because the order shouldn't matter
+            .joinToString(separator = " ")
     )
     private val postWithThreeTags = createPostDto(
         hash = randomHash(),
-        tags = listOf(mockTagString1, mockTagString2, mockTagString3).shuffled().joinToString(
-            separator = " "
-        ) // Intentionally shuffled because the order shouldn't matter
+        tags = listOf(mockTagString1, mockTagString2, mockTagString3)
+            .shuffled() // Intentionally shuffled because the order shouldn't matter
+            .joinToString(separator = " ")
     )
 
-    private val postPublic =
-        createPostDto(hash = randomHash(), shared = AppConfig.PinboardApiLiterals.YES)
-    private val postPrivate =
-        createPostDto(hash = randomHash(), shared = AppConfig.PinboardApiLiterals.NO)
+    private val postPublic = createPostDto(
+        hash = randomHash(),
+        shared = AppConfig.PinboardApiLiterals.YES
+    )
+    private val postPrivate = createPostDto(
+        hash = randomHash(),
+        shared = AppConfig.PinboardApiLiterals.NO
+    )
 
-    private val postReadLater =
-        createPostDto(hash = randomHash(), toread = AppConfig.PinboardApiLiterals.YES)
-    private val postNotReadLater =
-        createPostDto(hash = randomHash(), toread = AppConfig.PinboardApiLiterals.NO)
+    private val postReadLater = createPostDto(
+        hash = randomHash(),
+        toread = AppConfig.PinboardApiLiterals.YES
+    )
+    private val postNotReadLater = createPostDto(
+        hash = randomHash(),
+        toread = AppConfig.PinboardApiLiterals.NO
+    )
 
     private val postFirst = createPostDto(hash = randomHash(), time = mockTime1)
     private val postSecond = createPostDto(hash = randomHash(), time = mockTime2)
@@ -88,7 +101,7 @@ class PostsDaoTest : BaseDbTest() {
 
         // THEN
         val result = postsDao.getAllPosts()
-        result.isEmpty() shouldBe true
+        assertThat(result).isEmpty()
     }
 
     @Test
@@ -107,7 +120,7 @@ class PostsDaoTest : BaseDbTest() {
 
         // THEN
         val result = postsDao.getAllPosts()
-        result shouldContain listOf(modified, other, another)
+        assertThat(result).containsExactly(modified, other, another)
     }
 
     // region getPostCount
@@ -117,7 +130,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getPostCount()
 
         // THEN
-        result shouldBe 0
+        assertThat(result).isEqualTo(0)
     }
 
     @Test
@@ -130,7 +143,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getPostCount()
 
         // THEN
-        result shouldBe list.size
+        assertThat(result).isEqualTo(list.size)
     }
 
     @Test
@@ -149,7 +162,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getPostCount(term = PostsDao.preFormatTerm(mockTerm))
 
         // THEN
-        result shouldBe 3
+        assertThat(result).isEqualTo(3)
     }
 
     @Test
@@ -167,7 +180,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getPostCount(term = PostsDao.preFormatTerm("term-with"))
 
         // THEN
-        result shouldBe 1
+        assertThat(result).isEqualTo(1)
     }
 
     @Test
@@ -186,7 +199,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getPostCount(tag1 = PostsDao.preFormatTag(mockTagString1))
 
         // THEN
-        result shouldBe 3
+        assertThat(result).isEqualTo(3)
     }
 
     @Test
@@ -205,7 +218,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getPostCount(tag1 = PostsDao.preFormatTag(mockTagString1))
 
         // THEN
-        result shouldBe 3
+        assertThat(result).isEqualTo(3)
     }
 
     @Test
@@ -226,7 +239,7 @@ class PostsDaoTest : BaseDbTest() {
         )
 
         // THEN
-        result shouldBe 2
+        assertThat(result).isEqualTo(2)
     }
 
     @Test
@@ -248,7 +261,7 @@ class PostsDaoTest : BaseDbTest() {
         )
 
         // THEN
-        result shouldBe 1
+        assertThat(result).isEqualTo(1)
     }
 
     @Test
@@ -266,7 +279,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getPostCount(untaggedOnly = true)
 
         // THEN
-        result shouldBe 1
+        assertThat(result).isEqualTo(1)
     }
 
     @Test
@@ -282,7 +295,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getPostCount(publicPostsOnly = true)
 
         // THEN
-        result shouldBe 1
+        assertThat(result).isEqualTo(1)
     }
 
     @Test
@@ -298,7 +311,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getPostCount(privatePostsOnly = true)
 
         // THEN
-        result shouldBe 1
+        assertThat(result).isEqualTo(1)
     }
 
     @Test
@@ -314,7 +327,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getPostCount(readLaterOnly = true)
 
         // THEN
-        result shouldBe 1
+        assertThat(result).isEqualTo(1)
     }
 
     @Test
@@ -340,7 +353,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getPostCount(limit = list.size - 1)
 
         // THEN
-        result shouldBe list.size - 1
+        assertThat(result).isEqualTo(list.size - 1)
     }
 
     @Test
@@ -366,7 +379,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getPostCount(limit = list.size + 1)
 
         // THEN
-        result shouldBe list.size
+        assertThat(result).isEqualTo(list.size)
     }
     // endregion
 
@@ -377,7 +390,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getAllPosts()
 
         // THEN
-        result.isEmpty() shouldBe true
+        assertThat(result).isEmpty()
     }
 
     @Test
@@ -390,7 +403,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getAllPosts()
 
         // THEN
-        result shouldBe list
+        assertThat(result).isEqualTo(list)
     }
 
     @Test
@@ -409,12 +422,14 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getAllPosts(newestFirst = true)
 
         // THEN
-        result shouldBe listOf(
-            postFifth,
-            postFourth,
-            postThird,
-            postSecond,
-            postFirst
+        assertThat(result).isEqualTo(
+            listOf(
+                postFifth,
+                postFourth,
+                postThird,
+                postSecond,
+                postFirst
+            )
         )
     }
 
@@ -434,12 +449,14 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getAllPosts(newestFirst = false)
 
         // THEN
-        result shouldBe listOf(
-            postFirst,
-            postSecond,
-            postThird,
-            postFourth,
-            postFifth
+        assertThat(result).isEqualTo(
+            listOf(
+                postFirst,
+                postSecond,
+                postThird,
+                postFourth,
+                postFifth
+            )
         )
     }
 
@@ -458,10 +475,12 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getAllPosts(term = PostsDao.preFormatTerm(mockTerm))
 
         // THEN
-        result shouldBe listOf(
-            postWithTermInTheHref,
-            postWithTermInTheDescription,
-            postWithTermInTheExtended
+        assertThat(result).isEqualTo(
+            listOf(
+                postWithTermInTheHref,
+                postWithTermInTheDescription,
+                postWithTermInTheExtended
+            )
         )
     }
 
@@ -480,7 +499,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getAllPosts(term = PostsDao.preFormatTerm("term-with"))
 
         // THEN
-        result shouldBe listOf(postWithTermInTheDescription)
+        assertThat(result).isEqualTo(listOf(postWithTermInTheDescription))
     }
 
     @Test
@@ -498,7 +517,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getAllPosts(tag1 = PostsDao.preFormatTag(mockTagString1))
 
         // THEN
-        result shouldBe listOf(postWithOneTag, postWithTwoTags, postWithThreeTags)
+        assertThat(result).isEqualTo(listOf(postWithOneTag, postWithTwoTags, postWithThreeTags))
     }
 
     @Test
@@ -516,7 +535,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getAllPosts(tag1 = PostsDao.preFormatTag(mockTagString1))
 
         // THEN
-        result shouldBe listOf(postWithOneTag, postWithTwoTags, postWithThreeTags)
+        assertThat(result).isEqualTo(listOf(postWithOneTag, postWithTwoTags, postWithThreeTags))
     }
 
     @Test
@@ -537,7 +556,7 @@ class PostsDaoTest : BaseDbTest() {
         )
 
         // THEN
-        result shouldBe listOf(postWithTwoTags, postWithThreeTags)
+        assertThat(result).isEqualTo(listOf(postWithTwoTags, postWithThreeTags))
     }
 
     @Test
@@ -559,7 +578,7 @@ class PostsDaoTest : BaseDbTest() {
         )
 
         // THEN
-        result shouldBe listOf(postWithThreeTags)
+        assertThat(result).isEqualTo(listOf(postWithThreeTags))
     }
 
     @Test
@@ -577,7 +596,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getAllPosts(untaggedOnly = true)
 
         // THEN
-        result shouldBe listOf(postWithNoTags)
+        assertThat(result).isEqualTo(listOf(postWithNoTags))
     }
 
     @Test
@@ -593,7 +612,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getAllPosts(publicPostsOnly = true)
 
         // THEN
-        result shouldBe listOf(postPublic)
+        assertThat(result).isEqualTo(listOf(postPublic))
     }
 
     @Test
@@ -609,7 +628,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getAllPosts(privatePostsOnly = true)
 
         // THEN
-        result shouldBe listOf(postPrivate)
+        assertThat(result).isEqualTo(listOf(postPrivate))
     }
 
     @Test
@@ -625,7 +644,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getAllPosts(readLaterOnly = true)
 
         // THEN
-        result shouldBe listOf(postReadLater)
+        assertThat(result).isEqualTo(listOf(postReadLater))
     }
 
     @Test
@@ -651,18 +670,20 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getAllPosts(limit = list.size - 1)
 
         // THEN
-        result shouldBe listOf(
-            postWithoutTerm,
-            postWithTermInTheHref,
-            postWithTermInTheDescription,
-            postWithTermInTheExtended,
-            postWithNoTags,
-            postWithOneTag,
-            postWithTwoTags,
-            postWithThreeTags,
-            postPublic,
-            postPrivate,
-            postReadLater
+        assertThat(result).isEqualTo(
+            listOf(
+                postWithoutTerm,
+                postWithTermInTheHref,
+                postWithTermInTheDescription,
+                postWithTermInTheExtended,
+                postWithNoTags,
+                postWithOneTag,
+                postWithTwoTags,
+                postWithThreeTags,
+                postPublic,
+                postPrivate,
+                postReadLater
+            )
         )
     }
 
@@ -689,7 +710,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getAllPosts(limit = list.size + 1)
 
         // THEN
-        result shouldBe list
+        assertThat(result).isEqualTo(list)
     }
 
     @Test
@@ -715,7 +736,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getAllPosts(offset = list.size - 1)
 
         // THEN
-        result sizeShouldBe 1
+        assertThat(result).hasSize(1)
     }
 
     @Test
@@ -741,7 +762,7 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.getAllPosts(offset = list.size)
 
         // THEN
-        result shouldBe emptyList<Post>()
+        assertThat(result).isEmpty()
     }
     // endregion
 
@@ -760,7 +781,13 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.searchExistingPostTag(PostsDao.preFormatTag(mockTagString1))
 
         // THEN
-        result shouldBe listOf(postWithOneTag.tags, postWithTwoTags.tags, postWithThreeTags.tags)
+        assertThat(result).isEqualTo(
+            listOf(
+                postWithOneTag.tags,
+                postWithTwoTags.tags,
+                postWithThreeTags.tags
+            )
+        )
     }
 
     @Test
@@ -778,6 +805,12 @@ class PostsDaoTest : BaseDbTest() {
         val result = postsDao.searchExistingPostTag(PostsDao.preFormatTag(mockTagString1))
 
         // THEN
-        result shouldBe listOf(postWithOneTag.tags, postWithTwoTags.tags, postWithThreeTags.tags)
+        assertThat(result).isEqualTo(
+            listOf(
+                postWithOneTag.tags,
+                postWithTwoTags.tags,
+                postWithThreeTags.tags
+            )
+        )
     }
 }

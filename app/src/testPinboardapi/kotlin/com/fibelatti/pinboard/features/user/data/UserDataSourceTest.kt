@@ -1,8 +1,6 @@
 package com.fibelatti.pinboard.features.user.data
 
 import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
-import com.fibelatti.core.test.extension.mock
-import com.fibelatti.core.test.extension.shouldBe
 import com.fibelatti.pinboard.InstantExecutorExtension
 import com.fibelatti.pinboard.MockDataProvider.mockApiToken
 import com.fibelatti.pinboard.MockDataProvider.mockTime
@@ -12,15 +10,14 @@ import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.randomBoolean
+import com.google.common.truth.Truth.assertThat
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.ArgumentMatchers.anyString
-import org.mockito.BDDMockito.given
-import org.mockito.Mockito.never
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
 
 @ExtendWith(InstantExecutorExtension::class)
 internal class UserDataSourceTest {
@@ -28,15 +25,14 @@ internal class UserDataSourceTest {
     @Nested
     inner class InitialisationTests {
 
-        private val mockUserSharedPreferences = mock<UserSharedPreferences>()
+        private val mockUserSharedPreferences = mockk<UserSharedPreferences>(relaxed = true)
 
         private lateinit var userDataSource: UserDataSource
 
         @Test
         fun `WHEN getAuthToken is not empty THEN getLoginState will return LoggedIn`() {
             // GIVEN
-            given(mockUserSharedPreferences.getAuthToken())
-                .willReturn(mockApiToken)
+            every { mockUserSharedPreferences.getAuthToken() } returns mockApiToken
 
             userDataSource = UserDataSource(mockUserSharedPreferences)
 
@@ -47,8 +43,7 @@ internal class UserDataSourceTest {
         @Test
         fun `WHEN getAuthToken is empty THEN getLoginState will return LoggedOut`() {
             // GIVEN
-            given(mockUserSharedPreferences.getAuthToken())
-                .willReturn("")
+            every { mockUserSharedPreferences.getAuthToken() } returns ""
 
             userDataSource = UserDataSource(mockUserSharedPreferences)
 
@@ -60,13 +55,13 @@ internal class UserDataSourceTest {
     @Nested
     inner class Methods {
 
-        private val mockUserSharedPreferences = mock<UserSharedPreferences>()
+        private val mockUserSharedPreferences = mockk<UserSharedPreferences>(relaxed = true)
 
         private lateinit var userDataSource: UserDataSource
 
         @BeforeEach
         fun setup() {
-            given(mockUserSharedPreferences.getAuthToken()).willReturn(mockApiToken)
+            every { mockUserSharedPreferences.getAuthToken() } returns mockApiToken
 
             userDataSource = UserDataSource(mockUserSharedPreferences)
         }
@@ -77,7 +72,7 @@ internal class UserDataSourceTest {
             userDataSource.loginAttempt(mockApiToken)
 
             // THEN
-            verify(mockUserSharedPreferences).setAuthToken(mockApiToken)
+            verify { mockUserSharedPreferences.setAuthToken(mockApiToken) }
             userDataSource.getLoginState().currentValueShouldBe(LoginState.Authorizing)
         }
 
@@ -96,8 +91,8 @@ internal class UserDataSourceTest {
             userDataSource.logout()
 
             // THEN
-            verify(mockUserSharedPreferences).setAuthToken("")
-            verify(mockUserSharedPreferences).setLastUpdate("")
+            verify { mockUserSharedPreferences.setAuthToken("") }
+            verify { mockUserSharedPreferences.setLastUpdate("") }
             userDataSource.getLoginState().currentValueShouldBe(LoginState.LoggedOut)
         }
 
@@ -113,8 +108,8 @@ internal class UserDataSourceTest {
                 userDataSource.forceLogout()
 
                 // THEN
-                verify(mockUserSharedPreferences, never()).setAuthToken(anyString())
-                verify(mockUserSharedPreferences, never()).setLastUpdate(anyString())
+                verify(exactly = 0) { mockUserSharedPreferences.setAuthToken(any()) }
+                verify(exactly = 0) { mockUserSharedPreferences.setLastUpdate(any()) }
                 userDataSource.getLoginState().currentValueShouldBe(LoginState.LoggedOut)
             }
 
@@ -127,8 +122,8 @@ internal class UserDataSourceTest {
                 userDataSource.forceLogout()
 
                 // THEN
-                verify(mockUserSharedPreferences).setAuthToken("")
-                verify(mockUserSharedPreferences).setLastUpdate("")
+                verify { mockUserSharedPreferences.setAuthToken("") }
+                verify { mockUserSharedPreferences.setLastUpdate("") }
                 userDataSource.getLoginState().currentValueShouldBe(LoginState.Unauthorized)
             }
         }
@@ -139,11 +134,10 @@ internal class UserDataSourceTest {
             @Test
             fun `WHEN getLastUpdate is called THEN UserSharedPreferences is returned`() {
                 // GIVEN
-                given(mockUserSharedPreferences.getLastUpdate())
-                    .willReturn(mockTime)
+                every { mockUserSharedPreferences.getLastUpdate() } returns mockTime
 
                 // THEN
-                userDataSource.getLastUpdate() shouldBe mockTime
+                assertThat(userDataSource.getLastUpdate()).isEqualTo(mockTime)
             }
 
             @Test
@@ -152,7 +146,7 @@ internal class UserDataSourceTest {
                 userDataSource.setLastUpdate(mockTime)
 
                 // THEN
-                verify(mockUserSharedPreferences).setLastUpdate(mockTime)
+                verify { mockUserSharedPreferences.setLastUpdate(mockTime) }
             }
         }
 
@@ -162,44 +156,41 @@ internal class UserDataSourceTest {
             @Test
             fun `GIVEN set appearance is the light theme WHEN getAppearance is called THEN LightTheme is returned`() {
                 // GIVEN
-                given(mockUserSharedPreferences.getAppearance())
-                    .willReturn(Appearance.LightTheme.value)
+                every { mockUserSharedPreferences.getAppearance() } returns Appearance.LightTheme.value
 
                 // THEN
-                userDataSource.getAppearance() shouldBe Appearance.LightTheme
+                assertThat(userDataSource.getAppearance()).isEqualTo(Appearance.LightTheme)
             }
 
             @Test
             fun `GIVEN set appearance is the dark theme WHEN getAppearance is called THEN DarkTheme is returned`() {
                 // GIVEN
-                given(mockUserSharedPreferences.getAppearance())
-                    .willReturn(Appearance.LightTheme.value)
+                every { mockUserSharedPreferences.getAppearance() } returns Appearance.LightTheme.value
 
                 // THEN
-                userDataSource.getAppearance() shouldBe Appearance.LightTheme
+                assertThat(userDataSource.getAppearance()).isEqualTo(Appearance.LightTheme)
             }
 
             @Test
             fun `GIVEN set appearance is not set WHEN getAppearance is called THEN SystemDefault is returned`() {
                 // GIVEN
-                given(mockUserSharedPreferences.getAppearance())
-                    .willReturn("anything really")
+                every { mockUserSharedPreferences.getAppearance() } returns "anything really"
 
                 // THEN
-                userDataSource.getAppearance() shouldBe Appearance.SystemDefault
+                assertThat(userDataSource.getAppearance()).isEqualTo(Appearance.SystemDefault)
             }
 
             @Test
             fun `WHEN setAppearance is called THEN UserSharedPreferences is set`() {
                 // GIVEN
-                val mockAppearance = mock<Appearance>()
-                given(mockAppearance.value).willReturn("random-value")
+                val mockAppearance = mockk<Appearance>()
+                every { mockAppearance.value } returns "random-value"
 
                 // WHEN
                 userDataSource.setAppearance(mockAppearance)
 
                 // THEN
-                verify(mockUserSharedPreferences).setAppearance("random-value")
+                verify { mockUserSharedPreferences.setAppearance("random-value") }
             }
         }
 
@@ -210,51 +201,54 @@ internal class UserDataSourceTest {
             fun `GIVEN set preferred details view is external browser WHEN getPreferredDetailsView is called THEN ExternalBrowser is returned`() {
                 // GIVEN
                 val randomBoolean = randomBoolean()
-                given(mockUserSharedPreferences.getPreferredDetailsView())
-                    .willReturn(PreferredDetailsView.ExternalBrowser(randomBoolean).value)
-                given(mockUserSharedPreferences.getMarkAsReadOnOpen())
-                    .willReturn(randomBoolean)
+                every { mockUserSharedPreferences.getPreferredDetailsView() } returns PreferredDetailsView.ExternalBrowser(
+                    randomBoolean
+                ).value
+                every { mockUserSharedPreferences.getMarkAsReadOnOpen() } returns randomBoolean
 
                 // THEN
-                userDataSource.getPreferredDetailsView() shouldBe PreferredDetailsView.ExternalBrowser(randomBoolean)
-                verify(mockUserSharedPreferences).getMarkAsReadOnOpen()
+                assertThat(userDataSource.getPreferredDetailsView()).isEqualTo(
+                    PreferredDetailsView.ExternalBrowser(randomBoolean)
+                )
+                verify { mockUserSharedPreferences.getMarkAsReadOnOpen() }
             }
 
             @Test
             fun `GIVEN set preferred details view is edit WHEN getPreferredDetailsView is called THEN Edit is returned`() {
                 // GIVEN
-                given(mockUserSharedPreferences.getPreferredDetailsView())
-                    .willReturn(PreferredDetailsView.Edit.value)
+                every { mockUserSharedPreferences.getPreferredDetailsView() } returns PreferredDetailsView.Edit.value
 
                 // THEN
-                userDataSource.getPreferredDetailsView() shouldBe PreferredDetailsView.Edit
+                assertThat(userDataSource.getPreferredDetailsView()).isEqualTo(
+                    PreferredDetailsView.Edit
+                )
             }
 
             @Test
             fun `GIVEN set preferred details view is not specifically handled WHEN getPreferredDetailsView is called THEN InAppBrowser is returned`() {
                 // GIVEN
                 val randomBoolean = randomBoolean()
-                given(mockUserSharedPreferences.getPreferredDetailsView())
-                    .willReturn("anything really")
-                given(mockUserSharedPreferences.getMarkAsReadOnOpen())
-                    .willReturn(randomBoolean)
+                every { mockUserSharedPreferences.getPreferredDetailsView() } returns "anything really"
+                every { mockUserSharedPreferences.getMarkAsReadOnOpen() } returns randomBoolean
 
                 // THEN
-                userDataSource.getPreferredDetailsView() shouldBe PreferredDetailsView.InAppBrowser(randomBoolean)
-                verify(mockUserSharedPreferences, times(2)).getMarkAsReadOnOpen()
+                assertThat(userDataSource.getPreferredDetailsView()).isEqualTo(
+                    PreferredDetailsView.InAppBrowser(randomBoolean)
+                )
+                verify(exactly = 2) { mockUserSharedPreferences.getMarkAsReadOnOpen() }
             }
 
             @Test
             fun `WHEN setPreferredDetailsView is called THEN UserSharedPreferences is set`() {
                 // GIVEN
-                val mockPreferredDetailsView = mock<PreferredDetailsView>()
-                given(mockPreferredDetailsView.value).willReturn("random-value")
+                val mockPreferredDetailsView = mockk<PreferredDetailsView>()
+                every { mockPreferredDetailsView.value } returns "random-value"
 
                 // WHEN
                 userDataSource.setPreferredDetailsView(mockPreferredDetailsView)
 
                 // THEN
-                verify(mockUserSharedPreferences).setPreferredDetailsView("random-value")
+                verify { mockUserSharedPreferences.setPreferredDetailsView("random-value") }
             }
         }
 
@@ -265,11 +259,10 @@ internal class UserDataSourceTest {
             fun `WHEN getMarkAsReadOnOpen is called THEN UserSharedPreferences is returned`() {
                 // GIVEN
                 val value = randomBoolean()
-                given(mockUserSharedPreferences.getMarkAsReadOnOpen())
-                    .willReturn(value)
+                every { mockUserSharedPreferences.getMarkAsReadOnOpen() } returns value
 
                 // THEN
-                userDataSource.getMarkAsReadOnOpen() shouldBe value
+                assertThat(userDataSource.getMarkAsReadOnOpen()).isEqualTo(value)
             }
 
             @Test
@@ -281,7 +274,7 @@ internal class UserDataSourceTest {
                 userDataSource.setMarkAsReadOnOpen(value)
 
                 // THEN
-                verify(mockUserSharedPreferences).setMarkAsReadOnOpen(value)
+                verify { mockUserSharedPreferences.setMarkAsReadOnOpen(value) }
             }
         }
 
@@ -292,11 +285,10 @@ internal class UserDataSourceTest {
             fun `WHEN getAutoFillDescription is called THEN UserSharedPreferences is returned`() {
                 // GIVEN
                 val value = randomBoolean()
-                given(mockUserSharedPreferences.getAutoFillDescription())
-                    .willReturn(value)
+                every { mockUserSharedPreferences.getAutoFillDescription() } returns value
 
                 // THEN
-                userDataSource.getAutoFillDescription() shouldBe value
+                assertThat(userDataSource.getAutoFillDescription()).isEqualTo(value)
             }
 
             @Test
@@ -308,7 +300,7 @@ internal class UserDataSourceTest {
                 userDataSource.setAutoFillDescription(value)
 
                 // THEN
-                verify(mockUserSharedPreferences).setAutoFillDescription(value)
+                verify { mockUserSharedPreferences.setAutoFillDescription(value) }
             }
         }
 
@@ -319,11 +311,10 @@ internal class UserDataSourceTest {
             fun `WHEN getShowDescriptionInLists is called THEN UserSharedPreferences is returned`() {
                 // GIVEN
                 val value = randomBoolean()
-                given(mockUserSharedPreferences.getShowDescriptionInLists())
-                    .willReturn(value)
+                every { mockUserSharedPreferences.getShowDescriptionInLists() } returns value
 
                 // THEN
-                userDataSource.getShowDescriptionInLists() shouldBe value
+                assertThat(userDataSource.getShowDescriptionInLists()).isEqualTo(value)
             }
 
             @Test
@@ -335,7 +326,7 @@ internal class UserDataSourceTest {
                 userDataSource.setShowDescriptionInLists(value)
 
                 // THEN
-                verify(mockUserSharedPreferences).setShowDescriptionInLists(value)
+                verify { mockUserSharedPreferences.setShowDescriptionInLists(value) }
             }
         }
 
@@ -346,11 +337,10 @@ internal class UserDataSourceTest {
             fun `WHEN getDefaultPrivate is called THEN UserSharedPreferences is returned`() {
                 // GIVEN
                 val value = randomBoolean()
-                given(mockUserSharedPreferences.getDefaultPrivate())
-                    .willReturn(value)
+                every { mockUserSharedPreferences.getDefaultPrivate() } returns value
 
                 // THEN
-                userDataSource.getDefaultPrivate() shouldBe value
+                assertThat(userDataSource.getDefaultPrivate()).isEqualTo(value)
             }
 
             @Test
@@ -362,7 +352,7 @@ internal class UserDataSourceTest {
                 userDataSource.setDefaultPrivate(value)
 
                 // THEN
-                verify(mockUserSharedPreferences).setDefaultPrivate(value)
+                verify { mockUserSharedPreferences.setDefaultPrivate(value) }
             }
         }
 
@@ -373,11 +363,10 @@ internal class UserDataSourceTest {
             fun `WHEN getDefaultReadLater is called THEN UserSharedPreferences is returned`() {
                 // GIVEN
                 val value = randomBoolean()
-                given(mockUserSharedPreferences.getDefaultReadLater())
-                    .willReturn(value)
+                every { mockUserSharedPreferences.getDefaultReadLater() } returns value
 
                 // THEN
-                userDataSource.getDefaultReadLater() shouldBe value
+                assertThat(userDataSource.getDefaultReadLater()).isEqualTo(value)
             }
 
             @Test
@@ -389,7 +378,7 @@ internal class UserDataSourceTest {
                 userDataSource.setDefaultReadLater(value)
 
                 // THEN
-                verify(mockUserSharedPreferences).setDefaultReadLater(value)
+                verify { mockUserSharedPreferences.setDefaultReadLater(value) }
             }
         }
 
@@ -399,44 +388,41 @@ internal class UserDataSourceTest {
             @Test
             fun `GIVEN set EditAfterSharing is the BeforeSaving value WHEN getEditAfterSharing is called THEN BeforeSaving is returned`() {
                 // GIVEN
-                given(mockUserSharedPreferences.getEditAfterSharing())
-                    .willReturn(EditAfterSharing.BeforeSaving.value)
+                every { mockUserSharedPreferences.getEditAfterSharing() } returns EditAfterSharing.BeforeSaving.value
 
                 // THEN
-                userDataSource.getEditAfterSharing() shouldBe EditAfterSharing.BeforeSaving
+                assertThat(userDataSource.getEditAfterSharing()).isEqualTo(EditAfterSharing.BeforeSaving)
             }
 
             @Test
             fun `GIVEN set EditAfterSharing is the AfterSaving value WHEN getEditAfterSharing is called THEN AfterSaving is returned`() {
                 // GIVEN
-                given(mockUserSharedPreferences.getEditAfterSharing())
-                    .willReturn(EditAfterSharing.AfterSaving.value)
+                every { mockUserSharedPreferences.getEditAfterSharing() } returns EditAfterSharing.AfterSaving.value
 
                 // THEN
-                userDataSource.getEditAfterSharing() shouldBe EditAfterSharing.AfterSaving
+                assertThat(userDataSource.getEditAfterSharing()).isEqualTo(EditAfterSharing.AfterSaving)
             }
 
             @Test
             fun `GIVEN not EditAfterSharing is set WHEN getEditAfterSharing is called THEN SkipEdit is returned`() {
                 // GIVEN
-                given(mockUserSharedPreferences.getEditAfterSharing())
-                    .willReturn("anything really")
+                every { mockUserSharedPreferences.getEditAfterSharing() } returns "anything really"
 
                 // THEN
-                userDataSource.getEditAfterSharing() shouldBe EditAfterSharing.SkipEdit
+                assertThat(userDataSource.getEditAfterSharing()).isEqualTo(EditAfterSharing.SkipEdit)
             }
 
             @Test
             fun `WHEN setEditAfterSharing is called THEN UserSharedPreferences is set`() {
                 // GIVEN
-                val mockEditAfterSharing = mock<EditAfterSharing>()
-                given(mockEditAfterSharing.value).willReturn("random-value")
+                val mockEditAfterSharing = mockk<EditAfterSharing>()
+                every { mockEditAfterSharing.value } returns "random-value"
 
                 // WHEN
                 userDataSource.setEditAfterSharing(mockEditAfterSharing)
 
                 // THEN
-                verify(mockUserSharedPreferences).setEditAfterSharing("random-value")
+                verify { mockUserSharedPreferences.setEditAfterSharing("random-value") }
             }
         }
     }

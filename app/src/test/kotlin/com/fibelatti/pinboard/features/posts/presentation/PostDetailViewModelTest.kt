@@ -1,26 +1,25 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import com.fibelatti.core.archcomponents.test.extension.currentEventShouldBe
-import com.fibelatti.core.archcomponents.test.extension.shouldNeverReceiveValues
+import com.fibelatti.pinboard.shouldNeverReceiveValues
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
-import com.fibelatti.core.test.extension.givenSuspend
-import com.fibelatti.core.test.extension.mock
-import com.fibelatti.core.test.extension.verifySuspend
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostDeleted
 import com.fibelatti.pinboard.features.posts.domain.usecase.DeletePost
-import com.fibelatti.pinboard.features.prepareToReceiveMany
-import com.fibelatti.pinboard.features.shouldHaveReceived
+import com.fibelatti.pinboard.prepareToReceiveMany
+import com.fibelatti.pinboard.shouldHaveReceived
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.never
 
 internal class PostDetailViewModelTest : BaseViewModelTest() {
 
-    private val mockAppStateRepository = mock<AppStateRepository>()
-    private val mockDeletePost = mock<DeletePost>()
+    private val mockAppStateRepository = mockk<AppStateRepository>()
+    private val mockDeletePost = mockk<DeletePost>()
 
     private val mockPost = createPost()
 
@@ -33,8 +32,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
     fun `WHEN deletePost fails THEN deleteError should receive a value`() {
         // GIVEN
         val error = Exception()
-        givenSuspend { mockDeletePost(mockPost.url) }
-            .willReturn(Failure(error))
+        coEvery { mockDeletePost(mockPost.url) } returns Failure(error)
 
         val loadingObserver = postDetailViewModel.loading.prepareToReceiveMany()
 
@@ -46,14 +44,13 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
         postDetailViewModel.deleteError.currentEventShouldBe(error)
         postDetailViewModel.deleted.shouldNeverReceiveValues()
 
-        verifySuspend(mockAppStateRepository, never()) { runAction(PostDeleted) }
+        coVerify(exactly = 0) { mockAppStateRepository.runAction(PostDeleted) }
     }
 
     @Test
     fun `WHEN deletePost succeeds THEN appStateRepository should run PostDeleted`() {
         // GIVEN
-        givenSuspend { mockDeletePost(mockPost.url) }
-            .willReturn(Success(Unit))
+        coEvery { mockDeletePost(mockPost.url) } returns Success(Unit)
 
         val loadingObserver = postDetailViewModel.loading.prepareToReceiveMany()
 
@@ -65,6 +62,6 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
         postDetailViewModel.error.shouldNeverReceiveValues()
         postDetailViewModel.deleted.currentEventShouldBe(Unit)
 
-        verifySuspend(mockAppStateRepository) { runAction(PostDeleted) }
+        coVerify { mockAppStateRepository.runAction(PostDeleted) }
     }
 }
