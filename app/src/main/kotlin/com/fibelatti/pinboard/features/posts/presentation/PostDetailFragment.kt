@@ -27,7 +27,6 @@ import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
@@ -89,11 +88,15 @@ class PostDetailFragment @Inject constructor(
             viewLifecycleOwner.observeEvent(deleted) {
                 mainActivity?.showBanner(getString(R.string.posts_deleted_feedback))
             }
-            viewLifecycleOwner.observeEvent(deleteError) { error ->
-                activity?.sendErrorReport(
-                    error,
-                    altMessage = getString(R.string.posts_deleted_error)
-                )
+            viewLifecycleOwner.observeEvent(deleteError) {
+                context?.showStyledDialog(
+                    dialogStyle = R.style.AppTheme_AlertDialog,
+                    dialogBackground = R.drawable.background_contrast_rounded
+                ) {
+                    setMessage(R.string.posts_deleted_error)
+                    setPositiveButton(R.string.hint_ok) { dialog, _ -> dialog?.dismiss() }
+                }
+
             }
             viewLifecycleOwner.observe(error, ::handleError)
         }
