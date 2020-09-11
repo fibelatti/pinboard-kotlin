@@ -116,7 +116,7 @@ interface PostsDao {
                         "$it*"
                     }
 
-                    "href: \"$preparedTerm\" OR description: \"$preparedTerm*\" OR extended: \"$preparedTerm*\""
+                    "href: \"$preparedTerm\" OR description: \"$preparedTerm\" OR extended: \"$preparedTerm\""
                 }
                 .orEmpty()
         }
