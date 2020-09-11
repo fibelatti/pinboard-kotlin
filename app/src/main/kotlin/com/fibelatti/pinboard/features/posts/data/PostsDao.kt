@@ -60,6 +60,7 @@ interface PostsDao {
     fun getAllPostTags(): List<String>
 
     companion object {
+
         private const val SELECT_ALL_FROM_POST = "select $POST_TABLE_NAME.* from $POST_TABLE_NAME"
 
         private const val MATCH_TERM = "case " +
@@ -110,7 +111,13 @@ interface PostsDao {
         @JvmStatic
         fun preFormatTerm(term: String): String {
             return term.remove("\"").takeIf(String::isNotBlank)
-                ?.let { "href: \"$it*\" OR description: \"$it*\" OR extended: \"$it*\"" }
+                ?.let { input ->
+                    val preparedTerm = input.split(" ").joinToString(separator = " ") {
+                        "$it*"
+                    }
+
+                    "href: \"$preparedTerm\" OR description: \"$preparedTerm*\" OR extended: \"$preparedTerm*\""
+                }
                 .orEmpty()
         }
 

@@ -20,6 +20,7 @@ class PostsDaoTest : BaseDbTest() {
 
     // region Data
     private val mockTerm = "ter" // Intentionally incomplete to test wildcard matching
+    private val mockSecondTerm = "second" // Intentionally incomplete to test wildcard matching
 
     private val postWithoutTerm = createPostDto(
         hash = randomHash(),
@@ -29,7 +30,7 @@ class PostsDaoTest : BaseDbTest() {
     )
     private val postWithTermInTheHref = createPostDto(
         hash = randomHash(),
-        href = "term",
+        href = "term second",
         description = "",
         extended = ""
     )
@@ -163,6 +164,25 @@ class PostsDaoTest : BaseDbTest() {
 
         // THEN
         assertThat(result).isEqualTo(3)
+    }
+
+    @Test
+    @Suppress("MagicNumber")
+    fun givenDbHasDataAndTermFilterIsPassedWithMoreThanOneWordWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() {
+        // GIVEN
+        val list = listOf(
+            postWithoutTerm,
+            postWithTermInTheHref,
+            postWithTermInTheDescription,
+            postWithTermInTheExtended
+        )
+        postsDao.savePosts(list)
+
+        // WHEN
+        val result = postsDao.getPostCount(term = PostsDao.preFormatTerm("$mockTerm $mockSecondTerm"))
+
+        // THEN
+        assertThat(result).isEqualTo(1)
     }
 
     @Test
@@ -458,6 +478,24 @@ class PostsDaoTest : BaseDbTest() {
                 postFifth
             )
         )
+    }
+
+    @Test
+    fun givenDbHasDataAndTermFilterIsPassedWithMoreThanOneWordWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() {
+        // GIVEN
+        val list = listOf(
+            postWithoutTerm,
+            postWithTermInTheHref,
+            postWithTermInTheDescription,
+            postWithTermInTheExtended
+        )
+        postsDao.savePosts(list)
+
+        // WHEN
+        val result = postsDao.getAllPosts(term = PostsDao.preFormatTerm("$mockTerm $mockSecondTerm"))
+
+        // THEN
+        assertThat(result).isEqualTo(listOf(postWithTermInTheHref))
     }
 
     @Test
