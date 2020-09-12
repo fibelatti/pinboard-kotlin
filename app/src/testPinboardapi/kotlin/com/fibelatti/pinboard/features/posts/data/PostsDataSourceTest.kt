@@ -487,7 +487,7 @@ class PostsDataSourceTest {
     @Nested
     inner class GetAllPostsTests {
 
-        private val mockLocalData: PostListResult? = mockk()
+        private val mockLocalData: PostListResult = mockk()
 
         @Nested
         inner class NoConnectionTest {
@@ -1312,7 +1312,7 @@ class PostsDataSourceTest {
         }
 
         @Test
-        fun `WHEN local data size is 0 THEN null is returned and getAllPosts is not called`() {
+        fun `WHEN local data size is 0 THEN PostListResult is returned and getAllPosts is not called`() {
             // GIVEN
             coEvery {
                 dataSource.getLocalDataSize(
@@ -1344,7 +1344,13 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            assertThat(result.getOrThrow()).isEqualTo(null)
+            assertThat(result.getOrThrow()).isEqualTo(
+                PostListResult(
+                    totalCount = 0,
+                    posts = emptyList(),
+                    upToDate = upToDate
+                )
+            )
         }
 
         @Test

@@ -40,15 +40,17 @@ class PostActionHandler @Inject constructor(
 
     private fun setPosts(action: SetPosts, currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) { currentPostList ->
-            val posts = action.postListResult?.let {
+            val posts = action.postListResult.posts.takeIf { it.isNotEmpty() }?.let {
                 PostList(
-                    it.totalCount,
-                    it.posts,
-                    postListDiffUtilFactory.create(currentPostList.currentList, it.posts)
+                    totalCount = action.postListResult.totalCount,
+                    list = it,
+                    diffUtil = postListDiffUtilFactory.create(currentPostList.currentList, it)
                 )
             }
-            val isUpToDate = action.postListResult?.upToDate == true
-            currentPostList.copy(posts = posts, shouldLoad = if (isUpToDate) Loaded else Syncing)
+            currentPostList.copy(
+                posts = posts,
+                shouldLoad = if (action.postListResult.upToDate) Loaded else Syncing
+            )
         }
     }
 
@@ -64,7 +66,7 @@ class PostActionHandler @Inject constructor(
 
     private fun setNextPostPage(action: SetNextPostPage, currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) { currentPostList ->
-            if (currentPostList.posts != null && action.postListResult != null) {
+            if (currentPostList.posts != null) {
                 val currentList = currentPostList.currentList
                 val updatedList = currentList.plus(action.postListResult.posts)
                 val posts = PostList(

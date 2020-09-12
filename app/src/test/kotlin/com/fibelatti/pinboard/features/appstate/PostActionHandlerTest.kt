@@ -139,14 +139,41 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is PostListContent and actions posts is null THEN updated content is returned`() {
+        fun `WHEN currentContent is PostListContent and actions posts has an empty list is not up to date THEN updated content is returned`() {
             // WHEN
             val result = runBlocking {
-                postActionHandler.runAction(SetPosts(null), initialContent)
+                postActionHandler.runAction(
+                    SetPosts(
+                        PostListResult(
+                            totalCount = 0,
+                            posts = emptyList(),
+                            upToDate = false
+                        )
+                    ), initialContent
+                )
             }
 
             // THEN
             assertThat(result).isEqualTo(initialContent.copy(posts = null, shouldLoad = Syncing))
+        }
+
+        @Test
+        fun `WHEN currentContent is PostListContent and actions posts has an empty list is up to date THEN updated content is returned`() {
+            // WHEN
+            val result = runBlocking {
+                postActionHandler.runAction(
+                    SetPosts(
+                        PostListResult(
+                            totalCount = 0,
+                            posts = emptyList(),
+                            upToDate = true
+                        )
+                    ), initialContent
+                )
+            }
+
+            // THEN
+            assertThat(result).isEqualTo(initialContent.copy(posts = null, shouldLoad = Loaded))
         }
 
         @Test
@@ -339,28 +366,6 @@ internal class PostActionHandlerTest {
                     ),
                     content
                 )
-            }
-
-            // THEN
-            assertThat(result).isEqualTo(content)
-        }
-
-        @Test
-        fun `WHEN currentContent is PostListContent and action posts is null THEN same content is returned`() {
-            // GIVEN
-            val content = PostListContent(
-                category = All,
-                posts = PostList(1, listOf(createPost()), mockk()),
-                showDescription = false,
-                sortType = NewestFirst,
-                searchParameters = SearchParameters(),
-                shouldLoad = Loaded,
-                isConnected = true
-            )
-
-            // WHEN
-            val result = runBlocking {
-                postActionHandler.runAction(SetNextPostPage(postListResult = null), content)
             }
 
             // THEN

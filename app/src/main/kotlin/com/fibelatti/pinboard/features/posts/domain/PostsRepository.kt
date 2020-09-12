@@ -34,7 +34,7 @@ interface PostsRepository {
         countLimit: Int,
         pageLimit: Int,
         pageOffset: Int
-    ): Flow<Result<PostListResult?>>
+    ): Flow<Result<PostListResult>>
 
     suspend fun getPost(url: String): Result<Post>
 

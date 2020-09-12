@@ -11,7 +11,7 @@ class GetRecentPosts @Inject constructor(
     private val postsRepository: PostsRepository
 ) {
 
-    suspend operator fun invoke(params: GetPostParams): Flow<Result<PostListResult?>> =
+    suspend operator fun invoke(params: GetPostParams): Flow<Result<PostListResult>> =
         postsRepository.getAllPosts(
             newestFirst = true,
             searchTerm = params.searchTerm,

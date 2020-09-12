@@ -151,9 +151,9 @@ class PostsDataSource @Inject constructor(
         countLimit: Int,
         pageLimit: Int,
         pageOffset: Int
-    ): Flow<Result<PostListResult?>> {
+    ): Flow<Result<PostListResult>> {
         val isConnected = connectivityInfoProvider.isConnected()
-        val localData: suspend (upToDate: Boolean) -> Result<PostListResult?> =
+        val localData: suspend (upToDate: Boolean) -> Result<PostListResult> =
             { upToDate: Boolean ->
                 getLocalData(
                     newestFirst,
@@ -186,9 +186,9 @@ class PostsDataSource @Inject constructor(
 
     @VisibleForTesting
     fun getAllFromApi(
-        localData: suspend (upToDate: Boolean) -> Result<PostListResult?>,
+        localData: suspend (upToDate: Boolean) -> Result<PostListResult>,
         apiLastUpdate: String
-    ): Flow<Result<PostListResult?>> {
+    ): Flow<Result<PostListResult>> {
         pagedRequestsScope.coroutineContext.cancelChildren()
         val apiData = suspend {
             resultFromNetwork {
@@ -288,7 +288,7 @@ class PostsDataSource @Inject constructor(
         pageLimit: Int,
         pageOffset: Int,
         upToDate: Boolean
-    ): Result<PostListResult?> {
+    ): Result<PostListResult> {
         return resultFrom {
             val localDataSize = getLocalDataSize(
                 searchTerm,
@@ -300,8 +300,8 @@ class PostsDataSource @Inject constructor(
                 countLimit
             )
 
-            if (localDataSize > 0) {
-                val localData = withContext(Dispatchers.IO) {
+            val localData = if (localDataSize > 0) {
+                 withContext(Dispatchers.IO) {
                     postsDao.getAllPosts(
                         newestFirst = newestFirst,
                         term = PostsDao.preFormatTerm(searchTerm),
@@ -316,11 +316,11 @@ class PostsDataSource @Inject constructor(
                         offset = pageOffset
                     )
                 }.let(postDtoMapper::mapList)
-
-                PostListResult(totalCount = localDataSize, posts = localData, upToDate = upToDate)
             } else {
-                null
+                emptyList()
             }
+
+            PostListResult(totalCount = localDataSize, posts = localData, upToDate = upToDate)
         }
     }
 
