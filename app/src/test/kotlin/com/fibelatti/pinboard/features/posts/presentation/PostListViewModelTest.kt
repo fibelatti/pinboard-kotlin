@@ -26,6 +26,7 @@ import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetAllPosts
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPostParams
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
+import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.shouldNeverReceiveValues
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -321,7 +322,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     mockSortType,
                     mockSearchTerm,
                     GetPostParams.Tags.Tagged(mockTags),
-                    GetPostParams.Visibility.Public,
+                    PostVisibility.Public,
                     offset = mockOffset
                 )
             )
@@ -340,7 +341,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     mockSortType,
                     mockSearchTerm,
                     GetPostParams.Tags.Tagged(mockTags),
-                    GetPostParams.Visibility.Private,
+                    PostVisibility.Private,
                     offset = mockOffset
                 )
             )

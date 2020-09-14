@@ -26,11 +26,23 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
+        android:id="@+id/textViewSearchTermCaveat"
+        style="@style/AppTheme.Text.Detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textInputLayoutSearchTerm"
+        android:layout_marginStart="@dimen/margin_regular"
+        android:layout_marginTop="@dimen/margin_xsmall"
+        android:layout_marginEnd="@dimen/margin_regular"
+        android:text="@string/search_term_caveat"
+        android:textSize="@dimen/text_size_xsmall" />
+
+    <TextView
         android:id="@+id/textViewSelectedTagsTitle"
         style="@style/AppTheme.Text.SectionTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textInputLayoutSearchTerm"
+        android:layout_below="@+id/textViewSearchTermCaveat"
         android:layout_marginStart="@dimen/margin_regular"
         android:layout_marginTop="@dimen/margin_regular"
         android:layout_marginEnd="@dimen/margin_regular"

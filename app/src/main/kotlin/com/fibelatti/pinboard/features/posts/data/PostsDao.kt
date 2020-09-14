@@ -29,12 +29,14 @@ interface PostsDao {
         tag2: String = "",
         tag3: String = "",
         untaggedOnly: Boolean = false,
+        ignoreVisibility: Boolean = true,
         publicPostsOnly: Boolean = false,
         privatePostsOnly: Boolean = false,
         readLaterOnly: Boolean = false,
         limit: Int = -1
     ): Int
 
+    @Suppress("LongParameterList")
     @Query("$SELECT_ALL_FROM_POST $WHERE_SUB_QUERY $ORDER_BY_SUB_QUERY limit :offset, :limit")
     fun getAllPosts(
         newestFirst: Boolean = true,
@@ -43,6 +45,7 @@ interface PostsDao {
         tag2: String = "",
         tag3: String = "",
         untaggedOnly: Boolean = false,
+        ignoreVisibility: Boolean = true,
         publicPostsOnly: Boolean = false,
         privatePostsOnly: Boolean = false,
         readLaterOnly: Boolean = false,
@@ -91,7 +94,7 @@ interface PostsDao {
         private const val WHERE_PUBLIC = "case " +
             "when :publicPostsOnly = 1 then shared = '${AppConfig.PinboardApiLiterals.YES}' " +
             "when :privatePostsOnly = 1 then shared = '${AppConfig.PinboardApiLiterals.NO}' " +
-            "else 1 " +
+            "when :ignoreVisibility = 1 then 1 " +
             "end"
 
         private const val WHERE_READ_LATER = "case " +
@@ -109,17 +112,11 @@ interface PostsDao {
             "case when :newestFirst = 0 then time end ASC"
 
         @JvmStatic
-        fun preFormatTerm(term: String): String {
-            return term.remove("\"").takeIf(String::isNotBlank)
-                ?.let { input ->
-                    val preparedTerm = input.split(" ").joinToString(separator = " ") {
-                        "$it*"
-                    }
-
-                    "href: \"$preparedTerm\" OR description: \"$preparedTerm\" OR extended: \"$preparedTerm\""
-                }
-                .orEmpty()
-        }
+        fun preFormatTerm(term: String): String = term.remove("\"")
+            .takeIf(String::isNotBlank)
+            ?.split(" ")
+            ?.joinToString(separator = " NEAR ") { "$it*" }
+            .orEmpty()
 
         @JvmStatic
         fun preFormatTag(tag: String) = "\"${tag.remove("\"")}*\""

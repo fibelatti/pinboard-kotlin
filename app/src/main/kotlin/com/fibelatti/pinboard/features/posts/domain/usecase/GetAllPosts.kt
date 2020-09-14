@@ -15,10 +15,9 @@ class GetAllPosts @Inject constructor(
         postsRepository.getAllPosts(
             newestFirst = params.sorting == NewestFirst,
             searchTerm = params.searchTerm,
-            tags = if (params.tagParams is GetPostParams.Tags.Tagged) params.tagParams.tags else null,
-            untaggedOnly = params.tagParams is GetPostParams.Tags.Untagged,
-            publicPostsOnly = params.visibilityParams is GetPostParams.Visibility.Public,
-            privatePostsOnly = params.visibilityParams is GetPostParams.Visibility.Private,
+            tags = (params.tags as? GetPostParams.Tags.Tagged)?.tags,
+            untaggedOnly = params.tags is GetPostParams.Tags.Untagged,
+            postVisibility = params.visibility,
             readLaterOnly = params.readLater,
             countLimit = -1,
             pageLimit = params.limit,

@@ -122,7 +122,8 @@
 
     <!-- Search -->
     <string name="search_title">Filter bookmarks</string>
-    <string name="search_term">Keywords</string>
+    <string name="search_term">Search phrase</string>
+    <string name="search_term_caveat">If searching for multiple words, they must appear in the same order as provided in the URL, Title or Description</string>
     <string name="search_selected_tags">Selected tags (max. 3)</string>
     <string name="search_tags">Saved tags</string>
     <string name="search_active">Results are filtered</string>

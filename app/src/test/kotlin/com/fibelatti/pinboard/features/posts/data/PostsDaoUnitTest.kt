@@ -12,12 +12,17 @@ internal class PostsDaoUnitTest {
 
     @Test
     fun `WHEN preFormatTerm is called THEN term formatted for the query is returned`() {
-        assertThat(PostsDao.preFormatTerm("term")).isEqualTo("href: \"term*\" OR description: \"term*\" OR extended: \"term*\"")
+        assertThat(PostsDao.preFormatTerm("term")).isEqualTo("term*")
+    }
+
+    @Test
+    fun `WHEN preFormatTerm is called with more than one word THEN term formatted for the query is returned`() {
+        assertThat(PostsDao.preFormatTerm("two terms")).isEqualTo("two* NEAR terms*")
     }
 
     @Test
     fun `GIVEN term contained a double quote WHEN preFormatTerm is called THEN term formatted for the query is returned`() {
-        assertThat(PostsDao.preFormatTerm("term\"")).isEqualTo("href: \"term*\" OR description: \"term*\" OR extended: \"term*\"")
+        assertThat(PostsDao.preFormatTerm("term\"")).isEqualTo("term*")
     }
 
     @Test

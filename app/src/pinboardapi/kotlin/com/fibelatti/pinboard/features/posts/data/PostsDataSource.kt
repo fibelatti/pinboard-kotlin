@@ -28,6 +28,7 @@ import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
 import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagDtoMapper
+import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
@@ -145,8 +146,7 @@ class PostsDataSource @Inject constructor(
         searchTerm: String,
         tags: List<Tag>?,
         untaggedOnly: Boolean,
-        publicPostsOnly: Boolean,
-        privatePostsOnly: Boolean,
+        postVisibility: PostVisibility,
         readLaterOnly: Boolean,
         countLimit: Int,
         pageLimit: Int,
@@ -160,8 +160,7 @@ class PostsDataSource @Inject constructor(
                     searchTerm,
                     tags,
                     untaggedOnly,
-                    publicPostsOnly,
-                    privatePostsOnly,
+                    postVisibility,
                     readLaterOnly,
                     countLimit,
                     pageLimit,
@@ -257,8 +256,7 @@ class PostsDataSource @Inject constructor(
         searchTerm: String,
         tags: List<Tag>?,
         untaggedOnly: Boolean,
-        publicPostsOnly: Boolean,
-        privatePostsOnly: Boolean,
+        postVisibility: PostVisibility,
         readLaterOnly: Boolean,
         countLimit: Int
     ): Int = withContext(Dispatchers.IO) {
@@ -268,8 +266,9 @@ class PostsDataSource @Inject constructor(
             tag2 = tags.getAndFormat(1),
             tag3 = tags.getAndFormat(2),
             untaggedOnly = untaggedOnly,
-            publicPostsOnly = publicPostsOnly,
-            privatePostsOnly = privatePostsOnly,
+            ignoreVisibility = postVisibility is PostVisibility.None,
+            publicPostsOnly = postVisibility is PostVisibility.Public,
+            privatePostsOnly = postVisibility is PostVisibility.Private,
             readLaterOnly = readLaterOnly,
             limit = countLimit
         )
@@ -281,8 +280,7 @@ class PostsDataSource @Inject constructor(
         searchTerm: String,
         tags: List<Tag>?,
         untaggedOnly: Boolean,
-        publicPostsOnly: Boolean,
-        privatePostsOnly: Boolean,
+        postVisibility: PostVisibility,
         readLaterOnly: Boolean,
         countLimit: Int,
         pageLimit: Int,
@@ -294,8 +292,7 @@ class PostsDataSource @Inject constructor(
                 searchTerm,
                 tags,
                 untaggedOnly,
-                publicPostsOnly,
-                privatePostsOnly,
+                postVisibility,
                 readLaterOnly,
                 countLimit
             )
@@ -309,8 +306,9 @@ class PostsDataSource @Inject constructor(
                         tag2 = tags.getAndFormat(1),
                         tag3 = tags.getAndFormat(2),
                         untaggedOnly = untaggedOnly,
-                        publicPostsOnly = publicPostsOnly,
-                        privatePostsOnly = privatePostsOnly,
+                        ignoreVisibility = postVisibility is PostVisibility.None,
+                        publicPostsOnly = postVisibility is PostVisibility.Public,
+                        privatePostsOnly = postVisibility is PostVisibility.Private,
                         readLaterOnly = readLaterOnly,
                         limit = pageLimit,
                         offset = pageOffset

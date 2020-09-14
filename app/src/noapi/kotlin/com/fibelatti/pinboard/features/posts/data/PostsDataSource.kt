@@ -12,6 +12,7 @@ import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
+import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
@@ -82,21 +83,19 @@ class PostsDataSource @Inject constructor(
         searchTerm: String,
         tags: List<Tag>?,
         untaggedOnly: Boolean,
-        publicPostsOnly: Boolean,
-        privatePostsOnly: Boolean,
+        postVisibility: PostVisibility,
         readLaterOnly: Boolean,
         countLimit: Int,
         pageLimit: Int,
         pageOffset: Int
-    ): Flow<Result<PostListResult?>> =
+    ): Flow<Result<PostListResult>> =
         flowOf(
             getLocalData(
                 newestFirst,
                 searchTerm,
                 tags,
                 untaggedOnly,
-                publicPostsOnly,
-                privatePostsOnly,
+                postVisibility,
                 readLaterOnly,
                 countLimit,
                 pageLimit,
@@ -109,8 +108,7 @@ class PostsDataSource @Inject constructor(
         searchTerm: String,
         tags: List<Tag>?,
         untaggedOnly: Boolean,
-        publicPostsOnly: Boolean,
-        privatePostsOnly: Boolean,
+        postVisibility: PostVisibility,
         readLaterOnly: Boolean,
         countLimit: Int
     ): Int = withContext(Dispatchers.IO) {
@@ -120,8 +118,9 @@ class PostsDataSource @Inject constructor(
             tag2 = tags.getAndFormat(1),
             tag3 = tags.getAndFormat(2),
             untaggedOnly = untaggedOnly,
-            publicPostsOnly = publicPostsOnly,
-            privatePostsOnly = privatePostsOnly,
+            ignoreVisibility = postVisibility is PostVisibility.None,
+            publicPostsOnly = postVisibility is PostVisibility.Public,
+            privatePostsOnly = postVisibility is PostVisibility.Private,
             readLaterOnly = readLaterOnly,
             limit = countLimit
         )
@@ -133,26 +132,24 @@ class PostsDataSource @Inject constructor(
         searchTerm: String,
         tags: List<Tag>?,
         untaggedOnly: Boolean,
-        publicPostsOnly: Boolean,
-        privatePostsOnly: Boolean,
+        postVisibility: PostVisibility,
         readLaterOnly: Boolean,
         countLimit: Int,
         pageLimit: Int,
         pageOffset: Int
-    ): Result<PostListResult?> {
+    ): Result<PostListResult> {
         return resultFrom {
             val localDataSize = getLocalDataSize(
                 searchTerm,
                 tags,
                 untaggedOnly,
-                publicPostsOnly,
-                privatePostsOnly,
+                postVisibility,
                 readLaterOnly,
                 countLimit
             )
 
-            if (localDataSize > 0) {
-                val localData = withContext(Dispatchers.IO) {
+            val localData = if (localDataSize > 0) {
+                withContext(Dispatchers.IO) {
                     postsDao.getAllPosts(
                         newestFirst = newestFirst,
                         term = PostsDao.preFormatTerm(searchTerm),
@@ -160,18 +157,20 @@ class PostsDataSource @Inject constructor(
                         tag2 = tags.getAndFormat(1),
                         tag3 = tags.getAndFormat(2),
                         untaggedOnly = untaggedOnly,
-                        publicPostsOnly = publicPostsOnly,
-                        privatePostsOnly = privatePostsOnly,
+                        ignoreVisibility = postVisibility is PostVisibility.None,
+                        publicPostsOnly = postVisibility is PostVisibility.Public,
+                        privatePostsOnly = postVisibility is PostVisibility.Private,
+
                         readLaterOnly = readLaterOnly,
                         limit = pageLimit,
                         offset = pageOffset
                     )
                 }.let(postDtoMapper::mapList)
-
-                PostListResult(totalCount = localDataSize, posts = localData, upToDate = true)
             } else {
-                null
+                emptyList()
             }
+
+            PostListResult(totalCount = localDataSize, posts = localData, upToDate = true)
         }
     }
 

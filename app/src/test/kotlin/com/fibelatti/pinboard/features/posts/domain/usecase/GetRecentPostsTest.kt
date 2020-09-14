@@ -4,6 +4,7 @@ import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.MockDataProvider.mockTags
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_RECENT_QUANTITY
+import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import io.mockk.coEvery
@@ -28,8 +29,7 @@ class GetRecentPostsTest {
                 searchTerm = any(),
                 tags = any(),
                 untaggedOnly = any(),
-                publicPostsOnly = any(),
-                privatePostsOnly = any(),
+                postVisibility = any(),
                 readLaterOnly = any(),
                 countLimit = any(),
                 pageLimit = any(),
@@ -53,8 +53,7 @@ class GetRecentPostsTest {
                 searchTerm = mockUrlValid,
                 tags = null,
                 untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
+                postVisibility = PostVisibility.None,
                 readLaterOnly = false,
                 countLimit = DEFAULT_RECENT_QUANTITY,
                 pageLimit = DEFAULT_RECENT_QUANTITY,
@@ -66,7 +65,7 @@ class GetRecentPostsTest {
     @Test
     fun `GIVEN tagParams was None WHEN getRecentPosts is called THEN repository is called with the expected params`() {
         // GIVEN
-        val params = GetPostParams(tagParams = GetPostParams.Tags.None)
+        val params = GetPostParams(tags = GetPostParams.Tags.None)
 
         // WHEN
         runBlocking { getRecentPosts(params) }
@@ -78,8 +77,7 @@ class GetRecentPostsTest {
                 searchTerm = "",
                 tags = null,
                 untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
+                postVisibility = PostVisibility.None,
                 readLaterOnly = false,
                 countLimit = DEFAULT_RECENT_QUANTITY,
                 pageLimit = DEFAULT_RECENT_QUANTITY,
@@ -91,7 +89,7 @@ class GetRecentPostsTest {
     @Test
     fun `GIVEN tagParams was Untagged WHEN getRecentPosts is called THEN repository is called with the expected params`() {
         // GIVEN
-        val params = GetPostParams(tagParams = GetPostParams.Tags.Untagged)
+        val params = GetPostParams(tags = GetPostParams.Tags.Untagged)
 
         // WHEN
         runBlocking { getRecentPosts(params) }
@@ -103,8 +101,7 @@ class GetRecentPostsTest {
                 searchTerm = "",
                 tags = null,
                 untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
+                postVisibility = PostVisibility.None,
                 readLaterOnly = false,
                 countLimit = DEFAULT_RECENT_QUANTITY,
                 pageLimit = DEFAULT_RECENT_QUANTITY,
@@ -116,7 +113,7 @@ class GetRecentPostsTest {
     @Test
     fun `GIVEN tagParams was Tagged WHEN getRecentPosts is called THEN repository is called with the expected params`() {
         // GIVEN
-        val params = GetPostParams(tagParams = GetPostParams.Tags.Tagged(mockTags))
+        val params = GetPostParams(tags = GetPostParams.Tags.Tagged(mockTags))
 
         // WHEN
         runBlocking { getRecentPosts(params) }
@@ -128,8 +125,7 @@ class GetRecentPostsTest {
                 searchTerm = "",
                 tags = mockTags,
                 untaggedOnly = false,
-                publicPostsOnly = false,
-                privatePostsOnly = false,
+                postVisibility = PostVisibility.None,
                 readLaterOnly = false,
                 countLimit = DEFAULT_RECENT_QUANTITY,
                 pageLimit = DEFAULT_RECENT_QUANTITY,

@@ -21,6 +21,7 @@ import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetAllPosts
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPostParams
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
+import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -91,7 +92,7 @@ class PostListViewModel @Inject constructor(
                 sorting,
                 searchTerm,
                 GetPostParams.Tags.Tagged(tags),
-                GetPostParams.Visibility.Public,
+                PostVisibility.Public,
                 offset = offset
             )
         )
@@ -104,7 +105,7 @@ class PostListViewModel @Inject constructor(
                 sorting,
                 searchTerm,
                 GetPostParams.Tags.Tagged(tags),
-                GetPostParams.Visibility.Private,
+                PostVisibility.Private,
                 offset = offset
             )
         )

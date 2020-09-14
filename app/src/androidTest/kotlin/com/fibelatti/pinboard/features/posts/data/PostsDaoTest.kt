@@ -16,11 +16,12 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import java.util.UUID
 
+@Suppress("LargeClass")
 class PostsDaoTest : BaseDbTest() {
 
     // region Data
     private val mockTerm = "ter" // Intentionally incomplete to test wildcard matching
-    private val mockSecondTerm = "second" // Intentionally incomplete to test wildcard matching
+    private val mockSecondTerm = "oth" // Intentionally incomplete to test wildcard matching
 
     private val postWithoutTerm = createPostDto(
         hash = randomHash(),
@@ -30,7 +31,7 @@ class PostsDaoTest : BaseDbTest() {
     )
     private val postWithTermInTheHref = createPostDto(
         hash = randomHash(),
-        href = "term second",
+        href = "term with some other stuff",
         description = "",
         extended = ""
     )
@@ -179,7 +180,9 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getPostCount(term = PostsDao.preFormatTerm("$mockTerm $mockSecondTerm"))
+        val result = postsDao.getPostCount(
+            term = PostsDao.preFormatTerm("$mockTerm $mockSecondTerm")
+        )
 
         // THEN
         assertThat(result).isEqualTo(1)
@@ -300,6 +303,22 @@ class PostsDaoTest : BaseDbTest() {
 
         // THEN
         assertThat(result).isEqualTo(1)
+    }
+
+    @Test
+    fun givenDbHasDataAndIgnoreVisibilityFilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() {
+        // GIVEN
+        val list = listOf(
+            postPublic,
+            postPrivate
+        )
+        postsDao.savePosts(list)
+
+        // WHEN
+        val result = postsDao.getPostCount(ignoreVisibility = true)
+
+        // THEN
+        assertThat(result).isEqualTo(2)
     }
 
     @Test
@@ -492,7 +511,9 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getAllPosts(term = PostsDao.preFormatTerm("$mockTerm $mockSecondTerm"))
+        val result = postsDao.getAllPosts(
+            term = PostsDao.preFormatTerm("$mockTerm $mockSecondTerm")
+        )
 
         // THEN
         assertThat(result).isEqualTo(listOf(postWithTermInTheHref))
@@ -635,6 +656,22 @@ class PostsDaoTest : BaseDbTest() {
 
         // THEN
         assertThat(result).isEqualTo(listOf(postWithNoTags))
+    }
+
+    @Test
+    fun givenDbHasDataAndIgnoreVisibilityFilterIsPassedWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() {
+        // GIVEN
+        val list = listOf(
+            postPublic,
+            postPrivate
+        )
+        postsDao.savePosts(list)
+
+        // WHEN
+        val result = postsDao.getAllPosts(ignoreVisibility = true)
+
+        // THEN
+        assertThat(result).isEqualTo(listOf(postPublic, postPrivate))
     }
 
     @Test
