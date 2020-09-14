@@ -3,7 +3,7 @@ object Versions {
     const val targetSdkVersion = 29
     const val compileSdkVersion = 29
 
-    internal const val kotlinVersion = "1.4.0"
+    internal const val kotlinVersion = "1.4.10"
     internal const val coroutinesVersion = "1.3.9"
     internal const val lifecycleVersion = "2.2.0"
     internal const val roomVersion = "2.2.5"
