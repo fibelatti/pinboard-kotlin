@@ -40,6 +40,7 @@ import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
@@ -351,6 +352,51 @@ class PostsDataSourceTest {
             verify { mockUserRepository.setLastUpdate(mockFutureTime) }
             verify { mockDao.savePosts(mockListPostDto) }
             assertThat(result.getOrNull()).isEqualTo(mockPost)
+        }
+
+        @Test
+        fun `GIVEN the tags contain a plus sign THEN their are escaped before the request is sent`() {
+            // GIVEN
+            val expectedTags = "C%2b%2b+Tag%2bTag"
+            val inputTags = listOf(Tag(name = "C++"), Tag(name="Tag+Tag"))
+
+            coEvery {
+                mockApi.add(
+                    url = mockUrlValid,
+                    title = mockUrlTitle,
+                    description = null,
+                    public = null,
+                    readLater = null,
+                    tags = expectedTags,
+                    replace = AppConfig.PinboardApiLiterals.NO
+                )
+            } returns createGenericResponse(ApiResultCodes.DONE)
+
+            // WHEN
+            runBlocking {
+                dataSource.add(
+                    url = mockUrlValid,
+                    title = mockUrlTitle,
+                    description = null,
+                    private = null,
+                    readLater = null,
+                    tags = inputTags,
+                    replace = false
+                )
+            }
+
+            // THEN
+            coVerify {
+                mockApi.add(
+                    url = mockUrlValid,
+                    title = mockUrlTitle,
+                    description = null,
+                    public = null,
+                    readLater = null,
+                    tags = expectedTags,
+                    replace = AppConfig.PinboardApiLiterals.NO
+                )
+            }
         }
 
         @ParameterizedTest

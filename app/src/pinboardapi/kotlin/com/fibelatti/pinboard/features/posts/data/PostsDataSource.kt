@@ -90,10 +90,9 @@ class PostsDataSource @Inject constructor(
         val readLaterLiteral = readLater?.let {
             if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO
         }
-        val trimmedTags = tags?.joinToString(
-            PinboardApiLiterals.TAG_SEPARATOR_REQUEST,
-            transform = Tag::name
-        )?.take(API_MAX_LENGTH)
+        val trimmedTags = tags?.joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST) {
+            it.name.replace(oldValue = "+", newValue = "%2b")
+        }?.take(API_MAX_LENGTH)
         val replaceLiteral = if (replace) PinboardApiLiterals.YES else PinboardApiLiterals.NO
 
         // The API abuses GET, this aims to avoid getting 414 errors
@@ -298,7 +297,7 @@ class PostsDataSource @Inject constructor(
             )
 
             val localData = if (localDataSize > 0) {
-                 withContext(Dispatchers.IO) {
+                withContext(Dispatchers.IO) {
                     postsDao.getAllPosts(
                         newestFirst = newestFirst,
                         term = PostsDao.preFormatTerm(searchTerm),
