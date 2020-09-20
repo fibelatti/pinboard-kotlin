@@ -18,16 +18,8 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Setup cache
-        uses: actions/cache@v2.1.1
-        continue-on-error: true
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('key.txt') }}
-          restore-keys: ${{ runner.os }}-gradle-
-
       - name: Gradle Wrapper Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.1
         id: gradle-wrapper-cache
         with:
           path: ~/.gradle/wrapper/
@@ -68,16 +60,8 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Setup cache
-        uses: actions/cache@v2.1.1
-        continue-on-error: true
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('key.txt') }}
-          restore-keys: ${{ runner.os }}-gradle-
-
       - name: Gradle Wrapper Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.1
         id: gradle-wrapper-cache
         with:
           path: ~/.gradle/wrapper/
@@ -118,16 +102,8 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Setup cache
-        uses: actions/cache@v2.1.1
-        continue-on-error: true
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('key.txt') }}
-          restore-keys: ${{ runner.os }}-gradle-
-
       - name: Gradle Wrapper Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.1
         id: gradle-wrapper-cache
         with:
           path: ~/.gradle/wrapper/
