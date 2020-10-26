@@ -10,10 +10,9 @@ import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.util.DateFormatter
+import com.fibelatti.pinboard.databinding.ListItemPostBinding
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import kotlinx.android.synthetic.main.layout_quick_actions.view.*
-import kotlinx.android.synthetic.main.list_item_post.view.*
 import javax.inject.Inject
 
 class PostListAdapter @Inject constructor(
@@ -41,7 +40,8 @@ class PostListAdapter @Inject constructor(
 
     override fun getItemCount(): Int = items.size
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
+        ViewHolder(parent)
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(items[position])
@@ -67,32 +67,35 @@ class PostListAdapter @Inject constructor(
         fun bind(item: Post) = itemView.bindView(item)
 
         private fun View.bindView(item: Post) {
-            textViewPrivate.visibleIf(item.private, otherwiseVisibility = View.GONE)
-            textViewReadLater.visibleIf(item.readLater, otherwiseVisibility = View.GONE)
+            val binding = ListItemPostBinding.bind(this)
 
-            textViewLinkTitle.text = item.title
+            binding.textViewPrivate.visibleIf(item.private, otherwiseVisibility = View.GONE)
+            binding.textViewReadLater.visibleIf(item.readLater, otherwiseVisibility = View.GONE)
+
+            binding.textViewLinkTitle.text = item.title
 
             val addedDate = dateFormatter.tzFormatToDisplayFormat(item.time)
             if (addedDate != null) {
-                textViewLinkAddedDate.visible()
-                textViewLinkAddedDate.text = context.getString(R.string.posts_saved_on, addedDate)
+                binding.textViewLinkAddedDate.visible()
+                binding.textViewLinkAddedDate.text =
+                    context.getString(R.string.posts_saved_on, addedDate)
             } else {
-                textViewLinkAddedDate.gone()
+                binding.textViewLinkAddedDate.gone()
             }
 
-            textViewDescription.text = item.description
-            textViewDescription.visibleIf(
+            binding.textViewDescription.text = item.description
+            binding.textViewDescription.visibleIf(
                 showDescription && item.description.isNotBlank(),
                 otherwiseVisibility = View.GONE
             )
 
             if (item.tags.isNullOrEmpty()) {
-                chipGroupTags.gone()
+                binding.chipGroupTags.gone()
             } else {
-                layoutTags(item.tags)
+                binding.layoutTags(item.tags)
             }
 
-            hideQuickActions()
+            binding.hideQuickActions()
 
             setOnClickListener { onItemClicked?.invoke(item) }
             setOnLongClickListener {
@@ -101,17 +104,17 @@ class PostListAdapter @Inject constructor(
                 }
 
                 if (!quickActionsVisible) {
-                    showQuickActions(item)
+                    binding.showQuickActions(item)
                 } else {
-                    hideQuickActions()
+                    binding.hideQuickActions()
                 }
 
                 true
             }
-            chipGroupTags.onTagChipClicked = onTagClicked
+            binding.chipGroupTags.onTagChipClicked = onTagClicked
         }
 
-        private fun View.layoutTags(tags: List<Tag>) {
+        private fun ListItemPostBinding.layoutTags(tags: List<Tag>) {
             chipGroupTags.visible()
             chipGroupTags.removeAllViews()
             for (tag in tags) {
@@ -119,18 +122,24 @@ class PostListAdapter @Inject constructor(
             }
         }
 
-        private fun View.showQuickActions(item: Post) {
+        private fun ListItemPostBinding.showQuickActions(item: Post) {
             quickActionsVisible = true
-            layoutQuickActions.visible()
+            layoutQuickActions.root.visible()
 
-            buttonQuickActionEdit.setOnClickListener { quickActionsCallback?.onEditClicked(item) }
-            buttonQuickActionShare.setOnClickListener { quickActionsCallback?.onShareClicked(item) }
-            buttonQuickActionDelete.setOnClickListener { quickActionsCallback?.onDeleteClicked(item) }
+            layoutQuickActions.buttonQuickActionEdit.setOnClickListener {
+                quickActionsCallback?.onEditClicked(item)
+            }
+            layoutQuickActions.buttonQuickActionShare.setOnClickListener {
+                quickActionsCallback?.onShareClicked(item)
+            }
+            layoutQuickActions.buttonQuickActionDelete.setOnClickListener {
+                quickActionsCallback?.onDeleteClicked(item)
+            }
         }
 
-        private fun View.hideQuickActions() {
+        private fun ListItemPostBinding.hideQuickActions() {
             quickActionsVisible = false
-            layoutQuickActions.gone()
+            layoutQuickActions.root.gone()
         }
     }
 }

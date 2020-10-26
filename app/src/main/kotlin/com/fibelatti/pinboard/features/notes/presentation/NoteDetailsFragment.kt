@@ -1,7 +1,9 @@
 package com.fibelatti.pinboard.features.notes.presentation
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.fibelatti.core.archcomponents.extension.activityViewModel
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.viewModel
@@ -12,14 +14,14 @@ import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.viewBinding
+import com.fibelatti.pinboard.databinding.FragmentNoteDetailBinding
 import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.notes.domain.model.Note
-import kotlinx.android.synthetic.main.fragment_note_detail.*
-import kotlinx.android.synthetic.main.layout_progress_bar.*
 import javax.inject.Inject
 
-class NoteDetailsFragment @Inject constructor() : BaseFragment(R.layout.fragment_note_detail) {
+class NoteDetailsFragment @Inject constructor() : BaseFragment() {
 
     companion object {
         @JvmStatic
@@ -29,6 +31,17 @@ class NoteDetailsFragment @Inject constructor() : BaseFragment(R.layout.fragment
     private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
     private val noteDetailsViewModel by viewModel { viewModelProvider.noteDetailsViewModel() }
 
+    private var binding by viewBinding<FragmentNoteDetailBinding>()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = FragmentNoteDetailBinding.inflate(inflater, container, false).run {
+        binding = this
+        binding.root
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupViewModels()
@@ -37,7 +50,7 @@ class NoteDetailsFragment @Inject constructor() : BaseFragment(R.layout.fragment
     private fun setupViewModels() {
         viewLifecycleOwner.observe(appStateViewModel.noteDetailContent) { content ->
             setupActivityViews()
-            layoutOfflineAlert.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
+            binding.layoutOfflineAlert.root.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
 
             content.note.either({ getNoteDetails(content) }, ::showNote)
         }
@@ -62,22 +75,22 @@ class NoteDetailsFragment @Inject constructor() : BaseFragment(R.layout.fragment
     }
 
     private fun getNoteDetails(content: NoteDetailContent) {
-        layoutProgressBar.visible()
-        layoutDetailsRoot.gone()
+        binding.layoutProgressBar.root.visible()
+        binding.layoutDetailsRoot.gone()
         noteDetailsViewModel.getNoteDetails(content.id)
     }
 
     private fun showNote(note: Note) {
-        layoutProgressBar.gone()
-        layoutDetailsRoot.visible()
+        binding.layoutProgressBar.root.gone()
+        binding.layoutDetailsRoot.visible()
 
-        textViewNoteTitle.text = note.title
-        textViewNoteSavedDate.text = getString(R.string.notes_saved_at, note.createdAt)
-        textViewNoteUpdatedDate.visibleIf(
+        binding.textViewNoteTitle.text = note.title
+        binding.textViewNoteSavedDate.text = getString(R.string.notes_saved_at, note.createdAt)
+        binding.textViewNoteUpdatedDate.visibleIf(
             predicate = note.updatedAt != note.createdAt,
             text = getString(R.string.notes_updated_at, note.updatedAt),
             otherwiseVisibility = View.GONE
         )
-        textViewText.text = note.text
+        binding.textViewText.text = note.text
     }
 }

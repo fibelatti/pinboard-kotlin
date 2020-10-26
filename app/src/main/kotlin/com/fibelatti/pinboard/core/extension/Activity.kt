@@ -1,7 +1,10 @@
 package com.fibelatti.pinboard.core.extension
 
+import android.view.LayoutInflater
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.viewbinding.ViewBinding
 import com.fibelatti.core.extension.inTransaction
 import com.fibelatti.pinboard.R
 
@@ -41,3 +44,7 @@ fun FragmentActivity.slideUp(fragment: Fragment, tag: String, addToBackStack: Bo
         }
     }
 }
+
+inline fun <T : ViewBinding> AppCompatActivity.viewBinding(
+    crossinline bindingInflater: (LayoutInflater) -> T
+) = lazy(LazyThreadSafetyMode.NONE) { bindingInflater.invoke(layoutInflater) }

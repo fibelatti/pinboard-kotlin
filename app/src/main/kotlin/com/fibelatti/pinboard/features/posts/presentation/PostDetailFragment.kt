@@ -5,8 +5,10 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
@@ -28,20 +30,18 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.show
+import com.fibelatti.pinboard.core.extension.viewBinding
+import com.fibelatti.pinboard.databinding.FragmentPostDetailBinding
 import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import kotlinx.android.synthetic.main.fragment_post_detail.*
-import kotlinx.android.synthetic.main.layout_file_view.*
-import kotlinx.android.synthetic.main.layout_progress_bar.*
-import kotlinx.android.synthetic.main.layout_url_error.*
 import javax.inject.Inject
 
 class PostDetailFragment @Inject constructor(
     private val connectivityInfoProvider: ConnectivityInfoProvider
-) : BaseFragment(R.layout.fragment_post_detail) {
+) : BaseFragment() {
 
     companion object {
 
@@ -53,19 +53,29 @@ class PostDetailFragment @Inject constructor(
     private val postDetailViewModel by viewModel { viewModelProvider.postDetailsViewModel() }
     private val popularPostsViewModel by viewModel { viewModelProvider.popularPostsViewModel() }
 
-    private val knownFileExtensions =
-        listOf(
-            "pdf",
-            "doc", "docx",
-            "ppt", "pptx",
-            "xls", "xlsx",
-            "zip", "rar",
-            "txt", "rtf",
-            "mp3", "wav",
-            "gif", "jpg", "jpeg", "png", "svg",
-            "mp4", "3gp", "mpg", "mpeg", "avi"
-        )
+    private var binding by viewBinding<FragmentPostDetailBinding>()
+
+    private val knownFileExtensions = listOf(
+        "pdf",
+        "doc", "docx",
+        "ppt", "pptx",
+        "xls", "xlsx",
+        "zip", "rar",
+        "txt", "rtf",
+        "mp3", "wav",
+        "gif", "jpg", "jpeg", "png", "svg",
+        "mp4", "3gp", "mpg", "mpeg", "avi"
+    )
     private var postWebViewClient: PostWebViewClient? = null
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = FragmentPostDetailBinding.inflate(inflater, container, false).run {
+        binding = this
+        binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -83,7 +93,7 @@ class PostDetailFragment @Inject constructor(
 
         with(postDetailViewModel) {
             viewLifecycleOwner.observe(loading) {
-                layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE)
+                binding.layoutProgressBar.root.visibleIf(it, otherwiseVisibility = View.GONE)
             }
             viewLifecycleOwner.observeEvent(deleted) {
                 mainActivity?.showBanner(getString(R.string.posts_deleted_feedback))
@@ -102,7 +112,7 @@ class PostDetailFragment @Inject constructor(
         }
         with(popularPostsViewModel) {
             viewLifecycleOwner.observe(loading) {
-                layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE)
+                binding.layoutProgressBar.root.visibleIf(it, otherwiseVisibility = View.GONE)
             }
             viewLifecycleOwner.observe(saved) {
                 mainActivity?.showBanner(getString(R.string.posts_saved_feedback))
@@ -151,58 +161,60 @@ class PostDetailFragment @Inject constructor(
     }
 
     private fun showFileView(post: Post) {
-        layoutRootFileViewer.visible()
-        layoutScrollViewWeb.gone()
-        layoutProgressBar.gone()
+        binding.layoutFileView.root.visible()
+        binding.layoutScrollViewWeb.gone()
+        binding.layoutProgressBar.root.gone()
 
-        textViewFileUrlTitle.text = post.title
-        textViewFileUrl.text = post.url
-        buttonOpenInFileViewer.setOnClickListener { openUrlInFileViewer(post.url) }
+        binding.layoutFileView.textViewFileUrlTitle.text = post.title
+        binding.layoutFileView.textViewFileUrl.text = post.url
+        binding.layoutFileView.buttonOpenInFileViewer.setOnClickListener { openUrlInFileViewer(post.url) }
     }
 
     private fun showWebView(post: Post) {
-        layoutRootFileViewer.gone()
-        layoutScrollViewWeb.visible()
+        binding.layoutFileView.root.gone()
+        binding.layoutScrollViewWeb.visible()
 
         if (!connectivityInfoProvider.isConnected()) {
-            layoutProgressBar.gone()
-            layoutRootUrlError.visible()
+            binding.layoutProgressBar.root.gone()
+            binding.layoutUrlError.root.visible()
 
-            textViewErrorUrlTitle.text = post.title
-            textViewErrorUrl.text = post.url
-            textViewErrorDescription.setText(R.string.posts_url_offline_error)
-            buttonErrorAction.setOnClickListener(R.string.offline_retry) { showWebView(post) }
+            binding.layoutUrlError.textViewErrorUrlTitle.text = post.title
+            binding.layoutUrlError.textViewErrorUrl.text = post.url
+            binding.layoutUrlError.textViewErrorDescription.setText(R.string.posts_url_offline_error)
+            binding.layoutUrlError.buttonErrorAction.setOnClickListener(R.string.offline_retry) {
+                showWebView(post)
+            }
 
             return
         }
 
-        if (webView.url != post.url) {
+        if (binding.webView.url != post.url) {
             postWebViewClient = PostWebViewClient(object : PostWebViewClient.Callback {
 
                 override fun onPageStarted() {
-                    layoutProgressBar?.visible()
+                    binding.layoutProgressBar.root.visible()
                 }
 
                 override fun onPageFinished() {
-                    layoutProgressBar?.gone()
-                    layoutRootUrlError?.gone()
+                    binding.layoutProgressBar.root.gone()
+                    binding.layoutUrlError.root.gone()
                 }
 
                 override fun onError() {
                     showErrorLayout(post)
                 }
-            }).also(webView::setWebViewClient)
+            }).also(binding.webView::setWebViewClient)
 
-            webView.loadUrl(post.url)
+            binding.webView.loadUrl(post.url)
         }
     }
 
     private fun showErrorLayout(post: Post) {
-        layoutRootUrlError.visible()
+        binding.layoutUrlError.root.visible()
 
-        textViewErrorUrlTitle.text = post.title
-        textViewErrorUrl.text = post.url
-        buttonErrorAction.setOnClickListener { openUrlInExternalBrowser(post) }
+        binding.layoutUrlError.textViewErrorUrlTitle.text = post.title
+        binding.layoutUrlError.textViewErrorUrl.text = post.url
+        binding.layoutUrlError.buttonErrorAction.setOnClickListener { openUrlInExternalBrowser(post) }
     }
 
     private fun openUrlInFileViewer(url: String) {

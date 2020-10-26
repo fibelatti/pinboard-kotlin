@@ -8,6 +8,7 @@
     tools:showIn="@layout/fragment_tags">
 
     <include
+        android:id="@+id/layoutProgressBar"
         layout="@layout/layout_progress_bar"
         android:visibility="gone"
         tools:visibility="gone" />

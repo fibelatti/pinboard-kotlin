@@ -5,8 +5,8 @@ import androidx.recyclerview.widget.DiffUtil
 import com.fibelatti.core.android.base.BaseListAdapter
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.databinding.ListItemNoteBinding
 import com.fibelatti.pinboard.features.notes.domain.model.Note
-import kotlinx.android.synthetic.main.list_item_note.view.*
 import javax.inject.Inject
 
 class NoteListAdapter @Inject constructor() : BaseListAdapter<Note>(DIFF_UTIL) {
@@ -16,10 +16,12 @@ class NoteListAdapter @Inject constructor() : BaseListAdapter<Note>(DIFF_UTIL) {
     override fun getLayoutRes(): Int = R.layout.list_item_note
 
     override fun View.bindView(item: Note, viewHolder: BaseListAdapter<Note>.ViewHolder) {
-        textViewNoteTitle.text = item.title
-        textViewNoteSavedDate.text = context.getString(R.string.notes_saved_at, item.createdAt)
+        val binding = ListItemNoteBinding.bind(this)
 
-        textViewNoteUpdatedDate.visibleIf(
+        binding.textViewNoteTitle.text = item.title
+        binding.textViewNoteSavedDate.text = context.getString(R.string.notes_saved_at, item.createdAt)
+
+        binding.textViewNoteUpdatedDate.visibleIf(
             predicate = item.updatedAt != item.createdAt,
             text = context.getString(R.string.notes_updated_at, item.updatedAt),
             otherwiseVisibility = View.GONE

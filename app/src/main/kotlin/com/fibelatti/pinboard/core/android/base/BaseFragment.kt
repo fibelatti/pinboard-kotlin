@@ -2,17 +2,13 @@ package com.fibelatti.pinboard.core.android.base
 
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.ContentView
-import androidx.annotation.LayoutRes
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.getViewToApplyInsets
 import com.fibelatti.pinboard.core.di.ViewModelProvider
 
-abstract class BaseFragment @ContentView constructor(
-    @LayoutRes contentLayoutId: Int
-) : Fragment(contentLayoutId) {
+abstract class BaseFragment : Fragment() {
 
     protected val viewModelProvider: ViewModelProvider
         get() = (activity as BaseActivity).viewModelProvider

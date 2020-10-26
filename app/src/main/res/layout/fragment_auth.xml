@@ -26,6 +26,7 @@
         app:layout_constraintTop_toBottomOf="@+id/guideline" />
 
     <include
+        android:id="@+id/layoutAuthForm"
         layout="@layout/layout_auth_form"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

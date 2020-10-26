@@ -3,8 +3,8 @@ package com.fibelatti.pinboard.features.tags.presentation
 import android.view.View
 import com.fibelatti.core.android.base.BaseAdapter
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.databinding.ListItemTagBinding
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import kotlinx.android.synthetic.main.list_item_tag.view.*
 import javax.inject.Inject
 
 class TagsAdapter @Inject constructor() : BaseAdapter<Tag>() {
@@ -14,9 +14,14 @@ class TagsAdapter @Inject constructor() : BaseAdapter<Tag>() {
     override fun getLayoutRes(): Int = R.layout.list_item_tag
 
     override fun View.bindView(item: Tag, viewHolder: ViewHolder) {
-        textViewTagName.text = item.name
-        textViewPostCount.text =
-            context.resources.getQuantityString(R.plurals.posts_quantity, item.posts, item.posts)
+        val binding = ListItemTagBinding.bind(this)
+
+        binding.textViewTagName.text = item.name
+        binding.textViewPostCount.text = context.resources.getQuantityString(
+            R.plurals.posts_quantity,
+            item.posts,
+            item.posts
+        )
 
         setOnClickListener { onItemClicked?.invoke(item) }
     }

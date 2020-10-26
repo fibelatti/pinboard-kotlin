@@ -31,7 +31,11 @@ import com.fibelatti.pinboard.core.android.DefaultAnimationListener
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.customview.TitleLayout
+import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.core.functional.DoNothing
+import com.fibelatti.pinboard.databinding.ActivityMainBinding
+import com.fibelatti.pinboard.databinding.FragmentAuthBinding
+import com.fibelatti.pinboard.databinding.FragmentSplashBinding
 import com.fibelatti.pinboard.features.appstate.AddPostContent
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.ExternalBrowserContent
@@ -55,14 +59,11 @@ import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_auth.imageViewAppLogo as authViewLogo
-import kotlinx.android.synthetic.main.fragment_splash.imageViewAppLogo as splashViewLogo
 
 val Fragment.mainActivity: MainActivity? get() = activity as? MainActivity
 var Intent.fromBuilder by IntentDelegate.Boolean("FROM_BUILDER", false)
 
-class MainActivity : BaseActivity(R.layout.activity_main) {
+class MainActivity : BaseActivity() {
 
     companion object {
 
@@ -79,16 +80,20 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
 
     private var isRecreating: Boolean = false
 
+    private val binding by viewBinding(ActivityMainBinding::inflate)
+
     // An action that will run once when the Activity is resumed and will be set to null afterwards
     private var onResumeDelegate: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(binding.root)
+
         isRecreating = savedInstanceState != null
 
         if (!intent.fromBuilder && !isRecreating) {
             inTransaction {
-                add(R.id.fragmentHost, createFragment<SplashFragment>())
+                add(R.id.fragmentHost, createFragment<SplashFragment>(), SplashFragment.TAG)
             }
         }
 
@@ -110,7 +115,7 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
     }
 
     private fun onUpdateDownloadComplete() {
-        layoutRoot.snackbar(
+        binding.root.snackbar(
             message = getString(R.string.in_app_update_ready),
             textColor = R.color.text_primary,
             marginSize = R.dimen.margin_regular,
@@ -120,7 +125,7 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
             setAction(R.string.in_app_update_install) { inAppUpdateManager.completeUpdate() }
             setActionTextColor(
                 ContextCompat.getColor(
-                    layoutRoot.context,
+                    binding.root.context,
                     R.color.color_on_background
                 )
             )
@@ -140,7 +145,7 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
             View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
             View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
 
-        layoutTitle?.doOnApplyWindowInsets { view, insets, _, initialMargin ->
+        binding.layoutTitle.doOnApplyWindowInsets { view, insets, _, initialMargin ->
             view.layoutParams = (view.layoutParams as ViewGroup.MarginLayoutParams).apply {
                 leftMargin = initialMargin.left
                 topMargin = initialMargin.top + insets.systemWindowInsetTop
@@ -149,7 +154,7 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
             }
         }
 
-        fabMain?.doOnApplyWindowInsets { view, insets, _, initialMargin ->
+        binding.fabMain.doOnApplyWindowInsets { view, insets, _, initialMargin ->
             view.layoutParams = (view.layoutParams as ViewGroup.MarginLayoutParams).apply {
                 leftMargin = initialMargin.left
                 topMargin = initialMargin.top
@@ -162,7 +167,7 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
             view.doOnApplyWindowInsets { _, _, _, _ -> }
         }
 
-        bottomAppBar?.doOnApplyWindowInsets { view, insets, padding, _ ->
+        binding.bottomAppBar.doOnApplyWindowInsets { view, insets, padding, _ ->
             ViewCompat.setPaddingRelative(
                 view,
                 padding.start,
@@ -175,7 +180,7 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
             view.doOnApplyWindowInsets { _, _, _, _ -> }
         }
 
-        bottomAppBar?.setNavigationOnClickListener {
+        binding.bottomAppBar.setNavigationOnClickListener {
             createFragment<NavigationMenuFragment>().applyAs<Fragment, BottomSheetDialogFragment> {
                 show(supportFragmentManager, NavigationMenuFragment.TAG)
             }
@@ -217,12 +222,12 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
     }
 
     fun updateTitleLayout(titleUpdates: TitleLayout.() -> Unit) {
-        layoutTitle.visible()
-        layoutTitle.run(titleUpdates)
+        binding.layoutTitle.visible()
+        binding.layoutTitle.run(titleUpdates)
     }
 
     fun updateViews(update: (BottomAppBar, FloatingActionButton) -> Unit = { _, _ -> }) {
-        update(bottomAppBar, fabMain)
+        update(binding.bottomAppBar, binding.fabMain)
     }
 
     private fun handleLoginState(loginState: LoginState) {
@@ -246,8 +251,12 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
                             createFragment<PostListFragment>(),
                             PostListFragment.TAG
                         )
-                        authViewLogo?.let {
-                            addSharedElement(it, SharedElementTransitionNames.APP_LOGO)
+                        supportFragmentManager.findFragmentByTag(AuthFragment.TAG)?.view?.let {
+                            val binding = FragmentAuthBinding.bind(it)
+                            addSharedElement(
+                                binding.imageViewAppLogo,
+                                SharedElementTransitionNames.APP_LOGO
+                            )
                         }
                     }
                 }
@@ -259,8 +268,12 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
                     inTransaction {
                         setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                         replace(R.id.fragmentHost, createFragment<AuthFragment>())
-                        splashViewLogo?.let {
-                            addSharedElement(it, SharedElementTransitionNames.APP_LOGO)
+                        supportFragmentManager.findFragmentByTag(SplashFragment.TAG)?.view?.let {
+                            val binding = FragmentSplashBinding.bind(it)
+                            addSharedElement(
+                                binding.imageViewAppLogo,
+                                SharedElementTransitionNames.APP_LOGO
+                            )
                         }
                     }
 
@@ -276,7 +289,7 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
                     }
 
                     setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-                    add(R.id.fragmentHost, createFragment<AuthFragment>())
+                    add(R.id.fragmentHost, createFragment<AuthFragment>(), AuthFragment.TAG)
                 }
 
                 hideControls()
@@ -287,21 +300,27 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
     }
 
     private fun hideControls() {
-        layoutTitle.gone()
-        bottomAppBar.gone()
-        fabMain.hide()
+        binding.layoutTitle.gone()
+        binding.bottomAppBar.gone()
+        binding.fabMain.hide()
     }
 
     @Suppress("MagicNumber")
     fun showBanner(message: String) {
         val banner = layoutInflater.inflate(R.layout.layout_feedback_banner, null)
             .apply { findViewById<TextView>(R.id.textViewFeedback).text = message }
-            .also(layoutContent::addView)
+            .also(binding.layoutContent::addView)
 
         ConstraintSet()
             .apply {
-                clone(layoutContent)
-                connect(banner.id, ConstraintSet.TOP, layoutTitle.id, ConstraintSet.BOTTOM, 16)
+                clone(binding.layoutContent)
+                connect(
+                    banner.id,
+                    ConstraintSet.TOP,
+                    binding.layoutTitle.id,
+                    ConstraintSet.BOTTOM,
+                    16
+                )
                 connect(
                     banner.id,
                     ConstraintSet.START,
@@ -317,14 +336,14 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
                     16
                 )
             }
-            .applyTo(layoutContent)
+            .applyTo(binding.layoutContent)
 
         val disappearAnimation = AlphaAnimation(1F, 0F).apply {
             duration = 500L
             startOffset = 2_500L
             setAnimationListener(object : DefaultAnimationListener() {
                 override fun onAnimationEnd(animation: Animation?) {
-                    layoutContent?.removeView(banner)
+                    binding.layoutContent.removeView(banner)
                 }
             })
         }

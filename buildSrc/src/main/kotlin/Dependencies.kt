@@ -31,6 +31,8 @@ object Dependencies {
     const val coreLib = "com.fibelatti.core:core:2.0.0-alpha4"
     const val coreLibArch = "com.fibelatti.core:arch-components:2.0.0-alpha4"
 
+    const val lifecycleJava8 = "androidx.lifecycle:lifecycle-common-java8:2.2.0"
+
     const val archComponents = "androidx.lifecycle:lifecycle-extensions:${Versions.lifecycleVersion}"
     const val archComponentsCompiler = "androidx.lifecycle:lifecycle-compiler:${Versions.lifecycleVersion}"
 

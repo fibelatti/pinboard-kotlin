@@ -2,9 +2,10 @@ package com.fibelatti.pinboard.features.posts.presentation
 
 import android.os.Bundle
 import android.os.Handler
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.fragment.app.FragmentResultListener
+import android.view.ViewGroup
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
 import com.fibelatti.core.android.DefaultTransitionListener
@@ -28,6 +29,8 @@ import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.extension.show
+import com.fibelatti.pinboard.core.extension.viewBinding
+import com.fibelatti.pinboard.databinding.FragmentPostListBinding
 import com.fibelatti.pinboard.features.InAppReviewManager
 import com.fibelatti.pinboard.features.appstate.AddPost
 import com.fibelatti.pinboard.features.appstate.All
@@ -56,15 +59,12 @@ import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
-import kotlinx.android.synthetic.main.fragment_post_list.*
-import kotlinx.android.synthetic.main.layout_offline_alert.*
-import kotlinx.android.synthetic.main.layout_search_active.*
 import javax.inject.Inject
 
 class PostListFragment @Inject constructor(
     private val postsAdapter: PostListAdapter,
     private val inAppReviewManager: InAppReviewManager
-) : BaseFragment(R.layout.fragment_post_list) {
+) : BaseFragment() {
 
     companion object {
 
@@ -76,6 +76,8 @@ class PostListFragment @Inject constructor(
     private val postListViewModel by viewModel { viewModelProvider.postListViewModel() }
     private val postDetailViewModel by viewModel { viewModelProvider.postDetailsViewModel() }
 
+    private var binding by viewBinding<FragmentPostListBinding>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -86,15 +88,24 @@ class PostListFragment @Inject constructor(
         activity?.supportFragmentManager?.setFragmentResultListener(
             UserPreferencesFragment.TAG,
             this,
-            FragmentResultListener { _, _ ->
+            { _, _ ->
                 activity?.let(inAppReviewManager::checkForPlayStoreReview)
             }
         )
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = FragmentPostListBinding.inflate(inflater, container, false).run {
+        binding = this
+        binding.root
+    }
+
     override fun onPause() {
         super.onPause()
-        imageViewAppLogo?.gone()
+        binding.imageViewAppLogo.gone()
     }
 
     @Suppress("MagicNumber")
@@ -109,37 +120,37 @@ class PostListFragment @Inject constructor(
                 override fun onTransitionEnd(transition: Transition) {
                     // Changing the visibility immediately after the transition has finished
                     // won't work, so delay it a bit
-                    Handler().postDelayed({ imageViewAppLogo?.gone() }, delayMillis)
+                    Handler().postDelayed({ binding.imageViewAppLogo.gone() }, delayMillis)
                 }
             })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        imageViewAppLogo?.goneIf(savedInstanceState != null)
+        binding.imageViewAppLogo.goneIf(savedInstanceState != null)
         setupLayout()
         setupViewModels()
     }
 
     private fun setupLayout() {
-        imageViewAppLogo.transitionName = SharedElementTransitionNames.APP_LOGO
+        binding.imageViewAppLogo.transitionName = SharedElementTransitionNames.APP_LOGO
 
-        layoutRoot.animateChangingTransitions()
+        binding.root.animateChangingTransitions()
 
-        buttonClearSearch.setOnClickListener { appStateViewModel.runAction(ClearSearch) }
-        buttonRetryConnection.setOnClickListener { appStateViewModel.runAction(Refresh) }
+        binding.layoutSearchActive.buttonClearSearch.setOnClickListener { appStateViewModel.runAction(ClearSearch) }
+        binding.layoutOfflineAlert.buttonRetryConnection.setOnClickListener { appStateViewModel.runAction(Refresh) }
 
-        swipeToRefresh.setOnRefreshListener {
-            swipeToRefresh.isRefreshing = false
+        binding.swipeToRefresh.setOnRefreshListener {
+            binding.swipeToRefresh.isRefreshing = false
             appStateViewModel.runAction(Refresh)
         }
 
-        recyclerViewPosts
+        binding.recyclerViewPosts
             .apply {
                 setPageSize(AppConfig.DEFAULT_PAGE_SIZE)
                 setMinDistanceToLastItem(AppConfig.DEFAULT_PAGE_SIZE / 2)
                 onShouldRequestNextPage = {
-                    progressBar.visible()
+                    binding.progressBar.visible()
                     appStateViewModel.runAction(GetNextPostPage)
                 }
             }
@@ -181,7 +192,7 @@ class PostListFragment @Inject constructor(
         viewLifecycleOwner.observe(appStateViewModel.postListContent, ::updateContent)
         with(postDetailViewModel) {
             viewLifecycleOwner.observe(loading) {
-                progressBar.visibleIf(it, otherwiseVisibility = View.GONE)
+                binding.progressBar.visibleIf(it, otherwiseVisibility = View.GONE)
             }
             viewLifecycleOwner.observeEvent(deleted) {
                 mainActivity?.showBanner(getString(R.string.posts_deleted_feedback))
@@ -198,7 +209,7 @@ class PostListFragment @Inject constructor(
 
     override fun handleError(error: Throwable) {
         super.handleError(error)
-        progressBar.gone()
+        binding.progressBar.gone()
     }
 
     private fun updateContent(content: PostListContent) {
@@ -225,9 +236,9 @@ class PostListFragment @Inject constructor(
                     hideSubTitle()
                 }
 
-                progressBar.visible()
-                recyclerViewPosts.gone()
-                layoutEmptyList.gone()
+                binding.progressBar.visible()
+                binding.recyclerViewPosts.gone()
+                binding.layoutEmptyList.gone()
 
                 postsAdapter.clearItems()
 
@@ -237,11 +248,11 @@ class PostListFragment @Inject constructor(
             is Syncing, is Loaded -> showPosts(content)
         }.exhaustive
 
-        layoutSearchActive.visibleIf(
+        binding.layoutSearchActive.root.visibleIf(
             content.searchParameters.isActive(),
             otherwiseVisibility = View.GONE
         )
-        layoutOfflineAlert.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
+        binding.layoutOfflineAlert.root.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
     }
 
     private fun getCategoryTitle(category: ViewCategory): String {
@@ -256,8 +267,8 @@ class PostListFragment @Inject constructor(
     }
 
     private fun showPosts(content: PostListContent) {
-        progressBar.goneIf(content.shouldLoad == Loaded)
-        recyclerViewPosts.onRequestNextPageCompleted()
+        binding.progressBar.goneIf(content.shouldLoad == Loaded)
+        binding.recyclerViewPosts.onRequestNextPageCompleted()
 
         mainActivity?.updateTitleLayout {
             setTitle(getCategoryTitle(content.category))
@@ -276,8 +287,8 @@ class PostListFragment @Inject constructor(
             else -> {
                 postsAdapter.showDescription = content.showDescription
                 if (!content.posts.alreadyDisplayed || postsAdapter.itemCount == 0) {
-                    recyclerViewPosts.visible()
-                    layoutEmptyList.gone()
+                    binding.recyclerViewPosts.visible()
+                    binding.layoutEmptyList.gone()
 
                     postsAdapter.addAll(content.posts.list, content.posts.diffUtil.result)
                     appStateViewModel.runAction(PostsDisplayed)
@@ -305,8 +316,8 @@ class PostListFragment @Inject constructor(
 
     private fun showEmptyLayout() {
         mainActivity?.updateTitleLayout { hideSubTitle() }
-        recyclerViewPosts.gone()
-        layoutEmptyList.apply {
+        binding.recyclerViewPosts.gone()
+        binding.layoutEmptyList.apply {
             visible()
             setTitle(R.string.posts_empty_title)
             setDescription(R.string.posts_empty_description)

@@ -13,6 +13,10 @@ if (jacocoEnabled.toBoolean()) {
 }
 
 android {
+    buildFeatures {
+        viewBinding = true
+    }
+
     compileSdkVersion(Versions.compileSdkVersion)
 
     defaultConfig {
@@ -138,6 +142,8 @@ dependencies {
     implementation(Dependencies.materialDesign)
     implementation(Dependencies.constraintLayout)
     implementation(Dependencies.swipeRefreshLayout)
+
+    implementation(Dependencies.lifecycleJava8)
 
     implementation(Dependencies.archComponents)
     kapt(Dependencies.archComponentsCompiler)

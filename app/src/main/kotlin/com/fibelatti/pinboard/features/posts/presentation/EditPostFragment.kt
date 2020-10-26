@@ -4,9 +4,10 @@ import android.animation.ObjectAnimator
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import com.fibelatti.core.archcomponents.extension.activityViewModel
 import com.fibelatti.core.archcomponents.extension.observe
@@ -28,17 +29,15 @@ import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.show
+import com.fibelatti.pinboard.core.extension.viewBinding
+import com.fibelatti.pinboard.databinding.FragmentEditPostBinding
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import kotlinx.android.synthetic.main.fragment_edit_post.*
-import kotlinx.android.synthetic.main.layout_edit_post.*
-import kotlinx.android.synthetic.main.layout_edit_tags.*
-import kotlinx.android.synthetic.main.layout_progress_bar.*
 import javax.inject.Inject
 
-class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_edit_post) {
+class EditPostFragment @Inject constructor() : BaseFragment() {
 
     companion object {
 
@@ -49,6 +48,8 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
     private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
     private val editPostViewModel by viewModel { viewModelProvider.editPostViewModel() }
     private val postDetailViewModel by viewModel { viewModelProvider.postDetailsViewModel() }
+
+    private var binding by viewBinding<FragmentEditPostBinding>()
 
     private var initialInsetBottomValue = -1
 
@@ -70,6 +71,15 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
         override fun handleOnBackPressed() {
             onBackPressed()
         }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = FragmentEditPostBinding.inflate(inflater, container, false).run {
+        binding = this
+        binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -102,13 +112,16 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
 
     private fun onBackPressed() {
         val isContentUnchanged = originalPost?.run {
-            hash.isNotEmpty() &&
-                url == editTextUrl.textAsString() &&
-                title == editTextTitle.textAsString() &&
-                description == editTextDescription.textAsString() &&
-                private == checkboxPrivate.isChecked &&
-                readLater == checkboxReadLater.isChecked &&
-                tags == chipGroupTags.getAllTags().takeIf { it.isNotEmpty() }
+            with(binding.layoutAddPost) {
+                hash.isNotEmpty() &&
+                    url == editTextUrl.textAsString() &&
+                    title == editTextTitle.textAsString() &&
+                    description == editTextDescription.textAsString() &&
+                    private == checkboxPrivate.isChecked &&
+                    readLater == checkboxReadLater.isChecked &&
+                    tags == binding.layoutAddTags.chipGroupTags.getAllTags()
+                    .takeIf { it.isNotEmpty() }
+            }
         } ?: true
 
         if (isContentUnchanged) {
@@ -134,7 +147,7 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
 
     @Suppress("MagicNumber")
     private fun handleKeyboardVisibility() {
-        layoutRoot.doOnApplyWindowInsets { view, windowInsets, _, _ ->
+        binding.root.doOnApplyWindowInsets { view, windowInsets, _, _ ->
             // This is the first pass, just save the initial inset value
             if (initialInsetBottomValue == -1) {
                 initialInsetBottomValue = windowInsets.systemWindowInsetBottom
@@ -195,69 +208,65 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
         mainActivity?.updateViews { _, fab ->
             fab.hide()
         }
-        layoutRoot?.hideKeyboard()
+        binding.root.hideKeyboard()
 
-        editPostViewModel.saveLink(
-            editTextUrl.textAsString(),
-            editTextTitle.textAsString(),
-            editTextDescription.textAsString(),
-            checkboxPrivate.isChecked,
-            checkboxReadLater.isChecked,
-            chipGroupTags.getAllTags()
-        )
+        with(binding.layoutAddPost) {
+            editPostViewModel.saveLink(
+                editTextUrl.textAsString(),
+                editTextTitle.textAsString(),
+                editTextDescription.textAsString(),
+                checkboxPrivate.isChecked,
+                checkboxReadLater.isChecked,
+                binding.layoutAddTags.chipGroupTags.getAllTags()
+            )
+        }
     }
 
     private fun setupTagLayouts() {
         setupTagInput()
-        buttonTagsAdd.setOnClickListener {
-            editTextTags.textAsString().takeIf(String::isNotBlank)?.let {
-                chipGroupTags.addValue(it, index = 0)
+        with(binding.layoutAddTags) {
+            buttonTagsAdd.setOnClickListener {
+                editTextTags.textAsString().takeIf(String::isNotBlank)?.let {
+                    chipGroupTags.addValue(it, index = 0)
+                    editTextTags.clearText()
+                }
+            }
+
+            chipGroupTags.onTagChipRemoved = {
+                editTextTags.textAsString().takeIf(String::isNotBlank)?.let {
+                    editPostViewModel.searchForTag(it, chipGroupTags.getAllTags())
+                }
+            }
+
+            chipGroupSuggestedTags.onTagChipClicked = {
+                chipGroupTags.addTag(it, index = 0)
                 editTextTags.clearText()
             }
         }
-
-        chipGroupTags.onTagChipRemoved = {
-            editTextTags.textAsString().takeIf(String::isNotBlank)?.let {
-                editPostViewModel.searchForTag(it, chipGroupTags.getAllTags())
-            }
-        }
-
-        chipGroupSuggestedTags.onTagChipClicked = {
-            chipGroupTags.addTag(it, index = 0)
-            editTextTags.clearText()
-        }
-    }
-
-    private fun delayedHideKeyboard() {
-        // Dirty hack because of animateLayoutChanges:
-        // Without this the underlying fragment becomes visible for a split second where the keyboard
-        // was because this fragment is still resizing
-        Handler().postDelayed(
-            { layoutRoot?.hideKeyboard() },
-            resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
-        )
     }
 
     private fun setupTagInput() {
-        editTextTags.afterTextChanged { text ->
-            when {
-                text.isNotBlank() && text.endsWith(" ") -> {
-                    chipGroupTags.addValue(text, index = 0)
-                    editTextTags.clearText()
+        with(binding.layoutAddTags) {
+            editTextTags.afterTextChanged { text ->
+                when {
+                    text.isNotBlank() && text.endsWith(" ") -> {
+                        chipGroupTags.addValue(text, index = 0)
+                        editTextTags.clearText()
+                    }
+                    text.isNotBlank() -> editPostViewModel.searchForTag(
+                        text,
+                        chipGroupTags.getAllTags()
+                    )
+                    else -> chipGroupSuggestedTags.removeAllViews()
                 }
-                text.isNotBlank() -> editPostViewModel.searchForTag(
-                    text,
-                    chipGroupTags.getAllTags()
-                )
-                else -> chipGroupSuggestedTags.removeAllViews()
             }
-        }
-        editTextTags.onKeyboardSubmit {
-            when (val text = textAsString().trim()) {
-                "" -> hideKeyboard()
-                else -> {
-                    chipGroupTags.addValue(text, index = 0)
-                    editTextTags.clearText()
+            editTextTags.onKeyboardSubmit {
+                when (val text = textAsString().trim()) {
+                    "" -> hideKeyboard()
+                    else -> {
+                        chipGroupTags.addValue(text, index = 0)
+                        editTextTags.clearText()
+                    }
                 }
             }
         }
@@ -268,18 +277,23 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
             setupActivityViews()
 
             if (!isRecreating) {
-                checkboxPrivate.isChecked = it.defaultPrivate
-                checkboxReadLater.isChecked = it.defaultReadLater
+                binding.layoutAddPost.checkboxPrivate.isChecked = it.defaultPrivate
+                binding.layoutAddPost.checkboxReadLater.isChecked = it.defaultReadLater
             }
         }
         viewLifecycleOwner.observe(appStateViewModel.editPostContent, ::showPostDetails)
         with(editPostViewModel) {
             viewLifecycleOwner.observe(loading) {
-                layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE)
+                binding.layoutProgressBar.root.visibleIf(it, otherwiseVisibility = View.GONE)
             }
             viewLifecycleOwner.observe(suggestedTags) { tags ->
-                chipGroupSuggestedTags.removeAllViews()
-                tags.forEach { chipGroupSuggestedTags.addValue(it, showRemoveIcon = false) }
+                binding.layoutAddTags.chipGroupSuggestedTags.removeAllViews()
+                tags.forEach {
+                    binding.layoutAddTags.chipGroupSuggestedTags.addValue(
+                        it,
+                        showRemoveIcon = false
+                    )
+                }
             }
             viewLifecycleOwner.observeEvent(saved) {
                 mainActivity?.showBanner(getString(R.string.posts_saved_feedback))
@@ -293,7 +307,7 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
         }
         with(postDetailViewModel) {
             viewLifecycleOwner.observe(loading) {
-                layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE)
+                binding.layoutProgressBar.root.visibleIf(it, otherwiseVisibility = View.GONE)
             }
             viewLifecycleOwner.observeEvent(deleted) {
                 mainActivity?.showBanner(getString(R.string.posts_deleted_feedback))
@@ -340,14 +354,18 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
         }
 
         with(content.post) {
-            editTextUrl.setText(url)
-            editTextTitle.setText(title)
-            editTextDescription.setText(description)
-            checkboxPrivate.isChecked = private
-            checkboxReadLater.isChecked = readLater
+            with(binding.layoutAddPost) {
+                editTextUrl.setText(url)
+                editTextTitle.setText(title)
+                editTextDescription.setText(description)
+                checkboxPrivate.isChecked = private
+                checkboxReadLater.isChecked = readLater
+            }
 
-            chipGroupTags.removeAllViews()
-            tags?.forEach { chipGroupTags.addTag(it) }
+            with(binding.layoutAddTags) {
+                chipGroupTags.removeAllViews()
+                tags?.forEach { chipGroupTags.addTag(it) }
+            }
         }
     }
 
@@ -378,19 +396,19 @@ class EditPostFragment @Inject constructor() : BaseFragment(R.layout.fragment_ed
     private fun handleInvalidUrlError(message: String) {
         message.takeIf(String::isNotEmpty)
             ?.let {
-                textInputLayoutUrl.showError(it)
+                binding.layoutAddPost.textInputLayoutUrl.showError(it)
                 showFab()
             }
-            ?: textInputLayoutUrl.clearError()
+            ?: binding.layoutAddPost.textInputLayoutUrl.clearError()
     }
 
     private fun handleInvalidTitleError(message: String) {
         message.takeIf(String::isNotEmpty)
             ?.let {
-                textInputLayoutTitle.showError(it)
+                binding.layoutAddPost.textInputLayoutTitle.showError(it)
                 showFab()
             }
-            ?: textInputLayoutTitle.clearError()
+            ?: binding.layoutAddPost.textInputLayoutTitle.clearError()
     }
 
     private fun showFab() {

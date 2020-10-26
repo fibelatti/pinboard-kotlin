@@ -1,7 +1,9 @@
 package com.fibelatti.pinboard.features.user.presentation
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.bundleOf
@@ -15,15 +17,14 @@ import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.viewBinding
+import com.fibelatti.pinboard.databinding.FragmentUserPreferencesBinding
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
-import kotlinx.android.synthetic.main.fragment_user_preferences.*
 import javax.inject.Inject
 
-class UserPreferencesFragment @Inject constructor() : BaseFragment(
-    R.layout.fragment_user_preferences
-) {
+class UserPreferencesFragment @Inject constructor() : BaseFragment() {
 
     companion object {
 
@@ -34,6 +35,17 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(
     private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
     private val userPreferencesViewModel by viewModel { viewModelProvider.userPreferencesViewModel() }
 
+    private var binding by viewBinding<FragmentUserPreferencesBinding>()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = FragmentUserPreferencesBinding.inflate(inflater, container, false).run {
+        binding = this
+        binding.root
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -42,22 +54,22 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(
             setupAppearance(it.appearance)
             setupPreferredDetailsView(it.preferredDetailsView)
 
-            checkboxAutoFillDescription.setValueAndChangeListener(
+            binding.checkboxAutoFillDescription.setValueAndChangeListener(
                 it.autoFillDescription,
                 userPreferencesViewModel::saveAutoFillDescription
             )
-            checkboxShowDescriptionInLists.setValueAndChangeListener(
+            binding.checkboxShowDescriptionInLists.setValueAndChangeListener(
                 it.showDescriptionInLists,
                 userPreferencesViewModel::saveShowDescriptionInLists
             )
 
             setupEditAfterSharing(it.editAfterSharing)
 
-            checkboxPrivateDefault.setValueAndChangeListener(
+            binding.checkboxPrivateDefault.setValueAndChangeListener(
                 it.defaultPrivate,
                 userPreferencesViewModel::saveDefaultPrivate
             )
-            checkboxReadLaterDefault.setValueAndChangeListener(
+            binding.checkboxReadLaterDefault.setValueAndChangeListener(
                 it.defaultReadLater,
                 userPreferencesViewModel::saveDefaultReadLater
             )
@@ -95,17 +107,17 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(
 
     private fun setupAppearance(appearance: Appearance) {
         when (appearance) {
-            Appearance.DarkTheme -> buttonAppearanceDark.isChecked = true
-            Appearance.LightTheme -> buttonAppearanceLight.isChecked = true
-            else -> buttonAppearanceSystemDefault.isChecked = true
+            Appearance.DarkTheme -> binding.buttonAppearanceDark.isChecked = true
+            Appearance.LightTheme -> binding.buttonAppearanceLight.isChecked = true
+            else -> binding.buttonAppearanceSystemDefault.isChecked = true
         }
-        buttonAppearanceDark.setOnClickListener {
+        binding.buttonAppearanceDark.setOnClickListener {
             userPreferencesViewModel.saveAppearance(Appearance.DarkTheme)
         }
-        buttonAppearanceLight.setOnClickListener {
+        binding.buttonAppearanceLight.setOnClickListener {
             userPreferencesViewModel.saveAppearance(Appearance.LightTheme)
         }
-        buttonAppearanceSystemDefault.setOnClickListener {
+        binding.buttonAppearanceSystemDefault.setOnClickListener {
             userPreferencesViewModel.saveAppearance(Appearance.SystemDefault)
         }
     }
@@ -126,19 +138,19 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(
             }
         }
 
-        buttonPreferredDetailsViewInApp.setOnClickListener {
+        binding.buttonPreferredDetailsViewInApp.setOnClickListener {
             userPreferencesViewModel.savePreferredDetailsView(
-                PreferredDetailsView.InAppBrowser(checkboxMarkAsReadOnOpen.isChecked)
+                PreferredDetailsView.InAppBrowser(binding.checkboxMarkAsReadOnOpen.isChecked)
             )
             inAppSelected(markAsReadOnOpen)
         }
-        buttonPreferredDetailsViewExternal.setOnClickListener {
+        binding.buttonPreferredDetailsViewExternal.setOnClickListener {
             userPreferencesViewModel.savePreferredDetailsView(
-                PreferredDetailsView.ExternalBrowser(checkboxMarkAsReadOnOpen.isChecked)
+                PreferredDetailsView.ExternalBrowser(binding.checkboxMarkAsReadOnOpen.isChecked)
             )
             externalSelected(markAsReadOnOpen)
         }
-        buttonPreferredDetailsViewEdit.setOnClickListener {
+        binding.buttonPreferredDetailsViewEdit.setOnClickListener {
             userPreferencesViewModel.savePreferredDetailsView(PreferredDetailsView.Edit)
             editSelected()
         }
@@ -146,55 +158,55 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment(
 
     private fun setupEditAfterSharing(editAfterSharing: EditAfterSharing) {
         when (editAfterSharing) {
-            EditAfterSharing.BeforeSaving -> buttonBeforeSaving.isChecked = true
-            EditAfterSharing.AfterSaving -> buttonAfterSaving.isChecked = true
-            EditAfterSharing.SkipEdit -> buttonSkipEditing.isChecked = true
+            EditAfterSharing.BeforeSaving -> binding.buttonBeforeSaving.isChecked = true
+            EditAfterSharing.AfterSaving -> binding.buttonAfterSaving.isChecked = true
+            EditAfterSharing.SkipEdit -> binding.buttonSkipEditing.isChecked = true
         }
-        buttonBeforeSaving.setOnClickListener {
+        binding.buttonBeforeSaving.setOnClickListener {
             userPreferencesViewModel.saveEditAfterSharing(EditAfterSharing.BeforeSaving)
         }
-        buttonAfterSaving.setOnClickListener {
+        binding.buttonAfterSaving.setOnClickListener {
             userPreferencesViewModel.saveEditAfterSharing(EditAfterSharing.AfterSaving)
         }
-        buttonSkipEditing.setOnClickListener {
+        binding.buttonSkipEditing.setOnClickListener {
             userPreferencesViewModel.saveEditAfterSharing(EditAfterSharing.SkipEdit)
         }
     }
 
     private fun inAppSelected(markAsReadOnOpen: Boolean) {
-        buttonPreferredDetailsViewInApp.isChecked = true
-        textViewPreferredDetailsViewCaveat.setText(
+        binding.buttonPreferredDetailsViewInApp.isChecked = true
+        binding.textViewPreferredDetailsViewCaveat.setText(
             R.string.user_preferences_preferred_details_in_app_browser_caveat
         )
 
-        checkboxMarkAsReadOnOpen.setValueAndChangeListener(
+        binding.checkboxMarkAsReadOnOpen.setValueAndChangeListener(
             markAsReadOnOpen,
             userPreferencesViewModel::saveMarkAsReadOnOpen
         )
-        checkboxMarkAsReadOnOpen.visible()
-        checkboxMarkAsReadOnOpenCaveat.visible()
+        binding.checkboxMarkAsReadOnOpen.visible()
+        binding.checkboxMarkAsReadOnOpenCaveat.visible()
     }
 
     private fun externalSelected(markAsReadOnOpen: Boolean) {
-        buttonPreferredDetailsViewExternal.isChecked = true
-        textViewPreferredDetailsViewCaveat.setText(
+        binding.buttonPreferredDetailsViewExternal.isChecked = true
+        binding.textViewPreferredDetailsViewCaveat.setText(
             R.string.user_preferences_preferred_details_external_browser_caveat
         )
-        checkboxMarkAsReadOnOpen.setValueAndChangeListener(
+        binding.checkboxMarkAsReadOnOpen.setValueAndChangeListener(
             markAsReadOnOpen,
             userPreferencesViewModel::saveMarkAsReadOnOpen
         )
-        checkboxMarkAsReadOnOpen.visible()
-        checkboxMarkAsReadOnOpenCaveat.visible()
+        binding.checkboxMarkAsReadOnOpen.visible()
+        binding.checkboxMarkAsReadOnOpenCaveat.visible()
     }
 
     private fun editSelected() {
-        buttonPreferredDetailsViewEdit.isChecked = true
-        textViewPreferredDetailsViewCaveat.setText(
+        binding.buttonPreferredDetailsViewEdit.isChecked = true
+        binding.textViewPreferredDetailsViewCaveat.setText(
             R.string.user_preferences_preferred_details_post_details_caveat
         )
-        checkboxMarkAsReadOnOpen.gone()
-        checkboxMarkAsReadOnOpenCaveat.gone()
+        binding.checkboxMarkAsReadOnOpen.gone()
+        binding.checkboxMarkAsReadOnOpenCaveat.gone()
     }
 
     private fun CheckBox.setValueAndChangeListener(

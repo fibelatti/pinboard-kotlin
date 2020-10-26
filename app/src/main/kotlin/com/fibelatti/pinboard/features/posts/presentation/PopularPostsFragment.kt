@@ -1,7 +1,9 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.fibelatti.core.archcomponents.extension.activityViewModel
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.viewModel
@@ -15,27 +17,38 @@ import com.fibelatti.core.extension.withItemOffsetDecoration
 import com.fibelatti.core.extension.withLinearLayoutManager
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.viewBinding
+import com.fibelatti.pinboard.databinding.FragmentPopularPostsBinding
 import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.RefreshPopular
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import kotlinx.android.synthetic.main.fragment_popular_posts.*
-import kotlinx.android.synthetic.main.layout_offline_alert.*
-import kotlinx.android.synthetic.main.layout_progress_bar.*
 import javax.inject.Inject
 
 class PopularPostsFragment @Inject constructor(
     private val popularPostsAdapter: PopularPostsAdapter
-) : BaseFragment(R.layout.fragment_popular_posts) {
+) : BaseFragment() {
 
     companion object {
+
         @JvmStatic
         val TAG: String = "PopularPostsFragment"
     }
 
     private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
     private val popularPostsViewModel by viewModel { viewModelProvider.popularPostsViewModel() }
+
+    private var binding by viewBinding<FragmentPopularPostsBinding>()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = FragmentPopularPostsBinding.inflate(inflater, container, false).run {
+        binding = this
+        binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -44,14 +57,16 @@ class PopularPostsFragment @Inject constructor(
     }
 
     private fun setupLayout() {
-        buttonRetryConnection.setOnClickListener { appStateViewModel.runAction(RefreshPopular) }
-
-        swipeToRefresh.setOnRefreshListener {
-            swipeToRefresh.isRefreshing = false
+        binding.layoutOfflineAlert.buttonRetryConnection.setOnClickListener {
             appStateViewModel.runAction(RefreshPopular)
         }
 
-        recyclerViewPosts.withLinearLayoutManager()
+        binding.swipeToRefresh.setOnRefreshListener {
+            binding.swipeToRefresh.isRefreshing = false
+            appStateViewModel.runAction(RefreshPopular)
+        }
+
+        binding.recyclerViewPosts.withLinearLayoutManager()
             .withItemOffsetDecoration(R.dimen.padding_small)
             .adapter = popularPostsAdapter
 
@@ -87,20 +102,23 @@ class PopularPostsFragment @Inject constructor(
             }
 
             if (content.shouldLoad) {
-                layoutProgressBar.visible()
-                recyclerViewPosts.gone()
-                layoutEmptyList.gone()
+                binding.layoutProgressBar.root.visible()
+                binding.recyclerViewPosts.gone()
+                binding.layoutEmptyList.gone()
                 popularPostsViewModel.getPosts()
             } else {
                 showPosts(content)
             }
 
-            layoutOfflineAlert.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
+            binding.layoutOfflineAlert.root.goneIf(
+                content.isConnected,
+                otherwiseVisibility = View.VISIBLE
+            )
         }
         with(popularPostsViewModel) {
             viewLifecycleOwner.observe(loading) {
-                layoutProgressBar.visibleIf(it, otherwiseVisibility = View.GONE)
-                recyclerViewPosts.goneIf(it, otherwiseVisibility = View.VISIBLE)
+                binding.layoutProgressBar.root.visibleIf(it, otherwiseVisibility = View.GONE)
+                binding.recyclerViewPosts.goneIf(it, otherwiseVisibility = View.VISIBLE)
             }
             viewLifecycleOwner.observe(saved) {
                 mainActivity?.showBanner(getString(R.string.posts_saved_feedback))
@@ -110,11 +128,11 @@ class PopularPostsFragment @Inject constructor(
     }
 
     private fun showPosts(content: PopularPostsContent) {
-        layoutProgressBar.gone()
+        binding.layoutProgressBar.root.gone()
 
         if (content.posts.isEmpty()) {
-            recyclerViewPosts.gone()
-            layoutEmptyList.apply {
+            binding.recyclerViewPosts.gone()
+            binding.layoutEmptyList.apply {
                 visible()
                 setTitle(R.string.posts_empty_title)
                 setDescription(R.string.posts_empty_description)
@@ -122,8 +140,8 @@ class PopularPostsFragment @Inject constructor(
             return
         }
 
-        layoutEmptyList.gone()
-        recyclerViewPosts.visible()
+        binding.layoutEmptyList.gone()
+        binding.recyclerViewPosts.visible()
         popularPostsAdapter.submitList(content.posts)
     }
 }

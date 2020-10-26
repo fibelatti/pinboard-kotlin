@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layoutRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
@@ -11,6 +10,7 @@
     android:focusable="true">
 
     <include
+        android:id="@+id/layoutProgressBar"
         layout="@layout/layout_progress_bar"
         android:visibility="gone"
         tools:visibility="gone" />
@@ -20,7 +20,6 @@
         layout="@layout/layout_offline_alert"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/layoutSearchActive"
         android:layout_marginStart="@dimen/margin_regular"
         android:layout_marginEnd="@dimen/margin_regular"
         android:visibility="gone"

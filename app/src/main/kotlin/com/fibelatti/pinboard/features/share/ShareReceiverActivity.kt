@@ -11,12 +11,16 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.extension.isServerDownException
+import com.fibelatti.pinboard.core.extension.viewBinding
+import com.fibelatti.pinboard.databinding.ActivityShareBinding
 import com.fibelatti.pinboard.features.MainActivity
-import kotlinx.android.synthetic.main.activity_share.*
 import retrofit2.HttpException
 import java.net.HttpURLConnection
 
-class ShareReceiverActivity : BaseActivity(R.layout.activity_share) {
+class ShareReceiverActivity : BaseActivity() {
+
+    private val binding by viewBinding(ActivityShareBinding::inflate)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,20 +38,20 @@ class ShareReceiverActivity : BaseActivity(R.layout.activity_share) {
     private fun setupViewModels(shareReceiverViewModel: ShareReceiverViewModel) {
         with(shareReceiverViewModel) {
             observeEvent(saved) { message ->
-                imageViewFeedback.setImageResource(R.drawable.ic_url_saved)
+                binding.imageViewFeedback.setImageResource(R.drawable.ic_url_saved)
                 toast(message)
                 finish()
             }
             observeEvent(edit) { message ->
                 if (message.isNotEmpty()) {
-                    imageViewFeedback.setImageResource(R.drawable.ic_url_saved)
+                    binding.imageViewFeedback.setImageResource(R.drawable.ic_url_saved)
                     toast(message)
                 }
                 startActivity(MainActivity.Builder(this@ShareReceiverActivity).build())
                 finish()
             }
             observeEvent(failed) { error ->
-                imageViewFeedback.setImageResource(R.drawable.ic_url_saved_error)
+                binding.imageViewFeedback.setImageResource(R.drawable.ic_url_saved_error)
 
                 val loginFailedCodes = listOf(
                     HttpURLConnection.HTTP_UNAUTHORIZED,

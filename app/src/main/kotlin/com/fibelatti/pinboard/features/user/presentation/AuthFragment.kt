@@ -1,7 +1,9 @@
 package com.fibelatti.pinboard.features.user.presentation
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.transition.TransitionInflater
 import com.fibelatti.core.archcomponents.extension.activityViewModel
 import com.fibelatti.core.archcomponents.extension.observe
@@ -21,19 +23,36 @@ import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.extension.isServerDownException
-import kotlinx.android.synthetic.main.fragment_auth.*
-import kotlinx.android.synthetic.main.layout_auth_form.*
+import com.fibelatti.pinboard.core.extension.viewBinding
+import com.fibelatti.pinboard.databinding.FragmentAuthBinding
 import javax.inject.Inject
 
-class AuthFragment @Inject constructor() : BaseFragment(R.layout.fragment_auth) {
+class AuthFragment @Inject constructor() : BaseFragment() {
+
+    companion object {
+
+        @JvmStatic
+        val TAG: String = "AuthFragment"
+    }
 
     private val authViewModel by activityViewModel { viewModelProvider.authViewModel() }
+
+    private var binding by viewBinding<FragmentAuthBinding>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        sharedElementEnterTransition =
-            TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+        sharedElementEnterTransition = TransitionInflater.from(context)
+            .inflateTransition(android.R.transition.move)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = FragmentAuthBinding.inflate(inflater, container, false).run {
+        binding = this
+        binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -47,30 +66,34 @@ class AuthFragment @Inject constructor() : BaseFragment(R.layout.fragment_auth) 
     }
 
     private fun setupLayout() {
-        imageViewAppLogo.transitionName = SharedElementTransitionNames.APP_LOGO
-        layoutAuthForm.animateChangingTransitions()
+        binding.imageViewAppLogo.transitionName = SharedElementTransitionNames.APP_LOGO
+        with(binding.layoutAuthForm) {
+            root.animateChangingTransitions()
 
-        editTextAuthToken.onKeyboardSubmit {
-            authViewModel.login(editTextAuthToken.textAsString())
-        }
-        buttonAuth.setOnClickListener {
-            progressBar.visible()
-            buttonAuth.gone()
-            authViewModel.login(editTextAuthToken.textAsString())
-        }
+            editTextAuthToken.onKeyboardSubmit {
+                authViewModel.login(editTextAuthToken.textAsString())
+            }
+            buttonAuth.setOnClickListener {
+                progressBar.visible()
+                buttonAuth.gone()
+                authViewModel.login(editTextAuthToken.textAsString())
+            }
 
-        imageViewAuthHelp.setOnClickListener {
-            imageViewAuthHelp.gone()
-            textViewAuthHelpTitle.heightWrapContent()
-            textViewAuthHelpDescription.heightWrapContent()
-            textViewAuthHelpDescription.setupLinks(LinkTransformationMethod())
+            imageViewAuthHelp.setOnClickListener {
+                imageViewAuthHelp.gone()
+                textViewAuthHelpTitle.heightWrapContent()
+                textViewAuthHelpDescription.heightWrapContent()
+                textViewAuthHelpDescription.setupLinks(LinkTransformationMethod())
+            }
         }
     }
 
     private fun handleAuthError(message: String) {
-        progressBar.gone()
-        buttonAuth.visible()
-        textInputLayoutAuthToken.showError(message)
+        with(binding.layoutAuthForm) {
+            buttonAuth.visible()
+            progressBar.gone()
+            textInputLayoutAuthToken.showError(message)
+        }
     }
 
     override fun handleError(error: Throwable) {
@@ -78,11 +101,13 @@ class AuthFragment @Inject constructor() : BaseFragment(R.layout.fragment_auth) 
             error.printStackTrace()
         }
 
-        progressBar.gone()
-        buttonAuth.visible()
+        with(binding.layoutAuthForm) {
+            progressBar.gone()
+            buttonAuth.visible()
+        }
 
         if (error.isServerDownException()) {
-            textInputLayoutAuthToken.showError(getString(R.string.server_timeout_error))
+            binding.layoutAuthForm.textInputLayoutAuthToken.showError(getString(R.string.server_timeout_error))
         } else {
             activity?.sendErrorReport(error, altMessage = getString(R.string.auth_error))
         }

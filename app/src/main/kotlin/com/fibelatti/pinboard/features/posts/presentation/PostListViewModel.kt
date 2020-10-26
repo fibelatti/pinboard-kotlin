@@ -18,10 +18,10 @@ import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
+import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetAllPosts
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPostParams
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
-import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch

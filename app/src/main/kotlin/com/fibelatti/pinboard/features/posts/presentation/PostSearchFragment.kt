@@ -1,8 +1,10 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import com.fibelatti.core.archcomponents.extension.activityViewModel
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.viewModel
@@ -18,6 +20,8 @@ import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.blink
+import com.fibelatti.pinboard.core.extension.viewBinding
+import com.fibelatti.pinboard.databinding.FragmentSearchPostBinding
 import com.fibelatti.pinboard.features.appstate.AddSearchTag
 import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.RefreshSearchTags
@@ -27,20 +31,31 @@ import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagsAdapter
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
-import kotlinx.android.synthetic.main.fragment_search_post.*
 import javax.inject.Inject
 
 class PostSearchFragment @Inject constructor(
     private val tagsAdapter: TagsAdapter
-) : BaseFragment(R.layout.fragment_search_post) {
+) : BaseFragment() {
 
     companion object {
+
         @JvmStatic
         val TAG: String = "PostSearchFragment"
     }
 
     private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
     private val tagsViewModel by viewModel { viewModelProvider.tagsViewModel() }
+
+    private var binding by viewBinding<FragmentSearchPostBinding>()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = FragmentSearchPostBinding.inflate(inflater, container, false).run {
+        binding = this
+        binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,40 +65,43 @@ class PostSearchFragment @Inject constructor(
     }
 
     private fun setupLayout() {
-        layoutRoot.animateChangingTransitions()
+        binding.root.animateChangingTransitions()
 
-        editTextSearchTerm.onKeyboardSubmit { editTextSearchTerm.hideKeyboard() }
+        binding.editTextSearchTerm.onKeyboardSubmit { binding.editTextSearchTerm.hideKeyboard() }
 
-        tagListLayout.setAdapter(tagsAdapter) { appStateViewModel.runAction(AddSearchTag(it)) }
-        tagListLayout.setOnRefreshListener { appStateViewModel.runAction(RefreshSearchTags) }
-        tagListLayout.setSortingClickListener(tagsViewModel::sortTags)
+        binding.tagListLayout.setAdapter(tagsAdapter) { appStateViewModel.runAction(AddSearchTag(it)) }
+        binding.tagListLayout.setOnRefreshListener { appStateViewModel.runAction(RefreshSearchTags) }
+        binding.tagListLayout.setSortingClickListener(tagsViewModel::sortTags)
     }
 
     private fun setupViewModels() {
         viewLifecycleOwner.observe(appStateViewModel.searchContent) { content ->
             setupActivityViews()
-            editTextSearchTerm.setText(content.searchParameters.term)
+            binding.editTextSearchTerm.setText(content.searchParameters.term)
 
             if (content.searchParameters.tags.isNotEmpty()) {
-                chipGroupSelectedTags.removeAllViews()
+                binding.chipGroupSelectedTags.removeAllViews()
                 for (tag in content.searchParameters.tags) {
-                    chipGroupSelectedTags.addView(createTagChip(tag))
+                    binding.chipGroupSelectedTags.addView(createTagChip(tag))
                 }
 
-                textViewSelectedTagsTitle.visible()
+                binding.textViewSelectedTagsTitle.visible()
             } else {
-                textViewSelectedTagsTitle.gone()
-                chipGroupSelectedTags.removeAllViews()
+                binding.textViewSelectedTagsTitle.gone()
+                binding.chipGroupSelectedTags.removeAllViews()
             }
 
             if (content.shouldLoadTags) {
-                tagListLayout.showLoading()
+                binding.tagListLayout.showLoading()
                 tagsViewModel.getAll(TagsViewModel.Source.SEARCH)
             } else {
-                tagsViewModel.sortTags(content.availableTags, tagListLayout.getCurrentTagSorting())
+                tagsViewModel.sortTags(
+                    content.availableTags,
+                    binding.tagListLayout.getCurrentTagSorting()
+                )
             }
         }
-        viewLifecycleOwner.observe(tagsViewModel.tags, tagListLayout::showTags)
+        viewLifecycleOwner.observe(tagsViewModel.tags, binding.tagListLayout::showTags)
         viewLifecycleOwner.observe(tagsViewModel.error, ::handleError)
     }
 
@@ -106,7 +124,9 @@ class PostSearchFragment @Inject constructor(
             fab.run {
                 blink {
                     setImageResource(R.drawable.ic_search)
-                    setOnClickListener { appStateViewModel.runAction(Search(editTextSearchTerm.textAsString())) }
+                    setOnClickListener {
+                        appStateViewModel.runAction(Search(binding.editTextSearchTerm.textAsString()))
+                    }
                 }
             }
         }
@@ -114,17 +134,16 @@ class PostSearchFragment @Inject constructor(
 
     private fun handleMenuClick(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.menuItemClearSearch -> { appStateViewModel.runAction(ClearSearch) }
+            R.id.menuItemClearSearch -> appStateViewModel.runAction(ClearSearch)
         }
 
         return true
     }
 
-    private fun createTagChip(value: Tag): View {
-        return chipGroupSelectedTags.inflate(R.layout.list_item_chip, false)
-            .applyAs<View, TagChip> {
-                setValue(value)
-                setOnCloseIconClickListener { appStateViewModel.runAction(RemoveSearchTag(value)) }
-            }
-    }
+    private fun createTagChip(value: Tag): View = binding.chipGroupSelectedTags
+        .inflate(R.layout.list_item_chip, false)
+        .applyAs<View, TagChip> {
+            setValue(value)
+            setOnCloseIconClickListener { appStateViewModel.runAction(RemoveSearchTag(value)) }
+        }
 }

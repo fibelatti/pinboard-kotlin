@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layoutRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?android:colorBackground"
@@ -20,12 +19,17 @@
             android:paddingStart="@dimen/padding_regular"
             android:paddingEnd="@dimen/padding_regular">
 
-            <include layout="@layout/layout_edit_post" />
+            <include
+                android:id="@+id/layoutAddPost"
+                layout="@layout/layout_edit_post" />
 
-            <include layout="@layout/layout_edit_tags" />
+            <include
+                android:id="@+id/layoutAddTags"
+                layout="@layout/layout_edit_tags" />
         </LinearLayout>
 
         <include
+            android:id="@+id/layoutProgressBar"
             layout="@layout/layout_progress_bar"
             android:visibility="gone"
             tools:visibility="gone" />

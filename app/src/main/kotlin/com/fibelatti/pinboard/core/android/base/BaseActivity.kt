@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.webkit.WebView
 import android.widget.Toast
 import androidx.annotation.CallSuper
-import androidx.annotation.ContentView
-import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.FragmentActivity
@@ -24,9 +22,7 @@ import com.fibelatti.pinboard.core.extension.isServerDownException
 import java.io.PrintWriter
 import java.io.StringWriter
 
-abstract class BaseActivity @ContentView constructor(
-    @LayoutRes contentLayoutId: Int
-) : AppCompatActivity(contentLayoutId) {
+abstract class BaseActivity : AppCompatActivity() {
 
     protected val appComponent: AppComponent
         get() = (application as AppComponentProvider).appComponent

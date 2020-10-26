@@ -1,7 +1,9 @@
 package com.fibelatti.pinboard.features.tags.presentation
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.fibelatti.core.archcomponents.extension.activityViewModel
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.viewModel
@@ -11,15 +13,16 @@ import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.viewBinding
+import com.fibelatti.pinboard.databinding.FragmentTagsBinding
 import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.RefreshTags
 import com.fibelatti.pinboard.features.mainActivity
-import kotlinx.android.synthetic.main.fragment_tags.*
 import javax.inject.Inject
 
 class TagsFragment @Inject constructor(
     private val tagsAdapter: TagsAdapter
-) : BaseFragment(R.layout.fragment_tags) {
+) : BaseFragment() {
 
     companion object {
         @JvmStatic
@@ -29,6 +32,17 @@ class TagsFragment @Inject constructor(
     private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
     private val tagsViewModel by viewModel { viewModelProvider.tagsViewModel() }
 
+    private var binding by viewBinding<FragmentTagsBinding>()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = FragmentTagsBinding.inflate(inflater, container, false).run {
+        binding = this
+        binding.root
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -37,9 +51,9 @@ class TagsFragment @Inject constructor(
     }
 
     private fun setupLayout() {
-        tagListLayout.setAdapter(tagsAdapter) { appStateViewModel.runAction(PostsForTag(it)) }
-        tagListLayout.setOnRefreshListener { appStateViewModel.runAction(RefreshTags) }
-        tagListLayout.setSortingClickListener(tagsViewModel::sortTags)
+        binding.tagListLayout.setAdapter(tagsAdapter) { appStateViewModel.runAction(PostsForTag(it)) }
+        binding.tagListLayout.setOnRefreshListener { appStateViewModel.runAction(RefreshTags) }
+        binding.tagListLayout.setSortingClickListener(tagsViewModel::sortTags)
     }
 
     private fun setupViewModels() {
@@ -47,15 +61,15 @@ class TagsFragment @Inject constructor(
             setupActivityViews()
 
             if (content.shouldLoad) {
-                tagListLayout.showLoading()
+                binding.tagListLayout.showLoading()
                 tagsViewModel.getAll(TagsViewModel.Source.MENU)
             } else {
-                tagsViewModel.sortTags(content.tags, tagListLayout.getCurrentTagSorting())
+                tagsViewModel.sortTags(content.tags, binding.tagListLayout.getCurrentTagSorting())
             }
 
-            layoutOfflineAlert.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
+            binding.layoutOfflineAlert.root.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
         }
-        viewLifecycleOwner.observe(tagsViewModel.tags, tagListLayout::showTags)
+        viewLifecycleOwner.observe(tagsViewModel.tags, binding.tagListLayout::showTags)
         viewLifecycleOwner.observe(tagsViewModel.error, ::handleError)
     }
 

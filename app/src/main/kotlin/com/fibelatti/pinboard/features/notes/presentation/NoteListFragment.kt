@@ -1,7 +1,9 @@
 package com.fibelatti.pinboard.features.notes.presentation
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.fibelatti.core.archcomponents.extension.activityViewModel
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.viewModel
@@ -14,26 +16,38 @@ import com.fibelatti.core.extension.withItemOffsetDecoration
 import com.fibelatti.core.extension.withLinearLayoutManager
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.viewBinding
+import com.fibelatti.pinboard.databinding.FragmentNoteListBinding
 import com.fibelatti.pinboard.features.appstate.RefreshNotes
 import com.fibelatti.pinboard.features.appstate.ViewNote
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
-import kotlinx.android.synthetic.main.fragment_note_list.*
-import kotlinx.android.synthetic.main.layout_progress_bar.*
 import javax.inject.Inject
 
 class NoteListFragment @Inject constructor(
     private val noteListAdapter: NoteListAdapter
-) : BaseFragment(R.layout.fragment_note_list) {
+) : BaseFragment() {
 
     companion object {
+
         @JvmStatic
         val TAG: String = "NoteListFragment"
     }
 
     private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
     private val noteListViewModel by viewModel { viewModelProvider.noteListViewModel() }
+
+    private var binding by viewBinding<FragmentNoteListBinding>()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = FragmentNoteListBinding.inflate(inflater, container, false).run {
+        binding = this
+        binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,39 +57,39 @@ class NoteListFragment @Inject constructor(
     }
 
     private fun setupLayout() {
-        buttonNoteSortingDateUpdatedDesc.isChecked = true
+        binding.buttonNoteSortingDateUpdatedDesc.isChecked = true
 
-        buttonNoteSortingDateUpdatedDesc.setOnClickListener {
-            buttonNoteSortingDateUpdatedDesc.isChecked = true
+        binding.buttonNoteSortingDateUpdatedDesc.setOnClickListener {
+            binding.buttonNoteSortingDateUpdatedDesc.isChecked = true
             noteListAdapter.submitList(
                 noteListViewModel.sort(noteListAdapter.currentList, NoteSorting.ByDateUpdatedDesc)
             )
-            recyclerViewNotes.scrollToPosition(0)
+            binding.recyclerViewNotes.scrollToPosition(0)
         }
 
-        buttonNoteSortingDateUpdatedAsc.setOnClickListener {
-            buttonNoteSortingDateUpdatedAsc.isChecked = true
+        binding.buttonNoteSortingDateUpdatedAsc.setOnClickListener {
+            binding.buttonNoteSortingDateUpdatedAsc.isChecked = true
             noteListAdapter.submitList(
                 noteListViewModel.sort(noteListAdapter.currentList, NoteSorting.ByDateUpdatedAsc)
             )
-            recyclerViewNotes.scrollToPosition(0)
+            binding.recyclerViewNotes.scrollToPosition(0)
         }
 
-        buttonNoteSortingAtoZ.setOnClickListener {
-            buttonNoteSortingAtoZ.isChecked = true
+        binding.buttonNoteSortingAtoZ.setOnClickListener {
+            binding.buttonNoteSortingAtoZ.isChecked = true
             noteListAdapter.submitList(
                 noteListViewModel.sort(noteListAdapter.currentList, NoteSorting.AtoZ)
             )
-            recyclerViewNotes.scrollToPosition(0)
+            binding.recyclerViewNotes.scrollToPosition(0)
         }
 
-        swipeToRefresh.setOnRefreshListener {
-            buttonNoteSortingDateUpdatedDesc.isChecked = true
-            swipeToRefresh.isRefreshing = false
+        binding.swipeToRefresh.setOnRefreshListener {
+            binding.buttonNoteSortingDateUpdatedDesc.isChecked = true
+            binding.swipeToRefresh.isRefreshing = false
             appStateViewModel.runAction(RefreshNotes)
         }
 
-        recyclerViewNotes
+        binding.recyclerViewNotes
             .withLinearLayoutManager()
             .withItemOffsetDecoration(R.dimen.padding_small)
             .adapter = noteListAdapter
@@ -94,7 +108,10 @@ class NoteListFragment @Inject constructor(
                 showNotes(content.notes)
             }
 
-            layoutOfflineAlert.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
+            binding.layoutOfflineAlert.root.goneIf(
+                content.isConnected,
+                otherwiseVisibility = View.VISIBLE
+            )
         }
         observe(noteListViewModel.error, ::handleError)
     }
@@ -117,21 +134,27 @@ class NoteListFragment @Inject constructor(
     }
 
     private fun handleLoading(loading: Boolean) {
-        layoutProgressBar.visibleIf(loading, otherwiseVisibility = View.GONE)
-        buttonGroupNoteSorting.goneIf(loading)
-        recyclerViewNotes.goneIf(loading)
-        layoutEmptyList.goneIf(loading)
+        binding.layoutProgressBar.root.visibleIf(loading, otherwiseVisibility = View.GONE)
+        binding.buttonGroupNoteSorting.goneIf(loading)
+        binding.recyclerViewNotes.goneIf(loading)
+        binding.layoutEmptyList.goneIf(loading)
     }
 
     private fun showNotes(list: List<Note>) {
         if (list.isNotEmpty()) {
-            buttonGroupNoteSorting.visible()
-            recyclerViewNotes.visible()
-            layoutEmptyList.gone()
+            binding.buttonGroupNoteSorting.visible()
+            binding.recyclerViewNotes.visible()
+            binding.layoutEmptyList.gone()
 
             mainActivity?.updateTitleLayout {
                 setTitle(getString(R.string.notes_title))
-                setSubTitle(resources.getQuantityString(R.plurals.notes_quantity, list.size, list.size))
+                setSubTitle(
+                    resources.getQuantityString(
+                        R.plurals.notes_quantity,
+                        list.size,
+                        list.size
+                    )
+                )
             }
 
             noteListAdapter.submitList(list)
@@ -141,9 +164,9 @@ class NoteListFragment @Inject constructor(
     }
 
     private fun showEmptyLayout() {
-        buttonGroupNoteSorting.gone()
-        recyclerViewNotes.gone()
-        layoutEmptyList.apply {
+        binding.buttonGroupNoteSorting.gone()
+        binding.recyclerViewNotes.gone()
+        binding.layoutEmptyList.apply {
             setIcon(R.drawable.ic_notes)
             setTitle(R.string.notes_empty_title)
             setDescription(R.string.notes_empty_description)

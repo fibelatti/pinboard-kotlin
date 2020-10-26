@@ -9,11 +9,9 @@ import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.inflate
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.databinding.ListItemPopularPostBinding
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import kotlinx.android.synthetic.main.layout_popular_quick_actions.view.*
-import kotlinx.android.synthetic.main.layout_quick_actions.view.buttonQuickActionShare
-import kotlinx.android.synthetic.main.list_item_popular_post.view.*
 import javax.inject.Inject
 
 class PopularPostsAdapter @Inject constructor() :
@@ -48,15 +46,17 @@ class PopularPostsAdapter @Inject constructor() :
 
         private fun View.bindView(item: Post) {
 
-            textViewLinkTitle.text = item.title
+            val binding = ListItemPopularPostBinding.bind(this)
+
+            binding.textViewLinkTitle.text = item.title
 
             if (item.tags.isNullOrEmpty()) {
-                chipGroupTags.gone()
+                binding.chipGroupTags.gone()
             } else {
-                layoutTags(item.tags)
+                binding.layoutTags(item.tags)
             }
 
-            hideQuickActions()
+            binding.hideQuickActions()
 
             setOnClickListener { onItemClicked?.invoke(item) }
             setOnLongClickListener {
@@ -65,16 +65,16 @@ class PopularPostsAdapter @Inject constructor() :
                 }
 
                 if (!quickActionsVisible) {
-                    showQuickActions(item)
+                    binding.showQuickActions(item)
                 } else {
-                    hideQuickActions()
+                    binding.hideQuickActions()
                 }
 
                 true
             }
         }
 
-        private fun View.layoutTags(tags: List<Tag>) {
+        private fun ListItemPopularPostBinding.layoutTags(tags: List<Tag>) {
             chipGroupTags.visible()
             chipGroupTags.removeAllViews()
             for (tag in tags) {
@@ -82,17 +82,17 @@ class PopularPostsAdapter @Inject constructor() :
             }
         }
 
-        private fun View.showQuickActions(item: Post) {
+        private fun ListItemPopularPostBinding.showQuickActions(item: Post) {
             quickActionsVisible = true
-            layoutQuickActions.visible()
+            layoutQuickActions.root.visible()
 
-            buttonQuickActionShare.setOnClickListener { quickActionsCallback?.onShareClicked(item) }
-            buttonQuickActionSave.setOnClickListener { quickActionsCallback?.onSaveClicked(item) }
+            layoutQuickActions.buttonQuickActionShare.setOnClickListener { quickActionsCallback?.onShareClicked(item) }
+            layoutQuickActions.buttonQuickActionSave.setOnClickListener { quickActionsCallback?.onSaveClicked(item) }
         }
 
-        private fun View.hideQuickActions() {
+        private fun ListItemPopularPostBinding.hideQuickActions() {
             quickActionsVisible = false
-            layoutQuickActions.gone()
+            layoutQuickActions.root.gone()
         }
     }
 
