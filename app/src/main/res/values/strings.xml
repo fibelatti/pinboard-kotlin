@@ -119,6 +119,7 @@
     <!-- Validation -->
     <string name="validation_error_empty_url">The URL cannot be empty.</string>
     <string name="validation_error_invalid_url">The URL is invalid</string>
+    <string name="validation_error_invalid_url_rationale">The bookmark URL cannot be added to Pinboard. Please double check that it is a valid URL.</string>
     <string name="validation_error_empty_title">The title cannot be empty</string>
 
     <!-- Search -->

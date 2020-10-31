@@ -14,8 +14,9 @@ import com.fibelatti.pinboard.core.extension.isServerDownException
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.ActivityShareBinding
 import com.fibelatti.pinboard.features.MainActivity
-import retrofit2.HttpException
+import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import java.net.HttpURLConnection
+import retrofit2.HttpException
 
 class ShareReceiverActivity : BaseActivity() {
 
@@ -58,6 +59,15 @@ class ShareReceiverActivity : BaseActivity() {
                     HttpURLConnection.HTTP_INTERNAL_ERROR
                 )
                 when {
+                    error is InvalidUrlException -> {
+                        showStyledDialog(
+                            dialogStyle = R.style.AppTheme_AlertDialog,
+                            dialogBackground = R.drawable.background_contrast_rounded
+                        ) {
+                            setMessage(R.string.validation_error_invalid_url_rationale)
+                            setPositiveButton(R.string.hint_ok) { _, _ -> finish() }
+                        }
+                    }
                     error.isServerDownException() -> {
                         showStyledDialog(
                             dialogStyle = R.style.AppTheme_AlertDialog,
