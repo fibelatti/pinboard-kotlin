@@ -3,7 +3,6 @@ package com.fibelatti.pinboard.features.user.presentation
 import androidx.lifecycle.MutableLiveData
 import com.fibelatti.core.archcomponents.test.extension.currentEventShouldBe
 import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
-import com.fibelatti.pinboard.shouldNeverReceiveValues
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.provider.ResourceProvider
@@ -14,22 +13,23 @@ import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.user.domain.Login
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import com.fibelatti.pinboard.shouldNeverReceiveValues
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import java.net.HttpURLConnection
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import retrofit2.HttpException
 import retrofit2.Response
-import java.net.HttpURLConnection
 
 class AuthViewModelTest : BaseViewModelTest() {
 
     private val mockLogin = mockk<Login>()
-    private val mockUserRepository = mockk<UserRepository>()
+    private val mockUserRepository = mockk<UserRepository>(relaxUnitFun = true)
     private val mockResourceProvider = mockk<ResourceProvider>()
 
     private val viewModel = AuthViewModel(
