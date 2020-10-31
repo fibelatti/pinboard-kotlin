@@ -311,7 +311,7 @@ class MainActivity : BaseActivity() {
 
     @Suppress("MagicNumber")
     fun showBanner(message: String) {
-        val banner = layoutInflater.inflate(R.layout.layout_feedback_banner, null)
+        val banner = layoutInflater.inflate(R.layout.layout_feedback_banner, binding.layoutContent, false)
             .apply { findViewById<TextView>(R.id.textViewFeedback).text = message }
             .also(binding.layoutContent::addView)
 

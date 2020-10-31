@@ -24,7 +24,7 @@ import java.io.StringWriter
 
 abstract class BaseActivity : AppCompatActivity() {
 
-    protected val appComponent: AppComponent
+    private val appComponent: AppComponent
         get() = (application as AppComponentProvider).appComponent
     val activityComponent: ActivityComponent
         get() = appComponent.activityComponentFactory().create(this)
