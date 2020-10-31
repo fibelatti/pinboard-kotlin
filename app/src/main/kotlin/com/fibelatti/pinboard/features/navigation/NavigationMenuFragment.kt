@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
 import com.fibelatti.core.archcomponents.extension.activityViewModel
 import com.fibelatti.core.archcomponents.extension.viewModel
@@ -63,11 +64,7 @@ class NavigationMenuFragment @Inject constructor() : BottomSheetDialogFragment()
                 return@setOnShowListener
             }
 
-            dialog.window?.let {
-                it.decorView.systemUiVisibility = it.decorView.systemUiVisibility or
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            }
+            dialog.window?.let { WindowCompat.setDecorFitsSystemWindows(it, false) }
 
             dialog.findViewById<ViewGroup>(com.google.android.material.R.id.container)
                 ?.fitsSystemWindows = false

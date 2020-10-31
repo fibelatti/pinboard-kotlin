@@ -8,7 +8,10 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.fibelatti.core.archcomponents.extension.activityViewModel
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
@@ -51,8 +54,6 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
 
     private var binding by viewBinding<FragmentEditPostBinding>()
 
-    private var initialInsetBottomValue = -1
-
     private var isRecreating: Boolean = false
 
     private var originalPost: Post? = null
@@ -76,7 +77,7 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? = FragmentEditPostBinding.inflate(inflater, container, false).run {
         binding = this
         binding.root
@@ -145,23 +146,20 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
         setupTagLayouts()
     }
 
-    @Suppress("MagicNumber")
     private fun handleKeyboardVisibility() {
-        binding.root.doOnApplyWindowInsets { view, windowInsets, _, _ ->
-            // This is the first pass, just save the initial inset value
-            if (initialInsetBottomValue == -1) {
-                initialInsetBottomValue = windowInsets.systemWindowInsetBottom
-                return@doOnApplyWindowInsets
-            }
+        binding.root.doOnApplyWindowInsets { view, insets, initialPadding, _ ->
+            if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
+                mainActivity?.updateTitleLayout { setActionButton(R.string.hint_save, ::saveLink) }
 
-            val keyboardWillAppear = windowInsets.systemWindowInsetBottom > initialInsetBottomValue
-            if (keyboardWillAppear) {
-                mainActivity?.updateTitleLayout {
-                    handler?.postDelayed({
-                        // Has to be delayed because keyboard is still appearing
-                        setActionButton(R.string.hint_save, ::saveLink)
-                    }, 100L)
-                }
+                val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
+
+                ViewCompat.setPaddingRelative(
+                    view,
+                    initialPadding.start,
+                    initialPadding.top,
+                    initialPadding.end,
+                    initialPadding.bottom + imeInsets.bottom,
+                )
 
                 // In case what's below the focused view is also important
                 val scrollOffset = resources.getDimensionPixelSize(R.dimen.scroll_offset)
@@ -169,34 +167,29 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
                 val focusedViewBottom = try {
                     requireActivity().currentFocus?.let { focusedView ->
                         val pos = IntArray(2)
-                        focusedView.getLocationOnScreen(pos).run {
-                            pos[1] + focusedView.measuredHeight + scrollOffset
-                        }
+                        focusedView.getLocationOnScreen(pos).run { pos[1] + focusedView.measuredHeight + scrollOffset }
                     }.orZero()
                 } catch (ignored: IllegalStateException) {
                     // The activity is gone
                     return@doOnApplyWindowInsets
                 }
 
-                if (focusedViewBottom <= windowInsets.systemWindowInsetBottom) {
-                    // View is already fully visible, there's no need to scroll
-                    return@doOnApplyWindowInsets
+                if (focusedViewBottom >= view.measuredHeight - imeInsets.bottom) {
+                    ObjectAnimator.ofInt(view, "scrollY", focusedViewBottom)
+                        .apply { interpolator = AccelerateDecelerateInterpolator() }
+                        .setDuration(resources.getInteger(R.integer.anim_time_long).toLong())
+                        .start()
                 }
-
-                // Finally animate
-                ObjectAnimator.ofInt(view, "scrollY", focusedViewBottom)
-                    .setDuration(
-                        resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
-                    )
-                    .apply {
-                        // Has to be delayed because keyboard is still appearing
-                        startDelay = 100L
-                    }
-                    .start()
             } else {
-                mainActivity?.updateTitleLayout {
-                    hideActionButton()
-                }
+                ViewCompat.setPaddingRelative(
+                    view,
+                    initialPadding.start,
+                    initialPadding.top,
+                    initialPadding.end,
+                    initialPadding.bottom
+                )
+
+                mainActivity?.updateTitleLayout { hideActionButton() }
             }
         }
     }

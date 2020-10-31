@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.WindowInsetsCompat
 import androidx.transition.TransitionInflater
 import com.fibelatti.core.archcomponents.extension.activityViewModel
 import com.fibelatti.core.archcomponents.extension.observe
@@ -131,7 +132,7 @@ class PostListFragment @Inject constructor(
                 leftMargin = initialMargin.left
                 topMargin = initialMargin.top
                 rightMargin = initialMargin.right
-                bottomMargin = initialMargin.bottom + insets.systemWindowInsetBottom
+                bottomMargin = initialMargin.bottom + insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
             }
 
             CoroutineScope(postListViewModel.coroutineContext).launch {

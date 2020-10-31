@@ -15,9 +15,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:paddingBottom="@dimen/fab_offset_bottom"
             android:paddingStart="@dimen/padding_regular"
-            android:paddingEnd="@dimen/padding_regular">
+            android:paddingEnd="@dimen/padding_regular"
+            android:orientation="vertical">
 
             <include
                 android:id="@+id/layoutAddPost"

@@ -2,7 +2,7 @@ package com.fibelatti.pinboard.features.share
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
+import androidx.core.view.WindowCompat
 import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.showStyledDialog
@@ -26,9 +26,7 @@ class ShareReceiverActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or
-            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         val shareReceiverViewModel by viewModel { viewModelProvider.shareReceiverViewModel() }
 

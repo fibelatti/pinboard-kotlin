@@ -3,8 +3,6 @@ package com.fibelatti.pinboard.features
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
@@ -13,6 +11,8 @@ import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.fibelatti.core.android.IntentDelegate
 import com.fibelatti.core.android.base.BaseIntentBuilder
@@ -59,6 +59,9 @@ import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 val Fragment.mainActivity: MainActivity? get() = activity as? MainActivity
 var Intent.fromBuilder by IntentDelegate.Boolean("FROM_BUILDER", false)
@@ -75,8 +78,6 @@ class MainActivity : BaseActivity() {
 
     private val featureFragments get() = activityComponent.featureFragments()
     private val inAppUpdateManager get() = activityComponent.inAppUpdateManager()
-
-    private val handler = Handler()
 
     private var isRecreating: Boolean = false
 
@@ -141,14 +142,12 @@ class MainActivity : BaseActivity() {
     }
 
     private fun setupView() {
-        window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or
-            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         binding.layoutTitle.doOnApplyWindowInsets { view, insets, _, initialMargin ->
             view.layoutParams = (view.layoutParams as ViewGroup.MarginLayoutParams).apply {
                 leftMargin = initialMargin.left
-                topMargin = initialMargin.top + insets.systemWindowInsetTop
+                topMargin = initialMargin.top + insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
                 rightMargin = initialMargin.right
                 bottomMargin = initialMargin.bottom
             }
@@ -160,7 +159,7 @@ class MainActivity : BaseActivity() {
                 topMargin = initialMargin.top
                 rightMargin = initialMargin.right
                 bottomMargin = resources.getDimensionPixelSize(R.dimen.margin_small) +
-                    insets.systemWindowInsetBottom
+                    insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
             }
 
             // Remove once we're done to prevent the Fab from appearing over the keyboard
@@ -173,7 +172,7 @@ class MainActivity : BaseActivity() {
                 padding.start,
                 padding.top,
                 padding.end,
-                padding.bottom + insets.systemWindowInsetBottom
+                padding.bottom + insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
             )
 
             // Remove once we're done to prevent the BottomAppBar from appearing over the keyboard
@@ -235,68 +234,73 @@ class MainActivity : BaseActivity() {
             return
         }
 
+        val scope = CoroutineScope(appStateViewModel.coroutineContext)
         val animTime = resources.getInteger(R.integer.anim_time_long).toLong()
 
         when (loginState) {
             LoginState.Authorizing -> DoNothing
-            LoginState.LoggedIn -> {
-                if (intent.fromBuilder) {
-                    return
+            LoginState.LoggedIn -> scope.handleLoggedIn(animTime)
+            LoginState.LoggedOut -> scope.handleLoggedOut(animTime)
+            LoginState.Unauthorized -> handleUnauthorized()
+        }
+    }
+
+    private fun CoroutineScope.handleLoggedIn(animTime: Long) {
+        if (intent.fromBuilder) {
+            return
+        }
+
+        launch {
+            delay(animTime)
+            inTransaction {
+                replace(
+                    R.id.fragmentHost,
+                    createFragment<PostListFragment>(),
+                    PostListFragment.TAG
+                )
+                supportFragmentManager.findFragmentByTag(AuthFragment.TAG)?.view?.let {
+                    val binding = FragmentAuthBinding.bind(it)
+                    addSharedElement(
+                        binding.imageViewAppLogo,
+                        SharedElementTransitionNames.APP_LOGO
+                    )
                 }
-
-                val runnable = {
-                    inTransaction {
-                        replace(
-                            R.id.fragmentHost,
-                            createFragment<PostListFragment>(),
-                            PostListFragment.TAG
-                        )
-                        supportFragmentManager.findFragmentByTag(AuthFragment.TAG)?.view?.let {
-                            val binding = FragmentAuthBinding.bind(it)
-                            addSharedElement(
-                                binding.imageViewAppLogo,
-                                SharedElementTransitionNames.APP_LOGO
-                            )
-                        }
-                    }
-                }
-
-                handler.postDelayed(runnable, animTime)
-            }
-            LoginState.LoggedOut -> {
-                val runnable = {
-                    inTransaction {
-                        setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-                        replace(R.id.fragmentHost, createFragment<AuthFragment>())
-                        supportFragmentManager.findFragmentByTag(SplashFragment.TAG)?.view?.let {
-                            val binding = FragmentSplashBinding.bind(it)
-                            addSharedElement(
-                                binding.imageViewAppLogo,
-                                SharedElementTransitionNames.APP_LOGO
-                            )
-                        }
-                    }
-
-                    hideControls()
-                }
-
-                handler.postDelayed(runnable, animTime)
-            }
-            LoginState.Unauthorized -> {
-                inTransaction {
-                    for (fragment in supportFragmentManager.fragments) {
-                        remove(fragment)
-                    }
-
-                    setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-                    add(R.id.fragmentHost, createFragment<AuthFragment>(), AuthFragment.TAG)
-                }
-
-                hideControls()
-
-                showBanner(message = getString(R.string.auth_logged_out_feedback))
             }
         }
+    }
+
+    private fun CoroutineScope.handleLoggedOut(animTime: Long) {
+        launch {
+            delay(animTime)
+            inTransaction {
+                setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+                replace(R.id.fragmentHost, createFragment<AuthFragment>())
+                supportFragmentManager.findFragmentByTag(SplashFragment.TAG)?.view?.let {
+                    val binding = FragmentSplashBinding.bind(it)
+                    addSharedElement(
+                        binding.imageViewAppLogo,
+                        SharedElementTransitionNames.APP_LOGO
+                    )
+                }
+            }
+
+            hideControls()
+        }
+    }
+
+    private fun handleUnauthorized() {
+        inTransaction {
+            for (fragment in supportFragmentManager.fragments) {
+                remove(fragment)
+            }
+
+            setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+            add(R.id.fragmentHost, createFragment<AuthFragment>(), AuthFragment.TAG)
+        }
+
+        hideControls()
+
+        showBanner(message = getString(R.string.auth_logged_out_feedback))
     }
 
     private fun hideControls() {
@@ -311,36 +315,17 @@ class MainActivity : BaseActivity() {
             .apply { findViewById<TextView>(R.id.textViewFeedback).text = message }
             .also(binding.layoutContent::addView)
 
-        ConstraintSet()
-            .apply {
-                clone(binding.layoutContent)
-                connect(
-                    banner.id,
-                    ConstraintSet.TOP,
-                    binding.layoutTitle.id,
-                    ConstraintSet.BOTTOM,
-                    16
-                )
-                connect(
-                    banner.id,
-                    ConstraintSet.START,
-                    ConstraintSet.PARENT_ID,
-                    ConstraintSet.START,
-                    16
-                )
-                connect(
-                    banner.id,
-                    ConstraintSet.END,
-                    ConstraintSet.PARENT_ID,
-                    ConstraintSet.END,
-                    16
-                )
-            }
-            .applyTo(binding.layoutContent)
+        ConstraintSet().apply {
+            clone(binding.layoutContent)
+            connect(banner.id, ConstraintSet.TOP, binding.layoutTitle.id, ConstraintSet.BOTTOM, 16)
+            connect(banner.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, 16)
+            connect(banner.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, 16)
+        }.applyTo(binding.layoutContent)
 
+        val animTime = resources.getInteger(R.integer.anim_time_long).toLong()
         val disappearAnimation = AlphaAnimation(1F, 0F).apply {
-            duration = 500L
-            startOffset = 2_500L
+            duration = animTime
+            startOffset = animTime * 5
             setAnimationListener(object : DefaultAnimationListener() {
                 override fun onAnimationEnd(animation: Animation?) {
                     binding.layoutContent.removeView(banner)
@@ -349,7 +334,7 @@ class MainActivity : BaseActivity() {
         }
 
         val appearAnimation = AlphaAnimation(0F, 1F).apply {
-            duration = 500L
+            duration = animTime
             setAnimationListener(object : DefaultAnimationListener() {
                 override fun onAnimationEnd(animation: Animation?) {
                     banner?.startAnimation(disappearAnimation)
