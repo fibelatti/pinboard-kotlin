@@ -13,6 +13,7 @@ import com.fibelatti.pinboard.features.appstate.Public
 import com.fibelatti.pinboard.features.appstate.Recent
 import com.fibelatti.pinboard.features.appstate.SetNextPostPage
 import com.fibelatti.pinboard.features.appstate.SetPosts
+import com.fibelatti.pinboard.features.appstate.ShouldForceLoad
 import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
 import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
 import com.fibelatti.pinboard.features.appstate.SortType
@@ -23,38 +24,63 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.GetAllPosts
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPostParams
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import javax.inject.Inject
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 class PostListViewModel @Inject constructor(
     private val getAllPosts: GetAllPosts,
     private val getRecentPosts: GetRecentPosts,
-    private val appStateRepository: AppStateRepository
+    private val appStateRepository: AppStateRepository,
 ) : BaseViewModel() {
 
     fun loadContent(content: PostListContent) {
         val offset = when (content.shouldLoad) {
-            is ShouldLoadFirstPage -> 0
+            is ShouldLoadFirstPage, ShouldForceLoad -> 0
             is ShouldLoadNextPage -> content.shouldLoad.offset
             else -> return
         }
 
         when (content.category) {
             is All -> {
-                getAll(content.sortType, content.searchParameters.term, content.searchParameters.tags, offset)
+                getAll(
+                    content.sortType,
+                    content.searchParameters.term,
+                    content.searchParameters.tags,
+                    offset,
+                    forceRefresh = content.shouldLoad is ShouldForceLoad,
+                )
             }
             is Recent -> {
-                getRecent(content.sortType, content.searchParameters.term, content.searchParameters.tags)
+                getRecent(
+                    content.sortType,
+                    content.searchParameters.term,
+                    content.searchParameters.tags,
+                )
             }
             is Public -> {
-                getPublic(content.sortType, content.searchParameters.term, content.searchParameters.tags, offset)
+                getPublic(
+                    content.sortType,
+                    content.searchParameters.term,
+                    content.searchParameters.tags,
+                    offset,
+                )
             }
             is Private -> {
-                getPrivate(content.sortType, content.searchParameters.term, content.searchParameters.tags, offset)
+                getPrivate(
+                    content.sortType,
+                    content.searchParameters.term,
+                    content.searchParameters.tags,
+                    offset,
+                )
             }
             is Unread -> {
-                getUnread(content.sortType, content.searchParameters.term, content.searchParameters.tags, offset)
+                getUnread(
+                    content.sortType,
+                    content.searchParameters.term,
+                    content.searchParameters.tags,
+                    offset,
+                )
             }
             is Untagged -> {
                 getUntagged(content.sortType, content.searchParameters.term, offset)
@@ -63,13 +89,20 @@ class PostListViewModel @Inject constructor(
     }
 
     @VisibleForTesting
-    fun getAll(sorting: SortType, searchTerm: String, tags: List<Tag>, offset: Int) {
+    fun getAll(
+        sorting: SortType,
+        searchTerm: String,
+        tags: List<Tag>,
+        offset: Int,
+        forceRefresh: Boolean,
+    ) {
         launchGetAll(
             GetPostParams(
                 sorting,
                 searchTerm,
                 GetPostParams.Tags.Tagged(tags),
-                offset = offset
+                offset = offset,
+                forceRefresh = forceRefresh,
             )
         )
     }
@@ -106,7 +139,7 @@ class PostListViewModel @Inject constructor(
                 searchTerm,
                 GetPostParams.Tags.Tagged(tags),
                 PostVisibility.Private,
-                offset = offset
+                offset = offset,
             )
         )
     }
@@ -119,7 +152,7 @@ class PostListViewModel @Inject constructor(
                 searchTerm,
                 GetPostParams.Tags.Tagged(tags),
                 readLater = true,
-                offset = offset
+                offset = offset,
             )
         )
     }
@@ -131,7 +164,7 @@ class PostListViewModel @Inject constructor(
                 sorting,
                 searchTerm,
                 GetPostParams.Tags.Untagged,
-                offset = offset
+                offset = offset,
             )
         )
     }

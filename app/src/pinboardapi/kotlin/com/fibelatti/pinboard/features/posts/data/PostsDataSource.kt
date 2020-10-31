@@ -4,11 +4,9 @@ import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.extension.orZero
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.getOrDefault
-import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.functional.getOrThrow
 import com.fibelatti.core.functional.map
 import com.fibelatti.core.functional.mapCatching
-import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.core.AppConfig.API_BASE_URL_LENGTH
 import com.fibelatti.pinboard.core.AppConfig.API_MAX_LENGTH
 import com.fibelatti.pinboard.core.AppConfig.API_MAX_URI_LENGTH
@@ -116,7 +114,6 @@ class PostsDataSource @Inject constructor(
 
                 when (result.resultCode) {
                     ApiResultCodes.DONE.code -> {
-                        update().getOrNull()?.let(userRepository::setLastUpdate)
                         postsApi.getPost(url).posts
                             .also(postsDao::savePosts)
                             .first().let(postDtoMapper::map)
@@ -137,7 +134,7 @@ class PostsDataSource @Inject constructor(
             } else {
                 throw ApiException()
             }
-        }.onSuccess { update().getOrNull()?.let(userRepository::setLastUpdate) }
+        }
     }
 
     override suspend fun getAllPosts(
@@ -149,7 +146,8 @@ class PostsDataSource @Inject constructor(
         readLaterOnly: Boolean,
         countLimit: Int,
         pageLimit: Int,
-        pageOffset: Int
+        pageOffset: Int,
+        forceRefresh: Boolean,
     ): Flow<Result<PostListResult>> {
         val isConnected = connectivityInfoProvider.isConnected()
         val localData: suspend (upToDate: Boolean) -> Result<PostListResult> =
@@ -175,7 +173,7 @@ class PostsDataSource @Inject constructor(
         val userLastUpdate = userRepository.getLastUpdate().takeIf(String::isNotBlank)
         val apiLastUpdate = update().getOrDefault(dateFormatter.nowAsTzFormat())
 
-        if (userLastUpdate != null && userLastUpdate == apiLastUpdate) {
+        if (userLastUpdate != null && userLastUpdate == apiLastUpdate && !forceRefresh) {
             return flowOf(localData(true))
         }
 

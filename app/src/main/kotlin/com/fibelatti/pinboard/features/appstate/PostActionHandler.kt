@@ -14,7 +14,7 @@ class PostActionHandler @Inject constructor(
 
     override suspend fun runAction(action: PostAction, currentContent: Content): Content {
         return when (action) {
-            is Refresh -> refresh(currentContent)
+            is Refresh -> refresh(currentContent, force = action.force)
             is SetPosts -> setPosts(action, currentContent)
             is GetNextPostPage -> getNextPostPage(currentContent)
             is SetNextPostPage -> setNextPostPage(action, currentContent)
@@ -27,11 +27,16 @@ class PostActionHandler @Inject constructor(
         }
     }
 
-    private fun refresh(currentContent: Content): Content {
+    private fun refresh(currentContent: Content, force: Boolean): Content {
         return if (currentContent is PostListContent && currentContent.shouldLoad is Loaded) {
             currentContent.copy(
-                shouldLoad = if (connectivityInfoProvider.isConnected()) ShouldLoadFirstPage else Loaded,
-                isConnected = connectivityInfoProvider.isConnected()
+                shouldLoad = when {
+                    !connectivityInfoProvider.isConnected() -> Loaded
+                    force -> ShouldForceLoad
+                    else -> ShouldLoadFirstPage
+                },
+                isConnected = connectivityInfoProvider.isConnected(),
+                canForceSync = !force
             )
         } else {
             currentContent

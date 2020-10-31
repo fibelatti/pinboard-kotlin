@@ -35,7 +35,7 @@ object Untagged : ViewCategory()
 // region PostAction
 sealed class PostAction : Action()
 
-object Refresh : PostAction()
+data class Refresh(val force: Boolean = false) : PostAction()
 data class SetPosts(val postListResult: PostListResult) : PostAction()
 object GetNextPostPage : PostAction()
 data class SetNextPostPage(val postListResult: PostListResult) : PostAction()

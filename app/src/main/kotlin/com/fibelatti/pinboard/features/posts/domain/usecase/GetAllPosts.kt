@@ -21,6 +21,7 @@ class GetAllPosts @Inject constructor(
             readLaterOnly = params.readLater,
             countLimit = -1,
             pageLimit = params.limit,
-            pageOffset = params.offset
+            pageOffset = params.offset,
+            forceRefresh = params.forceRefresh,
         )
 }

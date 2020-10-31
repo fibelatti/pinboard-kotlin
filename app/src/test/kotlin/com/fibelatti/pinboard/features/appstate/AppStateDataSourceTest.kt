@@ -244,7 +244,7 @@ internal class AppStateDataSourceTest {
                             ViewPreferences -> add(ViewPreferences to ExpectedHandler.NAVIGATION)
 
                             // Post
-                            Refresh -> add(Refresh to ExpectedHandler.POST)
+                            is Refresh -> add(mockk<Refresh>() to ExpectedHandler.POST)
                             is SetPosts -> add(mockk<SetPosts>() to ExpectedHandler.POST)
                             GetNextPostPage -> add(GetNextPostPage to ExpectedHandler.POST)
                             is SetNextPostPage -> add(mockk<SetNextPostPage>() to ExpectedHandler.POST)

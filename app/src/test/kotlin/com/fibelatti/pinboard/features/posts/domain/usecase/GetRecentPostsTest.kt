@@ -12,6 +12,7 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class GetRecentPostsTest {
@@ -22,6 +23,7 @@ class GetRecentPostsTest {
 
     private val getRecentPosts = GetRecentPosts(mockPostsRepository)
 
+    @BeforeEach
     fun setup() {
         coEvery {
             mockPostsRepository.getAllPosts(
@@ -33,7 +35,8 @@ class GetRecentPostsTest {
                 readLaterOnly = any(),
                 countLimit = any(),
                 pageLimit = any(),
-                pageOffset = any()
+                pageOffset = any(),
+                forceRefresh = false,
             )
         } returns flowOf(Success(mockResponse))
     }
@@ -57,7 +60,8 @@ class GetRecentPostsTest {
                 readLaterOnly = false,
                 countLimit = DEFAULT_RECENT_QUANTITY,
                 pageLimit = DEFAULT_RECENT_QUANTITY,
-                pageOffset = 0
+                pageOffset = 0,
+                forceRefresh = false,
             )
         }
     }
@@ -81,7 +85,8 @@ class GetRecentPostsTest {
                 readLaterOnly = false,
                 countLimit = DEFAULT_RECENT_QUANTITY,
                 pageLimit = DEFAULT_RECENT_QUANTITY,
-                pageOffset = 0
+                pageOffset = 0,
+                forceRefresh = false,
             )
         }
     }
@@ -105,7 +110,8 @@ class GetRecentPostsTest {
                 readLaterOnly = false,
                 countLimit = DEFAULT_RECENT_QUANTITY,
                 pageLimit = DEFAULT_RECENT_QUANTITY,
-                pageOffset = 0
+                pageOffset = 0,
+                forceRefresh = false,
             )
         }
     }
@@ -129,7 +135,33 @@ class GetRecentPostsTest {
                 readLaterOnly = false,
                 countLimit = DEFAULT_RECENT_QUANTITY,
                 pageLimit = DEFAULT_RECENT_QUANTITY,
-                pageOffset = 0
+                pageOffset = 0,
+                forceRefresh = false,
+            )
+        }
+    }
+
+    @Test
+    fun `GIVEN forceRefresh was set in the params WHEN getRecentPosts is called THEN repository is called with the expected params`() {
+        // GIVEN
+        val params = GetPostParams(forceRefresh = true)
+
+        // WHEN
+        runBlocking { getRecentPosts(params) }
+
+        // THEN
+        coVerify {
+            mockPostsRepository.getAllPosts(
+                newestFirst = true,
+                searchTerm = "",
+                tags = null,
+                untaggedOnly = false,
+                postVisibility = PostVisibility.None,
+                readLaterOnly = false,
+                countLimit = DEFAULT_RECENT_QUANTITY,
+                pageLimit = DEFAULT_RECENT_QUANTITY,
+                pageOffset = 0,
+                forceRefresh = true,
             )
         }
     }

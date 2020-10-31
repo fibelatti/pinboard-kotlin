@@ -42,7 +42,8 @@ class GetAllPostsTest {
                 readLaterOnly = any(),
                 countLimit = any(),
                 pageLimit = any(),
-                pageOffset = any()
+                pageOffset = any(),
+                forceRefresh = any(),
             )
         } returns flowOf(Success(mockResponse))
     }
@@ -73,7 +74,8 @@ class GetAllPostsTest {
                     readLaterOnly = any(),
                     countLimit = -1,
                     pageLimit = any(),
-                    pageOffset = any()
+                    pageOffset = any(),
+                    forceRefresh = false,
                 )
             }
         }
@@ -100,7 +102,8 @@ class GetAllPostsTest {
                 readLaterOnly = false,
                 countLimit = -1,
                 pageLimit = params.limit,
-                pageOffset = params.offset
+                pageOffset = params.offset,
+                forceRefresh = false,
             )
         }
     }
@@ -124,7 +127,8 @@ class GetAllPostsTest {
                 readLaterOnly = any(),
                 countLimit = -1,
                 pageLimit = any(),
-                pageOffset = any()
+                pageOffset = any(),
+                forceRefresh = false,
             )
         }
     }
@@ -148,7 +152,8 @@ class GetAllPostsTest {
                 readLaterOnly = any(),
                 countLimit = -1,
                 pageLimit = any(),
-                pageOffset = any()
+                pageOffset = any(),
+                forceRefresh = false,
             )
         }
     }
@@ -172,7 +177,8 @@ class GetAllPostsTest {
                 readLaterOnly = any(),
                 countLimit = -1,
                 pageLimit = any(),
-                pageOffset = any()
+                pageOffset = any(),
+                forceRefresh = false,
             )
         }
     }
@@ -196,7 +202,8 @@ class GetAllPostsTest {
                 readLaterOnly = any(),
                 countLimit = -1,
                 pageLimit = any(),
-                pageOffset = any()
+                pageOffset = any(),
+                forceRefresh = false,
             )
         }
     }
@@ -220,7 +227,8 @@ class GetAllPostsTest {
                 readLaterOnly = any(),
                 countLimit = -1,
                 pageLimit = any(),
-                pageOffset = any()
+                pageOffset = any(),
+                forceRefresh = false,
             )
         }
     }
@@ -244,7 +252,8 @@ class GetAllPostsTest {
                 readLaterOnly = any(),
                 countLimit = -1,
                 pageLimit = any(),
-                pageOffset = any()
+                pageOffset = any(),
+                forceRefresh = false,
             )
         }
     }
@@ -268,7 +277,8 @@ class GetAllPostsTest {
                 readLaterOnly = true,
                 countLimit = -1,
                 pageLimit = any(),
-                pageOffset = any()
+                pageOffset = any(),
+                forceRefresh = false,
             )
         }
     }
@@ -292,7 +302,8 @@ class GetAllPostsTest {
                 readLaterOnly = false,
                 countLimit = -1,
                 pageLimit = any(),
-                pageOffset = any()
+                pageOffset = any(),
+                forceRefresh = false,
             )
         }
     }
@@ -316,7 +327,8 @@ class GetAllPostsTest {
                 readLaterOnly = any(),
                 countLimit = -1,
                 pageLimit = 100,
-                pageOffset = any()
+                pageOffset = any(),
+                forceRefresh = false,
             )
         }
     }
@@ -340,7 +352,33 @@ class GetAllPostsTest {
                 readLaterOnly = any(),
                 countLimit = -1,
                 pageLimit = any(),
-                pageOffset = 100
+                pageOffset = 100,
+                forceRefresh = false,
+            )
+        }
+    }
+
+    @Test
+    fun `GIVEN forceRefresh was set in the params WHEN getAllPosts is called THEN repository is called with the expected params`() {
+        // GIVEN
+        val params = GetPostParams(forceRefresh = true)
+
+        // WHEN
+        runBlocking { getAllPosts(params) }
+
+        // THEN
+        coVerify {
+            mockPostsRepository.getAllPosts(
+                newestFirst = any(),
+                searchTerm = any(),
+                tags = any(),
+                untaggedOnly = any(),
+                postVisibility = any(),
+                readLaterOnly = any(),
+                countLimit = -1,
+                pageLimit = any(),
+                pageOffset = any(),
+                forceRefresh = true,
             )
         }
     }

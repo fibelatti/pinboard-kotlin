@@ -349,7 +349,6 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify { mockUserRepository.setLastUpdate(mockFutureTime) }
             verify { mockDao.savePosts(mockListPostDto) }
             assertThat(result.getOrNull()).isEqualTo(mockPost)
         }
@@ -526,7 +525,6 @@ class PostsDataSourceTest {
 
             // THEN
             verify { mockDao.deletePost(mockUrlValid) }
-            verify { mockUserRepository.setLastUpdate(mockFutureTime) }
             assertThat(result.getOrNull()).isEqualTo(Unit)
         }
     }
@@ -573,7 +571,8 @@ class PostsDataSourceTest {
                         readLaterOnly = false,
                         countLimit = -1,
                         pageLimit = -1,
-                        pageOffset = 0
+                        pageOffset = 0,
+                        forceRefresh = false,
                     )
                     // THEN
                     result.collectLatest {
@@ -637,7 +636,8 @@ class PostsDataSourceTest {
                         readLaterOnly = false,
                         countLimit = -1,
                         pageLimit = -1,
-                        pageOffset = 0
+                        pageOffset = 0,
+                        forceRefresh = false,
                     )
                 }
 
@@ -692,7 +692,8 @@ class PostsDataSourceTest {
                         readLaterOnly = false,
                         countLimit = -1,
                         pageLimit = -1,
-                        pageOffset = 0
+                        pageOffset = 0,
+                        forceRefresh = false,
                     )
                 }
 
@@ -757,7 +758,8 @@ class PostsDataSourceTest {
                         readLaterOnly = false,
                         countLimit = -1,
                         pageLimit = -1,
-                        pageOffset = 0
+                        pageOffset = 0,
+                        forceRefresh = false,
                     )
                 }
 
@@ -788,6 +790,81 @@ class PostsDataSourceTest {
             }
 
             @Test
+            fun `WHEN force refresh is true THEN then api data is returned`() {
+                // GIVEN
+                val mockListPostDto = mockk<List<PostDto>>()
+                coEvery { mockApi.update() } returns UpdateDto(mockTime)
+                coEvery {
+                    mockApi.getAllPosts(
+                        offset = 0,
+                        limit = API_PAGE_SIZE
+                    )
+                } returns mockListPostDto
+                every { mockListPostDto.size } returns API_PAGE_SIZE - 1
+                every { dataSource.savePosts(any()) } returns Unit
+
+                // WHEN
+                val result = runBlocking {
+                    dataSource.getAllPosts(
+                        newestFirst = true,
+                        searchTerm = "",
+                        tags = null,
+                        untaggedOnly = false,
+                        postVisibility = PostVisibility.None,
+                        readLaterOnly = false,
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0,
+                        forceRefresh = true,
+                    )
+                }
+
+                // THEN
+                runBlocking {
+                    result.collectIndexed { index, value ->
+                        when (index) {
+                            0 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
+                            1 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
+                            else -> fail("Unexpected number of collections")
+                        }
+                    }
+                }
+                coVerify {
+                    dataSource.getLocalData(
+                        newestFirst = true,
+                        searchTerm = "",
+                        tags = null,
+                        untaggedOnly = false,
+                        postVisibility = PostVisibility.None,
+                        readLaterOnly = false,
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0,
+                        upToDate = false
+                    )
+                }
+                coVerify {
+                    dataSource.getLocalData(
+                        newestFirst = true,
+                        searchTerm = "",
+                        tags = null,
+                        untaggedOnly = false,
+                        postVisibility = PostVisibility.None,
+                        readLaterOnly = false,
+                        countLimit = -1,
+                        pageLimit = -1,
+                        pageOffset = 0,
+                        upToDate = true
+                    )
+                }
+                coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
+                coVerify { mockDao.deleteAllPosts() }
+                verify { dataSource.savePosts(mockListPostDto) }
+                coVerify { mockUserRepository.setLastUpdate(mockTime) }
+
+            }
+
+            @Test
             fun `WHEN getAllPosts fails THEN Failure is returned`() {
                 // GIVEN
                 coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
@@ -809,7 +886,8 @@ class PostsDataSourceTest {
                         readLaterOnly = false,
                         countLimit = -1,
                         pageLimit = -1,
-                        pageOffset = 0
+                        pageOffset = 0,
+                        forceRefresh = false,
                     )
                 }
 
@@ -866,7 +944,8 @@ class PostsDataSourceTest {
                         readLaterOnly = false,
                         countLimit = -1,
                         pageLimit = -1,
-                        pageOffset = 0
+                        pageOffset = 0,
+                        forceRefresh = false,
                     )
                 }
 
@@ -923,7 +1002,8 @@ class PostsDataSourceTest {
                         readLaterOnly = false,
                         countLimit = -1,
                         pageLimit = -1,
-                        pageOffset = 0
+                        pageOffset = 0,
+                        forceRefresh = false,
                     )
 
                     // THEN
@@ -981,7 +1061,8 @@ class PostsDataSourceTest {
                         readLaterOnly = false,
                         countLimit = -1,
                         pageLimit = -1,
-                        pageOffset = 0
+                        pageOffset = 0,
+                        forceRefresh = false,
                     )
                 }
 

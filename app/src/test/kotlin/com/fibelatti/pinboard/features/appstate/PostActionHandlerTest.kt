@@ -50,7 +50,7 @@ internal class PostActionHandlerTest {
             val content = mockk<PostDetailContent>()
 
             // WHEN
-            val result = runBlocking { postActionHandler.runAction(Refresh, content) }
+            val result = runBlocking { postActionHandler.runAction(Refresh(), content) }
 
             // THEN
             assertThat(result).isEqualTo(content)
@@ -63,7 +63,7 @@ internal class PostActionHandlerTest {
             every { content.shouldLoad } returns ShouldLoadFirstPage
 
             // WHEN
-            val result = runBlocking { postActionHandler.runAction(Refresh, content) }
+            val result = runBlocking { postActionHandler.runAction(Refresh(), content) }
 
             // THEN
             assertThat(result).isEqualTo(content)
@@ -76,7 +76,7 @@ internal class PostActionHandlerTest {
             every { content.shouldLoad } returns ShouldLoadNextPage(0)
 
             // WHEN
-            val result = runBlocking { postActionHandler.runAction(Refresh, content) }
+            val result = runBlocking { postActionHandler.runAction(Refresh(), content) }
 
             // THEN
             assertThat(result).isEqualTo(content)
@@ -88,7 +88,7 @@ internal class PostActionHandlerTest {
             every { mockConnectivityInfoProvider.isConnected() } returns false
 
             // WHEN
-            val result = runBlocking { postActionHandler.runAction(Refresh, initialContent) }
+            val result = runBlocking { postActionHandler.runAction(Refresh(), initialContent) }
 
             // THEN
             assertThat(result).isEqualTo(
@@ -107,7 +107,7 @@ internal class PostActionHandlerTest {
 
             // WHEN
             val result = runBlocking {
-                postActionHandler.runAction(Refresh, initialContent)
+                postActionHandler.runAction(Refresh(), initialContent)
             }
 
             // THEN
@@ -115,6 +115,27 @@ internal class PostActionHandlerTest {
                 initialContent.copy(
                     shouldLoad = ShouldLoadFirstPage,
                     isConnected = true
+                )
+            )
+            verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
+        }
+
+        @Test
+        fun `WHEN currentContent is PostListContent and is connected is true and force is true THEN updated content is returned`() {
+            // GIVEN
+            every { mockConnectivityInfoProvider.isConnected() } returns true
+
+            // WHEN
+            val result = runBlocking {
+                postActionHandler.runAction(Refresh(force = true), initialContent)
+            }
+
+            // THEN
+            assertThat(result).isEqualTo(
+                initialContent.copy(
+                    shouldLoad = ShouldForceLoad,
+                    isConnected = true,
+                    canForceSync = false,
                 )
             )
             verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
@@ -497,7 +518,7 @@ internal class PostActionHandlerTest {
             every { content.shouldLoad } returns ShouldLoadFirstPage
 
             // WHEN
-            val result = runBlocking { postActionHandler.runAction(Refresh, content) }
+            val result = runBlocking { postActionHandler.runAction(Refresh(), content) }
 
             // THEN
             assertThat(result).isEqualTo(content)
@@ -510,7 +531,7 @@ internal class PostActionHandlerTest {
             every { content.shouldLoad } returns ShouldLoadNextPage(0)
 
             // WHEN
-            val result = runBlocking { postActionHandler.runAction(Refresh, content) }
+            val result = runBlocking { postActionHandler.runAction(Refresh(), content) }
 
             // THEN
             assertThat(result).isEqualTo(content)

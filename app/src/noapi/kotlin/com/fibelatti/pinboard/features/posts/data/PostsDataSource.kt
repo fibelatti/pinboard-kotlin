@@ -87,7 +87,8 @@ class PostsDataSource @Inject constructor(
         readLaterOnly: Boolean,
         countLimit: Int,
         pageLimit: Int,
-        pageOffset: Int
+        pageOffset: Int,
+        forceRefresh: Boolean,
     ): Flow<Result<PostListResult>> =
         flowOf(
             getLocalData(

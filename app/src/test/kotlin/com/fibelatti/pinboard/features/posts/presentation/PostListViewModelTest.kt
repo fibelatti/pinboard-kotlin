@@ -15,6 +15,7 @@ import com.fibelatti.pinboard.features.appstate.Recent
 import com.fibelatti.pinboard.features.appstate.SearchParameters
 import com.fibelatti.pinboard.features.appstate.SetNextPostPage
 import com.fibelatti.pinboard.features.appstate.SetPosts
+import com.fibelatti.pinboard.features.appstate.ShouldForceLoad
 import com.fibelatti.pinboard.features.appstate.ShouldLoad
 import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
 import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
@@ -22,11 +23,12 @@ import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.appstate.ViewCategory
+import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetAllPosts
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPostParams
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
-import com.fibelatti.pinboard.features.posts.domain.PostVisibility
+import com.fibelatti.pinboard.randomBoolean
 import com.fibelatti.pinboard.shouldNeverReceiveValues
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -100,7 +102,8 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                         mockSortType,
                         mockSearchTerm,
                         mockTags,
-                        offset = expectedOffset
+                        offset = expectedOffset,
+                        forceRefresh = shouldLoad is ShouldForceLoad,
                     )
                 } returns Unit
 
@@ -113,7 +116,8 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                         mockSortType,
                         mockSearchTerm,
                         mockTags,
-                        offset = expectedOffset
+                        offset = expectedOffset,
+                        forceRefresh = shouldLoad is ShouldForceLoad,
                     )
                 }
             }
@@ -238,6 +242,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
 
             fun testCases(): List<Pair<ShouldLoad, Int>> =
                 mutableListOf<Pair<ShouldLoad, Int>>().apply {
+                    add(ShouldForceLoad to 0)
                     add(ShouldLoadFirstPage to 0)
                     add(ShouldLoadNextPage(13) to 13)
                 }
@@ -274,9 +279,10 @@ internal class PostListViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `WHEN getAll is called THEN launchGetAll is called with the expected GetPostParams`() {
+        val force = randomBoolean()
         every { postListViewModel.launchGetAll(any()) } returns Unit
 
-        postListViewModel.getAll(mockSortType, mockSearchTerm, mockTags, mockOffset)
+        postListViewModel.getAll(mockSortType, mockSearchTerm, mockTags, mockOffset, force)
 
         verify {
             postListViewModel.launchGetAll(
@@ -284,7 +290,8 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     mockSortType,
                     mockSearchTerm,
                     GetPostParams.Tags.Tagged(mockTags),
-                    offset = mockOffset
+                    offset = mockOffset,
+                    forceRefresh = force
                 )
             )
         }

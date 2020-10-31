@@ -22,6 +22,7 @@ class GetRecentPosts @Inject constructor(
             readLaterOnly = false,
             countLimit = DEFAULT_RECENT_QUANTITY,
             pageLimit = DEFAULT_RECENT_QUANTITY,
-            pageOffset = 0
+            pageOffset = 0,
+            forceRefresh = params.forceRefresh,
         )
 }

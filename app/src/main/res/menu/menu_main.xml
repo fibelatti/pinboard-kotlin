@@ -3,10 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/menuItemSync"
+        android:icon="@drawable/ic_sync"
+        android:title="@string/menu_main_sync"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/menuItemSearch"
         android:icon="@drawable/ic_search"
         android:title="@string/menu_main_search"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/menuItemSort"

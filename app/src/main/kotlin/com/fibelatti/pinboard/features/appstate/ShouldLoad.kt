@@ -18,6 +18,11 @@ object Loaded : ShouldLoad()
 object ShouldLoadFirstPage : ShouldLoad()
 
 /**
+ * Forces a refresh with data from the server.
+ */
+object ShouldForceLoad : ShouldLoad()
+
+/**
  * The user is reaching the end of the content and the next page should be loaded.
  *
  * @param offset the position to start the next page

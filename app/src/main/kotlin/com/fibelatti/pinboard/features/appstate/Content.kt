@@ -18,7 +18,8 @@ data class PostListContent(
     val sortType: SortType,
     val searchParameters: SearchParameters,
     val shouldLoad: ShouldLoad,
-    val isConnected: Boolean = true
+    val isConnected: Boolean = true,
+    val canForceSync: Boolean = true,
 ) : ContentWithHistory() {
 
     override val previousContent: Content = ExternalContent

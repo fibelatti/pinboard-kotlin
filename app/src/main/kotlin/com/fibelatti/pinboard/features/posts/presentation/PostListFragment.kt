@@ -1,19 +1,17 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.transition.Transition
 import androidx.transition.TransitionInflater
-import com.fibelatti.core.android.DefaultTransitionListener
 import com.fibelatti.core.archcomponents.extension.activityViewModel
 import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.animateChangingTransitions
+import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.exhaustive
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
@@ -46,6 +44,7 @@ import com.fibelatti.pinboard.features.appstate.Private
 import com.fibelatti.pinboard.features.appstate.Public
 import com.fibelatti.pinboard.features.appstate.Recent
 import com.fibelatti.pinboard.features.appstate.Refresh
+import com.fibelatti.pinboard.features.appstate.ShouldForceLoad
 import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
 import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
 import com.fibelatti.pinboard.features.appstate.SortType
@@ -60,10 +59,13 @@ import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class PostListFragment @Inject constructor(
     private val postsAdapter: PostListAdapter,
-    private val inAppReviewManager: InAppReviewManager
+    private val inAppReviewManager: InAppReviewManager,
 ) : BaseFragment() {
 
     companion object {
@@ -108,21 +110,11 @@ class PostListFragment @Inject constructor(
         binding.imageViewAppLogo.gone()
     }
 
-    @Suppress("MagicNumber")
     private fun setupSharedTransition() {
         val animTime = requireContext().resources.getInteger(R.integer.anim_time_long).toLong()
-        val delayMillis = 100L
-
         sharedElementEnterTransition = TransitionInflater.from(context)
             .inflateTransition(android.R.transition.move)
             .setDuration(animTime)
-            .addListener(object : Transition.TransitionListener by DefaultTransitionListener {
-                override fun onTransitionEnd(transition: Transition) {
-                    // Changing the visibility immediately after the transition has finished
-                    // won't work, so delay it a bit
-                    Handler().postDelayed({ binding.imageViewAppLogo.gone() }, delayMillis)
-                }
-            })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -134,15 +126,32 @@ class PostListFragment @Inject constructor(
 
     private fun setupLayout() {
         binding.imageViewAppLogo.transitionName = SharedElementTransitionNames.APP_LOGO
+        binding.imageViewAppLogo.doOnApplyWindowInsets { view, insets, _, initialMargin ->
+            view.layoutParams = (view.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                leftMargin = initialMargin.left
+                topMargin = initialMargin.top
+                rightMargin = initialMargin.right
+                bottomMargin = initialMargin.bottom + insets.systemWindowInsetBottom
+            }
+
+            CoroutineScope(postListViewModel.coroutineContext).launch {
+                delay(view.resources.getInteger(R.integer.anim_time_long).toLong())
+                view.gone()
+            }
+        }
 
         binding.root.animateChangingTransitions()
 
-        binding.layoutSearchActive.buttonClearSearch.setOnClickListener { appStateViewModel.runAction(ClearSearch) }
-        binding.layoutOfflineAlert.buttonRetryConnection.setOnClickListener { appStateViewModel.runAction(Refresh) }
+        binding.layoutSearchActive.buttonClearSearch.setOnClickListener {
+            appStateViewModel.runAction(ClearSearch)
+        }
+        binding.layoutOfflineAlert.buttonRetryConnection.setOnClickListener {
+            appStateViewModel.runAction(Refresh())
+        }
 
         binding.swipeToRefresh.setOnRefreshListener {
             binding.swipeToRefresh.isRefreshing = false
-            appStateViewModel.runAction(Refresh)
+            appStateViewModel.runAction(Refresh())
         }
 
         binding.recyclerViewPosts
@@ -218,6 +227,9 @@ class PostListFragment @Inject constructor(
             bottomAppBar.run {
                 setNavigationIcon(R.drawable.ic_menu)
                 replaceMenu(if (content.category != Recent) R.menu.menu_main else R.menu.menu_main_recent)
+                if (!content.canForceSync) {
+                    bottomAppBar.menu.removeItem(R.id.menuItemSync)
+                }
                 setOnMenuItemClickListener(::handleMenuClick)
                 visible()
                 show()
@@ -230,7 +242,7 @@ class PostListFragment @Inject constructor(
         }
 
         when (content.shouldLoad) {
-            is ShouldLoadFirstPage -> {
+            is ShouldLoadFirstPage, ShouldForceLoad -> {
                 mainActivity?.updateTitleLayout {
                     setTitle(getCategoryTitle(content.category))
                     hideSubTitle()
@@ -252,7 +264,10 @@ class PostListFragment @Inject constructor(
             content.searchParameters.isActive(),
             otherwiseVisibility = View.GONE
         )
-        binding.layoutOfflineAlert.root.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
+        binding.layoutOfflineAlert.root.goneIf(
+            content.isConnected,
+            otherwiseVisibility = View.VISIBLE
+        )
     }
 
     private fun getCategoryTitle(category: ViewCategory): String {
@@ -326,6 +341,7 @@ class PostListFragment @Inject constructor(
 
     private fun handleMenuClick(item: MenuItem?): Boolean {
         when (item?.itemId) {
+            R.id.menuItemSync -> appStateViewModel.runAction(Refresh(force = true))
             R.id.menuItemSearch -> appStateViewModel.runAction(ViewSearch)
             R.id.menuItemSort -> appStateViewModel.runAction(ToggleSorting)
         }

@@ -72,5 +72,6 @@
         android:layout_marginBottom="@dimen/post_list_animation_logo_margin"
         android:contentDescription="@string/cd_app_logo"
         android:elevation="@dimen/elevation_high"
+        android:importantForAccessibility="no"
         android:src="@drawable/pinkt" />
 </RelativeLayout>

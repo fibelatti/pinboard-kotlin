@@ -25,6 +25,7 @@
     <string name="server_timeout_error">It looks like the server is down. Please try again in a while.</string>
 
     <!-- Menus -->
+    <string name="menu_main_sync">Sync bookmarks</string>
     <string name="menu_main_search">Search</string>
     <string name="menu_main_sorting">Sorting</string>
 
