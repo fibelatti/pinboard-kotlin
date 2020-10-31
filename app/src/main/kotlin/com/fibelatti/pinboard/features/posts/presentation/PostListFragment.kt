@@ -111,7 +111,7 @@ class PostListFragment @Inject constructor(
     }
 
     private fun setupSharedTransition() {
-        val animTime = requireContext().resources.getInteger(R.integer.anim_time_long).toLong()
+        val animTime = requireContext().resources.getInteger(R.integer.anim_time_short).toLong()
         sharedElementEnterTransition = TransitionInflater.from(context)
             .inflateTransition(android.R.transition.move)
             .setDuration(animTime)
