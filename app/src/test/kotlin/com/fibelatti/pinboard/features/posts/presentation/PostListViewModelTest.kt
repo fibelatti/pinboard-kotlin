@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
-import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
@@ -28,15 +27,18 @@ import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetAllPosts
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPostParams
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
+import com.fibelatti.pinboard.isEmpty
 import com.fibelatti.pinboard.randomBoolean
-import com.fibelatti.pinboard.shouldNeverReceiveValues
+import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -304,7 +306,9 @@ internal class PostListViewModelTest : BaseViewModelTest() {
         postListViewModel.getRecent(mockSortType, mockSearchTerm, mockTags)
 
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
-        postListViewModel.error.currentValueShouldBe(mockException)
+        runBlocking {
+            assertThat(postListViewModel.error.first()).isEqualTo(mockException)
+        }
     }
 
     @Test
@@ -314,7 +318,9 @@ internal class PostListViewModelTest : BaseViewModelTest() {
         postListViewModel.getRecent(mockSortType, mockSearchTerm, mockTags)
 
         coVerify { mockAppStateRepository.runAction(SetPosts(mockResponse)) }
-        postListViewModel.error.shouldNeverReceiveValues()
+        runBlocking {
+            assertThat(postListViewModel.error.isEmpty()).isTrue()
+        }
     }
 
     @Test
@@ -402,7 +408,9 @@ internal class PostListViewModelTest : BaseViewModelTest() {
             postListViewModel.launchGetAll(GetPostParams())
 
             coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
-            postListViewModel.error.currentValueShouldBe(mockException)
+            runBlocking {
+                assertThat(postListViewModel.error.first()).isEqualTo(mockException)
+            }
         }
 
         @Test
@@ -416,7 +424,9 @@ internal class PostListViewModelTest : BaseViewModelTest() {
 
             // THEN
             coVerify { mockAppStateRepository.runAction(SetPosts(mockResponse)) }
-            postListViewModel.error.shouldNeverReceiveValues()
+            runBlocking {
+                assertThat(postListViewModel.error.isEmpty()).isTrue()
+            }
         }
 
         @Test
@@ -430,7 +440,9 @@ internal class PostListViewModelTest : BaseViewModelTest() {
 
             // THEN
             coVerify { mockAppStateRepository.runAction(SetNextPostPage(mockResponse)) }
-            postListViewModel.error.shouldNeverReceiveValues()
+            runBlocking {
+                assertThat(postListViewModel.error.isEmpty()).isTrue()
+            }
         }
     }
 }

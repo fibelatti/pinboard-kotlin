@@ -1,10 +1,10 @@
 package com.fibelatti.pinboard.features.appstate
 
-import androidx.lifecycle.LiveData
+import kotlinx.coroutines.flow.Flow
 
 interface AppStateRepository {
 
-    fun getContent(): LiveData<Content>
+    fun getContent(): Flow<Content>
 
     fun reset()
 

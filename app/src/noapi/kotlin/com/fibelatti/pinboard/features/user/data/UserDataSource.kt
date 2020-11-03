@@ -1,8 +1,6 @@
 package com.fibelatti.pinboard.features.user.data
 
 import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
@@ -11,6 +9,8 @@ import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Suppress("TooManyFunctions")
 @Singleton
@@ -19,9 +19,9 @@ class UserDataSource @Inject constructor(
 ) : UserRepository {
 
     @VisibleForTesting
-    val loginState = MutableLiveData<LoginState>().apply { value = LoginState.LoggedIn }
+    val loginState = MutableStateFlow<LoginState>(LoginState.LoggedIn)
 
-    override fun getLoginState(): LiveData<LoginState> = loginState
+    override fun getLoginState(): Flow<LoginState> = loginState
 
     override fun loginAttempt(authToken: String) {
         // Intentionally empty

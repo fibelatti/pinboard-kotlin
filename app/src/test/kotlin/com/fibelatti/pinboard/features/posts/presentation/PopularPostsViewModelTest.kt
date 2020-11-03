@@ -1,8 +1,5 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
-import com.fibelatti.core.archcomponents.test.extension.currentEventShouldBe
-import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
-import com.fibelatti.pinboard.shouldNeverReceiveValues
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
@@ -15,18 +12,20 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPopularPosts
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import com.fibelatti.pinboard.prepareToReceiveMany
+import com.fibelatti.pinboard.isEmpty
 import com.fibelatti.pinboard.randomBoolean
-import com.fibelatti.pinboard.shouldHaveReceived
+import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 
 internal class PopularPostsViewModelTest : BaseViewModelTest() {
 
-    private val mockAppStateRepository = mockk<AppStateRepository>()
+    private val mockAppStateRepository = mockk<AppStateRepository>(relaxed = true)
     private val mockUserRepository = mockk<UserRepository>(relaxed = true)
     private val mockGetPopularPosts = mockk<GetPopularPosts>()
     private val mockAddPost = mockk<AddPost>()
@@ -48,7 +47,9 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
         popularPostsViewModel.getPosts()
 
         // THEN
-        popularPostsViewModel.error.currentValueShouldBe(error)
+        runBlocking {
+            assertThat(popularPostsViewModel.error.first()).isEqualTo(error)
+        }
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 
@@ -63,7 +64,9 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
 
         // THEN
         coVerify { mockAppStateRepository.runAction(SetPopularPosts(mockPosts)) }
-        popularPostsViewModel.error.shouldNeverReceiveValues()
+        runBlocking {
+            assertThat(popularPostsViewModel.error.isEmpty()).isTrue()
+        }
     }
 
     @Test
@@ -77,7 +80,9 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
 
         // THEN
         coVerify { mockAppStateRepository.runAction(PostSaved(post)) }
-        popularPostsViewModel.loading.shouldNeverReceiveValues()
+        runBlocking {
+            assertThat(popularPostsViewModel.loading.isEmpty()).isTrue()
+        }
         coVerify(exactly = 0) { mockAddPost.invoke(any()) }
     }
 
@@ -89,16 +94,15 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
         coEvery { mockAddPost(any()) } returns Failure(error)
         every { mockUserRepository.getEditAfterSharing() } returns mockk()
 
-        val loadingObserver = popularPostsViewModel.loading.prepareToReceiveMany()
-
         // WHEN
         popularPostsViewModel.saveLink(post)
 
         // THEN
-        popularPostsViewModel.loading.shouldHaveReceived(loadingObserver, true, false)
-        popularPostsViewModel.error.currentValueShouldBe(error)
-        popularPostsViewModel.saved.shouldNeverReceiveValues()
-
+        runBlocking {
+            assertThat(popularPostsViewModel.loading.first()).isEqualTo(false)
+            assertThat(popularPostsViewModel.error.first()).isEqualTo(error)
+            assertThat(popularPostsViewModel.saved.isEmpty()).isTrue()
+        }
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any<PostSaved>()) }
     }
 
@@ -119,15 +123,15 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
         every { mockUserRepository.getDefaultReadLater() } returns randomBoolean
         coEvery { mockAddPost(params) } returns Success(post)
 
-        val loadingObserver = popularPostsViewModel.loading.prepareToReceiveMany()
-
         // WHEN
         popularPostsViewModel.saveLink(post)
 
         // THEN
-        popularPostsViewModel.loading.shouldHaveReceived(loadingObserver, true, false)
-        popularPostsViewModel.saved.currentEventShouldBe(Unit)
+        runBlocking {
+            assertThat(popularPostsViewModel.loading.first()).isEqualTo(false)
+            assertThat(popularPostsViewModel.saved.first()).isEqualTo(Unit)
+            assertThat(popularPostsViewModel.error.isEmpty()).isTrue()
+        }
         coVerify { mockAppStateRepository.runAction(PostSaved(post)) }
-        popularPostsViewModel.error.shouldNeverReceiveValues()
     }
 }

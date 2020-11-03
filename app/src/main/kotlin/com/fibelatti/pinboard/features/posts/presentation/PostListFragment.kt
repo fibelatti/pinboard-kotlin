@@ -6,10 +6,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionInflater
 import com.fibelatti.core.archcomponents.extension.activityViewModel
-import com.fibelatti.core.archcomponents.extension.observe
-import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.doOnApplyWindowInsets
@@ -60,8 +59,8 @@ import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
 import javax.inject.Inject
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class PostListFragment @Inject constructor(
@@ -100,7 +99,7 @@ class PostListFragment @Inject constructor(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? = FragmentPostListBinding.inflate(inflater, container, false).run {
         binding = this
         binding.root
@@ -135,7 +134,7 @@ class PostListFragment @Inject constructor(
                 bottomMargin = initialMargin.bottom + insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
             }
 
-            CoroutineScope(postListViewModel.coroutineContext).launch {
+            lifecycleScope.launch {
                 delay(view.resources.getInteger(R.integer.anim_time_long).toLong())
                 view.gone()
             }
@@ -198,22 +197,25 @@ class PostListFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        viewLifecycleOwner.observe(postListViewModel.error, ::handleError)
-        viewLifecycleOwner.observe(appStateViewModel.postListContent, ::updateContent)
-        with(postDetailViewModel) {
-            viewLifecycleOwner.observe(loading) {
-                binding.progressBar.visibleIf(it, otherwiseVisibility = View.GONE)
+        lifecycleScope.launch {
+            postListViewModel.error.collect(::handleError)
+        }
+        lifecycleScope.launch {
+            appStateViewModel.postListContent.collect(::updateContent)
+        }
+        lifecycleScope.launch {
+            postDetailViewModel.loading.collect { binding.progressBar.visibleIf(it, otherwiseVisibility = View.GONE) }
+        }
+        lifecycleScope.launch {
+            postDetailViewModel.deleted.collect { mainActivity?.showBanner(getString(R.string.posts_deleted_feedback)) }
+        }
+        lifecycleScope.launch {
+            postDetailViewModel.deleteError.collect { error ->
+                activity?.sendErrorReport(error, altMessage = getString(R.string.posts_deleted_error))
             }
-            viewLifecycleOwner.observeEvent(deleted) {
-                mainActivity?.showBanner(getString(R.string.posts_deleted_feedback))
-            }
-            viewLifecycleOwner.observeEvent(deleteError) { error ->
-                activity?.sendErrorReport(
-                    error,
-                    altMessage = getString(R.string.posts_deleted_error)
-                )
-            }
-            viewLifecycleOwner.observe(error, ::handleError)
+        }
+        lifecycleScope.launch {
+            postDetailViewModel.error.collect(::handleError)
         }
     }
 

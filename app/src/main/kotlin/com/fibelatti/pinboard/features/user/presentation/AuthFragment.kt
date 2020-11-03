@@ -4,10 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionInflater
 import com.fibelatti.core.archcomponents.extension.activityViewModel
-import com.fibelatti.core.archcomponents.extension.observe
-import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.heightWrapContent
@@ -26,6 +25,8 @@ import com.fibelatti.pinboard.core.extension.isServerDownException
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentAuthBinding
 import javax.inject.Inject
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class AuthFragment @Inject constructor() : BaseFragment() {
 
@@ -59,9 +60,11 @@ class AuthFragment @Inject constructor() : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         setupLayout()
 
-        with(authViewModel) {
-            observeEvent(apiTokenError, ::handleAuthError)
-            observe(error, ::handleError)
+        lifecycleScope.launch {
+            authViewModel.apiTokenError.collect(::handleAuthError)
+        }
+        lifecycleScope.launch {
+            authViewModel.error.collect(::handleError)
         }
     }
 

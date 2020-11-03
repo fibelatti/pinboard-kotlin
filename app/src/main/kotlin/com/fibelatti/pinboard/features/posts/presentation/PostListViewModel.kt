@@ -1,10 +1,10 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import androidx.annotation.VisibleForTesting
-import com.fibelatti.core.archcomponents.BaseViewModel
 import com.fibelatti.core.extension.exhaustive
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onFailure
+import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostListContent

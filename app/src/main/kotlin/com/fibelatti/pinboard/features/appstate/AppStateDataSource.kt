@@ -1,13 +1,13 @@
 package com.fibelatti.pinboard.features.appstate
 
 import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.fibelatti.core.functional.SingleRunner
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Singleton
 class AppStateDataSource @Inject constructor(
@@ -22,13 +22,9 @@ class AppStateDataSource @Inject constructor(
     private val connectivityInfoProvider: ConnectivityInfoProvider
 ) : AppStateRepository {
 
-    private val currentContent = MutableLiveData<Content>()
+    private val currentContent = MutableStateFlow(getInitialContent())
 
-    init {
-        reset()
-    }
-
-    override fun getContent(): LiveData<Content> = currentContent
+    override fun getContent(): Flow<Content> = currentContent
 
     override fun reset() {
         updateContent(getInitialContent())
@@ -36,8 +32,7 @@ class AppStateDataSource @Inject constructor(
 
     override suspend fun runAction(action: Action) {
         singleRunner.afterPrevious {
-            val content = currentContent.value ?: getInitialContent()
-
+            val content = currentContent.value
             val newContent = when (action) {
                 is NavigationAction -> navigationActionHandler.runAction(action, content)
                 is PostAction -> postActionHandler.runAction(action, content)
@@ -54,20 +49,18 @@ class AppStateDataSource @Inject constructor(
     }
 
     @VisibleForTesting
-    fun getInitialContent(): Content {
-        return PostListContent(
-            category = All,
-            posts = null,
-            showDescription = userRepository.getShowDescriptionInLists(),
-            sortType = NewestFirst,
-            searchParameters = SearchParameters(),
-            shouldLoad = ShouldLoadFirstPage,
-            isConnected = connectivityInfoProvider.isConnected()
-        )
-    }
+    fun getInitialContent(): Content = PostListContent(
+        category = All,
+        posts = null,
+        showDescription = userRepository.getShowDescriptionInLists(),
+        sortType = NewestFirst,
+        searchParameters = SearchParameters(),
+        shouldLoad = ShouldLoadFirstPage,
+        isConnected = connectivityInfoProvider.isConnected()
+    )
 
     @VisibleForTesting
     fun updateContent(content: Content) {
-        currentContent.postValue(content)
+        currentContent.value = content
     }
 }

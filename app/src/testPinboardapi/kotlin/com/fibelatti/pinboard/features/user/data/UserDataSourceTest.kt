@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.user.data
 
-import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
 import com.fibelatti.pinboard.InstantExecutorExtension
 import com.fibelatti.pinboard.MockDataProvider.mockApiToken
 import com.fibelatti.pinboard.MockDataProvider.mockTime
@@ -14,6 +13,8 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -37,7 +38,9 @@ internal class UserDataSourceTest {
             userDataSource = UserDataSource(mockUserSharedPreferences)
 
             // THEN
-            userDataSource.getLoginState().currentValueShouldBe(LoginState.LoggedIn)
+            runBlocking {
+                assertThat(userDataSource.getLoginState().first()).isEqualTo(LoginState.LoggedIn)
+            }
         }
 
         @Test
@@ -48,7 +51,9 @@ internal class UserDataSourceTest {
             userDataSource = UserDataSource(mockUserSharedPreferences)
 
             // THEN
-            userDataSource.getLoginState().currentValueShouldBe(LoginState.LoggedOut)
+            runBlocking {
+                assertThat(userDataSource.getLoginState().first()).isEqualTo(LoginState.LoggedOut)
+            }
         }
     }
 
@@ -73,7 +78,9 @@ internal class UserDataSourceTest {
 
             // THEN
             verify { mockUserSharedPreferences.setAuthToken(mockApiToken) }
-            userDataSource.getLoginState().currentValueShouldBe(LoginState.Authorizing)
+            runBlocking {
+                assertThat(userDataSource.getLoginState().first()).isEqualTo(LoginState.Authorizing)
+            }
         }
 
         @Test
@@ -82,7 +89,9 @@ internal class UserDataSourceTest {
             userDataSource.loggedIn()
 
             // THEN
-            userDataSource.getLoginState().currentValueShouldBe(LoginState.LoggedIn)
+            runBlocking {
+                assertThat(userDataSource.getLoginState().first()).isEqualTo(LoginState.LoggedIn)
+            }
         }
 
         @Test
@@ -93,7 +102,9 @@ internal class UserDataSourceTest {
             // THEN
             verify { mockUserSharedPreferences.setAuthToken("") }
             verify { mockUserSharedPreferences.setLastUpdate("") }
-            userDataSource.getLoginState().currentValueShouldBe(LoginState.LoggedOut)
+            runBlocking {
+                assertThat(userDataSource.getLoginState().first()).isEqualTo(LoginState.LoggedOut)
+            }
         }
 
         @Nested
@@ -110,7 +121,9 @@ internal class UserDataSourceTest {
                 // THEN
                 verify(exactly = 0) { mockUserSharedPreferences.setAuthToken(any()) }
                 verify(exactly = 0) { mockUserSharedPreferences.setLastUpdate(any()) }
-                userDataSource.getLoginState().currentValueShouldBe(LoginState.LoggedOut)
+                runBlocking {
+                    assertThat(userDataSource.getLoginState().first()).isEqualTo(LoginState.LoggedOut)
+                }
             }
 
             @Test
@@ -124,7 +137,9 @@ internal class UserDataSourceTest {
                 // THEN
                 verify { mockUserSharedPreferences.setAuthToken("") }
                 verify { mockUserSharedPreferences.setLastUpdate("") }
-                userDataSource.getLoginState().currentValueShouldBe(LoginState.Unauthorized)
+                runBlocking {
+                    assertThat(userDataSource.getLoginState().first()).isEqualTo(LoginState.Unauthorized)
+                }
             }
         }
 

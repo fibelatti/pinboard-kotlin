@@ -1,15 +1,12 @@
 package com.fibelatti.pinboard.features.share
 
-import com.fibelatti.core.archcomponents.BaseViewModel
-import com.fibelatti.core.archcomponents.LiveEvent
-import com.fibelatti.core.archcomponents.MutableLiveEvent
-import com.fibelatti.core.archcomponents.postEvent
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.functional.map
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.EditPostFromShare
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
@@ -19,8 +16,11 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.ExtractUrl
 import com.fibelatti.pinboard.features.posts.domain.usecase.ParseUrl
 import com.fibelatti.pinboard.features.posts.domain.usecase.RichUrl
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.launch
 
 class ShareReceiverViewModel @Inject constructor(
     private val extractUrl: ExtractUrl,
@@ -28,21 +28,21 @@ class ShareReceiverViewModel @Inject constructor(
     private val addPost: AddPost,
     private val userRepository: UserRepository,
     private val appStateRepository: AppStateRepository,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
 ) : BaseViewModel() {
 
-    val saved: LiveEvent<String> get() = _saved
-    private val _saved = MutableLiveEvent<String>()
-    val edit: LiveEvent<String> get() = _edit
-    private val _edit = MutableLiveEvent<String>()
-    val failed: LiveEvent<Throwable> get() = _failed
-    private val _failed = MutableLiveEvent<Throwable>()
+    val saved: Flow<String> get() = _saved.filterNotNull()
+    private val _saved = MutableStateFlow<String?>(null)
+    val edit: Flow<String> get() = _edit.filterNotNull()
+    private val _edit = MutableStateFlow<String?>(null)
+    val failed: Flow<Throwable> get() = _failed.filterNotNull().filterNotNull()
+    private val _failed = MutableStateFlow<Throwable?>(null)
 
     fun saveUrl(url: String) {
         launch {
             val richUrl = extractUrl(url)
                 .map { extractedUrl -> parseUrl(extractedUrl) }
-                .onFailure { _failed.postEvent(it) }
+                .onFailure { _failed.value = it }
                 .getOrNull() ?: return@launch
 
             if (userRepository.getEditAfterSharing() is EditAfterSharing.BeforeSaving) {
@@ -63,7 +63,7 @@ class ShareReceiverViewModel @Inject constructor(
             readLater = userRepository.getDefaultReadLater() ?: false,
         )
 
-        _edit.postEvent("")
+        _edit.value = ""
         appStateRepository.runAction(EditPostFromShare(newPost))
     }
 
@@ -81,11 +81,11 @@ class ShareReceiverViewModel @Inject constructor(
             )
         ).onSuccess {
             if (userRepository.getEditAfterSharing() is EditAfterSharing.AfterSaving) {
-                _edit.postEvent(resourceProvider.getString(R.string.posts_saved_feedback))
+                _edit.value = resourceProvider.getString(R.string.posts_saved_feedback)
                 appStateRepository.runAction(EditPostFromShare(it))
             } else {
-                _saved.postEvent(resourceProvider.getString(R.string.posts_saved_feedback))
+                _saved.value = resourceProvider.getString(R.string.posts_saved_feedback)
             }
-        }.onFailure { _failed.postEvent(it) }
+        }.onFailure { _failed.value = it }
     }
 }

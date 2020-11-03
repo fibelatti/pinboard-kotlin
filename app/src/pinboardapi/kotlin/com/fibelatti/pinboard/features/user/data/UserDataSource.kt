@@ -1,8 +1,6 @@
 package com.fibelatti.pinboard.features.user.data
 
 import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
@@ -11,38 +9,40 @@ import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Suppress("TooManyFunctions")
 @Singleton
 class UserDataSource @Inject constructor(
-    private val userSharedPreferences: UserSharedPreferences
+    private val userSharedPreferences: UserSharedPreferences,
 ) : UserRepository {
 
     @VisibleForTesting
-    val loginState = MutableLiveData<LoginState>().apply {
+    val loginState = MutableStateFlow(
         value = if (userSharedPreferences.getAuthToken().isNotEmpty()) {
             LoginState.LoggedIn
         } else {
             LoginState.LoggedOut
         }
-    }
+    )
 
-    override fun getLoginState(): LiveData<LoginState> = loginState
+    override fun getLoginState(): Flow<LoginState> = loginState
 
     override fun loginAttempt(authToken: String) {
         userSharedPreferences.setAuthToken(authToken)
-        loginState.postValue(LoginState.Authorizing)
+        loginState.value = LoginState.Authorizing
     }
 
     override fun loggedIn() {
-        loginState.postValue(LoginState.LoggedIn)
+        loginState.value = LoginState.LoggedIn
     }
 
     override fun logout() {
         userSharedPreferences.setAuthToken("")
         userSharedPreferences.setLastUpdate("")
 
-        loginState.postValue(LoginState.LoggedOut)
+        loginState.value = LoginState.LoggedOut
     }
 
     override fun forceLogout() {
@@ -50,7 +50,7 @@ class UserDataSource @Inject constructor(
             userSharedPreferences.setAuthToken("")
             userSharedPreferences.setLastUpdate("")
 
-            loginState.postValue(LoginState.Unauthorized)
+            loginState.value = LoginState.Unauthorized
         }
     }
 

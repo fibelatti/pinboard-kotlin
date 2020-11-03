@@ -100,11 +100,9 @@ class TagListLayout @JvmOverloads constructor(
         }
     }
 
-    fun getCurrentTagSorting(): TagSorting {
-        return when (binding.buttonGroupTagSorting.checkedButtonId) {
-            R.id.buttonTagSortingMoreFirst -> TagSorting.MoreFirst
-            R.id.buttonTagSortingLessFirst -> TagSorting.LessFirst
-            else -> TagSorting.AtoZ
-        }
+    fun getCurrentTagSorting(): TagSorting = when (binding.buttonGroupTagSorting.checkedButtonId) {
+        R.id.buttonTagSortingMoreFirst -> TagSorting.MoreFirst
+        R.id.buttonTagSortingLessFirst -> TagSorting.LessFirst
+        else -> TagSorting.AtoZ
     }
 }

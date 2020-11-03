@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.archcomponents.extension.activityViewModel
-import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
@@ -20,6 +20,8 @@ import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import javax.inject.Inject
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class NoteDetailsFragment @Inject constructor() : BaseFragment() {
 
@@ -48,13 +50,17 @@ class NoteDetailsFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun setupViewModels() {
-        viewLifecycleOwner.observe(appStateViewModel.noteDetailContent) { content ->
-            setupActivityViews()
-            binding.layoutOfflineAlert.root.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
+        lifecycleScope.launch {
+            appStateViewModel.noteDetailContent.collect { content ->
+                setupActivityViews()
+                binding.layoutOfflineAlert.root.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
 
-            content.note.either({ getNoteDetails(content) }, ::showNote)
+                content.note.either({ getNoteDetails(content) }, ::showNote)
+            }
         }
-        viewLifecycleOwner.observe(noteDetailsViewModel.error, ::handleError)
+        lifecycleScope.launch {
+            noteDetailsViewModel.error.collect(::handleError)
+        }
     }
 
     private fun setupActivityViews() {

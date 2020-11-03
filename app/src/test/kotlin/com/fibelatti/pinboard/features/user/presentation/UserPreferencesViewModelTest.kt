@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.user.presentation
 
-import com.fibelatti.core.archcomponents.test.extension.currentEventShouldBe
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
@@ -8,8 +7,11 @@ import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
+import com.google.common.truth.Truth.assertThat
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 
 internal class UserPreferencesViewModelTest : BaseViewModelTest() {
@@ -33,7 +35,9 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         // THEN
         verify { mockUserRepository.setAppearance(mockAppearance) }
         verify { mockAppStateRepository.reset() }
-        userPreferencesViewModel.appearanceChanged.currentEventShouldBe(mockAppearance)
+        runBlocking {
+            assertThat(userPreferencesViewModel.appearanceChanged.first()).isEqualTo(mockAppearance)
+        }
     }
 
     @Test

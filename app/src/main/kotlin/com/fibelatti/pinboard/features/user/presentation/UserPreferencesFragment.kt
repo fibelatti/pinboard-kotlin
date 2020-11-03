@@ -7,9 +7,8 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.bundleOf
+import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.archcomponents.extension.activityViewModel
-import com.fibelatti.core.archcomponents.extension.observe
-import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.navigateBack
@@ -23,6 +22,8 @@ import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import javax.inject.Inject
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class UserPreferencesFragment @Inject constructor() : BaseFragment() {
 
@@ -48,38 +49,40 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupActivityViews()
-        viewLifecycleOwner.observe(appStateViewModel.userPreferencesContent) {
-            setupAppearance(it.appearance)
-            setupPreferredDetailsView(it.preferredDetailsView)
+        lifecycleScope.launch {
+            appStateViewModel.userPreferencesContent.collect {
+                setupAppearance(it.appearance)
+                setupPreferredDetailsView(it.preferredDetailsView)
 
-            binding.checkboxAutoFillDescription.setValueAndChangeListener(
-                it.autoFillDescription,
-                userPreferencesViewModel::saveAutoFillDescription
-            )
-            binding.checkboxShowDescriptionInLists.setValueAndChangeListener(
-                it.showDescriptionInLists,
-                userPreferencesViewModel::saveShowDescriptionInLists
-            )
+                binding.checkboxAutoFillDescription.setValueAndChangeListener(
+                    it.autoFillDescription,
+                    userPreferencesViewModel::saveAutoFillDescription
+                )
+                binding.checkboxShowDescriptionInLists.setValueAndChangeListener(
+                    it.showDescriptionInLists,
+                    userPreferencesViewModel::saveShowDescriptionInLists
+                )
 
-            setupEditAfterSharing(it.editAfterSharing)
+                setupEditAfterSharing(it.editAfterSharing)
 
-            binding.checkboxPrivateDefault.setValueAndChangeListener(
-                it.defaultPrivate,
-                userPreferencesViewModel::saveDefaultPrivate
-            )
-            binding.checkboxReadLaterDefault.setValueAndChangeListener(
-                it.defaultReadLater,
-                userPreferencesViewModel::saveDefaultReadLater
-            )
+                binding.checkboxPrivateDefault.setValueAndChangeListener(
+                    it.defaultPrivate,
+                    userPreferencesViewModel::saveDefaultPrivate
+                )
+                binding.checkboxReadLaterDefault.setValueAndChangeListener(
+                    it.defaultReadLater,
+                    userPreferencesViewModel::saveDefaultReadLater
+                )
+            }
         }
-
-        viewLifecycleOwner.observeEvent(userPreferencesViewModel.appearanceChanged) { newAppearance ->
-            when (newAppearance) {
-                Appearance.DarkTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                Appearance.LightTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        lifecycleScope.launch {
+            userPreferencesViewModel.appearanceChanged.collect { newAppearance ->
+                when (newAppearance) {
+                    Appearance.DarkTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                    Appearance.LightTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                    else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                }
             }
         }
     }

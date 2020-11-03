@@ -1,29 +1,28 @@
 package com.fibelatti.pinboard.features.appstate
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import com.fibelatti.core.archcomponents.BaseViewModel
-import kotlinx.coroutines.launch
+import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.launch
 
 class AppStateViewModel @Inject constructor(
-    private val appStateRepository: AppStateRepository
+    private val appStateRepository: AppStateRepository,
 ) : BaseViewModel() {
 
-    val content: LiveData<Content>
-        get() = appStateRepository.getContent()
+    val content: Flow<Content> = appStateRepository.getContent()
 
-    val postListContent: LiveData<PostListContent> get() = mediatorLiveDataForContentType()
-    val postDetailContent: LiveData<PostDetailContent> get() = mediatorLiveDataForContentType()
-    val addPostContent: LiveData<AddPostContent> get() = mediatorLiveDataForContentType()
-    val editPostContent: LiveData<EditPostContent> get() = mediatorLiveDataForContentType()
-    val searchContent: LiveData<SearchContent> get() = mediatorLiveDataForContentType()
-    val tagListContent: LiveData<TagListContent> get() = mediatorLiveDataForContentType()
-    val noteListContent: LiveData<NoteListContent> get() = mediatorLiveDataForContentType()
-    val noteDetailContent: LiveData<NoteDetailContent> get() = mediatorLiveDataForContentType()
-    val popularPostsContent: LiveData<PopularPostsContent> get() = mediatorLiveDataForContentType()
-    val popularPostDetailContent: LiveData<PopularPostDetailContent> get() = mediatorLiveDataForContentType()
-    val userPreferencesContent: LiveData<UserPreferencesContent> get() = mediatorLiveDataForContentType()
+    val postListContent: Flow<PostListContent> get() = filteredContent()
+    val postDetailContent: Flow<PostDetailContent> get() = filteredContent()
+    val addPostContent: Flow<AddPostContent> get() = filteredContent()
+    val editPostContent: Flow<EditPostContent> get() = filteredContent()
+    val searchContent: Flow<SearchContent> get() = filteredContent()
+    val tagListContent: Flow<TagListContent> get() = filteredContent()
+    val noteListContent: Flow<NoteListContent> get() = filteredContent()
+    val noteDetailContent: Flow<NoteDetailContent> get() = filteredContent()
+    val popularPostsContent: Flow<PopularPostsContent> get() = filteredContent()
+    val popularPostDetailContent: Flow<PopularPostDetailContent> get() = filteredContent()
+    val userPreferencesContent: Flow<UserPreferencesContent> get() = filteredContent()
 
     fun reset() {
         appStateRepository.reset()
@@ -33,8 +32,5 @@ class AppStateViewModel @Inject constructor(
         launch { appStateRepository.runAction(action) }
     }
 
-    private inline fun <reified T : Content> mediatorLiveDataForContentType(): MediatorLiveData<T> =
-        MediatorLiveData<T>().apply {
-            addSource(appStateRepository.getContent()) { if (it is T) value = it }
-        }
+    private inline fun <reified T> filteredContent() = content.mapNotNull { it as? T }
 }

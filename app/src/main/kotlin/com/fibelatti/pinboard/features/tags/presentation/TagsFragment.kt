@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.archcomponents.extension.activityViewModel
-import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
@@ -19,6 +19,8 @@ import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.RefreshTags
 import com.fibelatti.pinboard.features.mainActivity
 import javax.inject.Inject
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class TagsFragment @Inject constructor(
     private val tagsAdapter: TagsAdapter
@@ -57,20 +59,26 @@ class TagsFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        viewLifecycleOwner.observe(appStateViewModel.tagListContent) { content ->
-            setupActivityViews()
+        lifecycleScope.launch {
+            appStateViewModel.tagListContent.collect { content ->
+                setupActivityViews()
 
-            if (content.shouldLoad) {
-                binding.tagListLayout.showLoading()
-                tagsViewModel.getAll(TagsViewModel.Source.MENU)
-            } else {
-                tagsViewModel.sortTags(content.tags, binding.tagListLayout.getCurrentTagSorting())
+                if (content.shouldLoad) {
+                    binding.tagListLayout.showLoading()
+                    tagsViewModel.getAll(TagsViewModel.Source.MENU)
+                } else {
+                    tagsViewModel.sortTags(content.tags, binding.tagListLayout.getCurrentTagSorting())
+                }
+
+                binding.layoutOfflineAlert.root.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
             }
-
-            binding.layoutOfflineAlert.root.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
         }
-        viewLifecycleOwner.observe(tagsViewModel.tags, binding.tagListLayout::showTags)
-        viewLifecycleOwner.observe(tagsViewModel.error, ::handleError)
+        lifecycleScope.launch {
+            tagsViewModel.tags.collect(binding.tagListLayout::showTags)
+        }
+        lifecycleScope.launch {
+            tagsViewModel.error.collect(::handleError)
+        }
     }
 
     private fun setupActivityViews() {

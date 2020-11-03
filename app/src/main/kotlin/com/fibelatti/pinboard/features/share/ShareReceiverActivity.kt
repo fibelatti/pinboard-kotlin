@@ -3,7 +3,7 @@ package com.fibelatti.pinboard.features.share
 import android.content.Intent
 import android.os.Bundle
 import androidx.core.view.WindowCompat
-import com.fibelatti.core.archcomponents.extension.observeEvent
+import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.showStyledDialog
 import com.fibelatti.core.extension.toast
@@ -16,12 +16,13 @@ import com.fibelatti.pinboard.databinding.ActivityShareBinding
 import com.fibelatti.pinboard.features.MainActivity
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import java.net.HttpURLConnection
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
 class ShareReceiverActivity : BaseActivity() {
 
     private val binding by viewBinding(ActivityShareBinding::inflate)
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,13 +36,15 @@ class ShareReceiverActivity : BaseActivity() {
     }
 
     private fun setupViewModels(shareReceiverViewModel: ShareReceiverViewModel) {
-        with(shareReceiverViewModel) {
-            observeEvent(saved) { message ->
+        lifecycleScope.launch {
+            shareReceiverViewModel.saved.collect { message ->
                 binding.imageViewFeedback.setImageResource(R.drawable.ic_url_saved)
                 toast(message)
                 finish()
             }
-            observeEvent(edit) { message ->
+        }
+        lifecycleScope.launch {
+            shareReceiverViewModel.edit.collect { message ->
                 if (message.isNotEmpty()) {
                     binding.imageViewFeedback.setImageResource(R.drawable.ic_url_saved)
                     toast(message)
@@ -49,7 +52,9 @@ class ShareReceiverActivity : BaseActivity() {
                 startActivity(MainActivity.Builder(this@ShareReceiverActivity).build())
                 finish()
             }
-            observeEvent(failed) { error ->
+        }
+        lifecycleScope.launch {
+            shareReceiverViewModel.failed.collect { error ->
                 binding.imageViewFeedback.setImageResource(R.drawable.ic_url_saved_error)
 
                 val loginFailedCodes = listOf(

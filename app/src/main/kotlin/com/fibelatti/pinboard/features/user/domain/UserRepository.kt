@@ -1,14 +1,14 @@
 package com.fibelatti.pinboard.features.user.domain
 
-import androidx.lifecycle.LiveData
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
+import kotlinx.coroutines.flow.Flow
 
 @Suppress("ComplexInterface", "TooManyFunctions")
 interface UserRepository {
 
-    fun getLoginState(): LiveData<LoginState>
+    fun getLoginState(): Flow<LoginState>
 
     fun loginAttempt(authToken: String)
 

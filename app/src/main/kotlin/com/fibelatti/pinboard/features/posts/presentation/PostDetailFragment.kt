@@ -15,9 +15,8 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.MenuRes
+import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.archcomponents.extension.activityViewModel
-import com.fibelatti.core.archcomponents.extension.observe
-import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.navigateBack
@@ -38,9 +37,11 @@ import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import javax.inject.Inject
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class PostDetailFragment @Inject constructor(
-    private val connectivityInfoProvider: ConnectivityInfoProvider
+    private val connectivityInfoProvider: ConnectivityInfoProvider,
 ) : BaseFragment() {
 
     companion object {
@@ -71,7 +72,7 @@ class PostDetailFragment @Inject constructor(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? = FragmentPostDetailBinding.inflate(inflater, container, false).run {
         binding = this
         binding.root
@@ -88,17 +89,22 @@ class PostDetailFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        viewLifecycleOwner.observe(appStateViewModel.postDetailContent, ::updateViews)
-        viewLifecycleOwner.observe(appStateViewModel.popularPostDetailContent, ::updateViews)
-
-        with(postDetailViewModel) {
-            viewLifecycleOwner.observe(loading) {
+        lifecycleScope.launch {
+            appStateViewModel.postDetailContent.collect(::updateViews)
+        }
+        lifecycleScope.launch {
+            appStateViewModel.popularPostDetailContent.collect(::updateViews)
+        }
+        lifecycleScope.launch {
+            postDetailViewModel.loading.collect {
                 binding.layoutProgressBar.root.visibleIf(it, otherwiseVisibility = View.GONE)
             }
-            viewLifecycleOwner.observeEvent(deleted) {
-                mainActivity?.showBanner(getString(R.string.posts_deleted_feedback))
-            }
-            viewLifecycleOwner.observeEvent(deleteError) {
+        }
+        lifecycleScope.launch {
+            postDetailViewModel.deleted.collect { mainActivity?.showBanner(getString(R.string.posts_deleted_feedback)) }
+        }
+        lifecycleScope.launch {
+            postDetailViewModel.deleteError.collect {
                 context?.showStyledDialog(
                     dialogStyle = R.style.AppTheme_AlertDialog,
                     dialogBackground = R.drawable.background_contrast_rounded
@@ -106,18 +112,21 @@ class PostDetailFragment @Inject constructor(
                     setMessage(R.string.posts_deleted_error)
                     setPositiveButton(R.string.hint_ok) { dialog, _ -> dialog?.dismiss() }
                 }
-
             }
-            viewLifecycleOwner.observe(error, ::handleError)
         }
-        with(popularPostsViewModel) {
-            viewLifecycleOwner.observe(loading) {
+        lifecycleScope.launch {
+            postDetailViewModel.error.collect(::handleError)
+        }
+        lifecycleScope.launch {
+            popularPostsViewModel.loading.collect {
                 binding.layoutProgressBar.root.visibleIf(it, otherwiseVisibility = View.GONE)
             }
-            viewLifecycleOwner.observe(saved) {
-                mainActivity?.showBanner(getString(R.string.posts_saved_feedback))
-            }
-            viewLifecycleOwner.observe(error, ::handleError)
+        }
+        lifecycleScope.launch {
+            popularPostsViewModel.saved.collect { mainActivity?.showBanner(getString(R.string.posts_saved_feedback)) }
+        }
+        lifecycleScope.launch {
+            popularPostsViewModel.error.collect(::handleError)
         }
     }
 
@@ -285,7 +294,7 @@ private class PostWebViewClient(callback: Callback) : WebViewClient() {
     override fun onReceivedError(
         view: WebView?,
         request: WebResourceRequest?,
-        error: WebResourceError?
+        error: WebResourceError?,
     ) {
         super.onReceivedError(view, request, error)
         callback?.onError()

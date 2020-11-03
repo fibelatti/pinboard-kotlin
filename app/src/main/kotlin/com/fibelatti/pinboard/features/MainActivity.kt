@@ -14,9 +14,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.android.IntentDelegate
 import com.fibelatti.core.android.base.BaseIntentBuilder
-import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.applyAs
 import com.fibelatti.core.extension.createFragment
@@ -59,8 +59,8 @@ import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 val Fragment.mainActivity: MainActivity? get() = activity as? MainActivity
@@ -102,11 +102,7 @@ class MainActivity : BaseActivity() {
         setupView()
         setupViewModels()
 
-        inAppUpdateManager.checkForAvailableUpdates(
-            this,
-            FLEXIBLE_UPDATE_REQUEST,
-            ::onUpdateDownloadComplete
-        )
+        inAppUpdateManager.checkForAvailableUpdates(this, FLEXIBLE_UPDATE_REQUEST, ::onUpdateDownloadComplete)
     }
 
     override fun onResume() {
@@ -124,12 +120,7 @@ class MainActivity : BaseActivity() {
             duration = Snackbar.LENGTH_LONG
         ) {
             setAction(R.string.in_app_update_install) { inAppUpdateManager.completeUpdate() }
-            setActionTextColor(
-                ContextCompat.getColor(
-                    binding.root.context,
-                    R.color.color_on_background
-                )
-            )
+            setActionTextColor(ContextCompat.getColor(binding.root.context, R.color.color_on_background))
         }
     }
 
@@ -187,36 +178,41 @@ class MainActivity : BaseActivity() {
     }
 
     private fun setupViewModels() {
-        observe(authViewModel.loginState, ::handleLoginState)
-        observe(authViewModel.error, ::handleError)
-        observe(appStateViewModel.content) { content ->
-            if (isRecreating) {
-                isRecreating = false
-                return@observe
-            }
+        lifecycleScope.launch {
+            authViewModel.loginState.collect(::handleLoginState)
+        }
+        lifecycleScope.launch {
+            authViewModel.error.collect(::handleError)
+        }
+        lifecycleScope.launch {
+            appStateViewModel.content.collect { content ->
+                if (isRecreating) {
+                    isRecreating = false
+                    return@collect
+                }
 
-            when (content) {
-                is PostListContent -> featureFragments.showPostList()
-                is PostDetailContent -> featureFragments.showPostDetail()
-                is ExternalBrowserContent -> {
-                    featureFragments.showPostInExternalBrowser(content.post)
-                    onResumeDelegate = { appStateViewModel.runAction(NavigateBack) }
-                }
-                is SearchContent -> featureFragments.showSearch()
-                is AddPostContent -> featureFragments.showAddPost()
-                is EditPostContent -> featureFragments.showEditPost()
-                is TagListContent -> featureFragments.showTags()
-                is NoteListContent -> featureFragments.showNotes()
-                is NoteDetailContent -> featureFragments.showNoteDetails()
-                is PopularPostsContent -> featureFragments.showPopular()
-                is PopularPostDetailContent -> featureFragments.showPostDetail()
-                is UserPreferencesContent -> featureFragments.showPreferences()
-                is ExternalContent -> {
-                    appStateViewModel.content.removeObservers(this)
-                    appStateViewModel.reset()
-                    finish()
-                }
-            }.exhaustive
+                when (content) {
+                    is PostListContent -> featureFragments.showPostList()
+                    is PostDetailContent -> featureFragments.showPostDetail()
+                    is ExternalBrowserContent -> {
+                        featureFragments.showPostInExternalBrowser(content.post)
+                        onResumeDelegate = { appStateViewModel.runAction(NavigateBack) }
+                    }
+                    is SearchContent -> featureFragments.showSearch()
+                    is AddPostContent -> featureFragments.showAddPost()
+                    is EditPostContent -> featureFragments.showEditPost()
+                    is TagListContent -> featureFragments.showTags()
+                    is NoteListContent -> featureFragments.showNotes()
+                    is NoteDetailContent -> featureFragments.showNoteDetails()
+                    is PopularPostsContent -> featureFragments.showPopular()
+                    is PopularPostDetailContent -> featureFragments.showPostDetail()
+                    is UserPreferencesContent -> featureFragments.showPreferences()
+                    is ExternalContent -> {
+                        appStateViewModel.reset()
+                        finish()
+                    }
+                }.exhaustive
+            }
         }
     }
 
@@ -234,53 +230,42 @@ class MainActivity : BaseActivity() {
             return
         }
 
-        val scope = CoroutineScope(appStateViewModel.coroutineContext)
-        val animTime = resources.getInteger(R.integer.anim_time_long).toLong()
-
         when (loginState) {
             LoginState.Authorizing -> DoNothing
-            LoginState.LoggedIn -> scope.handleLoggedIn(animTime)
-            LoginState.LoggedOut -> scope.handleLoggedOut(animTime)
+            LoginState.LoggedIn -> handleLoggedIn()
+            LoginState.LoggedOut -> handleLoggedOut()
             LoginState.Unauthorized -> handleUnauthorized()
         }
     }
 
-    private fun CoroutineScope.handleLoggedIn(animTime: Long) {
+    private fun handleLoggedIn() {
         if (intent.fromBuilder) {
             return
         }
 
-        launch {
+        val animTime = resources.getInteger(R.integer.anim_time_long).toLong()
+        lifecycleScope.launch {
             delay(animTime)
             inTransaction {
-                replace(
-                    R.id.fragmentHost,
-                    createFragment<PostListFragment>(),
-                    PostListFragment.TAG
-                )
+                replace(R.id.fragmentHost, createFragment<PostListFragment>(), PostListFragment.TAG)
                 supportFragmentManager.findFragmentByTag(AuthFragment.TAG)?.view?.let {
                     val binding = FragmentAuthBinding.bind(it)
-                    addSharedElement(
-                        binding.imageViewAppLogo,
-                        SharedElementTransitionNames.APP_LOGO
-                    )
+                    addSharedElement(binding.imageViewAppLogo, SharedElementTransitionNames.APP_LOGO)
                 }
             }
         }
     }
 
-    private fun CoroutineScope.handleLoggedOut(animTime: Long) {
-        launch {
+    private fun handleLoggedOut() {
+        val animTime = resources.getInteger(R.integer.anim_time_long).toLong()
+        lifecycleScope.launch {
             delay(animTime)
             inTransaction {
                 setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                 replace(R.id.fragmentHost, createFragment<AuthFragment>())
                 supportFragmentManager.findFragmentByTag(SplashFragment.TAG)?.view?.let {
                     val binding = FragmentSplashBinding.bind(it)
-                    addSharedElement(
-                        binding.imageViewAppLogo,
-                        SharedElementTransitionNames.APP_LOGO
-                    )
+                    addSharedElement(binding.imageViewAppLogo, SharedElementTransitionNames.APP_LOGO)
                 }
             }
 
@@ -290,11 +275,10 @@ class MainActivity : BaseActivity() {
 
     private fun handleUnauthorized() {
         inTransaction {
+            setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
             for (fragment in supportFragmentManager.fragments) {
                 remove(fragment)
             }
-
-            setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
             add(R.id.fragmentHost, createFragment<AuthFragment>(), AuthFragment.TAG)
         }
 

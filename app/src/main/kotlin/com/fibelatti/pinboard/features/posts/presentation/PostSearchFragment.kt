@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.archcomponents.extension.activityViewModel
-import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.applyAs
@@ -32,6 +32,8 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagsAdapter
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class PostSearchFragment @Inject constructor(
     private val tagsAdapter: TagsAdapter
@@ -75,34 +77,37 @@ class PostSearchFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        viewLifecycleOwner.observe(appStateViewModel.searchContent) { content ->
-            setupActivityViews()
-            binding.editTextSearchTerm.setText(content.searchParameters.term)
+        lifecycleScope.launch {
+            appStateViewModel.searchContent.collect { content ->
+                setupActivityViews()
+                binding.editTextSearchTerm.setText(content.searchParameters.term)
 
-            if (content.searchParameters.tags.isNotEmpty()) {
-                binding.chipGroupSelectedTags.removeAllViews()
-                for (tag in content.searchParameters.tags) {
-                    binding.chipGroupSelectedTags.addView(createTagChip(tag))
+                if (content.searchParameters.tags.isNotEmpty()) {
+                    binding.chipGroupSelectedTags.removeAllViews()
+                    for (tag in content.searchParameters.tags) {
+                        binding.chipGroupSelectedTags.addView(createTagChip(tag))
+                    }
+
+                    binding.textViewSelectedTagsTitle.visible()
+                } else {
+                    binding.textViewSelectedTagsTitle.gone()
+                    binding.chipGroupSelectedTags.removeAllViews()
                 }
 
-                binding.textViewSelectedTagsTitle.visible()
-            } else {
-                binding.textViewSelectedTagsTitle.gone()
-                binding.chipGroupSelectedTags.removeAllViews()
-            }
-
-            if (content.shouldLoadTags) {
-                binding.tagListLayout.showLoading()
-                tagsViewModel.getAll(TagsViewModel.Source.SEARCH)
-            } else {
-                tagsViewModel.sortTags(
-                    content.availableTags,
-                    binding.tagListLayout.getCurrentTagSorting()
-                )
+                if (content.shouldLoadTags) {
+                    binding.tagListLayout.showLoading()
+                    tagsViewModel.getAll(TagsViewModel.Source.SEARCH)
+                } else {
+                    tagsViewModel.sortTags(content.availableTags, binding.tagListLayout.getCurrentTagSorting())
+                }
             }
         }
-        viewLifecycleOwner.observe(tagsViewModel.tags, binding.tagListLayout::showTags)
-        viewLifecycleOwner.observe(tagsViewModel.error, ::handleError)
+        lifecycleScope.launch {
+            tagsViewModel.tags.collect(binding.tagListLayout::showTags)
+        }
+        lifecycleScope.launch {
+            tagsViewModel.error.collect(::handleError)
+        }
     }
 
     private fun setupActivityViews() {

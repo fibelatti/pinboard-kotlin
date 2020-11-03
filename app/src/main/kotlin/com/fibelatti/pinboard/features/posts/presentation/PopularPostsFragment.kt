@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.archcomponents.extension.activityViewModel
-import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
@@ -25,6 +25,8 @@ import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import javax.inject.Inject
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class PopularPostsFragment @Inject constructor(
     private val popularPostsAdapter: PopularPostsAdapter
@@ -85,45 +87,49 @@ class PopularPostsFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        viewLifecycleOwner.observe(appStateViewModel.popularPostsContent) { content ->
-            mainActivity?.updateTitleLayout {
-                setTitle(R.string.popular_title)
-                hideSubTitle()
-                setNavigateUp { navigateBack() }
-            }
-
-            mainActivity?.updateViews { bottomAppBar, fab ->
-                bottomAppBar.run {
-                    navigationIcon = null
-                    menu.clear()
-                    gone()
+        lifecycleScope.launch {
+            appStateViewModel.popularPostsContent.collect { content ->
+                mainActivity?.updateTitleLayout {
+                    setTitle(R.string.popular_title)
+                    hideSubTitle()
+                    setNavigateUp { navigateBack() }
                 }
-                fab.hide()
-            }
 
-            if (content.shouldLoad) {
-                binding.layoutProgressBar.root.visible()
-                binding.recyclerViewPosts.gone()
-                binding.layoutEmptyList.gone()
-                popularPostsViewModel.getPosts()
-            } else {
-                showPosts(content)
-            }
+                mainActivity?.updateViews { bottomAppBar, fab ->
+                    bottomAppBar.run {
+                        navigationIcon = null
+                        menu.clear()
+                        gone()
+                    }
+                    fab.hide()
+                }
 
-            binding.layoutOfflineAlert.root.goneIf(
-                content.isConnected,
-                otherwiseVisibility = View.VISIBLE
-            )
+                if (content.shouldLoad) {
+                    binding.layoutProgressBar.root.visible()
+                    binding.recyclerViewPosts.gone()
+                    binding.layoutEmptyList.gone()
+                    popularPostsViewModel.getPosts()
+                } else {
+                    showPosts(content)
+                }
+
+                binding.layoutOfflineAlert.root.goneIf(
+                    content.isConnected,
+                    otherwiseVisibility = View.VISIBLE
+                )
+            }
         }
-        with(popularPostsViewModel) {
-            viewLifecycleOwner.observe(loading) {
+        lifecycleScope.launch {
+            popularPostsViewModel.loading.collect {
                 binding.layoutProgressBar.root.visibleIf(it, otherwiseVisibility = View.GONE)
                 binding.recyclerViewPosts.goneIf(it, otherwiseVisibility = View.VISIBLE)
             }
-            viewLifecycleOwner.observe(saved) {
-                mainActivity?.showBanner(getString(R.string.posts_saved_feedback))
-            }
-            viewLifecycleOwner.observe(error, ::handleError)
+        }
+        lifecycleScope.launch {
+            popularPostsViewModel.saved.collect { mainActivity?.showBanner(getString(R.string.posts_saved_feedback)) }
+        }
+        lifecycleScope.launch {
+            popularPostsViewModel.error.collect(::handleError)
         }
     }
 

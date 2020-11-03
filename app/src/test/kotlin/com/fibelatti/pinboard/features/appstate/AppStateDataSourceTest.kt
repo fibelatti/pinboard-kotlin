@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.appstate
 
-import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
 import com.fibelatti.core.functional.SingleRunner
 import com.fibelatti.pinboard.InstantExecutorExtension
 import com.fibelatti.pinboard.allSealedSubclasses
@@ -15,6 +14,7 @@ import io.mockk.mockkClass
 import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.BeforeEach
@@ -74,7 +74,9 @@ internal class AppStateDataSourceTest {
 
     @Test
     fun `AppStateDataSource initial value should be set`() {
-        appStateDataSource.getContent().currentValueShouldBe(expectedInitialValue)
+        runBlocking {
+            assertThat(appStateDataSource.getContent().first()).isEqualTo(expectedInitialValue)
+        }
     }
 
     @Test
@@ -88,7 +90,9 @@ internal class AppStateDataSourceTest {
         // THEN
         verify { appStateDataSource.getInitialContent() }
         verify { appStateDataSource.updateContent(expectedInitialValue) }
-        appStateDataSource.getContent().currentValueShouldBe(expectedInitialValue)
+        runBlocking {
+            assertThat(appStateDataSource.getContent().first()).isEqualTo(expectedInitialValue)
+        }
     }
 
     @Nested
@@ -100,42 +104,12 @@ internal class AppStateDataSourceTest {
         fun `WHEN runAction is called THEN expected action handler is called`(testCase: Pair<Action, ExpectedHandler>) {
             runBlocking {
                 // GIVEN
-                coEvery {
-                    mockNavigationActionHandler.runAction(
-                        any(),
-                        any()
-                    )
-                } returns expectedInitialValue
-                coEvery {
-                    mockPostActionHandler.runAction(
-                        any(),
-                        any()
-                    )
-                } returns expectedInitialValue
-                coEvery {
-                    mockSearchActionHandler.runAction(
-                        any(),
-                        any()
-                    )
-                } returns expectedInitialValue
-                coEvery {
-                    mockTagActionHandler.runAction(
-                        any(),
-                        any()
-                    )
-                } returns expectedInitialValue
-                coEvery {
-                    mockNoteActionHandler.runAction(
-                        any(),
-                        any()
-                    )
-                } returns expectedInitialValue
-                coEvery {
-                    mockPopularActionHandler.runAction(
-                        any(),
-                        any()
-                    )
-                } returns expectedInitialValue
+                coEvery { mockNavigationActionHandler.runAction(any(), any()) } returns expectedInitialValue
+                coEvery { mockPostActionHandler.runAction(any(), any()) } returns expectedInitialValue
+                coEvery { mockSearchActionHandler.runAction(any(), any()) } returns expectedInitialValue
+                coEvery { mockTagActionHandler.runAction(any(), any()) } returns expectedInitialValue
+                coEvery { mockNoteActionHandler.runAction(any(), any()) } returns expectedInitialValue
+                coEvery { mockPopularActionHandler.runAction(any(), any()) } returns expectedInitialValue
 
                 val (action, expectedHandler) = testCase
 
@@ -146,72 +120,42 @@ internal class AppStateDataSourceTest {
                 when (expectedHandler) {
                     ExpectedHandler.NAVIGATION -> {
                         if (action is NavigationAction) {
-                            coVerify {
-                                mockNavigationActionHandler.runAction(
-                                    action,
-                                    expectedInitialValue
-                                )
-                            }
+                            coVerify { mockNavigationActionHandler.runAction(action, expectedInitialValue) }
                         } else {
                             fail { "Unexpected Action received" }
                         }
                     }
                     ExpectedHandler.POST -> {
                         if (action is PostAction) {
-                            coVerify {
-                                mockPostActionHandler.runAction(
-                                    action,
-                                    expectedInitialValue
-                                )
-                            }
+                            coVerify { mockPostActionHandler.runAction(action, expectedInitialValue) }
                         } else {
                             fail { "Unexpected Action received" }
                         }
                     }
                     ExpectedHandler.SEARCH -> {
                         if (action is SearchAction) {
-                            coVerify {
-                                mockSearchActionHandler.runAction(
-                                    action,
-                                    expectedInitialValue
-                                )
-                            }
+                            coVerify { mockSearchActionHandler.runAction(action, expectedInitialValue) }
                         } else {
                             fail { "Unexpected Action received" }
                         }
                     }
                     ExpectedHandler.TAG -> {
                         if (action is TagAction) {
-                            coVerify {
-                                mockTagActionHandler.runAction(
-                                    action,
-                                    expectedInitialValue
-                                )
-                            }
+                            coVerify { mockTagActionHandler.runAction(action, expectedInitialValue) }
                         } else {
                             fail { "Unexpected Action received" }
                         }
                     }
                     ExpectedHandler.NOTE -> {
                         if (action is NoteAction) {
-                            coVerify {
-                                mockNoteActionHandler.runAction(
-                                    action,
-                                    expectedInitialValue
-                                )
-                            }
+                            coVerify { mockNoteActionHandler.runAction(action, expectedInitialValue) }
                         } else {
                             fail { "Unexpected Action received" }
                         }
                     }
                     ExpectedHandler.POPULAR -> {
                         if (action is PopularAction) {
-                            coVerify {
-                                mockPopularActionHandler.runAction(
-                                    action,
-                                    expectedInitialValue
-                                )
-                            }
+                            coVerify { mockPopularActionHandler.runAction(action, expectedInitialValue) }
                         } else {
                             fail { "Unexpected Action received" }
                         }
@@ -289,10 +233,7 @@ internal class AppStateDataSourceTest {
             // GIVEN
             val mockAction = mockk<NavigationAction>()
             coEvery {
-                mockNavigationActionHandler.runAction(
-                    mockAction,
-                    expectedInitialValue
-                )
+                mockNavigationActionHandler.runAction(mockAction, expectedInitialValue)
             } returns expectedInitialValue
 
             // WHEN
@@ -307,10 +248,7 @@ internal class AppStateDataSourceTest {
             // GIVEN
             val mockAction = mockk<PostAction>()
             coEvery {
-                mockPostActionHandler.runAction(
-                    mockAction,
-                    expectedInitialValue
-                )
+                mockPostActionHandler.runAction(mockAction, expectedInitialValue)
             } returns expectedInitialValue
 
             // WHEN
@@ -325,10 +263,7 @@ internal class AppStateDataSourceTest {
             // GIVEN
             val mockAction = mockk<SearchAction>()
             coEvery {
-                mockSearchActionHandler.runAction(
-                    mockAction,
-                    expectedInitialValue
-                )
+                mockSearchActionHandler.runAction(mockAction, expectedInitialValue)
             } returns expectedInitialValue
 
             // WHEN
@@ -343,10 +278,7 @@ internal class AppStateDataSourceTest {
             // GIVEN
             val mockAction = mockk<TagAction>()
             coEvery {
-                mockTagActionHandler.runAction(
-                    mockAction,
-                    expectedInitialValue
-                )
+                mockTagActionHandler.runAction(mockAction, expectedInitialValue)
             } returns expectedInitialValue
 
             // WHEN
@@ -361,10 +293,7 @@ internal class AppStateDataSourceTest {
             // GIVEN
             val mockAction = mockk<NoteAction>()
             coEvery {
-                mockNoteActionHandler.runAction(
-                    mockAction,
-                    expectedInitialValue
-                )
+                mockNoteActionHandler.runAction(mockAction, expectedInitialValue)
             } returns expectedInitialValue
 
             // WHEN
@@ -379,10 +308,7 @@ internal class AppStateDataSourceTest {
             // GIVEN
             val mockAction = mockk<PopularAction>()
             coEvery {
-                mockPopularActionHandler.runAction(
-                    mockAction,
-                    expectedInitialValue
-                )
+                mockPopularActionHandler.runAction(mockAction, expectedInitialValue)
             } returns expectedInitialValue
 
             // WHEN
@@ -407,7 +333,9 @@ internal class AppStateDataSourceTest {
         appStateDataSource.updateContent(mockContent)
 
         // THEN
-        appStateDataSource.getContent().currentValueShouldBe(mockContent)
+        runBlocking {
+            assertThat(appStateDataSource.getContent().first()).isEqualTo(mockContent)
+        }
     }
 
     internal enum class ExpectedHandler {

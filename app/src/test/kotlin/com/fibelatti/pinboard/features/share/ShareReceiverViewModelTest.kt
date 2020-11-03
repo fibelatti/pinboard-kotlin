@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.share
 
-import com.fibelatti.core.archcomponents.test.extension.currentEventShouldBe
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.provider.ResourceProvider
@@ -18,11 +17,14 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.ParseUrl
 import com.fibelatti.pinboard.features.posts.domain.usecase.RichUrl
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
+import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 
 internal class ShareReceiverViewModelTest : BaseViewModelTest() {
@@ -56,7 +58,9 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         shareReceiverViewModel.saveUrl(mockUrlValid)
 
         // THEN
-        shareReceiverViewModel.failed.currentEventShouldBe(error)
+        runBlocking {
+            assertThat(shareReceiverViewModel.failed.first()).isEqualTo(error)
+        }
         coVerify(exactly = 0) { mockAddPost.invoke(any()) }
     }
 
@@ -70,7 +74,9 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         shareReceiverViewModel.saveUrl(mockUrlValid)
 
         // THEN
-        shareReceiverViewModel.failed.currentEventShouldBe(error)
+        runBlocking {
+            assertThat(shareReceiverViewModel.failed.first()).isEqualTo(error)
+        }
         coVerify(exactly = 0) { mockAddPost.invoke(any()) }
     }
 
@@ -100,7 +106,9 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         // THEN
         verify { mockUserRepository.getDefaultPrivate() }
         verify { mockUserRepository.getDefaultReadLater() }
-        shareReceiverViewModel.edit.currentEventShouldBe("")
+        runBlocking {
+            assertThat(shareReceiverViewModel.edit.first()).isEqualTo("")
+        }
         coVerify { mockAppStateRepository.runAction(EditPostFromShare(expectedPost)) }
         coVerify(exactly = 0) { mockAddPost.invoke(any()) }
     }
@@ -134,7 +142,9 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         // THEN
         verify { mockUserRepository.getDefaultPrivate() }
         verify { mockUserRepository.getDefaultReadLater() }
-        shareReceiverViewModel.failed.currentEventShouldBe(error)
+        runBlocking {
+            assertThat(shareReceiverViewModel.failed.first()).isEqualTo(error)
+        }
     }
 
     @Test
@@ -167,7 +177,9 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         // THEN
         verify { mockUserRepository.getDefaultPrivate() }
         verify { mockUserRepository.getDefaultReadLater() }
-        shareReceiverViewModel.saved.currentEventShouldBe("R.string.posts_saved_feedback")
+        runBlocking {
+            assertThat(shareReceiverViewModel.saved.first()).isEqualTo("R.string.posts_saved_feedback")
+        }
     }
 
     @Test
@@ -201,7 +213,9 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         // THEN
         verify { mockUserRepository.getDefaultPrivate() }
         verify { mockUserRepository.getDefaultReadLater() }
-        shareReceiverViewModel.edit.currentEventShouldBe("R.string.posts_saved_feedback")
+        runBlocking {
+            assertThat(shareReceiverViewModel.edit.first()).isEqualTo("R.string.posts_saved_feedback")
+        }
         coVerify { mockAppStateRepository.runAction(EditPostFromShare(post)) }
     }
 }

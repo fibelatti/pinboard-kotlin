@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.tags.presentation
 
-import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
@@ -9,9 +8,12 @@ import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.SetSearchTags
 import com.fibelatti.pinboard.features.appstate.SetTags
 import com.fibelatti.pinboard.features.tags.domain.usecase.GetAllTags
+import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 
 internal class TagsViewModelTest : BaseViewModelTest() {
@@ -34,7 +36,9 @@ internal class TagsViewModelTest : BaseViewModelTest() {
         tagsViewModel.getAll(mockk())
 
         // THEN
-        tagsViewModel.error.currentValueShouldBe(error)
+        runBlocking {
+            assertThat(tagsViewModel.error.first()).isEqualTo(error)
+        }
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 

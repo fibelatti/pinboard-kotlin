@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.archcomponents.extension.activityViewModel
-import com.fibelatti.core.archcomponents.extension.observe
 import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
@@ -24,6 +24,8 @@ import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
 import javax.inject.Inject
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class NoteListFragment @Inject constructor(
     private val noteListAdapter: NoteListAdapter
@@ -98,22 +100,26 @@ class NoteListFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        viewLifecycleOwner.observe(appStateViewModel.noteListContent) { content ->
-            setupActivityViews()
-            handleLoading(content.shouldLoad)
+        lifecycleScope.launch {
+            appStateViewModel.noteListContent.collect { content ->
+                setupActivityViews()
+                handleLoading(content.shouldLoad)
 
-            if (content.shouldLoad) {
-                noteListViewModel.getAllNotes()
-            } else {
-                showNotes(content.notes)
+                if (content.shouldLoad) {
+                    noteListViewModel.getAllNotes()
+                } else {
+                    showNotes(content.notes)
+                }
+
+                binding.layoutOfflineAlert.root.goneIf(
+                    content.isConnected,
+                    otherwiseVisibility = View.VISIBLE
+                )
             }
-
-            binding.layoutOfflineAlert.root.goneIf(
-                content.isConnected,
-                otherwiseVisibility = View.VISIBLE
-            )
         }
-        observe(noteListViewModel.error, ::handleError)
+        lifecycleScope.launch {
+            noteListViewModel.error.collect(::handleError)
+        }
     }
 
     private fun setupActivityViews() {

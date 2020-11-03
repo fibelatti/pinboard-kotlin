@@ -12,9 +12,8 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.archcomponents.extension.activityViewModel
-import com.fibelatti.core.archcomponents.extension.observe
-import com.fibelatti.core.archcomponents.extension.observeEvent
 import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.afterTextChanged
 import com.fibelatti.core.extension.clearError
@@ -39,6 +38,8 @@ import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import javax.inject.Inject
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class EditPostFragment @Inject constructor() : BaseFragment() {
 
@@ -266,46 +267,57 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun setupViewModels() {
-        viewLifecycleOwner.observe(appStateViewModel.addPostContent) {
-            setupActivityViews()
+        lifecycleScope.launch {
+            appStateViewModel.addPostContent.collect {
+                setupActivityViews()
 
-            if (!isRecreating) {
-                binding.layoutAddPost.checkboxPrivate.isChecked = it.defaultPrivate
-                binding.layoutAddPost.checkboxReadLater.isChecked = it.defaultReadLater
-            }
-        }
-        viewLifecycleOwner.observe(appStateViewModel.editPostContent, ::showPostDetails)
-        with(editPostViewModel) {
-            viewLifecycleOwner.observe(loading) {
-                binding.layoutProgressBar.root.visibleIf(it, otherwiseVisibility = View.GONE)
-            }
-            viewLifecycleOwner.observe(suggestedTags) { tags ->
-                binding.layoutAddTags.chipGroupSuggestedTags.removeAllViews()
-                tags.forEach {
-                    binding.layoutAddTags.chipGroupSuggestedTags.addValue(
-                        it,
-                        showRemoveIcon = false
-                    )
+                if (!isRecreating) {
+                    binding.layoutAddPost.checkboxPrivate.isChecked = it.defaultPrivate
+                    binding.layoutAddPost.checkboxReadLater.isChecked = it.defaultReadLater
                 }
             }
-            viewLifecycleOwner.observeEvent(saved) {
-                mainActivity?.showBanner(getString(R.string.posts_saved_feedback))
+        }
+        lifecycleScope.launch {
+            appStateViewModel.editPostContent.collect(::showPostDetails)
+        }
+        lifecycleScope.launch {
+            editPostViewModel.loading.collect {
+                binding.layoutProgressBar.root.visibleIf(it, otherwiseVisibility = View.GONE)
             }
-            viewLifecycleOwner.observe(invalidUrlError, ::handleInvalidUrlError)
-            viewLifecycleOwner.observe(invalidUrlTitleError, ::handleInvalidTitleError)
-            viewLifecycleOwner.observe(error) {
+        }
+        lifecycleScope.launch {
+            editPostViewModel.suggestedTags.collect { tags ->
+                binding.layoutAddTags.chipGroupSuggestedTags.removeAllViews()
+                tags.forEach { binding.layoutAddTags.chipGroupSuggestedTags.addValue(it, showRemoveIcon = false) }
+            }
+        }
+        lifecycleScope.launch {
+            editPostViewModel.saved.collect { mainActivity?.showBanner(getString(R.string.posts_saved_feedback)) }
+        }
+        lifecycleScope.launch {
+            editPostViewModel.invalidUrlError.collect(::handleInvalidUrlError)
+        }
+        lifecycleScope.launch {
+            editPostViewModel.invalidUrlTitleError.collect(::handleInvalidTitleError)
+        }
+        lifecycleScope.launch {
+            editPostViewModel.error.collect {
                 handleError(it)
                 showFab()
             }
         }
-        with(postDetailViewModel) {
-            viewLifecycleOwner.observe(loading) {
+        lifecycleScope.launch {
+            postDetailViewModel.loading.collect {
                 binding.layoutProgressBar.root.visibleIf(it, otherwiseVisibility = View.GONE)
             }
-            viewLifecycleOwner.observeEvent(deleted) {
+        }
+        lifecycleScope.launch {
+            postDetailViewModel.deleted.collect {
                 mainActivity?.showBanner(getString(R.string.posts_deleted_feedback))
             }
-            viewLifecycleOwner.observe(error, ::handleError)
+        }
+        lifecycleScope.launch {
+            postDetailViewModel.error.collect(::handleError)
         }
     }
 

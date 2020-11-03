@@ -179,7 +179,6 @@ dependencies {
     testImplementation(TestDependencies.junit5Params)
 
     testImplementation(TestDependencies.coreLibTest)
-    testImplementation(TestDependencies.coreLibArchTest)
 
     testImplementation(Dependencies.kotlinReflect)
 

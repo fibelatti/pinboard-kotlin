@@ -1,9 +1,5 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
-import com.fibelatti.core.archcomponents.test.extension.currentEventShouldBe
-import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
-import com.fibelatti.pinboard.shouldNeverReceiveValues
-import com.fibelatti.core.extension.empty
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.provider.ResourceProvider
@@ -22,17 +18,19 @@ import com.fibelatti.pinboard.features.appstate.PostSaved
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetSuggestedTags
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
-import com.fibelatti.pinboard.prepareToReceiveMany
-import com.fibelatti.pinboard.shouldHaveReceived
+import com.fibelatti.pinboard.isEmpty
+import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 
 internal class EditPostViewModelTest : BaseViewModelTest() {
 
-    private val mockAppStateRepository = mockk<AppStateRepository>()
+    private val mockAppStateRepository = mockk<AppStateRepository>(relaxed = true)
     private val mockGetSuggestedTags = mockk<GetSuggestedTags>()
     private val mockAddPost = mockk<AddPost>()
     private val mockResourceProvider = mockk<ResourceProvider> {
@@ -57,7 +55,9 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         editPostViewModel.searchForTag(mockTagString1, mockk())
 
         // THEN
-        editPostViewModel.suggestedTags.shouldNeverReceiveValues()
+        runBlocking {
+            assertThat(editPostViewModel.suggestedTags.isEmpty()).isTrue()
+        }
     }
 
     @Test
@@ -70,7 +70,9 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         editPostViewModel.searchForTag(mockTagString1, mockk())
 
         // THEN
-        editPostViewModel.suggestedTags.currentValueShouldBe(result)
+        runBlocking {
+            assertThat(editPostViewModel.suggestedTags.first()).isEqualTo(result)
+        }
     }
 
     @Test
@@ -86,8 +88,10 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         )
 
         // THEN
-        editPostViewModel.invalidUrlError.currentValueShouldBe("R.string.validation_error_empty_url")
-        editPostViewModel.saved.shouldNeverReceiveValues()
+        runBlocking {
+            assertThat(editPostViewModel.invalidUrlError.first()).isEqualTo("R.string.validation_error_empty_url")
+            assertThat(editPostViewModel.saved.isEmpty()).isTrue()
+        }
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 
@@ -104,8 +108,10 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         )
 
         // THEN
-        editPostViewModel.invalidUrlTitleError.currentValueShouldBe("R.string.validation_error_empty_title")
-        editPostViewModel.saved.shouldNeverReceiveValues()
+        runBlocking {
+            assertThat(editPostViewModel.invalidUrlTitleError.first()).isEqualTo("R.string.validation_error_empty_title")
+            assertThat(editPostViewModel.saved.isEmpty()).isTrue()
+        }
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 
@@ -125,8 +131,6 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
             )
         } returns Failure(InvalidUrlException())
 
-        val loadingObserver = editPostViewModel.loading.prepareToReceiveMany()
-
         // WHEN
         editPostViewModel.saveLink(
             url = mockUrlInvalid,
@@ -138,10 +142,12 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         )
 
         // THEN
-        editPostViewModel.loading.shouldHaveReceived(loadingObserver, true, false)
-        editPostViewModel.invalidUrlError.currentValueShouldBe("R.string.validation_error_invalid_url")
-        editPostViewModel.invalidUrlTitleError.currentValueShouldBe(String.empty())
-        editPostViewModel.saved.shouldNeverReceiveValues()
+        runBlocking {
+            assertThat(editPostViewModel.loading.first()).isEqualTo(false)
+            assertThat(editPostViewModel.invalidUrlError.first()).isEqualTo("R.string.validation_error_invalid_url")
+            assertThat(editPostViewModel.invalidUrlTitleError.first()).isEqualTo("")
+            assertThat(editPostViewModel.saved.isEmpty()).isTrue()
+        }
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 
@@ -162,8 +168,6 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
             )
         } returns Failure(error)
 
-        val loadingObserver = editPostViewModel.loading.prepareToReceiveMany()
-
         // WHEN
         editPostViewModel.saveLink(
             url = mockUrlValid,
@@ -175,11 +179,14 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         )
 
         // THEN
-        editPostViewModel.loading.shouldHaveReceived(loadingObserver, true, false)
-        editPostViewModel.invalidUrlError.currentValueShouldBe(String.empty())
-        editPostViewModel.invalidUrlTitleError.currentValueShouldBe(String.empty())
-        editPostViewModel.error.currentValueShouldBe(error)
-        editPostViewModel.saved.shouldNeverReceiveValues()
+        runBlocking {
+            assertThat(editPostViewModel.loading.first()).isEqualTo(false)
+            assertThat(editPostViewModel.invalidUrlError.first()).isEqualTo("")
+            assertThat(editPostViewModel.invalidUrlTitleError.first()).isEqualTo("")
+            assertThat(editPostViewModel.error.first()).isEqualTo(error)
+            assertThat(editPostViewModel.saved.isEmpty()).isTrue()
+        }
+
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 
@@ -200,8 +207,6 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
             )
         } returns Success(post)
 
-        val loadingObserver = editPostViewModel.loading.prepareToReceiveMany()
-
         // WHEN
         editPostViewModel.saveLink(
             url = mockUrlValid,
@@ -213,11 +218,14 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         )
 
         // THEN
-        editPostViewModel.loading.shouldHaveReceived(loadingObserver, true)
-        editPostViewModel.invalidUrlError.currentValueShouldBe(String.empty())
-        editPostViewModel.invalidUrlTitleError.currentValueShouldBe(String.empty())
-        editPostViewModel.error.shouldNeverReceiveValues()
-        editPostViewModel.saved.currentEventShouldBe(Unit)
+        runBlocking {
+            assertThat(editPostViewModel.loading.first()).isEqualTo(true)
+            assertThat(editPostViewModel.invalidUrlError.first()).isEqualTo("")
+            assertThat(editPostViewModel.invalidUrlTitleError.first()).isEqualTo("")
+            assertThat(editPostViewModel.error.isEmpty()).isTrue()
+            assertThat(editPostViewModel.saved.first()).isEqualTo(Unit)
+        }
+
         coVerify { mockAppStateRepository.runAction(PostSaved(post)) }
     }
 }

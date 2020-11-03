@@ -1,8 +1,5 @@
 package com.fibelatti.pinboard.features.user.presentation
 
-import androidx.lifecycle.MutableLiveData
-import com.fibelatti.core.archcomponents.test.extension.currentEventShouldBe
-import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.provider.ResourceProvider
@@ -13,12 +10,16 @@ import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.user.domain.Login
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import com.fibelatti.pinboard.shouldNeverReceiveValues
+import com.fibelatti.pinboard.isEmpty
+import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import java.net.HttpURLConnection
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.jupiter.api.Nested
@@ -41,13 +42,12 @@ class AuthViewModelTest : BaseViewModelTest() {
     @Test
     fun `GIVEN userRepository getLoginState contains a value THEN viewModel loginState returns that value`() {
         // GIVEN
-        val mockLoginState = MutableLiveData<LoginState>().apply {
-            value = LoginState.LoggedOut
-        }
-        every { mockUserRepository.getLoginState() } returns mockLoginState
+        every { mockUserRepository.getLoginState() } returns flowOf(LoginState.LoggedOut)
 
         // THEN
-        viewModel.loginState currentValueShouldBe LoginState.LoggedOut
+        runBlocking {
+            assertThat(viewModel.loginState.first()).isEqualTo(LoginState.LoggedOut)
+        }
     }
 
     @Nested
@@ -62,8 +62,10 @@ class AuthViewModelTest : BaseViewModelTest() {
             viewModel.login(mockApiToken)
 
             // THEN
-            viewModel.error.shouldNeverReceiveValues()
-            viewModel.apiTokenError.shouldNeverReceiveValues()
+            runBlocking {
+                assertThat(viewModel.error.isEmpty()).isTrue()
+                assertThat(viewModel.apiTokenError.isEmpty()).isTrue()
+            }
         }
 
         @Test
@@ -83,8 +85,10 @@ class AuthViewModelTest : BaseViewModelTest() {
             viewModel.login(mockApiToken)
 
             // THEN
-            viewModel.error.shouldNeverReceiveValues()
-            viewModel.apiTokenError currentEventShouldBe "R.string.auth_token_error"
+            runBlocking {
+                assertThat(viewModel.error.isEmpty()).isTrue()
+                assertThat(viewModel.apiTokenError.first()).isEqualTo("R.string.auth_token_error")
+            }
         }
 
         @Test
@@ -104,8 +108,10 @@ class AuthViewModelTest : BaseViewModelTest() {
             viewModel.login(mockApiToken)
 
             // THEN
-            viewModel.error.shouldNeverReceiveValues()
-            viewModel.apiTokenError currentEventShouldBe "R.string.auth_token_error"
+            runBlocking {
+                assertThat(viewModel.error.isEmpty()).isTrue()
+                assertThat(viewModel.apiTokenError.first()).isEqualTo("R.string.auth_token_error")
+            }
         }
 
         @Test
@@ -118,8 +124,10 @@ class AuthViewModelTest : BaseViewModelTest() {
             viewModel.login(mockApiToken)
 
             // THEN
-            viewModel.error currentValueShouldBe error
-            viewModel.apiTokenError.shouldNeverReceiveValues()
+            runBlocking {
+                assertThat(viewModel.error.first()).isEqualTo(error)
+                assertThat(viewModel.apiTokenError.isEmpty()).isTrue()
+            }
         }
     }
 

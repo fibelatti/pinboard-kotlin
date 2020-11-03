@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.notes.presentation
 
-import com.fibelatti.core.archcomponents.test.extension.currentValueShouldBe
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
@@ -9,10 +8,13 @@ import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.SetNote
 import com.fibelatti.pinboard.features.notes.domain.NotesRepository
 import com.fibelatti.pinboard.features.notes.domain.model.Note
-import com.fibelatti.pinboard.shouldNeverReceiveValues
+import com.fibelatti.pinboard.isEmpty
+import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 
 internal class NoteDetailsViewModelTest : BaseViewModelTest() {
@@ -35,7 +37,9 @@ internal class NoteDetailsViewModelTest : BaseViewModelTest() {
         noteDetailsViewModel.getNoteDetails(mockNoteId)
 
         // THEN
-        noteDetailsViewModel.error.currentValueShouldBe(error)
+        runBlocking {
+            assertThat(noteDetailsViewModel.error.first()).isEqualTo(error)
+        }
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 
@@ -50,6 +54,8 @@ internal class NoteDetailsViewModelTest : BaseViewModelTest() {
 
         // THEN
         coVerify { mockAppStateRepository.runAction(SetNote(mockNote)) }
-        noteDetailsViewModel.error.shouldNeverReceiveValues()
+        runBlocking {
+            assertThat(noteDetailsViewModel.error.isEmpty()).isTrue()
+        }
     }
 }
