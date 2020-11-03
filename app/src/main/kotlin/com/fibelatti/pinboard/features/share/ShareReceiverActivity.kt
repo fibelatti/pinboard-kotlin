@@ -10,7 +10,7 @@ import com.fibelatti.core.extension.toast
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
-import com.fibelatti.pinboard.core.extension.isServerDownException
+import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.ActivityShareBinding
 import com.fibelatti.pinboard.features.MainActivity
@@ -71,7 +71,7 @@ class ShareReceiverActivity : BaseActivity() {
                             setPositiveButton(R.string.hint_ok) { _, _ -> finish() }
                         }
                     }
-                    error.isServerDownException() -> {
+                    error.isServerException() -> {
                         showStyledDialog(
                             dialogStyle = R.style.AppTheme_AlertDialog,
                             dialogBackground = R.drawable.background_contrast_rounded

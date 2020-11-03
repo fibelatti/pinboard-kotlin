@@ -21,7 +21,7 @@ import com.fibelatti.pinboard.core.android.LinkTransformationMethod
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
-import com.fibelatti.pinboard.core.extension.isServerDownException
+import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentAuthBinding
 import javax.inject.Inject
@@ -109,7 +109,7 @@ class AuthFragment @Inject constructor() : BaseFragment() {
             buttonAuth.visible()
         }
 
-        if (error.isServerDownException()) {
+        if (error.isServerException()) {
             binding.layoutAuthForm.textInputLayoutAuthToken.showError(getString(R.string.server_timeout_error))
         } else {
             activity?.sendErrorReport(error, altMessage = getString(R.string.auth_error))

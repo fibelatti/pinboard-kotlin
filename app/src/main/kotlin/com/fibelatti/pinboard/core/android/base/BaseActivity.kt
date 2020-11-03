@@ -18,7 +18,7 @@ import com.fibelatti.pinboard.core.di.ActivityComponent
 import com.fibelatti.pinboard.core.di.AppComponent
 import com.fibelatti.pinboard.core.di.AppComponentProvider
 import com.fibelatti.pinboard.core.di.ViewModelProvider
-import com.fibelatti.pinboard.core.extension.isServerDownException
+import com.fibelatti.pinboard.core.extension.isServerException
 import java.io.PrintWriter
 import java.io.StringWriter
 
@@ -43,7 +43,7 @@ abstract class BaseActivity : AppCompatActivity() {
             error.printStackTrace()
         }
 
-        if (error.isServerDownException()) {
+        if (error.isServerException()) {
             toast(getString(R.string.server_timeout_error), duration = Toast.LENGTH_LONG)
         } else {
             sendErrorReport(error)

@@ -22,7 +22,7 @@
     <string name="generic_log_error">Error in %1$s (%2$s)</string>
 
     <string name="generic_msg_error">Oops, something went wrong</string>
-    <string name="server_timeout_error">It looks like the server is down. Please try again in a while.</string>
+    <string name="server_timeout_error">It looks like there\'s a problem with Pinboard. Please try again in a while.</string>
 
     <!-- Menus -->
     <string name="menu_main_sync">Sync bookmarks</string>

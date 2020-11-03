@@ -1,7 +1,9 @@
 package com.fibelatti.pinboard.core.extension
 
-import kotlinx.coroutines.TimeoutCancellationException
 import java.net.UnknownHostException
+import kotlinx.coroutines.TimeoutCancellationException
+import retrofit2.HttpException
 
-fun Throwable.isServerDownException(): Boolean = this is TimeoutCancellationException ||
-    this is UnknownHostException
+fun Throwable.isServerException(): Boolean = this is TimeoutCancellationException ||
+    this is UnknownHostException ||
+    this is HttpException
