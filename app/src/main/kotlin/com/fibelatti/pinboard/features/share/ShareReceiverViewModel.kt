@@ -61,6 +61,7 @@ class ShareReceiverViewModel @Inject constructor(
             description = description ?: "",
             private = userRepository.getDefaultPrivate() ?: false,
             readLater = userRepository.getDefaultReadLater() ?: false,
+            tags = userRepository.getDefaultTags(),
         )
 
         _edit.value = ""
@@ -77,7 +78,8 @@ class ShareReceiverViewModel @Inject constructor(
                 description = description,
                 private = userRepository.getDefaultPrivate(),
                 readLater = userRepository.getDefaultReadLater(),
-                replace = false
+                tags = userRepository.getDefaultTags(),
+                replace = false,
             )
         ).onSuccess {
             if (userRepository.getEditAfterSharing() is EditAfterSharing.AfterSaving) {

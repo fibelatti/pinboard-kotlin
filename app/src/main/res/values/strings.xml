@@ -183,6 +183,8 @@
     <string name="user_preferences_default_read_later">Read later bookmarks</string>
     <string name="user_preferences_default_read_later_label">Read later by default</string>
     <string name="user_preferences_default_read_later_description">If checked, bookmarks shared to Pinkt will be saved as read later, otherwise your default Pinboard preferences apply</string>
+    <string name="user_preferences_default_tags">Default tags</string>
+    <string name="user_preferences_default_tags_description">These tags will be added to all bookmarks created with Pinkt or shared to Pinkt</string>
     <string name="user_preferences_edit_after_sharing_title">Editing — Sharing &amp; Popular</string>
     <string name="user_preferences_edit_after_sharing_before_saving">Before saving</string>
     <string name="user_preferences_edit_after_sharing_after_saving">After saving</string>

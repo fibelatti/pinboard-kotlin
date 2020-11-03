@@ -24,9 +24,10 @@
                 android:id="@+id/layoutAddPost"
                 layout="@layout/layout_edit_post" />
 
-            <include
+            <com.fibelatti.pinboard.core.android.customview.AddTagsLayout
                 android:id="@+id/layoutAddTags"
-                layout="@layout/layout_edit_tags" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
         <include

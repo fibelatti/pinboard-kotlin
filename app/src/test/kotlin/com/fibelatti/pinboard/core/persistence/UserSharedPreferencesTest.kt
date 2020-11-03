@@ -297,6 +297,7 @@ internal class UserSharedPreferencesTest {
         assertThat(userSharedPreferences.getEditAfterSharing()).isEqualTo("BEFORE_SAVING")
     }
 
+
     @Test
     fun `WHEN setEditAfterSharing is called THEN KEY_NEW_EDIT_AFTER_SHARING is set`() {
         // WHEN
@@ -304,5 +305,35 @@ internal class UserSharedPreferencesTest {
 
         // THEN
         verify { mockEditor.putString(KEY_NEW_EDIT_AFTER_SHARING, "BEFORE_SAVING") }
+    }
+
+    @Test
+    fun `WHEN getDefaultTags is called AND the value is empty THEN empty list is returned`() {
+        // GIVEN
+        every { mockSharedPreferences.get(KEY_DEFAULT_TAGS, "") } returns ""
+
+        // THEN
+        assertThat(userSharedPreferences.getDefaultTags()).isEmpty()
+    }
+
+    @Test
+    fun `WHEN getDefaultTags is called THEN its value is returned`() {
+        // GIVEN
+        every { mockSharedPreferences.get(KEY_DEFAULT_TAGS, "") } returns "test"
+
+        // THEN
+        assertThat(userSharedPreferences.getDefaultTags()).isEqualTo(listOf("test"))
+    }
+
+    @Test
+    fun `WHEN setDefaultTags is called THEN KEY_DEFAULT_TAGS is set`() {
+        // GIVEN
+        val value = listOf("test", "another-test")
+
+        // WHEN
+        userSharedPreferences.setDefaultTags(value)
+
+        // THEN
+        verify { mockEditor.putString(KEY_DEFAULT_TAGS, "test,another-test") }
     }
 }

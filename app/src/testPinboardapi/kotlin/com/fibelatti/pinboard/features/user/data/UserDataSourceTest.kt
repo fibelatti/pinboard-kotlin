@@ -7,6 +7,7 @@ import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
@@ -394,6 +395,31 @@ internal class UserDataSourceTest {
 
                 // THEN
                 verify { mockUserSharedPreferences.setDefaultReadLater(value) }
+            }
+        }
+
+        @Nested
+        inner class DefaultTags {
+
+            private val mockTagValues = listOf("test")
+            private val mockTags = listOf(Tag("test"))
+
+            @Test
+            fun `WHEN getDefaultTags is called THEN UserSharedPreferences is returned`() {
+                // GIVEN
+                every { mockUserSharedPreferences.getDefaultTags() } returns mockTagValues
+
+                // THEN
+                assertThat(userDataSource.getDefaultTags()).isEqualTo(mockTags)
+            }
+
+            @Test
+            fun `WHEN setDefaultTags is called THEN UserSharedPreferences is set`() {
+                // WHEN
+                userDataSource.setDefaultTags(mockTags)
+
+                // THEN
+                verify { mockUserSharedPreferences.setDefaultTags(mockTagValues) }
             }
         }
 

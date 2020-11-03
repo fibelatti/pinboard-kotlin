@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
-import android.animation.ObjectAnimator
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -8,20 +7,16 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.archcomponents.extension.activityViewModel
 import com.fibelatti.core.archcomponents.extension.viewModel
-import com.fibelatti.core.extension.afterTextChanged
 import com.fibelatti.core.extension.clearError
-import com.fibelatti.core.extension.clearText
 import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.invisible
-import com.fibelatti.core.extension.onKeyboardSubmit
 import com.fibelatti.core.extension.orZero
 import com.fibelatti.core.extension.showError
 import com.fibelatti.core.extension.showStyledDialog
@@ -31,6 +26,7 @@ import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.show
+import com.fibelatti.pinboard.core.extension.smoothScrollY
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentEditPostBinding
 import com.fibelatti.pinboard.features.appstate.EditPostContent
@@ -121,8 +117,7 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
                     description == editTextDescription.textAsString() &&
                     private == checkboxPrivate.isChecked &&
                     readLater == checkboxReadLater.isChecked &&
-                    tags == binding.layoutAddTags.chipGroupTags.getAllTags()
-                    .takeIf { it.isNotEmpty() }
+                    tags == binding.layoutAddTags.getTags().takeIf { it.isNotEmpty() }
             }
         } ?: true
 
@@ -144,7 +139,10 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
 
     private fun setupLayout() {
         handleKeyboardVisibility()
-        setupTagLayouts()
+        binding.layoutAddTags.setup(
+            afterTagInput = editPostViewModel::searchForTag,
+            onTagRemoved = editPostViewModel::searchForTag
+        )
     }
 
     private fun handleKeyboardVisibility() {
@@ -176,10 +174,7 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
                 }
 
                 if (focusedViewBottom >= view.measuredHeight - imeInsets.bottom) {
-                    ObjectAnimator.ofInt(view, "scrollY", focusedViewBottom)
-                        .apply { interpolator = AccelerateDecelerateInterpolator() }
-                        .setDuration(resources.getInteger(R.integer.anim_time_long).toLong())
-                        .start()
+                    view.smoothScrollY(focusedViewBottom)
                 }
             } else {
                 ViewCompat.setPaddingRelative(
@@ -211,58 +206,8 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
                 editTextDescription.textAsString(),
                 checkboxPrivate.isChecked,
                 checkboxReadLater.isChecked,
-                binding.layoutAddTags.chipGroupTags.getAllTags()
+                binding.layoutAddTags.getTags()
             )
-        }
-    }
-
-    private fun setupTagLayouts() {
-        setupTagInput()
-        with(binding.layoutAddTags) {
-            buttonTagsAdd.setOnClickListener {
-                editTextTags.textAsString().takeIf(String::isNotBlank)?.let {
-                    chipGroupTags.addValue(it, index = 0)
-                    editTextTags.clearText()
-                }
-            }
-
-            chipGroupTags.onTagChipRemoved = {
-                editTextTags.textAsString().takeIf(String::isNotBlank)?.let {
-                    editPostViewModel.searchForTag(it, chipGroupTags.getAllTags())
-                }
-            }
-
-            chipGroupSuggestedTags.onTagChipClicked = {
-                chipGroupTags.addTag(it, index = 0)
-                editTextTags.clearText()
-            }
-        }
-    }
-
-    private fun setupTagInput() {
-        with(binding.layoutAddTags) {
-            editTextTags.afterTextChanged { text ->
-                when {
-                    text.isNotBlank() && text.endsWith(" ") -> {
-                        chipGroupTags.addValue(text, index = 0)
-                        editTextTags.clearText()
-                    }
-                    text.isNotBlank() -> editPostViewModel.searchForTag(
-                        text,
-                        chipGroupTags.getAllTags()
-                    )
-                    else -> chipGroupSuggestedTags.removeAllViews()
-                }
-            }
-            editTextTags.onKeyboardSubmit {
-                when (val text = textAsString().trim()) {
-                    "" -> hideKeyboard()
-                    else -> {
-                        chipGroupTags.addValue(text, index = 0)
-                        editTextTags.clearText()
-                    }
-                }
-            }
         }
     }
 
@@ -274,6 +219,7 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
                 if (!isRecreating) {
                     binding.layoutAddPost.checkboxPrivate.isChecked = it.defaultPrivate
                     binding.layoutAddPost.checkboxReadLater.isChecked = it.defaultReadLater
+                    binding.layoutAddTags.showTags(it.defaultTags)
                 }
             }
         }
@@ -286,9 +232,8 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
             }
         }
         lifecycleScope.launch {
-            editPostViewModel.suggestedTags.collect { tags ->
-                binding.layoutAddTags.chipGroupSuggestedTags.removeAllViews()
-                tags.forEach { binding.layoutAddTags.chipGroupSuggestedTags.addValue(it, showRemoveIcon = false) }
+            editPostViewModel.suggestedTags.collect {
+                binding.layoutAddTags.showSuggestedValuesAsTags(it, showRemoveIcon = false)
             }
         }
         lifecycleScope.launch {
@@ -367,10 +312,7 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
                 checkboxReadLater.isChecked = readLater
             }
 
-            with(binding.layoutAddTags) {
-                chipGroupTags.removeAllViews()
-                tags?.forEach { chipGroupTags.addTag(it) }
-            }
+            tags?.let(binding.layoutAddTags::showTags)
         }
     }
 

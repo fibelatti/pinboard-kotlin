@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.extension.get
 import com.fibelatti.core.extension.getSharedPreferences
+import com.fibelatti.core.extension.ifNotNullOrEmpty
 import com.fibelatti.core.extension.put
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -12,30 +13,43 @@ import javax.inject.Singleton
 // region Constants
 @VisibleForTesting
 const val KEY_AUTH_TOKEN = "AUTH_TOKEN"
+
 @VisibleForTesting
 const val KEY_LAST_UPDATE = "LAST_UPDATE"
+
 @VisibleForTesting
 const val KEY_APPEARANCE = "APPEARANCE"
+
 @VisibleForTesting
 const val KEY_PREFERRED_DETAILS_VIEW = "PREFERRED_DETAILS_VIEW"
+
 @VisibleForTesting
 const val KEY_MARK_AS_READ_ON_OPEN = "MARK_AS_READ_ON_OPEN"
+
 @VisibleForTesting
 const val KEY_AUTO_FILL_DESCRIPTION = "AUTO_FILL_DESCRIPTION"
+
 @VisibleForTesting
 const val KEY_SHOW_DESCRIPTION_IN_LISTS = "SHOW_DESCRIPTION_IN_LISTS"
+
 @VisibleForTesting
 const val KEY_DEFAULT_PRIVATE = "DEFAULT_PRIVATE"
+
 @VisibleForTesting
 const val KEY_DEFAULT_READ_LATER = "DEFAULT_READ_LATER"
+
 @VisibleForTesting
 @Deprecated(
     message = "Use KEY_NEW_EDIT_AFTER_SHARING instead.",
     replaceWith = ReplaceWith(expression = "KEY_NEW_EDIT_AFTER_SHARING", imports = emptyArray())
 )
 const val KEY_EDIT_AFTER_SHARING = "EDIT_AFTER_SHARING"
+
 @VisibleForTesting
 const val KEY_NEW_EDIT_AFTER_SHARING = "NEW_EDIT_AFTER_SHARING"
+
+@VisibleForTesting
+const val KEY_DEFAULT_TAGS = "DEFAULT_TAGS"
 // endregion
 
 fun Context.getUserPreferences() = getSharedPreferences("user_preferences")
@@ -128,5 +142,12 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
 
     fun setEditAfterSharing(value: String) {
         sharedPreferences.put(KEY_NEW_EDIT_AFTER_SHARING, value)
+    }
+
+    fun getDefaultTags(): List<String> = sharedPreferences.get(KEY_DEFAULT_TAGS, "")
+        .ifNotNullOrEmpty { it.split(",") }.orEmpty()
+
+    fun setDefaultTags(value: List<String>) {
+        sharedPreferences.put(KEY_DEFAULT_TAGS, value.joinToString(separator = ","))
     }
 }

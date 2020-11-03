@@ -691,6 +691,7 @@ internal class PostActionHandlerTest {
             val currentContent = AddPostContent(
                 defaultPrivate = randomBoolean,
                 defaultReadLater = randomBoolean,
+                defaultTags = emptyList(),
                 previousContent = initialContent
             )
 

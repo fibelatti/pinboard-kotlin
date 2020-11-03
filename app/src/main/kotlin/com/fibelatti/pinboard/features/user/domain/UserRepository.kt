@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.user.domain
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.flow.Flow
 
 @Suppress("ComplexInterface", "TooManyFunctions")
@@ -53,4 +54,8 @@ interface UserRepository {
     fun getEditAfterSharing(): EditAfterSharing
 
     fun setEditAfterSharing(editAfterSharing: EditAfterSharing)
+
+    fun getDefaultTags(): List<Tag>
+
+    fun setDefaultTags(tags: List<Tag>)
 }

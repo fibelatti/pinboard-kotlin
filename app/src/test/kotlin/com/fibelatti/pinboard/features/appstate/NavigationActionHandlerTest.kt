@@ -8,6 +8,7 @@ import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
@@ -404,10 +405,13 @@ internal class NavigationActionHandlerTest {
     @Nested
     inner class AddPostTests {
 
+        private val mockTags = mockk<List<Tag>>()
+
         @BeforeEach
         fun setup() {
             every { mockUserRepository.getDefaultPrivate() } returns true
             every { mockUserRepository.getDefaultReadLater() } returns true
+            every { mockUserRepository.getDefaultTags() } returns mockTags
         }
 
         @Test
@@ -432,7 +436,8 @@ internal class NavigationActionHandlerTest {
                 AddPostContent(
                     defaultPrivate = true,
                     defaultReadLater = true,
-                    previousContent = previousContent
+                    defaultTags = mockTags,
+                    previousContent = previousContent,
                 )
             )
         }
@@ -450,7 +455,8 @@ internal class NavigationActionHandlerTest {
                 AddPostContent(
                     defaultPrivate = false,
                     defaultReadLater = true,
-                    previousContent = previousContent
+                    defaultTags = mockTags,
+                    previousContent = previousContent,
                 )
             )
         }
@@ -468,7 +474,8 @@ internal class NavigationActionHandlerTest {
                 AddPostContent(
                     defaultPrivate = true,
                     defaultReadLater = false,
-                    previousContent = previousContent
+                    defaultTags = mockTags,
+                    previousContent = previousContent,
                 )
             )
         }
@@ -650,6 +657,7 @@ internal class NavigationActionHandlerTest {
         private val mockPreferredDetailsView = mockk<PreferredDetailsView>()
         private val mockRandomBoolean = randomBoolean()
         private val mockEditAfterSharing = mockk<EditAfterSharing>()
+        private val mockTags = mockk<List<Tag>>()
 
         @BeforeEach
         fun setup() {
@@ -660,6 +668,7 @@ internal class NavigationActionHandlerTest {
             every { mockUserRepository.getDefaultPrivate() } returns mockRandomBoolean
             every { mockUserRepository.getDefaultReadLater() } returns mockRandomBoolean
             every { mockUserRepository.getEditAfterSharing() } returns mockEditAfterSharing
+            every { mockUserRepository.getDefaultTags() } returns mockTags
         }
 
         @Test
@@ -690,7 +699,8 @@ internal class NavigationActionHandlerTest {
                     showDescriptionInLists = mockRandomBoolean,
                     defaultReadLater = mockRandomBoolean,
                     editAfterSharing = mockEditAfterSharing,
-                    previousContent = previousContent
+                    defaultTags = mockTags,
+                    previousContent = previousContent,
                 )
             )
         }
@@ -715,7 +725,8 @@ internal class NavigationActionHandlerTest {
                     defaultPrivate = false,
                     defaultReadLater = mockRandomBoolean,
                     editAfterSharing = mockEditAfterSharing,
-                    previousContent = previousContent
+                    defaultTags = mockTags,
+                    previousContent = previousContent,
                 )
             )
         }
@@ -740,7 +751,8 @@ internal class NavigationActionHandlerTest {
                     defaultPrivate = mockRandomBoolean,
                     defaultReadLater = false,
                     editAfterSharing = mockEditAfterSharing,
-                    previousContent = previousContent
+                    defaultTags = mockTags,
+                    previousContent = previousContent,
                 )
             )
         }

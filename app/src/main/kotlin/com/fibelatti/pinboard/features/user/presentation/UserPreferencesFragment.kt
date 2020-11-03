@@ -7,15 +7,20 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.bundleOf
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.archcomponents.extension.activityViewModel
 import com.fibelatti.core.archcomponents.extension.viewModel
+import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.gone
+import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.smoothScrollY
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentUserPreferencesBinding
 import com.fibelatti.pinboard.features.mainActivity
@@ -41,7 +46,7 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? = FragmentUserPreferencesBinding.inflate(inflater, container, false).run {
         binding = this
         binding.root
@@ -50,6 +55,16 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupActivityViews()
+        binding.layoutAddTags.setup(
+            afterTagInput = userPreferencesViewModel::searchForTag,
+            onTagAdded = { _, currentTags -> userPreferencesViewModel.saveDefaultTags(currentTags) },
+            onTagRemoved = { tag, currentTags ->
+                userPreferencesViewModel.saveDefaultTags(currentTags)
+                userPreferencesViewModel.searchForTag(tag, currentTags)
+            }
+        )
+
+        handleKeyboardVisibility()
         lifecycleScope.launch {
             appStateViewModel.userPreferencesContent.collect {
                 setupAppearance(it.appearance)
@@ -74,6 +89,8 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
                     it.defaultReadLater,
                     userPreferencesViewModel::saveDefaultReadLater
                 )
+
+                binding.layoutAddTags.showTags(it.defaultTags)
             }
         }
         lifecycleScope.launch {
@@ -85,9 +102,15 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
                 }
             }
         }
+        lifecycleScope.launch {
+            userPreferencesViewModel.suggestedTags.collect(binding.layoutAddTags::showSuggestedValuesAsTags)
+        }
     }
 
     override fun onDestroy() {
+        mainActivity?.updateViews { bottomAppBar, _ ->
+            bottomAppBar.hideKeyboard()
+        }
         activity?.supportFragmentManager?.setFragmentResult(TAG, bundleOf())
         super.onDestroy()
     }
@@ -105,6 +128,38 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
                 gone()
             }
             fab.hide()
+        }
+    }
+
+    private fun handleKeyboardVisibility() {
+        binding.root.doOnApplyWindowInsets { view, insets, initialPadding, _ ->
+            if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
+                val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
+
+                ViewCompat.setPaddingRelative(
+                    view,
+                    initialPadding.start,
+                    initialPadding.top,
+                    initialPadding.end,
+                    initialPadding.bottom + imeInsets.bottom,
+                )
+
+                with(binding.root) {
+                    val lastChild = getChildAt(childCount - 1)
+                    val bottom = lastChild.bottom + paddingBottom
+                    val delta = height - scrollY - bottom
+
+                    view.smoothScrollY(-delta)
+                }
+            } else {
+                ViewCompat.setPaddingRelative(
+                    view,
+                    initialPadding.start,
+                    initialPadding.top,
+                    initialPadding.end,
+                    initialPadding.bottom
+                )
+            }
         }
     }
 
@@ -214,7 +269,7 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
 
     private fun CheckBox.setValueAndChangeListener(
         initialValue: Boolean,
-        onCheckedChangeListener: (Boolean) -> Unit
+        onCheckedChangeListener: (Boolean) -> Unit,
     ) {
         isChecked = initialValue
         setOnCheckedChangeListener { _, isChecked -> onCheckedChangeListener(isChecked) }

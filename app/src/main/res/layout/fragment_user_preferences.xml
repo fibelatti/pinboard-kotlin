@@ -10,10 +10,10 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:paddingBottom="@dimen/padding_xlarge"
         android:paddingStart="@dimen/padding_regular"
         android:paddingEnd="@dimen/padding_regular"
-        android:paddingBottom="@dimen/padding_xlarge">
+        android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/layoutAppearance"
@@ -109,9 +109,9 @@
                 style="@style/AppTheme.Text.Detail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_small"
                 android:layout_marginStart="@dimen/margin_small"
                 android:layout_marginEnd="@dimen/margin_small"
-                android:layout_marginBottom="@dimen/margin_small"
                 android:text="@string/user_preferences_preferred_details_in_app_browser_caveat" />
 
             <TextView
@@ -325,6 +325,39 @@
                 android:layout_marginStart="@dimen/margin_small"
                 android:layout_marginEnd="@dimen/margin_small"
                 android:text="@string/user_preferences_default_read_later_description" />
+
+            <include
+                layout="@layout/layout_divider"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_size"
+                android:layout_marginTop="@dimen/margin_regular"
+                android:layout_marginBottom="@dimen/margin_regular" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutDefaultTags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/layoutReadLaterDefault">
+
+            <TextView
+                style="@style/AppTheme.Text.SectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/user_preferences_default_tags" />
+
+            <TextView
+                style="@style/AppTheme.Text.Detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="@string/user_preferences_default_tags_description" />
+
+            <com.fibelatti.pinboard.core.android.customview.AddTagsLayout
+                android:id="@+id/layoutAddTags"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

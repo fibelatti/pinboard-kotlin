@@ -59,7 +59,8 @@ data class SearchContent(
 data class AddPostContent(
     val defaultPrivate: Boolean,
     val defaultReadLater: Boolean,
-    override val previousContent: PostListContent
+    val defaultTags: List<Tag>,
+    override val previousContent: PostListContent,
 ) : ContentWithHistory()
 
 data class EditPostContent(
@@ -108,7 +109,8 @@ data class UserPreferencesContent(
     val defaultPrivate: Boolean,
     val defaultReadLater: Boolean,
     val editAfterSharing: EditAfterSharing,
-    override val previousContent: PostListContent
+    val defaultTags: List<Tag>,
+    override val previousContent: PostListContent,
 ) : ContentWithHistory()
 
 /**

@@ -10,9 +10,9 @@ import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 class NavigationActionHandler @Inject constructor(
     private val userRepository: UserRepository,
@@ -132,6 +132,7 @@ class NavigationActionHandler @Inject constructor(
             AddPostContent(
                 defaultPrivate = userRepository.getDefaultPrivate().orFalse(),
                 defaultReadLater = userRepository.getDefaultReadLater().orFalse(),
+                defaultTags = userRepository.getDefaultTags(),
                 previousContent = it
             )
         }
@@ -191,7 +192,8 @@ class NavigationActionHandler @Inject constructor(
                 defaultPrivate = userRepository.getDefaultPrivate().orFalse(),
                 defaultReadLater = userRepository.getDefaultReadLater().orFalse(),
                 editAfterSharing = userRepository.getEditAfterSharing(),
-                previousContent = it
+                defaultTags = userRepository.getDefaultTags(),
+                previousContent = it,
             )
         }
     }

@@ -15,6 +15,7 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.ExtractUrl
 import com.fibelatti.pinboard.features.posts.domain.usecase.ParseUrl
 import com.fibelatti.pinboard.features.posts.domain.usecase.RichUrl
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
@@ -85,11 +86,13 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         // GIVEN
         val defaultPrivate = randomBoolean()
         val defaultReadLater = randomBoolean()
+        val defaultTags = mockk<List<Tag>>()
 
         coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
         coEvery { mockParseUrl(mockUrlValid) } returns Success(RichUrl(mockUrlValid, mockUrlValid))
         every { mockUserRepository.getDefaultPrivate() } returns defaultPrivate
         every { mockUserRepository.getDefaultReadLater() } returns defaultReadLater
+        every { mockUserRepository.getDefaultTags() } returns defaultTags
         every { mockUserRepository.getEditAfterSharing() } returns EditAfterSharing.BeforeSaving
 
         val expectedPost = Post(
@@ -97,7 +100,8 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
             title = mockUrlValid,
             description = "",
             private = defaultPrivate,
-            readLater = defaultReadLater
+            readLater = defaultReadLater,
+            tags = defaultTags,
         )
 
         // WHEN
@@ -106,6 +110,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         // THEN
         verify { mockUserRepository.getDefaultPrivate() }
         verify { mockUserRepository.getDefaultReadLater() }
+        verify { mockUserRepository.getDefaultTags() }
         runBlocking {
             assertThat(shareReceiverViewModel.edit.first()).isEqualTo("")
         }
@@ -118,11 +123,13 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         // GIVEN
         val defaultPrivate = randomBoolean()
         val defaultReadLater = randomBoolean()
+        val defaultTags = mockk<List<Tag>>()
 
         coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
         coEvery { mockParseUrl(mockUrlValid) } returns Success(RichUrl(mockUrlValid, mockUrlValid))
         every { mockUserRepository.getDefaultPrivate() } returns defaultPrivate
         every { mockUserRepository.getDefaultReadLater() } returns defaultReadLater
+        every { mockUserRepository.getDefaultTags() } returns defaultTags
         every { mockUserRepository.getEditAfterSharing() } returns mockk()
         coEvery {
             mockAddPost(
@@ -131,7 +138,8 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                     title = mockUrlValid,
                     private = defaultPrivate,
                     readLater = defaultReadLater,
-                    replace = false
+                    tags = defaultTags,
+                    replace = false,
                 )
             )
         } returns Failure(error)
@@ -142,6 +150,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         // THEN
         verify { mockUserRepository.getDefaultPrivate() }
         verify { mockUserRepository.getDefaultReadLater() }
+        verify { mockUserRepository.getDefaultTags() }
         runBlocking {
             assertThat(shareReceiverViewModel.failed.first()).isEqualTo(error)
         }
@@ -152,11 +161,13 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         // GIVEN
         val defaultPrivate = randomBoolean()
         val defaultReadLater = randomBoolean()
+        val defaultTags = mockk<List<Tag>>()
 
         coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
         coEvery { mockParseUrl(mockUrlValid) } returns Success(RichUrl(mockUrlValid, mockUrlValid))
         every { mockUserRepository.getDefaultPrivate() } returns defaultPrivate
         every { mockUserRepository.getDefaultReadLater() } returns defaultReadLater
+        every { mockUserRepository.getDefaultTags() } returns defaultTags
         every { mockUserRepository.getEditAfterSharing() } returns EditAfterSharing.SkipEdit
 
         coEvery {
@@ -166,7 +177,8 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                     title = mockUrlValid,
                     private = defaultPrivate,
                     readLater = defaultReadLater,
-                    replace = false
+                    tags = defaultTags,
+                    replace = false,
                 )
             )
         } returns Success(createPost())
@@ -177,6 +189,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         // THEN
         verify { mockUserRepository.getDefaultPrivate() }
         verify { mockUserRepository.getDefaultReadLater() }
+        verify { mockUserRepository.getDefaultTags() }
         runBlocking {
             assertThat(shareReceiverViewModel.saved.first()).isEqualTo("R.string.posts_saved_feedback")
         }
@@ -187,11 +200,13 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         // GIVEN
         val defaultPrivate = randomBoolean()
         val defaultReadLater = randomBoolean()
+        val defaultTags = mockk<List<Tag>>()
 
         coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
         coEvery { mockParseUrl(mockUrlValid) } returns Success(RichUrl(mockUrlValid, mockUrlValid))
         every { mockUserRepository.getDefaultPrivate() } returns defaultPrivate
         every { mockUserRepository.getDefaultReadLater() } returns defaultReadLater
+        every { mockUserRepository.getDefaultTags() } returns defaultTags
         every { mockUserRepository.getEditAfterSharing() } returns EditAfterSharing.AfterSaving
 
         val post = createPost()
@@ -202,7 +217,8 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                     title = mockUrlValid,
                     private = defaultPrivate,
                     readLater = defaultReadLater,
-                    replace = false
+                    tags = defaultTags,
+                    replace = false,
                 )
             )
         } returns Success(post)
@@ -213,6 +229,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         // THEN
         verify { mockUserRepository.getDefaultPrivate() }
         verify { mockUserRepository.getDefaultReadLater() }
+        verify { mockUserRepository.getDefaultTags() }
         runBlocking {
             assertThat(shareReceiverViewModel.edit.first()).isEqualTo("R.string.posts_saved_feedback")
         }

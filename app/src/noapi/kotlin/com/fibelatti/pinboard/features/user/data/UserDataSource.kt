@@ -5,6 +5,7 @@ import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
@@ -45,12 +46,10 @@ class UserDataSource @Inject constructor(
         // Intentionally empty
     }
 
-    override fun getAppearance(): Appearance {
-        return when (userSharedPreferences.getAppearance()) {
-            Appearance.LightTheme.value -> Appearance.LightTheme
-            Appearance.DarkTheme.value -> Appearance.DarkTheme
-            else -> Appearance.SystemDefault
-        }
+    override fun getAppearance(): Appearance = when (userSharedPreferences.getAppearance()) {
+        Appearance.LightTheme.value -> Appearance.LightTheme
+        Appearance.DarkTheme.value -> Appearance.DarkTheme
+        else -> Appearance.SystemDefault
     }
 
     override fun setAppearance(appearance: Appearance) {
@@ -101,15 +100,19 @@ class UserDataSource @Inject constructor(
         userSharedPreferences.setDefaultReadLater(value)
     }
 
-    override fun getEditAfterSharing(): EditAfterSharing {
-        return when (userSharedPreferences.getEditAfterSharing()) {
-            EditAfterSharing.BeforeSaving.value -> EditAfterSharing.BeforeSaving
-            EditAfterSharing.AfterSaving.value -> EditAfterSharing.AfterSaving
-            else -> EditAfterSharing.SkipEdit
-        }
+    override fun getEditAfterSharing(): EditAfterSharing = when (userSharedPreferences.getEditAfterSharing()) {
+        EditAfterSharing.BeforeSaving.value -> EditAfterSharing.BeforeSaving
+        EditAfterSharing.AfterSaving.value -> EditAfterSharing.AfterSaving
+        else -> EditAfterSharing.SkipEdit
     }
 
     override fun setEditAfterSharing(editAfterSharing: EditAfterSharing) {
         userSharedPreferences.setEditAfterSharing(editAfterSharing.value)
+    }
+
+    override fun getDefaultTags(): List<Tag> = userSharedPreferences.getDefaultTags().map(::Tag)
+
+    override fun setDefaultTags(tags: List<Tag>) {
+        userSharedPreferences.setDefaultTags(tags.map(Tag::name))
     }
 }

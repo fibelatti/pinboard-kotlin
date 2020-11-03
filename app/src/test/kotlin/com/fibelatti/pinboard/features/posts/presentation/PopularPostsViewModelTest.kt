@@ -11,6 +11,7 @@ import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPopularPosts
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.isEmpty
 import com.fibelatti.pinboard.randomBoolean
@@ -79,7 +80,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
         popularPostsViewModel.saveLink(post)
 
         // THEN
-        coVerify { mockAppStateRepository.runAction(PostSaved(post)) }
+        coVerify { mockAppStateRepository.runAction(PostSaved(post.copy(tags = emptyList()))) }
         runBlocking {
             assertThat(popularPostsViewModel.loading.isEmpty()).isTrue()
         }
@@ -109,18 +110,22 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
     @Test
     fun `WHEN saveLink is called AND add post is successful THEN saved should receive a value and PostSave should be run`() {
         // GIVEN
-        val post = createPost()
+        val post = createPost(
+            tags = null
+        )
         val randomBoolean = randomBoolean()
+        val mockTags = mockk<List<Tag>>()
         val params = AddPost.Params(
             url = post.url,
             title = post.title,
             description = post.description,
-            tags = post.tags,
+            tags = mockTags,
             private = randomBoolean,
-            readLater = randomBoolean
+            readLater = randomBoolean,
         )
         every { mockUserRepository.getDefaultPrivate() } returns randomBoolean
         every { mockUserRepository.getDefaultReadLater() } returns randomBoolean
+        every { mockUserRepository.getDefaultTags() } returns mockTags
         coEvery { mockAddPost(params) } returns Success(post)
 
         // WHEN

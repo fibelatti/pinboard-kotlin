@@ -1,5 +1,8 @@
 package com.fibelatti.pinboard.core.extension
 
+import android.animation.ObjectAnimator
+import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import com.fibelatti.pinboard.R
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -18,4 +21,11 @@ fun FloatingActionButton.blink(onHidden: () -> Unit = {}) {
             show()
         }
     })
+}
+
+fun View.smoothScrollY(scrollBy: Int) {
+    ObjectAnimator.ofInt(this, "scrollY", scrollBy)
+        .apply { interpolator = AccelerateDecelerateInterpolator() }
+        .setDuration(resources.getInteger(R.integer.anim_time_long).toLong())
+        .start()
 }

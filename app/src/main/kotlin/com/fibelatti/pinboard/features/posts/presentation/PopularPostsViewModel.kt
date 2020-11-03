@@ -43,6 +43,7 @@ class PopularPostsViewModel @Inject constructor(
             val newPost = post.copy(
                 private = userRepository.getDefaultPrivate() ?: false,
                 readLater = userRepository.getDefaultReadLater() ?: false,
+                tags = userRepository.getDefaultTags(),
             )
             if (userRepository.getEditAfterSharing() is EditAfterSharing.BeforeSaving) {
                 appStateRepository.runAction(PostSaved(newPost))
