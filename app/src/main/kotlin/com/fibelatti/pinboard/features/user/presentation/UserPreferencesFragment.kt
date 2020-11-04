@@ -103,7 +103,9 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
             }
         }
         lifecycleScope.launch {
-            userPreferencesViewModel.suggestedTags.collect(binding.layoutAddTags::showSuggestedValuesAsTags)
+            userPreferencesViewModel.suggestedTags.collect {
+                binding.layoutAddTags.showSuggestedValuesAsTags(it, showRemoveIcon = false)
+            }
         }
     }
 
