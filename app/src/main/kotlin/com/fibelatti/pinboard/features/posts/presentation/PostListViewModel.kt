@@ -25,6 +25,7 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.GetPostParams
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import javax.inject.Inject
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -35,6 +36,8 @@ class PostListViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     fun loadContent(content: PostListContent) {
+        coroutineContext.cancelChildren()
+
         val offset = when (content.shouldLoad) {
             is ShouldLoadFirstPage, ShouldForceLoad -> 0
             is ShouldLoadNextPage -> content.shouldLoad.offset
@@ -52,35 +55,16 @@ class PostListViewModel @Inject constructor(
                 )
             }
             is Recent -> {
-                getRecent(
-                    content.sortType,
-                    content.searchParameters.term,
-                    content.searchParameters.tags,
-                )
+                getRecent(content.sortType, content.searchParameters.term, content.searchParameters.tags)
             }
             is Public -> {
-                getPublic(
-                    content.sortType,
-                    content.searchParameters.term,
-                    content.searchParameters.tags,
-                    offset,
-                )
+                getPublic(content.sortType, content.searchParameters.term, content.searchParameters.tags, offset)
             }
             is Private -> {
-                getPrivate(
-                    content.sortType,
-                    content.searchParameters.term,
-                    content.searchParameters.tags,
-                    offset,
-                )
+                getPrivate(content.sortType, content.searchParameters.term, content.searchParameters.tags, offset)
             }
             is Unread -> {
-                getUnread(
-                    content.sortType,
-                    content.searchParameters.term,
-                    content.searchParameters.tags,
-                    offset,
-                )
+                getUnread(content.sortType, content.searchParameters.term, content.searchParameters.tags, offset)
             }
             is Untagged -> {
                 getUntagged(content.sortType, content.searchParameters.term, offset)
