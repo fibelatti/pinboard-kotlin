@@ -703,6 +703,7 @@ class PostsDataSourceTest {
                         when (index) {
                             0 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
                             1 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
+                            2 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
                             else -> fail("Unexpected number of collections")
                         }
                     }
@@ -825,6 +826,7 @@ class PostsDataSourceTest {
                         when (index) {
                             0 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
                             1 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
+                            2 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
                             else -> fail("Unexpected number of collections")
                         }
                     }
@@ -896,7 +898,8 @@ class PostsDataSourceTest {
                     result.collectIndexed { index, value ->
                         when (index) {
                             0 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
-                            1 -> assertThat(value.exceptionOrNull()).isInstanceOf(Exception::class.java)
+                            1 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
+                            2 -> assertThat(value.exceptionOrNull()).isInstanceOf(Exception::class.java)
                             else -> fail("Unexpected number of collections")
                         }
                     }
@@ -954,7 +957,8 @@ class PostsDataSourceTest {
                     result.collectIndexed { index, value ->
                         when (index) {
                             0 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
-                            1 -> assertThat(value.exceptionOrNull()).isInstanceOf(Exception::class.java)
+                            1 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
+                            2 -> assertThat(value.exceptionOrNull()).isInstanceOf(Exception::class.java)
                             else -> fail("Unexpected number of collections")
                         }
                     }
@@ -1010,7 +1014,8 @@ class PostsDataSourceTest {
                     result.collectIndexed { index, value ->
                         when (index) {
                             0 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
-                            1 -> assertThat(value.exceptionOrNull()).isInstanceOf(Exception::class.java)
+                            1 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
+                            2 -> assertThat(value.exceptionOrNull()).isInstanceOf(Exception::class.java)
                         }
                     }
                     coVerify {
@@ -1072,6 +1077,7 @@ class PostsDataSourceTest {
                         when (index) {
                             0 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
                             1 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
+                            2 -> assertThat(value.getOrNull()).isEqualTo(mockLocalData)
                             else -> fail("Unexpected number of collections")
                         }
                     }
