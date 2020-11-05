@@ -58,12 +58,13 @@ class PostsDataSource @Inject constructor(
 
     companion object {
 
-        private const val SERVER_DOWN_TIMEOUT = 10_000L
+        private const val SERVER_DOWN_TIMEOUT_SHORT = 10_000L
+        private const val SERVER_DOWN_TIMEOUT_LONG = 15_000L
     }
 
     override suspend fun update(): Result<String> = resultFromNetwork {
         withContext(Dispatchers.IO) {
-            withTimeout(SERVER_DOWN_TIMEOUT) {
+            withTimeout(SERVER_DOWN_TIMEOUT_SHORT) {
                 postsApi.update().updateTime
             }
         }
@@ -97,7 +98,7 @@ class PostsDataSource @Inject constructor(
 
         return resultFromNetwork {
             withContext(Dispatchers.IO) {
-                val result = withTimeout(SERVER_DOWN_TIMEOUT) {
+                val result = withTimeout(SERVER_DOWN_TIMEOUT_LONG) {
                     postsApi.add(
                         url = url,
                         title = trimmedTitle,
