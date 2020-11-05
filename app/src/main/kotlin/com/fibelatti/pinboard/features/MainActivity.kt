@@ -316,9 +316,9 @@ class MainActivity : BaseActivity() {
 
         ConstraintSet().apply {
             clone(binding.layoutContent)
-            connect(banner.id, ConstraintSet.TOP, binding.layoutTitle.id, ConstraintSet.BOTTOM, 16)
-            connect(banner.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, 16)
-            connect(banner.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, 16)
+            connect(banner.id, ConstraintSet.TOP, binding.layoutTitle.id, ConstraintSet.BOTTOM, 0)
+            connect(banner.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, 0)
+            connect(banner.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, 0)
         }.applyTo(binding.layoutContent)
 
         val animTime = resources.getInteger(R.integer.anim_time_long).toLong()

@@ -3,17 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layoutBanner"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_margin="@dimen/margin_regular"
-    android:background="@drawable/background_snackbar"
-    android:elevation="@dimen/elevation_high">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/textViewFeedback"
         style="@style/AppTheme.Text.Detail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_large"
         android:padding="@dimen/padding_regular"
+        android:elevation="@dimen/elevation_high"
+        android:background="@drawable/background_snackbar"
         tools:text="@tools:sample/lorem/random" />
 
 </FrameLayout>
