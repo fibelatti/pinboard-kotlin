@@ -224,12 +224,15 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
         }
         binding.buttonBeforeSaving.setOnClickListener {
             userPreferencesViewModel.saveEditAfterSharing(EditAfterSharing.BeforeSaving)
+            binding.buttonBeforeSaving.isChecked = true
         }
         binding.buttonAfterSaving.setOnClickListener {
             userPreferencesViewModel.saveEditAfterSharing(EditAfterSharing.AfterSaving)
+            binding.buttonAfterSaving.isChecked = true
         }
         binding.buttonSkipEditing.setOnClickListener {
             userPreferencesViewModel.saveEditAfterSharing(EditAfterSharing.SkipEdit)
+            binding.buttonSkipEditing.isChecked = true
         }
     }
 
