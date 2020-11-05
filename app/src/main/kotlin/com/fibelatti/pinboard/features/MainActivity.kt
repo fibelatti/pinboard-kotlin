@@ -26,11 +26,14 @@ import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.inTransaction
 import com.fibelatti.core.extension.snackbar
 import com.fibelatti.core.extension.visible
+import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.DefaultAnimationListener
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseActivity
+import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.android.customview.TitleLayout
+import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.core.functional.DoNothing
 import com.fibelatti.pinboard.databinding.ActivityMainBinding
@@ -291,6 +294,18 @@ class MainActivity : BaseActivity() {
         binding.layoutTitle.gone()
         binding.bottomAppBar.gone()
         binding.fabMain.hide()
+    }
+
+    override fun handleError(error: Throwable) {
+        if (BuildConfig.DEBUG) {
+            error.printStackTrace()
+        }
+
+        if (error.isServerException()) {
+            showBanner(getString(R.string.server_timeout_error))
+        } else {
+            sendErrorReport(error)
+        }
     }
 
     @Suppress("MagicNumber")

@@ -38,7 +38,7 @@ abstract class BaseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
     }
 
-    fun handleError(error: Throwable) {
+    open fun handleError(error: Throwable) {
         if (BuildConfig.DEBUG) {
             error.printStackTrace()
         }
@@ -75,7 +75,7 @@ abstract class BaseActivity : AppCompatActivity() {
 fun FragmentActivity.sendErrorReport(
     throwable: Throwable,
     altMessage: String = "",
-    postAction: () -> Unit = {}
+    postAction: () -> Unit = {},
 ) {
     showStyledDialog(
         dialogStyle = R.style.AppTheme_AlertDialog,
