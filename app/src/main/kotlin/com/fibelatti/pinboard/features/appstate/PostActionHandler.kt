@@ -12,23 +12,23 @@ class PostActionHandler @Inject constructor(
     private val postListDiffUtilFactory: PostListDiffUtilFactory
 ) : ActionHandler<PostAction>() {
 
-    override suspend fun runAction(action: PostAction, currentContent: Content): Content {
-        return when (action) {
-            is Refresh -> refresh(currentContent, force = action.force)
-            is SetPosts -> setPosts(action, currentContent)
-            is GetNextPostPage -> getNextPostPage(currentContent)
-            is SetNextPostPage -> setNextPostPage(action, currentContent)
-            is PostsDisplayed -> postsDisplayed(currentContent)
-            is ToggleSorting -> toggleSorting(currentContent)
-            is EditPost -> editPost(action, currentContent)
-            is EditPostFromShare -> editPostFromShare(action)
-            is PostSaved -> postSaved(action, currentContent)
-            is PostDeleted -> postDeleted(currentContent)
-        }
+    override suspend fun runAction(action: PostAction, currentContent: Content): Content = when (action) {
+        is Refresh -> refresh(currentContent, force = action.force)
+        is SetPosts -> setPosts(action, currentContent)
+        is GetNextPostPage -> getNextPostPage(currentContent)
+        is SetNextPostPage -> setNextPostPage(action, currentContent)
+        is PostsDisplayed -> postsDisplayed(currentContent)
+        is ToggleSorting -> toggleSorting(currentContent)
+        is EditPost -> editPost(action, currentContent)
+        is EditPostFromShare -> editPostFromShare(action)
+        is PostSaved -> postSaved(action, currentContent)
+        is PostDeleted -> postDeleted(currentContent)
     }
 
     private fun refresh(currentContent: Content, force: Boolean): Content {
-        return if (currentContent is PostListContent && currentContent.shouldLoad is Loaded) {
+        return if (currentContent is PostListContent &&
+            (currentContent.shouldLoad is Loaded || currentContent.shouldLoad is Syncing)
+        ) {
             currentContent.copy(
                 shouldLoad = when {
                     !connectivityInfoProvider.isConnected() -> Loaded

@@ -245,22 +245,17 @@ class PostListFragment @Inject constructor(
         }
 
         when (content.shouldLoad) {
-            is ShouldLoadFirstPage, ShouldForceLoad -> {
+            ShouldLoadFirstPage, ShouldForceLoad -> {
                 mainActivity?.updateTitleLayout {
                     setTitle(getCategoryTitle(content.category))
                     hideSubTitle()
                 }
 
                 binding.progressBar.visible()
-                binding.recyclerViewPosts.gone()
-                binding.layoutEmptyList.gone()
-
-                postsAdapter.clearItems()
-
                 postListViewModel.loadContent(content)
             }
             is ShouldLoadNextPage -> postListViewModel.loadContent(content)
-            is Syncing, is Loaded -> showPosts(content)
+            Syncing, Loaded -> showPosts(content)
         }.exhaustive
 
         binding.layoutSearchActive.root.visibleIf(
@@ -273,15 +268,13 @@ class PostListFragment @Inject constructor(
         )
     }
 
-    private fun getCategoryTitle(category: ViewCategory): String {
-        return when (category) {
-            All -> getString(R.string.posts_title_all)
-            Recent -> getString(R.string.posts_title_recent)
-            Public -> getString(R.string.posts_title_public)
-            Private -> getString(R.string.posts_title_private)
-            Unread -> getString(R.string.posts_title_unread)
-            Untagged -> getString(R.string.posts_title_untagged)
-        }
+    private fun getCategoryTitle(category: ViewCategory): String = when (category) {
+        All -> getString(R.string.posts_title_all)
+        Recent -> getString(R.string.posts_title_recent)
+        Public -> getString(R.string.posts_title_public)
+        Private -> getString(R.string.posts_title_private)
+        Unread -> getString(R.string.posts_title_unread)
+        Untagged -> getString(R.string.posts_title_untagged)
     }
 
     private fun showPosts(content: PostListContent) {
@@ -317,11 +310,7 @@ class PostListFragment @Inject constructor(
 
     private fun buildPostCountSubTitle(count: Int, sortType: SortType): String {
         val countFormatArg = if (count % AppConfig.API_PAGE_SIZE == 0) "$count+" else "$count"
-        val countString = resources.getQuantityString(
-            R.plurals.posts_quantity,
-            count,
-            countFormatArg
-        )
+        val countString = resources.getQuantityString(R.plurals.posts_quantity, count, countFormatArg)
         return resources.getString(
             if (sortType == NewestFirst) {
                 R.string.posts_sorting_newest_first

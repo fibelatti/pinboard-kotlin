@@ -853,9 +853,36 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is PopularPostsContent AND getEditAfterSharing is not AfterSaving THEN updated content is returned`() {
+        fun `WHEN currentContent is PopularPostsContent AND getEditAfterSharing is BeforeSaving THEN updated content is returned`() {
             // GIVEN
-            every { mockUserRepository.getEditAfterSharing() } returns mockk()
+            every { mockUserRepository.getEditAfterSharing() } returns EditAfterSharing.BeforeSaving
+            val currentContent = PopularPostsContent(
+                posts = mockk(),
+                shouldLoad = false,
+                previousContent = initialContent
+            )
+            val expectedContent = currentContent.copy(
+                previousContent = initialContent.copy(shouldLoad = ShouldLoadFirstPage)
+            )
+
+            // WHEN
+            val result = runBlocking {
+                postActionHandler.runAction(PostSaved(mockPost), currentContent)
+            }
+
+            // THEN
+            assertThat(result).isEqualTo(
+                EditPostContent(
+                    post = mockPost,
+                    previousContent = expectedContent
+                )
+            )
+        }
+
+        @Test
+        fun `WHEN currentContent is PopularPostsContent AND getEditAfterSharing is SkipEdit THEN updated content is returned`() {
+            // GIVEN
+            every { mockUserRepository.getEditAfterSharing() } returns EditAfterSharing.SkipEdit
             val currentContent = PopularPostsContent(
                 posts = mockk(),
                 shouldLoad = false,

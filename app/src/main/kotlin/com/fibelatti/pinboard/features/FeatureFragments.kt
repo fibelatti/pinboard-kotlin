@@ -22,15 +22,16 @@ import javax.inject.Inject
 class FeatureFragments @Inject constructor(private val activity: FragmentActivity) {
 
     fun showPostList() {
-        activity.popTo(PostListFragment.TAG)
+        if (activity.supportFragmentManager.findFragmentByTag(PostListFragment.TAG) == null) {
+            activity.slideUp(activity.createFragment<PostListFragment>(), PostListFragment.TAG)
+        } else {
+            activity.popTo(PostListFragment.TAG)
+        }
     }
 
     fun showPostDetail() {
         if (activity.supportFragmentManager.findFragmentByTag(PostDetailFragment.TAG) == null) {
-            activity.slideFromTheRight(
-                activity.createFragment<PostDetailFragment>(),
-                PostDetailFragment.TAG
-            )
+            activity.slideFromTheRight(activity.createFragment<PostDetailFragment>(), PostDetailFragment.TAG)
         } else {
             activity.popTo(PostDetailFragment.TAG)
         }
@@ -63,10 +64,7 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
 
     fun showNotes() {
         if (activity.supportFragmentManager.findFragmentByTag(NoteListFragment.TAG) == null) {
-            activity.slideFromTheRight(
-                activity.createFragment<NoteListFragment>(),
-                NoteListFragment.TAG
-            )
+            activity.slideFromTheRight(activity.createFragment<NoteListFragment>(), NoteListFragment.TAG)
         } else {
             activity.popTo(NoteListFragment.TAG)
         }
@@ -74,19 +72,13 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
 
     fun showNoteDetails() {
         if (activity.supportFragmentManager.findFragmentByTag(NoteDetailsFragment.TAG) == null) {
-            activity.slideFromTheRight(
-                activity.createFragment<NoteDetailsFragment>(),
-                NoteDetailsFragment.TAG
-            )
+            activity.slideFromTheRight(activity.createFragment<NoteDetailsFragment>(), NoteDetailsFragment.TAG)
         }
     }
 
     fun showPopular() {
         if (activity.supportFragmentManager.findFragmentByTag(PopularPostsFragment.TAG) == null) {
-            activity.slideFromTheRight(
-                activity.createFragment<PopularPostsFragment>(),
-                PopularPostsFragment.TAG
-            )
+            activity.slideFromTheRight(activity.createFragment<PopularPostsFragment>(), PopularPostsFragment.TAG)
         } else {
             activity.popTo(PopularPostsFragment.TAG)
         }
@@ -94,10 +86,7 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
 
     fun showPreferences() {
         if (activity.supportFragmentManager.findFragmentByTag(UserPreferencesFragment.TAG) == null) {
-            activity.slideFromTheRight(
-                activity.createFragment<UserPreferencesFragment>(),
-                UserPreferencesFragment.TAG
-            )
+            activity.slideFromTheRight(activity.createFragment<UserPreferencesFragment>(), UserPreferencesFragment.TAG)
         }
     }
 

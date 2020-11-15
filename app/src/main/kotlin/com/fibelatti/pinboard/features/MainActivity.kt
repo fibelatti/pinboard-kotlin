@@ -194,6 +194,10 @@ class MainActivity : BaseActivity() {
                     return@collect
                 }
 
+                if (supportFragmentManager.isStateSaved) {
+                    return@collect
+                }
+
                 when (content) {
                     is PostListContent -> featureFragments.showPostList()
                     is PostDetailContent -> featureFragments.showPostDetail()
