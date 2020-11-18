@@ -22,11 +22,7 @@ import javax.inject.Inject
 class FeatureFragments @Inject constructor(private val activity: FragmentActivity) {
 
     fun showPostList() {
-        if (activity.supportFragmentManager.findFragmentByTag(PostListFragment.TAG) == null) {
-            activity.slideUp(activity.createFragment<PostListFragment>(), PostListFragment.TAG)
-        } else {
-            activity.popTo(PostListFragment.TAG)
-        }
+        activity.popTo(PostListFragment.TAG)
     }
 
     fun showPostDetail() {
