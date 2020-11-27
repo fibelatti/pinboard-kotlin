@@ -128,4 +128,4 @@ jobs:
         with:
           api-level: 29
           arch: x86_64
-          script: ./gradlew clean :app:connectedAndroidTest --stacktrace
+          script: .github/scripts/gradlew_recursive.sh clean :app:connectedAndroidTest --stacktrace
