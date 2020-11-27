@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/padding_small"
     android:animateLayoutChanges="true"
-    android:minHeight="@dimen/title_layout_height"
-    android:paddingBottom="@dimen/padding_small">
+    android:minHeight="@dimen/title_layout_height">
 
     <ImageButton
         android:id="@+id/buttonNavigateBack"
@@ -26,8 +26,8 @@
         style="@style/AppTheme.Text.Title"
         android:layout_width="0dp"
         android:layout_height="@dimen/clickable_area"
-        android:layout_gravity="center_vertical"
         android:layout_marginStart="@dimen/margin_regular"
+        android:layout_gravity="center_vertical"
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:maxLines="1"
@@ -61,7 +61,6 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textViewTitle"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Some action"
         tools:visibility="visible" />

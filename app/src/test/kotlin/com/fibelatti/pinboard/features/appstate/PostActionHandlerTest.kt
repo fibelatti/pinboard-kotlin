@@ -673,7 +673,7 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is not AddPostContent or EditPostContent THEN same content is returned`() {
             // GIVEN
-            val content = mockk<PostDetailContent>()
+            val content = mockk<Content>()
 
             // WHEN
             val result = runBlocking {
@@ -682,6 +682,25 @@ internal class PostActionHandlerTest {
 
             // THEN
             assertThat(result).isEqualTo(content)
+        }
+
+        @Test
+        fun `WHEN currentContent is PostDetailContent THEN same content is returned`() {
+            // GIVEN
+            val post = createPost()
+            val currentContent = PostDetailContent(
+                post = post,
+                previousContent = initialContent
+            )
+
+            // WHEN
+            val result = runBlocking {
+                postActionHandler.runAction(PostSaved(post), currentContent)
+            }
+
+            // THEN
+            assertThat(result)
+                .isEqualTo(currentContent.copy(previousContent = initialContent.copy(shouldLoad = ShouldLoadFirstPage)))
         }
 
         @Test

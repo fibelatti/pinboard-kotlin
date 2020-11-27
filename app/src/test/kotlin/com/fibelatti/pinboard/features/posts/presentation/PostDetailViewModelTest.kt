@@ -6,6 +6,8 @@ import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostDeleted
+import com.fibelatti.pinboard.features.appstate.PostSaved
+import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.DeletePost
 import com.fibelatti.pinboard.isEmpty
 import com.google.common.truth.Truth.assertThat
@@ -18,14 +20,16 @@ import org.junit.jupiter.api.Test
 
 internal class PostDetailViewModelTest : BaseViewModelTest() {
 
-    private val mockAppStateRepository = mockk<AppStateRepository>()
+    private val mockAppStateRepository = mockk<AppStateRepository>(relaxed = true)
     private val mockDeletePost = mockk<DeletePost>()
+    private val mockAddPost = mockk<AddPost>()
 
     private val mockPost = createPost()
 
     private val postDetailViewModel = PostDetailViewModel(
         mockAppStateRepository,
-        mockDeletePost
+        mockDeletePost,
+        mockAddPost,
     )
 
     @Test
@@ -43,7 +47,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
             assertThat(postDetailViewModel.deleteError.first()).isEqualTo(error)
             assertThat(postDetailViewModel.deleted.isEmpty()).isTrue()
         }
-        coVerify(exactly = 0) { mockAppStateRepository.runAction(PostDeleted) }
+        coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 
     @Test
@@ -62,5 +66,41 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
         }
 
         coVerify { mockAppStateRepository.runAction(PostDeleted) }
+    }
+
+    @Test
+    fun `WHEN markAsRead fails THEN updateError should receive a value`() {
+        // GIVEN
+        val error = Exception()
+        coEvery { mockAddPost(any()) } returns Failure(error)
+
+        // WHEN
+        postDetailViewModel.markAsRead(mockPost)
+
+        // THEN
+        runBlocking {
+            assertThat(postDetailViewModel.loading.first()).isEqualTo(false)
+            assertThat(postDetailViewModel.updateError.first()).isEqualTo(error)
+            assertThat(postDetailViewModel.updated.isEmpty()).isTrue()
+        }
+        coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
+    }
+
+    @Test
+    fun `WHEN markAsRead succeeds THEN appStateRepository should run PostSaved`() {
+        // GIVEN
+        coEvery { mockAddPost(any()) } returns Success(mockPost)
+
+        // WHEN
+        postDetailViewModel.markAsRead(mockPost)
+
+        // THEN
+        runBlocking {
+            assertThat(postDetailViewModel.loading.first()).isEqualTo(false)
+            assertThat(postDetailViewModel.updateError.isEmpty()).isTrue()
+            assertThat(postDetailViewModel.updated.first()).isEqualTo(Unit)
+        }
+
+        coVerify { mockAppStateRepository.runAction(PostSaved(mockPost)) }
     }
 }

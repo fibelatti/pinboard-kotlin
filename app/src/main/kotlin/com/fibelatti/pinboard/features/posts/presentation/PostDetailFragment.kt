@@ -84,6 +84,7 @@ class PostDetailFragment @Inject constructor(
     }
 
     override fun onDestroyView() {
+        mainActivity?.updateTitleLayout { hideActionButton() }
         postWebViewClient?.callback = null
         super.onDestroyView()
     }
@@ -112,6 +113,17 @@ class PostDetailFragment @Inject constructor(
                     setMessage(R.string.posts_deleted_error)
                     setPositiveButton(R.string.hint_ok) { dialog, _ -> dialog?.dismiss() }
                 }
+            }
+        }
+        lifecycleScope.launch {
+            postDetailViewModel.updated.collect {
+                mainActivity?.showBanner(getString(R.string.posts_marked_as_read_feedback))
+                mainActivity?.updateTitleLayout { hideActionButton() }
+            }
+        }
+        lifecycleScope.launch {
+            postDetailViewModel.updateError.collect {
+                mainActivity?.showBanner(getString(R.string.posts_marked_as_read_error))
             }
         }
         lifecycleScope.launch {
@@ -170,6 +182,8 @@ class PostDetailFragment @Inject constructor(
     }
 
     private fun showFileView(post: Post) {
+        mainActivity?.updateTitleLayout { hideActionButton() }
+
         binding.layoutFileView.root.visible()
         binding.layoutScrollViewWeb.gone()
         binding.layoutProgressBar.root.gone()
@@ -195,6 +209,14 @@ class PostDetailFragment @Inject constructor(
             }
 
             return
+        }
+
+        if (post.readLater) {
+            mainActivity?.updateTitleLayout {
+                setActionButton(R.string.hint_mark_as_read) {
+                    postDetailViewModel.markAsRead(post)
+                }
+            }
         }
 
         if (binding.webView.url != post.url) {
