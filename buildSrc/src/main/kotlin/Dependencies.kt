@@ -3,10 +3,10 @@ object Versions {
     const val targetSdkVersion = 30
     const val compileSdkVersion = 30
 
-    internal const val kotlinVersion = "1.4.20"
+    internal const val kotlinVersion = "1.4.31"
     internal const val coroutinesVersion = "1.4.2"
-    internal const val lifecycleVersion = "2.2.0"
-    internal const val roomVersion = "2.2.5"
+    internal const val lifecycleVersion = "2.3.0"
+    internal const val roomVersion = "2.2.6"
 }
 
 object Classpaths {
@@ -21,9 +21,9 @@ object Dependencies {
     const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutinesVersion}"
 
     const val supportLibrary = "androidx.appcompat:appcompat:1.2.0"
-    const val androidCore = "androidx.core:core-ktx:1.5.0-alpha04"
-    const val activity = "androidx.activity:activity-ktx:1.1.0"
-    const val fragments = "androidx.fragment:fragment-ktx:1.3.0-beta01"
+    const val androidCore = "androidx.core:core-ktx:1.5.0-beta02"
+    const val activity = "androidx.activity:activity-ktx:1.2.0"
+    const val fragments = "androidx.fragment:fragment-ktx:1.3.0"
     const val supportAnnotations = "androidx.annotation:annotation:1.1.0"
     const val materialDesign = "com.google.android.material:material:1.2.0"
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.4"
@@ -32,7 +32,7 @@ object Dependencies {
     const val coreLib = "com.fibelatti.core:core:2.0.0-alpha4"
     const val coreLibArch = "com.fibelatti.core:arch-components:2.0.0-alpha4"
 
-    const val lifecycleJava8 = "androidx.lifecycle:lifecycle-common-java8:2.2.0"
+    const val lifecycleJava8 = "androidx.lifecycle:lifecycle-common-java8:${Versions.lifecycleVersion}"
 
     const val archComponents = "androidx.lifecycle:lifecycle-extensions:${Versions.lifecycleVersion}"
     const val archComponentsCompiler = "androidx.lifecycle:lifecycle-compiler:${Versions.lifecycleVersion}"
@@ -40,9 +40,9 @@ object Dependencies {
     const val room = "androidx.room:room-runtime:${Versions.roomVersion}"
     const val roomCompiler = "androidx.room:room-compiler:${Versions.roomVersion}"
 
-    const val customTabs = "androidx.browser:browser:1.2.0"
+    const val customTabs = "androidx.browser:browser:1.3.0"
 
-    private const val daggerVersion = "2.29.1"
+    private const val daggerVersion = "2.33"
 
     const val dagger = "com.google.dagger:dagger:$daggerVersion"
     const val daggerCompiler = "com.google.dagger:dagger-compiler:$daggerVersion"
@@ -61,7 +61,7 @@ object Dependencies {
 
     const val playCore = "com.google.android.play:core-ktx:1.8.1"
 
-    const val leakCanary = "com.squareup.leakcanary:leakcanary-android:2.5"
+    const val leakCanary = "com.squareup.leakcanary:leakcanary-android:2.6"
 }
 
 object TestDependencies {
@@ -79,7 +79,7 @@ object TestDependencies {
     const val testRunner = "androidx.test:runner:1.2.0"
 
     const val googleTruth = "com.google.truth:truth:1.1"
-    const val mockk = "io.mockk:mockk:1.10.2"
+    const val mockk = "io.mockk:mockk:1.10.6"
 
     const val kotlinTest = "org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlinVersion}"
     const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutinesVersion}"
