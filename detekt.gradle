@@ -1,11 +1,9 @@
 buildscript {
     repositories {
-        maven {
-            setUrl("https://plugins.gradle.org/m2/")
-        }
+        mavenCentral()
     }
     dependencies {
-        classpath("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.6.0")
+        classpath("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.15.0")
     }
 }
 

@@ -5,7 +5,7 @@ object Versions {
 
     internal const val kotlinVersion = "1.4.31"
     internal const val coroutinesVersion = "1.4.2"
-    internal const val lifecycleVersion = "2.3.0"
+    internal const val lifecycleVersion = "2.2.0"
     internal const val roomVersion = "2.2.6"
 }
 
