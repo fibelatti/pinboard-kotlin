@@ -1,3 +1,6 @@
+import com.android.build.gradle.internal.api.ReadOnlyProductFlavor
+import org.gradle.internal.extensibility.DefaultExtraPropertiesExtension
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -5,7 +8,8 @@ plugins {
     id("kotlin-kapt")
 }
 
-if (jacocoEnabled.toBoolean()) {
+val jacocoEnabled: Boolean by project
+if (jacocoEnabled) {
     println("Applying coverage-report.gradle")
     apply {
         from("coverage-report.gradle")
@@ -33,72 +37,81 @@ android {
 
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = [
-                    "room.schemaLocation":"$projectDir/schemas".toString(),
-                    "room.incremental":"true"
-                ]
+                arguments(
+                    mapOf(
+                        "room.schemaLocation" to "$projectDir/schemas",
+                        "room.incremental" to "true"
+                    )
+                )
             }
         }
     }
 
     signingConfigs {
-        debug {
-            storeFile file("../keystore/debug.keystore")
-            keyAlias "androiddebugkey"
-            keyPassword "android"
-            storePassword "android"
+        getByName("debug") {
+            storeFile = File("$rootDir/keystore/debug.keystore")
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+            storePassword = "android"
         }
     }
 
     buildTypes {
-        debug {
-            applicationIdSuffix ".debug"
-
-            minifyEnabled false
-            testCoverageEnabled = jacocoEnabled.toBoolean()
+        getByName("debug") {
+            applicationIdSuffix = ".debug"
+            isMinifyEnabled = false
+            isTestCoverageEnabled = jacocoEnabled
         }
-        release {
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+
+        getByName("release") {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            setProguardFiles(
+                listOf(getDefaultProguardFile("proguard-android-optimize.txt"), File("proguard-rules.pro"))
+            )
         }
     }
 
     flavorDimensions("api")
     productFlavors {
-        pinboardapi {
+        create("pinboardapi") {
             dimension("api")
-
-            ext {
-                appNameSuffix = [debug: " Dev", release: ""]
-            }
+            require(this is ExtensionAware)
+            extra["appNameSuffix"] = mapOf("debug" to " Dev", "release" to "")
         }
-        noapi {
+
+        create("noapi") {
             dimension("api")
             applicationIdSuffix(".noapi")
-
-            ext {
-                appNameSuffix = [debug: " NoApi Dev", release: " NoApi"]
-            }
+            require(this is ExtensionAware)
+            extra["appNameSuffix"] = mapOf("debug" to "NoApi Dev", "release" to " NoApi")
         }
+    }
 
-        applicationVariants.all { variant ->
-            def flavor = variant.productFlavors[0]
-            variant.resValue("string", "app_name", "${AppInfo.appName}${flavor.ext.appNameSuffix[variant.buildType.name]}")
+    afterEvaluate {
+        applicationVariants.forEach { variant ->
+            val flavor = variant.productFlavors[0] as ReadOnlyProductFlavor
+            val extra = flavor.getProperty("ext") as DefaultExtraPropertiesExtension
+            val appNameSuffix = extra.get("appNameSuffix")
+            require(appNameSuffix is Map<*, *>)
+            variant.resValue("string", "app_name", "${AppInfo.appName}${appNameSuffix[variant.buildType.name]}")
         }
     }
 
     sourceSets {
-        main.java.srcDirs("src/main/kotlin")
-        pinboardapi.java.srcDir("src/pinboardapi/kotlin")
-        noapi.java.srcDir("src/noapi/kotlin")
+        getByName("main").java.srcDirs("src/main/kotlin")
 
-        test.java.srcDirs("src/test/kotlin", "src/sharedTest/kotlin")
-        testPinboardapi.java.srcDirs("src/test/kotlin", "src/sharedTest/kotlin", "src/testPinboardapi/kotlin")
+        getByName("pinboardapi").java.srcDir("src/pinboardapi/kotlin")
+        getByName("noapi").java.srcDir("src/noapi/kotlin")
 
-        androidTest {
+        getByName("test").java.srcDirs("src/test/kotlin", "src/sharedTest/kotlin")
+        getByName("testPinboardapi").java
+            .srcDirs("src/test/kotlin", "src/sharedTest/kotlin", "src/testPinboardapi/kotlin")
+
+
+        getByName("androidTest") {
             java.srcDirs("src/androidTest/kotlin", "src/sharedTest/kotlin")
-            assets.srcDirs += files("$projectDir/schemas")
+            assets.srcDirs(files("$projectDir/schemas"))
         }
     }
 
@@ -113,14 +126,14 @@ android {
     }
 
     testOptions {
-        animationsDisabled true
+        animationsDisabled = true
 
         unitTests {
-            returnDefaultValues = true
-            includeAndroidResources = true
+            isReturnDefaultValues = true
+            isIncludeAndroidResources = true
 
             all {
-                useJUnitPlatform()
+                it.useJUnitPlatform()
             }
         }
     }
