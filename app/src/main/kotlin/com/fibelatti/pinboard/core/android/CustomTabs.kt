@@ -8,6 +8,7 @@ import android.text.method.TransformationMethod
 import android.text.style.URLSpan
 import android.view.View
 import android.widget.TextView
+import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
 import com.fibelatti.pinboard.R
@@ -15,9 +16,17 @@ import com.fibelatti.pinboard.R
 class CustomTabsURLSpan(url: String) : URLSpan(url) {
 
     override fun onClick(widget: View) {
+        val color = ContextCompat.getColor(widget.context, R.color.color_background)
         CustomTabsIntent.Builder()
             .setShowTitle(true)
-            .setToolbarColor(ContextCompat.getColor(widget.context, R.color.color_background))
+            .setDefaultColorSchemeParams(
+                CustomTabColorSchemeParams.Builder()
+                    .setNavigationBarColor(color)
+                    .setNavigationBarDividerColor(color)
+                    .setToolbarColor(color)
+                    .setSecondaryToolbarColor(color)
+                    .build()
+                )
             .build()
             .launchUrl(widget.context, Uri.parse(url))
     }
