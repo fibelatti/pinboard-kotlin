@@ -25,7 +25,6 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentPostListBinding
@@ -210,8 +209,14 @@ class PostListFragment @Inject constructor(
             postDetailViewModel.deleted.collect { mainActivity?.showBanner(getString(R.string.posts_deleted_feedback)) }
         }
         lifecycleScope.launch {
-            postDetailViewModel.deleteError.collect { error ->
-                activity?.sendErrorReport(error, altMessage = getString(R.string.posts_deleted_error))
+            postDetailViewModel.deleteError.collect {
+                context?.showStyledDialog(
+                    dialogStyle = R.style.AppTheme_AlertDialog,
+                    dialogBackground = R.drawable.background_contrast_rounded
+                ) {
+                    setMessage(R.string.posts_deleted_error)
+                    setPositiveButton(R.string.hint_ok) { dialog, _ -> dialog?.dismiss() }
+                }
             }
         }
         lifecycleScope.launch {
