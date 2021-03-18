@@ -58,7 +58,7 @@ class NavigationMenuFragment @Inject constructor() : BottomSheetDialogFragment()
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         dialog?.setOnShowListener { dialog ->
             if (dialog !is BottomSheetDialog) {
                 return@setOnShowListener

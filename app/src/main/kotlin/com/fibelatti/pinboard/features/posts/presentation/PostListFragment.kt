@@ -100,7 +100,7 @@ class PostListFragment @Inject constructor(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? = FragmentPostListBinding.inflate(inflater, container, false).run {
+    ): View = FragmentPostListBinding.inflate(inflater, container, false).run {
         binding = this
         binding.root
     }

@@ -24,7 +24,7 @@ class SplashFragment @Inject constructor() : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = FragmentSplashBinding.inflate(inflater, container, false).run {
+    ): View = FragmentSplashBinding.inflate(inflater, container, false).run {
         binding = this
         binding.root
     }

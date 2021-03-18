@@ -51,7 +51,7 @@ class AuthFragment @Inject constructor() : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = FragmentAuthBinding.inflate(inflater, container, false).run {
+    ): View = FragmentAuthBinding.inflate(inflater, container, false).run {
         binding = this
         binding.root
     }

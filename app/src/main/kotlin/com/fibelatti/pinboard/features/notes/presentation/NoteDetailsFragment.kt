@@ -39,7 +39,7 @@ class NoteDetailsFragment @Inject constructor() : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = FragmentNoteDetailBinding.inflate(inflater, container, false).run {
+    ): View = FragmentNoteDetailBinding.inflate(inflater, container, false).run {
         binding = this
         binding.root
     }

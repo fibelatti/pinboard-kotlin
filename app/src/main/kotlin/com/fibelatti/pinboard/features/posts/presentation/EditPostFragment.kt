@@ -75,7 +75,7 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? = FragmentEditPostBinding.inflate(inflater, container, false).run {
+    ): View = FragmentEditPostBinding.inflate(inflater, container, false).run {
         binding = this
         binding.root
     }

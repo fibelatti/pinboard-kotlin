@@ -40,7 +40,7 @@ class TagsFragment @Inject constructor(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = FragmentTagsBinding.inflate(inflater, container, false).run {
+    ): View = FragmentTagsBinding.inflate(inflater, container, false).run {
         binding = this
         binding.root
     }

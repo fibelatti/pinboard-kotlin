@@ -73,7 +73,7 @@ class PostDetailFragment @Inject constructor(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? = FragmentPostDetailBinding.inflate(inflater, container, false).run {
+    ): View = FragmentPostDetailBinding.inflate(inflater, container, false).run {
         binding = this
         binding.root
     }

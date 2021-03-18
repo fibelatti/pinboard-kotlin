@@ -47,7 +47,7 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? = FragmentUserPreferencesBinding.inflate(inflater, container, false).run {
+    ): View = FragmentUserPreferencesBinding.inflate(inflater, container, false).run {
         binding = this
         binding.root
     }

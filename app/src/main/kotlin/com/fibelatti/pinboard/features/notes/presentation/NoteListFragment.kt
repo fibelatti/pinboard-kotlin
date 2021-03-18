@@ -46,7 +46,7 @@ class NoteListFragment @Inject constructor(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = FragmentNoteListBinding.inflate(inflater, container, false).run {
+    ): View = FragmentNoteListBinding.inflate(inflater, container, false).run {
         binding = this
         binding.root
     }

@@ -54,7 +54,7 @@ class PostSearchFragment @Inject constructor(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = FragmentSearchPostBinding.inflate(inflater, container, false).run {
+    ): View = FragmentSearchPostBinding.inflate(inflater, container, false).run {
         binding = this
         binding.root
     }

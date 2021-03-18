@@ -47,7 +47,7 @@ class PopularPostsFragment @Inject constructor(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = FragmentPopularPostsBinding.inflate(inflater, container, false).run {
+    ): View = FragmentPopularPostsBinding.inflate(inflater, container, false).run {
         binding = this
         binding.root
     }
