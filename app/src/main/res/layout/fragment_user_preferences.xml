@@ -59,6 +59,36 @@
                     android:text="@string/user_preferences_appearance_system_default" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
+            <TextView
+                android:id="@+id/textViewDateFormatTitle"
+                style="@style/AppTheme.Text.SectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="@string/user_preferences_date_format" />
+
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/buttonGroupDateFormat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                app:singleSelection="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonDateFormatDayFirst"
+                    style="@style/AppTheme.GroupButtonItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/user_preferences_date_format_day_first" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonDateFormatMonthFirst"
+                    style="@style/AppTheme.GroupButtonItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/user_preferences_date_format_month_first" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
             <include
                 layout="@layout/layout_divider"
                 android:layout_width="match_parent"

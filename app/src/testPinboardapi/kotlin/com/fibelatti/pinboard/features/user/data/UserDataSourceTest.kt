@@ -4,6 +4,7 @@ import com.fibelatti.pinboard.InstantExecutorExtension
 import com.fibelatti.pinboard.MockDataProvider.mockApiToken
 import com.fibelatti.pinboard.MockDataProvider.mockTime
 import com.fibelatti.pinboard.core.android.Appearance
+import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
@@ -181,10 +182,10 @@ internal class UserDataSourceTest {
             @Test
             fun `GIVEN set appearance is the dark theme WHEN getAppearance is called THEN DarkTheme is returned`() {
                 // GIVEN
-                every { mockUserSharedPreferences.getAppearance() } returns Appearance.LightTheme.value
+                every { mockUserSharedPreferences.getAppearance() } returns Appearance.DarkTheme.value
 
                 // THEN
-                assertThat(userDataSource.getAppearance()).isEqualTo(Appearance.LightTheme)
+                assertThat(userDataSource.getAppearance()).isEqualTo(Appearance.DarkTheme)
             }
 
             @Test
@@ -207,6 +208,50 @@ internal class UserDataSourceTest {
 
                 // THEN
                 verify { mockUserSharedPreferences.setAppearance("random-value") }
+            }
+        }
+
+        @Nested
+        inner class PreferredDateFormatTests {
+
+            @Test
+            fun `GIVEN the shared preferences has DayMonthYearWithTime value WHEN the getter is called THEN DayMonthYearWithTime is returned`() {
+                // GIVEN
+                every { mockUserSharedPreferences.preferredDateFormat } returns PreferredDateFormat.DayMonthYearWithTime.value
+
+                // THEN
+                assertThat(userDataSource.preferredDateFormat).isEqualTo(PreferredDateFormat.DayMonthYearWithTime)
+            }
+
+            @Test
+            fun `GIVEN the shared preferences has MonthDayYearWithTime value WHEN the getter is called THEN MonthDayYearWithTime is returned`() {
+                // GIVEN
+                every { mockUserSharedPreferences.preferredDateFormat } returns PreferredDateFormat.MonthDayYearWithTime.value
+
+                // THEN
+                assertThat(userDataSource.preferredDateFormat).isEqualTo(PreferredDateFormat.MonthDayYearWithTime)
+            }
+
+            @Test
+            fun `GIVEN the shared preferences has any other value WHEN the getter is called THEN DayMonthYearWithTime is returned`() {
+                // GIVEN
+                every { mockUserSharedPreferences.preferredDateFormat } returns "anything really"
+
+                // THEN
+                assertThat(userDataSource.preferredDateFormat).isEqualTo(PreferredDateFormat.DayMonthYearWithTime)
+            }
+
+            @Test
+            fun `WHEN setter is called THEN the shared preferences is updated`() {
+                // GIVEN
+                val mockPreferredDateFormat = mockk<PreferredDateFormat>()
+                every { mockPreferredDateFormat.value } returns "random-value"
+
+                // WHEN
+                userDataSource.preferredDateFormat = mockPreferredDateFormat
+
+                // THEN
+                verify { mockUserSharedPreferences.preferredDateFormat = "random-value" }
             }
         }
 

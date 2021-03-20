@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.user.data
 
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.pinboard.core.android.Appearance
+import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
@@ -70,6 +71,15 @@ class UserDataSource @Inject constructor(
     override fun setAppearance(appearance: Appearance) {
         userSharedPreferences.setAppearance(appearance.value)
     }
+
+    override var preferredDateFormat: PreferredDateFormat
+        get() = when (userSharedPreferences.preferredDateFormat) {
+            PreferredDateFormat.MonthDayYearWithTime.value -> PreferredDateFormat.MonthDayYearWithTime
+            else -> PreferredDateFormat.DayMonthYearWithTime
+        }
+        set(value) {
+            userSharedPreferences.preferredDateFormat = value.value
+        }
 
     override fun getPreferredDetailsView(): PreferredDetailsView {
         val externalBrowser = PreferredDetailsView.ExternalBrowser(getMarkAsReadOnOpen())

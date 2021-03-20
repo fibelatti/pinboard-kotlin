@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.user.domain
 
 import com.fibelatti.pinboard.core.android.Appearance
+import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -26,6 +27,8 @@ interface UserRepository {
     fun getAppearance(): Appearance
 
     fun setAppearance(appearance: Appearance)
+
+    var preferredDateFormat: PreferredDateFormat
 
     fun getPreferredDetailsView(): PreferredDetailsView
 

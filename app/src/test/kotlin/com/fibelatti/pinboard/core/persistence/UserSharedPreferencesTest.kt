@@ -105,6 +105,33 @@ internal class UserSharedPreferencesTest {
     }
 
     @Test
+    fun `GIVEN KEY_PREFERRED_DATE_FORMAT has no value WHEN preferredDateFormat getter is called THEN an empty string is returned`() {
+        // GIVEN
+        every { mockSharedPreferences.get(KEY_PREFERRED_DATE_FORMAT, "") } returns ""
+
+        // THEN
+        assertThat(userSharedPreferences.preferredDateFormat).isEmpty()
+    }
+
+    @Test
+    fun `GIVEN KEY_PREFERRED_DATE_FORMAT has value WHEN preferredDateFormat getter is called THEN the value is returned`() {
+        // GIVEN
+        every { mockSharedPreferences.get(KEY_PREFERRED_DATE_FORMAT, "") } returns "some-value"
+
+        // THEN
+        assertThat(userSharedPreferences.preferredDateFormat).isEqualTo("some-value")
+    }
+
+    @Test
+    fun `WHEN preferredDateFormat setter is called THEN KEY_PREFERRED_DATE_FORMAT is set`() {
+        // WHEN
+        userSharedPreferences.preferredDateFormat = "some-value"
+
+        // THEN
+        verify { mockEditor.putString(KEY_PREFERRED_DATE_FORMAT, "some-value") }
+    }
+
+    @Test
     fun `GIVEN KEY_PREFERRED_DETAILS_VIEW has no value WHEN getAppearance is called THEN empty string is returned`() {
         // GIVEN
         every { mockSharedPreferences.get(KEY_PREFERRED_DETAILS_VIEW, "") } returns ""

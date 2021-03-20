@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.user.presentation
 
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.core.android.Appearance
+import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
@@ -33,6 +34,12 @@ class UserPreferencesViewModel @Inject constructor(
             userRepository.setAppearance(appearance)
             appStateRepository.reset()
             _appearanceChanged.value = appearance
+        }
+    }
+
+    fun savePreferredDateFormat(preferredDateFormat: PreferredDateFormat) {
+        launch {
+            userRepository.preferredDateFormat = preferredDateFormat
         }
     }
 

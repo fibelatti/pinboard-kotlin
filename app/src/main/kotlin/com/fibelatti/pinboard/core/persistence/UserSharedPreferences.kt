@@ -21,6 +21,9 @@ const val KEY_LAST_UPDATE = "LAST_UPDATE"
 const val KEY_APPEARANCE = "APPEARANCE"
 
 @VisibleForTesting
+const val KEY_PREFERRED_DATE_FORMAT = "PREFERRED_DATE_FORMAT"
+
+@VisibleForTesting
 const val KEY_PREFERRED_DETAILS_VIEW = "PREFERRED_DETAILS_VIEW"
 
 @VisibleForTesting
@@ -79,6 +82,12 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
     fun setAppearance(value: String) {
         sharedPreferences.put(KEY_APPEARANCE, value)
     }
+
+    var preferredDateFormat: String
+        get() = sharedPreferences.get(KEY_PREFERRED_DATE_FORMAT, "")
+        set(value) {
+            sharedPreferences.put(KEY_PREFERRED_DATE_FORMAT, value)
+        }
 
     fun getPreferredDetailsView(): String = sharedPreferences.get(KEY_PREFERRED_DETAILS_VIEW, "")
 

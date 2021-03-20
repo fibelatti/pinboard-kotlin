@@ -5,6 +5,7 @@ import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.allSealedSubclasses
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
@@ -654,6 +655,7 @@ internal class NavigationActionHandlerTest {
     inner class ViewPreferencesTests {
 
         private val mockAppearance = mockk<Appearance>()
+        private val mockPreferredDateFormat = mockk<PreferredDateFormat>()
         private val mockPreferredDetailsView = mockk<PreferredDetailsView>()
         private val mockRandomBoolean = randomBoolean()
         private val mockEditAfterSharing = mockk<EditAfterSharing>()
@@ -662,6 +664,7 @@ internal class NavigationActionHandlerTest {
         @BeforeEach
         fun setup() {
             every { mockUserRepository.getAppearance() } returns mockAppearance
+            every { mockUserRepository.preferredDateFormat } returns mockPreferredDateFormat
             every { mockUserRepository.getPreferredDetailsView() } returns mockPreferredDetailsView
             every { mockUserRepository.getAutoFillDescription() } returns mockRandomBoolean
             every { mockUserRepository.getShowDescriptionInLists() } returns mockRandomBoolean
@@ -693,6 +696,7 @@ internal class NavigationActionHandlerTest {
             assertThat(result).isEqualTo(
                 UserPreferencesContent(
                     appearance = mockAppearance,
+                    preferredDateFormat = mockPreferredDateFormat,
                     preferredDetailsView = mockPreferredDetailsView,
                     defaultPrivate = mockRandomBoolean,
                     autoFillDescription = mockRandomBoolean,
@@ -719,6 +723,7 @@ internal class NavigationActionHandlerTest {
             assertThat(result).isEqualTo(
                 UserPreferencesContent(
                     appearance = mockAppearance,
+                    preferredDateFormat = mockPreferredDateFormat,
                     preferredDetailsView = mockPreferredDetailsView,
                     autoFillDescription = mockRandomBoolean,
                     showDescriptionInLists = mockRandomBoolean,
@@ -745,6 +750,7 @@ internal class NavigationActionHandlerTest {
             assertThat(result).isEqualTo(
                 UserPreferencesContent(
                     appearance = mockAppearance,
+                    preferredDateFormat = mockPreferredDateFormat,
                     preferredDetailsView = mockPreferredDetailsView,
                     autoFillDescription = mockRandomBoolean,
                     showDescriptionInLists = mockRandomBoolean,

@@ -5,6 +5,7 @@ import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider
 import com.fibelatti.pinboard.core.android.Appearance
+import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
@@ -47,6 +48,18 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         runBlocking {
             assertThat(userPreferencesViewModel.appearanceChanged.first()).isEqualTo(mockAppearance)
         }
+    }
+
+    @Test
+    fun `WHEN savePreferredDateFormat is called THEN repository is updated`() {
+        // GIVEN
+        val mockPreferredDateFormat = mockk<PreferredDateFormat>()
+
+        // WHEN
+        userPreferencesViewModel.savePreferredDateFormat(mockPreferredDateFormat)
+
+        // THEN
+        verify { mockUserRepository.preferredDateFormat = mockPreferredDateFormat }
     }
 
     @Test

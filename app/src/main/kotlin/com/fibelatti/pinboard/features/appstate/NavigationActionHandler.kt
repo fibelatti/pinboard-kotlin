@@ -186,6 +186,7 @@ class NavigationActionHandler @Inject constructor(
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
             UserPreferencesContent(
                 appearance = userRepository.getAppearance(),
+                preferredDateFormat = userRepository.preferredDateFormat,
                 preferredDetailsView = userRepository.getPreferredDetailsView(),
                 autoFillDescription = userRepository.getAutoFillDescription(),
                 showDescriptionInLists = userRepository.getShowDescriptionInLists(),

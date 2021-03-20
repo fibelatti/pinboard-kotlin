@@ -19,6 +19,7 @@ import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.Appearance
+import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.smoothScrollY
 import com.fibelatti.pinboard.core.extension.viewBinding
@@ -68,6 +69,7 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
         lifecycleScope.launch {
             appStateViewModel.userPreferencesContent.collect {
                 setupAppearance(it.appearance)
+                setupPreferredDateFormat(it.preferredDateFormat)
                 setupPreferredDetailsView(it.preferredDetailsView)
 
                 binding.checkboxAutoFillDescription.setValueAndChangeListener(
@@ -179,6 +181,19 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
         }
         binding.buttonAppearanceSystemDefault.setOnClickListener {
             userPreferencesViewModel.saveAppearance(Appearance.SystemDefault)
+        }
+    }
+
+    private fun setupPreferredDateFormat(preferredDateFormat: PreferredDateFormat) {
+        when (preferredDateFormat) {
+            PreferredDateFormat.DayMonthYearWithTime -> binding.buttonDateFormatDayFirst.isChecked = true
+            PreferredDateFormat.MonthDayYearWithTime -> binding.buttonDateFormatMonthFirst.isChecked = true
+        }
+        binding.buttonDateFormatDayFirst.setOnClickListener {
+            userPreferencesViewModel.savePreferredDateFormat(PreferredDateFormat.DayMonthYearWithTime)
+        }
+        binding.buttonDateFormatMonthFirst.setOnClickListener {
+            userPreferencesViewModel.savePreferredDateFormat(PreferredDateFormat.MonthDayYearWithTime)
         }
     }
 
