@@ -1181,6 +1181,17 @@ class PostsDataSourceTest {
     inner class SavePostsTests {
 
         @Test
+        fun `WHEN href contains escaped escape html character THEN href is replaced`() {
+            val input = listOf(createPostDto(href = "https://www.some-url.com?query=with%20space"))
+            val expected = listOf(createPostDto(href = "https://www.some-url.com?query=with space"))
+            every { mockDao.savePosts(expected) } just Runs
+
+            dataSource.savePosts(input)
+
+            coVerify { mockDao.savePosts(expected) }
+        }
+
+        @Test
         fun `WHEN tags contain escaped html characters THEN tags are replaced`() {
             val input = HTML_CHAR_MAP.keys.map { createPostDto(tags = it) }
                 .toMutableList().apply { add(createPostDto()) }

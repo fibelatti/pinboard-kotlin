@@ -233,8 +233,11 @@ class PostsDataSource @Inject constructor(
     @VisibleForTesting
     fun savePosts(posts: List<PostDto>) {
         val updatedPosts = posts.map { post ->
-            if (post.tags.containsHtmlChars()) {
-                post.copy(tags = post.tags.replaceHtmlChars())
+            if (post.tags.containsHtmlChars() || post.href.contains("%20")) {
+                post.copy(
+                    href = post.href.replace("%20", " "),
+                    tags = post.tags.replaceHtmlChars(),
+                )
             } else {
                 post
             }
