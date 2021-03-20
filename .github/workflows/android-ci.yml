@@ -117,7 +117,7 @@ jobs:
           cp .github/ci-gradle.properties ~/.gradle/gradle.properties
 
       - name: Run instrumented tests
-        uses: reactivecircus/android-emulator-runner@v2.14.3
+        uses: reactivecircus/android-emulator-runner@v2.15.0
         with:
           api-level: 29
           arch: x86_64
