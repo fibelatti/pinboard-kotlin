@@ -87,7 +87,7 @@ internal class NavigationActionHandlerTest {
             every { contentWithHistory.previousContent } returns returnedContent
 
             val randomBoolean = randomBoolean()
-            every { mockUserRepository.getShowDescriptionInLists() } returns randomBoolean
+            every { mockUserRepository.showDescriptionInLists } returns randomBoolean
 
             // WHEN
             val result = runBlocking {
@@ -123,7 +123,7 @@ internal class NavigationActionHandlerTest {
         fun `WHEN action is ViewCategory THEN a PostListContent is returned`(category: ViewCategory) {
             // GIVEN
             val randomBoolean = randomBoolean()
-            every { mockUserRepository.getShowDescriptionInLists() } returns randomBoolean
+            every { mockUserRepository.showDescriptionInLists } returns randomBoolean
             every { mockConnectivityInfoProvider.isConnected() } returns false
 
             // WHEN
@@ -178,7 +178,7 @@ internal class NavigationActionHandlerTest {
         @Test
         fun `WHEN currentContent is PostListContent and PreferredDetailsView is InAppBrowser THEN PostDetailContent is returned`() {
             // GIVEN
-            every { mockUserRepository.getPreferredDetailsView() } returns PreferredDetailsView.InAppBrowser(
+            every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.InAppBrowser(
                 randomBoolean
             )
 
@@ -200,7 +200,7 @@ internal class NavigationActionHandlerTest {
         @Test
         fun `WHEN currentContent is PostListContent and PreferredDetailsView is ExternalBrowser THEN ExternalBrowserContent is returned`() {
             // GIVEN
-            every { mockUserRepository.getPreferredDetailsView() } returns PreferredDetailsView.ExternalBrowser(
+            every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.ExternalBrowser(
                 randomBoolean
             )
 
@@ -222,7 +222,7 @@ internal class NavigationActionHandlerTest {
         @Test
         fun `WHEN currentContent is PostListContent and PreferredDetailsView is Edit THEN EditPostContent is returned`() {
             // GIVEN
-            every { mockUserRepository.getPreferredDetailsView() } returns PreferredDetailsView.Edit
+            every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.Edit
 
             // WHEN
             val result = runBlocking {
@@ -242,7 +242,7 @@ internal class NavigationActionHandlerTest {
         fun `WHEN currentContent is PopularPostsContent and PreferredDetailsView is InAppBrowser THEN PopularPostDetailContent is returned`() {
             // GIVEN
             val mockPopularPostsContent = mockk<PopularPostsContent>()
-            every { mockUserRepository.getPreferredDetailsView() } returns PreferredDetailsView.InAppBrowser(
+            every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.InAppBrowser(
                 randomBoolean
             )
 
@@ -264,7 +264,7 @@ internal class NavigationActionHandlerTest {
         fun `WHEN currentContent is PopularPostsContent and PreferredDetailsView is ExternalBrowser THEN ExternalBrowserContent is returned`() {
             // GIVEN
             val mockPopularPostsContent = mockk<PopularPostsContent>()
-            every { mockUserRepository.getPreferredDetailsView() } returns PreferredDetailsView.ExternalBrowser(
+            every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.ExternalBrowser(
                 randomBoolean
             )
 
@@ -286,7 +286,7 @@ internal class NavigationActionHandlerTest {
         fun `WHEN currentContent is PopularPostsContent and PreferredDetailsView is Edit THEN PopularPostDetailContent is returned`() {
             // GIVEN
             val mockPopularPostsContent = mockk<PopularPostsContent>()
-            every { mockUserRepository.getPreferredDetailsView() } returns PreferredDetailsView.Edit
+            every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.Edit
 
             // WHEN
             val result = runBlocking {
@@ -324,7 +324,7 @@ internal class NavigationActionHandlerTest {
         fun `WHEN user repository getMarkAsReadOnOpen returns false THEN Loaded is returned`() {
             // GIVEN
             val readLater = post.copy(readLater = true)
-            every { mockUserRepository.getMarkAsReadOnOpen() } returns false
+            every { mockUserRepository.markAsReadOnOpen } returns false
 
             // WHEN
             val result = navigationActionHandler.markAsRead(readLater)
@@ -337,7 +337,7 @@ internal class NavigationActionHandlerTest {
         fun `WHEN post readLater is false AND user repository getMarkAsReadOnOpen returns true THEN posts repository add is called`() {
             // GIVEN
             val readLater = post.copy(readLater = true)
-            every { mockUserRepository.getMarkAsReadOnOpen() } returns true
+            every { mockUserRepository.markAsReadOnOpen } returns true
 
             // WHEN
             navigationActionHandler.markAsRead(readLater)
@@ -360,7 +360,7 @@ internal class NavigationActionHandlerTest {
         fun `WHEN post readLater is false AND user repository getMarkAsReadOnOpen returns true THEN ShouldLoadFirstPage is returned`() {
             // GIVEN
             val readLater = post.copy(readLater = true)
-            every { mockUserRepository.getMarkAsReadOnOpen() } returns true
+            every { mockUserRepository.markAsReadOnOpen } returns true
 
             // WHEN
             val result = navigationActionHandler.markAsRead(readLater)
@@ -410,9 +410,9 @@ internal class NavigationActionHandlerTest {
 
         @BeforeEach
         fun setup() {
-            every { mockUserRepository.getDefaultPrivate() } returns true
-            every { mockUserRepository.getDefaultReadLater() } returns true
-            every { mockUserRepository.getDefaultTags() } returns mockTags
+            every { mockUserRepository.defaultPrivate } returns true
+            every { mockUserRepository.defaultReadLater } returns true
+            every { mockUserRepository.defaultTags } returns mockTags
         }
 
         @Test
@@ -446,7 +446,7 @@ internal class NavigationActionHandlerTest {
         @Test
         fun `WHEN getDefaultPrivate returns null THEN defaultPrivate is set to false`() {
             // GIVEN
-            every { mockUserRepository.getDefaultPrivate() } returns null
+            every { mockUserRepository.defaultPrivate } returns null
 
             // WHEN
             val result = runBlocking { navigationActionHandler.runAction(AddPost, previousContent) }
@@ -465,7 +465,7 @@ internal class NavigationActionHandlerTest {
         @Test
         fun `WHEN getDefaultReadLater returns null THEN defaultReadLater is set to false`() {
             // GIVEN
-            every { mockUserRepository.getDefaultReadLater() } returns null
+            every { mockUserRepository.defaultReadLater } returns null
 
             // WHEN
             val result = runBlocking { navigationActionHandler.runAction(AddPost, previousContent) }
@@ -663,15 +663,15 @@ internal class NavigationActionHandlerTest {
 
         @BeforeEach
         fun setup() {
-            every { mockUserRepository.getAppearance() } returns mockAppearance
+            every { mockUserRepository.appearance } returns mockAppearance
             every { mockUserRepository.preferredDateFormat } returns mockPreferredDateFormat
-            every { mockUserRepository.getPreferredDetailsView() } returns mockPreferredDetailsView
-            every { mockUserRepository.getAutoFillDescription() } returns mockRandomBoolean
-            every { mockUserRepository.getShowDescriptionInLists() } returns mockRandomBoolean
-            every { mockUserRepository.getDefaultPrivate() } returns mockRandomBoolean
-            every { mockUserRepository.getDefaultReadLater() } returns mockRandomBoolean
-            every { mockUserRepository.getEditAfterSharing() } returns mockEditAfterSharing
-            every { mockUserRepository.getDefaultTags() } returns mockTags
+            every { mockUserRepository.preferredDetailsView } returns mockPreferredDetailsView
+            every { mockUserRepository.autoFillDescription } returns mockRandomBoolean
+            every { mockUserRepository.showDescriptionInLists } returns mockRandomBoolean
+            every { mockUserRepository.defaultPrivate } returns mockRandomBoolean
+            every { mockUserRepository.defaultReadLater } returns mockRandomBoolean
+            every { mockUserRepository.editAfterSharing } returns mockEditAfterSharing
+            every { mockUserRepository.defaultTags } returns mockTags
         }
 
         @Test
@@ -712,7 +712,7 @@ internal class NavigationActionHandlerTest {
         @Test
         fun `WHEN getDefaultPrivate returns null THEN defaultPrivate is set to false`() {
             // GIVEN
-            every { mockUserRepository.getDefaultPrivate() } returns null
+            every { mockUserRepository.defaultPrivate } returns null
 
             // WHEN
             val result = runBlocking {
@@ -739,7 +739,7 @@ internal class NavigationActionHandlerTest {
         @Test
         fun `WHEN getDefaultReadLater returns null THEN defaultReadLater is set to false`() {
             // GIVEN
-            every { mockUserRepository.getDefaultReadLater() } returns null
+            every { mockUserRepository.defaultReadLater } returns null
 
             // WHEN
             val result = runBlocking {

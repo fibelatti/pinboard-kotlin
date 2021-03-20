@@ -39,7 +39,7 @@ class TagActionHandler @Inject constructor(
         return PostListContent(
             category = All,
             posts = null,
-            showDescription = userRepository.getShowDescriptionInLists(),
+            showDescription = userRepository.showDescriptionInLists,
             sortType = NewestFirst,
             searchParameters = SearchParameters(tags = listOf(action.tag)),
             shouldLoad = ShouldLoadFirstPage,

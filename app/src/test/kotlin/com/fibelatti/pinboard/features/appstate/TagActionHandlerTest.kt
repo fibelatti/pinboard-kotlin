@@ -116,7 +116,7 @@ internal class TagActionHandlerTest {
             every { mockConnectivityInfoProvider.isConnected() } returns true
 
             val randomBoolean = randomBoolean()
-            every { mockUserRepository.getShowDescriptionInLists() } returns randomBoolean
+            every { mockUserRepository.showDescriptionInLists } returns randomBoolean
 
             // WHEN
             val result = runBlocking {

@@ -52,7 +52,7 @@ class AppStateDataSource @Inject constructor(
     fun getInitialContent(): Content = PostListContent(
         category = All,
         posts = null,
-        showDescription = userRepository.getShowDescriptionInLists(),
+        showDescription = userRepository.showDescriptionInLists,
         sortType = NewestFirst,
         searchParameters = SearchParameters(),
         shouldLoad = ShouldLoadFirstPage,

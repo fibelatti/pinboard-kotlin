@@ -167,7 +167,7 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
+            verify(exactly = 0) { mockUserRepository.lastUpdate = any() }
             assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
         }
 
@@ -200,7 +200,7 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
+            verify(exactly = 0) { mockUserRepository.lastUpdate = any() }
             assertThat(result.exceptionOrNull()).isInstanceOf(ApiException::class.java)
         }
 
@@ -239,7 +239,7 @@ class PostsDataSourceTest {
                 }
 
                 // THEN
-                verify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
+                verify(exactly = 0) { mockUserRepository.lastUpdate = any() }
                 assertThat(result.getOrNull()).isEqualTo(mockPost)
             }
 
@@ -275,7 +275,7 @@ class PostsDataSourceTest {
                 }
 
                 // THEN
-                verify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
+                verify(exactly = 0) { mockUserRepository.lastUpdate = any() }
                 assertThat(result.getOrNull()).isEqualTo(mockPost)
             }
 
@@ -310,7 +310,7 @@ class PostsDataSourceTest {
                 }
 
                 // THEN
-                verify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
+                verify(exactly = 0) { mockUserRepository.lastUpdate = any() }
 
                 assertThat(result.exceptionOrNull()).isInstanceOf(InvalidRequestException::class.java)
             }
@@ -493,7 +493,7 @@ class PostsDataSourceTest {
 
             // THEN
             verify(exactly = 0) { mockDao.deletePost(mockUrlValid) }
-            verify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
+            verify(exactly = 0) { mockUserRepository.lastUpdate = any() }
 
             assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
         }
@@ -508,7 +508,7 @@ class PostsDataSourceTest {
 
             // THEN
             verify(exactly = 0) { mockDao.deletePost(mockUrlValid) }
-            verify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
+            verify(exactly = 0) { mockUserRepository.lastUpdate = any() }
 
             assertThat(result.exceptionOrNull()).isInstanceOf(ApiException::class.java)
         }
@@ -588,7 +588,7 @@ class PostsDataSourceTest {
             @BeforeEach
             fun setup() {
                 every { mockConnectivityInfoProvider.isConnected() } returns true
-                coEvery { mockUserRepository.getLastUpdate() } returns mockTime
+                coEvery { mockUserRepository.lastUpdate } returns mockTime
                 coEvery {
                     dataSource.getLocalData(
                         newestFirst = true,
@@ -665,13 +665,13 @@ class PostsDataSourceTest {
                 coVerify(exactly = 0) { mockApi.getAllPosts() }
                 coVerify(exactly = 0) { mockDao.deleteAllPosts() }
                 coVerify(exactly = 0) { mockDao.savePosts(any()) }
-                coVerify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
+                coVerify(exactly = 0) { mockUserRepository.lastUpdate = any() }
             }
 
             @Test
             fun `WHEN user last update is null THEN api should be called`() {
                 // GIVEN
-                coEvery { mockUserRepository.getLastUpdate() } returns ""
+                coEvery { mockUserRepository.lastUpdate } returns ""
                 coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
                 coEvery {
                     mockApi.getAllPosts(
@@ -740,7 +740,7 @@ class PostsDataSourceTest {
                         upToDate = true
                     )
                 }
-                coVerify { mockUserRepository.setLastUpdate(mockFutureTime) }
+                coVerify { mockUserRepository.lastUpdate = mockFutureTime }
             }
 
             @Test
@@ -787,7 +787,7 @@ class PostsDataSourceTest {
                 coVerify(exactly = 0) { mockApi.getAllPosts() }
                 coVerify(exactly = 0) { mockDao.deleteAllPosts() }
                 coVerify(exactly = 0) { mockDao.savePosts(any()) }
-                coVerify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
+                coVerify(exactly = 0) { mockUserRepository.lastUpdate = any() }
             }
 
             @Test
@@ -862,7 +862,7 @@ class PostsDataSourceTest {
                 coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 coVerify { mockDao.deleteAllPosts() }
                 verify { dataSource.savePosts(mockListPostDto) }
-                coVerify { mockUserRepository.setLastUpdate(mockTime) }
+                coVerify { mockUserRepository.lastUpdate = mockTime }
 
             }
 
@@ -921,7 +921,7 @@ class PostsDataSourceTest {
                 coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 coVerify(exactly = 0) { mockDao.deleteAllPosts() }
                 coVerify(exactly = 0) { mockDao.savePosts(any()) }
-                coVerify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
+                coVerify(exactly = 0) { mockUserRepository.lastUpdate = any() }
             }
 
             @Test
@@ -980,7 +980,7 @@ class PostsDataSourceTest {
                 coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 coVerify { mockDao.deleteAllPosts() }
                 verify(exactly = 0) { mockDao.savePosts(any()) }
-                coVerify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
+                coVerify(exactly = 0) { mockUserRepository.lastUpdate = any() }
             }
 
             @Test
@@ -1036,7 +1036,7 @@ class PostsDataSourceTest {
                     coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                     verify { mockDao.deleteAllPosts() }
                     verify { dataSource.savePosts(mockListPostDto) }
-                    verify(exactly = 0) { mockUserRepository.setLastUpdate(any()) }
+                    verify(exactly = 0) { mockUserRepository.lastUpdate = any() }
                 }
             }
 
@@ -1114,7 +1114,7 @@ class PostsDataSourceTest {
                 coVerify { mockDao.deleteAllPosts() }
                 verify { dataSource.savePosts(mockListPostDto) }
                 verify { dataSource.getAdditionalPages() }
-                coVerify { mockUserRepository.setLastUpdate(mockFutureTime) }
+                coVerify { mockUserRepository.lastUpdate = mockFutureTime }
             }
         }
     }

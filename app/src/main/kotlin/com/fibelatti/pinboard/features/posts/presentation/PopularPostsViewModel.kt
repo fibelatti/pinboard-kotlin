@@ -41,11 +41,11 @@ class PopularPostsViewModel @Inject constructor(
     fun saveLink(post: Post) {
         launch {
             val newPost = post.copy(
-                private = userRepository.getDefaultPrivate() ?: false,
-                readLater = userRepository.getDefaultReadLater() ?: false,
-                tags = userRepository.getDefaultTags(),
+                private = userRepository.defaultPrivate ?: false,
+                readLater = userRepository.defaultReadLater ?: false,
+                tags = userRepository.defaultTags,
             )
-            if (userRepository.getEditAfterSharing() is EditAfterSharing.BeforeSaving) {
+            if (userRepository.editAfterSharing is EditAfterSharing.BeforeSaving) {
                 appStateRepository.runAction(PostSaved(newPost))
             } else {
                 addBookmark(post = newPost)

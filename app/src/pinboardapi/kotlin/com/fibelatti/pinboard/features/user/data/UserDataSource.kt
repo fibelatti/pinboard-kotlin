@@ -14,63 +14,39 @@ import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-@Suppress("TooManyFunctions")
 @Singleton
 class UserDataSource @Inject constructor(
     private val userSharedPreferences: UserSharedPreferences,
 ) : UserRepository {
 
     @VisibleForTesting
-    val loginState = MutableStateFlow(
-        value = if (userSharedPreferences.getAuthToken().isNotEmpty()) {
+    @Suppress("VariableNaming")
+    val _loginState = MutableStateFlow(
+        value = if (userSharedPreferences.authToken.isNotEmpty()) {
             LoginState.LoggedIn
         } else {
             LoginState.LoggedOut
         }
     )
 
-    override fun getLoginState(): Flow<LoginState> = loginState
+    override val loginState: Flow<LoginState>
+        get() = _loginState
 
-    override fun loginAttempt(authToken: String) {
-        userSharedPreferences.setAuthToken(authToken)
-        loginState.value = LoginState.Authorizing
-    }
-
-    override fun loggedIn() {
-        loginState.value = LoginState.LoggedIn
-    }
-
-    override fun logout() {
-        userSharedPreferences.setAuthToken("")
-        userSharedPreferences.setLastUpdate("")
-
-        loginState.value = LoginState.LoggedOut
-    }
-
-    override fun forceLogout() {
-        if (loginState.value == LoginState.LoggedIn) {
-            userSharedPreferences.setAuthToken("")
-            userSharedPreferences.setLastUpdate("")
-
-            loginState.value = LoginState.Unauthorized
+    override var lastUpdate: String
+        get() = userSharedPreferences.lastUpdate
+        set(value) {
+            userSharedPreferences.lastUpdate = value
         }
-    }
 
-    override fun getLastUpdate(): String = userSharedPreferences.getLastUpdate()
-
-    override fun setLastUpdate(value: String) {
-        userSharedPreferences.setLastUpdate(value)
-    }
-
-    override fun getAppearance(): Appearance = when (userSharedPreferences.getAppearance()) {
-        Appearance.LightTheme.value -> Appearance.LightTheme
-        Appearance.DarkTheme.value -> Appearance.DarkTheme
-        else -> Appearance.SystemDefault
-    }
-
-    override fun setAppearance(appearance: Appearance) {
-        userSharedPreferences.setAppearance(appearance.value)
-    }
+    override var appearance: Appearance
+        get() = when (userSharedPreferences.appearance) {
+            Appearance.LightTheme.value -> Appearance.LightTheme
+            Appearance.DarkTheme.value -> Appearance.DarkTheme
+            else -> Appearance.SystemDefault
+        }
+        set(value) {
+            userSharedPreferences.appearance = value.value
+        }
 
     override var preferredDateFormat: PreferredDateFormat
         get() = when (userSharedPreferences.preferredDateFormat) {
@@ -81,63 +57,87 @@ class UserDataSource @Inject constructor(
             userSharedPreferences.preferredDateFormat = value.value
         }
 
-    override fun getPreferredDetailsView(): PreferredDetailsView {
-        val externalBrowser = PreferredDetailsView.ExternalBrowser(getMarkAsReadOnOpen())
-        return when (userSharedPreferences.getPreferredDetailsView()) {
-            externalBrowser.value -> externalBrowser
-            PreferredDetailsView.Edit.value -> PreferredDetailsView.Edit
-            else -> PreferredDetailsView.InAppBrowser(getMarkAsReadOnOpen())
+    override var preferredDetailsView: PreferredDetailsView
+        get() {
+            val externalBrowser = PreferredDetailsView.ExternalBrowser(markAsReadOnOpen)
+            return when (userSharedPreferences.preferredDetailsView) {
+                externalBrowser.value -> externalBrowser
+                PreferredDetailsView.Edit.value -> PreferredDetailsView.Edit
+                else -> PreferredDetailsView.InAppBrowser(markAsReadOnOpen)
+            }
         }
+        set(value) {
+            userSharedPreferences.preferredDetailsView = value.value
+        }
+
+    override var markAsReadOnOpen: Boolean
+        get() = userSharedPreferences.markAsReadOnOpen
+        set(value) {
+            userSharedPreferences.markAsReadOnOpen = value
+        }
+
+    override var autoFillDescription: Boolean
+        get() = userSharedPreferences.autoFillDescription
+        set(value) {
+            userSharedPreferences.autoFillDescription = value
+        }
+
+    override var showDescriptionInLists: Boolean
+        get() = userSharedPreferences.showDescriptionInLists
+        set(value) {
+            userSharedPreferences.showDescriptionInLists = value
+        }
+
+    override var defaultPrivate: Boolean?
+        get() = userSharedPreferences.defaultPrivate
+        set(value) {
+            userSharedPreferences.defaultPrivate = value
+        }
+
+    override var defaultReadLater: Boolean?
+        get() = userSharedPreferences.defaultReadLater
+        set(value) {
+            userSharedPreferences.defaultReadLater = value
+        }
+
+    override var editAfterSharing: EditAfterSharing
+        get() = when (userSharedPreferences.editAfterSharing) {
+            EditAfterSharing.BeforeSaving.value -> EditAfterSharing.BeforeSaving
+            EditAfterSharing.AfterSaving.value -> EditAfterSharing.AfterSaving
+            else -> EditAfterSharing.SkipEdit
+        }
+        set(value) {
+            userSharedPreferences.editAfterSharing = value.value
+        }
+
+    override var defaultTags: List<Tag>
+        get() = userSharedPreferences.defaultTags.map(::Tag)
+        set(value) {
+            userSharedPreferences.defaultTags = value.map(Tag::name)
+        }
+
+    override fun loginAttempt(authToken: String) {
+        userSharedPreferences.authToken = authToken
+        _loginState.value = LoginState.Authorizing
     }
 
-    override fun setPreferredDetailsView(preferredDetailsView: PreferredDetailsView) {
-        userSharedPreferences.setPreferredDetailsView(preferredDetailsView.value)
+    override fun loggedIn() {
+        _loginState.value = LoginState.LoggedIn
     }
 
-    override fun getMarkAsReadOnOpen(): Boolean = userSharedPreferences.getMarkAsReadOnOpen()
+    override fun logout() {
+        userSharedPreferences.authToken = ""
+        userSharedPreferences.lastUpdate = ""
 
-    override fun setMarkAsReadOnOpen(value: Boolean) {
-        userSharedPreferences.setMarkAsReadOnOpen(value)
+        _loginState.value = LoginState.LoggedOut
     }
 
-    override fun getAutoFillDescription(): Boolean = userSharedPreferences.getAutoFillDescription()
+    override fun forceLogout() {
+        if (_loginState.value == LoginState.LoggedIn) {
+            userSharedPreferences.authToken = ""
+            userSharedPreferences.lastUpdate = ""
 
-    override fun setAutoFillDescription(value: Boolean) {
-        userSharedPreferences.setAutoFillDescription(value)
-    }
-
-    override fun getShowDescriptionInLists(): Boolean =
-        userSharedPreferences.getShowDescriptionInLists()
-
-    override fun setShowDescriptionInLists(value: Boolean) {
-        userSharedPreferences.setShowDescriptionInLists(value)
-    }
-
-    override fun getDefaultPrivate(): Boolean? = userSharedPreferences.getDefaultPrivate()
-
-    override fun setDefaultPrivate(value: Boolean) {
-        userSharedPreferences.setDefaultPrivate(value)
-    }
-
-    override fun getDefaultReadLater(): Boolean? = userSharedPreferences.getDefaultReadLater()
-
-    override fun setDefaultReadLater(value: Boolean) {
-        userSharedPreferences.setDefaultReadLater(value)
-    }
-
-    override fun getEditAfterSharing(): EditAfterSharing = when (userSharedPreferences.getEditAfterSharing()) {
-        EditAfterSharing.BeforeSaving.value -> EditAfterSharing.BeforeSaving
-        EditAfterSharing.AfterSaving.value -> EditAfterSharing.AfterSaving
-        else -> EditAfterSharing.SkipEdit
-    }
-
-    override fun setEditAfterSharing(editAfterSharing: EditAfterSharing) {
-        userSharedPreferences.setEditAfterSharing(editAfterSharing.value)
-    }
-
-    override fun getDefaultTags(): List<Tag> = userSharedPreferences.getDefaultTags().map(::Tag)
-
-    override fun setDefaultTags(tags: List<Tag>) {
-        userSharedPreferences.setDefaultTags(tags.map(Tag::name))
+            _loginState.value = LoginState.Unauthorized
+        }
     }
 }

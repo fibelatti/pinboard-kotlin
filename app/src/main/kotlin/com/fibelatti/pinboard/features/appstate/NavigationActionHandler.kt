@@ -40,7 +40,7 @@ class NavigationActionHandler @Inject constructor(
         return runOnlyForCurrentContentOfType<ContentWithHistory>(currentContent) {
             if (currentContent is UserPreferencesContent) {
                 currentContent.previousContent.copy(
-                    showDescription = userRepository.getShowDescriptionInLists()
+                    showDescription = userRepository.showDescriptionInLists
                 )
             } else {
                 it.previousContent
@@ -52,7 +52,7 @@ class NavigationActionHandler @Inject constructor(
         return PostListContent(
             category = action,
             posts = null,
-            showDescription = userRepository.getShowDescriptionInLists(),
+            showDescription = userRepository.showDescriptionInLists,
             sortType = NewestFirst,
             searchParameters = SearchParameters(),
             shouldLoad = ShouldLoadFirstPage,
@@ -61,7 +61,7 @@ class NavigationActionHandler @Inject constructor(
     }
 
     private fun viewPost(action: ViewPost, currentContent: Content): Content {
-        val preferredDetailsView = userRepository.getPreferredDetailsView()
+        val preferredDetailsView = userRepository.preferredDetailsView
 
         return when (currentContent) {
             is PostListContent -> {
@@ -101,7 +101,7 @@ class NavigationActionHandler @Inject constructor(
 
     @VisibleForTesting
     fun markAsRead(post: Post): ShouldLoad {
-        return if (post.readLater && userRepository.getMarkAsReadOnOpen()) {
+        return if (post.readLater && userRepository.markAsReadOnOpen) {
             markAsReadRequestScope.launch {
                 catching {
                     postsRepository.add(
@@ -130,9 +130,9 @@ class NavigationActionHandler @Inject constructor(
     private fun viewAddPost(currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
             AddPostContent(
-                defaultPrivate = userRepository.getDefaultPrivate().orFalse(),
-                defaultReadLater = userRepository.getDefaultReadLater().orFalse(),
-                defaultTags = userRepository.getDefaultTags(),
+                defaultPrivate = userRepository.defaultPrivate.orFalse(),
+                defaultReadLater = userRepository.defaultReadLater.orFalse(),
+                defaultTags = userRepository.defaultTags,
                 previousContent = it
             )
         }
@@ -185,15 +185,15 @@ class NavigationActionHandler @Inject constructor(
     private fun viewPreferences(currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
             UserPreferencesContent(
-                appearance = userRepository.getAppearance(),
+                appearance = userRepository.appearance,
                 preferredDateFormat = userRepository.preferredDateFormat,
-                preferredDetailsView = userRepository.getPreferredDetailsView(),
-                autoFillDescription = userRepository.getAutoFillDescription(),
-                showDescriptionInLists = userRepository.getShowDescriptionInLists(),
-                defaultPrivate = userRepository.getDefaultPrivate().orFalse(),
-                defaultReadLater = userRepository.getDefaultReadLater().orFalse(),
-                editAfterSharing = userRepository.getEditAfterSharing(),
-                defaultTags = userRepository.getDefaultTags(),
+                preferredDetailsView = userRepository.preferredDetailsView,
+                autoFillDescription = userRepository.autoFillDescription,
+                showDescriptionInLists = userRepository.showDescriptionInLists,
+                defaultPrivate = userRepository.defaultPrivate.orFalse(),
+                defaultReadLater = userRepository.defaultReadLater.orFalse(),
+                editAfterSharing = userRepository.editAfterSharing,
+                defaultTags = userRepository.defaultTags,
                 previousContent = it,
             )
         }

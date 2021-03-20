@@ -786,7 +786,7 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is PopularPostDetailContent AND getEditAfterSharing is AfterSaving THEN updated content is returned`() {
             // GIVEN
-            every { mockUserRepository.getEditAfterSharing() } returns EditAfterSharing.AfterSaving
+            every { mockUserRepository.editAfterSharing } returns EditAfterSharing.AfterSaving
             val currentContent = PopularPostDetailContent(
                 post = mockk(),
                 previousContent = PopularPostsContent(
@@ -819,7 +819,7 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is PopularPostDetailContent AND getEditAfterSharing is not AfterSaving THEN updated content is returned`() {
             // GIVEN
-            every { mockUserRepository.getEditAfterSharing() } returns mockk()
+            every { mockUserRepository.editAfterSharing } returns mockk()
             val currentContent = PopularPostDetailContent(
                 post = mockk(),
                 previousContent = PopularPostsContent(
@@ -847,7 +847,7 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is PopularPostsContent AND getEditAfterSharing is AfterSaving THEN updated content is returned`() {
             // GIVEN
-            every { mockUserRepository.getEditAfterSharing() } returns EditAfterSharing.AfterSaving
+            every { mockUserRepository.editAfterSharing } returns EditAfterSharing.AfterSaving
             val currentContent = PopularPostsContent(
                 posts = mockk(),
                 shouldLoad = false,
@@ -874,7 +874,7 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is PopularPostsContent AND getEditAfterSharing is BeforeSaving THEN updated content is returned`() {
             // GIVEN
-            every { mockUserRepository.getEditAfterSharing() } returns EditAfterSharing.BeforeSaving
+            every { mockUserRepository.editAfterSharing } returns EditAfterSharing.BeforeSaving
             val currentContent = PopularPostsContent(
                 posts = mockk(),
                 shouldLoad = false,
@@ -901,7 +901,7 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is PopularPostsContent AND getEditAfterSharing is SkipEdit THEN updated content is returned`() {
             // GIVEN
-            every { mockUserRepository.getEditAfterSharing() } returns EditAfterSharing.SkipEdit
+            every { mockUserRepository.editAfterSharing } returns EditAfterSharing.SkipEdit
             val currentContent = PopularPostsContent(
                 posts = mockk(),
                 shouldLoad = false,

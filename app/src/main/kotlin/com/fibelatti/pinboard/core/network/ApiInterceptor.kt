@@ -13,7 +13,7 @@ class ApiInterceptor @Inject constructor(
         val request = chain.request()
         val url = request.url.newBuilder()
             .addQueryParameter("format", "json")
-            .addEncodedQueryParameter("auth_token", userSharedPreferences.getAuthToken())
+            .addEncodedQueryParameter("auth_token", userSharedPreferences.authToken)
             .build()
 
         return catchingSocketTimeoutException(chain) {

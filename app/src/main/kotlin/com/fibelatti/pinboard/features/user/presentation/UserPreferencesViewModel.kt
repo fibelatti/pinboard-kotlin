@@ -22,73 +22,52 @@ class UserPreferencesViewModel @Inject constructor(
     private val getSuggestedTags: GetSuggestedTags,
 ) : BaseViewModel() {
 
-    val appearanceChanged: Flow<Appearance>
-        get() = _appearanceChanged.filterNotNull()
+    val appearanceChanged: Flow<Appearance> get() = _appearanceChanged.filterNotNull()
     private val _appearanceChanged = MutableStateFlow<Appearance?>(null)
 
     val suggestedTags: Flow<List<String>> get() = _suggestedTags.filterNotNull()
     private val _suggestedTags = MutableStateFlow<List<String>?>(null)
 
     fun saveAppearance(appearance: Appearance) {
-        launch {
-            userRepository.setAppearance(appearance)
-            appStateRepository.reset()
-            _appearanceChanged.value = appearance
-        }
+        userRepository.appearance = appearance
+        appStateRepository.reset()
+        _appearanceChanged.value = appearance
     }
 
     fun savePreferredDateFormat(preferredDateFormat: PreferredDateFormat) {
-        launch {
-            userRepository.preferredDateFormat = preferredDateFormat
-        }
+        userRepository.preferredDateFormat = preferredDateFormat
     }
 
     fun savePreferredDetailsView(preferredDetailsView: PreferredDetailsView) {
-        launch {
-            userRepository.setPreferredDetailsView(preferredDetailsView)
-        }
+        userRepository.preferredDetailsView = preferredDetailsView
     }
 
     fun saveMarkAsReadOnOpen(value: Boolean) {
-        launch {
-            userRepository.setMarkAsReadOnOpen(value)
-        }
+        userRepository.markAsReadOnOpen = value
     }
 
     fun saveAutoFillDescription(value: Boolean) {
-        launch {
-            userRepository.setAutoFillDescription(value)
-        }
+        userRepository.autoFillDescription = value
     }
 
     fun saveShowDescriptionInLists(value: Boolean) {
-        launch {
-            userRepository.setShowDescriptionInLists(value)
-        }
+        userRepository.showDescriptionInLists = value
     }
 
     fun saveEditAfterSharing(editAfterSharing: EditAfterSharing) {
-        launch {
-            userRepository.setEditAfterSharing(editAfterSharing)
-        }
+        userRepository.editAfterSharing = editAfterSharing
     }
 
     fun saveDefaultPrivate(value: Boolean) {
-        launch {
-            userRepository.setDefaultPrivate(value)
-        }
+        userRepository.defaultPrivate = value
     }
 
     fun saveDefaultReadLater(value: Boolean) {
-        launch {
-            userRepository.setDefaultReadLater(value)
-        }
+        userRepository.defaultReadLater = value
     }
 
     fun saveDefaultTags(tags: List<Tag>) {
-        launch {
-            userRepository.setDefaultTags(tags)
-        }
+        userRepository.defaultTags = tags
     }
 
     fun searchForTag(tag: String, currentTags: List<Tag>) {

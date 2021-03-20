@@ -6,10 +6,9 @@ import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.features.posts.data.PostsDao
 import com.fibelatti.pinboard.features.tags.domain.TagsRepository
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import retrofit2.http.GET
-import javax.inject.Inject
 
 class TagsDataSource @Inject constructor(private val postsDao: PostsDao) : TagsRepository {
 
@@ -24,8 +23,4 @@ class TagsDataSource @Inject constructor(private val postsDao: PostsDao) : TagsR
         }
 }
 
-interface TagsApi {
-
-    @GET("tags/get")
-    suspend fun getTags(): TagsDto
-}
+interface TagsApi

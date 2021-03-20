@@ -163,7 +163,7 @@ class PostActionHandler @Inject constructor(
                     )
                 )
 
-                if (userRepository.getEditAfterSharing() is EditAfterSharing.AfterSaving) {
+                if (userRepository.editAfterSharing is EditAfterSharing.AfterSaving) {
                     EditPostContent(post = action.post, previousContent = updatedCurrentContent)
                 } else {
                     updatedCurrentContent
@@ -176,7 +176,7 @@ class PostActionHandler @Inject constructor(
                     )
                 )
 
-                if (userRepository.getEditAfterSharing() !is EditAfterSharing.SkipEdit) {
+                if (userRepository.editAfterSharing !is EditAfterSharing.SkipEdit) {
                     EditPostContent(post = action.post, previousContent = updatedCurrentContent)
                 } else {
                     updatedCurrentContent

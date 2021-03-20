@@ -43,7 +43,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         userPreferencesViewModel.saveAppearance(mockAppearance)
 
         // THEN
-        verify { mockUserRepository.setAppearance(mockAppearance) }
+        verify { mockUserRepository.appearance = mockAppearance }
         verify { mockAppStateRepository.reset() }
         runBlocking {
             assertThat(userPreferencesViewModel.appearanceChanged.first()).isEqualTo(mockAppearance)
@@ -71,7 +71,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         userPreferencesViewModel.savePreferredDetailsView(preferredDetailsView)
 
         // THEN
-        verify { mockUserRepository.setPreferredDetailsView(preferredDetailsView) }
+        verify { mockUserRepository.preferredDetailsView = preferredDetailsView }
     }
 
     @Test
@@ -83,7 +83,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         userPreferencesViewModel.saveMarkAsReadOnOpen(value)
 
         // THEN
-        verify { mockUserRepository.setMarkAsReadOnOpen(value) }
+        verify { mockUserRepository.markAsReadOnOpen = value }
     }
 
     @Test
@@ -95,7 +95,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         userPreferencesViewModel.saveAutoFillDescription(value)
 
         // THEN
-        verify { mockUserRepository.setAutoFillDescription(value) }
+        verify { mockUserRepository.autoFillDescription = value }
     }
 
     @Test
@@ -107,7 +107,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         userPreferencesViewModel.saveShowDescriptionInLists(value)
 
         // THEN
-        verify { mockUserRepository.setShowDescriptionInLists(value) }
+        verify { mockUserRepository.showDescriptionInLists = value }
     }
 
     @Test
@@ -119,7 +119,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         userPreferencesViewModel.saveEditAfterSharing(value)
 
         // THEN
-        verify { mockUserRepository.setEditAfterSharing(value) }
+        verify { mockUserRepository.editAfterSharing = value }
     }
 
     @Test
@@ -131,7 +131,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         userPreferencesViewModel.saveDefaultPrivate(value)
 
         // THEN
-        verify { mockUserRepository.setDefaultPrivate(value) }
+        verify { mockUserRepository.defaultPrivate = value }
     }
 
     @Test
@@ -143,7 +143,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         userPreferencesViewModel.saveDefaultReadLater(value)
 
         // THEN
-        verify { mockUserRepository.setDefaultReadLater(value) }
+        verify { mockUserRepository.defaultReadLater = value }
     }
 
     @Test
@@ -155,7 +155,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         userPreferencesViewModel.saveDefaultTags(value)
 
         // THEN
-        verify { mockUserRepository.setDefaultTags(value) }
+        verify { mockUserRepository.defaultTags = value }
     }
 
     @Test

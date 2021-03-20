@@ -42,7 +42,7 @@ class AuthViewModelTest : BaseViewModelTest() {
     @Test
     fun `GIVEN userRepository getLoginState contains a value THEN viewModel loginState returns that value`() {
         // GIVEN
-        every { mockUserRepository.getLoginState() } returns flowOf(LoginState.LoggedOut)
+        every { mockUserRepository.loginState } returns flowOf(LoginState.LoggedOut)
 
         // THEN
         runBlocking {

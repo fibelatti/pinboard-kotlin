@@ -21,7 +21,7 @@ class AuthViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider
 ) : BaseViewModel() {
 
-    val loginState: Flow<LoginState> get() = userRepository.getLoginState()
+    val loginState: Flow<LoginState> get() = userRepository.loginState
 
     val apiTokenError: Flow<String> get() = _apiTokenError.filterNotNull()
     private val _apiTokenError = MutableStateFlow<String?>(null)

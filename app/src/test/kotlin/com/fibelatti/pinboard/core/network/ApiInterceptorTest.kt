@@ -30,7 +30,7 @@ internal class ApiInterceptorTest {
 
     @BeforeEach
     fun setup() {
-        every { mockUserSharedPreferences.getAuthToken() } returns expectedToken
+        every { mockUserSharedPreferences.authToken } returns expectedToken
         every { mockChain.request() } returns mockRequest
         every { mockChain.proceed(mockRequest) } returns mockResponse
         every { mockRequest.url } returns mockUrl

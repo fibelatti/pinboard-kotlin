@@ -167,7 +167,7 @@ class PostsDataSource @Inject constructor(
 
         emit(localData(false))
 
-        val userLastUpdate = userRepository.getLastUpdate().takeIf(String::isNotBlank)
+        val userLastUpdate = userRepository.lastUpdate.takeIf(String::isNotBlank)
         val apiLastUpdate = update().getOrDefault(dateFormatter.nowAsTzFormat())
 
         if (userLastUpdate != null && userLastUpdate == apiLastUpdate && !forceRefresh) {
@@ -193,7 +193,7 @@ class PostsDataSource @Inject constructor(
                     savePosts(posts)
                 }
 
-                userRepository.setLastUpdate(apiLastUpdate)
+                userRepository.lastUpdate = apiLastUpdate
 
                 if (posts.size == API_PAGE_SIZE) {
                     getAdditionalPages()

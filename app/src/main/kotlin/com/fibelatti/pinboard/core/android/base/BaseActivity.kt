@@ -52,7 +52,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     private fun setupTheme() {
         workaroundWebViewNightModeIssue()
-        when (appComponent.userRepository().getAppearance()) {
+        when (appComponent.userRepository().appearance) {
             Appearance.DarkTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             Appearance.LightTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)

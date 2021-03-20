@@ -29,7 +29,7 @@ internal class UserSharedPreferencesTest {
         every { mockSharedPreferences.get(KEY_AUTH_TOKEN, "") } returns ""
 
         // THEN
-        assertThat(userSharedPreferences.getAuthToken()).isEmpty()
+        assertThat(userSharedPreferences.authToken).isEmpty()
     }
 
     @Test
@@ -38,13 +38,13 @@ internal class UserSharedPreferencesTest {
         every { mockSharedPreferences.get(KEY_AUTH_TOKEN, "") } returns mockApiToken
 
         // THEN
-        assertThat(userSharedPreferences.getAuthToken()).isEqualTo(mockApiToken)
+        assertThat(userSharedPreferences.authToken).isEqualTo(mockApiToken)
     }
 
     @Test
     fun `WHEN setAuthToken is called THEN KEY_AUTH_TOKEN is set`() {
         // WHEN
-        userSharedPreferences.setAuthToken(mockApiToken)
+        userSharedPreferences.authToken = mockApiToken
 
         // THEN
         verify { mockEditor.putString(KEY_AUTH_TOKEN, mockApiToken) }
@@ -56,7 +56,7 @@ internal class UserSharedPreferencesTest {
         every { mockSharedPreferences.get(KEY_LAST_UPDATE, "") } returns ""
 
         // THEN
-        assertThat(userSharedPreferences.getLastUpdate()).isEmpty()
+        assertThat(userSharedPreferences.lastUpdate).isEmpty()
     }
 
     @Test
@@ -65,13 +65,13 @@ internal class UserSharedPreferencesTest {
         every { mockSharedPreferences.get(KEY_LAST_UPDATE, "") } returns mockTime
 
         // THEN
-        assertThat(userSharedPreferences.getLastUpdate()).isEqualTo(mockTime)
+        assertThat(userSharedPreferences.lastUpdate).isEqualTo(mockTime)
     }
 
     @Test
     fun `WHEN setLastUpdate is called THEN KEY_LAST_UPDATE is set`() {
         // WHEN
-        userSharedPreferences.setLastUpdate(mockTime)
+        userSharedPreferences.lastUpdate = mockTime
 
         // THEN
         verify { mockEditor.putString(KEY_LAST_UPDATE, mockTime) }
@@ -83,7 +83,7 @@ internal class UserSharedPreferencesTest {
         every { mockSharedPreferences.get(KEY_APPEARANCE, "") } returns ""
 
         // THEN
-        assertThat(userSharedPreferences.getAppearance()).isEmpty()
+        assertThat(userSharedPreferences.appearance).isEmpty()
     }
 
     @Test
@@ -92,13 +92,13 @@ internal class UserSharedPreferencesTest {
         every { mockSharedPreferences.get(KEY_APPEARANCE, "") } returns "some-value"
 
         // THEN
-        assertThat(userSharedPreferences.getAppearance()).isEqualTo("some-value")
+        assertThat(userSharedPreferences.appearance).isEqualTo("some-value")
     }
 
     @Test
     fun `WHEN setAppearance is called THEN KEY_APPEARANCE is set`() {
         // WHEN
-        userSharedPreferences.setAppearance("some-value")
+        userSharedPreferences.appearance = "some-value"
 
         // THEN
         verify { mockEditor.putString(KEY_APPEARANCE, "some-value") }
@@ -137,7 +137,7 @@ internal class UserSharedPreferencesTest {
         every { mockSharedPreferences.get(KEY_PREFERRED_DETAILS_VIEW, "") } returns ""
 
         // THEN
-        assertThat(userSharedPreferences.getPreferredDetailsView()).isEmpty()
+        assertThat(userSharedPreferences.preferredDetailsView).isEmpty()
     }
 
     @Test
@@ -146,13 +146,13 @@ internal class UserSharedPreferencesTest {
         every { mockSharedPreferences.get(KEY_PREFERRED_DETAILS_VIEW, "") } returns "some-value"
 
         // THEN
-        assertThat(userSharedPreferences.getPreferredDetailsView()).isEqualTo("some-value")
+        assertThat(userSharedPreferences.preferredDetailsView).isEqualTo("some-value")
     }
 
     @Test
     fun `WHEN setPreferredDetailsView is called THEN KEY_PREFERRED_DETAILS_VIEW is set`() {
         // WHEN
-        userSharedPreferences.setPreferredDetailsView("some-value")
+        userSharedPreferences.preferredDetailsView = "some-value"
 
         // THEN
         verify { mockEditor.putString(KEY_PREFERRED_DETAILS_VIEW, "some-value") }
@@ -163,7 +163,7 @@ internal class UserSharedPreferencesTest {
         val randomBoolean = randomBoolean()
 
         // WHEN
-        userSharedPreferences.setMarkAsReadOnOpen(randomBoolean)
+        userSharedPreferences.markAsReadOnOpen = randomBoolean
 
         // THEN
         verify { mockEditor.putBoolean(KEY_MARK_AS_READ_ON_OPEN, randomBoolean) }
@@ -176,7 +176,7 @@ internal class UserSharedPreferencesTest {
         every { mockSharedPreferences.get(KEY_MARK_AS_READ_ON_OPEN, false) } returns value
 
         // THEN
-        assertThat(userSharedPreferences.getMarkAsReadOnOpen()).isEqualTo(value)
+        assertThat(userSharedPreferences.markAsReadOnOpen).isEqualTo(value)
     }
 
     @Test
@@ -186,7 +186,7 @@ internal class UserSharedPreferencesTest {
         every { mockSharedPreferences.get(KEY_MARK_AS_READ_ON_OPEN, false) } returns false
 
         // THEN
-        assertThat(userSharedPreferences.getMarkAsReadOnOpen()).isFalse()
+        assertThat(userSharedPreferences.markAsReadOnOpen).isFalse()
     }
 
     @Test
@@ -196,14 +196,14 @@ internal class UserSharedPreferencesTest {
         every { mockSharedPreferences.get(KEY_AUTO_FILL_DESCRIPTION, false) } returns value
 
         // THEN
-        assertThat(userSharedPreferences.getAutoFillDescription()).isEqualTo(value)
+        assertThat(userSharedPreferences.autoFillDescription).isEqualTo(value)
     }
 
     @Test
     fun `WHEN setDescriptionAutoFill is called THEN KEY_DESCRIPTION_AUTO_FILL is set`() {
         // WHEN
         val value = randomBoolean()
-        userSharedPreferences.setAutoFillDescription(value)
+        userSharedPreferences.autoFillDescription = value
 
         // THEN
         verify { mockEditor.putBoolean(KEY_AUTO_FILL_DESCRIPTION, value) }
@@ -216,14 +216,14 @@ internal class UserSharedPreferencesTest {
         every { mockSharedPreferences.get(KEY_SHOW_DESCRIPTION_IN_LISTS, true) } returns value
 
         // THEN
-        assertThat(userSharedPreferences.getShowDescriptionInLists()).isEqualTo(value)
+        assertThat(userSharedPreferences.showDescriptionInLists).isEqualTo(value)
     }
 
     @Test
     fun `WHEN setEditAfterSharing is called THEN KEY_DESCRIPTION_VISIBLE_LIST is set`() {
         // WHEN
         val value = randomBoolean()
-        userSharedPreferences.setShowDescriptionInLists(value)
+        userSharedPreferences.showDescriptionInLists = value
 
         // THEN
         verify { mockEditor.putBoolean(KEY_SHOW_DESCRIPTION_IN_LISTS, value) }
@@ -235,7 +235,7 @@ internal class UserSharedPreferencesTest {
         every { mockSharedPreferences.get(KEY_DEFAULT_PRIVATE, false) } returns false
 
         // THEN
-        assertThat(userSharedPreferences.getDefaultPrivate()).isEqualTo(null)
+        assertThat(userSharedPreferences.defaultPrivate).isEqualTo(null)
     }
 
     @Test
@@ -244,7 +244,7 @@ internal class UserSharedPreferencesTest {
         every { mockSharedPreferences.get(KEY_DEFAULT_PRIVATE, false) } returns true
 
         // THEN
-        assertThat(userSharedPreferences.getDefaultPrivate()).isTrue()
+        assertThat(userSharedPreferences.defaultPrivate).isTrue()
     }
 
     @Test
@@ -253,7 +253,7 @@ internal class UserSharedPreferencesTest {
         val value = randomBoolean()
 
         // WHEN
-        userSharedPreferences.setDefaultPrivate(value)
+        userSharedPreferences.defaultPrivate = value
 
         // THEN
         verify { mockEditor.putBoolean(KEY_DEFAULT_PRIVATE, value) }
@@ -265,7 +265,7 @@ internal class UserSharedPreferencesTest {
         every { mockSharedPreferences.get(KEY_DEFAULT_READ_LATER, false) } returns false
 
         // THEN
-        assertThat(userSharedPreferences.getDefaultReadLater()).isEqualTo(null)
+        assertThat(userSharedPreferences.defaultReadLater).isEqualTo(null)
     }
 
     @Test
@@ -274,7 +274,7 @@ internal class UserSharedPreferencesTest {
         every { mockSharedPreferences.get(KEY_DEFAULT_READ_LATER, false) } returns true
 
         // THEN
-        assertThat(userSharedPreferences.getDefaultReadLater()).isTrue()
+        assertThat(userSharedPreferences.defaultReadLater).isTrue()
     }
 
     @Test
@@ -283,7 +283,7 @@ internal class UserSharedPreferencesTest {
         val value = randomBoolean()
 
         // WHEN
-        userSharedPreferences.setDefaultReadLater(value)
+        userSharedPreferences.defaultReadLater = value
 
         // THEN
         verify { mockEditor.putBoolean(KEY_DEFAULT_READ_LATER, value) }
@@ -296,7 +296,7 @@ internal class UserSharedPreferencesTest {
         every { mockSharedPreferences.getString(KEY_NEW_EDIT_AFTER_SHARING, "AFTER_SAVING") } returns null
 
         // THEN
-        assertThat(userSharedPreferences.getEditAfterSharing()).isEqualTo(EditAfterSharing.AfterSaving.value)
+        assertThat(userSharedPreferences.editAfterSharing).isEqualTo(EditAfterSharing.AfterSaving.value)
     }
 
     @Test
@@ -306,7 +306,7 @@ internal class UserSharedPreferencesTest {
         every { mockSharedPreferences.getString(KEY_NEW_EDIT_AFTER_SHARING, "SKIP_EDIT") } returns null
 
         // THEN
-        assertThat(userSharedPreferences.getEditAfterSharing()).isEqualTo(EditAfterSharing.SkipEdit.value)
+        assertThat(userSharedPreferences.editAfterSharing).isEqualTo(EditAfterSharing.SkipEdit.value)
     }
 
     @Test
@@ -321,14 +321,14 @@ internal class UserSharedPreferencesTest {
         } returns "BEFORE_SAVING"
 
         // THEN
-        assertThat(userSharedPreferences.getEditAfterSharing()).isEqualTo("BEFORE_SAVING")
+        assertThat(userSharedPreferences.editAfterSharing).isEqualTo("BEFORE_SAVING")
     }
 
 
     @Test
     fun `WHEN setEditAfterSharing is called THEN KEY_NEW_EDIT_AFTER_SHARING is set`() {
         // WHEN
-        userSharedPreferences.setEditAfterSharing("BEFORE_SAVING")
+        userSharedPreferences.editAfterSharing = "BEFORE_SAVING"
 
         // THEN
         verify { mockEditor.putString(KEY_NEW_EDIT_AFTER_SHARING, "BEFORE_SAVING") }
@@ -340,7 +340,7 @@ internal class UserSharedPreferencesTest {
         every { mockSharedPreferences.get(KEY_DEFAULT_TAGS, "") } returns ""
 
         // THEN
-        assertThat(userSharedPreferences.getDefaultTags()).isEmpty()
+        assertThat(userSharedPreferences.defaultTags).isEmpty()
     }
 
     @Test
@@ -349,7 +349,7 @@ internal class UserSharedPreferencesTest {
         every { mockSharedPreferences.get(KEY_DEFAULT_TAGS, "") } returns "test"
 
         // THEN
-        assertThat(userSharedPreferences.getDefaultTags()).isEqualTo(listOf("test"))
+        assertThat(userSharedPreferences.defaultTags).isEqualTo(listOf("test"))
     }
 
     @Test
@@ -358,7 +358,7 @@ internal class UserSharedPreferencesTest {
         val value = listOf("test", "another-test")
 
         // WHEN
-        userSharedPreferences.setDefaultTags(value)
+        userSharedPreferences.defaultTags = value
 
         // THEN
         verify { mockEditor.putString(KEY_DEFAULT_TAGS, "test,another-test") }

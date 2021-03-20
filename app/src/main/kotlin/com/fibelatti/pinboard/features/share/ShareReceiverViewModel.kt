@@ -45,7 +45,7 @@ class ShareReceiverViewModel @Inject constructor(
                 .onFailure { _failed.value = it }
                 .getOrNull() ?: return@launch
 
-            if (userRepository.getEditAfterSharing() is EditAfterSharing.BeforeSaving) {
+            if (userRepository.editAfterSharing is EditAfterSharing.BeforeSaving) {
                 editBookmark(richUrl = richUrl)
             } else {
                 addBookmark(richUrl = richUrl)
@@ -59,9 +59,9 @@ class ShareReceiverViewModel @Inject constructor(
             url = finalUrl,
             title = title,
             description = description ?: "",
-            private = userRepository.getDefaultPrivate() ?: false,
-            readLater = userRepository.getDefaultReadLater() ?: false,
-            tags = userRepository.getDefaultTags(),
+            private = userRepository.defaultPrivate ?: false,
+            readLater = userRepository.defaultReadLater ?: false,
+            tags = userRepository.defaultTags,
         )
 
         _edit.value = ""
@@ -76,13 +76,13 @@ class ShareReceiverViewModel @Inject constructor(
                 url = finalUrl,
                 title = title,
                 description = description,
-                private = userRepository.getDefaultPrivate(),
-                readLater = userRepository.getDefaultReadLater(),
-                tags = userRepository.getDefaultTags(),
+                private = userRepository.defaultPrivate,
+                readLater = userRepository.defaultReadLater,
+                tags = userRepository.defaultTags,
                 replace = false,
             )
         ).onSuccess {
-            if (userRepository.getEditAfterSharing() is EditAfterSharing.AfterSaving) {
+            if (userRepository.editAfterSharing is EditAfterSharing.AfterSaving) {
                 _edit.value = resourceProvider.getString(R.string.posts_saved_feedback)
                 appStateRepository.runAction(EditPostFromShare(it))
             } else {

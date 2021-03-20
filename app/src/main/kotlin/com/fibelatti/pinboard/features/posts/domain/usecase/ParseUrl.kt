@@ -21,7 +21,7 @@ class ParseUrl @Inject constructor(
             val url = document.location()
             val title = document.title().takeIf(String::isNotEmpty) ?: url
             val description: String? = document.getMetaProperty("og:description")
-                .takeIf { userRepository.getAutoFillDescription() }
+                .takeIf { userRepository.autoFillDescription }
             val imageUrl: String? = document.getMetaProperty("og:image")
 
             RichUrl(url, title, description, imageUrl)

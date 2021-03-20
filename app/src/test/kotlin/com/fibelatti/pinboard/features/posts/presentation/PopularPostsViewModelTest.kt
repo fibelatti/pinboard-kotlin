@@ -74,7 +74,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
     fun `WHEN saveLink is called AND getEditAfterSharing is BeforeSaving THEN PostSaved action is run AND AddPost is not called`() {
         // GIVEN
         val post = createPost()
-        every { mockUserRepository.getEditAfterSharing() } returns EditAfterSharing.BeforeSaving
+        every { mockUserRepository.editAfterSharing } returns EditAfterSharing.BeforeSaving
 
         // WHEN
         popularPostsViewModel.saveLink(post)
@@ -93,7 +93,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
         val post = createPost()
         val error = Exception()
         coEvery { mockAddPost(any()) } returns Failure(error)
-        every { mockUserRepository.getEditAfterSharing() } returns mockk()
+        every { mockUserRepository.editAfterSharing } returns mockk()
 
         // WHEN
         popularPostsViewModel.saveLink(post)
@@ -123,9 +123,9 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
             private = randomBoolean,
             readLater = randomBoolean,
         )
-        every { mockUserRepository.getDefaultPrivate() } returns randomBoolean
-        every { mockUserRepository.getDefaultReadLater() } returns randomBoolean
-        every { mockUserRepository.getDefaultTags() } returns mockTags
+        every { mockUserRepository.defaultPrivate } returns randomBoolean
+        every { mockUserRepository.defaultReadLater } returns randomBoolean
+        every { mockUserRepository.defaultTags } returns mockTags
         coEvery { mockAddPost(params) } returns Success(post)
 
         // WHEN
