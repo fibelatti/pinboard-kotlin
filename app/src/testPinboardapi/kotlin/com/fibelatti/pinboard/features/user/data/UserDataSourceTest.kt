@@ -8,6 +8,7 @@ import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
+import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.randomBoolean
@@ -164,6 +165,68 @@ internal class UserDataSourceTest {
 
                 // THEN
                 verify { mockUserSharedPreferences.lastUpdate = mockTime }
+            }
+        }
+
+        @Nested
+        inner class PeriodicSyncTests {
+
+            @Test
+            fun `GIVEN the shared preferences has Off value WHEN the getter is called THEN Off is returned`() {
+                // GIVEN
+                every { mockUserSharedPreferences.periodicSync } returns PeriodicSync.Off.hours
+
+                // THEN
+                assertThat(userDataSource.periodicSync).isEqualTo(PeriodicSync.Off)
+            }
+
+            @Test
+            fun `GIVEN the shared preferences has Every6Hours value WHEN the getter is called THEN Every6Hours is returned`() {
+                // GIVEN
+                every { mockUserSharedPreferences.periodicSync } returns PeriodicSync.Every6Hours.hours
+
+                // THEN
+                assertThat(userDataSource.periodicSync).isEqualTo(PeriodicSync.Every6Hours)
+            }
+
+            @Test
+            fun `GIVEN the shared preferences has Every12Hours value WHEN the getter is called THEN Every12Hours is returned`() {
+                // GIVEN
+                every { mockUserSharedPreferences.periodicSync } returns PeriodicSync.Every12Hours.hours
+
+                // THEN
+                assertThat(userDataSource.periodicSync).isEqualTo(PeriodicSync.Every12Hours)
+            }
+
+            @Test
+            fun `GIVEN the shared preferences has Every24Hours value WHEN the getter is called THEN Every24Hours is returned`() {
+                // GIVEN
+                every { mockUserSharedPreferences.periodicSync } returns PeriodicSync.Every24Hours.hours
+
+                // THEN
+                assertThat(userDataSource.periodicSync).isEqualTo(PeriodicSync.Every24Hours)
+            }
+
+            @Test
+            fun `GIVEN the shared preferences has any other value WHEN the getter is called THEN Off is returned`() {
+                // GIVEN
+                every { mockUserSharedPreferences.periodicSync } returns 42
+
+                // THEN
+                assertThat(userDataSource.periodicSync).isEqualTo(PeriodicSync.Off)
+            }
+
+            @Test
+            fun `WHEN setter is called THEN the shared preferences is updated`() {
+                // GIVEN
+                val mockPeriodicSync = mockk<PeriodicSync>()
+                every { mockPeriodicSync.hours } returns 42
+
+                // WHEN
+                userDataSource.periodicSync = mockPeriodicSync
+
+                // THEN
+                verify { mockUserSharedPreferences.periodicSync = 42 }
             }
         }
 

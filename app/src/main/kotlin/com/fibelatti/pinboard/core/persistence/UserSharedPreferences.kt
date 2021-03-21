@@ -18,6 +18,9 @@ const val KEY_AUTH_TOKEN = "AUTH_TOKEN"
 const val KEY_LAST_UPDATE = "LAST_UPDATE"
 
 @VisibleForTesting
+const val KEY_PERIODIC_SYNC = "PERIODIC_SYNC"
+
+@VisibleForTesting
 const val KEY_APPEARANCE = "APPEARANCE"
 
 @VisibleForTesting
@@ -70,6 +73,11 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
     var lastUpdate: String
         get() = sharedPreferences.get(KEY_LAST_UPDATE, currentLastUpdate)
         set(value) = sharedPreferences.put(KEY_LAST_UPDATE, value).also { currentLastUpdate = value }
+
+    @Suppress("MagicNumber")
+    var periodicSync: Long
+        get() = sharedPreferences.get(KEY_PERIODIC_SYNC, 24)
+        set(value) = sharedPreferences.put(KEY_PERIODIC_SYNC, value)
 
     var appearance: String
         get() = sharedPreferences.get(KEY_APPEARANCE, "")

@@ -6,6 +6,7 @@ import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
+import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -103,6 +104,7 @@ data class PopularPostDetailContent(
 ) : ContentWithHistory()
 
 data class UserPreferencesContent(
+    val periodicSync: PeriodicSync,
     val appearance: Appearance,
     val preferredDateFormat: PreferredDateFormat,
     val preferredDetailsView: PreferredDetailsView,

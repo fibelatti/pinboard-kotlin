@@ -8,6 +8,8 @@ import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetSuggestedTags
+import com.fibelatti.pinboard.features.sync.PeriodicSync
+import com.fibelatti.pinboard.features.sync.PeriodicSyncManager
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
@@ -20,6 +22,7 @@ class UserPreferencesViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val appStateRepository: AppStateRepository,
     private val getSuggestedTags: GetSuggestedTags,
+    private val periodicSyncManager: PeriodicSyncManager,
 ) : BaseViewModel() {
 
     val appearanceChanged: Flow<Appearance> get() = _appearanceChanged.filterNotNull()
@@ -27,6 +30,11 @@ class UserPreferencesViewModel @Inject constructor(
 
     val suggestedTags: Flow<List<String>> get() = _suggestedTags.filterNotNull()
     private val _suggestedTags = MutableStateFlow<List<String>?>(null)
+
+    fun savePeriodicSync(periodicSync: PeriodicSync) {
+        userRepository.periodicSync = periodicSync
+        periodicSyncManager.enqueue(periodicSync, shouldReplace = true)
+    }
 
     fun saveAppearance(appearance: Appearance) {
         userRepository.appearance = appearance

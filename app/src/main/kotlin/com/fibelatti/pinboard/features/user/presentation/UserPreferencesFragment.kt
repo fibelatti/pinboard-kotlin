@@ -26,6 +26,7 @@ import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentUserPreferencesBinding
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
+import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import javax.inject.Inject
 import kotlinx.coroutines.flow.collect
@@ -68,6 +69,7 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
         handleKeyboardVisibility()
         lifecycleScope.launch {
             appStateViewModel.userPreferencesContent.collect {
+                setupPeriodicSync(it.periodicSync)
                 setupAppearance(it.appearance)
                 setupPreferredDateFormat(it.preferredDateFormat)
                 setupPreferredDetailsView(it.preferredDetailsView)
@@ -164,6 +166,27 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
                     initialPadding.bottom
                 )
             }
+        }
+    }
+
+    private fun setupPeriodicSync(periodicSync: PeriodicSync) {
+        when (periodicSync) {
+            PeriodicSync.Off -> binding.buttonPeriodicSyncOff.isChecked = true
+            PeriodicSync.Every6Hours -> binding.buttonPeriodicSync6Hours.isChecked = true
+            PeriodicSync.Every12Hours -> binding.buttonPeriodicSync12Hours.isChecked = true
+            PeriodicSync.Every24Hours -> binding.buttonPeriodicSync24Hours.isChecked = true
+        }
+        binding.buttonPeriodicSyncOff.setOnClickListener {
+            userPreferencesViewModel.savePeriodicSync(PeriodicSync.Off)
+        }
+        binding.buttonPeriodicSync6Hours.setOnClickListener {
+            userPreferencesViewModel.savePeriodicSync(PeriodicSync.Every6Hours)
+        }
+        binding.buttonPeriodicSync12Hours.setOnClickListener {
+            userPreferencesViewModel.savePeriodicSync(PeriodicSync.Every12Hours)
+        }
+        binding.buttonPeriodicSync24Hours.setOnClickListener {
+            userPreferencesViewModel.savePeriodicSync(PeriodicSync.Every24Hours)
         }
     }
 

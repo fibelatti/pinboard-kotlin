@@ -5,6 +5,7 @@ import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
+import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -24,6 +25,18 @@ class UserDataSource @Inject constructor(
         get() = userSharedPreferences.lastUpdate
         set(value) {
             userSharedPreferences.lastUpdate = value
+        }
+
+    @Suppress("MagicNumber")
+    override var periodicSync: PeriodicSync
+        get() = when (userSharedPreferences.periodicSync) {
+            6L -> PeriodicSync.Every6Hours
+            12L -> PeriodicSync.Every12Hours
+            24L -> PeriodicSync.Every24Hours
+            else -> PeriodicSync.Off
+        }
+        set(value) {
+            userSharedPreferences.periodicSync = value.hours
         }
 
     override var appearance: Appearance

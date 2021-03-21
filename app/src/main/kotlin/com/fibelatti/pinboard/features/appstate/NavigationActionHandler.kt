@@ -185,6 +185,7 @@ class NavigationActionHandler @Inject constructor(
     private fun viewPreferences(currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
             UserPreferencesContent(
+                periodicSync = userRepository.periodicSync,
                 appearance = userRepository.appearance,
                 preferredDateFormat = userRepository.preferredDateFormat,
                 preferredDetailsView = userRepository.preferredDetailsView,

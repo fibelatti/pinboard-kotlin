@@ -9,6 +9,7 @@ import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
+import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
@@ -654,6 +655,7 @@ internal class NavigationActionHandlerTest {
     @Nested
     inner class ViewPreferencesTests {
 
+        private val mockPeriodicSync = mockk<PeriodicSync>()
         private val mockAppearance = mockk<Appearance>()
         private val mockPreferredDateFormat = mockk<PreferredDateFormat>()
         private val mockPreferredDetailsView = mockk<PreferredDetailsView>()
@@ -663,6 +665,7 @@ internal class NavigationActionHandlerTest {
 
         @BeforeEach
         fun setup() {
+            every { mockUserRepository.periodicSync } returns mockPeriodicSync
             every { mockUserRepository.appearance } returns mockAppearance
             every { mockUserRepository.preferredDateFormat } returns mockPreferredDateFormat
             every { mockUserRepository.preferredDetailsView } returns mockPreferredDetailsView
@@ -695,6 +698,7 @@ internal class NavigationActionHandlerTest {
             // THEN
             assertThat(result).isEqualTo(
                 UserPreferencesContent(
+                    periodicSync = mockPeriodicSync,
                     appearance = mockAppearance,
                     preferredDateFormat = mockPreferredDateFormat,
                     preferredDetailsView = mockPreferredDetailsView,
@@ -722,6 +726,7 @@ internal class NavigationActionHandlerTest {
             // THEN
             assertThat(result).isEqualTo(
                 UserPreferencesContent(
+                    periodicSync = mockPeriodicSync,
                     appearance = mockAppearance,
                     preferredDateFormat = mockPreferredDateFormat,
                     preferredDetailsView = mockPreferredDetailsView,
@@ -749,6 +754,7 @@ internal class NavigationActionHandlerTest {
             // THEN
             assertThat(result).isEqualTo(
                 UserPreferencesContent(
+                    periodicSync = mockPeriodicSync,
                     appearance = mockAppearance,
                     preferredDateFormat = mockPreferredDateFormat,
                     preferredDetailsView = mockPreferredDetailsView,

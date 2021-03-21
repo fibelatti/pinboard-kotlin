@@ -78,6 +78,33 @@ internal class UserSharedPreferencesTest {
     }
 
     @Test
+    fun `GIVEN KEY_PERIODIC_SYNC has no value WHEN periodicSync getter is called THEN 24 is returned`() {
+        // GIVEN
+        every { mockSharedPreferences.get(KEY_PERIODIC_SYNC, 24L) } returns 24L
+
+        // THEN
+        assertThat(userSharedPreferences.periodicSync).isEqualTo(24L)
+    }
+
+    @Test
+    fun `GIVEN KEY_PERIODIC_SYNC has value WHEN periodicSync getter is called THEN the value is returned`() {
+        // GIVEN
+        every { mockSharedPreferences.get(KEY_PERIODIC_SYNC, 24L) } returns 42L
+
+        // THEN
+        assertThat(userSharedPreferences.periodicSync).isEqualTo(42L)
+    }
+
+    @Test
+    fun `WHEN periodicSync setter is called THEN KEY_PERIODIC_SYNC is set`() {
+        // WHEN
+        userSharedPreferences.periodicSync = 42
+
+        // THEN
+        verify { mockEditor.putLong(KEY_PERIODIC_SYNC, 42) }
+    }
+
+    @Test
     fun `GIVEN KEY_APPEARANCE has no value WHEN getAppearance is called THEN empty string is returned`() {
         // GIVEN
         every { mockSharedPreferences.get(KEY_APPEARANCE, "") } returns ""

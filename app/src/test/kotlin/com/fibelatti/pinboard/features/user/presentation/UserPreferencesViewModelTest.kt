@@ -10,13 +10,18 @@ import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetSuggestedTags
+import com.fibelatti.pinboard.features.sync.PeriodicSync
+import com.fibelatti.pinboard.features.sync.PeriodicSyncManager
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.isEmpty
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -27,12 +32,31 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
     private val mockUserRepository = mockk<UserRepository>(relaxed = true)
     private val mockAppStateRepository = mockk<AppStateRepository>(relaxed = true)
     private val mockGetSuggestedTags = mockk<GetSuggestedTags>()
+    private val mockPeriodicSyncManager = mockk<PeriodicSyncManager> {
+        every { enqueue(any(), any()) } just runs
+    }
 
     private val userPreferencesViewModel = UserPreferencesViewModel(
         mockUserRepository,
         mockAppStateRepository,
         mockGetSuggestedTags,
+        mockPeriodicSyncManager,
     )
+
+    @Test
+    fun `WHEN savePeriodicSync is called THEN repository is updated AND periodicSyncManager enqueues`() {
+        // GIVEN
+        val mockPeriodicSync = mockk<PeriodicSync>()
+
+        // WHEN
+        userPreferencesViewModel.savePeriodicSync(mockPeriodicSync)
+
+        // THEN
+        verify { mockUserRepository.periodicSync = mockPeriodicSync }
+        verify {
+            mockPeriodicSyncManager.enqueue(mockPeriodicSync, shouldReplace = true)
+        }
+    }
 
     @Test
     fun `WHEN saveAppearance is called THEN repository is updated`() {

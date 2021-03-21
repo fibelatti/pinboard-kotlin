@@ -5,6 +5,7 @@ import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import com.fibelatti.pinboard.core.di.AppComponent
+import com.fibelatti.pinboard.features.sync.SyncBookmarksWorker
 
 class InjectingWorkerFactory(
     private val appComponent: AppComponent,

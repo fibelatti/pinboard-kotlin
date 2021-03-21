@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features
+package com.fibelatti.pinboard.features.sync
 
 import android.content.Context
 import androidx.work.CoroutineWorker
@@ -15,6 +15,10 @@ class SyncBookmarksWorker(
     workerParams: WorkerParameters,
     private val postsRepository: PostsRepository,
 ) : CoroutineWorker(context, workerParams) {
+
+    companion object {
+        const val UNIQUE_WORK_NAME = "SyncBookmarksWork"
+    }
 
     override suspend fun doWork(): Result {
         val success = postsRepository.getAllPosts(

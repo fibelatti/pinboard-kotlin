@@ -16,12 +16,71 @@
         android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/layoutPeriodicSync"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/layoutAppearance"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                style="@style/AppTheme.Text.SectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/user_preferences_periodic_sync" />
+
+            <TextView
+                style="@style/AppTheme.Text.Detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_xsmall"
+                android:text="@string/user_preferences_periodic_sync_description" />
+
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/buttonGroupPeriodicSync"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                app:singleSelection="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonPeriodicSyncOff"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:text="@string/user_preferences_periodic_sync_off" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonPeriodicSync6Hours"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:text="@string/user_preferences_periodic_sync_6_hours" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonPeriodicSync12Hours"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:text="@string/user_preferences_periodic_sync_12_hours" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonPeriodicSync24Hours"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:text="@string/user_preferences_periodic_sync_24_hours" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            <TextView
+                style="@style/AppTheme.Text.Detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="@string/user_preferences_periodic_sync_caveat" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/layoutAppearance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_regular"
             android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@+id/layoutPreferredDetailsView"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/layoutPeriodicSync">
 
             <TextView
                 android:id="@+id/textViewAppearanceTitle"
@@ -34,7 +93,7 @@
                 android:id="@+id/buttonGroupAppearance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"
+                android:layout_marginTop="@dimen/margin_xsmall"
                 app:singleSelection="true">
 
                 <com.google.android.material.button.MaterialButton
@@ -64,14 +123,14 @@
                 style="@style/AppTheme.Text.SectionTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"
+                android:layout_marginTop="@dimen/margin_regular"
                 android:text="@string/user_preferences_date_format" />
 
             <com.google.android.material.button.MaterialButtonToggleGroup
                 android:id="@+id/buttonGroupDateFormat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"
+                android:layout_marginTop="@dimen/margin_xsmall"
                 app:singleSelection="true">
 
                 <com.google.android.material.button.MaterialButton
@@ -88,19 +147,13 @@
                     android:layout_height="wrap_content"
                     android:text="@string/user_preferences_date_format_month_first" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
-
-            <include
-                layout="@layout/layout_divider"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/divider_size"
-                android:layout_marginTop="@dimen/margin_regular"
-                android:layout_marginBottom="@dimen/margin_regular" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/layoutPreferredDetailsView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_regular"
             android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@+id/layoutBookmarksDescription"
             app:layout_constraintTop_toBottomOf="@+id/layoutAppearance">
@@ -115,7 +168,7 @@
                 android:id="@+id/buttonGroupPreferredDetailsView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"
+                android:layout_marginTop="@dimen/margin_xsmall"
                 app:singleSelection="true">
 
                 <com.google.android.material.button.MaterialButton
@@ -139,17 +192,14 @@
                 style="@style/AppTheme.Text.Detail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/margin_small"
-                android:layout_marginStart="@dimen/margin_small"
-                android:layout_marginEnd="@dimen/margin_small"
+                android:layout_marginTop="@dimen/margin_small"
                 android:text="@string/user_preferences_preferred_details_in_app_browser_caveat" />
 
             <TextView
                 style="@style/AppTheme.Text.Detail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_small"
-                android:layout_marginEnd="@dimen/margin_small"
+                android:layout_marginTop="@dimen/margin_small"
                 android:text="@string/user_preferences_preferred_details_view_caveat" />
 
             <CheckBox
@@ -164,22 +214,14 @@
                 style="@style/AppTheme.Text.Detail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_small"
-                android:layout_marginEnd="@dimen/margin_small"
                 android:text="@string/user_preferences_preferred_details_view_mark_as_read_on_open_caveat" />
-
-            <include
-                layout="@layout/layout_divider"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/divider_size"
-                android:layout_marginTop="@dimen/margin_regular"
-                android:layout_marginBottom="@dimen/margin_regular" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/layoutBookmarksDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_regular"
             android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@+id/layoutEditAfterSharing"
             app:layout_constraintTop_toBottomOf="@+id/layoutPreferredDetailsView">
@@ -194,16 +236,8 @@
                 android:id="@+id/checkboxAutoFillDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"
+                android:layout_marginTop="@dimen/margin_xsmall"
                 android:text="@string/user_preferences_description_auto_fill" />
-
-            <TextView
-                style="@style/AppTheme.Text.Detail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_small"
-                android:layout_marginEnd="@dimen/margin_small"
-                android:text="@string/user_preferences_description_auto_fill_description" />
 
             <CheckBox
                 android:id="@+id/checkboxShowDescriptionInLists"
@@ -211,27 +245,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
                 android:text="@string/user_preferences_description_visible_in_lists" />
-
-            <TextView
-                style="@style/AppTheme.Text.Detail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_small"
-                android:layout_marginEnd="@dimen/margin_small"
-                android:text="@string/user_preferences_description_visible_caveat" />
-
-            <include
-                layout="@layout/layout_divider"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/divider_size"
-                android:layout_marginTop="@dimen/margin_regular"
-                android:layout_marginBottom="@dimen/margin_regular" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/layoutEditAfterSharing"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_regular"
             android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@+id/layoutPrivateDefault"
             app:layout_constraintTop_toBottomOf="@+id/layoutBookmarksDescription">
@@ -246,7 +266,7 @@
                 android:id="@+id/buttonGroupEditAfterSharing"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"
+                android:layout_marginTop="@dimen/margin_xsmall"
                 app:singleSelection="true">
 
                 <com.google.android.material.button.MaterialButton
@@ -275,22 +295,15 @@
                 style="@style/AppTheme.Text.Detail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_small"
-                android:layout_marginEnd="@dimen/margin_small"
+                android:layout_marginTop="@dimen/margin_small"
                 android:text="@string/user_preferences_edit_after_sharing_description" />
-
-            <include
-                layout="@layout/layout_divider"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/divider_size"
-                android:layout_marginTop="@dimen/margin_regular"
-                android:layout_marginBottom="@dimen/margin_regular" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/layoutPrivateDefault"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_regular"
             android:orientation="vertical"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/layoutReadLaterDefault"
@@ -306,7 +319,7 @@
                 android:id="@+id/checkboxPrivateDefault"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"
+                android:layout_marginTop="@dimen/margin_xsmall"
                 android:drawableEnd="@drawable/ic_private"
                 android:drawablePadding="@dimen/padding_small"
                 android:text="@string/user_preferences_default_private_label" />
@@ -315,22 +328,14 @@
                 style="@style/AppTheme.Text.Detail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_small"
-                android:layout_marginEnd="@dimen/margin_small"
                 android:text="@string/user_preferences_default_private_description" />
-
-            <include
-                layout="@layout/layout_divider"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/divider_size"
-                android:layout_marginTop="@dimen/margin_regular"
-                android:layout_marginBottom="@dimen/margin_regular" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/layoutReadLaterDefault"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_regular"
             android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="@+id/layoutPrivateDefault">
 
@@ -344,7 +349,7 @@
                 android:id="@+id/checkboxReadLaterDefault"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"
+                android:layout_marginTop="@dimen/margin_xsmall"
                 android:drawableEnd="@drawable/ic_read_later"
                 android:drawablePadding="@dimen/padding_small"
                 android:text="@string/user_preferences_default_read_later_label" />
@@ -353,22 +358,14 @@
                 style="@style/AppTheme.Text.Detail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_small"
-                android:layout_marginEnd="@dimen/margin_small"
                 android:text="@string/user_preferences_default_read_later_description" />
-
-            <include
-                layout="@layout/layout_divider"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/divider_size"
-                android:layout_marginTop="@dimen/margin_regular"
-                android:layout_marginBottom="@dimen/margin_regular" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/layoutDefaultTags"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_regular"
             android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="@+id/layoutReadLaterDefault">
 
@@ -382,7 +379,7 @@
                 style="@style/AppTheme.Text.Detail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"
+                android:layout_marginTop="@dimen/margin_xsmall"
                 android:text="@string/user_preferences_default_tags_description" />
 
             <com.fibelatti.pinboard.core.android.customview.AddTagsLayout
