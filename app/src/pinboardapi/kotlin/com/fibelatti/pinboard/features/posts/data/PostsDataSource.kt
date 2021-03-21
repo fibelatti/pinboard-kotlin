@@ -5,7 +5,6 @@ import com.fibelatti.core.extension.orZero
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.getOrThrow
-import com.fibelatti.core.functional.map
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.pinboard.core.AppConfig.API_BASE_URL_LENGTH
 import com.fibelatti.pinboard.core.AppConfig.API_MAX_LENGTH
@@ -198,10 +197,9 @@ class PostsDataSource @Inject constructor(
                 if (posts.size == API_PAGE_SIZE) {
                     getAdditionalPages()
                 }
-            }.map { localData(true) }
+            }.let { localData(true) }
         }
 
-        emit(localData(false))
         emit(apiData())
     }
 

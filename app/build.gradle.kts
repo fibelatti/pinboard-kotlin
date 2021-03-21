@@ -165,6 +165,8 @@ dependencies {
     implementation(Dependencies.room)
     kapt(Dependencies.roomCompiler)
 
+    implementation(Dependencies.workManager)
+
     implementation(Dependencies.customTabs)
 
     // Misc

@@ -40,6 +40,8 @@ object Dependencies {
     const val room = "androidx.room:room-runtime:${Versions.roomVersion}"
     const val roomCompiler = "androidx.room:room-compiler:${Versions.roomVersion}"
 
+    const val workManager = "androidx.work:work-runtime-ktx:2.5.0"
+
     const val customTabs = "androidx.browser:browser:1.3.0"
 
     private const val daggerVersion = "2.33"
