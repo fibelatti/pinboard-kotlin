@@ -207,5 +207,6 @@
 
     <style name="AppTheme.ChipTextAppearance" parent="TextAppearance.MaterialComponents.Chip">
         <item name="android:textSize">11sp</item>
+        <item name="fontFamily">sans-serif-medium</item>
     </style>
 </resources>
