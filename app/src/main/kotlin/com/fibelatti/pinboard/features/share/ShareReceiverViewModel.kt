@@ -35,7 +35,7 @@ class ShareReceiverViewModel @Inject constructor(
     private val _saved = MutableStateFlow<String?>(null)
     val edit: Flow<String> get() = _edit.filterNotNull()
     private val _edit = MutableStateFlow<String?>(null)
-    val failed: Flow<Throwable> get() = _failed.filterNotNull().filterNotNull()
+    val failed: Flow<Throwable> get() = _failed.filterNotNull()
     private val _failed = MutableStateFlow<Throwable?>(null)
 
     fun saveUrl(url: String) {

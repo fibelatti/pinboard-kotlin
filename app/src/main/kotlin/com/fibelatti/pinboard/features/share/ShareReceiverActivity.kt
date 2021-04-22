@@ -26,6 +26,7 @@ class ShareReceiverActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(binding.root)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
