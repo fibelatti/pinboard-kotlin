@@ -38,7 +38,6 @@ import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.core.functional.DoNothing
 import com.fibelatti.pinboard.databinding.ActivityMainBinding
 import com.fibelatti.pinboard.databinding.FragmentAuthBinding
-import com.fibelatti.pinboard.databinding.FragmentSplashBinding
 import com.fibelatti.pinboard.features.appstate.AddPostContent
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.ExternalBrowserContent
@@ -55,7 +54,6 @@ import com.fibelatti.pinboard.features.appstate.TagListContent
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
 import com.fibelatti.pinboard.features.navigation.NavigationMenuFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
-import com.fibelatti.pinboard.features.splash.presentation.SplashFragment
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.presentation.AuthFragment
 import com.google.android.material.bottomappbar.BottomAppBar
@@ -94,12 +92,6 @@ class MainActivity : BaseActivity() {
         setContentView(binding.root)
 
         isRecreating = savedInstanceState != null
-
-        if (!intent.fromBuilder && !isRecreating) {
-            inTransaction {
-                add(R.id.fragmentHost, createFragment<SplashFragment>(), SplashFragment.TAG)
-            }
-        }
 
         setupBackNavigation()
         setupView()
@@ -270,10 +262,6 @@ class MainActivity : BaseActivity() {
             inTransaction {
                 setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                 replace(R.id.fragmentHost, createFragment<AuthFragment>())
-                supportFragmentManager.findFragmentByTag(SplashFragment.TAG)?.view?.let {
-                    val binding = FragmentSplashBinding.bind(it)
-                    addSharedElement(binding.imageViewAppLogo, SharedElementTransitionNames.APP_LOGO)
-                }
             }
 
             hideControls()

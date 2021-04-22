@@ -10,7 +10,6 @@ import com.fibelatti.pinboard.features.posts.presentation.PopularPostsFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostDetailFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostSearchFragment
-import com.fibelatti.pinboard.features.splash.presentation.SplashFragment
 import com.fibelatti.pinboard.features.tags.presentation.TagsFragment
 import com.fibelatti.pinboard.features.user.presentation.AuthFragment
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
@@ -20,11 +19,6 @@ import dagger.multibindings.IntoMap
 
 @Module
 abstract class FeatureModule {
-
-    @Binds
-    @IntoMap
-    @FragmentKey(SplashFragment::class)
-    abstract fun SplashFragment.splashFragment(): Fragment
 
     @Binds
     @IntoMap
