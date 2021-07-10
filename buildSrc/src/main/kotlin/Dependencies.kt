@@ -3,14 +3,14 @@ object Versions {
     const val targetSdkVersion = 30
     const val compileSdkVersion = 30
 
-    internal const val kotlinVersion = "1.4.31"
-    internal const val coroutinesVersion = "1.4.2"
+    internal const val kotlinVersion = "1.5.20"
+    internal const val coroutinesVersion = "1.5.0"
     internal const val lifecycleVersion = "2.2.0"
-    internal const val roomVersion = "2.2.6"
+    internal const val roomVersion = "2.3.0"
 }
 
 object Classpaths {
-    const val gradlePlugin = "com.android.tools.build:gradle:4.1.0"
+    const val gradlePlugin = "com.android.tools.build:gradle:4.2.0"
     const val kotlinPlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlinVersion}"
 }
 
@@ -20,12 +20,12 @@ object Dependencies {
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutinesVersion}"
     const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutinesVersion}"
 
-    const val supportLibrary = "androidx.appcompat:appcompat:1.2.0"
-    const val androidCore = "androidx.core:core-ktx:1.5.0-beta02"
-    const val activity = "androidx.activity:activity-ktx:1.2.0"
-    const val fragments = "androidx.fragment:fragment-ktx:1.3.0"
-    const val supportAnnotations = "androidx.annotation:annotation:1.1.0"
-    const val materialDesign = "com.google.android.material:material:1.2.0"
+    const val supportLibrary = "androidx.appcompat:appcompat:1.3.0"
+    const val androidCore = "androidx.core:core-ktx:1.5.0"
+    const val activity = "androidx.activity:activity-ktx:1.2.3"
+    const val fragments = "androidx.fragment:fragment-ktx:1.3.5"
+    const val supportAnnotations = "androidx.annotation:annotation:1.2.0"
+    const val materialDesign = "com.google.android.material:material:1.4.0"
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.4"
     const val swipeRefreshLayout = "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
@@ -44,7 +44,7 @@ object Dependencies {
 
     const val customTabs = "androidx.browser:browser:1.3.0"
 
-    private const val daggerVersion = "2.33"
+    private const val daggerVersion = "2.37"
 
     const val dagger = "com.google.dagger:dagger:$daggerVersion"
     const val daggerCompiler = "com.google.dagger:dagger-compiler:$daggerVersion"
@@ -69,22 +69,21 @@ object Dependencies {
 object TestDependencies {
 
     const val coreLibTest = "com.fibelatti.core:core-test:2.0.0-alpha4"
-    const val coreLibArchTest = "com.fibelatti.core:arch-components-test:2.0.0-alpha4"
 
-    private const val junit5Version = "5.7.0"
+    private const val junit5Version = "5.7.2"
     const val junit = "junit:junit:4.13"
     const val junit5 = "org.junit.jupiter:junit-jupiter-api:$junit5Version"
     const val junit5Engine = "org.junit.jupiter:junit-jupiter-engine:$junit5Version"
     const val junit5Params = "org.junit.jupiter:junit-jupiter-params:$junit5Version"
     const val junitVintage = "org.junit.vintage:junit-vintage-engine:$junit5Version"
 
-    const val testRunner = "androidx.test:runner:1.2.0"
+    const val testRunner = "androidx.test:runner:1.4.0"
 
-    const val googleTruth = "com.google.truth:truth:1.1"
-    const val mockk = "io.mockk:mockk:1.10.6"
+    const val googleTruth = "com.google.truth:truth:1.1.3"
+    const val mockk = "io.mockk:mockk:1.12.0"
 
     const val kotlinTest = "org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlinVersion}"
     const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutinesVersion}"
-    const val archComponentsTest = "android.arch.core:core-testing:${Versions.lifecycleVersion}"
-    const val roomTest = "android.arch.persistence.room:testing:${Versions.roomVersion}"
+    const val archComponentsTest = "androidx.arch.core:core-testing:2.1.0"
+    const val roomTest = "androidx.room:room-testing:${Versions.roomVersion}"
 }

@@ -3,14 +3,13 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.15.0")
+        classpath("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.17.1")
     }
 }
 
 apply plugin: io.gitlab.arturbosch.detekt.DetektPlugin
 
 detekt {
-    failFast = true
     buildUponDefaultConfig = true
     input = files("$projectDir")
     config = files("$projectDir/detekt.yml")

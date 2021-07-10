@@ -2,7 +2,7 @@ package com.fibelatti.pinboard.features.tags.domain.model
 
 import android.os.Parcelable
 import androidx.annotation.Keep
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Keep
 @Parcelize

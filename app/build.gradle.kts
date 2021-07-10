@@ -1,6 +1,3 @@
-import com.android.build.gradle.internal.api.ReadOnlyProductFlavor
-import org.gradle.internal.extensibility.DefaultExtraPropertiesExtension
-
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -76,41 +73,34 @@ android {
     productFlavors {
         create("pinboardapi") {
             dimension("api")
-            require(this is ExtensionAware)
-            extra["appNameSuffix"] = mapOf("debug" to " Dev", "release" to "")
         }
 
         create("noapi") {
             dimension("api")
             applicationIdSuffix(".noapi")
-            require(this is ExtensionAware)
-            extra["appNameSuffix"] = mapOf("debug" to "NoApi Dev", "release" to " NoApi")
         }
     }
 
-    afterEvaluate {
-        applicationVariants.forEach { variant ->
-            val flavor = variant.productFlavors[0] as ReadOnlyProductFlavor
-            val extra = flavor.getProperty("ext") as DefaultExtraPropertiesExtension
-            val appNameSuffix = extra.get("appNameSuffix")
-            require(appNameSuffix is Map<*, *>)
-            variant.resValue("string", "app_name", "${AppInfo.appName}${appNameSuffix[variant.buildType.name]}")
+    androidComponents {
+        onVariants { variant ->
+            val appName = StringBuilder().apply {
+                append(AppInfo.appName)
+                if (variant.name.contains("noapi", ignoreCase = true)) append(" NoApi")
+                if (variant.name.contains("debug", ignoreCase = true)) append(" Dev")
+            }
+
+            variant.addResValue("app_name", "string", "$appName", null)
         }
     }
 
     sourceSets {
-        getByName("main").java.srcDirs("src/main/kotlin")
+        forEach { sourceSet -> getByName(sourceSet.name).java.srcDirs("src/${sourceSet.name}/kotlin") }
 
-        getByName("pinboardapi").java.srcDir("src/pinboardapi/kotlin")
-        getByName("noapi").java.srcDir("src/noapi/kotlin")
-
-        getByName("test").java.srcDirs("src/test/kotlin", "src/sharedTest/kotlin")
-        getByName("testPinboardapi").java
-            .srcDirs("src/test/kotlin", "src/sharedTest/kotlin", "src/testPinboardapi/kotlin")
-
+        getByName("test").java.srcDirs("src/sharedTest/kotlin")
+        getByName("testPinboardapi").java.srcDirs("src/test/kotlin", "src/sharedTest/kotlin")
 
         getByName("androidTest") {
-            java.srcDirs("src/androidTest/kotlin", "src/sharedTest/kotlin")
+            java.srcDirs("src/sharedTest/kotlin")
             assets.srcDirs(files("$projectDir/schemas"))
         }
     }
