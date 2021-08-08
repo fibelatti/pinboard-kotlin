@@ -10,9 +10,10 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.fibelatti.core.archcomponents.extension.activityViewModel
-import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.clearError
 import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.hideKeyboard
@@ -21,22 +22,23 @@ import com.fibelatti.core.extension.orZero
 import com.fibelatti.core.extension.showError
 import com.fibelatti.core.extension.showStyledDialog
 import com.fibelatti.core.extension.textAsString
-import com.fibelatti.core.extension.visible
-import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.smoothScrollY
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentEditPostBinding
+import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class EditPostFragment @Inject constructor() : BaseFragment() {
 
     companion object {
@@ -45,9 +47,9 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
         val TAG: String = "EditPostFragment"
     }
 
-    private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
-    private val editPostViewModel by viewModel { viewModelProvider.editPostViewModel() }
-    private val postDetailViewModel by viewModel { viewModelProvider.postDetailsViewModel() }
+    private val appStateViewModel: AppStateViewModel by activityViewModels()
+    private val editPostViewModel: EditPostViewModel by viewModels()
+    private val postDetailViewModel: PostDetailViewModel by viewModels()
 
     private var binding by viewBinding<FragmentEditPostBinding>()
 
@@ -104,7 +106,7 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
         }
         mainActivity?.updateViews { bottomAppBar, _ ->
             bottomAppBar.hideKeyboard()
-            bottomAppBar.visible()
+            bottomAppBar.isVisible = true
         }
     }
 
@@ -228,7 +230,7 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
         }
         lifecycleScope.launch {
             editPostViewModel.loading.collect {
-                binding.layoutProgressBar.root.visibleIf(it, otherwiseVisibility = View.GONE)
+                binding.layoutProgressBar.root.isVisible = it
             }
         }
         lifecycleScope.launch {
@@ -253,7 +255,7 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
         }
         lifecycleScope.launch {
             postDetailViewModel.loading.collect {
-                binding.layoutProgressBar.root.visibleIf(it, otherwiseVisibility = View.GONE)
+                binding.layoutProgressBar.root.isVisible = it
             }
         }
         lifecycleScope.launch {
@@ -292,7 +294,7 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
                 navigationIcon = null
                 replaceMenu(R.menu.menu_details)
                 setOnMenuItemClickListener { item -> handleMenuClick(item, content.post) }
-                visible()
+                isVisible = true
                 show()
             }
         }

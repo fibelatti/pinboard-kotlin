@@ -7,10 +7,13 @@ import com.fibelatti.core.extension.get
 import com.fibelatti.core.extension.getSharedPreferences
 import com.fibelatti.core.extension.put
 import com.google.android.play.core.review.ReviewManagerFactory
+import dagger.hilt.android.qualifiers.ActivityContext
 import java.lang.reflect.Field
 import javax.inject.Inject
 
-class InAppReviewManager @Inject constructor(context: Context) {
+class InAppReviewManager @Inject constructor(
+    @ActivityContext context: Context,
+) {
 
     companion object {
 

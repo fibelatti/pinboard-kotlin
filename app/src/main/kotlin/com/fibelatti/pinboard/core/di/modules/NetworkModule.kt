@@ -9,6 +9,8 @@ import com.fibelatti.pinboard.core.network.UnauthorizedInterceptor
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import okhttp3.CipherSuite
 import okhttp3.ConnectionPool
 import okhttp3.ConnectionSpec
@@ -21,6 +23,7 @@ import javax.inject.Singleton
 
 @Suppress("MagicNumber")
 @Module
+@InstallIn(SingletonComponent::class)
 object NetworkModule {
 
     @Provides

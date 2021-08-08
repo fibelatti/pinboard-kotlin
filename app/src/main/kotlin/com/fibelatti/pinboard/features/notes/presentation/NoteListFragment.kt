@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.fibelatti.core.archcomponents.extension.activityViewModel
-import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.navigateBack
@@ -18,15 +18,18 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentNoteListBinding
+import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.RefreshNotes
 import com.fibelatti.pinboard.features.appstate.ViewNote
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class NoteListFragment @Inject constructor(
     private val noteListAdapter: NoteListAdapter
 ) : BaseFragment() {
@@ -37,8 +40,8 @@ class NoteListFragment @Inject constructor(
         val TAG: String = "NoteListFragment"
     }
 
-    private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
-    private val noteListViewModel by viewModel { viewModelProvider.noteListViewModel() }
+    private val appStateViewModel: AppStateViewModel by activityViewModels()
+    private val noteListViewModel: NoteListViewModel by viewModels()
 
     private var binding by viewBinding<FragmentNoteListBinding>()
 

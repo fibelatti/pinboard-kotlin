@@ -9,9 +9,9 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.fibelatti.core.archcomponents.extension.activityViewModel
-import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.hideKeyboard
@@ -24,14 +24,17 @@ import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.smoothScrollY
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentUserPreferencesBinding
+import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
-import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
-import javax.inject.Inject
+import com.fibelatti.pinboard.features.sync.PeriodicSync
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class UserPreferencesFragment @Inject constructor() : BaseFragment() {
 
     companion object {
@@ -40,8 +43,8 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
         val TAG: String = "UserPreferencesFragment"
     }
 
-    private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
-    private val userPreferencesViewModel by viewModel { viewModelProvider.userPreferencesViewModel() }
+    private val appStateViewModel: AppStateViewModel by activityViewModels()
+    private val userPreferencesViewModel: UserPreferencesViewModel by viewModels()
 
     private var binding by viewBinding<FragmentUserPreferencesBinding>()
 

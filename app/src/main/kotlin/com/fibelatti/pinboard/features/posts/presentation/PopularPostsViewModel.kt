@@ -11,12 +11,14 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPopularPosts
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
+@HiltViewModel
 class PopularPostsViewModel @Inject constructor(
     private val appStateRepository: AppStateRepository,
     private val userRepository: UserRepository,

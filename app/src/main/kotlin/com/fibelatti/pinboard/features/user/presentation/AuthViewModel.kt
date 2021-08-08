@@ -7,14 +7,16 @@ import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.user.domain.Login
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import java.net.HttpURLConnection
-import javax.inject.Inject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import java.net.HttpURLConnection
+import javax.inject.Inject
 
+@HiltViewModel
 class AuthViewModel @Inject constructor(
     private val loginUseCase: Login,
     private val userRepository: UserRepository,

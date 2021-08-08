@@ -3,7 +3,7 @@ object Versions {
     const val targetSdkVersion = 30
     const val compileSdkVersion = 30
 
-    internal const val kotlinVersion = "1.5.20"
+    internal const val kotlinVersion = "1.5.21"
     internal const val coroutinesVersion = "1.5.0"
     internal const val lifecycleVersion = "2.2.0"
     internal const val roomVersion = "2.3.0"
@@ -12,6 +12,7 @@ object Versions {
 object Classpaths {
     const val gradlePlugin = "com.android.tools.build:gradle:4.2.0"
     const val kotlinPlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlinVersion}"
+    const val hiltPlugin = "com.google.dagger:hilt-android-gradle-plugin:2.38.1"
 }
 
 object Dependencies {
@@ -44,10 +45,8 @@ object Dependencies {
 
     const val customTabs = "androidx.browser:browser:1.3.0"
 
-    private const val daggerVersion = "2.37"
-
-    const val dagger = "com.google.dagger:dagger:$daggerVersion"
-    const val daggerCompiler = "com.google.dagger:dagger-compiler:$daggerVersion"
+    const val hilt = "com.google.dagger:hilt-android:2.38.1"
+    const val hiltCompiler = "com.google.dagger:hilt-compiler:2.38.1"
 
     const val gson = "com.google.code.gson:gson:2.8.5"
 

@@ -33,7 +33,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
     private val mockAppStateRepository = mockk<AppStateRepository>(relaxed = true)
     private val mockGetSuggestedTags = mockk<GetSuggestedTags>()
     private val mockPeriodicSyncManager = mockk<PeriodicSyncManager> {
-        every { enqueue(any(), any()) } just runs
+        every { enqueueWork(any()) } just runs
     }
 
     private val userPreferencesViewModel = UserPreferencesViewModel(
@@ -53,9 +53,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
 
         // THEN
         verify { mockUserRepository.periodicSync = mockPeriodicSync }
-        verify {
-            mockPeriodicSyncManager.enqueue(mockPeriodicSync, shouldReplace = true)
-        }
+        verify { mockPeriodicSyncManager.enqueueWork(shouldReplace = true) }
     }
 
     @Test

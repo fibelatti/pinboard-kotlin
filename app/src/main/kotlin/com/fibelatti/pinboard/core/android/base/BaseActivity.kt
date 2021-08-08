@@ -14,28 +14,26 @@ import com.fibelatti.core.extension.toast
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.Appearance
-import com.fibelatti.pinboard.core.di.ActivityComponent
-import com.fibelatti.pinboard.core.di.AppComponent
-import com.fibelatti.pinboard.core.di.AppComponentProvider
-import com.fibelatti.pinboard.core.di.ViewModelProvider
+import com.fibelatti.pinboard.core.di.modules.ActivityEntryPoint
 import com.fibelatti.pinboard.core.extension.isServerException
+import com.fibelatti.pinboard.features.user.domain.UserRepository
+import dagger.hilt.android.EntryPointAccessors
 import java.io.PrintWriter
 import java.io.StringWriter
+import javax.inject.Inject
 
 abstract class BaseActivity : AppCompatActivity() {
 
-    private val appComponent: AppComponent
-        get() = (application as AppComponentProvider).appComponent
-    val activityComponent: ActivityComponent
-        get() = appComponent.activityComponentFactory().create(this)
-    val viewModelProvider: ViewModelProvider
-        get() = activityComponent
+    @Inject
+    lateinit var userRepository: UserRepository
 
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
-        supportFragmentManager.fragmentFactory = activityComponent.fragmentFactory()
-        setupTheme()
+        val entryPoint = EntryPointAccessors.fromActivity(this, ActivityEntryPoint::class.java)
+        supportFragmentManager.fragmentFactory = entryPoint.getFragmentFactory()
+
         super.onCreate(savedInstanceState)
+        setupTheme()
     }
 
     open fun handleError(error: Throwable) {
@@ -52,7 +50,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     private fun setupTheme() {
         workaroundWebViewNightModeIssue()
-        when (appComponent.userRepository().appearance) {
+        when (userRepository.appearance) {
             Appearance.DarkTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             Appearance.LightTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)

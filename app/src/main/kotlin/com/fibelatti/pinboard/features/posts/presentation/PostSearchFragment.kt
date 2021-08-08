@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.fibelatti.core.archcomponents.extension.activityViewModel
-import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.applyAs
 import com.fibelatti.core.extension.gone
@@ -23,6 +23,7 @@ import com.fibelatti.pinboard.core.extension.blink
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentSearchPostBinding
 import com.fibelatti.pinboard.features.appstate.AddSearchTag
+import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.RefreshSearchTags
 import com.fibelatti.pinboard.features.appstate.RemoveSearchTag
@@ -31,10 +32,12 @@ import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagsAdapter
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class PostSearchFragment @Inject constructor(
     private val tagsAdapter: TagsAdapter
 ) : BaseFragment() {
@@ -45,8 +48,8 @@ class PostSearchFragment @Inject constructor(
         val TAG: String = "PostSearchFragment"
     }
 
-    private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
-    private val tagsViewModel by viewModel { viewModelProvider.tagsViewModel() }
+    private val appStateViewModel: AppStateViewModel by activityViewModels()
+    private val tagsViewModel: TagsViewModel by viewModels()
 
     private var binding by viewBinding<FragmentSearchPostBinding>()
 

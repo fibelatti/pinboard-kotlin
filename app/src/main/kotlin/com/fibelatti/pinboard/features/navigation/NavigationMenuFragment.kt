@@ -10,17 +10,16 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
-import com.fibelatti.core.archcomponents.extension.activityViewModel
-import com.fibelatti.core.archcomponents.extension.viewModel
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.shareText
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
-import com.fibelatti.pinboard.core.android.base.BaseActivity
-import com.fibelatti.pinboard.core.di.ViewModelProvider
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentMenuBinding
 import com.fibelatti.pinboard.features.appstate.All
+import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.Private
 import com.fibelatti.pinboard.features.appstate.Public
 import com.fibelatti.pinboard.features.appstate.Recent
@@ -30,11 +29,14 @@ import com.fibelatti.pinboard.features.appstate.ViewNotes
 import com.fibelatti.pinboard.features.appstate.ViewPopular
 import com.fibelatti.pinboard.features.appstate.ViewPreferences
 import com.fibelatti.pinboard.features.appstate.ViewTags
+import com.fibelatti.pinboard.features.user.presentation.AuthViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class NavigationMenuFragment @Inject constructor() : BottomSheetDialogFragment() {
 
     companion object {
@@ -42,10 +44,8 @@ class NavigationMenuFragment @Inject constructor() : BottomSheetDialogFragment()
         val TAG: String = "NavigationMenuFragment"
     }
 
-    private val viewModelProvider: ViewModelProvider
-        get() = (requireActivity() as BaseActivity).viewModelProvider
-    private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
-    private val authViewModel by viewModel { viewModelProvider.authViewModel() }
+    private val appStateViewModel: AppStateViewModel by activityViewModels()
+    private val authViewModel: AuthViewModel by viewModels()
 
     private var binding by viewBinding<FragmentMenuBinding>()
 

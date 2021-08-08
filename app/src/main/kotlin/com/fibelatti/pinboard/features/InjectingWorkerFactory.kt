@@ -4,11 +4,12 @@ import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
-import com.fibelatti.pinboard.core.di.AppComponent
+import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.sync.SyncBookmarksWorker
+import javax.inject.Inject
 
-class InjectingWorkerFactory(
-    private val appComponent: AppComponent,
+class InjectingWorkerFactory @Inject constructor(
+    private val postsRepository: PostsRepository,
 ) : WorkerFactory() {
 
     override fun createWorker(
@@ -19,7 +20,7 @@ class InjectingWorkerFactory(
         SyncBookmarksWorker::class.java.name -> SyncBookmarksWorker(
             appContext,
             workerParameters,
-            appComponent.postsRepository(),
+            postsRepository,
         )
         else -> null
     }

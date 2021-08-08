@@ -10,12 +10,14 @@ import com.fibelatti.pinboard.features.appstate.SetTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
 import com.fibelatti.pinboard.features.tags.domain.usecase.GetAllTags
+import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
+@HiltViewModel
 class TagsViewModel @Inject constructor(
     private val getAllTags: GetAllTags,
     private val appStateRepository: AppStateRepository,

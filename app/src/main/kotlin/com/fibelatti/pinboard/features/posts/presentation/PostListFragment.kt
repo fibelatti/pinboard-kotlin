@@ -6,10 +6,10 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionInflater
-import com.fibelatti.core.archcomponents.extension.activityViewModel
-import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.exhaustive
@@ -31,6 +31,7 @@ import com.fibelatti.pinboard.databinding.FragmentPostListBinding
 import com.fibelatti.pinboard.features.InAppReviewManager
 import com.fibelatti.pinboard.features.appstate.AddPost
 import com.fibelatti.pinboard.features.appstate.All
+import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.GetNextPostPage
@@ -57,11 +58,13 @@ import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class PostListFragment @Inject constructor(
     private val postsAdapter: PostListAdapter,
     private val inAppReviewManager: InAppReviewManager,
@@ -73,9 +76,9 @@ class PostListFragment @Inject constructor(
         val TAG: String = "PostListFragment"
     }
 
-    private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
-    private val postListViewModel by viewModel { viewModelProvider.postListViewModel() }
-    private val postDetailViewModel by viewModel { viewModelProvider.postDetailsViewModel() }
+    private val appStateViewModel: AppStateViewModel by activityViewModels()
+    private val postListViewModel: PostListViewModel by viewModels()
+    private val postDetailViewModel: PostDetailViewModel by viewModels()
 
     private var binding by viewBinding<FragmentPostListBinding>()
 

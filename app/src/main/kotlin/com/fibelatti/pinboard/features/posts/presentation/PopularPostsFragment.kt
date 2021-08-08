@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.fibelatti.core.archcomponents.extension.activityViewModel
-import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.navigateBack
@@ -19,17 +19,20 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentPopularPostsBinding
+import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.RefreshPopular
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class PopularPostsFragment @Inject constructor(
-    private val popularPostsAdapter: PopularPostsAdapter
+    private val popularPostsAdapter: PopularPostsAdapter,
 ) : BaseFragment() {
 
     companion object {
@@ -38,15 +41,15 @@ class PopularPostsFragment @Inject constructor(
         val TAG: String = "PopularPostsFragment"
     }
 
-    private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
-    private val popularPostsViewModel by viewModel { viewModelProvider.popularPostsViewModel() }
+    private val appStateViewModel: AppStateViewModel by activityViewModels()
+    private val popularPostsViewModel: PopularPostsViewModel by viewModels()
 
     private var binding by viewBinding<FragmentPopularPostsBinding>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View = FragmentPopularPostsBinding.inflate(inflater, container, false).run {
         binding = this
         binding.root

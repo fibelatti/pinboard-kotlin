@@ -8,6 +8,7 @@ import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -17,7 +18,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.android.IntentDelegate
 import com.fibelatti.core.android.base.BaseIntentBuilder
-import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.applyAs
 import com.fibelatti.core.extension.createFragment
 import com.fibelatti.core.extension.doOnApplyWindowInsets
@@ -39,6 +39,7 @@ import com.fibelatti.pinboard.core.functional.DoNothing
 import com.fibelatti.pinboard.databinding.ActivityMainBinding
 import com.fibelatti.pinboard.databinding.FragmentAuthBinding
 import com.fibelatti.pinboard.features.appstate.AddPostContent
+import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.ExternalBrowserContent
 import com.fibelatti.pinboard.features.appstate.ExternalContent
@@ -56,17 +57,21 @@ import com.fibelatti.pinboard.features.navigation.NavigationMenuFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
 import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.presentation.AuthFragment
+import com.fibelatti.pinboard.features.user.presentation.AuthViewModel
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 val Fragment.mainActivity: MainActivity? get() = activity as? MainActivity
 var Intent.fromBuilder by IntentDelegate.Boolean("FROM_BUILDER", false)
 
+@AndroidEntryPoint
 class MainActivity : BaseActivity() {
 
     companion object {
@@ -74,11 +79,13 @@ class MainActivity : BaseActivity() {
         private const val FLEXIBLE_UPDATE_REQUEST = 1001
     }
 
-    private val appStateViewModel by viewModel { viewModelProvider.appStateViewModel() }
-    private val authViewModel by viewModel { viewModelProvider.authViewModel() }
+    private val appStateViewModel: AppStateViewModel by viewModels()
+    private val authViewModel: AuthViewModel by viewModels()
 
-    private val featureFragments get() = activityComponent.featureFragments()
-    private val inAppUpdateManager get() = activityComponent.inAppUpdateManager()
+    @Inject
+    lateinit var featureFragments: FeatureFragments
+    @Inject
+    lateinit var inAppUpdateManager: InAppUpdateManager
 
     private var isRecreating: Boolean = false
 

@@ -7,9 +7,12 @@ import com.fibelatti.pinboard.core.persistence.database.DATABASE_NAME
 import com.fibelatti.pinboard.core.persistence.database.getAllMigrations
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
+@InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
     @Provides

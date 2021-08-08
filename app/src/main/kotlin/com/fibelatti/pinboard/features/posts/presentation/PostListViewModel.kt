@@ -24,11 +24,13 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.GetAllPosts
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPostParams
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
+@HiltViewModel
 class PostListViewModel @Inject constructor(
     private val getAllPosts: GetAllPosts,
     private val getRecentPosts: GetRecentPosts,

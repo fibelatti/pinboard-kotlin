@@ -1,11 +1,13 @@
 package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 
+@HiltViewModel
 class AppStateViewModel @Inject constructor(
     private val appStateRepository: AppStateRepository,
 ) : BaseViewModel() {

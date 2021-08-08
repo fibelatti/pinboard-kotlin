@@ -3,6 +3,7 @@ plugins {
     id("kotlin-android")
     id("kotlin-parcelize")
     id("kotlin-kapt")
+    id("dagger.hilt.android.plugin")
 }
 
 val jacocoEnabled: Boolean by project
@@ -34,12 +35,8 @@ android {
 
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments(
-                    mapOf(
-                        "room.schemaLocation" to "$projectDir/schemas",
-                        "room.incremental" to "true"
-                    )
-                )
+                arguments["room.schemaLocation"] = "$projectDir/schemas"
+                arguments["room.incremental"] = "true"
             }
         }
     }
@@ -110,6 +107,10 @@ android {
         targetCompatibility(JavaVersion.VERSION_1_8)
     }
 
+    kotlinOptions {
+        freeCompilerArgs = freeCompilerArgs + "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi"
+    }
+
     packagingOptions {
         exclude("META-INF/LICENSE.md")
         exclude("META-INF/LICENSE-notice.md")
@@ -160,8 +161,8 @@ dependencies {
     implementation(Dependencies.customTabs)
 
     // Misc
-    implementation(Dependencies.dagger)
-    kapt(Dependencies.daggerCompiler)
+    implementation(Dependencies.hilt)
+    kapt(Dependencies.hiltCompiler)
 
     implementation(Dependencies.gson)
 
@@ -199,4 +200,8 @@ dependencies {
     androidTestImplementation(TestDependencies.kotlinTest)
     androidTestImplementation(TestDependencies.archComponentsTest)
     androidTestImplementation(TestDependencies.roomTest)
+}
+
+kapt {
+    correctErrorTypes = true
 }

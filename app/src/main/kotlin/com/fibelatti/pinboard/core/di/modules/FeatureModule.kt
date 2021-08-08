@@ -15,9 +15,12 @@ import com.fibelatti.pinboard.features.user.presentation.AuthFragment
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
 import dagger.Binds
 import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
 import dagger.multibindings.IntoMap
 
 @Module
+@InstallIn(ActivityComponent::class)
 abstract class FeatureModule {
 
     @Binds

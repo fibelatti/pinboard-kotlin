@@ -15,9 +15,9 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.MenuRes
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.fibelatti.core.archcomponents.extension.activityViewModel
-import com.fibelatti.core.archcomponents.extension.viewModel
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.setOnClickListener
@@ -31,15 +31,18 @@ import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentPostDetailBinding
+import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class PostDetailFragment @Inject constructor(
     private val connectivityInfoProvider: ConnectivityInfoProvider,
 ) : BaseFragment() {
@@ -50,9 +53,9 @@ class PostDetailFragment @Inject constructor(
         val TAG: String = "PostDetailFragment"
     }
 
-    private val appStateViewModel by activityViewModel { viewModelProvider.appStateViewModel() }
-    private val postDetailViewModel by viewModel { viewModelProvider.postDetailsViewModel() }
-    private val popularPostsViewModel by viewModel { viewModelProvider.popularPostsViewModel() }
+    private val appStateViewModel: AppStateViewModel by activityViewModels()
+    private val postDetailViewModel: PostDetailViewModel by viewModels()
+    private val popularPostsViewModel: PopularPostsViewModel by viewModels()
 
     private var binding by viewBinding<FragmentPostDetailBinding>()
 

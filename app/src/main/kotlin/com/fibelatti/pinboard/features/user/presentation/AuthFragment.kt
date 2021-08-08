@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionInflater
-import com.fibelatti.core.archcomponents.extension.activityViewModel
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.heightWrapContent
@@ -24,10 +24,12 @@ import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentAuthBinding
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AuthFragment @Inject constructor() : BaseFragment() {
 
     companion object {
@@ -36,7 +38,7 @@ class AuthFragment @Inject constructor() : BaseFragment() {
         val TAG: String = "AuthFragment"
     }
 
-    private val authViewModel by activityViewModel { viewModelProvider.authViewModel() }
+    private val authViewModel: AuthViewModel by activityViewModels()
 
     private var binding by viewBinding<FragmentAuthBinding>()
 

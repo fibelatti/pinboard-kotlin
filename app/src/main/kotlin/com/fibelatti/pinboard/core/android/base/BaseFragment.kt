@@ -7,12 +7,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.getViewToApplyInsets
-import com.fibelatti.pinboard.core.di.ViewModelProvider
 
 abstract class BaseFragment : Fragment() {
-
-    protected val viewModelProvider: ViewModelProvider
-        get() = (activity as BaseActivity).viewModelProvider
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -34,7 +34,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     private val mockParseUrl = mockk<ParseUrl>()
     private val mockAddPost = mockk<AddPost>()
     private val mockUserRepository = mockk<UserRepository>()
-    private val mockAppStateRepository = mockk<AppStateRepository>()
+    private val mockAppStateRepository = mockk<AppStateRepository>(relaxUnitFun = true)
     private val mockResourceProvider = mockk<ResourceProvider> {
         every { getString(R.string.posts_saved_feedback) } returns "R.string.posts_saved_feedback"
     }
