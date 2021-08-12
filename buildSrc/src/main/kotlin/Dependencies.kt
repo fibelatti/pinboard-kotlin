@@ -4,7 +4,7 @@ object Versions {
     const val compileSdkVersion = 30
 
     internal const val kotlinVersion = "1.5.21"
-    internal const val coroutinesVersion = "1.5.0"
+    internal const val coroutinesVersion = "1.5.1"
     internal const val lifecycleVersion = "2.2.0"
     internal const val roomVersion = "2.3.0"
 }
@@ -21,13 +21,13 @@ object Dependencies {
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutinesVersion}"
     const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutinesVersion}"
 
-    const val supportLibrary = "androidx.appcompat:appcompat:1.3.0"
-    const val androidCore = "androidx.core:core-ktx:1.5.0"
-    const val activity = "androidx.activity:activity-ktx:1.2.3"
-    const val fragments = "androidx.fragment:fragment-ktx:1.3.5"
+    const val supportLibrary = "androidx.appcompat:appcompat:1.3.1"
+    const val androidCore = "androidx.core:core-ktx:1.6.0"
+    const val activity = "androidx.activity:activity-ktx:1.3.1"
+    const val fragments = "androidx.fragment:fragment-ktx:1.3.6"
     const val supportAnnotations = "androidx.annotation:annotation:1.2.0"
     const val materialDesign = "com.google.android.material:material:1.4.0"
-    const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.4"
+    const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.1.0"
     const val swipeRefreshLayout = "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
     const val coreLib = "com.fibelatti.core:core:2.0.0-alpha4"
