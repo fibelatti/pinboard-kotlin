@@ -17,8 +17,8 @@ class TagsDataSource @Inject constructor(private val postsDao: PostsDao) : TagsR
             resultFrom { postsDao.getAllPostTags() }
                 .mapCatching { concatenatedTags ->
                     concatenatedTags.flatMap { it.split(" ") }
-                        .distinct()
-                        .map { tag -> Tag(tag) }
+                        .groupBy { it }
+                        .map { (tag, postList) -> Tag(tag, postList.size) }
                 }
         }
 }
