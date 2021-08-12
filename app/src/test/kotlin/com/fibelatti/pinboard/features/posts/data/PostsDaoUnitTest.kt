@@ -16,6 +16,11 @@ internal class PostsDaoUnitTest {
     }
 
     @Test
+    fun `GIVEN tem has trailing spaces WHEN preFormatTerm is called THEN term formatted for the query is returned`() {
+        assertThat(PostsDao.preFormatTerm("term ")).isEqualTo("term*")
+    }
+
+    @Test
     fun `WHEN preFormatTerm is called with more than one word THEN term formatted for the query is returned`() {
         assertThat(PostsDao.preFormatTerm("two terms")).isEqualTo("two* NEAR terms*")
     }

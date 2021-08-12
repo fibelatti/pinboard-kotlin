@@ -112,8 +112,10 @@ interface PostsDao {
             "case when :newestFirst = 0 then time end ASC"
 
         @JvmStatic
-        fun preFormatTerm(term: String): String = term.remove("\"")
-            .takeIf(String::isNotBlank)
+        fun preFormatTerm(term: String): String = term
+            .trim()
+            .remove("\"")
+            .takeIf(String::isNotEmpty)
             ?.split(" ")
             ?.joinToString(separator = " NEAR ") { "$it*" }
             .orEmpty()
