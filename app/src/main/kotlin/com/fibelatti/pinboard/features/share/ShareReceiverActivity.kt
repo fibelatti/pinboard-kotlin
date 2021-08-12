@@ -16,6 +16,7 @@ import com.fibelatti.pinboard.databinding.ActivityShareBinding
 import com.fibelatti.pinboard.features.MainActivity
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -38,11 +39,13 @@ class ShareReceiverActivity : BaseActivity() {
         intent?.checkForExtraText(shareReceiverViewModel::saveUrl)
     }
 
+    @Suppress("MagicNumber")
     private fun setupViewModels(shareReceiverViewModel: ShareReceiverViewModel) {
         lifecycleScope.launch {
             shareReceiverViewModel.saved.collect { message ->
                 binding.imageViewFeedback.setImageResource(R.drawable.ic_url_saved)
                 toast(message)
+                delay(500L)
                 finish()
             }
         }
