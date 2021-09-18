@@ -28,6 +28,11 @@ class AddTagsLayout @JvmOverloads constructor(
         with(binding) {
             editTextTags.afterTextChanged { text ->
                 when {
+                    text == ". " -> {
+                        // Handle keyboards that add a space after punctuation, . is used for private tags
+                        editTextTags.setText(".")
+                        editTextTags.setSelection(1)
+                    }
                     text.isNotBlank() && text.endsWith(" ") -> {
                         chipGroupTags.addValue(text, index = 0)
                         editTextTags.clearText()
