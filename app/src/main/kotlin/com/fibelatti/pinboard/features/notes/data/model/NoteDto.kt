@@ -1,23 +1,23 @@
 package com.fibelatti.pinboard.features.notes.data.model
 
-import androidx.annotation.Keep
 import com.fibelatti.core.functional.Mapper
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.notes.domain.model.Note
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import javax.inject.Inject
 
-@Keep
+@JsonClass(generateAdapter = true)
 data class NoteDto(
     val id: String,
     val title: String?,
-    @SerializedName("created_at") val createdAt: String?,
-    @SerializedName("updated_at") val updatedAt: String?,
-    val text: String?
+    @Json(name = "created_at") val createdAt: String?,
+    @Json(name = "updated_at") val updatedAt: String?,
+    val text: String?,
 )
 
 class NoteDtoMapper @Inject constructor(
-    private val dateFormatter: DateFormatter
+    private val dateFormatter: DateFormatter,
 ) : Mapper<NoteDto, Note> {
 
     override fun map(param: NoteDto): Note {

@@ -8,7 +8,6 @@ import com.fibelatti.core.android.AppResourceProvider
 import com.fibelatti.core.extension.getSystemService
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.core.persistence.getUserPreferences
-import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,9 +19,6 @@ import java.util.Locale
 @Module
 @InstallIn(SingletonComponent::class)
 object AndroidModule {
-
-    @Provides
-    fun gson(): Gson = Gson()
 
     @Provides
     fun localeDefault(): Locale = Locale.getDefault()

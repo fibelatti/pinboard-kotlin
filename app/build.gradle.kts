@@ -136,6 +136,7 @@ dependencies {
 
     // Kotlin
     implementation(Dependencies.kotlin)
+    implementation(Dependencies.kotlinReflect)
     implementation(Dependencies.coroutinesCore)
     implementation(Dependencies.coroutinesAndroid)
 
@@ -164,11 +165,12 @@ dependencies {
     implementation(Dependencies.hilt)
     kapt(Dependencies.hiltCompiler)
 
-    implementation(Dependencies.gson)
+    implementation(Dependencies.moshi)
+    kapt(Dependencies.moshiCodeGen)
 
     implementation(Dependencies.okhttp)
     implementation(Dependencies.retrofit)
-    implementation(Dependencies.retrofitGsonConverter)
+    implementation(Dependencies.retrofitConverter)
     implementation(Dependencies.httpLoggingInterceptor)
 
     implementation(Dependencies.jsoup)
@@ -185,8 +187,6 @@ dependencies {
     testImplementation(TestDependencies.junit5Params)
 
     testImplementation(TestDependencies.coreLibTest)
-
-    testImplementation(Dependencies.kotlinReflect)
 
     testImplementation(TestDependencies.googleTruth)
     testImplementation(TestDependencies.mockk)

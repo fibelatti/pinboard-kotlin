@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.posts.data.model
 
-import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -10,13 +9,14 @@ import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import com.squareup.moshi.JsonClass
 import java.net.URLDecoder
 import java.net.URLEncoder
 import javax.inject.Inject
 
 const val POST_TABLE_NAME = "Posts"
 
-@Keep
+@JsonClass(generateAdapter = true)
 @Entity(
     tableName = POST_TABLE_NAME,
     indices = [Index(value = ["shared"]), Index(value = ["toread"])]

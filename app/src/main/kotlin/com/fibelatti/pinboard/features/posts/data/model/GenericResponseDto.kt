@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.features.posts.data.model
 
-import androidx.annotation.Keep
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
-@Keep
-class GenericResponseDto(@SerializedName("result_code") val resultCode: String)
+@JsonClass(generateAdapter = true)
+class GenericResponseDto(@Json(name = "result_code") val resultCode: String)

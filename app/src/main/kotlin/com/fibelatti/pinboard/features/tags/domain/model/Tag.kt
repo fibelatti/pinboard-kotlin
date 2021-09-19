@@ -1,10 +1,10 @@
 package com.fibelatti.pinboard.features.tags.domain.model
 
 import android.os.Parcelable
-import androidx.annotation.Keep
+import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.Parcelize
 
-@Keep
+@JsonClass(generateAdapter = true)
 @Parcelize
 data class Tag(val name: String, val posts: Int) : Parcelable {
 

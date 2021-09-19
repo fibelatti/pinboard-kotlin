@@ -48,7 +48,8 @@ object Dependencies {
     const val hilt = "com.google.dagger:hilt-android:2.38.1"
     const val hiltCompiler = "com.google.dagger:hilt-compiler:2.38.1"
 
-    const val gson = "com.google.code.gson:gson:2.8.5"
+    const val moshi = "com.squareup.moshi:moshi-kotlin:1.12.0"
+    const val moshiCodeGen = "com.squareup.moshi:moshi-kotlin-codegen:1.12.0"
 
     private const val okHttpVersion = "4.9.0"
     const val okhttp = "com.squareup.okhttp3:okhttp:$okHttpVersion"
@@ -56,7 +57,7 @@ object Dependencies {
 
     private const val retrofitVersion = "2.9.0"
     const val retrofit = "com.squareup.retrofit2:retrofit:$retrofitVersion"
-    const val retrofitGsonConverter = "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    const val retrofitConverter = "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
 
     const val jsoup = "org.jsoup:jsoup:1.13.1"
 
