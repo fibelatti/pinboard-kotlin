@@ -6,7 +6,6 @@ import com.fibelatti.pinboard.core.network.ApiInterceptor
 import com.fibelatti.pinboard.core.network.ApiRateLimitRunner
 import com.fibelatti.pinboard.core.network.RateLimitRunner
 import com.fibelatti.pinboard.core.network.UnauthorizedInterceptor
-import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,18 +27,17 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun retrofit(okHttpClient: OkHttpClient): Retrofit =
-        Retrofit.Builder()
-            .baseUrl(AppConfig.API_BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(MoshiConverterFactory.create(Moshi.Builder().build()))
-            .build()
+    fun retrofit(okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
+        .baseUrl(AppConfig.API_BASE_URL)
+        .client(okHttpClient)
+        .addConverterFactory(MoshiConverterFactory.create())
+        .build()
 
     @Provides
     fun okHttpClient(
         apiInterceptor: ApiInterceptor,
         unauthorizedInterceptor: UnauthorizedInterceptor,
-        loggingInterceptor: HttpLoggingInterceptor
+        loggingInterceptor: HttpLoggingInterceptor,
     ): OkHttpClient {
         // These are the server preferred Ciphers + all the ones included in COMPATIBLE_TLS
         val cipherSuites: List<CipherSuite> = listOf(
