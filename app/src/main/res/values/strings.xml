@@ -174,8 +174,9 @@
     <string name="user_preferences_appearance_light">Light theme</string>
     <string name="user_preferences_appearance_system_default">System default</string>
     <string name="user_preferences_date_format">Preferred date format</string>
-    <string name="user_preferences_date_format_day_first">31/12/21 12:21</string>
-    <string name="user_preferences_date_format_month_first">12/31/21 12:21</string>
+    <string name="user_preferences_date_format_day_first">31/12/21, 12:21</string>
+    <string name="user_preferences_date_format_month_first">12/31/21, 12:21</string>
+    <string name="user_preferences_date_format_year_first">2021–12–31, 12:21</string>
     <string name="user_preferences_preferred_details_view">Viewing bookmarks</string>
     <string name="user_preferences_preferred_details_in_app_browser">In-app</string>
     <string name="user_preferences_preferred_details_in_app_browser_caveat">Open bookmarks using the internal browser</string>

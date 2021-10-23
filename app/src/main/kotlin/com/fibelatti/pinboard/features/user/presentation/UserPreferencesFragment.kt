@@ -214,12 +214,16 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
         when (preferredDateFormat) {
             PreferredDateFormat.DayMonthYearWithTime -> binding.buttonDateFormatDayFirst.isChecked = true
             PreferredDateFormat.MonthDayYearWithTime -> binding.buttonDateFormatMonthFirst.isChecked = true
+            PreferredDateFormat.YearMonthDayWithTime -> binding.buttonDateFormatYearFirst.isChecked = true
         }
         binding.buttonDateFormatDayFirst.setOnClickListener {
             userPreferencesViewModel.savePreferredDateFormat(PreferredDateFormat.DayMonthYearWithTime)
         }
         binding.buttonDateFormatMonthFirst.setOnClickListener {
             userPreferencesViewModel.savePreferredDateFormat(PreferredDateFormat.MonthDayYearWithTime)
+        }
+        binding.buttonDateFormatYearFirst.setOnClickListener {
+            userPreferencesViewModel.savePreferredDateFormat(PreferredDateFormat.YearMonthDayWithTime)
         }
     }
 
