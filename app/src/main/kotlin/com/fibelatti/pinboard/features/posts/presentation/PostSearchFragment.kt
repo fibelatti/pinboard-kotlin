@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -14,7 +15,6 @@ import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.inflate
 import com.fibelatti.core.extension.navigateBack
-import com.fibelatti.core.extension.onKeyboardSubmit
 import com.fibelatti.core.extension.textAsString
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
@@ -72,7 +72,14 @@ class PostSearchFragment @Inject constructor(
     private fun setupLayout() {
         binding.root.animateChangingTransitions()
 
-        binding.editTextSearchTerm.onKeyboardSubmit { binding.editTextSearchTerm.hideKeyboard() }
+        binding.editTextSearchTerm.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                binding.editTextSearchTerm.hideKeyboard()
+                appStateViewModel.runAction(Search(binding.editTextSearchTerm.textAsString()))
+                return@setOnEditorActionListener true
+            }
+            return@setOnEditorActionListener false
+        }
 
         binding.tagListLayout.setAdapter(tagsAdapter) { appStateViewModel.runAction(AddSearchTag(it)) }
         binding.tagListLayout.setOnRefreshListener { appStateViewModel.runAction(RefreshSearchTags) }
