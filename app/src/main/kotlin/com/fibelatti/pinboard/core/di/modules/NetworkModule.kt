@@ -5,7 +5,9 @@ import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.network.ApiInterceptor
 import com.fibelatti.pinboard.core.network.ApiRateLimitRunner
 import com.fibelatti.pinboard.core.network.RateLimitRunner
+import com.fibelatti.pinboard.core.network.SkipBadElementsListAdapter
 import com.fibelatti.pinboard.core.network.UnauthorizedInterceptor
+import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,11 +29,14 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun retrofit(okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
+    fun retrofit(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit = Retrofit.Builder()
         .baseUrl(AppConfig.API_BASE_URL)
         .client(okHttpClient)
-        .addConverterFactory(MoshiConverterFactory.create())
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()
+
+    @Provides
+    fun moshi(): Moshi = Moshi.Builder().add(SkipBadElementsListAdapter.Factory).build()
 
     @Provides
     fun okHttpClient(
