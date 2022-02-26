@@ -1,7 +1,7 @@
 object Versions {
     const val minSdkVersion = 21
-    const val targetSdkVersion = 30
-    const val compileSdkVersion = 30
+    const val targetSdkVersion = 31
+    const val compileSdkVersion = 31
 
     internal const val kotlinVersion = "1.5.21"
     internal const val coroutinesVersion = "1.5.1"
@@ -10,7 +10,7 @@ object Versions {
 }
 
 object Classpaths {
-    const val gradlePlugin = "com.android.tools.build:gradle:4.2.0"
+    const val gradlePlugin = "com.android.tools.build:gradle:7.1.2"
     const val kotlinPlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlinVersion}"
     const val hiltPlugin = "com.google.dagger:hilt-android-gradle-plugin:2.38.1"
 }

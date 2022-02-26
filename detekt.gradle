@@ -22,4 +22,4 @@ detekt {
     }
 }
 
-tasks.detekt.jvmTarget = "1.8"
+tasks.detekt.jvmTarget = "11"

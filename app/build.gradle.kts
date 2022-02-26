@@ -19,16 +19,16 @@ android {
         viewBinding = true
     }
 
-    compileSdkVersion(Versions.compileSdkVersion)
+    compileSdk = Versions.compileSdkVersion
 
     defaultConfig {
         applicationId = AppInfo.applicationId
         versionCode = AppInfo.versionCode
         versionName = AppInfo.versionName
-        minSdkVersion(Versions.minSdkVersion)
-        targetSdkVersion(Versions.targetSdkVersion)
+        minSdk = Versions.minSdkVersion
+        targetSdk = Versions.targetSdkVersion
 
-        resConfigs("en")
+        resourceConfigurations.add("en")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -66,15 +66,15 @@ android {
         }
     }
 
-    flavorDimensions("api")
+    flavorDimensions.add("api")
     productFlavors {
         create("pinboardapi") {
-            dimension("api")
+            dimension = "api"
         }
 
         create("noapi") {
-            dimension("api")
-            applicationIdSuffix(".noapi")
+            dimension = "api"
+            applicationIdSuffix = ".noapi"
         }
     }
 
@@ -84,9 +84,12 @@ android {
                 append(AppInfo.appName)
                 if (variant.name.contains("noapi", ignoreCase = true)) append(" NoApi")
                 if (variant.name.contains("debug", ignoreCase = true)) append(" Dev")
-            }
+            }.toString()
 
-            variant.addResValue("app_name", "string", "$appName", null)
+            variant.resValues.put(
+                variant.makeResValueKey("string", "app_name"),
+                com.android.build.api.variant.ResValue(appName, null)
+            )
         }
     }
 
@@ -103,8 +106,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility(JavaVersion.VERSION_1_8)
-        targetCompatibility(JavaVersion.VERSION_1_8)
+        sourceCompatibility(JavaVersion.VERSION_11)
+        targetCompatibility(JavaVersion.VERSION_11)
     }
 
     kotlinOptions {
@@ -112,8 +115,8 @@ android {
     }
 
     packagingOptions {
-        exclude("META-INF/LICENSE.md")
-        exclude("META-INF/LICENSE-notice.md")
+        resources.excludes.add("META-INF/LICENSE.md")
+        resources.excludes.add("META-INF/LICENSE-notice.md")
     }
 
     testOptions {

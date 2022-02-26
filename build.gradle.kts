@@ -21,15 +21,20 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
         mavenCentral()
+        jcenter {
+            content {
+                // Remove jcenter once this is migrated
+                includeGroup("com.fibelatti.core")
+            }
+        }
     }
 }
 
 subprojects {
     afterEvaluate {
         tasks.withType<KotlinCompile>().all {
-            kotlinOptions.jvmTarget = "1.8"
+            kotlinOptions.jvmTarget = "11"
         }
 
         tasks.findByName("preBuild")?.dependsOn(":detekt")
