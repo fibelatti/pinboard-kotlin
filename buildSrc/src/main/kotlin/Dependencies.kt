@@ -63,7 +63,7 @@ object Dependencies {
 
     const val playCore = "com.google.android.play:core-ktx:1.8.1"
 
-    const val leakCanary = "com.squareup.leakcanary:leakcanary-android:2.6"
+    const val leakCanary = "com.squareup.leakcanary:leakcanary-android:2.8.1"
 }
 
 object TestDependencies {
