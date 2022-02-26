@@ -10,17 +10,17 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/padding_xlarge"
+        android:orientation="vertical"
         android:paddingStart="@dimen/padding_regular"
         android:paddingEnd="@dimen/padding_regular"
-        android:orientation="vertical">
+        android:paddingBottom="@dimen/padding_xlarge">
 
         <LinearLayout
             android:id="@+id/layoutPeriodicSync"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             android:orientation="vertical"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/layoutAppearance"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -126,27 +126,39 @@
                 android:layout_marginTop="@dimen/margin_regular"
                 android:text="@string/user_preferences_date_format" />
 
-            <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/buttonGroupDateFormat"
+            <HorizontalScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_xsmall"
-                app:singleSelection="true">
+                android:layout_height="wrap_content">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonDateFormatDayFirst"
-                    style="@style/AppTheme.GroupButtonItem"
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/buttonGroupDateFormat"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/user_preferences_date_format_day_first" />
+                    android:layout_marginTop="@dimen/margin_xsmall"
+                    app:singleSelection="true">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonDateFormatMonthFirst"
-                    style="@style/AppTheme.GroupButtonItem"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/user_preferences_date_format_month_first" />
-            </com.google.android.material.button.MaterialButtonToggleGroup>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buttonDateFormatDayFirst"
+                        style="@style/AppTheme.GroupButtonItem"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/user_preferences_date_format_day_first" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buttonDateFormatMonthFirst"
+                        style="@style/AppTheme.GroupButtonItem"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/user_preferences_date_format_month_first" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buttonDateFormatYearFirst"
+                        style="@style/AppTheme.GroupButtonItem"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/user_preferences_date_format_year_first" />
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+            </HorizontalScrollView>
         </LinearLayout>
 
         <LinearLayout
