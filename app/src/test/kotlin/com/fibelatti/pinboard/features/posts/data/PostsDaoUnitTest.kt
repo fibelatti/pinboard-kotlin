@@ -26,6 +26,11 @@ internal class PostsDaoUnitTest {
     }
 
     @Test
+    fun `GIVEN term contained special characters that are not tokenized WHEN preFormatTerm is called THEN term formatted for the query is returned`() {
+        assertThat(PostsDao.preFormatTerm("term (13)")).isEqualTo("term* NEAR 13*")
+    }
+
+    @Test
     fun `GIVEN term contained a double quote WHEN preFormatTerm is called THEN term formatted for the query is returned`() {
         assertThat(PostsDao.preFormatTerm("term\"")).isEqualTo("term*")
     }
