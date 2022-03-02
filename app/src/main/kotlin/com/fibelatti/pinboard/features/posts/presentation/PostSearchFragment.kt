@@ -84,12 +84,13 @@ class PostSearchFragment @Inject constructor(
         binding.tagListLayout.setAdapter(tagsAdapter) { appStateViewModel.runAction(AddSearchTag(it)) }
         binding.tagListLayout.setOnRefreshListener { appStateViewModel.runAction(RefreshSearchTags) }
         binding.tagListLayout.setSortingClickListener(tagsViewModel::sortTags)
+
+        setupActivityViews()
     }
 
     private fun setupViewModels() {
         lifecycleScope.launch {
             appStateViewModel.searchContent.collect { content ->
-                setupActivityViews()
                 binding.editTextSearchTerm.setText(content.searchParameters.term)
 
                 if (content.searchParameters.tags.isNotEmpty()) {
