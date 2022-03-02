@@ -62,8 +62,8 @@ object MockDataProvider {
 
     fun createPostDto(
         href: String = URLEncoder.encode(mockUrlValid, AppConfig.API_ENCODING),
-        description: String = mockUrlTitle,
-        extended: String = mockUrlDescription,
+        description: String? = mockUrlTitle,
+        extended: String? = mockUrlDescription,
         hash: String = mockHash,
         time: String = mockTime,
         shared: String = PinboardApiLiterals.YES,
@@ -79,7 +79,6 @@ object MockDataProvider {
             shared = shared,
             toread = toread,
             tags = tags,
-            imageUrl = null
         )
 
     fun createPost(

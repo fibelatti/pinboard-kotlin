@@ -58,7 +58,6 @@ class PostsDataSource @Inject constructor(
             toread = if (readLater.orFalse()) AppConfig.PinboardApiLiterals.YES else AppConfig.PinboardApiLiterals.NO,
             tags = tags?.joinToString(AppConfig.PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name }
                 .orEmpty(),
-            imageUrl = null
         )
 
         return resultFrom {

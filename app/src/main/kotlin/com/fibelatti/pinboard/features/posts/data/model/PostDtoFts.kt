@@ -16,7 +16,7 @@ const val POST_FTS_TABLE_NAME = "PostsFts"
 @Entity(tableName = POST_FTS_TABLE_NAME)
 data class PostDtoFts(
     val href: String,
-    val description: String,
-    val extended: String,
+    val description: String?,
+    val extended: String?,
     val tags: String
 )

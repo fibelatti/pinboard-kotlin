@@ -23,14 +23,13 @@ const val POST_TABLE_NAME = "Posts"
 )
 data class PostDto(
     val href: String,
-    val description: String,
-    val extended: String,
+    val description: String?,
+    val extended: String?,
     @PrimaryKey val hash: String,
     val time: String,
     val shared: String,
     val toread: String,
     val tags: String,
-    val imageUrl: String?
 )
 
 class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
@@ -41,8 +40,8 @@ class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
                 href.replace("%(?![0-9a-fA-F]{2})".toRegex(), "%25"),
                 API_ENCODING
             ),
-            title = description,
-            description = extended,
+            title = description ?: "No title",
+            description = extended.orEmpty(),
             hash = hash,
             time = time,
             private = shared == PinboardApiLiterals.NO,
@@ -68,7 +67,6 @@ class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
             shared = if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES,
             toread = if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO,
             tags = tags?.joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name }.orEmpty(),
-            imageUrl = null
         )
     }
 }
