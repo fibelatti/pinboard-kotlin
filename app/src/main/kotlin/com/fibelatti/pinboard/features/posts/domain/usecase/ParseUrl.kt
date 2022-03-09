@@ -12,24 +12,21 @@ import org.jsoup.nodes.Document
 import javax.inject.Inject
 
 class ParseUrl @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) : UseCaseWithParams<RichUrl, String>() {
 
-    override suspend fun run(params: String): Result<RichUrl> {
-        return catching {
-            val document = withContext(Dispatchers.IO) { Jsoup.connect(params).get() }
-            val url = document.location()
-            val title = document.title().takeIf(String::isNotEmpty) ?: url
-            val description: String? = document.getMetaProperty("og:description")
-                .takeIf { userRepository.autoFillDescription }
-            val imageUrl: String? = document.getMetaProperty("og:image")
+    override suspend fun run(params: String): Result<RichUrl> = catching {
+        val document = withContext(Dispatchers.IO) { Jsoup.connect(params).get() }
+        val url = document.location()
+        val title = document.getMetaProperty("og:title")?.takeIf(String::isNotEmpty)
+            ?: document.title().takeIf(String::isNotEmpty)
+            ?: url
+        val description = document.getMetaProperty("og:description").takeIf { userRepository.autoFillDescription }
 
-            RichUrl(url, title, description, imageUrl)
-        }.onFailureReturn(RichUrl(url = params, title = params))
-    }
+        RichUrl(url, title, description)
+    }.onFailureReturn(RichUrl(url = params, title = params))
 
-    private fun Document.getMetaProperty(property: String): String? =
-        getElementsByTag("meta")
-            .find { it.attr("property") == property }
-            ?.attr("content")
+    private fun Document.getMetaProperty(property: String): String? = getElementsByTag("meta")
+        .find { it.attr("property") == property }
+        ?.attr("content")
 }
