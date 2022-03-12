@@ -14,19 +14,40 @@ if (jacocoEnabled) {
     }
 }
 
+object AppInfo {
+
+    const val appName = "Pinkt"
+    const val applicationId = "com.fibelatti.pinboard"
+
+    private const val versionMajor = 1
+    private const val versionMinor = 16
+    private const val versionPatch = 4
+    private const val versionBuild = 0
+
+    val versionCode: Int = (versionMajor * 1000000 + versionMinor * 10000 + versionPatch * 100 + versionBuild)
+        .also { println("versionCode: $it") }
+
+    val versionName: String = "$versionMajor.$versionMinor.$versionPatch"
+        .also { println("versionName: $it") }
+
+    const val minSdkVersion = 21
+    const val targetSdkVersion = 30
+    const val compileSdkVersion = 31
+}
+
 android {
     buildFeatures {
         viewBinding = true
     }
 
-    compileSdk = Versions.compileSdkVersion
+    compileSdk = AppInfo.compileSdkVersion
 
     defaultConfig {
         applicationId = AppInfo.applicationId
         versionCode = AppInfo.versionCode
         versionName = AppInfo.versionName
-        minSdk = Versions.minSdkVersion
-        targetSdk = Versions.targetSdkVersion
+        minSdk = AppInfo.minSdkVersion
+        targetSdk = AppInfo.targetSdkVersion
 
         resourceConfigurations.add("en")
 
@@ -134,75 +155,75 @@ android {
 }
 
 dependencies {
-    implementation(Dependencies.coreLib)
-    implementation(Dependencies.coreLibArch)
+    implementation(libs.fibelatti.core)
+    implementation(libs.fibelatti.arch.components)
 
     // Kotlin
-    implementation(Dependencies.kotlin)
-    implementation(Dependencies.kotlinReflect)
-    implementation(Dependencies.coroutinesCore)
-    implementation(Dependencies.coroutinesAndroid)
+    implementation(libs.kotlin)
+    implementation(libs.kotlin.reflect)
+    implementation(libs.coroutines.core)
+    implementation(libs.coroutines.android)
 
     // Android
-    implementation(Dependencies.supportLibrary)
-    implementation(Dependencies.androidCore)
-    implementation(Dependencies.activity)
-    implementation(Dependencies.fragments)
-    implementation(Dependencies.materialDesign)
-    implementation(Dependencies.constraintLayout)
-    implementation(Dependencies.swipeRefreshLayout)
+    implementation(libs.appcompat)
+    implementation(libs.core.ktx)
+    implementation(libs.activity.ktx)
+    implementation(libs.fragment.ktx)
+    implementation(libs.material)
+    implementation(libs.constraint.layout)
+    implementation(libs.swipe.refresh.layout)
 
-    implementation(Dependencies.lifecycleJava8)
+    implementation(libs.lifecycle.java8)
 
-    implementation(Dependencies.archComponents)
-    kapt(Dependencies.archComponentsCompiler)
+    implementation(libs.lifecycle.extensions)
+    kapt(libs.lifecycle.compiler)
 
-    implementation(Dependencies.room)
-    kapt(Dependencies.roomCompiler)
+    implementation(libs.room.runtime)
+    kapt(libs.room.compiler)
 
-    implementation(Dependencies.workManager)
+    implementation(libs.work.runtime.ktx)
 
-    implementation(Dependencies.customTabs)
+    implementation(libs.browser)
 
     // Misc
-    implementation(Dependencies.hilt)
-    kapt(Dependencies.hiltCompiler)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 
-    implementation(Dependencies.moshi)
-    kapt(Dependencies.moshiCodeGen)
+    implementation(libs.moshi)
+    kapt(libs.moshi.codegen)
 
-    implementation(Dependencies.okhttp)
-    implementation(Dependencies.retrofit)
-    implementation(Dependencies.retrofitConverter)
-    implementation(Dependencies.httpLoggingInterceptor)
+    implementation(libs.okhttp)
+    implementation(libs.retrofit)
+    implementation(libs.converter.moshi)
+    implementation(libs.logging.interceptor)
 
-    implementation(Dependencies.jsoup)
+    implementation(libs.jsoup)
 
-    implementation(Dependencies.playCore)
+    implementation(libs.play.core.ktx)
 
-    debugImplementation(Dependencies.leakCanary)
+    debugImplementation(libs.leakcanary)
 
     // Test
-    testCompileOnly(TestDependencies.junit)
-    testRuntimeOnly(TestDependencies.junit5Engine)
-    testRuntimeOnly(TestDependencies.junitVintage)
-    testImplementation(TestDependencies.junit5)
-    testImplementation(TestDependencies.junit5Params)
+    testCompileOnly(libs.junit)
+    testRuntimeOnly(libs.junit5.engine)
+    testRuntimeOnly(libs.junit5.vintage)
+    testImplementation(libs.junit5.api)
+    testImplementation(libs.junit5.params)
 
-    testImplementation(TestDependencies.coreLibTest)
+    testImplementation(libs.fibelatti.core.test)
 
-    testImplementation(TestDependencies.googleTruth)
-    testImplementation(TestDependencies.mockk)
-    testImplementation(TestDependencies.coroutinesTest)
-    testImplementation(TestDependencies.archComponentsTest)
+    testImplementation(libs.truth)
+    testImplementation(libs.mockk)
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.arch.core.testing)
 
-    androidTestImplementation(TestDependencies.googleTruth)
-    androidTestImplementation(Dependencies.supportAnnotations)
-    androidTestImplementation(TestDependencies.testRunner)
-    androidTestImplementation(TestDependencies.coreLibTest)
-    androidTestImplementation(TestDependencies.kotlinTest)
-    androidTestImplementation(TestDependencies.archComponentsTest)
-    androidTestImplementation(TestDependencies.roomTest)
+    androidTestImplementation(libs.truth)
+    androidTestImplementation(libs.annotations)
+    androidTestImplementation(libs.runner)
+    androidTestImplementation(libs.fibelatti.core.test)
+    androidTestImplementation(libs.kotlin.test.junit)
+    androidTestImplementation(libs.arch.core.testing)
+    androidTestImplementation(libs.room.testing)
 }
 
 kapt {
