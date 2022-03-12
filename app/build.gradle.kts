@@ -31,7 +31,7 @@ object AppInfo {
         .also { println("versionName: $it") }
 
     const val minSdkVersion = 21
-    const val targetSdkVersion = 30
+    const val targetSdkVersion = 31
     const val compileSdkVersion = 31
 }
 
@@ -132,7 +132,7 @@ android {
     }
 
     kotlinOptions {
-        freeCompilerArgs = freeCompilerArgs + "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi"
+        freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
     }
 
     packagingOptions {
@@ -175,9 +175,6 @@ dependencies {
 
     implementation(libs.lifecycle.java8)
 
-    implementation(libs.lifecycle.extensions)
-    kapt(libs.lifecycle.compiler)
-
     implementation(libs.room.runtime)
     kapt(libs.room.compiler)
 
@@ -199,6 +196,7 @@ dependencies {
 
     implementation(libs.jsoup)
 
+    implementation(libs.play.core)
     implementation(libs.play.core.ktx)
 
     debugImplementation(libs.leakcanary)
