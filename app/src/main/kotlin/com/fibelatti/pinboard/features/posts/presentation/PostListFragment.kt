@@ -5,25 +5,20 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.transition.TransitionInflater
 import com.fibelatti.core.extension.animateChangingTransitions
-import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.exhaustive
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.shareText
-import com.fibelatti.core.extension.showStyledDialog
 import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.core.extension.withItemOffsetDecoration
 import com.fibelatti.core.extension.withLinearLayoutManager
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
-import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.viewBinding
@@ -58,9 +53,8 @@ import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -85,17 +79,9 @@ class PostListFragment @Inject constructor(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (savedInstanceState == null) {
-            setupSharedTransition()
+        activity?.supportFragmentManager?.setFragmentResultListener(UserPreferencesFragment.TAG, this) { _, _ ->
+            activity?.let(inAppReviewManager::checkForPlayStoreReview)
         }
-
-        activity?.supportFragmentManager?.setFragmentResultListener(
-            UserPreferencesFragment.TAG,
-            this,
-            { _, _ ->
-                activity?.let(inAppReviewManager::checkForPlayStoreReview)
-            }
-        )
     }
 
     override fun onCreateView(
@@ -107,41 +93,13 @@ class PostListFragment @Inject constructor(
         binding.root
     }
 
-    override fun onPause() {
-        super.onPause()
-        binding.imageViewAppLogo.gone()
-    }
-
-    private fun setupSharedTransition() {
-        val animTime = requireContext().resources.getInteger(R.integer.anim_time_short).toLong()
-        sharedElementEnterTransition = TransitionInflater.from(context)
-            .inflateTransition(android.R.transition.move)
-            .setDuration(animTime)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.imageViewAppLogo.goneIf(savedInstanceState != null)
         setupLayout()
         setupViewModels()
     }
 
     private fun setupLayout() {
-        binding.imageViewAppLogo.transitionName = SharedElementTransitionNames.APP_LOGO
-        binding.imageViewAppLogo.doOnApplyWindowInsets { view, insets, _, initialMargin ->
-            view.layoutParams = (view.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                leftMargin = initialMargin.left
-                topMargin = initialMargin.top
-                rightMargin = initialMargin.right
-                bottomMargin = initialMargin.bottom + insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
-            }
-
-            lifecycleScope.launch {
-                delay(view.resources.getInteger(R.integer.anim_time_long).toLong())
-                view.gone()
-            }
-        }
-
         binding.root.animateChangingTransitions()
 
         binding.layoutSearchActive.buttonClearSearch.setOnClickListener {
@@ -188,14 +146,11 @@ class PostListFragment @Inject constructor(
     }
 
     private fun deletePost(post: Post) {
-        context?.showStyledDialog(
-            dialogStyle = R.style.AppTheme_AlertDialog,
-            dialogBackground = R.drawable.background_contrast_rounded
-        ) {
+        MaterialAlertDialogBuilder(requireContext()).apply {
             setMessage(R.string.alert_confirm_deletion)
             setPositiveButton(R.string.hint_yes) { _, _ -> postDetailViewModel.deletePost(post) }
             setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
-        }
+        }.show()
     }
 
     private fun setupViewModels() {
@@ -213,13 +168,10 @@ class PostListFragment @Inject constructor(
         }
         lifecycleScope.launch {
             postDetailViewModel.deleteError.collect {
-                context?.showStyledDialog(
-                    dialogStyle = R.style.AppTheme_AlertDialog,
-                    dialogBackground = R.drawable.background_contrast_rounded
-                ) {
+                MaterialAlertDialogBuilder(requireContext()).apply {
                     setMessage(R.string.posts_deleted_error)
                     setPositiveButton(R.string.hint_ok) { dialog, _ -> dialog?.dismiss() }
-                }
+                }.show()
             }
         }
         lifecycleScope.launch {

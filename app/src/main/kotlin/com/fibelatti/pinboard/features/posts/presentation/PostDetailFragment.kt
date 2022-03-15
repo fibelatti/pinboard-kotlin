@@ -22,7 +22,6 @@ import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.setOnClickListener
 import com.fibelatti.core.extension.shareText
-import com.fibelatti.core.extension.showStyledDialog
 import com.fibelatti.core.extension.visible
 import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
@@ -37,8 +36,8 @@ import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -109,13 +108,10 @@ class PostDetailFragment @Inject constructor(
         }
         lifecycleScope.launch {
             postDetailViewModel.deleteError.collect {
-                context?.showStyledDialog(
-                    dialogStyle = R.style.AppTheme_AlertDialog,
-                    dialogBackground = R.drawable.background_contrast_rounded
-                ) {
+                MaterialAlertDialogBuilder(requireContext()).apply {
                     setMessage(R.string.posts_deleted_error)
                     setPositiveButton(R.string.hint_ok) { dialog, _ -> dialog?.dismiss() }
-                }
+                }.show()
             }
         }
         lifecycleScope.launch {
@@ -278,14 +274,11 @@ class PostDetailFragment @Inject constructor(
     }
 
     private fun deletePost(post: Post) {
-        context?.showStyledDialog(
-            dialogStyle = R.style.AppTheme_AlertDialog,
-            dialogBackground = R.drawable.background_contrast_rounded
-        ) {
+        MaterialAlertDialogBuilder(requireContext()).apply {
             setMessage(R.string.alert_confirm_deletion)
             setPositiveButton(R.string.hint_yes) { _, _ -> postDetailViewModel.deletePost(post) }
             setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
-        }
+        }.show()
     }
 
     private fun openUrlInExternalBrowser(post: Post) {

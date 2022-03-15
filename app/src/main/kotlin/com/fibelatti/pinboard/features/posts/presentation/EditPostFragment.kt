@@ -20,7 +20,6 @@ import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.invisible
 import com.fibelatti.core.extension.orZero
 import com.fibelatti.core.extension.showError
-import com.fibelatti.core.extension.showStyledDialog
 import com.fibelatti.core.extension.textAsString
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
@@ -33,8 +32,8 @@ import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -126,16 +125,13 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
         if (isContentUnchanged) {
             appStateViewModel.runAction(NavigateBack)
         } else {
-            context?.showStyledDialog(
-                dialogStyle = R.style.AppTheme_AlertDialog,
-                dialogBackground = R.drawable.background_contrast_rounded
-            ) {
+            MaterialAlertDialogBuilder(requireContext()).apply {
                 setMessage(R.string.alert_confirm_unsaved_changes)
                 setPositiveButton(R.string.hint_yes) { _, _ ->
                     appStateViewModel.runAction(NavigateBack)
                 }
                 setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
-            }
+            }.show()
         }
     }
 
@@ -328,14 +324,11 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun deletePost(post: Post) {
-        context?.showStyledDialog(
-            dialogStyle = R.style.AppTheme_AlertDialog,
-            dialogBackground = R.drawable.background_contrast_rounded
-        ) {
+        MaterialAlertDialogBuilder(requireContext()).apply {
             setMessage(R.string.alert_confirm_deletion)
             setPositiveButton(R.string.hint_yes) { _, _ -> postDetailViewModel.deletePost(post) }
             setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
-        }
+        }.show()
     }
 
     private fun openUrlInExternalBrowser(post: Post) {

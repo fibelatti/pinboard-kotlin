@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
-import com.fibelatti.core.extension.showStyledDialog
 import com.fibelatti.core.extension.toast
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseActivity
@@ -15,9 +14,9 @@ import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.ActivityShareBinding
 import com.fibelatti.pinboard.features.MainActivity
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.net.HttpURLConnection
@@ -69,31 +68,22 @@ class ShareReceiverActivity : BaseActivity() {
                 )
                 when {
                     error is InvalidUrlException -> {
-                        showStyledDialog(
-                            dialogStyle = R.style.AppTheme_AlertDialog,
-                            dialogBackground = R.drawable.background_contrast_rounded
-                        ) {
+                        MaterialAlertDialogBuilder(this@ShareReceiverActivity).apply {
                             setMessage(R.string.validation_error_invalid_url_rationale)
                             setPositiveButton(R.string.hint_ok) { _, _ -> finish() }
-                        }
+                        }.show()
                     }
                     error.isServerException() -> {
-                        showStyledDialog(
-                            dialogStyle = R.style.AppTheme_AlertDialog,
-                            dialogBackground = R.drawable.background_contrast_rounded
-                        ) {
+                        MaterialAlertDialogBuilder(this@ShareReceiverActivity).apply {
                             setMessage(R.string.server_timeout_error)
                             setPositiveButton(R.string.hint_ok) { _, _ -> finish() }
-                        }
+                        }.show()
                     }
                     error is HttpException && error.code() in loginFailedCodes -> {
-                        showStyledDialog(
-                            dialogStyle = R.style.AppTheme_AlertDialog,
-                            dialogBackground = R.drawable.background_contrast_rounded
-                        ) {
+                        MaterialAlertDialogBuilder(this@ShareReceiverActivity).apply {
                             setMessage(R.string.auth_logged_out_feedback)
                             setPositiveButton(R.string.hint_ok) { _, _ -> finish() }
-                        }
+                        }.show()
                     }
                     else -> sendErrorReport(error) { finish() }
                 }

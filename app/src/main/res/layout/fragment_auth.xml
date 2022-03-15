@@ -20,10 +20,11 @@
         android:layout_height="@dimen/app_icon_size"
         android:contentDescription="@string/cd_app_logo"
         android:elevation="@dimen/elevation_high"
-        android:src="@drawable/pinkt"
+        android:src="@drawable/ic_pin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/guideline" />
+        app:layout_constraintTop_toBottomOf="@+id/guideline"
+        app:tint="?attr/colorPrimary" />
 
     <include
         android:id="@+id/layoutAuthForm"

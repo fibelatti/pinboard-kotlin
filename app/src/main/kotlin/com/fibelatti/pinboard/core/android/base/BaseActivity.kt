@@ -9,7 +9,6 @@ import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.FragmentActivity
-import com.fibelatti.core.extension.showStyledDialog
 import com.fibelatti.core.extension.toast
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
@@ -17,6 +16,7 @@ import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.di.modules.ActivityEntryPoint
 import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.EntryPointAccessors
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -75,10 +75,7 @@ fun FragmentActivity.sendErrorReport(
     altMessage: String = "",
     postAction: () -> Unit = {},
 ) {
-    showStyledDialog(
-        dialogStyle = R.style.AppTheme_AlertDialog,
-        dialogBackground = R.drawable.background_contrast_rounded
-    ) {
+    MaterialAlertDialogBuilder(this).apply {
         val message = altMessage.ifEmpty { getString(R.string.error_report_rationale) }
         setMessage(message)
         setPositiveButton(R.string.error_report) { dialog, _ ->
@@ -102,5 +99,5 @@ fun FragmentActivity.sendErrorReport(
             dialog?.dismiss()
             postAction.invoke()
         }
-    }
+    }.show()
 }

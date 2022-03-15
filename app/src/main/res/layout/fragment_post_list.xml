@@ -62,16 +62,4 @@
             android:paddingBottom="@dimen/fab_offset_bottom"
             tools:listitem="@layout/list_item_post" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <ImageView
-        android:id="@+id/imageViewAppLogo"
-        android:layout_width="@dimen/clickable_area"
-        android:layout_height="@dimen/clickable_area"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="@dimen/post_list_animation_logo_margin"
-        android:contentDescription="@string/cd_app_logo"
-        android:elevation="@dimen/elevation_high"
-        android:importantForAccessibility="no"
-        android:src="@drawable/pinkt" />
 </RelativeLayout>

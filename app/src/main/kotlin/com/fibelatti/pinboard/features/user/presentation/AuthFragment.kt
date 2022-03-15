@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.transition.TransitionInflater
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.heightWrapContent
@@ -18,14 +17,12 @@ import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.LinkTransformationMethod
-import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentAuthBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,13 +38,6 @@ class AuthFragment @Inject constructor() : BaseFragment() {
     private val authViewModel: AuthViewModel by activityViewModels()
 
     private var binding by viewBinding<FragmentAuthBinding>()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        sharedElementEnterTransition = TransitionInflater.from(context)
-            .inflateTransition(android.R.transition.move)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,7 +61,6 @@ class AuthFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun setupLayout() {
-        binding.imageViewAppLogo.transitionName = SharedElementTransitionNames.APP_LOGO
         with(binding.layoutAuthForm) {
             root.animateChangingTransitions()
 

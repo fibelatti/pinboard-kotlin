@@ -8,8 +8,5 @@
     android:checkable="false"
     android:textAlignment="center"
     android:textAppearance="@style/AppTheme.ChipTextAppearance"
-    android:textColor="@color/chip_foreground"
-    app:chipBackgroundColor="@color/chip_background"
-    app:closeIconTint="@color/chip_foreground"
     app:closeIconVisible="true"
     tools:text="Some text" />

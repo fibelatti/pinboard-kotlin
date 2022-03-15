@@ -10,10 +10,10 @@ import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.android.IntentDelegate
@@ -24,12 +24,10 @@ import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.exhaustive
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.inTransaction
-import com.fibelatti.core.extension.snackbar
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.DefaultAnimationListener
-import com.fibelatti.pinboard.core.android.SharedElementTransitionNames
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.android.customview.TitleLayout
@@ -37,7 +35,6 @@ import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.core.functional.DoNothing
 import com.fibelatti.pinboard.databinding.ActivityMainBinding
-import com.fibelatti.pinboard.databinding.FragmentAuthBinding
 import com.fibelatti.pinboard.features.appstate.AddPostContent
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPostContent
@@ -64,7 +61,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -84,6 +80,7 @@ class MainActivity : BaseActivity() {
 
     @Inject
     lateinit var featureFragments: FeatureFragments
+
     @Inject
     lateinit var inAppUpdateManager: InAppUpdateManager
 
@@ -114,15 +111,9 @@ class MainActivity : BaseActivity() {
     }
 
     private fun onUpdateDownloadComplete() {
-        binding.root.snackbar(
-            message = getString(R.string.in_app_update_ready),
-            textColor = R.color.text_primary,
-            marginSize = R.dimen.margin_regular,
-            background = R.drawable.background_snackbar,
-            duration = Snackbar.LENGTH_LONG
-        ) {
+        Snackbar.make(binding.root, getString(R.string.in_app_update_ready), Snackbar.LENGTH_INDEFINITE).apply {
             setAction(R.string.in_app_update_install) { inAppUpdateManager.completeUpdate() }
-            setActionTextColor(ContextCompat.getColor(binding.root.context, R.color.color_on_background))
+            show()
         }
     }
 
@@ -137,20 +128,12 @@ class MainActivity : BaseActivity() {
     private fun setupView() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        binding.layoutTitle.doOnApplyWindowInsets { view, insets, _, initialMargin ->
-            view.layoutParams = (view.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                leftMargin = initialMargin.left
-                topMargin = initialMargin.top + insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
-                rightMargin = initialMargin.right
-                bottomMargin = initialMargin.bottom
-            }
+        binding.layoutTitle.doOnApplyWindowInsets { view, insets, initialPadding, _ ->
+            view.updatePadding(top = initialPadding.top + insets.getInsets(WindowInsetsCompat.Type.systemBars()).top)
         }
 
-        binding.fabMain.doOnApplyWindowInsets { view, insets, _, initialMargin ->
-            view.layoutParams = (view.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                leftMargin = initialMargin.left
-                topMargin = initialMargin.top
-                rightMargin = initialMargin.right
+        binding.fabMain.doOnApplyWindowInsets { view, insets, _, _ ->
+            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 bottomMargin = resources.getDimensionPixelSize(R.dimen.margin_small) +
                     insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
             }
@@ -160,13 +143,7 @@ class MainActivity : BaseActivity() {
         }
 
         binding.bottomAppBar.doOnApplyWindowInsets { view, insets, padding, _ ->
-            ViewCompat.setPaddingRelative(
-                view,
-                padding.start,
-                padding.top,
-                padding.end,
-                padding.bottom + insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
-            )
+            view.updatePadding(bottom = padding.bottom + insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom)
 
             // Remove once we're done to prevent the BottomAppBar from appearing over the keyboard
             view.doOnApplyWindowInsets { _, _, _, _ -> }
@@ -253,11 +230,8 @@ class MainActivity : BaseActivity() {
         lifecycleScope.launch {
             delay(animTime)
             inTransaction {
+                setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                 replace(R.id.fragmentHost, createFragment<PostListFragment>(), PostListFragment.TAG)
-                supportFragmentManager.findFragmentByTag(AuthFragment.TAG)?.view?.let {
-                    val binding = FragmentAuthBinding.bind(it)
-                    addSharedElement(binding.imageViewAppLogo, SharedElementTransitionNames.APP_LOGO)
-                }
             }
         }
     }
