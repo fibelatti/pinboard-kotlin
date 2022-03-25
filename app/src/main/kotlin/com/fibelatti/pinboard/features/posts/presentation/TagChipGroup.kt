@@ -15,7 +15,7 @@ import com.google.android.material.chip.ChipGroup
 class TagChipGroup @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.chipGroupStyle
+    defStyleAttr: Int = com.google.android.material.R.attr.chipGroupStyle
 ) : ChipGroup(context, attrs, defStyleAttr) {
 
     companion object {
