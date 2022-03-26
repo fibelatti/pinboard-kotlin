@@ -24,6 +24,9 @@ const val KEY_PERIODIC_SYNC = "PERIODIC_SYNC"
 const val KEY_APPEARANCE = "APPEARANCE"
 
 @VisibleForTesting
+const val KEY_APPLY_DYNAMIC_COLORS = "APPLY_DYNAMIC_COLORS"
+
+@VisibleForTesting
 const val KEY_PREFERRED_DATE_FORMAT = "PREFERRED_DATE_FORMAT"
 
 @VisibleForTesting
@@ -82,6 +85,10 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
     var appearance: String
         get() = sharedPreferences.get(KEY_APPEARANCE, "")
         set(value) = sharedPreferences.put(KEY_APPEARANCE, value)
+
+    var applyDynamicColors: Boolean
+        get() = sharedPreferences.get(KEY_APPLY_DYNAMIC_COLORS, false)
+        set(value) = sharedPreferences.put(KEY_APPLY_DYNAMIC_COLORS, value)
 
     var preferredDateFormat: String
         get() = sharedPreferences.get(KEY_PREFERRED_DATE_FORMAT, "")

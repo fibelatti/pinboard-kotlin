@@ -117,6 +117,13 @@
                     android:text="@string/user_preferences_appearance_system_default" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
+            <CheckBox
+                android:id="@+id/checkboxDynamicColors"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_xsmall"
+                android:text="@string/user_preferences_dynamic_colors" />
+
             <TextView
                 android:id="@+id/textViewDateFormatTitle"
                 style="@style/AppTheme.Text.SectionTitle"

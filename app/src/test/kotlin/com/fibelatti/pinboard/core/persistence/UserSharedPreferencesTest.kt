@@ -132,6 +132,35 @@ internal class UserSharedPreferencesTest {
     }
 
     @Test
+    fun `GIVEN KEY_APPLY_DYNAMIC_COLORS has no value WHEN applyDynamicColors is called THEN false is returned`() {
+        // GIVEN
+        every { mockSharedPreferences.get(KEY_APPLY_DYNAMIC_COLORS, false) } returns false
+
+        // THEN
+        assertThat(userSharedPreferences.applyDynamicColors).isFalse()
+    }
+
+    @Test
+    fun `GIVEN KEY_APPLY_DYNAMIC_COLORS has value WHEN applyDynamicColors is called THEN value is returned`() {
+        // GIVEN
+        val value = randomBoolean()
+        every { mockSharedPreferences.get(KEY_APPLY_DYNAMIC_COLORS, false) } returns value
+
+        // THEN
+        assertThat(userSharedPreferences.applyDynamicColors).isEqualTo(value)
+    }
+
+    @Test
+    fun `WHEN applyDynamicColors is called THEN KEY_APPLY_DYNAMIC_COLORS is set`() {
+        // WHEN
+        val value = randomBoolean()
+        userSharedPreferences.applyDynamicColors = value
+
+        // THEN
+        verify { mockEditor.putBoolean(KEY_APPLY_DYNAMIC_COLORS, value) }
+    }
+
+    @Test
     fun `GIVEN KEY_PREFERRED_DATE_FORMAT has no value WHEN preferredDateFormat getter is called THEN an empty string is returned`() {
         // GIVEN
         every { mockSharedPreferences.get(KEY_PREFERRED_DATE_FORMAT, "") } returns ""
@@ -209,7 +238,6 @@ internal class UserSharedPreferencesTest {
     @Test
     fun `GIVEN KEY_MARK_AS_READ_ON_OPEN has no value WHEN getMarkAsReadOnOpen is called THEN false is returned`() {
         // GIVEN
-
         every { mockSharedPreferences.get(KEY_MARK_AS_READ_ON_OPEN, false) } returns false
 
         // THEN
@@ -350,7 +378,6 @@ internal class UserSharedPreferencesTest {
         // THEN
         assertThat(userSharedPreferences.editAfterSharing).isEqualTo("BEFORE_SAVING")
     }
-
 
     @Test
     fun `WHEN setEditAfterSharing is called THEN KEY_NEW_EDIT_AFTER_SHARING is set`() {

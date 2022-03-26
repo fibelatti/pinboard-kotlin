@@ -1,16 +1,19 @@
 package com.fibelatti.pinboard.features.user.presentation
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.activityViewModels
+import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.gone
@@ -21,21 +24,24 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.extension.smoothScrollY
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentUserPreferencesBinding
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
+import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class UserPreferencesFragment @Inject constructor() : BaseFragment() {
+class UserPreferencesFragment @Inject constructor(
+    @MainVariant private val mainVariant: Boolean,
+) : BaseFragment() {
 
     companion object {
 
@@ -43,7 +49,6 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
         val TAG: String = "UserPreferencesFragment"
     }
 
-    private val appStateViewModel: AppStateViewModel by activityViewModels()
     private val userPreferencesViewModel: UserPreferencesViewModel by viewModels()
 
     private var binding by viewBinding<FragmentUserPreferencesBinding>()
@@ -60,60 +65,9 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupActivityViews()
-        binding.layoutAddTags.setup(
-            afterTagInput = userPreferencesViewModel::searchForTag,
-            onTagAdded = { _, currentTags -> userPreferencesViewModel.saveDefaultTags(currentTags) },
-            onTagRemoved = { tag, currentTags ->
-                userPreferencesViewModel.saveDefaultTags(currentTags)
-                userPreferencesViewModel.searchForTag(tag, currentTags)
-            }
-        )
-
+        setupViews()
         handleKeyboardVisibility()
-        lifecycleScope.launch {
-            appStateViewModel.userPreferencesContent.collect {
-                setupPeriodicSync(it.periodicSync)
-                setupAppearance(it.appearance)
-                setupPreferredDateFormat(it.preferredDateFormat)
-                setupPreferredDetailsView(it.preferredDetailsView)
-
-                binding.checkboxAutoFillDescription.setValueAndChangeListener(
-                    it.autoFillDescription,
-                    userPreferencesViewModel::saveAutoFillDescription
-                )
-                binding.checkboxShowDescriptionInLists.setValueAndChangeListener(
-                    it.showDescriptionInLists,
-                    userPreferencesViewModel::saveShowDescriptionInLists
-                )
-
-                setupEditAfterSharing(it.editAfterSharing)
-
-                binding.checkboxPrivateDefault.setValueAndChangeListener(
-                    it.defaultPrivate,
-                    userPreferencesViewModel::saveDefaultPrivate
-                )
-                binding.checkboxReadLaterDefault.setValueAndChangeListener(
-                    it.defaultReadLater,
-                    userPreferencesViewModel::saveDefaultReadLater
-                )
-
-                binding.layoutAddTags.showTags(it.defaultTags)
-            }
-        }
-        lifecycleScope.launch {
-            userPreferencesViewModel.appearanceChanged.collect { newAppearance ->
-                when (newAppearance) {
-                    Appearance.DarkTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                    Appearance.LightTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                    else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-                }
-            }
-        }
-        lifecycleScope.launch {
-            userPreferencesViewModel.suggestedTags.collect {
-                binding.layoutAddTags.showSuggestedValuesAsTags(it, showRemoveIcon = false)
-            }
-        }
+        setupViewModels()
     }
 
     override fun onDestroy() {
@@ -140,18 +94,28 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
         }
     }
 
+    private fun setupViews() {
+        binding.layoutPeriodicSync.isVisible = mainVariant
+        binding.layoutPrivateDefault.isVisible = mainVariant
+
+        binding.checkboxDynamicColors.isVisible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+
+        binding.layoutAddTags.setup(
+            afterTagInput = userPreferencesViewModel::searchForTag,
+            onTagAdded = { _, currentTags -> userPreferencesViewModel.saveDefaultTags(currentTags) },
+            onTagRemoved = { tag, currentTags ->
+                userPreferencesViewModel.saveDefaultTags(currentTags)
+                userPreferencesViewModel.searchForTag(tag, currentTags)
+            }
+        )
+    }
+
     private fun handleKeyboardVisibility() {
         binding.root.doOnApplyWindowInsets { view, insets, initialPadding, _ ->
             if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
                 val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
 
-                ViewCompat.setPaddingRelative(
-                    view,
-                    initialPadding.start,
-                    initialPadding.top,
-                    initialPadding.end,
-                    initialPadding.bottom + imeInsets.bottom,
-                )
+                view.updatePadding(bottom = initialPadding.bottom + imeInsets.bottom)
 
                 with(binding.root) {
                     val lastChild = getChildAt(childCount - 1)
@@ -161,15 +125,61 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
                     view.smoothScrollY(-delta)
                 }
             } else {
-                ViewCompat.setPaddingRelative(
-                    view,
-                    initialPadding.start,
-                    initialPadding.top,
-                    initialPadding.end,
-                    initialPadding.bottom
-                )
+                view.updatePadding(bottom = initialPadding.bottom)
             }
         }
+    }
+
+    private fun setupViewModels() {
+        userPreferencesViewModel.currentPreferences
+            .onEach {
+                setupPeriodicSync(it.periodicSync)
+                setupAppearance(it.appearance, it.applyDynamicColors)
+                setupPreferredDateFormat(it.preferredDateFormat)
+                setupPreferredDetailsView(it.preferredDetailsView)
+
+                binding.checkboxAutoFillDescription.setValueAndChangeListener(
+                    it.autoFillDescription,
+                    userPreferencesViewModel::saveAutoFillDescription
+                )
+                binding.checkboxShowDescriptionInLists.setValueAndChangeListener(
+                    it.showDescriptionInLists,
+                    userPreferencesViewModel::saveShowDescriptionInLists
+                )
+
+                setupEditAfterSharing(it.editAfterSharing)
+
+                binding.checkboxPrivateDefault.setValueAndChangeListener(
+                    it.defaultPrivate,
+                    userPreferencesViewModel::saveDefaultPrivate
+                )
+                binding.checkboxReadLaterDefault.setValueAndChangeListener(
+                    it.defaultReadLater,
+                    userPreferencesViewModel::saveDefaultReadLater
+                )
+
+                binding.layoutAddTags.showTags(it.defaultTags)
+            }
+            .flowWithLifecycle(lifecycle)
+            .launchIn(lifecycleScope)
+
+        userPreferencesViewModel.appearanceChanged
+            .onEach { newAppearance ->
+                when (newAppearance) {
+                    Appearance.DarkTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                    Appearance.LightTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                    else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                }
+            }
+            .flowWithLifecycle(lifecycle)
+            .launchIn(lifecycleScope)
+
+        userPreferencesViewModel.suggestedTags
+            .onEach {
+                binding.layoutAddTags.showSuggestedValuesAsTags(it, showRemoveIcon = false)
+            }
+            .flowWithLifecycle(lifecycle)
+            .launchIn(lifecycleScope)
     }
 
     private fun setupPeriodicSync(periodicSync: PeriodicSync) {
@@ -179,34 +189,40 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
             PeriodicSync.Every12Hours -> binding.buttonPeriodicSync12Hours.isChecked = true
             PeriodicSync.Every24Hours -> binding.buttonPeriodicSync24Hours.isChecked = true
         }
-        binding.buttonPeriodicSyncOff.setOnClickListener {
+        binding.buttonPeriodicSyncOff.selectOnClick {
             userPreferencesViewModel.savePeriodicSync(PeriodicSync.Off)
         }
-        binding.buttonPeriodicSync6Hours.setOnClickListener {
+        binding.buttonPeriodicSync6Hours.selectOnClick {
             userPreferencesViewModel.savePeriodicSync(PeriodicSync.Every6Hours)
         }
-        binding.buttonPeriodicSync12Hours.setOnClickListener {
+        binding.buttonPeriodicSync12Hours.selectOnClick {
             userPreferencesViewModel.savePeriodicSync(PeriodicSync.Every12Hours)
         }
-        binding.buttonPeriodicSync24Hours.setOnClickListener {
+        binding.buttonPeriodicSync24Hours.selectOnClick {
             userPreferencesViewModel.savePeriodicSync(PeriodicSync.Every24Hours)
         }
     }
 
-    private fun setupAppearance(appearance: Appearance) {
+    private fun setupAppearance(appearance: Appearance, applyDynamicColors: Boolean) {
         when (appearance) {
             Appearance.DarkTheme -> binding.buttonAppearanceDark.isChecked = true
             Appearance.LightTheme -> binding.buttonAppearanceLight.isChecked = true
             else -> binding.buttonAppearanceSystemDefault.isChecked = true
         }
-        binding.buttonAppearanceDark.setOnClickListener {
+        binding.buttonAppearanceDark.selectOnClick {
             userPreferencesViewModel.saveAppearance(Appearance.DarkTheme)
         }
-        binding.buttonAppearanceLight.setOnClickListener {
+        binding.buttonAppearanceLight.selectOnClick {
             userPreferencesViewModel.saveAppearance(Appearance.LightTheme)
         }
-        binding.buttonAppearanceSystemDefault.setOnClickListener {
+        binding.buttonAppearanceSystemDefault.selectOnClick {
             userPreferencesViewModel.saveAppearance(Appearance.SystemDefault)
+        }
+
+        binding.checkboxDynamicColors.isSaveEnabled = false // To prevent a recreate loop
+        binding.checkboxDynamicColors.setValueAndChangeListener(applyDynamicColors) {
+            userPreferencesViewModel.saveApplyDynamicColors(it)
+            ActivityCompat.recreate(requireActivity())
         }
     }
 
@@ -216,13 +232,13 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
             PreferredDateFormat.MonthDayYearWithTime -> binding.buttonDateFormatMonthFirst.isChecked = true
             PreferredDateFormat.YearMonthDayWithTime -> binding.buttonDateFormatYearFirst.isChecked = true
         }
-        binding.buttonDateFormatDayFirst.setOnClickListener {
+        binding.buttonDateFormatDayFirst.selectOnClick {
             userPreferencesViewModel.savePreferredDateFormat(PreferredDateFormat.DayMonthYearWithTime)
         }
-        binding.buttonDateFormatMonthFirst.setOnClickListener {
+        binding.buttonDateFormatMonthFirst.selectOnClick {
             userPreferencesViewModel.savePreferredDateFormat(PreferredDateFormat.MonthDayYearWithTime)
         }
-        binding.buttonDateFormatYearFirst.setOnClickListener {
+        binding.buttonDateFormatYearFirst.selectOnClick {
             userPreferencesViewModel.savePreferredDateFormat(PreferredDateFormat.YearMonthDayWithTime)
         }
     }
@@ -267,17 +283,14 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
             EditAfterSharing.AfterSaving -> binding.buttonAfterSaving.isChecked = true
             EditAfterSharing.SkipEdit -> binding.buttonSkipEditing.isChecked = true
         }
-        binding.buttonBeforeSaving.setOnClickListener {
+        binding.buttonBeforeSaving.selectOnClick {
             userPreferencesViewModel.saveEditAfterSharing(EditAfterSharing.BeforeSaving)
-            binding.buttonBeforeSaving.isChecked = true
         }
-        binding.buttonAfterSaving.setOnClickListener {
+        binding.buttonAfterSaving.selectOnClick {
             userPreferencesViewModel.saveEditAfterSharing(EditAfterSharing.AfterSaving)
-            binding.buttonAfterSaving.isChecked = true
         }
-        binding.buttonSkipEditing.setOnClickListener {
+        binding.buttonSkipEditing.selectOnClick {
             userPreferencesViewModel.saveEditAfterSharing(EditAfterSharing.SkipEdit)
-            binding.buttonSkipEditing.isChecked = true
         }
     }
 
@@ -286,7 +299,6 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
         binding.textViewPreferredDetailsViewCaveat.setText(
             R.string.user_preferences_preferred_details_in_app_browser_caveat
         )
-
         binding.checkboxMarkAsReadOnOpen.setValueAndChangeListener(
             markAsReadOnOpen,
             userPreferencesViewModel::saveMarkAsReadOnOpen
@@ -321,7 +333,17 @@ class UserPreferencesFragment @Inject constructor() : BaseFragment() {
         initialValue: Boolean,
         onCheckedChangeListener: (Boolean) -> Unit,
     ) {
+        setOnCheckedChangeListener(null)
         isChecked = initialValue
         setOnCheckedChangeListener { _, isChecked -> onCheckedChangeListener(isChecked) }
+    }
+
+    private fun MaterialButton.selectOnClick(
+        onClickListener: () -> Unit,
+    ) {
+        setOnClickListener {
+            onClickListener()
+            isChecked = true
+        }
     }
 }

@@ -10,6 +10,7 @@ dependencyResolutionManagement {
             version("coroutines", "1.6.0")
             version("hilt", "2.40.5")
             version("room", "2.4.0")
+            version("lifecycle", "2.4.1")
             version("fibelatti", "2.0.0-alpha4")
 
             // Classpath
@@ -34,7 +35,8 @@ dependencyResolutionManagement {
             library("swipe-refresh-layout", "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
             library("fibelatti-core", "com.fibelatti.core", "core").versionRef("fibelatti")
             library("fibelatti-arch-components", "com.fibelatti.core", "arch-components").versionRef("fibelatti")
-            library("lifecycle-java8", "androidx.lifecycle:lifecycle-common-java8:2.4.1")
+            library("lifecycle-java8", "androidx.lifecycle", "lifecycle-common-java8").versionRef("lifecycle")
+            library("lifecycle-runtime-ktx", "androidx.lifecycle", "lifecycle-runtime-ktx").versionRef("lifecycle")
             library("room-runtime", "androidx.room", "room-runtime").versionRef("room")
             library("room-compiler", "androidx.room", "room-compiler").versionRef("room")
             library("work-runtime-ktx", "androidx.work:work-runtime-ktx:2.7.1")

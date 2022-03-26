@@ -11,6 +11,7 @@ import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.LoginState
+import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
@@ -26,19 +27,56 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(InstantExecutorExtension::class)
 internal class UserDataSourceTest {
 
+    private val mockUserSharedPreferences = mockk<UserSharedPreferences>(relaxed = true) {
+        every { periodicSync } returns 0L
+        every { appearance } returns ""
+        every { applyDynamicColors } returns false
+        every { preferredDateFormat } returns ""
+        every { preferredDetailsView } returns ""
+        every { autoFillDescription } returns false
+        every { showDescriptionInLists } returns false
+        every { defaultPrivate } returns null
+        every { defaultReadLater } returns null
+        every { editAfterSharing } returns ""
+        every { defaultTags } returns emptyList()
+    }
+
+    private fun defaultPreferences() = UserPreferences(
+        periodicSync = PeriodicSync.Off,
+        appearance = Appearance.SystemDefault,
+        applyDynamicColors = false,
+        preferredDateFormat = PreferredDateFormat.DayMonthYearWithTime,
+        preferredDetailsView = PreferredDetailsView.InAppBrowser(markAsReadOnOpen = false),
+        autoFillDescription = false,
+        showDescriptionInLists = false,
+        defaultPrivate = false,
+        defaultReadLater = false,
+        editAfterSharing = EditAfterSharing.SkipEdit,
+        defaultTags = emptyList(),
+    )
+
     @Nested
     inner class InitialisationTests {
 
-        private val mockUserSharedPreferences = mockk<UserSharedPreferences>(relaxed = true)
-
         private lateinit var userDataSource: UserDataSource
+
+        @Test
+        fun `currentPreferences will contain the initial state`() {
+            // GIVEN
+            userDataSource = UserDataSource(mockUserSharedPreferences, mainVariant = true)
+
+            // THEN
+            runBlocking {
+                assertThat(userDataSource.currentPreferences.first()).isEqualTo(defaultPreferences())
+            }
+        }
 
         @Test
         fun `WHEN getAuthToken is not empty THEN getLoginState will return LoggedIn`() {
             // GIVEN
             every { mockUserSharedPreferences.authToken } returns mockApiToken
 
-            userDataSource = UserDataSource(mockUserSharedPreferences)
+            userDataSource = UserDataSource(mockUserSharedPreferences, mainVariant = true)
 
             // THEN
             runBlocking {
@@ -51,11 +89,25 @@ internal class UserDataSourceTest {
             // GIVEN
             every { mockUserSharedPreferences.authToken } returns ""
 
-            userDataSource = UserDataSource(mockUserSharedPreferences)
+            userDataSource = UserDataSource(mockUserSharedPreferences, mainVariant = true)
 
             // THEN
             runBlocking {
                 assertThat(userDataSource.loginState.first()).isEqualTo(LoginState.LoggedOut)
+            }
+        }
+
+        @Test
+        fun `WHEN mainVariant is false THEN loginState will return LoggedIn`() {
+            // GIVEN
+            userDataSource = UserDataSource(mockUserSharedPreferences, mainVariant = false)
+
+            // THEN
+            runBlocking {
+                assertThat(userDataSource.loginState.first()).isEqualTo(LoginState.LoggedIn)
+            }
+            verify(exactly = 0) {
+                mockUserSharedPreferences.authToken
             }
         }
     }
@@ -63,15 +115,13 @@ internal class UserDataSourceTest {
     @Nested
     inner class Methods {
 
-        private val mockUserSharedPreferences = mockk<UserSharedPreferences>(relaxed = true)
-
         private lateinit var userDataSource: UserDataSource
 
         @BeforeEach
         fun setup() {
             every { mockUserSharedPreferences.authToken } returns mockApiToken
 
-            userDataSource = UserDataSource(mockUserSharedPreferences)
+            userDataSource = UserDataSource(mockUserSharedPreferences, mainVariant = true)
         }
 
         @Test
@@ -220,13 +270,13 @@ internal class UserDataSourceTest {
             fun `WHEN setter is called THEN the shared preferences is updated`() {
                 // GIVEN
                 val mockPeriodicSync = mockk<PeriodicSync>()
-                every { mockPeriodicSync.hours } returns 42
+                every { mockPeriodicSync.hours } returns 24
 
                 // WHEN
                 userDataSource.periodicSync = mockPeriodicSync
 
                 // THEN
-                verify { mockUserSharedPreferences.periodicSync = 42 }
+                verify { mockUserSharedPreferences.periodicSync = 24 }
             }
         }
 
@@ -368,7 +418,6 @@ internal class UserDataSourceTest {
                 assertThat(userDataSource.preferredDetailsView).isEqualTo(
                     PreferredDetailsView.InAppBrowser(randomBoolean)
                 )
-                verify(exactly = 2) { mockUserSharedPreferences.markAsReadOnOpen }
             }
 
             @Test

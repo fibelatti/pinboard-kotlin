@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
 
+    val currentPreferences: Flow<UserPreferences>
+
     val loginState: Flow<LoginState>
 
     var lastUpdate: String
@@ -17,6 +19,8 @@ interface UserRepository {
     var periodicSync: PeriodicSync
 
     var appearance: Appearance
+
+    var applyDynamicColors: Boolean
 
     var preferredDateFormat: PreferredDateFormat
 

@@ -185,16 +185,6 @@ class NavigationActionHandler @Inject constructor(
     private fun viewPreferences(currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
             UserPreferencesContent(
-                periodicSync = userRepository.periodicSync,
-                appearance = userRepository.appearance,
-                preferredDateFormat = userRepository.preferredDateFormat,
-                preferredDetailsView = userRepository.preferredDetailsView,
-                autoFillDescription = userRepository.autoFillDescription,
-                showDescriptionInLists = userRepository.showDescriptionInLists,
-                defaultPrivate = userRepository.defaultPrivate.orFalse(),
-                defaultReadLater = userRepository.defaultReadLater.orFalse(),
-                editAfterSharing = userRepository.editAfterSharing,
-                defaultTags = userRepository.defaultTags,
                 previousContent = it,
             )
         }

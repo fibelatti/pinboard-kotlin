@@ -7,6 +7,8 @@ import android.net.ConnectivityManager
 import com.fibelatti.core.android.AppResourceProvider
 import com.fibelatti.core.extension.getSystemService
 import com.fibelatti.core.provider.ResourceProvider
+import com.fibelatti.pinboard.BuildConfig
+import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.persistence.getUserPreferences
 import dagger.Module
 import dagger.Provides
@@ -19,6 +21,10 @@ import java.util.Locale
 @Module
 @InstallIn(SingletonComponent::class)
 object AndroidModule {
+
+    @Provides
+    @MainVariant
+    fun mainVariant(): Boolean = BuildConfig.FLAVOR == "pinboardapi"
 
     @Provides
     fun localeDefault(): Locale = Locale.getDefault()

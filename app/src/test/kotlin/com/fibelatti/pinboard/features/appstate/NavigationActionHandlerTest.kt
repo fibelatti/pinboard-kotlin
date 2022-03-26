@@ -3,13 +3,9 @@ package com.fibelatti.pinboard.features.appstate
 import com.fibelatti.core.functional.Either
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.allSealedSubclasses
-import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
-import com.fibelatti.pinboard.core.android.PreferredDateFormat
-import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
-import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
@@ -655,28 +651,6 @@ internal class NavigationActionHandlerTest {
     @Nested
     inner class ViewPreferencesTests {
 
-        private val mockPeriodicSync = mockk<PeriodicSync>()
-        private val mockAppearance = mockk<Appearance>()
-        private val mockPreferredDateFormat = mockk<PreferredDateFormat>()
-        private val mockPreferredDetailsView = mockk<PreferredDetailsView>()
-        private val mockRandomBoolean = randomBoolean()
-        private val mockEditAfterSharing = mockk<EditAfterSharing>()
-        private val mockTags = mockk<List<Tag>>()
-
-        @BeforeEach
-        fun setup() {
-            every { mockUserRepository.periodicSync } returns mockPeriodicSync
-            every { mockUserRepository.appearance } returns mockAppearance
-            every { mockUserRepository.preferredDateFormat } returns mockPreferredDateFormat
-            every { mockUserRepository.preferredDetailsView } returns mockPreferredDetailsView
-            every { mockUserRepository.autoFillDescription } returns mockRandomBoolean
-            every { mockUserRepository.showDescriptionInLists } returns mockRandomBoolean
-            every { mockUserRepository.defaultPrivate } returns mockRandomBoolean
-            every { mockUserRepository.defaultReadLater } returns mockRandomBoolean
-            every { mockUserRepository.editAfterSharing } returns mockEditAfterSharing
-            every { mockUserRepository.defaultTags } returns mockTags
-        }
-
         @Test
         fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
             // GIVEN
@@ -692,78 +666,11 @@ internal class NavigationActionHandlerTest {
         @Test
         fun `WHEN currentContent is PostListContent THEN UserPreferencesContent is returned`() {
             // WHEN
-            val result =
-                runBlocking { navigationActionHandler.runAction(ViewPreferences, previousContent) }
+            val result = runBlocking { navigationActionHandler.runAction(ViewPreferences, previousContent) }
 
             // THEN
             assertThat(result).isEqualTo(
                 UserPreferencesContent(
-                    periodicSync = mockPeriodicSync,
-                    appearance = mockAppearance,
-                    preferredDateFormat = mockPreferredDateFormat,
-                    preferredDetailsView = mockPreferredDetailsView,
-                    defaultPrivate = mockRandomBoolean,
-                    autoFillDescription = mockRandomBoolean,
-                    showDescriptionInLists = mockRandomBoolean,
-                    defaultReadLater = mockRandomBoolean,
-                    editAfterSharing = mockEditAfterSharing,
-                    defaultTags = mockTags,
-                    previousContent = previousContent,
-                )
-            )
-        }
-
-        @Test
-        fun `WHEN getDefaultPrivate returns null THEN defaultPrivate is set to false`() {
-            // GIVEN
-            every { mockUserRepository.defaultPrivate } returns null
-
-            // WHEN
-            val result = runBlocking {
-                navigationActionHandler.runAction(ViewPreferences, previousContent)
-            }
-
-            // THEN
-            assertThat(result).isEqualTo(
-                UserPreferencesContent(
-                    periodicSync = mockPeriodicSync,
-                    appearance = mockAppearance,
-                    preferredDateFormat = mockPreferredDateFormat,
-                    preferredDetailsView = mockPreferredDetailsView,
-                    autoFillDescription = mockRandomBoolean,
-                    showDescriptionInLists = mockRandomBoolean,
-                    defaultPrivate = false,
-                    defaultReadLater = mockRandomBoolean,
-                    editAfterSharing = mockEditAfterSharing,
-                    defaultTags = mockTags,
-                    previousContent = previousContent,
-                )
-            )
-        }
-
-        @Test
-        fun `WHEN getDefaultReadLater returns null THEN defaultReadLater is set to false`() {
-            // GIVEN
-            every { mockUserRepository.defaultReadLater } returns null
-
-            // WHEN
-            val result = runBlocking {
-                navigationActionHandler.runAction(ViewPreferences, previousContent)
-            }
-
-            // THEN
-            assertThat(result).isEqualTo(
-                UserPreferencesContent(
-                    periodicSync = mockPeriodicSync,
-                    appearance = mockAppearance,
-                    preferredDateFormat = mockPreferredDateFormat,
-                    preferredDetailsView = mockPreferredDetailsView,
-                    autoFillDescription = mockRandomBoolean,
-                    showDescriptionInLists = mockRandomBoolean,
-                    defaultPrivate = mockRandomBoolean,
-                    defaultReadLater = false,
-                    editAfterSharing = mockEditAfterSharing,
-                    defaultTags = mockTags,
                     previousContent = previousContent,
                 )
             )

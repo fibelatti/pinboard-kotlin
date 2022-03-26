@@ -6,13 +6,13 @@ import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
-import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetSuggestedTags
 import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.sync.PeriodicSyncManager
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.isEmpty
 import com.fibelatti.pinboard.randomBoolean
@@ -24,13 +24,14 @@ import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 
 internal class UserPreferencesViewModelTest : BaseViewModelTest() {
 
     private val mockUserRepository = mockk<UserRepository>(relaxed = true)
-    private val mockAppStateRepository = mockk<AppStateRepository>(relaxed = true)
     private val mockGetSuggestedTags = mockk<GetSuggestedTags>()
     private val mockPeriodicSyncManager = mockk<PeriodicSyncManager> {
         every { enqueueWork(any()) } just runs
@@ -38,10 +39,36 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
 
     private val userPreferencesViewModel = UserPreferencesViewModel(
         mockUserRepository,
-        mockAppStateRepository,
         mockGetSuggestedTags,
         mockPeriodicSyncManager,
     )
+
+    @Test
+    fun `currentPreferences should emit the repository values`() {
+        // GIVEN
+        val preferences = mockk<UserPreferences>()
+        every { mockUserRepository.currentPreferences } returns flowOf(preferences)
+
+        // THEN
+        runBlocking {
+            assertThat(userPreferencesViewModel.currentPreferences.toList()).isEqualTo(listOf(preferences))
+        }
+    }
+
+    @Test
+    fun `appearanceChanged should emit the current preferences appearance`() {
+        // GIVEN
+        val appearance = mockk<Appearance>()
+        val preferences = mockk<UserPreferences> {
+            every { this@mockk.appearance } returns appearance
+        }
+        every { mockUserRepository.currentPreferences } returns flowOf(preferences)
+
+        // THEN
+        runBlocking {
+            assertThat(userPreferencesViewModel.appearanceChanged.toList()).isEqualTo(listOf(appearance))
+        }
+    }
 
     @Test
     fun `WHEN savePeriodicSync is called THEN repository is updated AND periodicSyncManager enqueues`() {
@@ -66,10 +93,18 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
 
         // THEN
         verify { mockUserRepository.appearance = mockAppearance }
-        verify { mockAppStateRepository.reset() }
-        runBlocking {
-            assertThat(userPreferencesViewModel.appearanceChanged.first()).isEqualTo(mockAppearance)
-        }
+    }
+
+    @Test
+    fun `WHEN saveApplyDynamicColors is called THEN repository is updated`() {
+        // GIVEN
+        val value = randomBoolean()
+
+        // WHEN
+        userPreferencesViewModel.saveApplyDynamicColors(value)
+
+        // THEN
+        verify { mockUserRepository.applyDynamicColors = value }
     }
 
     @Test

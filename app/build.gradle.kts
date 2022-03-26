@@ -174,6 +174,7 @@ dependencies {
     implementation(libs.swipe.refresh.layout)
 
     implementation(libs.lifecycle.java8)
+    implementation(libs.lifecycle.runtime.ktx)
 
     implementation(libs.room.runtime)
     kapt(libs.room.compiler)

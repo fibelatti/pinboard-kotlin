@@ -1,34 +1,35 @@
 package com.fibelatti.pinboard.features.user.presentation
 
-import com.fibelatti.core.functional.onSuccess
+import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
-import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetSuggestedTags
 import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.sync.PeriodicSyncManager
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class UserPreferencesViewModel @Inject constructor(
     private val userRepository: UserRepository,
-    private val appStateRepository: AppStateRepository,
     private val getSuggestedTags: GetSuggestedTags,
     private val periodicSyncManager: PeriodicSyncManager,
 ) : BaseViewModel() {
 
-    val appearanceChanged: Flow<Appearance> get() = _appearanceChanged.filterNotNull()
-    private val _appearanceChanged = MutableStateFlow<Appearance?>(null)
+    val currentPreferences: Flow<UserPreferences> get() = userRepository.currentPreferences
+
+    val appearanceChanged: Flow<Appearance> get() = currentPreferences.map { it.appearance }
 
     val suggestedTags: Flow<List<String>> get() = _suggestedTags.filterNotNull()
     private val _suggestedTags = MutableStateFlow<List<String>?>(null)
@@ -40,8 +41,10 @@ class UserPreferencesViewModel @Inject constructor(
 
     fun saveAppearance(appearance: Appearance) {
         userRepository.appearance = appearance
-        appStateRepository.reset()
-        _appearanceChanged.value = appearance
+    }
+
+    fun saveApplyDynamicColors(value: Boolean) {
+        userRepository.applyDynamicColors = value
     }
 
     fun savePreferredDateFormat(preferredDateFormat: PreferredDateFormat) {
@@ -82,8 +85,7 @@ class UserPreferencesViewModel @Inject constructor(
 
     fun searchForTag(tag: String, currentTags: List<Tag>) {
         launch {
-            getSuggestedTags(GetSuggestedTags.Params(tag, currentTags))
-                .onSuccess { _suggestedTags.value = it }
+            _suggestedTags.value = getSuggestedTags(GetSuggestedTags.Params(tag, currentTags)).getOrNull()
         }
     }
 }
