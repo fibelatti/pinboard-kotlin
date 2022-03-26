@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
+    android:paddingTop="@dimen/padding_small"
     android:weightSum="3">
 
     <com.google.android.material.button.MaterialButton
