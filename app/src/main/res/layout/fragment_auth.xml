@@ -19,8 +19,8 @@
         android:layout_width="@dimen/app_icon_size"
         android:layout_height="@dimen/app_icon_size"
         android:contentDescription="@string/cd_app_logo"
-        android:elevation="@dimen/elevation_high"
         android:src="@drawable/ic_pin"
+        app:layout_constraintBottom_toTopOf="@id/layoutAuthForm"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guideline"
@@ -29,6 +29,9 @@
     <include
         android:id="@+id/layoutAuthForm"
         layout="@layout/layout_auth_form"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageViewAppLogo" />

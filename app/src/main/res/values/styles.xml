@@ -54,6 +54,10 @@
         <item name="textInputStyle">@style/AppTheme.InputLayout</item>
     </style>
 
+    <style name="AppTheme.Overlay" parent="ThemeOverlay.Material3.DynamicColors.DayNight">
+        <item name="android:colorBackground">@color/color_background</item>
+    </style>
+
     <!-- Animation -->
     <style name="AppTheme.AppActivityAnimation" parent="@android:style/Animation.Activity">
         <item name="android:activityOpenEnterAnimation">@anim/slide_right_in</item>

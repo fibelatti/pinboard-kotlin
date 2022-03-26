@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_large"
         android:padding="@dimen/padding_regular"
-        android:elevation="@dimen/elevation_high"
+        android:elevation="8dp"
         android:background="@drawable/background_snackbar"
         tools:text="@tools:sample/lorem/random" />
 

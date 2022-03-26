@@ -25,7 +25,9 @@ class App : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
 
-        DynamicColors.applyToActivitiesIfAvailable(this) { _, _ -> userRepository.applyDynamicColors }
+        DynamicColors.applyToActivitiesIfAvailable(this, R.style.AppTheme_Overlay) { _, _ ->
+            userRepository.applyDynamicColors
+        }
 
         periodicSyncManager.enqueueWork()
     }
