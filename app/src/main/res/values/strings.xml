@@ -162,9 +162,9 @@
 
     <!-- User Preferences -->
     <string name="user_preferences_title">Preferences</string>
-    <string name="user_preferences_periodic_sync">Periodic sync</string>
-    <string name="user_preferences_periodic_sync_description">Automatically pull new bookmarks added to your collection every number of hours</string>
-    <string name="user_preferences_periodic_sync_caveat">When using the app your bookmarks are always pulled and updated given that the Pinboard service is available, no matter this preference</string>
+    <string name="user_preferences_periodic_sync">Background sync</string>
+    <string name="user_preferences_periodic_sync_description">Automatically pull new bookmarks added to your collection on a regular interval</string>
+    <string name="user_preferences_periodic_sync_caveat">When the app is in the foreground your bookmarks are kept in sync regardless of this preference, given that the Pinboard service is available</string>
     <string name="user_preferences_periodic_sync_off">Off</string>
     <string name="user_preferences_periodic_sync_6_hours">6 hours</string>
     <string name="user_preferences_periodic_sync_12_hours">12 hours</string>
@@ -172,8 +172,9 @@
     <string name="user_preferences_appearance">Appearance</string>
     <string name="user_preferences_appearance_dark">Dark theme</string>
     <string name="user_preferences_appearance_light">Light theme</string>
-    <string name="user_preferences_appearance_system_default">System default</string>
-    <string name="user_preferences_dynamic_colors">Use dynamic colors — Chane the colors of the app based on your wallpaper</string>
+    <string name="user_preferences_appearance_system_default">Follow system</string>
+    <string name="user_preferences_dynamic_colors">Use dynamic colors</string>
+    <string name="user_preferences_dynamic_colors_caveat">Change the colors of the app based on your wallpaper</string>
     <string name="user_preferences_date_format">Preferred date format</string>
     <string name="user_preferences_date_format_day_first">31/12/21, 12:21</string>
     <string name="user_preferences_date_format_month_first">12/31/21, 12:21</string>
@@ -182,28 +183,30 @@
     <string name="user_preferences_preferred_details_in_app_browser">In-app</string>
     <string name="user_preferences_preferred_details_in_app_browser_caveat">Open bookmarks using the internal browser</string>
     <string name="user_preferences_preferred_details_external_browser">External</string>
-    <string name="user_preferences_preferred_details_external_browser_caveat">Open bookmarks using the external browser</string>
+    <string name="user_preferences_preferred_details_external_browser_caveat">Open bookmarks using the default external browser</string>
     <string name="user_preferences_preferred_details_post_details">Bookmark details</string>
-    <string name="user_preferences_preferred_details_post_details_caveat">Open bookmarks directly in the Edit screen</string>
-    <string name="user_preferences_preferred_details_view_caveat">You can long press each bookmark in lists for quick access to share and edit</string>
+    <string name="user_preferences_preferred_details_post_details_caveat">Don\'t open bookmarks in a browser, show the edit screen instead</string>
+    <string name="user_preferences_preferred_details_view_caveat">Long press list items when browsing bookmarks to access share and edit shortcuts</string>
     <string name="user_preferences_preferred_details_view_mark_as_read_on_open">Mark as read on open</string>
-    <string name="user_preferences_preferred_details_view_mark_as_read_on_open_caveat">Pinkt will automatically mark a bookmark when read when it is viewed</string>
+    <string name="user_preferences_preferred_details_view_mark_as_read_on_open_caveat">Automatically update the bookmark to remove the read later flag</string>
     <string name="user_preferences_description_title">Bookmarks description</string>
-    <string name="user_preferences_description_auto_fill">Automatically try to obtain the bookmark description from the website</string>
-    <string name="user_preferences_description_visible_in_lists">Show the first 5 lines of the description in lists</string>
+    <string name="user_preferences_description_auto_fill">Auto fill description</string>
+    <string name="user_preferences_description_auto_fill_description">Automatically try to get the bookmark description from the website when saving</string>
+    <string name="user_preferences_description_visible_in_lists">Show description in lists</string>
+    <string name="user_preferences_description_visible_in_lists_description">Show the first 5 lines of the description when browsing bookmarks</string>
     <string name="user_preferences_default_private">Private bookmarks</string>
     <string name="user_preferences_default_private_label">Private by default</string>
-    <string name="user_preferences_default_private_description">If checked bookmarks shared to Pinkt will be saved as private, otherwise your default Pinboard preferences apply</string>
+    <string name="user_preferences_default_private_description">If active bookmarks shared to Pinkt are saved as private, otherwise your default Pinboard preferences apply</string>
     <string name="user_preferences_default_read_later">Read later bookmarks</string>
     <string name="user_preferences_default_read_later_label">Read later by default</string>
-    <string name="user_preferences_default_read_later_description">If checked bookmarks shared to Pinkt will be saved as read later, otherwise your default Pinboard preferences apply</string>
+    <string name="user_preferences_default_read_later_description">If active bookmarks shared to Pinkt are saved as read later, otherwise your default Pinboard preferences apply</string>
     <string name="user_preferences_default_tags">Default tags</string>
     <string name="user_preferences_default_tags_description">These tags will be added to all bookmarks created with Pinkt or shared to Pinkt</string>
     <string name="user_preferences_edit_after_sharing_title">Editing — Sharing &amp; Popular</string>
     <string name="user_preferences_edit_after_sharing_before_saving">Before saving</string>
     <string name="user_preferences_edit_after_sharing_after_saving">After saving</string>
     <string name="user_preferences_edit_after_sharing_skip">Skip editing</string>
-    <string name="user_preferences_edit_after_sharing_description">The edit screen can be displayed after a bookmark is shared to Pinkt or saved from the list of popular bookmarks.\nUse this preference to control when the bookmark is saved to Pinboard</string>
+    <string name="user_preferences_edit_after_sharing_description">Use this settings to control whether the edit screen should be displayed before or after saving a bookmark to Pinboard. This applies when sharing to Pinkt or saving from the list of popular bookmarks</string>
 
     <!-- In-app Update -->
     <string name="in_app_update_ready">An app update is ready to install</string>

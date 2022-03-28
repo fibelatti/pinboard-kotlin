@@ -29,11 +29,11 @@
         android:id="@+id/textInputLayoutTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_regular"
+        android:layout_marginTop="@dimen/margin_small"
         android:hint="@string/posts_add_url_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutUrl">
+        app:layout_constraintTop_toBottomOf="@id/textInputLayoutUrl">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextTitle"
@@ -50,12 +50,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_small"
-        android:layout_marginBottom="@dimen/margin_small"
         android:hint="@string/posts_add_url_description"
-        app:layout_constraintBottom_toTopOf="@+id/checkboxPrivate"
+        app:layout_constraintBottom_toTopOf="@id/togglePrivate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutTitle">
+        app:layout_constraintTop_toBottomOf="@id/textInputLayoutTitle">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextDescription"
@@ -67,28 +66,26 @@
             android:textSize="@dimen/text_size_small" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <CheckBox
-        android:id="@+id/checkboxPrivate"
-        android:layout_width="wrap_content"
+    <com.fibelatti.pinboard.core.android.customview.SettingToggle
+        android:id="@+id/togglePrivate"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:drawableEnd="@drawable/ic_private"
-        android:drawablePadding="@dimen/padding_small"
-        android:text="@string/posts_add_private"
+        android:layout_marginTop="@dimen/margin_small"
+        android:layout_marginEnd="@dimen/margin_large"
         android:visibility="gone"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toStartOf="@id/toggleReadLater"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputUrlDescription" />
+        app:layout_constraintTop_toBottomOf="@id/textInputUrlDescription"
+        app:settingTitle="@string/posts_add_private" />
 
-    <CheckBox
-        android:id="@+id/checkboxReadLater"
-        android:layout_width="wrap_content"
+    <com.fibelatti.pinboard.core.android.customview.SettingToggle
+        android:id="@+id/toggleReadLater"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:drawableEnd="@drawable/ic_read_later"
-        android:drawablePadding="@dimen/padding_small"
-        android:text="@string/posts_add_read_later"
+        android:layout_marginTop="@dimen/margin_small"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/checkboxPrivate"
-        app:layout_constraintTop_toBottomOf="@+id/textInputUrlDescription" />
+        app:layout_constraintStart_toEndOf="@id/togglePrivate"
+        app:layout_constraintTop_toBottomOf="@id/textInputUrlDescription"
+        app:settingTitle="@string/posts_add_read_later" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -24,16 +24,15 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                style="@style/AppTheme.Text.SectionTitle"
+                style="@style/AppTheme.Text.SectionTitle.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/user_preferences_periodic_sync" />
 
             <TextView
-                style="@style/AppTheme.Text.Detail"
+                style="@style/AppTheme.Text.Caveat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_xsmall"
                 android:text="@string/user_preferences_periodic_sync_description" />
 
             <com.google.android.material.button.MaterialButtonToggleGroup
@@ -65,7 +64,7 @@
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
             <TextView
-                style="@style/AppTheme.Text.Detail"
+                style="@style/AppTheme.Text.Caveat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
@@ -76,14 +75,14 @@
             android:id="@+id/layoutAppearance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_regular"
+            android:layout_marginTop="@dimen/margin_xlarge"
             android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@+id/layoutPreferredDetailsView"
             app:layout_constraintTop_toBottomOf="@+id/layoutPeriodicSync">
 
             <TextView
                 android:id="@+id/textViewAppearanceTitle"
-                style="@style/AppTheme.Text.SectionTitle"
+                style="@style/AppTheme.Text.SectionTitle.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/user_preferences_appearance" />
@@ -92,7 +91,6 @@
                 android:id="@+id/buttonGroupAppearance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_xsmall"
                 app:singleSelection="true">
 
                 <com.google.android.material.button.MaterialButton
@@ -117,19 +115,20 @@
                     android:text="@string/user_preferences_appearance_system_default" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
-            <CheckBox
-                android:id="@+id/checkboxDynamicColors"
-                android:layout_width="wrap_content"
+            <com.fibelatti.pinboard.core.android.customview.SettingToggle
+                android:id="@+id/toggleDynamicColors"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_xsmall"
-                android:text="@string/user_preferences_dynamic_colors" />
+                android:layout_marginTop="@dimen/margin_small"
+                app:settingDescription="@string/user_preferences_dynamic_colors_caveat"
+                app:settingTitle="@string/user_preferences_dynamic_colors" />
 
             <TextView
                 android:id="@+id/textViewDateFormatTitle"
-                style="@style/AppTheme.Text.SectionTitle"
+                style="@style/AppTheme.Text.SectionTitle.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_regular"
+                android:layout_marginTop="@dimen/margin_xlarge"
                 android:text="@string/user_preferences_date_format" />
 
             <HorizontalScrollView
@@ -140,7 +139,6 @@
                     android:id="@+id/buttonGroupDateFormat"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_xsmall"
                     app:singleSelection="true">
 
                     <com.google.android.material.button.MaterialButton
@@ -171,13 +169,13 @@
             android:id="@+id/layoutPreferredDetailsView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_regular"
+            android:layout_marginTop="@dimen/margin_xlarge"
             android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@+id/layoutBookmarksDescription"
             app:layout_constraintTop_toBottomOf="@+id/layoutAppearance">
 
             <TextView
-                style="@style/AppTheme.Text.SectionTitle"
+                style="@style/AppTheme.Text.SectionTitle.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/user_preferences_preferred_details_view" />
@@ -186,7 +184,6 @@
                 android:id="@+id/buttonGroupPreferredDetailsView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_xsmall"
                 app:singleSelection="true">
 
                 <com.google.android.material.button.MaterialButton
@@ -207,75 +204,70 @@
 
             <TextView
                 android:id="@+id/textViewPreferredDetailsViewCaveat"
-                style="@style/AppTheme.Text.Detail"
+                style="@style/AppTheme.Text.Caveat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
                 android:text="@string/user_preferences_preferred_details_in_app_browser_caveat" />
 
             <TextView
-                style="@style/AppTheme.Text.Detail"
+                style="@style/AppTheme.Text.Caveat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
                 android:text="@string/user_preferences_preferred_details_view_caveat" />
 
-            <CheckBox
-                android:id="@+id/checkboxMarkAsReadOnOpen"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"
-                android:text="@string/user_preferences_preferred_details_view_mark_as_read_on_open" />
-
-            <TextView
-                android:id="@+id/checkboxMarkAsReadOnOpenCaveat"
-                style="@style/AppTheme.Text.Detail"
+            <com.fibelatti.pinboard.core.android.customview.SettingToggle
+                android:id="@+id/toggleMarkAsReadOnOpen"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/user_preferences_preferred_details_view_mark_as_read_on_open_caveat" />
+                android:layout_marginTop="@dimen/margin_small"
+                app:settingDescription="@string/user_preferences_preferred_details_view_mark_as_read_on_open_caveat"
+                app:settingTitle="@string/user_preferences_preferred_details_view_mark_as_read_on_open" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/layoutBookmarksDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_regular"
+            android:layout_marginTop="@dimen/margin_xlarge"
             android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@+id/layoutEditAfterSharing"
             app:layout_constraintTop_toBottomOf="@+id/layoutPreferredDetailsView">
 
             <TextView
-                style="@style/AppTheme.Text.SectionTitle"
+                style="@style/AppTheme.Text.SectionTitle.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/user_preferences_description_title" />
 
-            <CheckBox
-                android:id="@+id/checkboxAutoFillDescription"
-                android:layout_width="wrap_content"
+            <com.fibelatti.pinboard.core.android.customview.SettingToggle
+                android:id="@+id/toggleAutoFillDescription"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_xsmall"
-                android:text="@string/user_preferences_description_auto_fill" />
+                app:settingDescription="@string/user_preferences_description_auto_fill_description"
+                app:settingTitle="@string/user_preferences_description_auto_fill" />
 
-            <CheckBox
-                android:id="@+id/checkboxShowDescriptionInLists"
-                android:layout_width="wrap_content"
+            <com.fibelatti.pinboard.core.android.customview.SettingToggle
+                android:id="@+id/toggleShowDescriptionInLists"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
-                android:text="@string/user_preferences_description_visible_in_lists" />
+                app:settingDescription="@string/user_preferences_description_visible_in_lists_description"
+                app:settingTitle="@string/user_preferences_description_visible_in_lists" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/layoutEditAfterSharing"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_regular"
+            android:layout_marginTop="@dimen/margin_xlarge"
             android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@+id/layoutPrivateDefault"
             app:layout_constraintTop_toBottomOf="@+id/layoutBookmarksDescription">
 
             <TextView
-                style="@style/AppTheme.Text.SectionTitle"
+                style="@style/AppTheme.Text.SectionTitle.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/user_preferences_edit_after_sharing_title" />
@@ -284,7 +276,6 @@
                 android:id="@+id/buttonGroupEditAfterSharing"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_xsmall"
                 app:singleSelection="true">
 
                 <com.google.android.material.button.MaterialButton
@@ -310,7 +301,7 @@
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
             <TextView
-                style="@style/AppTheme.Text.Detail"
+                style="@style/AppTheme.Text.Caveat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
@@ -321,88 +312,72 @@
             android:id="@+id/layoutPrivateDefault"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_regular"
+            android:layout_marginTop="@dimen/margin_xlarge"
             android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@+id/layoutReadLaterDefault"
             app:layout_constraintTop_toBottomOf="@+id/layoutEditAfterSharing">
 
             <TextView
-                style="@style/AppTheme.Text.SectionTitle"
+                style="@style/AppTheme.Text.SectionTitle.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/user_preferences_default_private" />
 
-            <CheckBox
-                android:id="@+id/checkboxPrivateDefault"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_xsmall"
-                android:drawablePadding="@dimen/padding_small"
-                android:text="@string/user_preferences_default_private_label"
-                app:drawableEndCompat="@drawable/ic_private" />
-
-            <TextView
-                style="@style/AppTheme.Text.Detail"
+            <com.fibelatti.pinboard.core.android.customview.SettingToggle
+                android:id="@+id/togglePrivateDefault"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/user_preferences_default_private_description" />
+                app:settingDescription="@string/user_preferences_default_private_description"
+                app:settingTitle="@string/user_preferences_default_private_label" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/layoutReadLaterDefault"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_regular"
+            android:layout_marginTop="@dimen/margin_xlarge"
             android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="@+id/layoutPrivateDefault">
 
             <TextView
-                style="@style/AppTheme.Text.SectionTitle"
+                style="@style/AppTheme.Text.SectionTitle.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/user_preferences_default_read_later" />
 
-            <CheckBox
-                android:id="@+id/checkboxReadLaterDefault"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_xsmall"
-                android:drawablePadding="@dimen/padding_small"
-                android:text="@string/user_preferences_default_read_later_label"
-                app:drawableEndCompat="@drawable/ic_read_later" />
-
-            <TextView
-                style="@style/AppTheme.Text.Detail"
+            <com.fibelatti.pinboard.core.android.customview.SettingToggle
+                android:id="@+id/toggleReadLaterDefault"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/user_preferences_default_read_later_description" />
+                app:settingDescription="@string/user_preferences_default_read_later_description"
+                app:settingTitle="@string/user_preferences_default_read_later_label" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/layoutDefaultTags"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_regular"
+            android:layout_marginTop="@dimen/margin_xlarge"
             android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="@+id/layoutReadLaterDefault">
 
             <TextView
-                style="@style/AppTheme.Text.SectionTitle"
+                style="@style/AppTheme.Text.SectionTitle.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/user_preferences_default_tags" />
 
             <TextView
-                style="@style/AppTheme.Text.Detail"
+                style="@style/AppTheme.Text.Caveat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_xsmall"
                 android:text="@string/user_preferences_default_tags_description" />
 
             <com.fibelatti.pinboard.core.android.customview.AddTagsLayout
                 android:id="@+id/layoutAddTags"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

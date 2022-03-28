@@ -116,8 +116,8 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
                     url == editTextUrl.textAsString() &&
                     title == editTextTitle.textAsString() &&
                     description == editTextDescription.textAsString() &&
-                    private == checkboxPrivate.isChecked &&
-                    readLater == checkboxReadLater.isChecked &&
+                    private == togglePrivate.isActive &&
+                    readLater == toggleReadLater.isActive &&
                     tags == binding.layoutAddTags.getTags().takeIf { it.isNotEmpty() }
             }
         } ?: true
@@ -202,8 +202,8 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
                 editTextUrl.textAsString(),
                 editTextTitle.textAsString(),
                 editTextDescription.textAsString(),
-                checkboxPrivate.isChecked,
-                checkboxReadLater.isChecked,
+                togglePrivate.isActive,
+                toggleReadLater.isActive,
                 binding.layoutAddTags.getTags()
             )
         }
@@ -215,8 +215,8 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
                 setupActivityViews()
 
                 if (!isRecreating) {
-                    binding.layoutAddPost.checkboxPrivate.isChecked = it.defaultPrivate
-                    binding.layoutAddPost.checkboxReadLater.isChecked = it.defaultReadLater
+                    binding.layoutAddPost.togglePrivate.isActive = it.defaultPrivate
+                    binding.layoutAddPost.toggleReadLater.isActive = it.defaultReadLater
                     binding.layoutAddTags.showTags(it.defaultTags)
                 }
             }
@@ -306,8 +306,8 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
                 editTextUrl.setText(url)
                 editTextTitle.setText(title)
                 editTextDescription.setText(description)
-                checkboxPrivate.isChecked = private
-                checkboxReadLater.isChecked = readLater
+                togglePrivate.isActive = private
+                toggleReadLater.isActive = readLater
             }
 
             tags?.let(binding.layoutAddTags::showTags)

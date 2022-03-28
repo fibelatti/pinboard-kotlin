@@ -164,6 +164,11 @@
         <item name="android:textSize">@dimen/text_size_regular</item>
     </style>
 
+    <style name="AppTheme.Text.SectionTitle.Primary">
+        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="android:layout_marginBottom">@dimen/margin_small</item>
+    </style>
+
     <style name="AppTheme.Text.Body">
         <item name="android:textColor">@color/color_onSurfaceVariant</item>
         <item name="android:textSize">@dimen/text_size_regular</item>
@@ -172,6 +177,11 @@
     <style name="AppTheme.Text.Detail">
         <item name="android:textColor">@color/color_onSurfaceVariant</item>
         <item name="android:textSize">@dimen/text_size_small</item>
+    </style>
+
+    <style name="AppTheme.Text.Caveat">
+        <item name="android:textColor">@color/color_onSurfaceVariant</item>
+        <item name="android:textSize">@dimen/text_size_xsmall</item>
     </style>
 
     <style name="AppTheme.Text.Tag">

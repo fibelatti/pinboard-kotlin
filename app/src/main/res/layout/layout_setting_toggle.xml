@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settingToggleRoot"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/padding_small"
+    android:paddingBottom="@dimen/padding_small">
+
+    <TextView
+        android:id="@+id/settingTitle"
+        style="@style/AppTheme.Text.ListItem"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_small"
+        android:textSize="@dimen/text_size_small"
+        app:layout_constraintBottom_toTopOf="@id/settingDescription"
+        app:layout_constraintEnd_toStartOf="@id/settingSwitch"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Setting title" />
+
+    <TextView
+        android:id="@+id/settingDescription"
+        style="@style/AppTheme.Text.Caveat"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_xsmall"
+        android:layout_marginEnd="@dimen/margin_small"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/settingSwitch"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/settingTitle"
+        tools:text="Setting subtitle" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/settingSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:thumb="@drawable/shape_setting_toggle_thumb"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/settingTitle"
+        app:layout_constraintTop_toTopOf="parent"
+        app:thumbTint="@color/selector_setting_toggle_thumb"
+        app:track="@drawable/shape_setting_toggle_track"
+        app:trackTint="@color/selector_setting_toggle_track" />
+</androidx.constraintlayout.widget.ConstraintLayout>

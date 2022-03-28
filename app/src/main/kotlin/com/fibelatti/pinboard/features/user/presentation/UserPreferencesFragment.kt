@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
@@ -24,6 +23,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.android.customview.SettingToggle
 import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.extension.smoothScrollY
 import com.fibelatti.pinboard.core.extension.viewBinding
@@ -34,8 +34,10 @@ import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -98,7 +100,7 @@ class UserPreferencesFragment @Inject constructor(
         binding.layoutPeriodicSync.isVisible = mainVariant
         binding.layoutPrivateDefault.isVisible = mainVariant
 
-        binding.checkboxDynamicColors.isVisible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        binding.toggleDynamicColors.isVisible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
         binding.layoutAddTags.setup(
             afterTagInput = userPreferencesViewModel::searchForTag,
@@ -138,22 +140,22 @@ class UserPreferencesFragment @Inject constructor(
                 setupPreferredDateFormat(it.preferredDateFormat)
                 setupPreferredDetailsView(it.preferredDetailsView)
 
-                binding.checkboxAutoFillDescription.setValueAndChangeListener(
+                binding.toggleAutoFillDescription.setActiveAndOnChangedListener(
                     it.autoFillDescription,
                     userPreferencesViewModel::saveAutoFillDescription
                 )
-                binding.checkboxShowDescriptionInLists.setValueAndChangeListener(
+                binding.toggleShowDescriptionInLists.setActiveAndOnChangedListener(
                     it.showDescriptionInLists,
                     userPreferencesViewModel::saveShowDescriptionInLists
                 )
 
                 setupEditAfterSharing(it.editAfterSharing)
 
-                binding.checkboxPrivateDefault.setValueAndChangeListener(
+                binding.togglePrivateDefault.setActiveAndOnChangedListener(
                     it.defaultPrivate,
                     userPreferencesViewModel::saveDefaultPrivate
                 )
-                binding.checkboxReadLaterDefault.setValueAndChangeListener(
+                binding.toggleReadLaterDefault.setActiveAndOnChangedListener(
                     it.defaultReadLater,
                     userPreferencesViewModel::saveDefaultReadLater
                 )
@@ -203,6 +205,7 @@ class UserPreferencesFragment @Inject constructor(
         }
     }
 
+    @Suppress("MagicNumber")
     private fun setupAppearance(appearance: Appearance, applyDynamicColors: Boolean) {
         when (appearance) {
             Appearance.DarkTheme -> binding.buttonAppearanceDark.isChecked = true
@@ -219,10 +222,12 @@ class UserPreferencesFragment @Inject constructor(
             userPreferencesViewModel.saveAppearance(Appearance.SystemDefault)
         }
 
-        binding.checkboxDynamicColors.isSaveEnabled = false // To prevent a recreate loop
-        binding.checkboxDynamicColors.setValueAndChangeListener(applyDynamicColors) {
+        binding.toggleDynamicColors.setActiveAndOnChangedListener(applyDynamicColors) {
             userPreferencesViewModel.saveApplyDynamicColors(it)
-            ActivityCompat.recreate(requireActivity())
+            lifecycleScope.launch {
+                delay(300L) // Simply to animate the switch
+                ActivityCompat.recreate(requireActivity())
+            }
         }
     }
 
@@ -261,13 +266,13 @@ class UserPreferencesFragment @Inject constructor(
 
         binding.buttonPreferredDetailsViewInApp.setOnClickListener {
             userPreferencesViewModel.savePreferredDetailsView(
-                PreferredDetailsView.InAppBrowser(binding.checkboxMarkAsReadOnOpen.isChecked)
+                PreferredDetailsView.InAppBrowser(binding.toggleMarkAsReadOnOpen.isActive)
             )
             inAppSelected(markAsReadOnOpen)
         }
         binding.buttonPreferredDetailsViewExternal.setOnClickListener {
             userPreferencesViewModel.savePreferredDetailsView(
-                PreferredDetailsView.ExternalBrowser(binding.checkboxMarkAsReadOnOpen.isChecked)
+                PreferredDetailsView.ExternalBrowser(binding.toggleMarkAsReadOnOpen.isActive)
             )
             externalSelected(markAsReadOnOpen)
         }
@@ -299,12 +304,11 @@ class UserPreferencesFragment @Inject constructor(
         binding.textViewPreferredDetailsViewCaveat.setText(
             R.string.user_preferences_preferred_details_in_app_browser_caveat
         )
-        binding.checkboxMarkAsReadOnOpen.setValueAndChangeListener(
+        binding.toggleMarkAsReadOnOpen.setActiveAndOnChangedListener(
             markAsReadOnOpen,
             userPreferencesViewModel::saveMarkAsReadOnOpen
         )
-        binding.checkboxMarkAsReadOnOpen.visible()
-        binding.checkboxMarkAsReadOnOpenCaveat.visible()
+        binding.toggleMarkAsReadOnOpen.visible()
     }
 
     private fun externalSelected(markAsReadOnOpen: Boolean) {
@@ -312,12 +316,11 @@ class UserPreferencesFragment @Inject constructor(
         binding.textViewPreferredDetailsViewCaveat.setText(
             R.string.user_preferences_preferred_details_external_browser_caveat
         )
-        binding.checkboxMarkAsReadOnOpen.setValueAndChangeListener(
+        binding.toggleMarkAsReadOnOpen.setActiveAndOnChangedListener(
             markAsReadOnOpen,
             userPreferencesViewModel::saveMarkAsReadOnOpen
         )
-        binding.checkboxMarkAsReadOnOpen.visible()
-        binding.checkboxMarkAsReadOnOpenCaveat.visible()
+        binding.toggleMarkAsReadOnOpen.visible()
     }
 
     private fun editSelected() {
@@ -325,17 +328,15 @@ class UserPreferencesFragment @Inject constructor(
         binding.textViewPreferredDetailsViewCaveat.setText(
             R.string.user_preferences_preferred_details_post_details_caveat
         )
-        binding.checkboxMarkAsReadOnOpen.gone()
-        binding.checkboxMarkAsReadOnOpenCaveat.gone()
+        binding.toggleMarkAsReadOnOpen.gone()
     }
 
-    private fun CheckBox.setValueAndChangeListener(
+    private fun SettingToggle.setActiveAndOnChangedListener(
         initialValue: Boolean,
-        onCheckedChangeListener: (Boolean) -> Unit,
+        onChangedListener: (Boolean) -> Unit,
     ) {
-        setOnCheckedChangeListener(null)
-        isChecked = initialValue
-        setOnCheckedChangeListener { _, isChecked -> onCheckedChangeListener(isChecked) }
+        isActive = initialValue
+        setOnChangedListener(onChangedListener)
     }
 
     private fun MaterialButton.selectOnClick(
