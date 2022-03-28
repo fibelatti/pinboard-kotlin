@@ -57,32 +57,6 @@ internal class PostActionHandlerTest {
         }
 
         @Test
-        fun `GIVEN shouldLoad is ShouldLoadFirstPage WHEN currentContent is PostListContent THEN same content is returned`() {
-            // GIVEN
-            val content = mockk<PostListContent>()
-            every { content.shouldLoad } returns ShouldLoadFirstPage
-
-            // WHEN
-            val result = runBlocking { postActionHandler.runAction(Refresh(), content) }
-
-            // THEN
-            assertThat(result).isEqualTo(content)
-        }
-
-        @Test
-        fun `GIVEN shouldLoad is ShouldLoadNextPage WHEN currentContent is PostListContent THEN same content is returned`() {
-            // GIVEN
-            val content = mockk<PostListContent>()
-            every { content.shouldLoad } returns ShouldLoadNextPage(0)
-
-            // WHEN
-            val result = runBlocking { postActionHandler.runAction(Refresh(), content) }
-
-            // THEN
-            assertThat(result).isEqualTo(content)
-        }
-
-        @Test
         fun `WHEN currentContent is PostListContent and is connected is false THEN updated content is returned`() {
             // GIVEN
             every { mockConnectivityInfoProvider.isConnected() } returns false
@@ -506,32 +480,6 @@ internal class PostActionHandlerTest {
 
             // WHEN
             val result = runBlocking { postActionHandler.runAction(ToggleSorting, content) }
-
-            // THEN
-            assertThat(result).isEqualTo(content)
-        }
-
-        @Test
-        fun `GIVEN shouldLoad is ShouldLoadFirstPage WHEN currentContent is PostListContent THEN same content is returned`() {
-            // GIVEN
-            val content = mockk<PostListContent>()
-            every { content.shouldLoad } returns ShouldLoadFirstPage
-
-            // WHEN
-            val result = runBlocking { postActionHandler.runAction(Refresh(), content) }
-
-            // THEN
-            assertThat(result).isEqualTo(content)
-        }
-
-        @Test
-        fun `GIVEN shouldLoad is ShouldLoadNextPage WHEN currentContent is PostListContent THEN same content is returned`() {
-            // GIVEN
-            val content = mockk<PostListContent>()
-            every { content.shouldLoad } returns ShouldLoadNextPage(0)
-
-            // WHEN
-            val result = runBlocking { postActionHandler.runAction(Refresh(), content) }
 
             // THEN
             assertThat(result).isEqualTo(content)
