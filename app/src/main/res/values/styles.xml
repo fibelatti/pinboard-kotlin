@@ -126,6 +126,9 @@
         <item name="android:layout_marginEnd">@dimen/margin_xsmall</item>
         <item name="android:layout_weight">1</item>
         <item name="android:gravity">center</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
         <item name="iconGravity">textStart</item>
         <item name="iconPadding">@dimen/padding_small</item>
         <item name="iconSize">@dimen/quick_action_icon_size</item>

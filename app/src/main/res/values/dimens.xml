@@ -60,7 +60,7 @@
 
     <dimen name="post_list_animation_logo_margin">28dp</dimen>
 
-    <dimen name="quick_action_icon_size">20dp</dimen>
+    <dimen name="quick_action_icon_size">16dp</dimen>
 
     <dimen name="scroll_offset">50dp</dimen>
 </resources>
