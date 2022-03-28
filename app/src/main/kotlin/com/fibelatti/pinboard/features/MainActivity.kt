@@ -37,6 +37,7 @@ import com.fibelatti.pinboard.core.functional.DoNothing
 import com.fibelatti.pinboard.databinding.ActivityMainBinding
 import com.fibelatti.pinboard.features.appstate.AddPostContent
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.features.appstate.Content
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.ExternalBrowserContent
 import com.fibelatti.pinboard.features.appstate.ExternalContent
@@ -60,8 +61,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 val Fragment.mainActivity: MainActivity? get() = activity as? MainActivity
@@ -157,46 +158,50 @@ class MainActivity : BaseActivity() {
     }
 
     private fun setupViewModels() {
-        lifecycleScope.launch {
-            authViewModel.loginState.collect(::handleLoginState)
-        }
-        lifecycleScope.launch {
-            authViewModel.error.collect(::handleError)
-        }
-        lifecycleScope.launch {
-            appStateViewModel.content.collect { content ->
-                if (isRecreating) {
-                    isRecreating = false
-                    return@collect
-                }
+        authViewModel.loginState
+            .onEach(::handleLoginState)
+            .launchIn(lifecycleScope)
 
-                if (supportFragmentManager.isStateSaved) {
-                    return@collect
-                }
+        authViewModel.error
+            .onEach(::handleError)
+            .launchIn(lifecycleScope)
 
-                when (content) {
-                    is PostListContent -> featureFragments.showPostList()
-                    is PostDetailContent -> featureFragments.showPostDetail()
-                    is ExternalBrowserContent -> {
-                        featureFragments.showPostInExternalBrowser(content.post)
-                        onResumeDelegate = { appStateViewModel.runAction(NavigateBack) }
-                    }
-                    is SearchContent -> featureFragments.showSearch()
-                    is AddPostContent -> featureFragments.showAddPost()
-                    is EditPostContent -> featureFragments.showEditPost()
-                    is TagListContent -> featureFragments.showTags()
-                    is NoteListContent -> featureFragments.showNotes()
-                    is NoteDetailContent -> featureFragments.showNoteDetails()
-                    is PopularPostsContent -> featureFragments.showPopular()
-                    is PopularPostDetailContent -> featureFragments.showPostDetail()
-                    is UserPreferencesContent -> featureFragments.showPreferences()
-                    is ExternalContent -> {
-                        appStateViewModel.reset()
-                        finish()
-                    }
-                }.exhaustive
+        appStateViewModel.content
+            .onEach(::handleContent)
+            .launchIn(lifecycleScope)
+    }
+
+    private fun handleContent(content: Content) {
+        if (isRecreating) {
+            isRecreating = false
+            return
+        }
+
+        if (supportFragmentManager.isStateSaved) {
+            return
+        }
+
+        when (content) {
+            is PostListContent -> featureFragments.showPostList()
+            is PostDetailContent -> featureFragments.showPostDetail()
+            is ExternalBrowserContent -> {
+                featureFragments.showPostInExternalBrowser(content.post)
+                onResumeDelegate = { appStateViewModel.runAction(NavigateBack) }
             }
-        }
+            is SearchContent -> featureFragments.showSearch()
+            is AddPostContent -> featureFragments.showAddPost()
+            is EditPostContent -> featureFragments.showEditPost()
+            is TagListContent -> featureFragments.showTags()
+            is NoteListContent -> featureFragments.showNotes()
+            is NoteDetailContent -> featureFragments.showNoteDetails()
+            is PopularPostsContent -> featureFragments.showPopular()
+            is PopularPostDetailContent -> featureFragments.showPostDetail()
+            is UserPreferencesContent -> featureFragments.showPreferences()
+            is ExternalContent -> {
+                appStateViewModel.reset()
+                finish()
+            }
+        }.exhaustive
     }
 
     fun updateTitleLayout(titleUpdates: TitleLayout.() -> Unit) {
@@ -226,27 +231,19 @@ class MainActivity : BaseActivity() {
             return
         }
 
-        val animTime = resources.getInteger(R.integer.anim_time_long).toLong()
-        lifecycleScope.launch {
-            delay(animTime)
-            inTransaction {
-                setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-                replace(R.id.fragmentHost, createFragment<PostListFragment>(), PostListFragment.TAG)
-            }
+        inTransaction {
+            setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+            replace(R.id.fragmentHost, createFragment<PostListFragment>(), PostListFragment.TAG)
         }
     }
 
     private fun handleLoggedOut() {
-        val animTime = resources.getInteger(R.integer.anim_time_long).toLong()
-        lifecycleScope.launch {
-            delay(animTime)
-            inTransaction {
-                setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-                replace(R.id.fragmentHost, createFragment<AuthFragment>())
-            }
-
-            hideControls()
+        inTransaction {
+            setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+            replace(R.id.fragmentHost, createFragment<AuthFragment>())
         }
+
+        hideControls()
     }
 
     private fun handleUnauthorized() {
