@@ -56,7 +56,7 @@ class PostDetailFragment @Inject constructor(
     private val postDetailViewModel: PostDetailViewModel by viewModels()
     private val popularPostsViewModel: PopularPostsViewModel by viewModels()
 
-    private var binding by viewBinding<FragmentPostDetailBinding>()
+    private val binding by viewBinding(FragmentPostDetailBinding::bind)
 
     private val knownFileExtensions = listOf(
         "pdf",
@@ -75,10 +75,7 @@ class PostDetailFragment @Inject constructor(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View = FragmentPostDetailBinding.inflate(inflater, container, false).run {
-        binding = this
-        binding.root
-    }
+    ): View = FragmentPostDetailBinding.inflate(inflater, container, false).root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -37,16 +37,13 @@ class TagsFragment @Inject constructor(
     private val appStateViewModel: AppStateViewModel by activityViewModels()
     private val tagsViewModel: TagsViewModel by viewModels()
 
-    private var binding by viewBinding<FragmentTagsBinding>()
+    private val binding by viewBinding(FragmentTagsBinding::bind)
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = FragmentTagsBinding.inflate(inflater, container, false).run {
-        binding = this
-        binding.root
-    }
+    ): View = FragmentTagsBinding.inflate(inflater, container, false).root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

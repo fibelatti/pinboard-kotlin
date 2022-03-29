@@ -50,7 +50,7 @@ class NavigationMenuFragment @Inject constructor(
     private val appStateViewModel: AppStateViewModel by activityViewModels()
     private val authViewModel: AuthViewModel by viewModels()
 
-    private var binding by viewBinding<FragmentMenuBinding>()
+    private val binding by viewBinding(FragmentMenuBinding::bind)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -75,10 +75,7 @@ class NavigationMenuFragment @Inject constructor(
                 }
         }
 
-        return FragmentMenuBinding.inflate(inflater, container, false).run {
-            binding = this
-            binding.root
-        }
+        return FragmentMenuBinding.inflate(inflater, container, false).root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

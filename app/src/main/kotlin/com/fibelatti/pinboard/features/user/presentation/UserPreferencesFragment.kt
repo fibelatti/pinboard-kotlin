@@ -53,16 +53,13 @@ class UserPreferencesFragment @Inject constructor(
 
     private val userPreferencesViewModel: UserPreferencesViewModel by viewModels()
 
-    private var binding by viewBinding<FragmentUserPreferencesBinding>()
+    private val binding by viewBinding(FragmentUserPreferencesBinding::bind)
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View = FragmentUserPreferencesBinding.inflate(inflater, container, false).run {
-        binding = this
-        binding.root
-    }
+    ): View = FragmentUserPreferencesBinding.inflate(inflater, container, false).root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

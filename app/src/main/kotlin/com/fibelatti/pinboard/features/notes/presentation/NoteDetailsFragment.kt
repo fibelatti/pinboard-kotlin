@@ -36,16 +36,13 @@ class NoteDetailsFragment @Inject constructor() : BaseFragment() {
     private val appStateViewModel: AppStateViewModel by activityViewModels()
     private val noteDetailsViewModel: NoteDetailsViewModel by viewModels()
 
-    private var binding by viewBinding<FragmentNoteDetailBinding>()
+    private val binding by viewBinding(FragmentNoteDetailBinding::bind)
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = FragmentNoteDetailBinding.inflate(inflater, container, false).run {
-        binding = this
-        binding.root
-    }
+    ): View = FragmentNoteDetailBinding.inflate(inflater, container, false).root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

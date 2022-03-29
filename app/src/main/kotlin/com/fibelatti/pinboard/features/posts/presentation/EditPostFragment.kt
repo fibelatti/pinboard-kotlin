@@ -53,7 +53,7 @@ class EditPostFragment @Inject constructor(
     private val editPostViewModel: EditPostViewModel by viewModels()
     private val postDetailViewModel: PostDetailViewModel by viewModels()
 
-    private var binding by viewBinding<FragmentEditPostBinding>()
+    private val binding by viewBinding(FragmentEditPostBinding::bind)
 
     private var isRecreating: Boolean = false
 
@@ -79,10 +79,7 @@ class EditPostFragment @Inject constructor(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View = FragmentEditPostBinding.inflate(inflater, container, false).run {
-        binding = this
-        binding.root
-    }
+    ): View = FragmentEditPostBinding.inflate(inflater, container, false).root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

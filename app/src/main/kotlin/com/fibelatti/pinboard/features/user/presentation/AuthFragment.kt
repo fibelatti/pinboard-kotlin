@@ -37,16 +37,13 @@ class AuthFragment @Inject constructor() : BaseFragment() {
 
     private val authViewModel: AuthViewModel by activityViewModels()
 
-    private var binding by viewBinding<FragmentAuthBinding>()
+    private val binding by viewBinding(FragmentAuthBinding::bind)
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = FragmentAuthBinding.inflate(inflater, container, false).run {
-        binding = this
-        binding.root
-    }
+    ): View = FragmentAuthBinding.inflate(inflater, container, false).root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

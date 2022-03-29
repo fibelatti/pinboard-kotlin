@@ -74,7 +74,7 @@ class PostListFragment @Inject constructor(
     private val postListViewModel: PostListViewModel by viewModels()
     private val postDetailViewModel: PostDetailViewModel by viewModels()
 
-    private var binding by viewBinding<FragmentPostListBinding>()
+    private val binding by viewBinding(FragmentPostListBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,10 +88,7 @@ class PostListFragment @Inject constructor(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View = FragmentPostListBinding.inflate(inflater, container, false).run {
-        binding = this
-        binding.root
-    }
+    ): View = FragmentPostListBinding.inflate(inflater, container, false).root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

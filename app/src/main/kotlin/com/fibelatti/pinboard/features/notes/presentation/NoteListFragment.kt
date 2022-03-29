@@ -43,16 +43,13 @@ class NoteListFragment @Inject constructor(
     private val appStateViewModel: AppStateViewModel by activityViewModels()
     private val noteListViewModel: NoteListViewModel by viewModels()
 
-    private var binding by viewBinding<FragmentNoteListBinding>()
+    private val binding by viewBinding(FragmentNoteListBinding::bind)
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = FragmentNoteListBinding.inflate(inflater, container, false).run {
-        binding = this
-        binding.root
-    }
+    ): View = FragmentNoteListBinding.inflate(inflater, container, false).root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

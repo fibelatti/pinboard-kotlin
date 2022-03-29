@@ -44,16 +44,13 @@ class PopularPostsFragment @Inject constructor(
     private val appStateViewModel: AppStateViewModel by activityViewModels()
     private val popularPostsViewModel: PopularPostsViewModel by viewModels()
 
-    private var binding by viewBinding<FragmentPopularPostsBinding>()
+    private val binding by viewBinding(FragmentPopularPostsBinding::bind)
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View = FragmentPopularPostsBinding.inflate(inflater, container, false).run {
-        binding = this
-        binding.root
-    }
+    ): View = FragmentPopularPostsBinding.inflate(inflater, container, false).root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

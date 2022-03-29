@@ -55,16 +55,13 @@ class PostSearchFragment @Inject constructor(
     private val appStateViewModel: AppStateViewModel by activityViewModels()
     private val tagsViewModel: TagsViewModel by viewModels()
 
-    private var binding by viewBinding<FragmentSearchPostBinding>()
+    private val binding by viewBinding(FragmentSearchPostBinding::bind)
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = FragmentSearchPostBinding.inflate(inflater, container, false).run {
-        binding = this
-        binding.root
-    }
+    ): View = FragmentSearchPostBinding.inflate(inflater, container, false).root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
