@@ -7,7 +7,7 @@ import com.fibelatti.pinboard.databinding.ListItemTagBinding
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import javax.inject.Inject
 
-class TagsAdapter @Inject constructor() : BaseAdapter<Tag>() {
+class TagsAdapter @Inject constructor() : BaseAdapter<Tag>(hasFilter = true) {
 
     var onItemClicked: ((Tag) -> Unit)? = null
 
@@ -25,4 +25,6 @@ class TagsAdapter @Inject constructor() : BaseAdapter<Tag>() {
 
         setOnClickListener { onItemClicked?.invoke(item) }
     }
+
+    override fun filterCriteria(query: String, item: Tag): Boolean = item.name.startsWith(query, ignoreCase = true)
 }

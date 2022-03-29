@@ -141,6 +141,8 @@
     <string name="tags_sorting_a_to_z">A to Z</string>
     <string name="tags_sorting_more_first">More first</string>
     <string name="tags_sorting_less_first">Less first</string>
+    <string name="tags_sorting_filter">Search</string>
+    <string name="tag_filter_hint">Tag name</string>
 
     <!-- Notes -->
     <string name="notes_title">Notes</string>

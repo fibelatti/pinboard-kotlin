@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    tools:parentTag="android.widget.LinearLayout"
     tools:showIn="@layout/fragment_tags">
 
     <include
@@ -42,7 +43,33 @@
             style="?attr/materialButtonOutlinedStyle"
             android:text="@string/tags_sorting_less_first" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonTagSortingFilter"
+            style="?attr/materialButtonOutlinedStyle"
+            android:text="@string/tags_sorting_filter" />
+
     </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutTagFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_regular"
+        android:layout_marginTop="@dimen/margin_small"
+        android:layout_marginEnd="@dimen/margin_regular"
+        android:layout_marginBottom="@dimen/margin_small"
+        android:hint="@string/tag_filter_hint"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextTagFilter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:importantForAutofill="no"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeToRefresh"
@@ -54,9 +81,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
+            android:orientation="vertical"
             android:paddingStart="@dimen/padding_regular"
             android:paddingEnd="@dimen/padding_regular"
             android:paddingBottom="@dimen/fab_offset_bottom"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/list_item_tag" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </merge>

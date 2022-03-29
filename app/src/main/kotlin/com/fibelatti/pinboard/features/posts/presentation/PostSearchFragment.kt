@@ -6,11 +6,16 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.applyAs
+import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.inflate
@@ -33,13 +38,12 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagsAdapter
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class PostSearchFragment @Inject constructor(
-    private val tagsAdapter: TagsAdapter
+    private val tagsAdapter: TagsAdapter,
 ) : BaseFragment() {
 
     companion object {
@@ -70,6 +74,7 @@ class PostSearchFragment @Inject constructor(
     }
 
     private fun setupLayout() {
+        handleKeyboardVisibility()
         binding.root.animateChangingTransitions()
 
         binding.editTextSearchTerm.setOnEditorActionListener { _, actionId, _ ->
@@ -84,6 +89,13 @@ class PostSearchFragment @Inject constructor(
         binding.tagListLayout.setAdapter(tagsAdapter) { appStateViewModel.runAction(AddSearchTag(it)) }
         binding.tagListLayout.setOnRefreshListener { appStateViewModel.runAction(RefreshSearchTags) }
         binding.tagListLayout.setSortingClickListener(tagsViewModel::sortTags)
+        binding.tagListLayout.setInputFocusChangeListener { hasFocus ->
+            val imeVisible = ViewCompat.getRootWindowInsets(requireView())
+                ?.isVisible(WindowInsetsCompat.Type.ime()) ?: false
+
+            binding.textInputLayoutSearchTerm.isGone = hasFocus && imeVisible
+            binding.textViewSearchTermCaveat.isGone = hasFocus && imeVisible
+        }
 
         setupActivityViews()
     }
@@ -100,8 +112,10 @@ class PostSearchFragment @Inject constructor(
                     }
 
                     binding.textViewSelectedTagsTitle.visible()
+                    binding.layoutChipContainer.isVisible = true
                 } else {
                     binding.textViewSelectedTagsTitle.gone()
+                    binding.layoutChipContainer.isGone = true
                     binding.chipGroupSelectedTags.removeAllViews()
                 }
 
@@ -145,6 +159,14 @@ class PostSearchFragment @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun handleKeyboardVisibility() {
+        binding.root.doOnApplyWindowInsets { _, insets, _, _ ->
+            val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+            binding.textInputLayoutSearchTerm.isGone = imeVisible && binding.tagListLayout.isInputFocused
+            binding.textViewSearchTermCaveat.isGone = imeVisible && binding.tagListLayout.isInputFocused
         }
     }
 

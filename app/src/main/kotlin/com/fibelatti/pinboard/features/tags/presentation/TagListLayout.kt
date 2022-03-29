@@ -5,9 +5,12 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
+import com.fibelatti.core.extension.clearText
 import com.fibelatti.core.extension.gone
+import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.visible
-import com.fibelatti.core.extension.withLinearLayoutManager
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.databinding.LayoutTagListBinding
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -23,23 +26,24 @@ class TagListLayout @JvmOverloads constructor(
 
     private var tagsAdapter: TagsAdapter? = null
 
+    val isInputFocused: Boolean get() = binding.editTextTagFilter.isFocused
+
     init {
         orientation = VERTICAL
         layoutTransition = LayoutTransition().apply {
             enableTransitionType(LayoutTransition.CHANGE_APPEARING)
             enableTransitionType(LayoutTransition.CHANGE_DISAPPEARING)
         }
-        binding.recyclerViewTags.withLinearLayoutManager()
+
+        binding.editTextTagFilter.doAfterTextChanged {
+            tagsAdapter?.filter(query = it.toString())
+        }
     }
 
     fun setAdapter(adapter: TagsAdapter, onClickListener: (Tag) -> Unit = {}) {
         tagsAdapter = adapter
-        setAdapterItemOnClickListener(onClickListener)
+        adapter.onItemClicked = onClickListener
         binding.recyclerViewTags.adapter = adapter
-    }
-
-    fun setAdapterItemOnClickListener(onClickListener: (Tag) -> Unit) {
-        tagsAdapter?.onItemClicked = onClickListener
     }
 
     fun setOnRefreshListener(onRefresh: () -> Unit) {
@@ -54,19 +58,40 @@ class TagListLayout @JvmOverloads constructor(
 
         binding.buttonTagSortingAtoZ.setOnClickListener {
             binding.buttonTagSortingAtoZ.isChecked = true
-            tagsAdapter?.let { onSortingSelected(it.getItems(), TagSorting.AtoZ) }
-            binding.recyclerViewTags.scrollToPosition(0)
+            onModeSelected(onSortingSelected, TagSorting.AtoZ, filterVisible = false)
         }
         binding.buttonTagSortingMoreFirst.setOnClickListener {
             binding.buttonTagSortingMoreFirst.isChecked = true
-            tagsAdapter?.let { onSortingSelected(it.getItems(), TagSorting.MoreFirst) }
-            binding.recyclerViewTags.scrollToPosition(0)
+            onModeSelected(onSortingSelected, TagSorting.MoreFirst, filterVisible = false)
         }
         binding.buttonTagSortingLessFirst.setOnClickListener {
             binding.buttonTagSortingLessFirst.isChecked = true
-            tagsAdapter?.let { onSortingSelected(it.getItems(), TagSorting.LessFirst) }
-            binding.recyclerViewTags.scrollToPosition(0)
+            onModeSelected(onSortingSelected, TagSorting.LessFirst, filterVisible = false)
         }
+        binding.buttonTagSortingFilter.setOnClickListener {
+            binding.buttonTagSortingFilter.isChecked = true
+            onModeSelected(onSortingSelected, TagSorting.AtoZ, filterVisible = true)
+        }
+    }
+
+    private fun onModeSelected(
+        onSortingSelected: (List<Tag>, TagSorting) -> Unit,
+        tagSorting: TagSorting,
+        filterVisible: Boolean,
+    ) {
+        if (!filterVisible) {
+            binding.root.hideKeyboard()
+            binding.editTextTagFilter.clearText()
+        }
+
+        binding.textInputLayoutTagFilter.isVisible = filterVisible
+        binding.recyclerViewTags.scrollToPosition(0)
+
+        tagsAdapter?.let { onSortingSelected(it.getItems(), tagSorting) }
+    }
+
+    fun setInputFocusChangeListener(onInputFocused: (hasFocus: Boolean) -> Unit) {
+        binding.editTextTagFilter.setOnFocusChangeListener { _, hasFocus -> onInputFocused(hasFocus) }
     }
 
     fun showLoading() {
@@ -83,6 +108,11 @@ class TagListLayout @JvmOverloads constructor(
             binding.layoutEmptyList.gone()
 
             tagsAdapter?.submitList(list)
+
+            val currentFilter = binding.editTextTagFilter.text.toString()
+            if (currentFilter.isNotBlank()) {
+                tagsAdapter?.filter(query = currentFilter)
+            }
         } else {
             showEmptyLayout()
         }
