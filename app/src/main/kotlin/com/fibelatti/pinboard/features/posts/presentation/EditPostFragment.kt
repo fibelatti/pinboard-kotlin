@@ -23,6 +23,7 @@ import com.fibelatti.core.extension.showError
 import com.fibelatti.core.extension.textAsString
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.smoothScrollY
 import com.fibelatti.pinboard.core.extension.viewBinding
@@ -38,7 +39,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class EditPostFragment @Inject constructor() : BaseFragment() {
+class EditPostFragment @Inject constructor(
+    @MainVariant private val mainVariant: Boolean,
+) : BaseFragment() {
 
     companion object {
 
@@ -137,6 +140,7 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
 
     private fun setupLayout() {
         handleKeyboardVisibility()
+        binding.layoutAddPost.togglePrivate.isVisible = mainVariant
         binding.layoutAddTags.setup(
             afterTagInput = editPostViewModel::searchForTag,
             onTagRemoved = editPostViewModel::searchForTag

@@ -9,12 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.view.WindowCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.shareText
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentMenuBinding
 import com.fibelatti.pinboard.features.appstate.All
@@ -36,7 +38,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class NavigationMenuFragment @Inject constructor() : BottomSheetDialogFragment() {
+class NavigationMenuFragment @Inject constructor(
+    @MainVariant private val mainVariant: Boolean,
+) : BottomSheetDialogFragment() {
 
     companion object {
         @JvmStatic
@@ -86,6 +90,11 @@ class NavigationMenuFragment @Inject constructor() : BottomSheetDialogFragment()
         } catch (ignored: PackageManager.NameNotFoundException) {
             binding.menuItemVersion.gone()
         }
+
+        binding.menuItemPublic.isVisible = mainVariant
+        binding.menuItemPrivate.isVisible = mainVariant
+        binding.menuItemNotes.isVisible = mainVariant
+        binding.menuItemLogout.isVisible = mainVariant
 
         setupCategoryListeners()
         setupUserListeners()

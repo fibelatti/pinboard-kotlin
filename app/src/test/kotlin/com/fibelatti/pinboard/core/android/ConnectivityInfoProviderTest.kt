@@ -27,11 +27,11 @@ internal class ConnectivityInfoProviderTest {
         every { it.getNetworkCapabilities(mockNetworkC) } returns null
     }
 
-    private val connectivityInfoProvider = ConnectivityInfoProvider(mockConnectivityManager)
+    private val connectivityInfoProvider = ConnectivityInfoProvider(mockConnectivityManager, mainVariant = true)
 
     @Test
     fun `WHEN ConnectivityManager is null THEN isConnected should return false`() {
-        assertThat(ConnectivityInfoProvider(connectivityManager = null).isConnected()).isFalse()
+        assertThat(ConnectivityInfoProvider(connectivityManager = null, mainVariant = true).isConnected()).isFalse()
     }
 
     @Test
