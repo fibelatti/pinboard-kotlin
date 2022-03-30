@@ -100,14 +100,13 @@ internal class UserDataSourceTest {
         @Test
         fun `WHEN mainVariant is false THEN loginState will return LoggedIn`() {
             // GIVEN
+            every { mockUserSharedPreferences.authToken } returns ""
+
             userDataSource = UserDataSource(mockUserSharedPreferences, mainVariant = false)
 
             // THEN
             runBlocking {
                 assertThat(userDataSource.loginState.first()).isEqualTo(LoginState.LoggedIn)
-            }
-            verify(exactly = 0) {
-                mockUserSharedPreferences.authToken
             }
         }
     }
