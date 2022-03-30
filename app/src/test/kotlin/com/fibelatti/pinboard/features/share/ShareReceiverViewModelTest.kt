@@ -13,8 +13,8 @@ import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.ExtractUrl
-import com.fibelatti.pinboard.features.posts.domain.usecase.ParseUrl
-import com.fibelatti.pinboard.features.posts.domain.usecase.RichUrl
+import com.fibelatti.pinboard.features.posts.domain.usecase.GetUrlPreview
+import com.fibelatti.pinboard.features.posts.domain.usecase.UrlPreview
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test
 internal class ShareReceiverViewModelTest : BaseViewModelTest() {
 
     private val mockExtractUrl = mockk<ExtractUrl>()
-    private val mockParseUrl = mockk<ParseUrl>()
+    private val mockGetUrlPreview = mockk<GetUrlPreview>()
     private val mockAddPost = mockk<AddPost>()
     private val mockUserRepository = mockk<UserRepository>()
     private val mockAppStateRepository = mockk<AppStateRepository>(relaxUnitFun = true)
@@ -43,7 +43,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
 
     private val shareReceiverViewModel = ShareReceiverViewModel(
         mockExtractUrl,
-        mockParseUrl,
+        mockGetUrlPreview,
         mockAddPost,
         mockUserRepository,
         mockAppStateRepository,
@@ -66,10 +66,10 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `WHEN ParseUrl fails THEN failed should receive a value`() {
+    fun `WHEN GetUrlPreview fails THEN failed should receive a value`() {
         // GIVEN
         coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
-        coEvery { mockParseUrl(mockUrlValid) } returns Failure(error)
+        coEvery { mockGetUrlPreview(mockUrlValid) } returns Failure(error)
 
         // WHEN
         shareReceiverViewModel.saveUrl(mockUrlValid)
@@ -89,7 +89,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         val defaultTags = mockk<List<Tag>>()
 
         coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
-        coEvery { mockParseUrl(mockUrlValid) } returns Success(RichUrl(mockUrlValid, mockUrlValid))
+        coEvery { mockGetUrlPreview(mockUrlValid) } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
         every { mockUserRepository.defaultPrivate } returns defaultPrivate
         every { mockUserRepository.defaultReadLater } returns defaultReadLater
         every { mockUserRepository.defaultTags } returns defaultTags
@@ -126,7 +126,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         val defaultTags = mockk<List<Tag>>()
 
         coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
-        coEvery { mockParseUrl(mockUrlValid) } returns Success(RichUrl(mockUrlValid, mockUrlValid))
+        coEvery { mockGetUrlPreview(mockUrlValid) } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
         every { mockUserRepository.defaultPrivate } returns defaultPrivate
         every { mockUserRepository.defaultReadLater } returns defaultReadLater
         every { mockUserRepository.defaultTags } returns defaultTags
@@ -164,7 +164,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         val defaultTags = mockk<List<Tag>>()
 
         coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
-        coEvery { mockParseUrl(mockUrlValid) } returns Success(RichUrl(mockUrlValid, mockUrlValid))
+        coEvery { mockGetUrlPreview(mockUrlValid) } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
         every { mockUserRepository.defaultPrivate } returns defaultPrivate
         every { mockUserRepository.defaultReadLater } returns defaultReadLater
         every { mockUserRepository.defaultTags } returns defaultTags
@@ -203,7 +203,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         val defaultTags = mockk<List<Tag>>()
 
         coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
-        coEvery { mockParseUrl(mockUrlValid) } returns Success(RichUrl(mockUrlValid, mockUrlValid))
+        coEvery { mockGetUrlPreview(mockUrlValid) } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
         every { mockUserRepository.defaultPrivate } returns defaultPrivate
         every { mockUserRepository.defaultReadLater } returns defaultReadLater
         every { mockUserRepository.defaultTags } returns defaultTags

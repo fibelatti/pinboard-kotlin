@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.core.di.modules
 
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.core.di.UrlParser
 import com.fibelatti.pinboard.core.network.ApiInterceptor
 import com.fibelatti.pinboard.core.network.ApiRateLimitRunner
 import com.fibelatti.pinboard.core.network.RateLimitRunner
@@ -67,6 +68,16 @@ object NetworkModule {
             .apply { if (BuildConfig.DEBUG) addInterceptor(loggingInterceptor) }
             .build()
     }
+
+    @Provides
+    @UrlParser
+    fun urlParserOkHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor,
+    ): OkHttpClient = OkHttpClient.Builder()
+        .followRedirects(true)
+        .followSslRedirects(true)
+        .apply { if (BuildConfig.DEBUG) addInterceptor(loggingInterceptor) }
+        .build()
 
     @Provides
     fun httpLoggingInterceptor(): HttpLoggingInterceptor = HttpLoggingInterceptor()

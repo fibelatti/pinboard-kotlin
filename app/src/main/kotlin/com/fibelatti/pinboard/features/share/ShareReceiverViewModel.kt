@@ -13,8 +13,8 @@ import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.ExtractUrl
-import com.fibelatti.pinboard.features.posts.domain.usecase.ParseUrl
-import com.fibelatti.pinboard.features.posts.domain.usecase.RichUrl
+import com.fibelatti.pinboard.features.posts.domain.usecase.GetUrlPreview
+import com.fibelatti.pinboard.features.posts.domain.usecase.UrlPreview
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -26,7 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ShareReceiverViewModel @Inject constructor(
     private val extractUrl: ExtractUrl,
-    private val parseUrl: ParseUrl,
+    private val getUrlPreview: GetUrlPreview,
     private val addPost: AddPost,
     private val userRepository: UserRepository,
     private val appStateRepository: AppStateRepository,
@@ -42,21 +42,21 @@ class ShareReceiverViewModel @Inject constructor(
 
     fun saveUrl(url: String) {
         launch {
-            val richUrl = extractUrl(url)
-                .map { extractedUrl -> parseUrl(extractedUrl) }
+            val urlPreview = extractUrl(url)
+                .map { extractedUrl -> getUrlPreview(extractedUrl) }
                 .onFailure { _failed.value = it }
                 .getOrNull() ?: return@launch
 
             if (userRepository.editAfterSharing is EditAfterSharing.BeforeSaving) {
-                editBookmark(richUrl = richUrl)
+                editBookmark(urlPreview = urlPreview)
             } else {
-                addBookmark(richUrl = richUrl)
+                addBookmark(urlPreview = urlPreview)
             }
         }
     }
 
-    private suspend fun editBookmark(richUrl: RichUrl) {
-        val (finalUrl: String, title: String, description: String?) = richUrl
+    private suspend fun editBookmark(urlPreview: UrlPreview) {
+        val (finalUrl: String, title: String, description: String?) = urlPreview
         val newPost = Post(
             url = finalUrl,
             title = title,
@@ -70,8 +70,8 @@ class ShareReceiverViewModel @Inject constructor(
         appStateRepository.runAction(EditPostFromShare(newPost))
     }
 
-    private suspend fun addBookmark(richUrl: RichUrl) {
-        val (finalUrl: String, title: String, description: String?) = richUrl
+    private suspend fun addBookmark(urlPreview: UrlPreview) {
+        val (finalUrl: String, title: String, description: String?) = urlPreview
 
         addPost(
             AddPost.Params(
