@@ -82,6 +82,7 @@ class UserDataSource @Inject constructor(
     override var preferredDateFormat: PreferredDateFormat
         get() = when (userSharedPreferences.preferredDateFormat) {
             PreferredDateFormat.MonthDayYearWithTime.value -> PreferredDateFormat.MonthDayYearWithTime
+            PreferredDateFormat.ShortYearMonthDayWithTime.value -> PreferredDateFormat.ShortYearMonthDayWithTime
             PreferredDateFormat.YearMonthDayWithTime.value -> PreferredDateFormat.YearMonthDayWithTime
             else -> PreferredDateFormat.DayMonthYearWithTime
         }

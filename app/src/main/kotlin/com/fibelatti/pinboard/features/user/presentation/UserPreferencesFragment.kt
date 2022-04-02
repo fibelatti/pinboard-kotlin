@@ -232,6 +232,7 @@ class UserPreferencesFragment @Inject constructor(
         when (preferredDateFormat) {
             PreferredDateFormat.DayMonthYearWithTime -> binding.buttonDateFormatDayFirst.isChecked = true
             PreferredDateFormat.MonthDayYearWithTime -> binding.buttonDateFormatMonthFirst.isChecked = true
+            PreferredDateFormat.ShortYearMonthDayWithTime -> binding.buttonDateFormatShortYearFirst.isChecked = true
             PreferredDateFormat.YearMonthDayWithTime -> binding.buttonDateFormatYearFirst.isChecked = true
         }
         binding.buttonDateFormatDayFirst.selectOnClick {
@@ -239,6 +240,9 @@ class UserPreferencesFragment @Inject constructor(
         }
         binding.buttonDateFormatMonthFirst.selectOnClick {
             userPreferencesViewModel.savePreferredDateFormat(PreferredDateFormat.MonthDayYearWithTime)
+        }
+        binding.buttonDateFormatShortYearFirst.selectOnClick {
+            userPreferencesViewModel.savePreferredDateFormat(PreferredDateFormat.ShortYearMonthDayWithTime)
         }
         binding.buttonDateFormatYearFirst.selectOnClick {
             userPreferencesViewModel.savePreferredDateFormat(PreferredDateFormat.YearMonthDayWithTime)
