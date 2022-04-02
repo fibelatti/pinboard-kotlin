@@ -31,7 +31,7 @@ jobs:
         run: ./gradlew clean assemblePinboardapi --stacktrace
 
       - name: Upload Pinboard API APK
-        uses: actions/upload-artifact@v2.2.4
+        uses: actions/upload-artifact@v3
         with:
           path: app/build/outputs/apk/pinboardapi/debug/app-pinboardapi-debug.apk
 
