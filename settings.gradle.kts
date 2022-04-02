@@ -64,7 +64,7 @@ dependencyResolutionManagement {
             // Test
             library("fibelatti-core-test", "com.fibelatti.core", "core-test").versionRef("fibelatti")
 
-            library("junit", "junit:junit:4.13")
+            library("junit", "junit:junit:4.13.2")
 
             version("junit5", "5.8.2")
             library("junit5-api", "org.junit.jupiter", "junit-jupiter-api").versionRef("junit5")
