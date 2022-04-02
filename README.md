@@ -12,17 +12,14 @@ Pinkt is an unofficial [Pinboard](http://pinboard.in/) Android client. Pinboard 
 About the project
 --------
 
-It is mainly developed as a playground to study many topics related to Android.
+Pinkt is a playground to study modern Android development.
 
-This project is used to study and demonstrate many topics related to Android development such as:
-- Android Support Library
-- Kotlin
-- Coroutines
-- ViewModel and LiveData
-- Room (with FTS)
-- DI with Dagger 2
+Here you will find a codebase that encourages the usage of state using Kotlin Coroutines + Kotlin Flows as foundation for a pragmatic unidirectional dataflow implementation. These are some of the topics you can expect to see:
+- Material Design, including Material 3
+- Android Jetpack, including WorkManager and Room (with FTS)
+- Kotlin, Coroutines and Flows
+- DI using Hilt
 - Detekt
-- Source Control Organisation
 - CI with GitHub Actions
 
 License
