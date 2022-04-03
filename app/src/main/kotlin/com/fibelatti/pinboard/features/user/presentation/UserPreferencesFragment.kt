@@ -16,7 +16,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.extension.doOnApplyWindowInsets
-import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.pinboard.R
@@ -88,7 +87,7 @@ class UserPreferencesFragment @Inject constructor(
             bottomAppBar.run {
                 navigationIcon = null
                 menu.clear()
-                gone()
+                isVisible = false
             }
             fab.hide()
         }
@@ -299,6 +298,7 @@ class UserPreferencesFragment @Inject constructor(
             }
         )
 
+        binding.toggleMarkAsReadOnOpen.isVisible = preferredDetailsView != PreferredDetailsView.Edit
         binding.toggleMarkAsReadOnOpen.setActiveAndOnChangedListener(
             initialValue = when (preferredDetailsView) {
                 is PreferredDetailsView.InAppBrowser -> preferredDetailsView.markAsReadOnOpen
