@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?android:colorBackground"
@@ -35,33 +36,11 @@
                 android:layout_height="wrap_content"
                 android:text="@string/user_preferences_periodic_sync_description" />
 
-            <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/buttonGroupPeriodicSync"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonPeriodicSync"
+                style="@style/AppTheme.SelectionButton"
                 android:layout_marginTop="@dimen/margin_small"
-                app:singleSelection="true">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonPeriodicSyncOff"
-                    style="?attr/materialButtonOutlinedStyle"
-                    android:text="@string/user_preferences_periodic_sync_off" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonPeriodicSync6Hours"
-                    style="?attr/materialButtonOutlinedStyle"
-                    android:text="@string/user_preferences_periodic_sync_6_hours" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonPeriodicSync12Hours"
-                    style="?attr/materialButtonOutlinedStyle"
-                    android:text="@string/user_preferences_periodic_sync_12_hours" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonPeriodicSync24Hours"
-                    style="?attr/materialButtonOutlinedStyle"
-                    android:text="@string/user_preferences_periodic_sync_24_hours" />
-            </com.google.android.material.button.MaterialButtonToggleGroup>
+                tools:text="@string/user_preferences_periodic_sync_24_hours" />
 
             <TextView
                 style="@style/AppTheme.Text.Caveat"
@@ -87,33 +66,10 @@
                 android:layout_height="wrap_content"
                 android:text="@string/user_preferences_appearance" />
 
-            <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/buttonGroupAppearance"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:singleSelection="true">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonAppearanceDark"
-                    style="@style/AppTheme.GroupButtonItem"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/user_preferences_appearance_dark" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonAppearanceLight"
-                    style="@style/AppTheme.GroupButtonItem"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/user_preferences_appearance_light" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonAppearanceSystemDefault"
-                    style="@style/AppTheme.GroupButtonItem"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/user_preferences_appearance_system_default" />
-            </com.google.android.material.button.MaterialButtonToggleGroup>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonAppearance"
+                style="@style/AppTheme.SelectionButton"
+                tools:text="@string/user_preferences_appearance_system_default" />
 
             <com.fibelatti.pinboard.core.android.customview.SettingToggle
                 android:id="@+id/toggleDynamicColors"
@@ -131,45 +87,10 @@
                 android:layout_marginTop="@dimen/margin_xlarge"
                 android:text="@string/user_preferences_date_format" />
 
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <com.google.android.material.button.MaterialButtonToggleGroup
-                    android:id="@+id/buttonGroupDateFormat"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:singleSelection="true">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/buttonDateFormatDayFirst"
-                        style="@style/AppTheme.GroupButtonItem"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/user_preferences_date_format_day_first" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/buttonDateFormatMonthFirst"
-                        style="@style/AppTheme.GroupButtonItem"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/user_preferences_date_format_month_first" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/buttonDateFormatShortYearFirst"
-                        style="@style/AppTheme.GroupButtonItem"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/user_preferences_date_format_short_year_first" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/buttonDateFormatYearFirst"
-                        style="@style/AppTheme.GroupButtonItem"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/user_preferences_date_format_year_first" />
-                </com.google.android.material.button.MaterialButtonToggleGroup>
-            </HorizontalScrollView>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonPreferredDateFormat"
+                style="@style/AppTheme.SelectionButton"
+                tools:text="@string/user_preferences_date_format_day_first" />
         </LinearLayout>
 
         <LinearLayout
@@ -187,35 +108,10 @@
                 android:layout_height="wrap_content"
                 android:text="@string/user_preferences_preferred_details_view" />
 
-            <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/buttonGroupPreferredDetailsView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:singleSelection="true">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonPreferredDetailsViewInApp"
-                    style="?attr/materialButtonOutlinedStyle"
-                    android:text="@string/user_preferences_preferred_details_in_app_browser" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonPreferredDetailsViewExternal"
-                    style="?attr/materialButtonOutlinedStyle"
-                    android:text="@string/user_preferences_preferred_details_external_browser" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonPreferredDetailsViewEdit"
-                    style="?attr/materialButtonOutlinedStyle"
-                    android:text="@string/user_preferences_preferred_details_post_details" />
-            </com.google.android.material.button.MaterialButtonToggleGroup>
-
-            <TextView
-                android:id="@+id/textViewPreferredDetailsViewCaveat"
-                style="@style/AppTheme.Text.Caveat"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"
-                android:text="@string/user_preferences_preferred_details_in_app_browser_caveat" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonPreferredDetailsView"
+                style="@style/AppTheme.SelectionButton"
+                tools:text="@string/user_preferences_preferred_details_in_app_browser" />
 
             <TextView
                 style="@style/AppTheme.Text.Caveat"
@@ -279,33 +175,10 @@
                 android:layout_height="wrap_content"
                 android:text="@string/user_preferences_edit_after_sharing_title" />
 
-            <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/buttonGroupEditAfterSharing"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:singleSelection="true">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonBeforeSaving"
-                    style="@style/AppTheme.GroupButtonItem"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/user_preferences_edit_after_sharing_before_saving" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonAfterSaving"
-                    style="@style/AppTheme.GroupButtonItem"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/user_preferences_edit_after_sharing_after_saving" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonSkipEditing"
-                    style="@style/AppTheme.GroupButtonItem"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/user_preferences_edit_after_sharing_skip" />
-            </com.google.android.material.button.MaterialButtonToggleGroup>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonEditAfterSharing"
+                style="@style/AppTheme.SelectionButton"
+                tools:text="@string/user_preferences_edit_after_sharing_before_saving" />
 
             <TextView
                 style="@style/AppTheme.Text.Caveat"

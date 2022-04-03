@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
@@ -18,10 +19,10 @@ import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.navigateBack
-import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
+import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.android.customview.SettingToggle
 import com.fibelatti.pinboard.core.di.MainVariant
@@ -182,42 +183,50 @@ class UserPreferencesFragment @Inject constructor(
     }
 
     private fun setupPeriodicSync(periodicSync: PeriodicSync) {
-        when (periodicSync) {
-            PeriodicSync.Off -> binding.buttonPeriodicSyncOff.isChecked = true
-            PeriodicSync.Every6Hours -> binding.buttonPeriodicSync6Hours.isChecked = true
-            PeriodicSync.Every12Hours -> binding.buttonPeriodicSync12Hours.isChecked = true
-            PeriodicSync.Every24Hours -> binding.buttonPeriodicSync24Hours.isChecked = true
-        }
-        binding.buttonPeriodicSyncOff.selectOnClick {
-            userPreferencesViewModel.savePeriodicSync(PeriodicSync.Off)
-        }
-        binding.buttonPeriodicSync6Hours.selectOnClick {
-            userPreferencesViewModel.savePeriodicSync(PeriodicSync.Every6Hours)
-        }
-        binding.buttonPeriodicSync12Hours.selectOnClick {
-            userPreferencesViewModel.savePeriodicSync(PeriodicSync.Every12Hours)
-        }
-        binding.buttonPeriodicSync24Hours.selectOnClick {
-            userPreferencesViewModel.savePeriodicSync(PeriodicSync.Every24Hours)
-        }
+        binding.buttonPeriodicSync.setupSelectionButton(
+            currentSelection = periodicSync,
+            buttonText = { option: PeriodicSync ->
+                when (option) {
+                    PeriodicSync.Off -> R.string.user_preferences_periodic_sync_off
+                    PeriodicSync.Every6Hours -> R.string.user_preferences_periodic_sync_6_hours
+                    PeriodicSync.Every12Hours -> R.string.user_preferences_periodic_sync_12_hours
+                    PeriodicSync.Every24Hours -> R.string.user_preferences_periodic_sync_24_hours
+                }
+            },
+            title = R.string.user_preferences_periodic_sync,
+            options = {
+                listOf(
+                    PeriodicSync.Off,
+                    PeriodicSync.Every6Hours,
+                    PeriodicSync.Every12Hours,
+                    PeriodicSync.Every24Hours,
+                )
+            },
+            onOptionSelected = userPreferencesViewModel::savePeriodicSync,
+        )
     }
 
     @Suppress("MagicNumber")
     private fun setupAppearance(appearance: Appearance, applyDynamicColors: Boolean) {
-        when (appearance) {
-            Appearance.DarkTheme -> binding.buttonAppearanceDark.isChecked = true
-            Appearance.LightTheme -> binding.buttonAppearanceLight.isChecked = true
-            else -> binding.buttonAppearanceSystemDefault.isChecked = true
-        }
-        binding.buttonAppearanceDark.selectOnClick {
-            userPreferencesViewModel.saveAppearance(Appearance.DarkTheme)
-        }
-        binding.buttonAppearanceLight.selectOnClick {
-            userPreferencesViewModel.saveAppearance(Appearance.LightTheme)
-        }
-        binding.buttonAppearanceSystemDefault.selectOnClick {
-            userPreferencesViewModel.saveAppearance(Appearance.SystemDefault)
-        }
+        binding.buttonAppearance.setupSelectionButton(
+            currentSelection = appearance,
+            buttonText = { option: Appearance ->
+                when (option) {
+                    Appearance.DarkTheme -> R.string.user_preferences_appearance_dark
+                    Appearance.LightTheme -> R.string.user_preferences_appearance_light
+                    Appearance.SystemDefault -> R.string.user_preferences_appearance_system_default
+                }
+            },
+            title = R.string.user_preferences_appearance,
+            options = {
+                listOf(
+                    Appearance.DarkTheme,
+                    Appearance.LightTheme,
+                    Appearance.SystemDefault,
+                )
+            },
+            onOptionSelected = userPreferencesViewModel::saveAppearance,
+        )
 
         binding.toggleDynamicColors.setActiveAndOnChangedListener(applyDynamicColors) {
             userPreferencesViewModel.saveApplyDynamicColors(it)
@@ -229,107 +238,97 @@ class UserPreferencesFragment @Inject constructor(
     }
 
     private fun setupPreferredDateFormat(preferredDateFormat: PreferredDateFormat) {
-        when (preferredDateFormat) {
-            PreferredDateFormat.DayMonthYearWithTime -> binding.buttonDateFormatDayFirst.isChecked = true
-            PreferredDateFormat.MonthDayYearWithTime -> binding.buttonDateFormatMonthFirst.isChecked = true
-            PreferredDateFormat.ShortYearMonthDayWithTime -> binding.buttonDateFormatShortYearFirst.isChecked = true
-            PreferredDateFormat.YearMonthDayWithTime -> binding.buttonDateFormatYearFirst.isChecked = true
-        }
-        binding.buttonDateFormatDayFirst.selectOnClick {
-            userPreferencesViewModel.savePreferredDateFormat(PreferredDateFormat.DayMonthYearWithTime)
-        }
-        binding.buttonDateFormatMonthFirst.selectOnClick {
-            userPreferencesViewModel.savePreferredDateFormat(PreferredDateFormat.MonthDayYearWithTime)
-        }
-        binding.buttonDateFormatShortYearFirst.selectOnClick {
-            userPreferencesViewModel.savePreferredDateFormat(PreferredDateFormat.ShortYearMonthDayWithTime)
-        }
-        binding.buttonDateFormatYearFirst.selectOnClick {
-            userPreferencesViewModel.savePreferredDateFormat(PreferredDateFormat.YearMonthDayWithTime)
-        }
+        binding.buttonPreferredDateFormat.setupSelectionButton(
+            currentSelection = preferredDateFormat,
+            buttonText = { option: PreferredDateFormat ->
+                when (option) {
+                    PreferredDateFormat.DayMonthYearWithTime -> R.string.user_preferences_date_format_day_first
+                    PreferredDateFormat.MonthDayYearWithTime -> R.string.user_preferences_date_format_month_first
+                    PreferredDateFormat.ShortYearMonthDayWithTime ->
+                        R.string.user_preferences_date_format_short_year_first
+                    PreferredDateFormat.YearMonthDayWithTime -> R.string.user_preferences_date_format_year_first
+                }
+            },
+            title = R.string.user_preferences_date_format,
+            options = {
+                listOf(
+                    PreferredDateFormat.DayMonthYearWithTime,
+                    PreferredDateFormat.MonthDayYearWithTime,
+                    PreferredDateFormat.ShortYearMonthDayWithTime,
+                    PreferredDateFormat.YearMonthDayWithTime,
+                )
+            },
+            onOptionSelected = userPreferencesViewModel::savePreferredDateFormat,
+        )
     }
 
     private fun setupPreferredDetailsView(preferredDetailsView: PreferredDetailsView) {
-        val markAsReadOnOpen: Boolean = when (preferredDetailsView) {
-            is PreferredDetailsView.InAppBrowser -> {
-                inAppSelected(preferredDetailsView.markAsReadOnOpen)
-                preferredDetailsView.markAsReadOnOpen
+        binding.buttonPreferredDetailsView.setupSelectionButton(
+            currentSelection = preferredDetailsView,
+            buttonText = { option: PreferredDetailsView ->
+                when (option) {
+                    is PreferredDetailsView.InAppBrowser -> R.string.user_preferences_preferred_details_in_app_browser
+                    is PreferredDetailsView.ExternalBrowser ->
+                        R.string.user_preferences_preferred_details_external_browser
+                    is PreferredDetailsView.Edit -> R.string.user_preferences_preferred_details_post_details
+                }
+            },
+            title = R.string.user_preferences_preferred_details_view,
+            options = {
+                listOf(
+                    PreferredDetailsView.InAppBrowser(binding.toggleMarkAsReadOnOpen.isActive),
+                    PreferredDetailsView.ExternalBrowser(binding.toggleMarkAsReadOnOpen.isActive),
+                    PreferredDetailsView.Edit,
+                )
+            },
+            onOptionSelected = { option: PreferredDetailsView ->
+                when (option) {
+                    is PreferredDetailsView.InAppBrowser -> {
+                        userPreferencesViewModel.savePreferredDetailsView(option)
+                        binding.toggleMarkAsReadOnOpen.isVisible = true
+                    }
+                    is PreferredDetailsView.ExternalBrowser -> {
+                        userPreferencesViewModel.savePreferredDetailsView(option)
+                        binding.toggleMarkAsReadOnOpen.isVisible = true
+                    }
+                    is PreferredDetailsView.Edit -> {
+                        userPreferencesViewModel.savePreferredDetailsView(option)
+                        binding.toggleMarkAsReadOnOpen.isVisible = false
+                    }
+                }
             }
-            is PreferredDetailsView.ExternalBrowser -> {
-                externalSelected(preferredDetailsView.markAsReadOnOpen)
-                preferredDetailsView.markAsReadOnOpen
-            }
-            PreferredDetailsView.Edit -> {
-                editSelected()
-                false
-            }
-        }
+        )
 
-        binding.buttonPreferredDetailsViewInApp.setOnClickListener {
-            userPreferencesViewModel.savePreferredDetailsView(
-                PreferredDetailsView.InAppBrowser(binding.toggleMarkAsReadOnOpen.isActive)
-            )
-            inAppSelected(markAsReadOnOpen)
-        }
-        binding.buttonPreferredDetailsViewExternal.setOnClickListener {
-            userPreferencesViewModel.savePreferredDetailsView(
-                PreferredDetailsView.ExternalBrowser(binding.toggleMarkAsReadOnOpen.isActive)
-            )
-            externalSelected(markAsReadOnOpen)
-        }
-        binding.buttonPreferredDetailsViewEdit.setOnClickListener {
-            userPreferencesViewModel.savePreferredDetailsView(PreferredDetailsView.Edit)
-            editSelected()
-        }
+        binding.toggleMarkAsReadOnOpen.setActiveAndOnChangedListener(
+            initialValue = when (preferredDetailsView) {
+                is PreferredDetailsView.InAppBrowser -> preferredDetailsView.markAsReadOnOpen
+                is PreferredDetailsView.ExternalBrowser -> preferredDetailsView.markAsReadOnOpen
+                is PreferredDetailsView.Edit -> false
+            },
+            onChangedListener = userPreferencesViewModel::saveMarkAsReadOnOpen,
+        )
     }
 
     private fun setupEditAfterSharing(editAfterSharing: EditAfterSharing) {
-        when (editAfterSharing) {
-            EditAfterSharing.BeforeSaving -> binding.buttonBeforeSaving.isChecked = true
-            EditAfterSharing.AfterSaving -> binding.buttonAfterSaving.isChecked = true
-            EditAfterSharing.SkipEdit -> binding.buttonSkipEditing.isChecked = true
-        }
-        binding.buttonBeforeSaving.selectOnClick {
-            userPreferencesViewModel.saveEditAfterSharing(EditAfterSharing.BeforeSaving)
-        }
-        binding.buttonAfterSaving.selectOnClick {
-            userPreferencesViewModel.saveEditAfterSharing(EditAfterSharing.AfterSaving)
-        }
-        binding.buttonSkipEditing.selectOnClick {
-            userPreferencesViewModel.saveEditAfterSharing(EditAfterSharing.SkipEdit)
-        }
-    }
-
-    private fun inAppSelected(markAsReadOnOpen: Boolean) {
-        binding.buttonPreferredDetailsViewInApp.isChecked = true
-        binding.textViewPreferredDetailsViewCaveat.setText(
-            R.string.user_preferences_preferred_details_in_app_browser_caveat
+        binding.buttonEditAfterSharing.setupSelectionButton(
+            currentSelection = editAfterSharing,
+            buttonText = { option: EditAfterSharing ->
+                when (option) {
+                    is EditAfterSharing.BeforeSaving -> R.string.user_preferences_edit_after_sharing_before_saving
+                    is EditAfterSharing.AfterSaving -> R.string.user_preferences_edit_after_sharing_after_saving
+                    is EditAfterSharing.SkipEdit -> R.string.user_preferences_edit_after_sharing_skip
+                }
+            },
+            title = R.string.user_preferences_edit_after_sharing_title,
+            options = {
+                listOf(
+                    EditAfterSharing.BeforeSaving,
+                    EditAfterSharing.AfterSaving,
+                    EditAfterSharing.SkipEdit,
+                )
+            },
+            onOptionSelected = userPreferencesViewModel::saveEditAfterSharing,
         )
-        binding.toggleMarkAsReadOnOpen.setActiveAndOnChangedListener(
-            markAsReadOnOpen,
-            userPreferencesViewModel::saveMarkAsReadOnOpen
-        )
-        binding.toggleMarkAsReadOnOpen.visible()
-    }
-
-    private fun externalSelected(markAsReadOnOpen: Boolean) {
-        binding.buttonPreferredDetailsViewExternal.isChecked = true
-        binding.textViewPreferredDetailsViewCaveat.setText(
-            R.string.user_preferences_preferred_details_external_browser_caveat
-        )
-        binding.toggleMarkAsReadOnOpen.setActiveAndOnChangedListener(
-            markAsReadOnOpen,
-            userPreferencesViewModel::saveMarkAsReadOnOpen
-        )
-        binding.toggleMarkAsReadOnOpen.visible()
-    }
-
-    private fun editSelected() {
-        binding.buttonPreferredDetailsViewEdit.isChecked = true
-        binding.textViewPreferredDetailsViewCaveat.setText(
-            R.string.user_preferences_preferred_details_post_details_caveat
-        )
-        binding.toggleMarkAsReadOnOpen.gone()
     }
 
     private fun SettingToggle.setActiveAndOnChangedListener(
@@ -346,6 +345,25 @@ class UserPreferencesFragment @Inject constructor(
         setOnClickListener {
             onClickListener()
             isChecked = true
+        }
+    }
+
+    private fun <T> MaterialButton.setupSelectionButton(
+        currentSelection: T,
+        buttonText: (T) -> Int,
+        @StringRes title: Int,
+        options: () -> List<T>,
+        onOptionSelected: (T) -> Unit,
+    ) = apply {
+        setText(buttonText(currentSelection))
+        setOnClickListener {
+            SelectionDialog.showSelectionDialog(
+                context = requireContext(),
+                title = getString(title),
+                options = options(),
+                optionName = { option -> getString(buttonText(option)) },
+                onOptionSelected = onOptionSelected,
+            )
         }
     }
 }

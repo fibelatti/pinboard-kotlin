@@ -136,6 +136,13 @@
         <item name="iconSize">@dimen/quick_action_icon_size</item>
     </style>
 
+    <style name="AppTheme.SelectionButton" parent="Widget.Material3.Button.ElevatedButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="icon">@drawable/ic_edit</item>
+        <item name="iconGravity">end</item>
+    </style>
+
     <style name="AppTheme.ProgressBarStyle" parent="Base.Widget.AppCompat.ProgressBar">
         <item name="android:layout_height">@dimen/progress_bar_size</item>
         <item name="android:layout_width">@dimen/progress_bar_size</item>
