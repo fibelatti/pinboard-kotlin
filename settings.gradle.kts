@@ -14,7 +14,7 @@ dependencyResolutionManagement {
             version("fibelatti", "2.0.0-alpha4")
 
             // Classpath
-            library("android-gradle-plugin", "com.android.tools.build:gradle:7.1.2")
+            library("android-gradle-plugin", "com.android.tools.build:gradle:7.1.3")
             library("kotlin-gradle-plugin", "org.jetbrains.kotlin", "kotlin-gradle-plugin").versionRef("kotlin")
             library("hilt-gradle-plugin", "com.google.dagger", "hilt-android-gradle-plugin").versionRef("hilt")
 
