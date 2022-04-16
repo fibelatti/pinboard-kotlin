@@ -16,7 +16,7 @@ dependencyResolutionManagement {
             library("kotlin-reflect", "org.jetbrains.kotlin:kotlin-reflect:1.6.10")
 
             library("coroutines-core", "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
-            library("coroutines-android", "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
+            library("coroutines-android", "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1")
 
             library("appcompat", "androidx.appcompat:appcompat:1.4.1")
             library("core-ktx", "androidx.core:core-ktx:1.7.0")
