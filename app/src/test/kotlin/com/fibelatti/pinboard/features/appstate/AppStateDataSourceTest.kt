@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.core.functional.SingleRunner
-import com.fibelatti.pinboard.InstantExecutorExtension
+import com.fibelatti.core.test.extension.mock
 import com.fibelatti.pinboard.allSealedSubclasses
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -13,23 +13,22 @@ import io.mockk.mockk
 import io.mockk.mockkClass
 import io.mockk.spyk
 import io.mockk.verify
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.fail
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
-@ExtendWith(InstantExecutorExtension::class)
 internal class AppStateDataSourceTest {
 
-    private val mockUserRepository = mockk<UserRepository>(relaxed = true)
+    private val mockUserRepository = mockk<UserRepository>(relaxed = true) {
+        every { hasAuthToken() } returns true
+    }
     private val mockNavigationActionHandler = mockk<NavigationActionHandler>()
     private val mockPostActionHandler = mockk<PostActionHandler>()
     private val mockSearchActionHandler = mockk<SearchActionHandler>()
@@ -37,9 +36,25 @@ internal class AppStateDataSourceTest {
     private val mockNoteActionHandler = mockk<NoteActionHandler>()
     private val mockPopularActionHandler = mockk<PopularActionHandler>()
     private val singleRunner = SingleRunner()
-    private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider>()
+    private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider> {
+        every { isConnected() } returns false
+    }
 
-    private lateinit var appStateDataSource: AppStateDataSource
+    private val appStateDataSource: AppStateDataSource = spyk(
+        AppStateDataSource(
+            mockUserRepository,
+            mockNavigationActionHandler,
+            mockPostActionHandler,
+            mockSearchActionHandler,
+            mockTagActionHandler,
+            mockNoteActionHandler,
+            mockPopularActionHandler,
+            singleRunner,
+            mockConnectivityInfoProvider,
+        )
+    )
+
+    private val expectedLoginInitialValue = LoginContent()
 
     private val expectedInitialValue = PostListContent(
         category = All,
@@ -48,61 +63,39 @@ internal class AppStateDataSourceTest {
         sortType = NewestFirst,
         searchParameters = SearchParameters(),
         shouldLoad = ShouldLoadFirstPage,
-        isConnected = false
+        isConnected = false,
     )
 
-    @BeforeEach
-    fun setup() {
-        Dispatchers.setMain(Dispatchers.Unconfined)
-
-        every { mockConnectivityInfoProvider.isConnected() } returns false
-
-        appStateDataSource = spyk(
-            AppStateDataSource(
-                mockUserRepository,
-                mockNavigationActionHandler,
-                mockPostActionHandler,
-                mockSearchActionHandler,
-                mockTagActionHandler,
-                mockNoteActionHandler,
-                mockPopularActionHandler,
-                singleRunner,
-                mockConnectivityInfoProvider
-            )
-        )
+    @Test
+    fun `AppStateDataSource initial value should be set`() = runTest {
+        assertThat(appStateDataSource.getContent().first()).isEqualTo(expectedInitialValue)
     }
 
     @Test
-    fun `AppStateDataSource initial value should be set`() {
-        runBlocking {
-            assertThat(appStateDataSource.getContent().first()).isEqualTo(expectedInitialValue)
-        }
-    }
-
-    @Test
-    fun `reset should set currentContent to the initial value`() {
+    fun `reset should set currentContent to the initial value`() = runTest {
         // GIVEN
-        coEvery { appStateDataSource.getInitialContent() } returns expectedInitialValue
+        appStateDataSource.updateContent(mock())
 
         // WHEN
         appStateDataSource.reset()
 
         // THEN
-        verify { appStateDataSource.getInitialContent() }
-        verify { appStateDataSource.updateContent(expectedInitialValue) }
-        runBlocking {
-            assertThat(appStateDataSource.getContent().first()).isEqualTo(expectedInitialValue)
-        }
+        assertThat(appStateDataSource.getContent().first()).isEqualTo(expectedInitialValue)
     }
 
     @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class RunActionTests {
 
+        @BeforeEach
+        fun setup() {
+            appStateDataSource.reset()
+        }
+
         @ParameterizedTest
         @MethodSource("testCases")
-        fun `WHEN runAction is called THEN expected action handler is called`(testCase: Pair<Action, ExpectedHandler>) {
-            runBlocking {
+        fun `WHEN runAction is called THEN expected action handler is called`(testCase: Pair<Action, ExpectedHandler>) =
+            runTest {
                 // GIVEN
                 coEvery { mockNavigationActionHandler.runAction(any(), any()) } returns expectedInitialValue
                 coEvery { mockPostActionHandler.runAction(any(), any()) } returns expectedInitialValue
@@ -118,6 +111,23 @@ internal class AppStateDataSourceTest {
 
                 // THEN
                 when (expectedHandler) {
+                    ExpectedHandler.NONE -> {
+                        when (action) {
+                            is UserLoggedIn -> {
+                                assertThat(appStateDataSource.getContent().first()).isEqualTo(expectedInitialValue)
+                            }
+                            is UserLoggedOut -> {
+                                assertThat(appStateDataSource.getContent().first()).isEqualTo(expectedLoginInitialValue)
+                                verify { mockUserRepository.clearAuthToken() }
+                            }
+                            is UserUnauthorized -> {
+                                assertThat(appStateDataSource.getContent().first())
+                                    .isEqualTo(LoginContent(isUnauthorized = true))
+                                verify { mockUserRepository.clearAuthToken() }
+                            }
+                            else -> fail { "Action should be assigned to a handler" }
+                        }
+                    }
                     ExpectedHandler.NAVIGATION -> {
                         if (action is NavigationAction) {
                             coVerify { mockNavigationActionHandler.runAction(action, expectedInitialValue) }
@@ -162,67 +172,66 @@ internal class AppStateDataSourceTest {
                     }
                 }.let { } // to make it exhaustive
             }
-        }
 
-        fun testCases(): List<Pair<Action, ExpectedHandler>> =
-            mutableListOf<Pair<Action, ExpectedHandler>>().apply {
-                Action::class.allSealedSubclasses
-                    .map { it.objectInstance ?: mockkClass(it) }
-                    .forEach { action ->
-                        when (action) {
-                            // Navigation
-                            NavigateBack -> add(NavigateBack to ExpectedHandler.NAVIGATION)
-                            All -> add(All to ExpectedHandler.NAVIGATION)
-                            Recent -> add(Recent to ExpectedHandler.NAVIGATION)
-                            Public -> add(Public to ExpectedHandler.NAVIGATION)
-                            Private -> add(Private to ExpectedHandler.NAVIGATION)
-                            Unread -> add(Unread to ExpectedHandler.NAVIGATION)
-                            Untagged -> add(Untagged to ExpectedHandler.NAVIGATION)
-                            is ViewPost -> add(mockk<ViewPost>() to ExpectedHandler.NAVIGATION)
-                            ViewSearch -> add(ViewSearch to ExpectedHandler.NAVIGATION)
-                            AddPost -> add(AddPost to ExpectedHandler.NAVIGATION)
-                            ViewTags -> add(ViewTags to ExpectedHandler.NAVIGATION)
-                            ViewNotes -> add(ViewNotes to ExpectedHandler.NAVIGATION)
-                            is ViewNote -> add(mockk<ViewNote>() to ExpectedHandler.NAVIGATION)
-                            ViewPopular -> add(ViewPopular to ExpectedHandler.NAVIGATION)
-                            ViewPreferences -> add(ViewPreferences to ExpectedHandler.NAVIGATION)
+        fun testCases(): List<Pair<Action, ExpectedHandler>> = Action::class.allSealedSubclasses.map {
+            when (it.objectInstance ?: mockkClass(it)) {
+                // Auth
+                UserLoggedIn -> UserLoggedIn to ExpectedHandler.NONE
+                UserLoggedOut -> UserLoggedOut to ExpectedHandler.NONE
+                UserUnauthorized -> UserUnauthorized to ExpectedHandler.NONE
 
-                            // Post
-                            is Refresh -> add(mockk<Refresh>() to ExpectedHandler.POST)
-                            is SetPosts -> add(mockk<SetPosts>() to ExpectedHandler.POST)
-                            GetNextPostPage -> add(GetNextPostPage to ExpectedHandler.POST)
-                            is SetNextPostPage -> add(mockk<SetNextPostPage>() to ExpectedHandler.POST)
-                            PostsDisplayed -> add(PostsDisplayed to ExpectedHandler.POST)
-                            ToggleSorting -> add(ToggleSorting to ExpectedHandler.POST)
-                            is EditPost -> add(mockk<EditPost>() to ExpectedHandler.POST)
-                            is EditPostFromShare -> add(mockk<EditPostFromShare>() to ExpectedHandler.POST)
-                            is PostSaved -> add(mockk<PostSaved>() to ExpectedHandler.POST)
-                            PostDeleted -> add(PostDeleted to ExpectedHandler.POST)
+                // Navigation
+                NavigateBack -> NavigateBack to ExpectedHandler.NAVIGATION
+                All -> All to ExpectedHandler.NAVIGATION
+                Recent -> Recent to ExpectedHandler.NAVIGATION
+                Public -> Public to ExpectedHandler.NAVIGATION
+                Private -> Private to ExpectedHandler.NAVIGATION
+                Unread -> Unread to ExpectedHandler.NAVIGATION
+                Untagged -> Untagged to ExpectedHandler.NAVIGATION
+                is ViewPost -> mockk<ViewPost>() to ExpectedHandler.NAVIGATION
+                ViewSearch -> ViewSearch to ExpectedHandler.NAVIGATION
+                AddPost -> AddPost to ExpectedHandler.NAVIGATION
+                ViewTags -> ViewTags to ExpectedHandler.NAVIGATION
+                ViewNotes -> ViewNotes to ExpectedHandler.NAVIGATION
+                is ViewNote -> mockk<ViewNote>() to ExpectedHandler.NAVIGATION
+                ViewPopular -> ViewPopular to ExpectedHandler.NAVIGATION
+                ViewPreferences -> ViewPreferences to ExpectedHandler.NAVIGATION
 
-                            // Search
-                            RefreshSearchTags -> add(RefreshSearchTags to ExpectedHandler.SEARCH)
-                            is SetSearchTags -> add(mockk<SetSearchTags>() to ExpectedHandler.SEARCH)
-                            is AddSearchTag -> add(mockk<AddSearchTag>() to ExpectedHandler.SEARCH)
-                            is RemoveSearchTag -> add(mockk<RemoveSearchTag>() to ExpectedHandler.SEARCH)
-                            is Search -> add(mockk<Search>() to ExpectedHandler.SEARCH)
-                            ClearSearch -> add(ClearSearch to ExpectedHandler.SEARCH)
+                // Post
+                is Refresh -> mockk<Refresh>() to ExpectedHandler.POST
+                is SetPosts -> mockk<SetPosts>() to ExpectedHandler.POST
+                GetNextPostPage -> GetNextPostPage to ExpectedHandler.POST
+                is SetNextPostPage -> mockk<SetNextPostPage>() to ExpectedHandler.POST
+                PostsDisplayed -> PostsDisplayed to ExpectedHandler.POST
+                ToggleSorting -> ToggleSorting to ExpectedHandler.POST
+                is EditPost -> mockk<EditPost>() to ExpectedHandler.POST
+                is EditPostFromShare -> mockk<EditPostFromShare>() to ExpectedHandler.POST
+                is PostSaved -> mockk<PostSaved>() to ExpectedHandler.POST
+                PostDeleted -> PostDeleted to ExpectedHandler.POST
 
-                            // Tag
-                            RefreshTags -> add(RefreshTags to ExpectedHandler.TAG)
-                            is SetTags -> add(mockk<SetTags>() to ExpectedHandler.TAG)
-                            is PostsForTag -> add(mockk<PostsForTag>() to ExpectedHandler.TAG)
+                // Search
+                RefreshSearchTags -> RefreshSearchTags to ExpectedHandler.SEARCH
+                is SetSearchTags -> mockk<SetSearchTags>() to ExpectedHandler.SEARCH
+                is AddSearchTag -> mockk<AddSearchTag>() to ExpectedHandler.SEARCH
+                is RemoveSearchTag -> mockk<RemoveSearchTag>() to ExpectedHandler.SEARCH
+                is Search -> mockk<Search>() to ExpectedHandler.SEARCH
+                ClearSearch -> ClearSearch to ExpectedHandler.SEARCH
 
-                            // Notes
-                            RefreshNotes -> add(RefreshNotes to ExpectedHandler.NOTE)
-                            is SetNotes -> add(mockk<SetNotes>() to ExpectedHandler.NOTE)
-                            is SetNote -> add(mockk<SetNote>() to ExpectedHandler.NOTE)
+                // Tag
+                RefreshTags -> RefreshTags to ExpectedHandler.TAG
+                is SetTags -> mockk<SetTags>() to ExpectedHandler.TAG
+                is PostsForTag -> mockk<PostsForTag>() to ExpectedHandler.TAG
 
-                            // Popular
-                            RefreshPopular -> add(RefreshPopular to ExpectedHandler.POPULAR)
-                            is SetPopularPosts -> add(mockk<SetPopularPosts>() to ExpectedHandler.POPULAR)
-                        }.let { } // to make it exhaustive
-                    }
+                // Notes
+                RefreshNotes -> RefreshNotes to ExpectedHandler.NOTE
+                is SetNotes -> mockk<SetNotes>() to ExpectedHandler.NOTE
+                is SetNote -> mockk<SetNote>() to ExpectedHandler.NOTE
+
+                // Popular
+                RefreshPopular -> RefreshPopular to ExpectedHandler.POPULAR
+                is SetPopularPosts -> mockk<SetPopularPosts>() to ExpectedHandler.POPULAR
             }
+        }
     }
 
     @Nested
@@ -320,12 +329,21 @@ internal class AppStateDataSourceTest {
     }
 
     @Test
-    fun `WHEN getInitialContent is called THEN expected initial content is returned`() {
+    fun `GIVEN hasAuthToken is false WHEN getInitialContent is called THEN expected initial content is returned`() {
+        coEvery { mockUserRepository.hasAuthToken() } returns false
+
+        assertThat(appStateDataSource.getInitialContent()).isEqualTo(expectedLoginInitialValue)
+    }
+
+    @Test
+    fun `GIVEN hasAuthToken is true WHEN getInitialContent is called THEN expected initial content is returned`() {
+        coEvery { mockUserRepository.hasAuthToken() } returns true
+
         assertThat(appStateDataSource.getInitialContent()).isEqualTo(expectedInitialValue)
     }
 
     @Test
-    fun `GIVEN updateContent is called THEN getContent should return that value`() {
+    fun `GIVEN updateContent is called THEN getContent should return that value`() = runTest {
         // GIVEN
         val mockContent = mockk<Content>()
 
@@ -333,12 +351,16 @@ internal class AppStateDataSourceTest {
         appStateDataSource.updateContent(mockContent)
 
         // THEN
-        runBlocking {
-            assertThat(appStateDataSource.getContent().first()).isEqualTo(mockContent)
-        }
+        assertThat(appStateDataSource.getContent().first()).isEqualTo(mockContent)
     }
 
     internal enum class ExpectedHandler {
-        NAVIGATION, POST, SEARCH, TAG, NOTE, POPULAR
+        NONE,
+        NAVIGATION,
+        POST,
+        SEARCH,
+        TAG,
+        NOTE,
+        POPULAR,
     }
 }

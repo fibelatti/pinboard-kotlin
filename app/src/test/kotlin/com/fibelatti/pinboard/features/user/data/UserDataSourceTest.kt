@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.user.data
 
-import com.fibelatti.pinboard.InstantExecutorExtension
 import com.fibelatti.pinboard.MockDataProvider.mockApiToken
 import com.fibelatti.pinboard.MockDataProvider.mockTime
 import com.fibelatti.pinboard.core.android.Appearance
@@ -10,21 +9,20 @@ import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
+import io.mockk.Called
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 
-@ExtendWith(InstantExecutorExtension::class)
 internal class UserDataSourceTest {
 
     private val mockUserSharedPreferences = mockk<UserSharedPreferences>(relaxed = true) {
@@ -41,7 +39,7 @@ internal class UserDataSourceTest {
         every { defaultTags } returns emptyList()
     }
 
-    private fun defaultPreferences() = UserPreferences(
+    private val defaultPreferences = UserPreferences(
         periodicSync = PeriodicSync.Off,
         appearance = Appearance.SystemDefault,
         applyDynamicColors = false,
@@ -55,144 +53,23 @@ internal class UserDataSourceTest {
         defaultTags = emptyList(),
     )
 
+    private val userDataSource = UserDataSource(mockUserSharedPreferences, mainVariant = true)
+
     @Nested
     inner class InitialisationTests {
 
-        private lateinit var userDataSource: UserDataSource
-
         @Test
-        fun `currentPreferences will contain the initial state`() {
-            // GIVEN
-            userDataSource = UserDataSource(mockUserSharedPreferences, mainVariant = true)
-
-            // THEN
-            runBlocking {
-                assertThat(userDataSource.currentPreferences.first()).isEqualTo(defaultPreferences())
-            }
-        }
-
-        @Test
-        fun `WHEN getAuthToken is not empty THEN getLoginState will return LoggedIn`() {
-            // GIVEN
-            every { mockUserSharedPreferences.authToken } returns mockApiToken
-
-            userDataSource = UserDataSource(mockUserSharedPreferences, mainVariant = true)
-
-            // THEN
-            runBlocking {
-                assertThat(userDataSource.loginState.first()).isEqualTo(LoginState.LoggedIn)
-            }
-        }
-
-        @Test
-        fun `WHEN getAuthToken is empty THEN getLoginState will return LoggedOut`() {
-            // GIVEN
-            every { mockUserSharedPreferences.authToken } returns ""
-
-            userDataSource = UserDataSource(mockUserSharedPreferences, mainVariant = true)
-
-            // THEN
-            runBlocking {
-                assertThat(userDataSource.loginState.first()).isEqualTo(LoginState.LoggedOut)
-            }
-        }
-
-        @Test
-        fun `WHEN mainVariant is false THEN loginState will return LoggedIn`() {
-            // GIVEN
-            every { mockUserSharedPreferences.authToken } returns ""
-
-            userDataSource = UserDataSource(mockUserSharedPreferences, mainVariant = false)
-
-            // THEN
-            runBlocking {
-                assertThat(userDataSource.loginState.first()).isEqualTo(LoginState.LoggedIn)
-            }
+        fun `currentPreferences will contain the initial state`() = runTest {
+            assertThat(userDataSource.currentPreferences.first()).isEqualTo(defaultPreferences)
         }
     }
 
     @Nested
     inner class Methods {
 
-        private lateinit var userDataSource: UserDataSource
-
         @BeforeEach
         fun setup() {
             every { mockUserSharedPreferences.authToken } returns mockApiToken
-
-            userDataSource = UserDataSource(mockUserSharedPreferences, mainVariant = true)
-        }
-
-        @Test
-        fun `WHEN loginAttempt is called THEN setAuthToken is called and loginState value is updated to Authorizing`() {
-            // WHEN
-            userDataSource.loginAttempt(mockApiToken)
-
-            // THEN
-            verify { mockUserSharedPreferences.authToken = mockApiToken }
-            runBlocking {
-                assertThat(userDataSource.loginState.first()).isEqualTo(LoginState.Authorizing)
-            }
-        }
-
-        @Test
-        fun `WHEN loggedIn is called THEN loginState value is updated to LoggedIn`() {
-            // WHEN
-            userDataSource.loggedIn()
-
-            // THEN
-            runBlocking {
-                assertThat(userDataSource.loginState.first()).isEqualTo(LoginState.LoggedIn)
-            }
-        }
-
-        @Test
-        fun `WHEN logout is called THEN setAuthToken is set and setLastUpdate is set and loginState value is updated to LoggedOut`() {
-            // WHEN
-            userDataSource.logout()
-
-            // THEN
-            verify { mockUserSharedPreferences.authToken = "" }
-            verify { mockUserSharedPreferences.lastUpdate = "" }
-            runBlocking {
-                assertThat(userDataSource.loginState.first()).isEqualTo(LoginState.LoggedOut)
-            }
-        }
-
-        @Nested
-        inner class LoginStateTests {
-
-            @Test
-            fun `GIVEN loginState is not LoggedIn WHEN forceLogout is called THEN nothing happens`() {
-                // GIVEN
-                userDataSource._loginState.value = LoginState.LoggedOut
-
-                // WHEN
-                userDataSource.forceLogout()
-
-                // THEN
-                verify(exactly = 0) { mockUserSharedPreferences.authToken = any() }
-                verify(exactly = 0) { mockUserSharedPreferences.lastUpdate = any() }
-                runBlocking {
-                    assertThat(userDataSource.loginState.first()).isEqualTo(LoginState.LoggedOut)
-                }
-            }
-
-            @Test
-            fun `GIVEN loginState is LoggedIn WHEN forceLogout is called THEN setAuthToken is set and setLastUpdate is set and loginState value is updated to Unauthorizerd`() {
-                // GIVEN
-                userDataSource._loginState.value = LoginState.LoggedIn
-
-                // WHEN
-                userDataSource.forceLogout()
-
-                // THEN
-                verify { mockUserSharedPreferences.authToken = "" }
-                verify { mockUserSharedPreferences.lastUpdate = "" }
-                runBlocking {
-                    assertThat(userDataSource.loginState.first()).isEqualTo(LoginState.Unauthorized)
-                }
-            }
         }
 
         @Nested
@@ -638,6 +515,70 @@ internal class UserDataSourceTest {
 
                 // THEN
                 verify { mockUserSharedPreferences.editAfterSharing = "random-value" }
+            }
+        }
+
+        @Nested
+        inner class AuthTokenTests {
+
+            private val altVariant = UserDataSource(mockUserSharedPreferences, mainVariant = false)
+
+            @Test
+            fun `hasAuthToken returns true if the auth token is not empty`() {
+                assertThat(userDataSource.hasAuthToken()).isTrue()
+            }
+
+            @Test
+            fun `hasAuthToken returns true if the main variant is false`() {
+                every { mockUserSharedPreferences.authToken } returns ""
+
+                assertThat(altVariant.hasAuthToken()).isTrue()
+            }
+
+            @Test
+            fun `setAuthToken saves the auth token`() {
+                userDataSource.setAuthToken("some-token")
+
+                verify {
+                    mockUserSharedPreferences.authToken = "some-token"
+                }
+            }
+
+            @Test
+            fun `setAuthToken does not save the auth token if it is blank`() {
+                clearMocks(mockUserSharedPreferences)
+
+                altVariant.setAuthToken(" ")
+
+                verify { mockUserSharedPreferences wasNot Called }
+            }
+
+            @Test
+            fun `setAuthToken does not save the auth token if main variant is false`() {
+                clearMocks(mockUserSharedPreferences)
+
+                altVariant.setAuthToken("some-token")
+
+                verify { mockUserSharedPreferences wasNot Called }
+            }
+
+            @Test
+            fun `clearAuthToken clears the auth token and last updated`() {
+                userDataSource.clearAuthToken()
+
+                verify {
+                    mockUserSharedPreferences.authToken = ""
+                    mockUserSharedPreferences.lastUpdate = ""
+                }
+            }
+
+            @Test
+            fun `clearAuthToken does not clear tokens if main variant is false`() {
+                clearMocks(mockUserSharedPreferences)
+
+                altVariant.clearAuthToken()
+
+                verify { mockUserSharedPreferences wasNot Called }
             }
         }
     }

@@ -99,11 +99,8 @@ internal class NavigationActionHandlerTest {
             }
         }
 
-        fun testCases(): List<ContentWithHistory> =
-            mutableListOf<ContentWithHistory>().apply {
-                ContentWithHistory::class.allSealedSubclasses
-                    .map { add(it.objectInstance ?: mockk()) }
-            }
+        fun testCases(): List<ContentWithHistory> = ContentWithHistory::class.allSealedSubclasses
+            .map { it.objectInstance ?: mockk() }
     }
 
     @Nested

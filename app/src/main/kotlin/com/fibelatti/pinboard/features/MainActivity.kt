@@ -23,7 +23,6 @@ import com.fibelatti.core.extension.createFragment
 import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.exhaustive
 import com.fibelatti.core.extension.gone
-import com.fibelatti.core.extension.inTransaction
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
@@ -33,7 +32,6 @@ import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.android.customview.TitleLayout
 import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.core.extension.viewBinding
-import com.fibelatti.pinboard.core.functional.DoNothing
 import com.fibelatti.pinboard.databinding.ActivityMainBinding
 import com.fibelatti.pinboard.features.appstate.AddPostContent
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -41,6 +39,7 @@ import com.fibelatti.pinboard.features.appstate.Content
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.ExternalBrowserContent
 import com.fibelatti.pinboard.features.appstate.ExternalContent
+import com.fibelatti.pinboard.features.appstate.LoginContent
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.pinboard.features.appstate.NoteListContent
@@ -52,10 +51,6 @@ import com.fibelatti.pinboard.features.appstate.SearchContent
 import com.fibelatti.pinboard.features.appstate.TagListContent
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
 import com.fibelatti.pinboard.features.navigation.NavigationMenuFragment
-import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
-import com.fibelatti.pinboard.features.user.domain.LoginState
-import com.fibelatti.pinboard.features.user.presentation.AuthFragment
-import com.fibelatti.pinboard.features.user.presentation.AuthViewModel
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -77,7 +72,6 @@ class MainActivity : BaseActivity() {
     }
 
     private val appStateViewModel: AppStateViewModel by viewModels()
-    private val authViewModel: AuthViewModel by viewModels()
 
     @Inject
     lateinit var featureFragments: FeatureFragments
@@ -158,14 +152,6 @@ class MainActivity : BaseActivity() {
     }
 
     private fun setupViewModels() {
-        authViewModel.loginState
-            .onEach(::handleLoginState)
-            .launchIn(lifecycleScope)
-
-        authViewModel.error
-            .onEach(::handleError)
-            .launchIn(lifecycleScope)
-
         appStateViewModel.content
             .onEach(::handleContent)
             .launchIn(lifecycleScope)
@@ -182,6 +168,11 @@ class MainActivity : BaseActivity() {
         }
 
         when (content) {
+            is LoginContent -> {
+                hideControls()
+                if (content.isUnauthorized) showBanner(message = getString(R.string.auth_logged_out_feedback))
+                featureFragments.showLogin()
+            }
             is PostListContent -> featureFragments.showPostList()
             is PostDetailContent -> featureFragments.showPostDetail()
             is ExternalBrowserContent -> {
@@ -211,53 +202,6 @@ class MainActivity : BaseActivity() {
 
     fun updateViews(update: (BottomAppBar, FloatingActionButton) -> Unit = { _, _ -> }) {
         update(binding.bottomAppBar, binding.fabMain)
-    }
-
-    private fun handleLoginState(loginState: LoginState) {
-        if (isRecreating) {
-            return
-        }
-
-        when (loginState) {
-            LoginState.Authorizing -> DoNothing
-            LoginState.LoggedIn -> handleLoggedIn()
-            LoginState.LoggedOut -> handleLoggedOut()
-            LoginState.Unauthorized -> handleUnauthorized()
-        }
-    }
-
-    private fun handleLoggedIn() {
-        if (intent.fromBuilder) {
-            return
-        }
-
-        inTransaction {
-            setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-            replace(R.id.fragmentHost, createFragment<PostListFragment>(), PostListFragment.TAG)
-        }
-    }
-
-    private fun handleLoggedOut() {
-        inTransaction {
-            setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-            replace(R.id.fragmentHost, createFragment<AuthFragment>())
-        }
-
-        hideControls()
-    }
-
-    private fun handleUnauthorized() {
-        inTransaction {
-            setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-            for (fragment in supportFragmentManager.fragments) {
-                remove(fragment)
-            }
-            add(R.id.fragmentHost, createFragment<AuthFragment>(), AuthFragment.TAG)
-        }
-
-        hideControls()
-
-        showBanner(message = getString(R.string.auth_logged_out_feedback))
     }
 
     private fun hideControls() {

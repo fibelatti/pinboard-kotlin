@@ -6,19 +6,17 @@ import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.mockApiToken
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.appstate.UserLoggedOut
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.user.domain.Login
-import com.fibelatti.pinboard.features.user.domain.LoginState
-import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.isEmpty
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import java.net.HttpURLConnection
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -26,29 +24,19 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import retrofit2.HttpException
 import retrofit2.Response
+import java.net.HttpURLConnection
 
 class AuthViewModelTest : BaseViewModelTest() {
 
     private val mockLogin = mockk<Login>()
-    private val mockUserRepository = mockk<UserRepository>(relaxUnitFun = true)
+    private val mockAppStateRepository = mockk<AppStateRepository>(relaxUnitFun = true)
     private val mockResourceProvider = mockk<ResourceProvider>()
 
     private val viewModel = AuthViewModel(
         mockLogin,
-        mockUserRepository,
+        mockAppStateRepository,
         mockResourceProvider
     )
-
-    @Test
-    fun `GIVEN userRepository getLoginState contains a value THEN viewModel loginState returns that value`() {
-        // GIVEN
-        every { mockUserRepository.loginState } returns flowOf(LoginState.LoggedOut)
-
-        // THEN
-        runBlocking {
-            assertThat(viewModel.loginState.first()).isEqualTo(LoginState.LoggedOut)
-        }
-    }
 
     @Nested
     inner class LoginTest {
@@ -132,11 +120,11 @@ class AuthViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `WHEN logout is called THEN userRepository logout is called`() {
+    fun `WHEN logout is called THEN appStateRepository runs UserLoggedOut`() {
         // WHEN
         viewModel.logout()
 
         // THEN
-        coVerify { mockUserRepository.logout() }
+        coVerify { mockAppStateRepository.runAction(UserLoggedOut) }
     }
 }

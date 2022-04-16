@@ -35,7 +35,8 @@
             android:layout_height="wrap_content"
             android:imeOptions="actionGo"
             android:importantForAutofill="no"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:textSize="@dimen/text_size_small" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton

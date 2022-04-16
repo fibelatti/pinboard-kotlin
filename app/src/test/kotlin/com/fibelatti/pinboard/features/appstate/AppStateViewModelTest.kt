@@ -1,13 +1,16 @@
 package com.fibelatti.pinboard.features.appstate
 
+import com.fibelatti.core.test.extension.mock
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.allSealedSubclasses
+import com.fibelatti.pinboard.core.network.UnauthorizedInterceptor
 import com.fibelatti.pinboard.isEmpty
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -19,9 +22,29 @@ import org.junit.jupiter.params.provider.MethodSource
 
 internal class AppStateViewModelTest : BaseViewModelTest() {
 
+    private val mockUnauthorizedInterceptor = mockk<UnauthorizedInterceptor> {
+        every { unauthorized } returns emptyFlow()
+    }
+
     private val mockAppStateRepository = mockk<AppStateRepository>(relaxed = true)
 
-    private lateinit var appStateViewModel: AppStateViewModel
+    private val appStateViewModel by lazy {
+        AppStateViewModel(mockAppStateRepository, mockUnauthorizedInterceptor)
+    }
+
+    @Test
+    fun `WHEN unauthorized emits THEN UserUnauthorized runs`() {
+        val mockUnauthorizedInterceptor = mockk<UnauthorizedInterceptor> {
+            every { unauthorized } returns flowOf(Unit)
+        }
+        every { mockAppStateRepository.getContent() } returns flowOf(mock())
+
+        AppStateViewModel(mockAppStateRepository, mockUnauthorizedInterceptor)
+
+        coVerify {
+            mockAppStateRepository.runAction(UserUnauthorized)
+        }
+    }
 
     @Test
     fun `WHEN getContent is called THEN repository content should be returned`() {
@@ -29,8 +52,6 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         val mockContent = mockk<Content>()
 
         every { mockAppStateRepository.getContent() } returns flowOf(mockContent)
-
-        appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
         // THEN
         runBlocking {
@@ -40,8 +61,6 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `WHEN reset is called THEN repository should reset`() {
-        appStateViewModel = AppStateViewModel(mockAppStateRepository)
-
         // WHEN
         appStateViewModel.reset()
 
@@ -53,8 +72,6 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
     fun `WHEN runAction is called THEN repository should runAction`() {
         // GIVEN
         val mockAction = mockk<Action>()
-
-        appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
         // WHEN
         appStateViewModel.runAction(mockAction)
@@ -73,8 +90,6 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
             // GIVEN
             every { mockAppStateRepository.getContent() } returns flowOf(content)
 
-            appStateViewModel = AppStateViewModel(mockAppStateRepository)
-
             // THEN
             runBlocking {
                 if (content is PostListContent) {
@@ -90,8 +105,6 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         fun `Only post detail content should be emitted to postDetailContent`(content: Content) {
             // GIVEN
             every { mockAppStateRepository.getContent() } returns flowOf(content)
-
-            appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
             // THEN
             runBlocking {
@@ -109,8 +122,6 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
             // GIVEN
             every { mockAppStateRepository.getContent() } returns flowOf(content)
 
-            appStateViewModel = AppStateViewModel(mockAppStateRepository)
-
             // THEN
             runBlocking {
                 if (content is AddPostContent) {
@@ -126,8 +137,6 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         fun `Only edit post content should be emitted to editPostContent`(content: Content) {
             // GIVEN
             every { mockAppStateRepository.getContent() } returns flowOf(content)
-
-            appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
             // THEN
             runBlocking {
@@ -145,8 +154,6 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
             // GIVEN
             every { mockAppStateRepository.getContent() } returns flowOf(content)
 
-            appStateViewModel = AppStateViewModel(mockAppStateRepository)
-
             // THEN
             runBlocking {
                 if (content is SearchContent) {
@@ -162,8 +169,6 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         fun `Only tag list content should be emitted to tagListContent`(content: Content) {
             // GIVEN
             every { mockAppStateRepository.getContent() } returns flowOf(content)
-
-            appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
             // THEN
             runBlocking {
@@ -181,8 +186,6 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
             // GIVEN
             every { mockAppStateRepository.getContent() } returns flowOf(content)
 
-            appStateViewModel = AppStateViewModel(mockAppStateRepository)
-
             // THEN
             runBlocking {
                 if (content is NoteListContent) {
@@ -199,8 +202,6 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
             // GIVEN
             every { mockAppStateRepository.getContent() } returns flowOf(content)
 
-            appStateViewModel = AppStateViewModel(mockAppStateRepository)
-
             // THEN
             runBlocking {
                 if (content is NoteDetailContent) {
@@ -216,8 +217,6 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         fun `Only popular posts content should be emitted to popularPostsContent`(content: Content) {
             // GIVEN
             every { mockAppStateRepository.getContent() } returns flowOf(content)
-
-            appStateViewModel = AppStateViewModel(mockAppStateRepository)
 
             // THEN
             runBlocking {
@@ -237,8 +236,6 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
             // GIVEN
             every { mockAppStateRepository.getContent() } returns flowOf(content)
 
-            appStateViewModel = AppStateViewModel(mockAppStateRepository)
-
             // THEN
             runBlocking {
                 if (content is PopularPostDetailContent) {
@@ -255,8 +252,6 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
             // GIVEN
             every { mockAppStateRepository.getContent() } returns flowOf(content)
 
-            appStateViewModel = AppStateViewModel(mockAppStateRepository)
-
             // THEN
             runBlocking {
                 if (content is UserPreferencesContent) {
@@ -267,10 +262,6 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
             }
         }
 
-        fun testCases(): List<Content> = mutableListOf<Content>().apply {
-            Content::class.allSealedSubclasses
-                .map { it.objectInstance ?: mockk() }
-                .forEach { add(it) }
-        }
+        fun testCases(): List<Content> = Content::class.allSealedSubclasses.map { it.objectInstance ?: mockk() }
     }
 }

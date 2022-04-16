@@ -8,6 +8,14 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 // region Action
 sealed class Action
 
+// region AuthAction
+sealed class AuthAction : Action()
+
+object UserLoggedIn : AuthAction()
+object UserLoggedOut : AuthAction()
+object UserUnauthorized : AuthAction()
+// endregion AuthAction
+
 // region NavigationAction
 sealed class NavigationAction : Action()
 

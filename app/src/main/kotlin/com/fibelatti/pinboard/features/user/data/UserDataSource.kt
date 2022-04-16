@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.user.data
 
-import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.extension.orFalse
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
@@ -10,13 +9,11 @@ import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import com.fibelatti.pinboard.features.user.domain.LoginState
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,19 +25,6 @@ class UserDataSource @Inject constructor(
 
     private val _currentPreferences = MutableStateFlow(getPreferences())
     override val currentPreferences: Flow<UserPreferences> = _currentPreferences.asStateFlow()
-
-    @VisibleForTesting
-    @Suppress("PropertyName", "VariableNaming")
-    val _loginState = MutableStateFlow(
-        value = if (userSharedPreferences.authToken.isNotEmpty()) {
-            LoginState.LoggedIn
-        } else {
-            LoginState.LoggedOut
-        }
-    )
-
-    override val loginState: Flow<LoginState>
-        get() = if (mainVariant) _loginState else flowOf(LoginState.LoggedIn)
 
     override var lastUpdate: String
         get() = userSharedPreferences.lastUpdate
@@ -176,36 +160,18 @@ class UserDataSource @Inject constructor(
         defaultTags = defaultTags,
     )
 
-    override fun loginAttempt(authToken: String) {
-        if (!mainVariant) return
+    override fun hasAuthToken(): Boolean = userSharedPreferences.authToken.isNotEmpty() || !mainVariant
+
+    override fun setAuthToken(authToken: String) {
+        if (!mainVariant || authToken.isBlank()) return
 
         userSharedPreferences.authToken = authToken
-        _loginState.value = LoginState.Authorizing
     }
 
-    override fun loggedIn() {
-        if (!mainVariant) return
-
-        _loginState.value = LoginState.LoggedIn
-    }
-
-    override fun logout() {
+    override fun clearAuthToken() {
         if (!mainVariant) return
 
         userSharedPreferences.authToken = ""
         userSharedPreferences.lastUpdate = ""
-
-        _loginState.value = LoginState.LoggedOut
-    }
-
-    override fun forceLogout() {
-        if (!mainVariant) return
-
-        if (_loginState.value == LoginState.LoggedIn) {
-            userSharedPreferences.authToken = ""
-            userSharedPreferences.lastUpdate = ""
-
-            _loginState.value = LoginState.Unauthorized
-        }
     }
 }

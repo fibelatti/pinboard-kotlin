@@ -8,6 +8,13 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 
 sealed class Content
 
+data class LoginContent(
+    val isUnauthorized: Boolean = false,
+) : ContentWithHistory() {
+
+    override val previousContent: Content = ExternalContent
+}
+
 data class PostListContent(
     val category: ViewCategory,
     val posts: PostList?,
@@ -30,6 +37,7 @@ data class PostListContent(
 }
 
 private interface ContentHistory {
+
     val previousContent: Content
 }
 

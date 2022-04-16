@@ -6,6 +6,9 @@ import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.pinboard.MockDataProvider.mockApiToken
 import com.fibelatti.pinboard.MockDataProvider.mockTime
+import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.appstate.UserLoggedIn
+import com.fibelatti.pinboard.features.appstate.UserLoggedOut
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
@@ -17,15 +20,17 @@ import org.junit.jupiter.api.Test
 class LoginTest {
 
     private val mockUserRepository = mockk<UserRepository>(relaxed = true)
+    private val mockAppStateRepository = mockk<AppStateRepository>(relaxUnitFun = true)
     private val mockPostsRepository = mockk<PostsRepository>()
 
     private val login = Login(
         mockUserRepository,
-        mockPostsRepository
+        mockAppStateRepository,
+        mockPostsRepository,
     )
 
     @Test
-    fun `GIVEN repository call fails WHEN Login is called THEN loggedIn is never called`() {
+    fun `GIVEN repository call fails WHEN Login is called THEN UserLoggedOut runs`() {
         // GIVEN
         coEvery { mockPostsRepository.update() } returns Failure(Exception())
 
@@ -34,13 +39,12 @@ class LoginTest {
 
         // THEN
         assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
-        coVerify { mockUserRepository.loginAttempt(mockApiToken) }
-        coVerify(exactly = 0) { mockPostsRepository.clearCache() }
-        coVerify(exactly = 0) { mockUserRepository.loggedIn() }
+        coVerify { mockUserRepository.setAuthToken(mockApiToken) }
+        coVerify { mockAppStateRepository.runAction(UserLoggedOut) }
     }
 
     @Test
-    fun `GIVEN repository call is successful WHEN Login is called THEN Success is returned and user is logged in`() {
+    fun `GIVEN repository call is successful WHEN Login is called THEN UserLoggedIn runs`() {
         // GIVEN
         coEvery { mockPostsRepository.update() } returns Success(mockTime)
         coEvery { mockPostsRepository.clearCache() } returns Success(Unit)
@@ -50,8 +54,8 @@ class LoginTest {
 
         // THEN
         assertThat(result.getOrNull()).isEqualTo(Unit)
-        coVerify { mockUserRepository.loginAttempt(mockApiToken) }
+        coVerify { mockUserRepository.setAuthToken(mockApiToken) }
         coVerify { mockPostsRepository.clearCache() }
-        coVerify { mockUserRepository.loggedIn() }
+        coVerify { mockAppStateRepository.runAction(UserLoggedIn) }
     }
 }

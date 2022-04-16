@@ -4,9 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.heightWrapContent
 import com.fibelatti.core.extension.onKeyboardSubmit
@@ -35,7 +34,7 @@ class AuthFragment @Inject constructor() : BaseFragment() {
         val TAG: String = "AuthFragment"
     }
 
-    private val authViewModel: AuthViewModel by activityViewModels()
+    private val authViewModel: AuthViewModel by viewModels()
 
     private val binding by viewBinding(FragmentAuthBinding::bind)
 
@@ -59,8 +58,6 @@ class AuthFragment @Inject constructor() : BaseFragment() {
 
     private fun setupLayout() {
         with(binding.layoutAuthForm) {
-            root.animateChangingTransitions()
-
             editTextAuthToken.onKeyboardSubmit {
                 authViewModel.login(editTextAuthToken.textAsString())
             }

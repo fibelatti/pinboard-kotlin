@@ -4,9 +4,9 @@ import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
+import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.appstate.UserLoggedOut
 import com.fibelatti.pinboard.features.user.domain.Login
-import com.fibelatti.pinboard.features.user.domain.LoginState
-import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,11 +19,9 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val loginUseCase: Login,
-    private val userRepository: UserRepository,
-    private val resourceProvider: ResourceProvider
+    private val appStateRepository: AppStateRepository,
+    private val resourceProvider: ResourceProvider,
 ) : BaseViewModel() {
-
-    val loginState: Flow<LoginState> get() = userRepository.loginState
 
     val apiTokenError: Flow<String> get() = _apiTokenError.filterNotNull()
     private val _apiTokenError = MutableStateFlow<String?>(null)
@@ -48,7 +46,7 @@ class AuthViewModel @Inject constructor(
 
     fun logout() {
         launch {
-            userRepository.logout()
+            appStateRepository.runAction(UserLoggedOut)
         }
     }
 }

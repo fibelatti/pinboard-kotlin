@@ -12,8 +12,6 @@ interface UserRepository {
 
     val currentPreferences: Flow<UserPreferences>
 
-    val loginState: Flow<LoginState>
-
     var lastUpdate: String
 
     var periodicSync: PeriodicSync
@@ -40,11 +38,9 @@ interface UserRepository {
 
     var defaultTags: List<Tag>
 
-    fun loginAttempt(authToken: String)
+    fun hasAuthToken(): Boolean
 
-    fun loggedIn()
+    fun setAuthToken(authToken: String)
 
-    fun logout()
-
-    fun forceLogout()
+    fun clearAuthToken()
 }
