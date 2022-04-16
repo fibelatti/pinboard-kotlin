@@ -5,7 +5,6 @@ import com.fibelatti.core.extension.get
 import com.fibelatti.core.test.MockSharedPreferencesEditor
 import com.fibelatti.pinboard.MockDataProvider.mockApiToken
 import com.fibelatti.pinboard.MockDataProvider.mockTime
-import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
@@ -345,34 +344,10 @@ internal class UserSharedPreferencesTest {
     }
 
     @Test
-    fun `WHEN getEditAfterSharing had the legacy value set THEN the correct value is returned`() {
-        // GIVEN
-        every { mockSharedPreferences.getBoolean(KEY_EDIT_AFTER_SHARING, false) } returns true
-        every { mockSharedPreferences.getString(KEY_NEW_EDIT_AFTER_SHARING, "AFTER_SAVING") } returns null
-
-        // THEN
-        assertThat(userSharedPreferences.editAfterSharing).isEqualTo(EditAfterSharing.AfterSaving.value)
-    }
-
-    @Test
-    fun `WHEN getEditAfterSharing had no legacy value set THEN the default value is returned`() {
-        // GIVEN
-        every { mockSharedPreferences.getBoolean(KEY_EDIT_AFTER_SHARING, false) } returns false
-        every { mockSharedPreferences.getString(KEY_NEW_EDIT_AFTER_SHARING, "SKIP_EDIT") } returns null
-
-        // THEN
-        assertThat(userSharedPreferences.editAfterSharing).isEqualTo(EditAfterSharing.SkipEdit.value)
-    }
-
-    @Test
     fun `WHEN getEditAfterSharing is called THEN its value is returned`() {
         // GIVEN
-        every { mockSharedPreferences.get(KEY_EDIT_AFTER_SHARING, false) } returns false
         every {
-            mockSharedPreferences.get(
-                KEY_NEW_EDIT_AFTER_SHARING,
-                "SKIP_EDIT"
-            )
+            mockSharedPreferences.get(KEY_NEW_EDIT_AFTER_SHARING, "")
         } returns "BEFORE_SAVING"
 
         // THEN

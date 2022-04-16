@@ -35,9 +35,10 @@ class UserDataSource @Inject constructor(
     @Suppress("MagicNumber")
     override var periodicSync: PeriodicSync
         get() = when (userSharedPreferences.periodicSync) {
-            6L -> PeriodicSync.Every6Hours
-            12L -> PeriodicSync.Every12Hours
-            24L -> PeriodicSync.Every24Hours
+            PeriodicSync.Off.hours -> PeriodicSync.Off
+            PeriodicSync.Every6Hours.hours -> PeriodicSync.Every6Hours
+            PeriodicSync.Every12Hours.hours -> PeriodicSync.Every12Hours
+            PeriodicSync.Every24Hours.hours -> PeriodicSync.Every24Hours
             else -> PeriodicSync.Off
         }
         set(value) {
@@ -49,6 +50,7 @@ class UserDataSource @Inject constructor(
         get() = when (userSharedPreferences.appearance) {
             Appearance.LightTheme.value -> Appearance.LightTheme
             Appearance.DarkTheme.value -> Appearance.DarkTheme
+            Appearance.SystemDefault.value -> Appearance.SystemDefault
             else -> Appearance.SystemDefault
         }
         set(value) {
@@ -65,6 +67,7 @@ class UserDataSource @Inject constructor(
 
     override var preferredDateFormat: PreferredDateFormat
         get() = when (userSharedPreferences.preferredDateFormat) {
+            PreferredDateFormat.DayMonthYearWithTime.value -> PreferredDateFormat.DayMonthYearWithTime
             PreferredDateFormat.MonthDayYearWithTime.value -> PreferredDateFormat.MonthDayYearWithTime
             PreferredDateFormat.ShortYearMonthDayWithTime.value -> PreferredDateFormat.ShortYearMonthDayWithTime
             PreferredDateFormat.YearMonthDayWithTime.value -> PreferredDateFormat.YearMonthDayWithTime
@@ -77,8 +80,10 @@ class UserDataSource @Inject constructor(
 
     override var preferredDetailsView: PreferredDetailsView
         get() {
+            val inAppBrowser = PreferredDetailsView.InAppBrowser(markAsReadOnOpen)
             val externalBrowser = PreferredDetailsView.ExternalBrowser(markAsReadOnOpen)
             return when (userSharedPreferences.preferredDetailsView) {
+                inAppBrowser.value -> inAppBrowser
                 externalBrowser.value -> externalBrowser
                 PreferredDetailsView.Edit.value -> PreferredDetailsView.Edit
                 else -> PreferredDetailsView.InAppBrowser(markAsReadOnOpen)
@@ -128,7 +133,8 @@ class UserDataSource @Inject constructor(
         get() = when (userSharedPreferences.editAfterSharing) {
             EditAfterSharing.BeforeSaving.value -> EditAfterSharing.BeforeSaving
             EditAfterSharing.AfterSaving.value -> EditAfterSharing.AfterSaving
-            else -> EditAfterSharing.SkipEdit
+            EditAfterSharing.SkipEdit.value -> EditAfterSharing.SkipEdit
+            else -> EditAfterSharing.AfterSaving
         }
         set(value) {
             userSharedPreferences.editAfterSharing = value.value
@@ -143,7 +149,7 @@ class UserDataSource @Inject constructor(
         }
 
     private fun updateCurrentPreferences() {
-        _currentPreferences.tryEmit(getPreferences())
+        _currentPreferences.value = getPreferences()
     }
 
     private fun getPreferences(): UserPreferences = UserPreferences(

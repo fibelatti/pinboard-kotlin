@@ -49,7 +49,7 @@ internal class UserDataSourceTest {
         showDescriptionInLists = false,
         defaultPrivate = false,
         defaultReadLater = false,
-        editAfterSharing = EditAfterSharing.SkipEdit,
+        editAfterSharing = EditAfterSharing.AfterSaving,
         defaultTags = emptyList(),
     )
 
@@ -178,6 +178,15 @@ internal class UserDataSourceTest {
             }
 
             @Test
+            fun `GIVEN set appearance is system default WHEN getAppearance is called THEN SystemDefault is returned`() {
+                // GIVEN
+                every { mockUserSharedPreferences.appearance } returns Appearance.SystemDefault.value
+
+                // THEN
+                assertThat(userDataSource.appearance).isEqualTo(Appearance.SystemDefault)
+            }
+
+            @Test
             fun `GIVEN set appearance is not set WHEN getAppearance is called THEN SystemDefault is returned`() {
                 // GIVEN
                 every { mockUserSharedPreferences.appearance } returns "anything really"
@@ -264,6 +273,22 @@ internal class UserDataSourceTest {
 
         @Nested
         inner class PreferredDetailsViewTests {
+
+            @Test
+            fun `GIVEN set preferred details view is in app browser WHEN getPreferredDetailsView is called THEN InAppBrowser is returned`() {
+                // GIVEN
+                val randomBoolean = randomBoolean()
+                every { mockUserSharedPreferences.preferredDetailsView } returns PreferredDetailsView.InAppBrowser(
+                    randomBoolean
+                ).value
+                every { mockUserSharedPreferences.markAsReadOnOpen } returns randomBoolean
+
+                // THEN
+                assertThat(userDataSource.preferredDetailsView).isEqualTo(
+                    PreferredDetailsView.InAppBrowser(randomBoolean)
+                )
+                verify { mockUserSharedPreferences.markAsReadOnOpen }
+            }
 
             @Test
             fun `GIVEN set preferred details view is external browser WHEN getPreferredDetailsView is called THEN ExternalBrowser is returned`() {
@@ -478,7 +503,7 @@ internal class UserDataSourceTest {
         inner class EditAfterSharingTests {
 
             @Test
-            fun `GIVEN set EditAfterSharing is the BeforeSaving value WHEN getEditAfterSharing is called THEN BeforeSaving is returned`() {
+            fun `GIVEN set EditAfterSharing is BeforeSaving value WHEN getEditAfterSharing is called THEN BeforeSaving is returned`() {
                 // GIVEN
                 every { mockUserSharedPreferences.editAfterSharing } returns EditAfterSharing.BeforeSaving.value
 
@@ -487,7 +512,7 @@ internal class UserDataSourceTest {
             }
 
             @Test
-            fun `GIVEN set EditAfterSharing is the AfterSaving value WHEN getEditAfterSharing is called THEN AfterSaving is returned`() {
+            fun `GIVEN set EditAfterSharing is AfterSaving value WHEN getEditAfterSharing is called THEN AfterSaving is returned`() {
                 // GIVEN
                 every { mockUserSharedPreferences.editAfterSharing } returns EditAfterSharing.AfterSaving.value
 
@@ -496,12 +521,21 @@ internal class UserDataSourceTest {
             }
 
             @Test
-            fun `GIVEN not EditAfterSharing is set WHEN getEditAfterSharing is called THEN SkipEdit is returned`() {
+            fun `GIVEN set EditAfterSharing is SkipEdit value WHEN getEditAfterSharing is called THEN SkipEdit is returned`() {
+                // GIVEN
+                every { mockUserSharedPreferences.editAfterSharing } returns EditAfterSharing.SkipEdit.value
+
+                // THEN
+                assertThat(userDataSource.editAfterSharing).isEqualTo(EditAfterSharing.SkipEdit)
+            }
+
+            @Test
+            fun `GIVEN not EditAfterSharing is set WHEN getEditAfterSharing is called THEN AfterSaving is returned`() {
                 // GIVEN
                 every { mockUserSharedPreferences.editAfterSharing } returns "anything really"
 
                 // THEN
-                assertThat(userDataSource.editAfterSharing).isEqualTo(EditAfterSharing.SkipEdit)
+                assertThat(userDataSource.editAfterSharing).isEqualTo(EditAfterSharing.AfterSaving)
             }
 
             @Test
