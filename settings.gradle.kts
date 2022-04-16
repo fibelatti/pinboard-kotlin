@@ -9,7 +9,7 @@ dependencyResolutionManagement {
             // Classpath
             library("android-gradle-plugin", "com.android.tools.build:gradle:7.1.3")
             library("kotlin-gradle-plugin", "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10")
-            library("hilt-gradle-plugin", "com.google.dagger:hilt-android-gradle-plugin:2.40.5")
+            library("hilt-gradle-plugin", "com.google.dagger:hilt-android-gradle-plugin:2.41")
 
             // Project dependencies
             library("kotlin", "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10")
