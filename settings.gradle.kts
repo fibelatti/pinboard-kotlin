@@ -8,15 +8,15 @@ dependencyResolutionManagement {
         create("libs") {
             // Classpath
             library("android-gradle-plugin", "com.android.tools.build:gradle:7.1.3")
-            library("kotlin-gradle-plugin", "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10")
+            library("kotlin-gradle-plugin", "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.20")
             library("hilt-gradle-plugin", "com.google.dagger:hilt-android-gradle-plugin:2.41")
 
             // Project dependencies
-            library("kotlin", "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10")
-            library("kotlin-reflect", "org.jetbrains.kotlin:kotlin-reflect:1.6.10")
+            library("kotlin", "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.20")
+            library("kotlin-reflect", "org.jetbrains.kotlin:kotlin-reflect:1.6.20")
 
-            library("coroutines-core", "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
-            library("coroutines-android", "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
+            library("coroutines-core", "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
+            library("coroutines-android", "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1")
 
             library("appcompat", "androidx.appcompat:appcompat:1.4.1")
             library("core-ktx", "androidx.core:core-ktx:1.7.0")
@@ -64,8 +64,8 @@ dependencyResolutionManagement {
             library("runner", "androidx.test:runner:1.4.0")
             library("truth", "com.google.truth:truth:1.1.3")
             library("mockk", "io.mockk:mockk:1.12.3")
-            library("kotlin-test-junit", "org.jetbrains.kotlin:kotlin-test-junit:1.6.10")
-            library("coroutines-test", "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
+            library("kotlin-test-junit", "org.jetbrains.kotlin:kotlin-test-junit:1.6.20")
+            library("coroutines-test", "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1")
             library("arch-core-testing", "androidx.arch.core:core-testing:2.1.0")
             library("room-testing", "androidx.room:room-testing:2.4.2")
         }
