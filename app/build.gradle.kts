@@ -21,7 +21,7 @@ object AppInfo {
 
     private const val versionMajor = 1
     private const val versionMinor = 17
-    private const val versionPatch = 0
+    private const val versionPatch = 1
     private const val versionBuild = 0
 
     val versionCode: Int = (versionMajor * 1000000 + versionMinor * 10000 + versionPatch * 100 + versionBuild)
