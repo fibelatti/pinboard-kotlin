@@ -67,7 +67,7 @@ dependencyResolutionManagement {
             library("kotlin-test-junit", "org.jetbrains.kotlin:kotlin-test-junit:1.6.10")
             library("coroutines-test", "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
             library("arch-core-testing", "androidx.arch.core:core-testing:2.1.0")
-            library("room-testing", "androidx.room:room-testing:2.4.0")
+            library("room-testing", "androidx.room:room-testing:2.4.2")
         }
     }
 }
