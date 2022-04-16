@@ -213,6 +213,7 @@
     </style>
 
     <style name="AppTheme.TagChip" parent="Widget.Material3.Chip.Suggestion">
+        <item name="chipMinHeight">@dimen/clickable_area</item>
         <item name="shapeAppearanceOverlay">@style/AppTheme.ChipAppearanceOverlay</item>
         <item name="android:textAppearance">@style/AppTheme.ChipTextAppearance</item>
     </style>
@@ -222,7 +223,7 @@
     </style>
 
     <style name="AppTheme.ChipTextAppearance" parent="TextAppearance.MaterialComponents.Chip">
-        <item name="android:textSize">11sp</item>
+        <item name="android:textSize">@dimen/text_size_xsmall</item>
         <item name="fontFamily">sans-serif-medium</item>
     </style>
 </resources>

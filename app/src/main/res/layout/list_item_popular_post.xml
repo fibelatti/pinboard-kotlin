@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_size"
         android:layout_marginTop="@dimen/margin_small"
-        android:layout_marginBottom="@dimen/margin_xsmall" />
+        android:layout_marginBottom="@dimen/margin_small" />
 
     <com.fibelatti.pinboard.features.posts.presentation.TagChipGroup
         android:id="@+id/chipGroupTags"
