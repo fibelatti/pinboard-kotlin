@@ -7,45 +7,44 @@ import com.fibelatti.pinboard.MockDataProvider.mockTags
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.SetSearchTags
 import com.fibelatti.pinboard.features.appstate.SetTags
-import com.fibelatti.pinboard.features.tags.domain.usecase.GetAllTags
+import com.fibelatti.pinboard.features.tags.domain.TagsRepository
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
 internal class TagsViewModelTest : BaseViewModelTest() {
 
-    private val mockGetAllTags = mockk<GetAllTags>()
+    private val mockTagsRepository = mockk<TagsRepository>()
     private val mockAppStateRepository = mockk<AppStateRepository>()
 
     private val tagsViewModel = TagsViewModel(
-        mockGetAllTags,
-        mockAppStateRepository
+        mockTagsRepository,
+        mockAppStateRepository,
     )
 
     @Test
-    fun `WHEN getAllTags fails THEN error should receive a value`() {
+    fun `WHEN getAllTags fails THEN error should receive a value`() = runTest {
         // GIVEN
         val error = Exception()
-        coEvery { mockGetAllTags() } returns Failure(error)
+        coEvery { mockTagsRepository.getAllTags() } returns flowOf(Failure(error))
 
         // WHEN
         tagsViewModel.getAll(mockk())
 
         // THEN
-        runBlocking {
-            assertThat(tagsViewModel.error.first()).isEqualTo(error)
-        }
+        assertThat(tagsViewModel.error.first()).isEqualTo(error)
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 
     @Test
     fun `GIVEN source is MENU WHEN getAllTags succeeds THEN AppStateRepository should run SetTags`() {
         // GIVEN
-        coEvery { mockGetAllTags() } returns Success(mockTags)
+        coEvery { mockTagsRepository.getAllTags() } returns flowOf(Success(mockTags))
 
         // WHEN
         tagsViewModel.getAll(TagsViewModel.Source.MENU)
@@ -57,7 +56,7 @@ internal class TagsViewModelTest : BaseViewModelTest() {
     @Test
     fun `GIVEN source is SEARCH WHEN getAllTags succeeds THEN AppStateRepository should run SetSearchTags`() {
         // GIVEN
-        coEvery { mockGetAllTags() } returns Success(mockTags)
+        coEvery { mockTagsRepository.getAllTags() } returns flowOf(Success(mockTags))
 
         // WHEN
         tagsViewModel.getAll(TagsViewModel.Source.SEARCH)

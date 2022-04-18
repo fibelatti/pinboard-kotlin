@@ -8,11 +8,13 @@
     tools:parentTag="android.widget.LinearLayout"
     tools:showIn="@layout/fragment_tags">
 
-    <include
-        android:id="@+id/layoutProgressBar"
-        layout="@layout/layout_progress_bar"
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@style/AppTheme.ProgressBarHorizontalStyle"
+        android:layout_marginStart="@dimen/margin_regular"
+        android:layout_marginEnd="@dimen/margin_regular"
         android:visibility="gone"
-        tools:visibility="gone" />
+        tools:visibility="visible" />
 
     <com.fibelatti.pinboard.core.android.customview.EmptyListLayout
         android:id="@+id/layoutEmptyList"

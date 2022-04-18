@@ -1,25 +1,27 @@
 package com.fibelatti.pinboard.features.tags.presentation
 
-import com.fibelatti.core.extension.exhaustive
-import com.fibelatti.core.functional.mapCatching
-import com.fibelatti.core.functional.onFailure
+import androidx.lifecycle.viewModelScope
+import com.fibelatti.core.functional.getOrThrow
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.SetSearchTags
 import com.fibelatti.pinboard.features.appstate.SetTags
+import com.fibelatti.pinboard.features.tags.domain.TagsRepository
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
-import com.fibelatti.pinboard.features.tags.domain.usecase.GetAllTags
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import javax.inject.Inject
 
 @HiltViewModel
 class TagsViewModel @Inject constructor(
-    private val getAllTags: GetAllTags,
+    private val tagsRepository: TagsRepository,
     private val appStateRepository: AppStateRepository,
 ) : BaseViewModel() {
 
@@ -28,16 +30,17 @@ class TagsViewModel @Inject constructor(
 
     fun getAll(source: Source) {
         _tags.value = null
-        launch {
-            getAllTags()
-                .mapCatching {
-                    when (source) {
-                        Source.MENU -> appStateRepository.runAction(SetTags(it))
-                        Source.SEARCH -> appStateRepository.runAction(SetSearchTags(it))
-                    }.exhaustive
+        tagsRepository.getAllTags()
+            .map { result ->
+                val tags = result.getOrThrow()
+                return@map when (source) {
+                    Source.MENU -> SetTags(tags)
+                    Source.SEARCH -> SetSearchTags(tags)
                 }
-                .onFailure(::handleError)
-        }
+            }
+            .onEach(appStateRepository::runAction)
+            .catch { cause -> handleError(cause) }
+            .launchIn(viewModelScope)
     }
 
     fun sortTags(tags: List<Tag>, sorting: TagSorting) {

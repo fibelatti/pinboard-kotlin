@@ -95,7 +95,7 @@ class TagListLayout @JvmOverloads constructor(
     }
 
     fun showLoading() {
-        binding.layoutProgressBar.root.visible()
+        binding.progressBar.visible()
         binding.buttonGroupTagSorting.gone()
         binding.recyclerViewTags.gone()
         binding.layoutEmptyList.gone()
@@ -116,7 +116,7 @@ class TagListLayout @JvmOverloads constructor(
         } else {
             showEmptyLayout()
         }
-        binding.layoutProgressBar.root.gone()
+        binding.progressBar.gone()
     }
 
     private fun showEmptyLayout() {

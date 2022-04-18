@@ -2,8 +2,9 @@ package com.fibelatti.pinboard.features.tags.domain
 
 import com.fibelatti.core.functional.Result
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import kotlinx.coroutines.flow.Flow
 
 interface TagsRepository {
 
-    suspend fun getAllTags(): Result<List<Tag>>
+    fun getAllTags(): Flow<Result<List<Tag>>>
 }
