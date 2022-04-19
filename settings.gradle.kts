@@ -12,7 +12,7 @@ dependencyResolutionManagement {
             library("hilt-gradle-plugin", "com.google.dagger:hilt-android-gradle-plugin:2.41")
 
             // Project dependencies
-            library("kotlin", "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.20")
+            library("kotlin", "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.21")
             library("kotlin-reflect", "org.jetbrains.kotlin:kotlin-reflect:1.6.20")
 
             library("coroutines-core", "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
