@@ -13,7 +13,7 @@ dependencyResolutionManagement {
 
             // Project dependencies
             library("kotlin", "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.20")
-            library("kotlin-reflect", "org.jetbrains.kotlin:kotlin-reflect:1.6.20")
+            library("kotlin-reflect", "org.jetbrains.kotlin:kotlin-reflect:1.6.21")
 
             library("coroutines-core", "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
             library("coroutines-android", "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1")
