@@ -74,8 +74,10 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
     private fun search(action: Search, currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<SearchContent>(currentContent) {
             it.previousContent.copy(
+                category = All,
+                sortType = NewestFirst,
                 searchParameters = it.searchParameters.copy(term = action.term),
-                shouldLoad = ShouldLoadFirstPage
+                shouldLoad = ShouldLoadFirstPage,
             )
         }
     }

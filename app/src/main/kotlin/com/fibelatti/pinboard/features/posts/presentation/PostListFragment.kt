@@ -186,9 +186,9 @@ class PostListFragment @Inject constructor(
         mainActivity?.updateViews { bottomAppBar, fab ->
             bottomAppBar.run {
                 setNavigationIcon(R.drawable.ic_menu)
-                replaceMenu(if (content.category != Recent) R.menu.menu_main else R.menu.menu_main_recent)
-                if (!content.canForceSync) {
-                    bottomAppBar.menu.removeItem(R.id.menuItemSync)
+                replaceMenu(R.menu.menu_main)
+                if (content.category != All || !content.canForceSync) {
+                    menu.removeItem(R.id.menuItemSync)
                 }
                 setOnMenuItemClickListener(::handleMenuClick)
                 visible()

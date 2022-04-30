@@ -339,6 +339,38 @@ internal class SearchActionHandlerTest {
                 )
             )
         }
+
+        @Test
+        fun `WHEN currentContent is SearchContent AND category is not All THEN an updated PostListContent is returned`() = runTest {
+            // GIVEN
+            val mockPreviousContent = PostListContent(
+                category = mockk(),
+                posts = null,
+                showDescription = false,
+                sortType = NewestFirst,
+                searchParameters = SearchParameters(),
+                shouldLoad = ShouldLoadFirstPage
+            )
+            val initialContent = SearchContent(
+                searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
+                previousContent = mockPreviousContent
+            )
+
+            // WHEN
+            val result = searchActionHandler.runAction(Search("new term"), initialContent)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                PostListContent(
+                    category = All,
+                    posts = null,
+                    showDescription = false,
+                    sortType = NewestFirst,
+                    searchParameters = SearchParameters(term = "new term", tags = listOf(mockTag1)),
+                    shouldLoad = ShouldLoadFirstPage
+                )
+            )
+        }
     }
 
     @Nested
