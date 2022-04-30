@@ -56,8 +56,8 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -77,7 +77,7 @@ class PostsDataSourceTest {
     private val mockDateFormatter = mockk<DateFormatter>(relaxed = true)
     private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider>()
     private val mockRunner = TestRateLimitRunner()
-    private val mockIoScope = TestCoroutineScope(TestCoroutineDispatcher())
+    private val mockIoScope = TestScope(UnconfinedTestDispatcher())
 
     private val mockPostDto = mockk<PostDto>()
     private val mockListPostDto = listOf(mockPostDto)
@@ -221,7 +221,7 @@ class PostsDataSourceTest {
                         replace = AppConfig.PinboardApiLiterals.YES
                     )
                 } returns createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS)
-                every { mockDao.getPost(mockUrlValid) } returns mockPostDto
+                coEvery { mockDao.getPost(mockUrlValid) } returns mockPostDto
                 every { mockPostDtoMapper.map(mockPostDto) } returns mockPost
 
                 // WHEN
@@ -256,7 +256,7 @@ class PostsDataSourceTest {
                         replace = AppConfig.PinboardApiLiterals.YES
                     )
                 } returns createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS)
-                every { mockDao.getPost(mockUrlValid) } returns null
+                coEvery { mockDao.getPost(mockUrlValid) } returns null
                 coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto(posts = mockListPostDto)
                 every { mockPostDtoMapper.map(mockPostDto) } returns mockPost
 
@@ -292,7 +292,7 @@ class PostsDataSourceTest {
                         replace = AppConfig.PinboardApiLiterals.YES
                     )
                 } returns createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS)
-                every { mockDao.getPost(mockUrlValid) } returns null
+                coEvery { mockDao.getPost(mockUrlValid) } returns null
                 coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto(posts = emptyList())
 
                 // WHEN
@@ -331,7 +331,7 @@ class PostsDataSourceTest {
                 )
             } returns createGenericResponse(ApiResultCodes.DONE)
             coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto(posts = mockListPostDto)
-            every { mockDao.savePosts(mockListPostDto) } just Runs
+            coEvery { mockDao.savePosts(mockListPostDto) } just Runs
             every { mockPostDtoMapper.map(mockPostDto) } returns mockPost
 
             // WHEN
@@ -348,7 +348,7 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify { mockDao.savePosts(mockListPostDto) }
+            coVerify { mockDao.savePosts(mockListPostDto) }
             assertThat(result.getOrNull()).isEqualTo(mockPost)
         }
 
@@ -356,7 +356,7 @@ class PostsDataSourceTest {
         fun `GIVEN the tags contain a plus sign THEN their are escaped before the request is sent`() {
             // GIVEN
             val expectedTags = "C%2b%2b+Tag%2bTag"
-            val inputTags = listOf(Tag(name = "C++"), Tag(name="Tag+Tag"))
+            val inputTags = listOf(Tag(name = "C++"), Tag(name = "Tag+Tag"))
 
             coEvery {
                 mockApi.add(
@@ -491,7 +491,7 @@ class PostsDataSourceTest {
             val result = runBlocking { dataSource.delete(mockUrlValid) }
 
             // THEN
-            verify(exactly = 0) { mockDao.deletePost(mockUrlValid) }
+            coVerify(exactly = 0) { mockDao.deletePost(mockUrlValid) }
             verify(exactly = 0) { mockUserRepository.lastUpdate = any() }
 
             assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
@@ -506,7 +506,7 @@ class PostsDataSourceTest {
             val result = runBlocking { dataSource.delete(mockUrlValid) }
 
             // THEN
-            verify(exactly = 0) { mockDao.deletePost(mockUrlValid) }
+            coVerify(exactly = 0) { mockDao.deletePost(mockUrlValid) }
             verify(exactly = 0) { mockUserRepository.lastUpdate = any() }
 
             assertThat(result.exceptionOrNull()).isInstanceOf(ApiException::class.java)
@@ -517,13 +517,13 @@ class PostsDataSourceTest {
             // GIVEN
             coEvery { mockApi.delete(mockUrlValid) } returns createGenericResponse(ApiResultCodes.DONE)
             coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
-            every { mockDao.deletePost(mockUrlValid) } just Runs
+            coEvery { mockDao.deletePost(mockUrlValid) } just Runs
 
             // WHEN
             val result = runBlocking { dataSource.delete(mockUrlValid) }
 
             // THEN
-            verify { mockDao.deletePost(mockUrlValid) }
+            coVerify { mockDao.deletePost(mockUrlValid) }
             assertThat(result.getOrNull()).isEqualTo(Unit)
         }
     }
@@ -678,7 +678,7 @@ class PostsDataSourceTest {
                         limit = API_PAGE_SIZE
                     )
                 } returns mockListPostDto
-                every { dataSource.savePosts(any()) } returns Unit
+                coEvery { dataSource.savePosts(any()) } returns Unit
 
                 // WHEN
                 val result = runBlocking {
@@ -710,7 +710,7 @@ class PostsDataSourceTest {
 
                 coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 coVerify { mockDao.deleteAllPosts() }
-                verify { dataSource.savePosts(mockListPostDto) }
+                coVerify { dataSource.savePosts(mockListPostDto) }
                 coVerify {
                     dataSource.getLocalData(
                         newestFirst = true,
@@ -801,7 +801,7 @@ class PostsDataSourceTest {
                     )
                 } returns mockListPostDto
                 every { mockListPostDto.size } returns API_PAGE_SIZE - 1
-                every { dataSource.savePosts(any()) } returns Unit
+                coEvery { dataSource.savePosts(any()) } returns Unit
 
                 // WHEN
                 val result = runBlocking {
@@ -860,7 +860,7 @@ class PostsDataSourceTest {
                 }
                 coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 coVerify { mockDao.deleteAllPosts() }
-                verify { dataSource.savePosts(mockListPostDto) }
+                coVerify { dataSource.savePosts(mockListPostDto) }
                 coVerify { mockUserRepository.lastUpdate = mockTime }
 
             }
@@ -933,7 +933,7 @@ class PostsDataSourceTest {
                         limit = API_PAGE_SIZE
                     )
                 } returns mockListPostDto
-                every { mockDao.deleteAllPosts() } throws Exception()
+                coEvery { mockDao.deleteAllPosts() } throws Exception()
 
                 // WHEN
                 val result = runBlocking {
@@ -978,7 +978,7 @@ class PostsDataSourceTest {
                 }
                 coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 coVerify { mockDao.deleteAllPosts() }
-                verify(exactly = 0) { mockDao.savePosts(any()) }
+                coVerify(exactly = 0) { mockDao.savePosts(any()) }
                 coVerify(exactly = 0) { mockUserRepository.lastUpdate = any() }
             }
 
@@ -993,7 +993,7 @@ class PostsDataSourceTest {
                             limit = API_PAGE_SIZE
                         )
                     } returns mockListPostDto
-                    every { dataSource.savePosts(any()) } throws Exception()
+                    coEvery { dataSource.savePosts(any()) } throws Exception()
 
                     // WHEN
                     val result = dataSource.getAllPosts(
@@ -1033,8 +1033,8 @@ class PostsDataSourceTest {
                     }
 
                     coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
-                    verify { mockDao.deleteAllPosts() }
-                    verify { dataSource.savePosts(mockListPostDto) }
+                    coVerify { mockDao.deleteAllPosts() }
+                    coVerify { dataSource.savePosts(mockListPostDto) }
                     verify(exactly = 0) { mockUserRepository.lastUpdate = any() }
                 }
             }
@@ -1052,7 +1052,7 @@ class PostsDataSourceTest {
                 } returns mockListPostDto
                 every { mockListPostDto.size } returns API_PAGE_SIZE
                 every { dataSource.getAdditionalPages() } returns Unit
-                every { dataSource.savePosts(any()) } returns Unit
+                coEvery { dataSource.savePosts(any()) } returns Unit
 
                 // WHEN
                 val result = runBlocking {
@@ -1111,7 +1111,7 @@ class PostsDataSourceTest {
                 }
                 coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 coVerify { mockDao.deleteAllPosts() }
-                verify { dataSource.savePosts(mockListPostDto) }
+                coVerify { dataSource.savePosts(mockListPostDto) }
                 verify { dataSource.getAdditionalPages() }
                 coVerify { mockUserRepository.lastUpdate = mockFutureTime }
             }
@@ -1122,7 +1122,7 @@ class PostsDataSourceTest {
     inner class GetAdditionalPagesTest {
 
         @Test
-        fun `getAdditionalPages should run at least once`() {
+        fun `getAdditionalPages should run at least once`() = runTest {
             // GIVEN
             val mockPosts = mockk<List<PostDto>>()
 
@@ -1132,18 +1132,18 @@ class PostsDataSourceTest {
                     limit = API_PAGE_SIZE
                 )
             } returns mockPosts
-            every { dataSource.savePosts(any()) } returns Unit
+            coEvery { dataSource.savePosts(any()) } returns Unit
 
             // WHEN
             dataSource.getAdditionalPages()
 
             // THEN
-            verify { dataSource.savePosts(mockPosts) }
+            coVerify { dataSource.savePosts(mockPosts) }
             coVerify { mockApi.getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
         }
 
         @Test
-        fun `getAdditionalPages should run again if the first time returned the same as the page size`() {
+        fun `getAdditionalPages should run again if the first time returned the same as the page size`() = runTest {
             // GIVEN
             val mockPosts = mockk<List<PostDto>>()
             every { mockPosts.size } returnsMany listOf(
@@ -1164,13 +1164,13 @@ class PostsDataSourceTest {
                     limit = API_PAGE_SIZE
                 )
             } returns mockPosts
-            every { dataSource.savePosts(any()) } returns Unit
+            coEvery { dataSource.savePosts(any()) } returns Unit
 
             // WHEN
             dataSource.getAdditionalPages()
 
             // THEN
-            verify(exactly = 2) { dataSource.savePosts(mockPosts) }
+            coVerify(exactly = 2) { dataSource.savePosts(mockPosts) }
             coVerify { mockApi.getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
             coVerify { mockApi.getAllPosts(offset = API_PAGE_SIZE * 2, limit = API_PAGE_SIZE) }
         }
@@ -1180,10 +1180,10 @@ class PostsDataSourceTest {
     inner class SavePostsTests {
 
         @Test
-        fun `WHEN href contains escaped escape html character THEN href is replaced`() {
+        fun `WHEN href contains escaped escape html character THEN href is replaced`() = runTest {
             val input = listOf(createPostDto(href = "https://www.some-url.com?query=with%20space"))
             val expected = listOf(createPostDto(href = "https://www.some-url.com?query=with space"))
-            every { mockDao.savePosts(expected) } just Runs
+            coEvery { mockDao.savePosts(expected) } just Runs
 
             dataSource.savePosts(input)
 
@@ -1191,12 +1191,12 @@ class PostsDataSourceTest {
         }
 
         @Test
-        fun `WHEN tags contain escaped html characters THEN tags are replaced`() {
+        fun `WHEN tags contain escaped html characters THEN tags are replaced`() = runTest {
             val input = HTML_CHAR_MAP.keys.map { createPostDto(tags = it) }
                 .toMutableList().apply { add(createPostDto()) }
             val expected = HTML_CHAR_MAP.values.map { createPostDto(tags = it) }
                 .toMutableList().apply { add(createPostDto()) }
-            every { mockDao.savePosts(expected) } just Runs
+            coEvery { mockDao.savePosts(expected) } just Runs
 
             dataSource.savePosts(input)
 
@@ -1209,7 +1209,7 @@ class PostsDataSourceTest {
 
         @Test
         fun `WHEN getQueryResultSize is called then it returns the dao post count`() = runTest {
-            every {
+            coEvery {
                 mockDao.getPostCount(
                     term = PostsDao.preFormatTerm(mockUrlTitle),
                     tag1 = PostsDao.preFormatTag(mockTag1.name),
@@ -1231,7 +1231,7 @@ class PostsDataSourceTest {
 
         @Test
         fun `WHEN getQueryResultSize is called and the dao throws then it returns 0`() = runTest {
-            every {
+            coEvery {
                 mockDao.getPostCount(
                     term = any(),
                     tag1 = any(),
@@ -1245,7 +1245,6 @@ class PostsDataSourceTest {
                 )
             } throws Exception()
 
-
             val result = dataSource.getQueryResultSize(mockUrlTitle, listOf(mockTag1))
 
             assertThat(result).isEqualTo(0)
@@ -1258,7 +1257,7 @@ class PostsDataSourceTest {
         @Test
         fun `WHEN tags is empty THEN tag1 tag2 and tag3 are sent as empty`() {
             // GIVEN
-            every {
+            coEvery {
                 mockDao.getPostCount(
                     term = any(),
                     tag1 = any(),
@@ -1285,7 +1284,7 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify {
+            coVerify {
                 mockDao.getPostCount(
                     term = PostsDao.preFormatTerm(mockUrlTitle),
                     tag1 = "",
@@ -1304,7 +1303,7 @@ class PostsDataSourceTest {
         @Test
         fun `WHEN tags size is 1 THEN tag2 and tag3 are sent as empty`() {
             // GIVEN
-            every {
+            coEvery {
                 mockDao.getPostCount(
                     term = any(),
                     tag1 = any(),
@@ -1331,7 +1330,7 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify {
+            coVerify {
                 mockDao.getPostCount(
                     term = PostsDao.preFormatTerm(mockUrlTitle),
                     tag1 = PostsDao.preFormatTag(mockTag1.name),
@@ -1350,7 +1349,7 @@ class PostsDataSourceTest {
         @Test
         fun `WHEN tags size is 2 THEN tag3 is sent as empty`() {
             // GIVEN
-            every {
+            coEvery {
                 mockDao.getPostCount(
                     term = any(),
                     tag1 = any(),
@@ -1377,7 +1376,7 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify {
+            coVerify {
                 mockDao.getPostCount(
                     term = PostsDao.preFormatTerm(mockUrlTitle),
                     tag1 = PostsDao.preFormatTag(mockTag1.name),
@@ -1396,7 +1395,7 @@ class PostsDataSourceTest {
         @Test
         fun `WHEN tags size is 3 THEN all tags are sent`() {
             // GIVEN
-            every {
+            coEvery {
                 mockDao.getPostCount(
                     term = any(),
                     tag1 = any(),
@@ -1423,7 +1422,7 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify {
+            coVerify {
                 mockDao.getPostCount(
                     term = PostsDao.preFormatTerm(mockUrlTitle),
                     tag1 = PostsDao.preFormatTag(mockTag1.name),
@@ -1459,7 +1458,7 @@ class PostsDataSourceTest {
                 )
             } returns mockLocalDataSize
 
-            every {
+            coEvery {
                 mockDao.getAllPosts(
                     newestFirst = any(),
                     term = any(),
@@ -1537,7 +1536,7 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify {
+            coVerify {
                 mockDao.getAllPosts(
                     newestFirst = true,
                     term = PostsDao.preFormatTerm(mockUrlTitle),
@@ -1580,7 +1579,7 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify {
+            coVerify {
                 mockDao.getAllPosts(
                     newestFirst = true,
                     term = PostsDao.preFormatTerm(mockUrlTitle),
@@ -1623,7 +1622,7 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify {
+            coVerify {
                 mockDao.getAllPosts(
                     newestFirst = true,
                     term = PostsDao.preFormatTerm(mockUrlTitle),
@@ -1666,7 +1665,7 @@ class PostsDataSourceTest {
             }
 
             // THEN
-            verify {
+            coVerify {
                 mockDao.getAllPosts(
                     newestFirst = true,
                     term = PostsDao.preFormatTerm(mockUrlTitle),
@@ -1693,7 +1692,7 @@ class PostsDataSourceTest {
         @Test
         fun `WHEN getGetAll posts fails THEN Failure is returned`() {
             // GIVEN
-            every {
+            coEvery {
                 mockDao.getAllPosts(
                     newestFirst = any(),
                     term = any(),
@@ -1762,7 +1761,7 @@ class PostsDataSourceTest {
             // GIVEN
             val post = createPost()
 
-            every { mockDao.getPost(mockUrlValid) } returns null
+            coEvery { mockDao.getPost(mockUrlValid) } returns null
             coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto()
             every { mockPostDtoMapper.map(createPostDto()) } returns post
 
@@ -1780,7 +1779,7 @@ class PostsDataSourceTest {
         @Test
         fun `WHEN the db call fails THEN Failure is returned`() {
             // GIVEN
-            every { mockDao.searchExistingPostTag(any()) } throws Exception()
+            coEvery { mockDao.searchExistingPostTag(any()) } throws Exception()
 
             // WHEN
             val result = runBlocking { dataSource.searchExistingPostTag(mockTagString1) }
@@ -1792,7 +1791,7 @@ class PostsDataSourceTest {
         @Test
         fun `WHEN the db call succeeds THEN distinct and sorted values are returned`() {
             // GIVEN
-            every { mockDao.searchExistingPostTag(any()) } returns
+            coEvery { mockDao.searchExistingPostTag(any()) } returns
                 listOf(
                     mockTagString1,
                     "$mockTagString2 $mockTagString1",
@@ -1859,7 +1858,7 @@ class PostsDataSourceTest {
             runBlocking { dataSource.clearCache() }
 
             // THEN
-            verify { mockDao.deleteAllPosts() }
+            coVerify { mockDao.deleteAllPosts() }
         }
     }
 }

@@ -19,7 +19,7 @@ class TagsDataSourceTest {
 
     private val mockApi = mockk<TagsApi>()
     private val mockPostsDao = mockk<PostsDao> {
-        every { getAllPostTags() } returns emptyList()
+        coEvery { getAllPostTags() } returns emptyList()
     }
     private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider> {
         every { isConnected() } returns true

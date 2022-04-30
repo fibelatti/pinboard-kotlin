@@ -97,8 +97,8 @@ class PostsDataSource @Inject constructor(
             trimmedTags?.length.orZero() - replaceLiteral.length
 
         return resultFromNetwork {
-            withContext(Dispatchers.IO) {
-                val result = withTimeout(SERVER_DOWN_TIMEOUT_LONG) {
+            val result = withContext(Dispatchers.IO) {
+                withTimeout(SERVER_DOWN_TIMEOUT_LONG) {
                     postsApi.add(
                         url = url,
                         title = trimmedTitle,
@@ -109,16 +109,16 @@ class PostsDataSource @Inject constructor(
                         replace = replaceLiteral
                     )
                 }
+            }
 
-                when (result.resultCode) {
-                    ApiResultCodes.DONE.code -> {
-                        postsApi.getPost(url).posts
-                            .also(postsDao::savePosts)
-                            .first().let(postDtoMapper::map)
-                    }
-                    ApiResultCodes.ITEM_ALREADY_EXISTS.code -> getPost(url).getOrThrow()
-                    else -> throw ApiException()
+            when (result.resultCode) {
+                ApiResultCodes.DONE.code -> {
+                    postsApi.getPost(url).posts
+                        .also { postsDao.savePosts(it) }
+                        .first().let(postDtoMapper::map)
                 }
+                ApiResultCodes.ITEM_ALREADY_EXISTS.code -> getPost(url).getOrThrow()
+                else -> throw ApiException()
             }
         }
     }
@@ -127,7 +127,7 @@ class PostsDataSource @Inject constructor(
         withContext(Dispatchers.IO) { postsApi.delete(url) }
     }.mapCatching { result ->
         if (result.resultCode == ApiResultCodes.DONE.code) {
-            withContext(Dispatchers.IO) { postsDao.deletePost(url) }
+            postsDao.deletePost(url)
         } else {
             throw ApiException()
         }
@@ -188,10 +188,8 @@ class PostsDataSource @Inject constructor(
                     postsApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE)
                 }
             }.mapCatching { posts ->
-                withContext(Dispatchers.IO) {
-                    postsDao.deleteAllPosts()
-                    savePosts(posts)
-                }
+                postsDao.deleteAllPosts()
+                savePosts(posts)
 
                 userRepository.lastUpdate = apiLastUpdate
 
@@ -230,7 +228,7 @@ class PostsDataSource @Inject constructor(
     }
 
     @VisibleForTesting
-    fun savePosts(posts: List<PostDto>) {
+    suspend fun savePosts(posts: List<PostDto>) {
         val updatedPosts = posts.map { post ->
             if (post.tags.containsHtmlChars() || post.href.contains("%20")) {
                 post.copy(
@@ -266,20 +264,18 @@ class PostsDataSource @Inject constructor(
         postVisibility: PostVisibility,
         readLaterOnly: Boolean,
         countLimit: Int,
-    ): Int = withContext(Dispatchers.IO) {
-        postsDao.getPostCount(
-            term = PostsDao.preFormatTerm(searchTerm),
-            tag1 = tags.getAndFormat(0),
-            tag2 = tags.getAndFormat(1),
-            tag3 = tags.getAndFormat(2),
-            untaggedOnly = untaggedOnly,
-            ignoreVisibility = postVisibility is PostVisibility.None,
-            publicPostsOnly = postVisibility is PostVisibility.Public,
-            privatePostsOnly = postVisibility is PostVisibility.Private,
-            readLaterOnly = readLaterOnly,
-            limit = countLimit
-        )
-    }
+    ): Int = postsDao.getPostCount(
+        term = PostsDao.preFormatTerm(searchTerm),
+        tag1 = tags.getAndFormat(0),
+        tag2 = tags.getAndFormat(1),
+        tag3 = tags.getAndFormat(2),
+        untaggedOnly = untaggedOnly,
+        ignoreVisibility = postVisibility is PostVisibility.None,
+        publicPostsOnly = postVisibility is PostVisibility.Public,
+        privatePostsOnly = postVisibility is PostVisibility.Private,
+        readLaterOnly = readLaterOnly,
+        limit = countLimit
+    )
 
     @VisibleForTesting
     suspend fun getLocalData(
@@ -304,22 +300,20 @@ class PostsDataSource @Inject constructor(
         )
 
         val localData = if (localDataSize > 0) {
-            withContext(Dispatchers.IO) {
-                postsDao.getAllPosts(
-                    newestFirst = newestFirst,
-                    term = PostsDao.preFormatTerm(searchTerm),
-                    tag1 = tags.getAndFormat(0),
-                    tag2 = tags.getAndFormat(1),
-                    tag3 = tags.getAndFormat(2),
-                    untaggedOnly = untaggedOnly,
-                    ignoreVisibility = postVisibility is PostVisibility.None,
-                    publicPostsOnly = postVisibility is PostVisibility.Public,
-                    privatePostsOnly = postVisibility is PostVisibility.Private,
-                    readLaterOnly = readLaterOnly,
-                    limit = pageLimit,
-                    offset = pageOffset
-                )
-            }.let(postDtoMapper::mapList)
+            postsDao.getAllPosts(
+                newestFirst = newestFirst,
+                term = PostsDao.preFormatTerm(searchTerm),
+                tag1 = tags.getAndFormat(0),
+                tag2 = tags.getAndFormat(1),
+                tag3 = tags.getAndFormat(2),
+                untaggedOnly = untaggedOnly,
+                ignoreVisibility = postVisibility is PostVisibility.None,
+                publicPostsOnly = postVisibility is PostVisibility.Public,
+                privatePostsOnly = postVisibility is PostVisibility.Private,
+                readLaterOnly = readLaterOnly,
+                limit = pageLimit,
+                offset = pageOffset
+            ).let(postDtoMapper::mapList)
         } else {
             emptyList()
         }
@@ -331,15 +325,15 @@ class PostsDataSource @Inject constructor(
         this?.getOrNull(index)?.name?.let(PostsDao.Companion::preFormatTag).orEmpty()
 
     override suspend fun getPost(url: String): Result<Post> = resultFromNetwork {
-        withContext(Dispatchers.IO) {
-            postsDao.getPost(url) ?: postsApi.getPost(url).posts.firstOrNull()
-        }?.let(postDtoMapper::map) ?: throw InvalidRequestException()
+        val post = postsDao.getPost(url) ?: withContext(Dispatchers.IO) {
+            postsApi.getPost(url).posts.firstOrNull()
+        }
+
+        post?.let(postDtoMapper::map) ?: throw InvalidRequestException()
     }
 
     override suspend fun searchExistingPostTag(tag: String): Result<List<String>> = resultFromNetwork {
-        val concatenatedTags = withContext(Dispatchers.IO) {
-            postsDao.searchExistingPostTag(PostsDao.preFormatTag(tag))
-        }
+        val concatenatedTags = postsDao.searchExistingPostTag(PostsDao.preFormatTag(tag))
 
         concatenatedTags.flatMap { it.replaceHtmlChars().split(" ") }
             .filter { it.startsWith(tag, ignoreCase = true) }
@@ -354,8 +348,6 @@ class PostsDataSource @Inject constructor(
     }
 
     override suspend fun clearCache(): Result<Unit> = resultFrom {
-        withContext(Dispatchers.IO) {
-            postsDao.deleteAllPosts()
-        }
+        postsDao.deleteAllPosts()
     }
 }

@@ -20,10 +20,8 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.withContext
 import java.util.UUID
 import javax.inject.Inject
 
@@ -45,9 +43,7 @@ class PostsDataSource @Inject constructor(
         replace: Boolean
     ): Result<Post> {
         val existingPost = resultFrom {
-            withContext(Dispatchers.IO) {
-                postsDao.getPost(url)
-            }
+            postsDao.getPost(url)
         }.getOrNull()
 
         val newPost = PostDto(
@@ -63,20 +59,13 @@ class PostsDataSource @Inject constructor(
         )
 
         return resultFrom {
-            withContext(Dispatchers.IO) {
-                postsDao.savePosts(listOf(newPost))
-            }
-
+            postsDao.savePosts(listOf(newPost))
             postDtoMapper.map(newPost)
         }
     }
 
-    override suspend fun delete(url: String): Result<Unit> {
-        return resultFrom {
-            withContext(Dispatchers.IO) {
-                postsDao.deletePost(url)
-            }
-        }
+    override suspend fun delete(url: String): Result<Unit> = resultFrom {
+        postsDao.deletePost(url)
     }
 
     override suspend fun getAllPosts(
@@ -90,20 +79,19 @@ class PostsDataSource @Inject constructor(
         pageLimit: Int,
         pageOffset: Int,
         forceRefresh: Boolean,
-    ): Flow<Result<PostListResult>> =
-        flowOf(
-            getLocalData(
-                newestFirst,
-                searchTerm,
-                tags,
-                untaggedOnly,
-                postVisibility,
-                readLaterOnly,
-                countLimit,
-                pageLimit,
-                pageOffset
-            )
+    ): Flow<Result<PostListResult>> = flowOf(
+        getLocalData(
+            newestFirst,
+            searchTerm,
+            tags,
+            untaggedOnly,
+            postVisibility,
+            readLaterOnly,
+            countLimit,
+            pageLimit,
+            pageOffset
         )
+    )
 
     override suspend fun getQueryResultSize(
         searchTerm: String,
@@ -127,20 +115,18 @@ class PostsDataSource @Inject constructor(
         postVisibility: PostVisibility,
         readLaterOnly: Boolean,
         countLimit: Int
-    ): Int = withContext(Dispatchers.IO) {
-        postsDao.getPostCount(
-            term = PostsDao.preFormatTerm(searchTerm),
-            tag1 = tags.getAndFormat(0),
-            tag2 = tags.getAndFormat(1),
-            tag3 = tags.getAndFormat(2),
-            untaggedOnly = untaggedOnly,
-            ignoreVisibility = postVisibility is PostVisibility.None,
-            publicPostsOnly = postVisibility is PostVisibility.Public,
-            privatePostsOnly = postVisibility is PostVisibility.Private,
-            readLaterOnly = readLaterOnly,
-            limit = countLimit
-        )
-    }
+    ): Int = postsDao.getPostCount(
+        term = PostsDao.preFormatTerm(searchTerm),
+        tag1 = tags.getAndFormat(0),
+        tag2 = tags.getAndFormat(1),
+        tag3 = tags.getAndFormat(2),
+        untaggedOnly = untaggedOnly,
+        ignoreVisibility = postVisibility is PostVisibility.None,
+        publicPostsOnly = postVisibility is PostVisibility.Public,
+        privatePostsOnly = postVisibility is PostVisibility.Private,
+        readLaterOnly = readLaterOnly,
+        limit = countLimit
+    )
 
     @VisibleForTesting
     suspend fun getLocalData(
@@ -153,76 +139,59 @@ class PostsDataSource @Inject constructor(
         countLimit: Int,
         pageLimit: Int,
         pageOffset: Int
-    ): Result<PostListResult> {
-        return resultFrom {
-            val localDataSize = getLocalDataSize(
-                searchTerm,
-                tags,
-                untaggedOnly,
-                postVisibility,
-                readLaterOnly,
-                countLimit
-            )
+    ): Result<PostListResult> = resultFrom {
+        val localDataSize = getLocalDataSize(
+            searchTerm,
+            tags,
+            untaggedOnly,
+            postVisibility,
+            readLaterOnly,
+            countLimit
+        )
 
-            val localData = if (localDataSize > 0) {
-                withContext(Dispatchers.IO) {
-                    postsDao.getAllPosts(
-                        newestFirst = newestFirst,
-                        term = PostsDao.preFormatTerm(searchTerm),
-                        tag1 = tags.getAndFormat(0),
-                        tag2 = tags.getAndFormat(1),
-                        tag3 = tags.getAndFormat(2),
-                        untaggedOnly = untaggedOnly,
-                        ignoreVisibility = postVisibility is PostVisibility.None,
-                        publicPostsOnly = postVisibility is PostVisibility.Public,
-                        privatePostsOnly = postVisibility is PostVisibility.Private,
+        val localData = if (localDataSize > 0) {
+            postsDao.getAllPosts(
+                newestFirst = newestFirst,
+                term = PostsDao.preFormatTerm(searchTerm),
+                tag1 = tags.getAndFormat(0),
+                tag2 = tags.getAndFormat(1),
+                tag3 = tags.getAndFormat(2),
+                untaggedOnly = untaggedOnly,
+                ignoreVisibility = postVisibility is PostVisibility.None,
+                publicPostsOnly = postVisibility is PostVisibility.Public,
+                privatePostsOnly = postVisibility is PostVisibility.Private,
 
-                        readLaterOnly = readLaterOnly,
-                        limit = pageLimit,
-                        offset = pageOffset
-                    )
-                }.let(postDtoMapper::mapList)
-            } else {
-                emptyList()
-            }
-
-            PostListResult(totalCount = localDataSize, posts = localData, upToDate = true)
+                readLaterOnly = readLaterOnly,
+                limit = pageLimit,
+                offset = pageOffset
+            ).let(postDtoMapper::mapList)
+        } else {
+            emptyList()
         }
+
+        PostListResult(totalCount = localDataSize, posts = localData, upToDate = true)
     }
 
-    private fun List<Tag>?.getAndFormat(index: Int): String {
-        return this?.getOrNull(index)?.name?.let(PostsDao.Companion::preFormatTag).orEmpty()
+    private fun List<Tag>?.getAndFormat(index: Int): String =
+        this?.getOrNull(index)?.name?.let(PostsDao.Companion::preFormatTag).orEmpty()
+
+    override suspend fun getPost(url: String): Result<Post> = resultFrom {
+        postsDao.getPost(url)?.let(postDtoMapper::map) ?: throw InvalidRequestException()
     }
 
-    override suspend fun getPost(url: String): Result<Post> {
-        return resultFrom {
-            withContext(Dispatchers.IO) {
-                postsDao.getPost(url)
-            }?.let(postDtoMapper::map) ?: throw InvalidRequestException()
-        }
-    }
+    override suspend fun searchExistingPostTag(tag: String): Result<List<String>> = resultFrom {
+        val concatenatedTags = postsDao.searchExistingPostTag(PostsDao.preFormatTag(tag))
 
-    override suspend fun searchExistingPostTag(tag: String): Result<List<String>> {
-        return resultFrom {
-            val concatenatedTags = withContext(Dispatchers.IO) {
-                postsDao.searchExistingPostTag(PostsDao.preFormatTag(tag))
-            }
-
-            concatenatedTags.flatMap { it.split(" ") }
-                .distinct()
-                .filter { it.startsWith(tag, ignoreCase = true) }
-                .sorted()
-        }
+        concatenatedTags.flatMap { it.split(" ") }
+            .distinct()
+            .filter { it.startsWith(tag, ignoreCase = true) }
+            .sorted()
     }
 
     override suspend fun getSuggestedTagsForUrl(url: String): Result<SuggestedTags> =
         Failure(IllegalStateException("getSuggestedTagsForUrl should not be called in this flavor"))
 
-    override suspend fun clearCache(): Result<Unit> {
-        return resultFrom {
-            withContext(Dispatchers.IO) {
-                postsDao.deleteAllPosts()
-            }
-        }
+    override suspend fun clearCache(): Result<Unit> = resultFrom {
+        postsDao.deleteAllPosts()
     }
 }

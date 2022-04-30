@@ -27,8 +27,8 @@ class TagsDataSource @Inject constructor(
         if (mainVariant && connectivityInfoProvider.isConnected()) emit(getRemoteTags())
     }
 
-    private suspend fun getLocalTags(): Result<List<Tag>> = withContext(Dispatchers.IO) {
-        resultFrom { postsDao.getAllPostTags() }
+    private suspend fun getLocalTags(): Result<List<Tag>> = resultFrom {
+        postsDao.getAllPostTags()
     }.mapCatching { concatenatedTags ->
         concatenatedTags
             .flatMap { it.split(" ") }

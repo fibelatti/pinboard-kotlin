@@ -40,7 +40,7 @@ dependencyResolutionManagement {
             library("fibelatti-arch-components", "com.fibelatti.core:arch-components:$fibelattiCoreVersion")
             library("lifecycle-java8", "androidx.lifecycle:lifecycle-common-java8:2.4.1")
             library("lifecycle-runtime-ktx", "androidx.lifecycle:lifecycle-runtime-ktx:2.4.1")
-            library("room-runtime", "androidx.room:room-runtime:$roomVersion")
+            library("room-runtime", "androidx.room:room-ktx:$roomVersion")
             library("room-compiler", "androidx.room:room-compiler:$roomVersion")
             library("work-runtime-ktx", "androidx.work:work-runtime-ktx:2.7.1")
             library("browser", "androidx.browser:browser:1.4.0")

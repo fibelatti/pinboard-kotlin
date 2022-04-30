@@ -14,16 +14,16 @@ import com.fibelatti.pinboard.features.posts.data.model.PostDto
 interface PostsDao {
 
     @Query("delete from $POST_TABLE_NAME")
-    fun deleteAllPosts()
+    suspend fun deleteAllPosts()
 
     @Query("delete from $POST_TABLE_NAME where href = :url")
-    fun deletePost(url: String)
+    suspend fun deletePost(url: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun savePosts(posts: List<PostDto>)
+    suspend fun savePosts(posts: List<PostDto>)
 
     @Query("select count(*) from (select hash from $POST_TABLE_NAME $WHERE_SUB_QUERY limit :limit)")
-    fun getPostCount(
+    suspend fun getPostCount(
         term: String = "",
         tag1: String = "",
         tag2: String = "",
@@ -38,7 +38,7 @@ interface PostsDao {
 
     @Suppress("LongParameterList")
     @Query("$SELECT_ALL_FROM_POST $WHERE_SUB_QUERY $ORDER_BY_SUB_QUERY limit :offset, :limit")
-    fun getAllPosts(
+    suspend fun getAllPosts(
         newestFirst: Boolean = true,
         term: String = "",
         tag1: String = "",
@@ -54,13 +54,13 @@ interface PostsDao {
     ): List<PostDto>
 
     @Query("select tags from $POST_FTS_TABLE_NAME where tags match :tag")
-    fun searchExistingPostTag(tag: String): List<String>
+    suspend fun searchExistingPostTag(tag: String): List<String>
 
     @Query("select * from $POST_TABLE_NAME where href = :url")
-    fun getPost(url: String): PostDto?
+    suspend fun getPost(url: String): PostDto?
 
     @Query("select tags from $POST_TABLE_NAME where tags != ''")
-    fun getAllPostTags(): List<String>
+    suspend fun getAllPostTags(): List<String>
 
     companion object {
 

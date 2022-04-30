@@ -13,6 +13,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockTime4
 import com.fibelatti.pinboard.MockDataProvider.mockTime5
 import com.fibelatti.pinboard.core.AppConfig
 import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import java.util.UUID
 
@@ -93,7 +94,7 @@ class PostsDaoTest : BaseDbTest() {
     private fun randomHash(): String = UUID.randomUUID().toString()
 
     @Test
-    fun whenDeleteIsCalledThenAllDataIsDeleted() {
+    fun whenDeleteIsCalledThenAllDataIsDeleted() = runTest {
         // GIVEN
         val list = listOf(createPostDto(), createPostDto(hash = "other-$mockHash"))
         postsDao.savePosts(list)
@@ -107,7 +108,7 @@ class PostsDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenEntryAlreadyExistsInDbWhenSavePostsIsCalledThenReplaceIsUsed() {
+    fun givenEntryAlreadyExistsInDbWhenSavePostsIsCalledThenReplaceIsUsed() = runTest {
         // GIVEN
         val original = createPostDto(toread = AppConfig.PinboardApiLiterals.YES)
         val modified = createPostDto(toread = AppConfig.PinboardApiLiterals.NO)
@@ -127,7 +128,7 @@ class PostsDaoTest : BaseDbTest() {
 
     // region getPostCount
     @Test
-    fun givenDbHasNoDataWhenGetPostCountIsCalledThenZeroIsReturned() {
+    fun givenDbHasNoDataWhenGetPostCountIsCalledThenZeroIsReturned() = runTest {
         // WHEN
         val result = postsDao.getPostCount()
 
@@ -136,7 +137,7 @@ class PostsDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenDbHasDataWhenGetPostCountIsCalledThenCountIsReturned() {
+    fun givenDbHasDataWhenGetPostCountIsCalledThenCountIsReturned() = runTest {
         // GIVEN
         val list = listOf(createPostDto())
         postsDao.savePosts(list)
@@ -150,227 +151,239 @@ class PostsDaoTest : BaseDbTest() {
 
     @Test
     @Suppress("MagicNumber")
-    fun givenDbHasDataAndTermFilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postWithoutTerm,
-            postWithTermInTheHref,
-            postWithTermInTheDescription,
-            postWithTermInTheExtended
-        )
-        postsDao.savePosts(list)
+    fun givenDbHasDataAndTermFilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postWithoutTerm,
+                postWithTermInTheHref,
+                postWithTermInTheDescription,
+                postWithTermInTheExtended
+            )
+            postsDao.savePosts(list)
 
-        // WHEN
-        val result = postsDao.getPostCount(term = PostsDao.preFormatTerm(mockTerm))
+            // WHEN
+            val result = postsDao.getPostCount(term = PostsDao.preFormatTerm(mockTerm))
 
-        // THEN
-        assertThat(result).isEqualTo(3)
-    }
-
-    @Test
-    @Suppress("MagicNumber")
-    fun givenDbHasDataAndTermFilterIsPassedWithMoreThanOneWordWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postWithoutTerm,
-            postWithTermInTheHref,
-            postWithTermInTheDescription,
-            postWithTermInTheExtended
-        )
-        postsDao.savePosts(list)
-
-        // WHEN
-        val result = postsDao.getPostCount(
-            term = PostsDao.preFormatTerm("$mockTerm $mockSecondTerm")
-        )
-
-        // THEN
-        assertThat(result).isEqualTo(1)
-    }
-
-    @Test
-    fun givenDbHasDataAndTermFilterIsPassedAndItContainsAHyphenWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postWithoutTerm,
-            postWithTermInTheHref,
-            postWithTermInTheDescription,
-            postWithTermInTheExtended
-        )
-        postsDao.savePosts(list)
-
-        // WHEN
-        val result = postsDao.getPostCount(term = PostsDao.preFormatTerm("term-with"))
-
-        // THEN
-        assertThat(result).isEqualTo(1)
-    }
+            // THEN
+            assertThat(result).isEqualTo(3)
+        }
 
     @Test
     @Suppress("MagicNumber")
-    fun givenDbHasDataAndTag1FilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postWithNoTags,
-            postWithOneTag,
-            postWithTwoTags,
-            postWithThreeTags
-        )
-        postsDao.savePosts(list)
+    fun givenDbHasDataAndTermFilterIsPassedWithMoreThanOneWordWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postWithoutTerm,
+                postWithTermInTheHref,
+                postWithTermInTheDescription,
+                postWithTermInTheExtended
+            )
+            postsDao.savePosts(list)
 
-        // WHEN
-        val result = postsDao.getPostCount(tag1 = PostsDao.preFormatTag(mockTagString1))
+            // WHEN
+            val result = postsDao.getPostCount(
+                term = PostsDao.preFormatTerm("$mockTerm $mockSecondTerm")
+            )
 
-        // THEN
-        assertThat(result).isEqualTo(3)
-    }
+            // THEN
+            assertThat(result).isEqualTo(1)
+        }
+
+    @Test
+    fun givenDbHasDataAndTermFilterIsPassedAndItContainsAHyphenWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postWithoutTerm,
+                postWithTermInTheHref,
+                postWithTermInTheDescription,
+                postWithTermInTheExtended
+            )
+            postsDao.savePosts(list)
+
+            // WHEN
+            val result = postsDao.getPostCount(term = PostsDao.preFormatTerm("term-with"))
+
+            // THEN
+            assertThat(result).isEqualTo(1)
+        }
 
     @Test
     @Suppress("MagicNumber")
-    fun givenDbHasDataAndTag1FilterIsPassedAndItContainsAHyphenWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postWithNoTags,
-            postWithOneTag,
-            postWithTwoTags,
-            postWithThreeTags
-        )
-        postsDao.savePosts(list)
+    fun givenDbHasDataAndTag1FilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postWithNoTags,
+                postWithOneTag,
+                postWithTwoTags,
+                postWithThreeTags
+            )
+            postsDao.savePosts(list)
 
-        // WHEN
-        val result = postsDao.getPostCount(tag1 = PostsDao.preFormatTag(mockTagString1))
+            // WHEN
+            val result = postsDao.getPostCount(tag1 = PostsDao.preFormatTag(mockTagString1))
 
-        // THEN
-        assertThat(result).isEqualTo(3)
-    }
-
-    @Test
-    fun givenDbHasDataAndTag1AndTag2FilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postWithNoTags,
-            postWithOneTag,
-            postWithTwoTags,
-            postWithThreeTags
-        )
-        postsDao.savePosts(list)
-
-        // WHEN
-        val result = postsDao.getPostCount(
-            tag1 = PostsDao.preFormatTag(mockTagString1),
-            tag2 = PostsDao.preFormatTag(mockTagString2)
-        )
-
-        // THEN
-        assertThat(result).isEqualTo(2)
-    }
+            // THEN
+            assertThat(result).isEqualTo(3)
+        }
 
     @Test
-    fun givenDbHasDataAndTag1AndTag2AndTag3FilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postWithNoTags,
-            postWithOneTag,
-            postWithTwoTags,
-            postWithThreeTags
-        )
-        postsDao.savePosts(list)
+    @Suppress("MagicNumber")
+    fun givenDbHasDataAndTag1FilterIsPassedAndItContainsAHyphenWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postWithNoTags,
+                postWithOneTag,
+                postWithTwoTags,
+                postWithThreeTags
+            )
+            postsDao.savePosts(list)
 
-        // WHEN
-        val result = postsDao.getPostCount(
-            tag1 = PostsDao.preFormatTag(mockTagString1),
-            tag2 = PostsDao.preFormatTag(mockTagString2),
-            tag3 = PostsDao.preFormatTag(mockTagString3)
-        )
+            // WHEN
+            val result = postsDao.getPostCount(tag1 = PostsDao.preFormatTag(mockTagString1))
 
-        // THEN
-        assertThat(result).isEqualTo(1)
-    }
+            // THEN
+            assertThat(result).isEqualTo(3)
+        }
 
     @Test
-    fun givenDbHasDataAndUntaggedOnlyFilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postWithNoTags,
-            postWithOneTag,
-            postWithTwoTags,
-            postWithThreeTags
-        )
-        postsDao.savePosts(list)
+    fun givenDbHasDataAndTag1AndTag2FilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postWithNoTags,
+                postWithOneTag,
+                postWithTwoTags,
+                postWithThreeTags
+            )
+            postsDao.savePosts(list)
 
-        // WHEN
-        val result = postsDao.getPostCount(untaggedOnly = true)
+            // WHEN
+            val result = postsDao.getPostCount(
+                tag1 = PostsDao.preFormatTag(mockTagString1),
+                tag2 = PostsDao.preFormatTag(mockTagString2)
+            )
 
-        // THEN
-        assertThat(result).isEqualTo(1)
-    }
-
-    @Test
-    fun givenDbHasDataAndIgnoreVisibilityFilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postPublic,
-            postPrivate
-        )
-        postsDao.savePosts(list)
-
-        // WHEN
-        val result = postsDao.getPostCount(ignoreVisibility = true)
-
-        // THEN
-        assertThat(result).isEqualTo(2)
-    }
+            // THEN
+            assertThat(result).isEqualTo(2)
+        }
 
     @Test
-    fun givenDbHasDataAndPublicPostsOnlyFilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postPublic,
-            postPrivate
-        )
-        postsDao.savePosts(list)
+    fun givenDbHasDataAndTag1AndTag2AndTag3FilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postWithNoTags,
+                postWithOneTag,
+                postWithTwoTags,
+                postWithThreeTags
+            )
+            postsDao.savePosts(list)
 
-        // WHEN
-        val result = postsDao.getPostCount(publicPostsOnly = true)
+            // WHEN
+            val result = postsDao.getPostCount(
+                tag1 = PostsDao.preFormatTag(mockTagString1),
+                tag2 = PostsDao.preFormatTag(mockTagString2),
+                tag3 = PostsDao.preFormatTag(mockTagString3)
+            )
 
-        // THEN
-        assertThat(result).isEqualTo(1)
-    }
-
-    @Test
-    fun givenDbHasDataAndPrivatePostsOnlyFilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postPublic,
-            postPrivate
-        )
-        postsDao.savePosts(list)
-
-        // WHEN
-        val result = postsDao.getPostCount(privatePostsOnly = true)
-
-        // THEN
-        assertThat(result).isEqualTo(1)
-    }
+            // THEN
+            assertThat(result).isEqualTo(1)
+        }
 
     @Test
-    fun givenDbHasDataAndReadLaterOnlyFilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postReadLater,
-            postNotReadLater
-        )
-        postsDao.savePosts(list)
+    fun givenDbHasDataAndUntaggedOnlyFilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postWithNoTags,
+                postWithOneTag,
+                postWithTwoTags,
+                postWithThreeTags
+            )
+            postsDao.savePosts(list)
 
-        // WHEN
-        val result = postsDao.getPostCount(readLaterOnly = true)
+            // WHEN
+            val result = postsDao.getPostCount(untaggedOnly = true)
 
-        // THEN
-        assertThat(result).isEqualTo(1)
-    }
+            // THEN
+            assertThat(result).isEqualTo(1)
+        }
 
     @Test
-    fun givenDbHasDataAndAndLimitIsLowerThenDataSizeWhenGetPostCountIsCalledThenTheLimitSizeIsReturned() {
+    fun givenDbHasDataAndIgnoreVisibilityFilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postPublic,
+                postPrivate
+            )
+            postsDao.savePosts(list)
+
+            // WHEN
+            val result = postsDao.getPostCount(ignoreVisibility = true)
+
+            // THEN
+            assertThat(result).isEqualTo(2)
+        }
+
+    @Test
+    fun givenDbHasDataAndPublicPostsOnlyFilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postPublic,
+                postPrivate
+            )
+            postsDao.savePosts(list)
+
+            // WHEN
+            val result = postsDao.getPostCount(publicPostsOnly = true)
+
+            // THEN
+            assertThat(result).isEqualTo(1)
+        }
+
+    @Test
+    fun givenDbHasDataAndPrivatePostsOnlyFilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postPublic,
+                postPrivate
+            )
+            postsDao.savePosts(list)
+
+            // WHEN
+            val result = postsDao.getPostCount(privatePostsOnly = true)
+
+            // THEN
+            assertThat(result).isEqualTo(1)
+        }
+
+    @Test
+    fun givenDbHasDataAndReadLaterOnlyFilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postReadLater,
+                postNotReadLater
+            )
+            postsDao.savePosts(list)
+
+            // WHEN
+            val result = postsDao.getPostCount(readLaterOnly = true)
+
+            // THEN
+            assertThat(result).isEqualTo(1)
+        }
+
+    @Test
+    fun givenDbHasDataAndAndLimitIsLowerThenDataSizeWhenGetPostCountIsCalledThenTheLimitSizeIsReturned() = runTest {
         // GIVEN
         val list = listOf(
             postWithoutTerm,
@@ -396,7 +409,7 @@ class PostsDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenDbHasDataAndAndLimitIsHigherThenDataSizeWhenGetPostCountIsCalledThenTheDataSizeIsReturned() {
+    fun givenDbHasDataAndAndLimitIsHigherThenDataSizeWhenGetPostCountIsCalledThenTheDataSizeIsReturned() = runTest {
         // GIVEN
         val list = listOf(
             postWithoutTerm,
@@ -424,7 +437,7 @@ class PostsDaoTest : BaseDbTest() {
 
     // region getAllPosts
     @Test
-    fun givenDbHasNoDataWhenGetAllPostsIsCalledThenEmptyListIsReturned() {
+    fun givenDbHasNoDataWhenGetAllPostsIsCalledThenEmptyListIsReturned() = runTest {
         // WHEN
         val result = postsDao.getAllPosts()
 
@@ -433,7 +446,7 @@ class PostsDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenDbHasDataWhenGetAllPostsIsCalledThenListIsReturned() {
+    fun givenDbHasDataWhenGetAllPostsIsCalledThenListIsReturned() = runTest {
         // GIVEN
         val list = listOf(createPostDto())
         postsDao.savePosts(list)
@@ -446,7 +459,7 @@ class PostsDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenDbHasDataAndNewestFirstIsTrueWhenGetAllPostsIsCalledThenPostsAreReturnedOrderByTimeDesc() {
+    fun givenDbHasDataAndNewestFirstIsTrueWhenGetAllPostsIsCalledThenPostsAreReturnedOrderByTimeDesc() = runTest {
         // GIVEN
         val list = listOf(
             postFirst,
@@ -473,7 +486,7 @@ class PostsDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenDbHasDataAndNewestFirstIsFalseWhenGetAllPostsIsCalledThenPostsAreReturnedOrderByTimeAsc() {
+    fun givenDbHasDataAndNewestFirstIsFalseWhenGetAllPostsIsCalledThenPostsAreReturnedOrderByTimeAsc() = runTest {
         // GIVEN
         val list = listOf(
             postFirst,
@@ -500,27 +513,28 @@ class PostsDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenDbHasDataAndTermFilterIsPassedWithMoreThanOneWordWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postWithoutTerm,
-            postWithTermInTheHref,
-            postWithTermInTheDescription,
-            postWithTermInTheExtended
-        )
-        postsDao.savePosts(list)
+    fun givenDbHasDataAndTermFilterIsPassedWithMoreThanOneWordWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postWithoutTerm,
+                postWithTermInTheHref,
+                postWithTermInTheDescription,
+                postWithTermInTheExtended
+            )
+            postsDao.savePosts(list)
 
-        // WHEN
-        val result = postsDao.getAllPosts(
-            term = PostsDao.preFormatTerm("$mockTerm $mockSecondTerm")
-        )
+            // WHEN
+            val result = postsDao.getAllPosts(
+                term = PostsDao.preFormatTerm("$mockTerm $mockSecondTerm")
+            )
 
-        // THEN
-        assertThat(result).isEqualTo(listOf(postWithTermInTheHref))
-    }
+            // THEN
+            assertThat(result).isEqualTo(listOf(postWithTermInTheHref))
+        }
 
     @Test
-    fun givenDbHasDataAndTermFilterIsPassedWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() {
+    fun givenDbHasDataAndTermFilterIsPassedWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() = runTest {
         // GIVEN
         val list = listOf(
             postWithoutTerm,
@@ -544,43 +558,26 @@ class PostsDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenDbHasDataAndTermFilterIsPassedAndItContainsAHyphenWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postWithoutTerm,
-            postWithTermInTheHref,
-            postWithTermInTheDescription,
-            postWithTermInTheExtended
-        )
-        postsDao.savePosts(list)
+    fun givenDbHasDataAndTermFilterIsPassedAndItContainsAHyphenWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postWithoutTerm,
+                postWithTermInTheHref,
+                postWithTermInTheDescription,
+                postWithTermInTheExtended
+            )
+            postsDao.savePosts(list)
 
-        // WHEN
-        val result = postsDao.getAllPosts(term = PostsDao.preFormatTerm("term-with"))
+            // WHEN
+            val result = postsDao.getAllPosts(term = PostsDao.preFormatTerm("term-with"))
 
-        // THEN
-        assertThat(result).isEqualTo(listOf(postWithTermInTheDescription))
-    }
-
-    @Test
-    fun givenDbHasDataAndTag1FilterIsPassedWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postWithNoTags,
-            postWithOneTag,
-            postWithTwoTags,
-            postWithThreeTags
-        )
-        postsDao.savePosts(list)
-
-        // WHEN
-        val result = postsDao.getAllPosts(tag1 = PostsDao.preFormatTag(mockTagString1))
-
-        // THEN
-        assertThat(result).isEqualTo(listOf(postWithOneTag, postWithTwoTags, postWithThreeTags))
-    }
+            // THEN
+            assertThat(result).isEqualTo(listOf(postWithTermInTheDescription))
+        }
 
     @Test
-    fun givenDbHasDataAndTag1FilterIsPassedAndItContainsAHyphenWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() {
+    fun givenDbHasDataAndTag1FilterIsPassedWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() = runTest {
         // GIVEN
         val list = listOf(
             postWithNoTags,
@@ -598,132 +595,158 @@ class PostsDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenDbHasDataAndTag1AndTag2FilterIsPassedWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postWithNoTags,
-            postWithOneTag,
-            postWithTwoTags,
-            postWithThreeTags
-        )
-        postsDao.savePosts(list)
+    fun givenDbHasDataAndTag1FilterIsPassedAndItContainsAHyphenWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postWithNoTags,
+                postWithOneTag,
+                postWithTwoTags,
+                postWithThreeTags
+            )
+            postsDao.savePosts(list)
 
-        // WHEN
-        val result = postsDao.getAllPosts(
-            tag1 = PostsDao.preFormatTag(mockTagString1),
-            tag2 = PostsDao.preFormatTag(mockTagString2)
-        )
+            // WHEN
+            val result = postsDao.getAllPosts(tag1 = PostsDao.preFormatTag(mockTagString1))
 
-        // THEN
-        assertThat(result).isEqualTo(listOf(postWithTwoTags, postWithThreeTags))
-    }
+            // THEN
+            assertThat(result).isEqualTo(listOf(postWithOneTag, postWithTwoTags, postWithThreeTags))
+        }
 
     @Test
-    fun givenDbHasDataAndTag1AndTag2AndTag3FilterIsPassedWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postWithNoTags,
-            postWithOneTag,
-            postWithTwoTags,
-            postWithThreeTags
-        )
-        postsDao.savePosts(list)
+    fun givenDbHasDataAndTag1AndTag2FilterIsPassedWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postWithNoTags,
+                postWithOneTag,
+                postWithTwoTags,
+                postWithThreeTags
+            )
+            postsDao.savePosts(list)
 
-        // WHEN
-        val result = postsDao.getAllPosts(
-            tag1 = PostsDao.preFormatTag(mockTagString1),
-            tag2 = PostsDao.preFormatTag(mockTagString2),
-            tag3 = PostsDao.preFormatTag(mockTagString3)
-        )
+            // WHEN
+            val result = postsDao.getAllPosts(
+                tag1 = PostsDao.preFormatTag(mockTagString1),
+                tag2 = PostsDao.preFormatTag(mockTagString2)
+            )
 
-        // THEN
-        assertThat(result).isEqualTo(listOf(postWithThreeTags))
-    }
-
-    @Test
-    fun givenDbHasDataAndUntaggedOnlyFilterIsPassedWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postWithNoTags,
-            postWithOneTag,
-            postWithTwoTags,
-            postWithThreeTags
-        )
-        postsDao.savePosts(list)
-
-        // WHEN
-        val result = postsDao.getAllPosts(untaggedOnly = true)
-
-        // THEN
-        assertThat(result).isEqualTo(listOf(postWithNoTags))
-    }
+            // THEN
+            assertThat(result).isEqualTo(listOf(postWithTwoTags, postWithThreeTags))
+        }
 
     @Test
-    fun givenDbHasDataAndIgnoreVisibilityFilterIsPassedWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postPublic,
-            postPrivate
-        )
-        postsDao.savePosts(list)
+    fun givenDbHasDataAndTag1AndTag2AndTag3FilterIsPassedWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postWithNoTags,
+                postWithOneTag,
+                postWithTwoTags,
+                postWithThreeTags
+            )
+            postsDao.savePosts(list)
 
-        // WHEN
-        val result = postsDao.getAllPosts(ignoreVisibility = true)
+            // WHEN
+            val result = postsDao.getAllPosts(
+                tag1 = PostsDao.preFormatTag(mockTagString1),
+                tag2 = PostsDao.preFormatTag(mockTagString2),
+                tag3 = PostsDao.preFormatTag(mockTagString3)
+            )
 
-        // THEN
-        assertThat(result).isEqualTo(listOf(postPublic, postPrivate))
-    }
-
-    @Test
-    fun givenDbHasDataAndPublicPostsOnlyFilterIsPassedWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postPublic,
-            postPrivate
-        )
-        postsDao.savePosts(list)
-
-        // WHEN
-        val result = postsDao.getAllPosts(publicPostsOnly = true)
-
-        // THEN
-        assertThat(result).isEqualTo(listOf(postPublic))
-    }
+            // THEN
+            assertThat(result).isEqualTo(listOf(postWithThreeTags))
+        }
 
     @Test
-    fun givenDbHasDataAndPrivatePostsOnlyFilterIsPassedWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postPublic,
-            postPrivate
-        )
-        postsDao.savePosts(list)
+    fun givenDbHasDataAndUntaggedOnlyFilterIsPassedWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postWithNoTags,
+                postWithOneTag,
+                postWithTwoTags,
+                postWithThreeTags
+            )
+            postsDao.savePosts(list)
 
-        // WHEN
-        val result = postsDao.getAllPosts(privatePostsOnly = true)
+            // WHEN
+            val result = postsDao.getAllPosts(untaggedOnly = true)
 
-        // THEN
-        assertThat(result).isEqualTo(listOf(postPrivate))
-    }
-
-    @Test
-    fun givenDbHasDataAndReadLaterOnlyFilterIsPassedWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postReadLater,
-            postNotReadLater
-        )
-        postsDao.savePosts(list)
-
-        // WHEN
-        val result = postsDao.getAllPosts(readLaterOnly = true)
-
-        // THEN
-        assertThat(result).isEqualTo(listOf(postReadLater))
-    }
+            // THEN
+            assertThat(result).isEqualTo(listOf(postWithNoTags))
+        }
 
     @Test
-    fun givenDbHasDataAndAndLimitIsLowerThenDataSizeWhenGetAllPostsIsCalledThenTheLimitSizeIsReturned() {
+    fun givenDbHasDataAndIgnoreVisibilityFilterIsPassedWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postPublic,
+                postPrivate
+            )
+            postsDao.savePosts(list)
+
+            // WHEN
+            val result = postsDao.getAllPosts(ignoreVisibility = true)
+
+            // THEN
+            assertThat(result).isEqualTo(listOf(postPublic, postPrivate))
+        }
+
+    @Test
+    fun givenDbHasDataAndPublicPostsOnlyFilterIsPassedWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postPublic,
+                postPrivate
+            )
+            postsDao.savePosts(list)
+
+            // WHEN
+            val result = postsDao.getAllPosts(publicPostsOnly = true)
+
+            // THEN
+            assertThat(result).isEqualTo(listOf(postPublic))
+        }
+
+    @Test
+    fun givenDbHasDataAndPrivatePostsOnlyFilterIsPassedWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postPublic,
+                postPrivate
+            )
+            postsDao.savePosts(list)
+
+            // WHEN
+            val result = postsDao.getAllPosts(privatePostsOnly = true)
+
+            // THEN
+            assertThat(result).isEqualTo(listOf(postPrivate))
+        }
+
+    @Test
+    fun givenDbHasDataAndReadLaterOnlyFilterIsPassedWhenGetAllPostsIsCalledThenPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postReadLater,
+                postNotReadLater
+            )
+            postsDao.savePosts(list)
+
+            // WHEN
+            val result = postsDao.getAllPosts(readLaterOnly = true)
+
+            // THEN
+            assertThat(result).isEqualTo(listOf(postReadLater))
+        }
+
+    @Test
+    fun givenDbHasDataAndAndLimitIsLowerThenDataSizeWhenGetAllPostsIsCalledThenTheLimitSizeIsReturned() = runTest {
         // GIVEN
         val list = listOf(
             postWithoutTerm,
@@ -763,7 +786,7 @@ class PostsDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenDbHasDataAndAndLimitIsHigherThenDataSizeWhenGetAllPostsIsCalledThenTheDataSizeIsReturned() {
+    fun givenDbHasDataAndAndLimitIsHigherThenDataSizeWhenGetAllPostsIsCalledThenTheDataSizeIsReturned() = runTest {
         // GIVEN
         val list = listOf(
             postWithoutTerm,
@@ -789,7 +812,7 @@ class PostsDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenDbHasDataAndAndOffsetIsLowerThenDataSizeWhenGetAllPostsIsCalledThenTheRemainingDataIsReturned() {
+    fun givenDbHasDataAndAndOffsetIsLowerThenDataSizeWhenGetAllPostsIsCalledThenTheRemainingDataIsReturned() = runTest {
         // GIVEN
         val list = listOf(
             postWithoutTerm,
@@ -815,7 +838,7 @@ class PostsDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenDbHasDataAndAndOffsetIsHigherThenDataSizeWhenGetAllPostsIsCalledThenNoDataIsReturned() {
+    fun givenDbHasDataAndAndOffsetIsHigherThenDataSizeWhenGetAllPostsIsCalledThenNoDataIsReturned() = runTest {
         // GIVEN
         val list = listOf(
             postWithoutTerm,
@@ -842,7 +865,7 @@ class PostsDaoTest : BaseDbTest() {
     // endregion
 
     @Test
-    fun whenSearchExistingPostTagIsCalledThenAListOfStringsContainingThatTagIsReturned() {
+    fun whenSearchExistingPostTagIsCalledThenAListOfStringsContainingThatTagIsReturned() = runTest {
         // GIVEN
         val list = listOf(
             postWithNoTags,
@@ -866,26 +889,27 @@ class PostsDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun whenSearchExistingPostTagIsCalledWithAQueryThatContainsAHyphenThenAListOfStringsContainingThatTagIsReturned() {
-        // GIVEN
-        val list = listOf(
-            postWithNoTags,
-            postWithOneTag,
-            postWithTwoTags,
-            postWithThreeTags
-        )
-        postsDao.savePosts(list)
-
-        // WHEN
-        val result = postsDao.searchExistingPostTag(PostsDao.preFormatTag(mockTagString1))
-
-        // THEN
-        assertThat(result).isEqualTo(
-            listOf(
-                postWithOneTag.tags,
-                postWithTwoTags.tags,
-                postWithThreeTags.tags
+    fun whenSearchExistingPostTagIsCalledWithAQueryThatContainsAHyphenThenAListOfStringsContainingThatTagIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                postWithNoTags,
+                postWithOneTag,
+                postWithTwoTags,
+                postWithThreeTags
             )
-        )
-    }
+            postsDao.savePosts(list)
+
+            // WHEN
+            val result = postsDao.searchExistingPostTag(PostsDao.preFormatTag(mockTagString1))
+
+            // THEN
+            assertThat(result).isEqualTo(
+                listOf(
+                    postWithOneTag.tags,
+                    postWithTwoTags.tags,
+                    postWithThreeTags.tags
+                )
+            )
+        }
 }
