@@ -10,18 +10,17 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.applyAs
 import com.fibelatti.core.extension.doOnApplyWindowInsets
-import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.inflate
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.textAsString
-import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.blink
@@ -33,12 +32,14 @@ import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.RefreshSearchTags
 import com.fibelatti.pinboard.features.appstate.RemoveSearchTag
 import com.fibelatti.pinboard.features.appstate.Search
+import com.fibelatti.pinboard.features.appstate.SetTerm
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagsAdapter
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -53,6 +54,7 @@ class PostSearchFragment @Inject constructor(
     }
 
     private val appStateViewModel: AppStateViewModel by activityViewModels()
+    private val searchPostViewModel: SearchPostViewModel by viewModels()
     private val tagsViewModel: TagsViewModel by viewModels()
 
     private val binding by viewBinding(FragmentSearchPostBinding::bind)
@@ -74,6 +76,9 @@ class PostSearchFragment @Inject constructor(
         handleKeyboardVisibility()
         binding.root.animateChangingTransitions()
 
+        binding.editTextSearchTerm.doAfterTextChanged { editable ->
+            appStateViewModel.runAction(SetTerm(editable.toString()))
+        }
         binding.editTextSearchTerm.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 binding.editTextSearchTerm.hideKeyboard()
@@ -98,38 +103,41 @@ class PostSearchFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        lifecycleScope.launch {
-            appStateViewModel.searchContent.collect { content ->
+        appStateViewModel.searchContent.onEach { content ->
+            if (binding.editTextSearchTerm.textAsString() != content.searchParameters.term) {
                 binding.editTextSearchTerm.setText(content.searchParameters.term)
-
-                if (content.searchParameters.tags.isNotEmpty()) {
-                    binding.chipGroupSelectedTags.removeAllViews()
-                    for (tag in content.searchParameters.tags) {
-                        binding.chipGroupSelectedTags.addView(createTagChip(tag))
-                    }
-
-                    binding.textViewSelectedTagsTitle.visible()
-                    binding.layoutChipContainer.isVisible = true
-                } else {
-                    binding.textViewSelectedTagsTitle.gone()
-                    binding.layoutChipContainer.isGone = true
-                    binding.chipGroupSelectedTags.removeAllViews()
-                }
-
-                if (content.shouldLoadTags) {
-                    binding.tagListLayout.showLoading()
-                    tagsViewModel.getAll(TagsViewModel.Source.SEARCH)
-                } else {
-                    tagsViewModel.sortTags(content.availableTags, binding.tagListLayout.getCurrentTagSorting())
-                }
+                binding.editTextSearchTerm.setSelection(content.searchParameters.term.length)
             }
-        }
-        lifecycleScope.launch {
-            tagsViewModel.tags.collect(binding.tagListLayout::showTags)
-        }
-        lifecycleScope.launch {
-            tagsViewModel.error.collect(::handleError)
-        }
+
+            binding.textViewQueryResultSize.isVisible = content.searchParameters.isActive()
+
+            if (content.searchParameters.isActive()) {
+                searchPostViewModel.searchParametersChanged(content.searchParameters)
+            }
+
+            val hasSelectedTags = content.searchParameters.tags.isNotEmpty()
+            binding.textViewSelectedTagsTitle.isVisible = hasSelectedTags
+            binding.layoutChipContainer.isVisible = hasSelectedTags
+            binding.chipGroupSelectedTags.removeAllViews()
+
+            for (tag in content.searchParameters.tags) {
+                binding.chipGroupSelectedTags.addView(createTagChip(tag))
+            }
+
+            if (content.shouldLoadTags) {
+                binding.tagListLayout.showLoading()
+                tagsViewModel.getAll(TagsViewModel.Source.SEARCH)
+            } else {
+                tagsViewModel.sortTags(content.availableTags, binding.tagListLayout.getCurrentTagSorting())
+            }
+        }.launchIn(lifecycleScope)
+
+        tagsViewModel.tags.onEach(binding.tagListLayout::showTags).launchIn(lifecycleScope)
+        tagsViewModel.error.onEach(::handleError).launchIn(lifecycleScope)
+
+        searchPostViewModel.queryResultSize.onEach { querySize ->
+            binding.textViewQueryResultSize.text = getString(R.string.search_result_size, querySize)
+        }.launchIn(lifecycleScope)
     }
 
     private fun setupActivityViews() {

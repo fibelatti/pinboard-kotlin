@@ -59,6 +59,7 @@ object PostDeleted : PostAction()
 sealed class SearchAction : Action()
 
 object RefreshSearchTags : SearchAction()
+data class SetTerm(val term: String) : SearchAction()
 data class SetSearchTags(val tags: List<Tag>) : SearchAction()
 data class AddSearchTag(val tag: Tag) : SearchAction()
 data class RemoveSearchTag(val tag: Tag) : SearchAction()

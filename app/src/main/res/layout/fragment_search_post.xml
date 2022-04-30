@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
@@ -31,7 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_regular"
-        android:layout_marginTop="@dimen/margin_xsmall"
+        android:layout_marginTop="@dimen/margin_small"
         android:layout_marginEnd="@dimen/margin_regular"
         android:layout_marginBottom="@dimen/margin_regular"
         android:text="@string/search_term_caveat"
@@ -51,6 +52,7 @@
         android:id="@+id/layoutChipContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_small"
         android:layout_marginBottom="@dimen/margin_regular"
         android:paddingStart="@dimen/padding_regular"
         android:paddingEnd="@dimen/padding_regular"
@@ -61,6 +63,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </HorizontalScrollView>
+
+    <TextView
+        android:id="@+id/textViewQueryResultSize"
+        style="@style/AppTheme.Text.Detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_regular"
+        android:layout_marginEnd="@dimen/margin_regular"
+        android:layout_marginBottom="@dimen/margin_regular"
+        android:background="@drawable/background_contrast_rounded"
+        android:backgroundTint="?attr/colorPrimaryContainer"
+        android:paddingHorizontal="@dimen/padding_regular"
+        android:paddingVertical="@dimen/padding_small"
+        android:visibility="gone"
+        tools:text="10 bookmarks match the current query"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/textViewSearchTagsTitle"
@@ -75,5 +93,5 @@
         android:id="@+id/tagListLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/margin_xsmall" />
+        android:layout_marginTop="@dimen/margin_small" />
 </LinearLayout>

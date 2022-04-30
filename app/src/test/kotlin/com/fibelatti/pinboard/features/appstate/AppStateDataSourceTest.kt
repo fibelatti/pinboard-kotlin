@@ -211,6 +211,7 @@ internal class AppStateDataSourceTest {
 
                 // Search
                 RefreshSearchTags -> RefreshSearchTags to ExpectedHandler.SEARCH
+                is SetTerm -> mockk<SetTerm>() to ExpectedHandler.SEARCH
                 is SetSearchTags -> mockk<SetSearchTags>() to ExpectedHandler.SEARCH
                 is AddSearchTag -> mockk<AddSearchTag>() to ExpectedHandler.SEARCH
                 is RemoveSearchTag -> mockk<RemoveSearchTag>() to ExpectedHandler.SEARCH

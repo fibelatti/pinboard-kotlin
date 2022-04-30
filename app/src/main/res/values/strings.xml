@@ -133,6 +133,7 @@
     <string name="search_selected_tags">Selected tags (max. 3)</string>
     <string name="search_tags">Saved tags</string>
     <string name="search_active">Results are filtered</string>
+    <string name="search_result_size">%d bookmarks match the current search</string>
 
     <!-- Tags -->
     <string name="tags_title">Tags</string>

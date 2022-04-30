@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.posts.data
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.extension.orZero
 import com.fibelatti.core.functional.Result
+import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.getOrThrow
 import com.fibelatti.core.functional.mapCatching
@@ -32,7 +33,6 @@ import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
@@ -42,6 +42,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import javax.inject.Inject
 
 class PostsDataSource @Inject constructor(
     private val userRepository: UserRepository,
@@ -242,6 +243,20 @@ class PostsDataSource @Inject constructor(
         }
         postsDao.savePosts(updatedPosts)
     }
+
+    override suspend fun getQueryResultSize(
+        searchTerm: String,
+        tags: List<Tag>?
+    ): Int = catching {
+        getLocalDataSize(
+            searchTerm = searchTerm,
+            tags = tags,
+            untaggedOnly = false,
+            postVisibility = PostVisibility.None,
+            readLaterOnly = false,
+            countLimit = -1,
+        )
+    }.getOrDefault(0)
 
     @VisibleForTesting
     suspend fun getLocalDataSize(

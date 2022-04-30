@@ -8,6 +8,7 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
     override suspend fun runAction(action: SearchAction, currentContent: Content): Content {
         return when (action) {
             is RefreshSearchTags -> refresh(currentContent)
+            is SetTerm -> setSearchTerm(action, currentContent)
             is SetSearchTags -> setSearchTags(action, currentContent)
             is AddSearchTag -> addSearchTag(action, currentContent)
             is RemoveSearchTag -> removeSearchTag(action, currentContent)
@@ -19,6 +20,12 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
     private fun refresh(currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<SearchContent>(currentContent) {
             it.copy(shouldLoadTags = true)
+        }
+    }
+
+    private fun setSearchTerm(action: SetTerm, currentContent: Content): Content {
+        return runOnlyForCurrentContentOfType<SearchContent>(currentContent) { searchContent ->
+            searchContent.copy(searchParameters = searchContent.searchParameters.copy(term = action.term))
         }
     }
 

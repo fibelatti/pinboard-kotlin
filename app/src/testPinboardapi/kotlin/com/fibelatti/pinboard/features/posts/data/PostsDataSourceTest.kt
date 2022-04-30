@@ -58,6 +58,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -1200,6 +1201,54 @@ class PostsDataSourceTest {
             dataSource.savePosts(input)
 
             coVerify { mockDao.savePosts(expected) }
+        }
+    }
+
+    @Nested
+    inner class GetQueryResultSize {
+
+        @Test
+        fun `WHEN getQueryResultSize is called then it returns the dao post count`() = runTest {
+            every {
+                mockDao.getPostCount(
+                    term = PostsDao.preFormatTerm(mockUrlTitle),
+                    tag1 = PostsDao.preFormatTag(mockTag1.name),
+                    tag2 = "",
+                    tag3 = "",
+                    untaggedOnly = false,
+                    ignoreVisibility = true,
+                    publicPostsOnly = false,
+                    privatePostsOnly = false,
+                    readLaterOnly = false,
+                    limit = -1,
+                )
+            } returns 13
+
+            val result = dataSource.getQueryResultSize(mockUrlTitle, listOf(mockTag1))
+
+            assertThat(result).isEqualTo(13)
+        }
+
+        @Test
+        fun `WHEN getQueryResultSize is called and the dao throws then it returns 0`() = runTest {
+            every {
+                mockDao.getPostCount(
+                    term = any(),
+                    tag1 = any(),
+                    tag2 = any(),
+                    tag3 = any(),
+                    untaggedOnly = any(),
+                    publicPostsOnly = any(),
+                    privatePostsOnly = any(),
+                    readLaterOnly = any(),
+                    limit = any()
+                )
+            } throws Exception()
+
+
+            val result = dataSource.getQueryResultSize(mockUrlTitle, listOf(mockTag1))
+
+            assertThat(result).isEqualTo(0)
         }
     }
 

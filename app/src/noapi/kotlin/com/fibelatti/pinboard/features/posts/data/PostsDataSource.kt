@@ -5,6 +5,8 @@ import com.fibelatti.core.extension.orFalse
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.Success
+import com.fibelatti.core.functional.catching
+import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.functional.resultFrom
@@ -102,6 +104,20 @@ class PostsDataSource @Inject constructor(
                 pageOffset
             )
         )
+
+    override suspend fun getQueryResultSize(
+        searchTerm: String,
+        tags: List<Tag>?
+    ): Int = catching {
+        getLocalDataSize(
+            searchTerm = searchTerm,
+            tags = tags,
+            untaggedOnly = false,
+            postVisibility = PostVisibility.None,
+            readLaterOnly = false,
+            countLimit = -1,
+        )
+    }.getOrDefault(0)
 
     @VisibleForTesting
     suspend fun getLocalDataSize(

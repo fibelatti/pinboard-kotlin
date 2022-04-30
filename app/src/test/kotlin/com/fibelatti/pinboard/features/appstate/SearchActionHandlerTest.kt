@@ -8,6 +8,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.google.common.truth.Truth.assertThat
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
@@ -51,6 +52,52 @@ internal class SearchActionHandlerTest {
                     searchParameters = SearchParameters(),
                     shouldLoadTags = true,
                     previousContent = mockPreviousContent
+                )
+            )
+        }
+    }
+
+    @Nested
+    inner class SetTermTests {
+
+        @Test
+        fun `WHEN currentContent is not SearchContent THEN same content is returned`() = runTest {
+            // GIVEN
+            val content = mockk<PostDetailContent>()
+
+            // WHEN
+            val result = searchActionHandler.runAction(mockk<SetTerm>(), content)
+
+            // THEN
+            assertThat(result).isEqualTo(content)
+        }
+
+        @Test
+        fun `WHEN currentContent is SearchContent THEN an updated SearchContent is returned`() = runTest {
+            // GIVEN
+            val mockPreviousContent = mockk<PostListContent>()
+            val initialContent = SearchContent(
+                searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
+                previousContent = mockPreviousContent
+            )
+
+            // WHEN
+            val result = searchActionHandler.runAction(
+                SetTerm("updated-term"),
+                initialContent,
+            )
+
+            // THEN
+            assertThat(result).isEqualTo(
+                SearchContent(
+                    searchParameters = SearchParameters(
+                        term = "updated-term",
+                        tags = listOf(mockTag1),
+                    ),
+                    availableTags = emptyList(),
+                    allTags = emptyList(),
+                    shouldLoadTags = true,
+                    previousContent = mockPreviousContent,
                 )
             )
         }

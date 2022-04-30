@@ -36,6 +36,11 @@ interface PostsRepository {
         forceRefresh: Boolean,
     ): Flow<Result<PostListResult>>
 
+    suspend fun getQueryResultSize(
+        searchTerm: String,
+        tags: List<Tag>?,
+    ): Int
+
     suspend fun getPost(url: String): Result<Post>
 
     suspend fun searchExistingPostTag(tag: String): Result<List<String>>
