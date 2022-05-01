@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MotionEvent
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.widget.FrameLayout
 import androidx.core.view.isGone
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.databinding.LayoutSettingToggleBinding
@@ -13,7 +13,7 @@ class SettingToggle @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : ConstraintLayout(context, attrs, defStyleAttr) {
+) : FrameLayout(context, attrs, defStyleAttr) {
 
     private val binding = LayoutSettingToggleBinding.inflate(LayoutInflater.from(context), this, true)
     private var onClickListener: (isChecked: Boolean) -> Unit = {}

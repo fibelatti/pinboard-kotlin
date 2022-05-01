@@ -3,12 +3,11 @@ package com.fibelatti.pinboard.core.android.customview
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.widget.FrameLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import com.fibelatti.core.extension.gone
-import com.fibelatti.core.extension.visible
+import androidx.core.view.isVisible
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.databinding.LayoutTitleBinding
 
@@ -16,7 +15,7 @@ class TitleLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : ConstraintLayout(context, attrs, defStyleAttr) {
+) : FrameLayout(context, attrs, defStyleAttr) {
 
     private val binding = LayoutTitleBinding.inflate(LayoutInflater.from(context), this, true)
 
@@ -24,13 +23,13 @@ class TitleLayout @JvmOverloads constructor(
         binding.buttonNavigateBack.apply {
             setImageDrawable(ContextCompat.getDrawable(context, iconRes))
             setOnClickListener { navigateUp() }
-            visible()
+            isVisible = true
         }
     }
 
     fun hideNavigateUp() {
         binding.buttonNavigateBack.setOnClickListener(null)
-        binding.buttonNavigateBack.gone()
+        binding.buttonNavigateBack.isVisible = false
     }
 
     fun setTitle(@StringRes titleRes: Int) {
@@ -38,28 +37,39 @@ class TitleLayout @JvmOverloads constructor(
     }
 
     fun setTitle(title: String) {
-        if (title.isNotEmpty()) binding.textViewTitle.visible(title) else hideTitle()
+        if (title.isNotEmpty()) {
+            binding.textViewTitle.text = title
+            binding.textViewTitle.isVisible = true
+        } else {
+            hideTitle()
+        }
     }
 
     fun hideTitle() {
-        binding.textViewTitle.gone()
+        binding.textViewTitle.isVisible = false
     }
 
     fun setSubTitle(title: String) {
-        if (title.isNotEmpty()) binding.textViewSubtitle.visible(title) else hideSubTitle()
+        if (title.isNotEmpty()) {
+            binding.textViewSubtitle.text = title
+            binding.textViewSubtitle.isVisible = true
+        } else {
+            hideSubTitle()
+        }
     }
 
     fun hideSubTitle() {
-        binding.textViewSubtitle.gone()
+        binding.textViewSubtitle.isVisible = false
     }
 
     fun setActionButton(@StringRes stringRes: Int, onClick: () -> Unit) {
         binding.buttonAction.setOnClickListener { onClick() }
-        binding.buttonAction.visible(stringRes)
+        binding.buttonAction.setText(stringRes)
+        binding.buttonAction.isVisible = true
     }
 
     fun hideActionButton() {
         binding.buttonAction.setOnClickListener(null)
-        binding.buttonAction.gone()
+        binding.buttonAction.isVisible = false
     }
 }

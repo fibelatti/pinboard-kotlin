@@ -3,7 +3,7 @@ package com.fibelatti.pinboard.core.android.customview
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.widget.FrameLayout
 import com.fibelatti.core.extension.afterTextChanged
 import com.fibelatti.core.extension.clearText
 import com.fibelatti.core.extension.hideKeyboard
@@ -16,7 +16,7 @@ class AddTagsLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
-) : ConstraintLayout(context, attrs, defStyleAttr) {
+) : FrameLayout(context, attrs, defStyleAttr) {
 
     private val binding = LayoutEditTagsBinding.inflate(LayoutInflater.from(context), this, true)
 

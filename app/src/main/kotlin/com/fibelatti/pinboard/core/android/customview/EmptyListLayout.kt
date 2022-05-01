@@ -3,16 +3,16 @@ package com.fibelatti.pinboard.core.android.customview
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.widget.FrameLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.fibelatti.pinboard.databinding.LayoutEmptyListBinding
 
 class EmptyListLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : ConstraintLayout(context, attrs, defStyleAttr) {
+) : FrameLayout(context, attrs, defStyleAttr) {
 
     private val binding = LayoutEmptyListBinding.inflate(LayoutInflater.from(context), this, true)
 
