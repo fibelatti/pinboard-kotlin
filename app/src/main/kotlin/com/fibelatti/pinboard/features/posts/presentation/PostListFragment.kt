@@ -21,6 +21,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.show
+import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentPostListBinding
 import com.fibelatti.pinboard.features.InAppReviewManager
@@ -161,7 +162,7 @@ class PostListFragment @Inject constructor(
             postDetailViewModel.loading.collect { binding.progressBar.visibleIf(it, otherwiseVisibility = View.GONE) }
         }
         lifecycleScope.launch {
-            postDetailViewModel.deleted.collect { mainActivity?.showBanner(getString(R.string.posts_deleted_feedback)) }
+            postDetailViewModel.deleted.collect { binding.root.showBanner(getString(R.string.posts_deleted_feedback)) }
         }
         lifecycleScope.launch {
             postDetailViewModel.deleteError.collect {

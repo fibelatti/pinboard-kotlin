@@ -17,6 +17,7 @@ import com.fibelatti.core.extension.withItemOffsetDecoration
 import com.fibelatti.core.extension.withLinearLayoutManager
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentPopularPostsBinding
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -26,7 +27,6 @@ import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.mainActivity
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -126,7 +126,7 @@ class PopularPostsFragment @Inject constructor(
             }
         }
         lifecycleScope.launch {
-            popularPostsViewModel.saved.collect { mainActivity?.showBanner(getString(R.string.posts_saved_feedback)) }
+            popularPostsViewModel.saved.collect { binding.root.showBanner(getString(R.string.posts_saved_feedback)) }
         }
         lifecycleScope.launch {
             popularPostsViewModel.error.collect(::handleError)

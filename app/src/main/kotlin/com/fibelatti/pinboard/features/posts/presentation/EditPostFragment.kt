@@ -25,6 +25,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.extension.show
+import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.core.extension.smoothScrollY
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentEditPostBinding
@@ -236,7 +237,7 @@ class EditPostFragment @Inject constructor(
             }
         }
         lifecycleScope.launch {
-            editPostViewModel.saved.collect { mainActivity?.showBanner(getString(R.string.posts_saved_feedback)) }
+            editPostViewModel.saved.collect { binding.root.showBanner(getString(R.string.posts_saved_feedback)) }
         }
         lifecycleScope.launch {
             editPostViewModel.invalidUrlError.collect(::handleInvalidUrlError)
@@ -257,7 +258,7 @@ class EditPostFragment @Inject constructor(
         }
         lifecycleScope.launch {
             postDetailViewModel.deleted.collect {
-                mainActivity?.showBanner(getString(R.string.posts_deleted_feedback))
+                binding.root.showBanner(getString(R.string.posts_deleted_feedback))
             }
         }
         lifecycleScope.launch {

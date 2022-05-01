@@ -28,6 +28,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.show
+import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentPostDetailBinding
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -101,7 +102,7 @@ class PostDetailFragment @Inject constructor(
             }
         }
         lifecycleScope.launch {
-            postDetailViewModel.deleted.collect { mainActivity?.showBanner(getString(R.string.posts_deleted_feedback)) }
+            postDetailViewModel.deleted.collect { binding.root.showBanner(getString(R.string.posts_deleted_feedback)) }
         }
         lifecycleScope.launch {
             postDetailViewModel.deleteError.collect {
@@ -113,13 +114,13 @@ class PostDetailFragment @Inject constructor(
         }
         lifecycleScope.launch {
             postDetailViewModel.updated.collect {
-                mainActivity?.showBanner(getString(R.string.posts_marked_as_read_feedback))
+                binding.root.showBanner(getString(R.string.posts_marked_as_read_feedback))
                 mainActivity?.updateTitleLayout { hideActionButton() }
             }
         }
         lifecycleScope.launch {
             postDetailViewModel.updateError.collect {
-                mainActivity?.showBanner(getString(R.string.posts_marked_as_read_error))
+                binding.root.showBanner(getString(R.string.posts_marked_as_read_error))
             }
         }
         lifecycleScope.launch {
@@ -131,7 +132,7 @@ class PostDetailFragment @Inject constructor(
             }
         }
         lifecycleScope.launch {
-            popularPostsViewModel.saved.collect { mainActivity?.showBanner(getString(R.string.posts_saved_feedback)) }
+            popularPostsViewModel.saved.collect { binding.root.showBanner(getString(R.string.posts_saved_feedback)) }
         }
         lifecycleScope.launch {
             popularPostsViewModel.error.collect(::handleError)
@@ -255,7 +256,7 @@ class PostDetailFragment @Inject constructor(
         try {
             startActivity(newIntent)
         } catch (ignored: ActivityNotFoundException) {
-            mainActivity?.showBanner(getString(R.string.posts_open_with_file_viewer_error))
+            binding.root.showBanner(getString(R.string.posts_open_with_file_viewer_error))
         }
     }
 

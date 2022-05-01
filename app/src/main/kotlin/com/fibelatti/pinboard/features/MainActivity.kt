@@ -4,12 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
-import android.view.animation.AlphaAnimation
-import android.view.animation.Animation
-import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
@@ -26,11 +22,11 @@ import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.android.DefaultAnimationListener
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.android.customview.TitleLayout
 import com.fibelatti.pinboard.core.extension.isServerException
+import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.ActivityMainBinding
 import com.fibelatti.pinboard.features.appstate.AddPostContent
@@ -170,7 +166,9 @@ class MainActivity : BaseActivity() {
         when (content) {
             is LoginContent -> {
                 hideControls()
-                if (content.isUnauthorized) showBanner(message = getString(R.string.auth_logged_out_feedback))
+                if (content.isUnauthorized) {
+                    binding.root.showBanner(message = getString(R.string.auth_logged_out_feedback))
+                }
                 featureFragments.showLogin()
             }
             is PostListContent -> featureFragments.showPostList()
@@ -216,46 +214,10 @@ class MainActivity : BaseActivity() {
         }
 
         if (error.isServerException()) {
-            showBanner(getString(R.string.server_timeout_error))
+            binding.root.showBanner(getString(R.string.server_timeout_error))
         } else {
             sendErrorReport(error)
         }
-    }
-
-    @Suppress("MagicNumber")
-    fun showBanner(message: String) {
-        val banner = layoutInflater.inflate(R.layout.layout_feedback_banner, binding.layoutContent, false)
-            .apply { findViewById<TextView>(R.id.textViewFeedback).text = message }
-            .also(binding.layoutContent::addView)
-
-        ConstraintSet().apply {
-            clone(binding.layoutContent)
-            connect(banner.id, ConstraintSet.TOP, binding.layoutTitle.id, ConstraintSet.BOTTOM, 0)
-            connect(banner.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, 0)
-            connect(banner.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, 0)
-        }.applyTo(binding.layoutContent)
-
-        val animTime = resources.getInteger(R.integer.anim_time_long).toLong()
-        val disappearAnimation = AlphaAnimation(1F, 0F).apply {
-            duration = animTime
-            startOffset = animTime * 5
-            setAnimationListener(object : DefaultAnimationListener() {
-                override fun onAnimationEnd(animation: Animation?) {
-                    binding.layoutContent.removeView(banner)
-                }
-            })
-        }
-
-        val appearAnimation = AlphaAnimation(0F, 1F).apply {
-            duration = animTime
-            setAnimationListener(object : DefaultAnimationListener() {
-                override fun onAnimationEnd(animation: Animation?) {
-                    banner?.startAnimation(disappearAnimation)
-                }
-            })
-        }
-
-        banner.startAnimation(appearAnimation)
     }
 
     class Builder(context: Context) : BaseIntentBuilder(context, MainActivity::class.java) {
