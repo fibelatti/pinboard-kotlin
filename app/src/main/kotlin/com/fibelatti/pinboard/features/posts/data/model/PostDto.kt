@@ -7,6 +7,7 @@ import com.fibelatti.core.functional.TwoWayMapper
 import com.fibelatti.pinboard.core.AppConfig.API_ENCODING
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
+import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.squareup.moshi.JsonClass
@@ -30,6 +31,7 @@ data class PostDto(
     val shared: String,
     val toread: String,
     val tags: String,
+    val pendingSync: PendingSyncDto? = null,
 )
 
 class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
@@ -53,7 +55,13 @@ class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
                     .split(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE)
                     .sorted()
                     .map(::Tag)
-            }
+            },
+            pendingSync = when (pendingSync) {
+                PendingSyncDto.ADD -> PendingSync.ADD
+                PendingSyncDto.UPDATE -> PendingSync.UPDATE
+                PendingSyncDto.DELETE -> PendingSync.DELETE
+                null -> null
+            },
         )
     }
 
@@ -67,6 +75,12 @@ class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
             shared = if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES,
             toread = if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO,
             tags = tags?.joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name }.orEmpty(),
+            pendingSync = when (pendingSync) {
+                PendingSync.ADD -> PendingSyncDto.ADD
+                PendingSync.UPDATE -> PendingSyncDto.UPDATE
+                PendingSync.DELETE -> PendingSyncDto.DELETE
+                null -> null
+            },
         )
     }
 }

@@ -47,5 +47,7 @@ interface PostsRepository {
 
     suspend fun getSuggestedTagsForUrl(url: String): Result<SuggestedTags>
 
+    suspend fun getPendingSyncPosts(): Result<List<Post>>
+
     suspend fun clearCache(): Result<Unit>
 }

@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.posts.presentation
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.fibelatti.core.extension.gone
@@ -11,12 +12,13 @@ import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.databinding.ListItemPostBinding
+import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import javax.inject.Inject
 
 class PostListAdapter @Inject constructor(
-    private val dateFormatter: DateFormatter
+    private val dateFormatter: DateFormatter,
 ) : RecyclerView.Adapter<PostListAdapter.ViewHolder>() {
 
     interface QuickActionsCallback {
@@ -40,8 +42,7 @@ class PostListAdapter @Inject constructor(
 
     override fun getItemCount(): Int = items.size
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-        ViewHolder(parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(parent)
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(items[position])
@@ -58,9 +59,7 @@ class PostListAdapter @Inject constructor(
         notifyDataSetChanged()
     }
 
-    inner class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-        parent.inflate(R.layout.list_item_post)
-    ) {
+    inner class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.list_item_post)) {
 
         private var quickActionsVisible: Boolean = false
 
@@ -68,6 +67,14 @@ class PostListAdapter @Inject constructor(
 
         private fun View.bindView(item: Post) {
             val binding = ListItemPostBinding.bind(this)
+
+            binding.textViewPendingSync.isVisible = item.pendingSync != null
+            when (item.pendingSync) {
+                PendingSync.ADD -> binding.textViewPendingSync.setText(R.string.posts_pending_add)
+                PendingSync.UPDATE -> binding.textViewPendingSync.setText(R.string.posts_pending_update)
+                PendingSync.DELETE -> binding.textViewPendingSync.setText(R.string.posts_pending_delete)
+                else -> Unit
+            }
 
             binding.textViewPrivate.visibleIf(item.private, otherwiseVisibility = View.GONE)
             binding.textViewReadLater.visibleIf(item.readLater, otherwiseVisibility = View.GONE)

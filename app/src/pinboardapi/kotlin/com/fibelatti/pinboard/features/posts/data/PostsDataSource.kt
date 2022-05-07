@@ -23,6 +23,7 @@ import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.core.network.RateLimitRunner
 import com.fibelatti.pinboard.core.network.resultFromNetwork
 import com.fibelatti.pinboard.core.util.DateFormatter
+import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
 import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagDtoMapper
@@ -42,6 +43,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import java.lang.IllegalStateException
+import java.util.UUID
 import javax.inject.Inject
 
 class PostsDataSource @Inject constructor(
@@ -78,23 +81,37 @@ class PostsDataSource @Inject constructor(
         readLater: Boolean?,
         tags: List<Tag>?,
         replace: Boolean,
+    ): Result<Post> = if (connectivityInfoProvider.isConnected()) {
+        addPostRemote(url, title, description, private, readLater, tags, replace)
+    } else {
+        addPostLocal(url, title, description, private, readLater, tags)
+    }
+
+    private suspend fun addPostRemote(
+        url: String,
+        title: String,
+        description: String?,
+        private: Boolean?,
+        readLater: Boolean?,
+        tags: List<Tag>?,
+        replace: Boolean,
     ): Result<Post> {
         val trimmedTitle = title.take(API_MAX_LENGTH)
-        val privateLiteral = private?.let {
+        val publicLiteral = private?.let {
             if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES
         }
         val readLaterLiteral = readLater?.let {
             if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO
         }
-        val trimmedTags = tags?.joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST) {
+        val trimmedTags = tags.orEmpty().joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST) {
             it.name.replace(oldValue = "+", newValue = "%2b")
-        }?.take(API_MAX_LENGTH)
+        }.take(API_MAX_LENGTH)
         val replaceLiteral = if (replace) PinboardApiLiterals.YES else PinboardApiLiterals.NO
 
         // The API abuses GET, this aims to avoid getting 414 errors
         val remainingLength = API_MAX_URI_LENGTH - API_BASE_URL_LENGTH - url.length -
-            trimmedTitle.length - privateLiteral?.length.orZero() - readLaterLiteral?.length.orZero() -
-            trimmedTags?.length.orZero() - replaceLiteral.length
+            trimmedTitle.length - publicLiteral?.length.orZero() - readLaterLiteral?.length.orZero() -
+            trimmedTags.length - replaceLiteral.length
 
         return resultFromNetwork {
             val result = withContext(Dispatchers.IO) {
@@ -103,7 +120,7 @@ class PostsDataSource @Inject constructor(
                         url = url,
                         title = trimmedTitle,
                         description = description?.take(remainingLength),
-                        public = privateLiteral,
+                        public = publicLiteral,
                         readLater = readLaterLiteral,
                         tags = trimmedTags,
                         replace = replaceLiteral
@@ -113,6 +130,7 @@ class PostsDataSource @Inject constructor(
 
             when (result.resultCode) {
                 ApiResultCodes.DONE.code -> {
+                    postsDao.deletePendingSyncPost(url)
                     postsApi.getPost(url).posts
                         .also { postsDao.savePosts(it) }
                         .first().let(postDtoMapper::map)
@@ -123,7 +141,40 @@ class PostsDataSource @Inject constructor(
         }
     }
 
-    override suspend fun delete(url: String): Result<Unit> = resultFromNetwork {
+    private suspend fun addPostLocal(
+        url: String,
+        title: String,
+        description: String?,
+        private: Boolean?,
+        readLater: Boolean?,
+        tags: List<Tag>?,
+    ): Result<Post> = resultFrom {
+        val existingPost = postsDao.getPost(url)
+
+        val newPost = PostDto(
+            href = existingPost?.href ?: url,
+            description = title,
+            extended = description,
+            hash = existingPost?.hash ?: UUID.randomUUID().toString(),
+            time = existingPost?.time ?: dateFormatter.nowAsTzFormat(),
+            shared = if (private == true) PinboardApiLiterals.NO else PinboardApiLiterals.YES,
+            toread = if (readLater == true) PinboardApiLiterals.YES else PinboardApiLiterals.NO,
+            tags = tags.orEmpty().joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name },
+            pendingSync = existingPost?.let { it.pendingSync ?: PendingSyncDto.UPDATE } ?: PendingSyncDto.ADD,
+        )
+
+        postsDao.savePosts(listOf(newPost))
+
+        return@resultFrom postDtoMapper.map(newPost)
+    }
+
+    override suspend fun delete(url: String): Result<Unit> = if (connectivityInfoProvider.isConnected()) {
+        deletePostRemote(url)
+    } else {
+        deletePostLocal(url)
+    }
+
+    private suspend fun deletePostRemote(url: String): Result<Unit> = resultFromNetwork {
         withContext(Dispatchers.IO) { postsApi.delete(url) }
     }.mapCatching { result ->
         if (result.resultCode == ApiResultCodes.DONE.code) {
@@ -131,6 +182,13 @@ class PostsDataSource @Inject constructor(
         } else {
             throw ApiException()
         }
+    }
+
+    private suspend fun deletePostLocal(url: String): Result<Unit> = resultFrom {
+        val existingPost = postsDao.getPost(url)
+            ?: throw IllegalStateException("Can't delete post with url: $url. It doesn't exist locally.")
+
+        postsDao.savePosts(listOf(existingPost.copy(pendingSync = PendingSyncDto.DELETE)))
     }
 
     override suspend fun getAllPosts(
@@ -188,7 +246,7 @@ class PostsDataSource @Inject constructor(
                     postsApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE)
                 }
             }.mapCatching { posts ->
-                postsDao.deleteAllPosts()
+                postsDao.deleteAllSyncedPosts()
                 savePosts(posts)
 
                 userRepository.lastUpdate = apiLastUpdate
@@ -244,7 +302,7 @@ class PostsDataSource @Inject constructor(
 
     override suspend fun getQueryResultSize(
         searchTerm: String,
-        tags: List<Tag>?
+        tags: List<Tag>?,
     ): Int = catching {
         getLocalDataSize(
             searchTerm = searchTerm,
@@ -345,6 +403,10 @@ class PostsDataSource @Inject constructor(
         withContext(Dispatchers.IO) {
             postsApi.getSuggestedTagsForUrl(url)
         }.let(suggestedTagDtoMapper::map)
+    }
+
+    override suspend fun getPendingSyncPosts(): Result<List<Post>> = resultFrom {
+        postsDao.getPendingSyncPosts().let(postDtoMapper::mapList)
     }
 
     override suspend fun clearCache(): Result<Unit> = resultFrom {

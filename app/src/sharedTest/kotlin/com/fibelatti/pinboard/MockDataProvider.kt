@@ -5,8 +5,10 @@ import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.network.ApiResultCodes
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.GetPostDto
+import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagsDto
+import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -68,18 +70,19 @@ object MockDataProvider {
         time: String = mockTime,
         shared: String = PinboardApiLiterals.YES,
         toread: String = PinboardApiLiterals.NO,
-        tags: String = mockTagsResponse
-    ): PostDto =
-        PostDto(
-            href = href,
-            description = description,
-            extended = extended,
-            hash = hash,
-            time = time,
-            shared = shared,
-            toread = toread,
-            tags = tags,
-        )
+        tags: String = mockTagsResponse,
+        pendingSync: PendingSyncDto? = null,
+    ): PostDto = PostDto(
+        href = href,
+        description = description,
+        extended = extended,
+        hash = hash,
+        time = time,
+        shared = shared,
+        toread = toread,
+        tags = tags,
+        pendingSync = pendingSync,
+    )
 
     fun createPost(
         hash: String = mockHash,
@@ -89,40 +92,40 @@ object MockDataProvider {
         description: String = mockUrlDescription,
         private: Boolean = false,
         readLater: Boolean = false,
-        tags: List<Tag>? = mockTags
-    ): Post =
-        Post(
-            url = url,
-            title = title,
-            description = description,
-            hash = hash,
-            time = time,
-            private = private,
-            readLater = readLater,
-            tags = tags
-        )
+        tags: List<Tag>? = mockTags,
+        pendingSync: PendingSync? = null,
+    ): Post = Post(
+        url = url,
+        title = title,
+        description = description,
+        hash = hash,
+        time = time,
+        private = private,
+        readLater = readLater,
+        tags = tags,
+        pendingSync = pendingSync,
+    )
 
     fun createGetPostDto(
-        posts: List<PostDto> = listOf(createPostDto())
-    ): GetPostDto =
-        GetPostDto(
-            date = mockTime,
-            user = mockUser,
-            posts = posts
-        )
+        posts: List<PostDto> = listOf(createPostDto()),
+    ): GetPostDto = GetPostDto(
+        date = mockTime,
+        user = mockUser,
+        posts = posts
+    )
 
     fun createSuggestedTagsDto(
         popular: List<String> = mockTagsString,
-        recommended: List<String> = mockTagsString
+        recommended: List<String> = mockTagsString,
     ): SuggestedTagsDto = SuggestedTagsDto(popular, recommended)
 
     fun createSuggestedTags(
         popular: List<Tag> = mockTags,
-        recommended: List<Tag> = mockTags
+        recommended: List<Tag> = mockTags,
     ): SuggestedTags = SuggestedTags(popular, recommended)
 
     fun createTag(
-        name: String = mockTagString1
+        name: String = mockTagString1,
     ): Tag = Tag(name)
     // endregion
 }

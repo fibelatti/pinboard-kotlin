@@ -7,6 +7,25 @@
     android:animateLayoutChanges="true"
     tools:showIn="@layout/fragment_edit_post">
 
+    <TextView
+        android:id="@+id/textViewPendingSync"
+        style="@style/AppTheme.Text.Caveat"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:drawablePadding="@dimen/padding_xsmall"
+        android:gravity="center_vertical"
+        android:paddingVertical="@dimen/padding_xsmall"
+        android:textColor="?attr/colorPrimary"
+        android:textStyle="italic"
+        android:visibility="gone"
+        app:drawableStartCompat="@drawable/ic_pending_sync"
+        app:drawableTint="?attr/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/posts_pending_add_expanded"
+        tools:visibility="visible" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutUrl"
         android:layout_width="0dp"
@@ -14,7 +33,7 @@
         android:hint="@string/posts_add_url"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/textViewPendingSync">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextUrl"

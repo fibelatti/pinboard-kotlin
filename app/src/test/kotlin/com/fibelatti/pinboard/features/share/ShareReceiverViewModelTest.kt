@@ -25,7 +25,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
 internal class ShareReceiverViewModelTest : BaseViewModelTest() {
@@ -51,7 +51,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     )
 
     @Test
-    fun `WHEN ExtractUrl fails THEN failed should receive a value`() {
+    fun `WHEN ExtractUrl fails THEN failed should receive a value`() = runTest {
         // GIVEN
         coEvery { mockExtractUrl(mockUrlValid) } returns Failure(error)
 
@@ -59,14 +59,12 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         shareReceiverViewModel.saveUrl(mockUrlValid)
 
         // THEN
-        runBlocking {
-            assertThat(shareReceiverViewModel.failed.first()).isEqualTo(error)
-        }
+        assertThat(shareReceiverViewModel.failed.first()).isEqualTo(error)
         coVerify(exactly = 0) { mockAddPost.invoke(any()) }
     }
 
     @Test
-    fun `WHEN GetUrlPreview fails THEN failed should receive a value`() {
+    fun `WHEN GetUrlPreview fails THEN failed should receive a value`() = runTest {
         // GIVEN
         coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
         coEvery { mockGetUrlPreview(mockUrlValid) } returns Failure(error)
@@ -75,51 +73,48 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         shareReceiverViewModel.saveUrl(mockUrlValid)
 
         // THEN
-        runBlocking {
-            assertThat(shareReceiverViewModel.failed.first()).isEqualTo(error)
-        }
+        assertThat(shareReceiverViewModel.failed.first()).isEqualTo(error)
         coVerify(exactly = 0) { mockAddPost.invoke(any()) }
     }
 
     @Test
-    fun `GIVEN getEditAfterSharing is BeforeSaving THEN edit should receive an empty value AND EditPostFromShare should run`() {
-        // GIVEN
-        val defaultPrivate = randomBoolean()
-        val defaultReadLater = randomBoolean()
-        val defaultTags = mockk<List<Tag>>()
+    fun `GIVEN getEditAfterSharing is BeforeSaving THEN edit should receive an empty value AND EditPostFromShare should run`() =
+        runTest {
+            // GIVEN
+            val defaultPrivate = randomBoolean()
+            val defaultReadLater = randomBoolean()
+            val defaultTags = mockk<List<Tag>>()
 
-        coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
-        coEvery { mockGetUrlPreview(mockUrlValid) } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
-        every { mockUserRepository.defaultPrivate } returns defaultPrivate
-        every { mockUserRepository.defaultReadLater } returns defaultReadLater
-        every { mockUserRepository.defaultTags } returns defaultTags
-        every { mockUserRepository.editAfterSharing } returns EditAfterSharing.BeforeSaving
+            coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
+            coEvery { mockGetUrlPreview(mockUrlValid) } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
+            every { mockUserRepository.defaultPrivate } returns defaultPrivate
+            every { mockUserRepository.defaultReadLater } returns defaultReadLater
+            every { mockUserRepository.defaultTags } returns defaultTags
+            every { mockUserRepository.editAfterSharing } returns EditAfterSharing.BeforeSaving
 
-        val expectedPost = Post(
-            url = mockUrlValid,
-            title = mockUrlValid,
-            description = "",
-            private = defaultPrivate,
-            readLater = defaultReadLater,
-            tags = defaultTags,
-        )
+            val expectedPost = Post(
+                url = mockUrlValid,
+                title = mockUrlValid,
+                description = "",
+                private = defaultPrivate,
+                readLater = defaultReadLater,
+                tags = defaultTags,
+            )
 
-        // WHEN
-        shareReceiverViewModel.saveUrl(mockUrlValid)
+            // WHEN
+            shareReceiverViewModel.saveUrl(mockUrlValid)
 
-        // THEN
-        verify { mockUserRepository.defaultPrivate }
-        verify { mockUserRepository.defaultReadLater }
-        verify { mockUserRepository.defaultTags }
-        runBlocking {
+            // THEN
+            verify { mockUserRepository.defaultPrivate }
+            verify { mockUserRepository.defaultReadLater }
+            verify { mockUserRepository.defaultTags }
             assertThat(shareReceiverViewModel.edit.first()).isEqualTo("")
+            coVerify { mockAppStateRepository.runAction(EditPostFromShare(expectedPost)) }
+            coVerify(exactly = 0) { mockAddPost.invoke(any()) }
         }
-        coVerify { mockAppStateRepository.runAction(EditPostFromShare(expectedPost)) }
-        coVerify(exactly = 0) { mockAddPost.invoke(any()) }
-    }
 
     @Test
-    fun `WHEN AddPost fails THEN failed should receive a value`() {
+    fun `WHEN AddPost fails THEN failed should receive a value`() = runTest {
         // GIVEN
         val defaultPrivate = randomBoolean()
         val defaultReadLater = randomBoolean()
@@ -139,7 +134,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                     private = defaultPrivate,
                     readLater = defaultReadLater,
                     tags = defaultTags,
-                    replace = false,
+                    replace = true,
                 )
             )
         } returns Failure(error)
@@ -151,13 +146,11 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         verify { mockUserRepository.defaultPrivate }
         verify { mockUserRepository.defaultReadLater }
         verify { mockUserRepository.defaultTags }
-        runBlocking {
-            assertThat(shareReceiverViewModel.failed.first()).isEqualTo(error)
-        }
+        assertThat(shareReceiverViewModel.failed.first()).isEqualTo(error)
     }
 
     @Test
-    fun `GIVEN getEditAfterSharing is SkipEdit WHEN saveUrl succeeds THEN saved should receive a value`() {
+    fun `GIVEN getEditAfterSharing is SkipEdit WHEN saveUrl succeeds THEN saved should receive a value`() = runTest {
         // GIVEN
         val defaultPrivate = randomBoolean()
         val defaultReadLater = randomBoolean()
@@ -178,7 +171,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                     private = defaultPrivate,
                     readLater = defaultReadLater,
                     tags = defaultTags,
-                    replace = false,
+                    replace = true,
                 )
             )
         } returns Success(createPost())
@@ -190,13 +183,11 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         verify { mockUserRepository.defaultPrivate }
         verify { mockUserRepository.defaultReadLater }
         verify { mockUserRepository.defaultTags }
-        runBlocking {
-            assertThat(shareReceiverViewModel.saved.first()).isEqualTo("R.string.posts_saved_feedback")
-        }
+        assertThat(shareReceiverViewModel.saved.first()).isEqualTo("R.string.posts_saved_feedback")
     }
 
     @Test
-    fun `GIVEN getEditAfterSharing is AfterSaving WHEN saveUrl succeeds THEN edit should receive a value`() {
+    fun `GIVEN getEditAfterSharing is AfterSaving WHEN saveUrl succeeds THEN edit should receive a value`() = runTest {
         // GIVEN
         val defaultPrivate = randomBoolean()
         val defaultReadLater = randomBoolean()
@@ -218,7 +209,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                     private = defaultPrivate,
                     readLater = defaultReadLater,
                     tags = defaultTags,
-                    replace = false,
+                    replace = true,
                 )
             )
         } returns Success(post)
@@ -230,9 +221,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         verify { mockUserRepository.defaultPrivate }
         verify { mockUserRepository.defaultReadLater }
         verify { mockUserRepository.defaultTags }
-        runBlocking {
-            assertThat(shareReceiverViewModel.edit.first()).isEqualTo("R.string.posts_saved_feedback")
-        }
+        assertThat(shareReceiverViewModel.edit.first()).isEqualTo("R.string.posts_saved_feedback")
         coVerify { mockAppStateRepository.runAction(EditPostFromShare(post)) }
     }
 }

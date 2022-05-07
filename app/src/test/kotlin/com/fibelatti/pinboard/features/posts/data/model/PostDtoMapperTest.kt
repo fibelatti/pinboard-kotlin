@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.posts.data.model
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.createPostDto
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
+import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.google.common.truth.Truth.assertThat
 import org.junit.jupiter.api.Nested
@@ -65,6 +66,18 @@ class PostDtoMapperTest {
                 )
             )
         }
+
+        @Test
+        fun `GIVEN pendingSync has value WHEN map is called THEN Post is returned with respective pendingSync`() {
+            assertThat(mapper.map(createPostDto(pendingSync = PendingSyncDto.ADD)))
+                .isEqualTo(createPost(pendingSync = PendingSync.ADD))
+            assertThat(mapper.map(createPostDto(pendingSync = PendingSyncDto.UPDATE)))
+                .isEqualTo(createPost(pendingSync = PendingSync.UPDATE))
+            assertThat(mapper.map(createPostDto(pendingSync = PendingSyncDto.DELETE)))
+                .isEqualTo(createPost(pendingSync = PendingSync.DELETE))
+            assertThat(mapper.map(createPostDto(pendingSync = null)))
+                .isEqualTo(createPost(pendingSync = null))
+        }
     }
 
     @Nested
@@ -105,6 +118,18 @@ class PostDtoMapperTest {
         @Test
         fun `GIVEN tags is null WHEN mapReverse is called THEN PostDto is returned AND tags is empty`() {
             assertThat(mapper.mapReverse(createPost(tags = null))).isEqualTo(createPostDto(tags = ""))
+        }
+
+        @Test
+        fun `GIVEN pendingSync has value WHEN mapReverse is called THEN Post is returned with respective pendingSync`() {
+            assertThat(mapper.mapReverse(createPost(pendingSync = PendingSync.ADD)))
+                .isEqualTo(createPostDto(pendingSync = PendingSyncDto.ADD))
+            assertThat(mapper.mapReverse(createPost(pendingSync = PendingSync.UPDATE)))
+                .isEqualTo(createPostDto(pendingSync = PendingSyncDto.UPDATE))
+            assertThat(mapper.mapReverse(createPost(pendingSync = PendingSync.DELETE)))
+                .isEqualTo(createPostDto(pendingSync = PendingSyncDto.DELETE))
+            assertThat(mapper.mapReverse(createPost(pendingSync = null)))
+                .isEqualTo(createPostDto(pendingSync = null))
         }
     }
 }

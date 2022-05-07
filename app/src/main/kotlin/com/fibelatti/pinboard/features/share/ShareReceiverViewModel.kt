@@ -81,7 +81,6 @@ class ShareReceiverViewModel @Inject constructor(
                 private = userRepository.defaultPrivate,
                 readLater = userRepository.defaultReadLater,
                 tags = userRepository.defaultTags,
-                replace = false,
             )
         ).onSuccess {
             if (userRepository.editAfterSharing is EditAfterSharing.AfterSaving) {

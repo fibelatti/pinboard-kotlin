@@ -12,6 +12,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockTime3
 import com.fibelatti.pinboard.MockDataProvider.mockTime4
 import com.fibelatti.pinboard.MockDataProvider.mockTime5
 import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -105,6 +106,32 @@ class PostsDaoTest : BaseDbTest() {
         // THEN
         val result = postsDao.getAllPosts()
         assertThat(result).isEmpty()
+    }
+
+    @Test
+    fun whenDeleteAllSyncedPostsIsCalledThenOnlySyncedPostsAreDeleted() = runTest {
+        // GIVEN
+        val list = listOf(
+            createPostDto(),
+            createPostDto(hash = "other-$mockHash"),
+            createPostDto(hash = "not-synced-add", pendingSync = PendingSyncDto.ADD),
+            createPostDto(hash = "not-synced-update", pendingSync = PendingSyncDto.UPDATE),
+            createPostDto(hash = "not-synced-delete", pendingSync = PendingSyncDto.DELETE),
+        )
+        postsDao.savePosts(list)
+
+        // WHEN
+        postsDao.deleteAllSyncedPosts()
+
+        // THEN
+        val result = postsDao.getAllPosts()
+        assertThat(result).isEqualTo(
+            listOf(
+                createPostDto(hash = "not-synced-add", pendingSync = PendingSyncDto.ADD),
+                createPostDto(hash = "not-synced-update", pendingSync = PendingSyncDto.UPDATE),
+                createPostDto(hash = "not-synced-delete", pendingSync = PendingSyncDto.DELETE),
+            )
+        )
     }
 
     @Test
@@ -912,4 +939,56 @@ class PostsDaoTest : BaseDbTest() {
                 )
             )
         }
+
+    @Test
+    fun whenGetPendingSyncedPostsIsCalledThenOnlyPendingSyncPostsAreReturned() = runTest {
+        // GIVEN
+        val list = listOf(
+            createPostDto(),
+            createPostDto(hash = "other-$mockHash"),
+            createPostDto(hash = "not-synced-add", pendingSync = PendingSyncDto.ADD),
+            createPostDto(hash = "not-synced-update", pendingSync = PendingSyncDto.UPDATE),
+            createPostDto(hash = "not-synced-delete", pendingSync = PendingSyncDto.DELETE),
+        )
+        postsDao.savePosts(list)
+
+        // WHEN
+        val result = postsDao.getPendingSyncPosts()
+
+        // THEN
+        assertThat(result).isEqualTo(
+            listOf(
+                createPostDto(hash = "not-synced-add", pendingSync = PendingSyncDto.ADD),
+                createPostDto(hash = "not-synced-update", pendingSync = PendingSyncDto.UPDATE),
+                createPostDto(hash = "not-synced-delete", pendingSync = PendingSyncDto.DELETE),
+            )
+        )
+    }
+
+    @Test
+    fun whenDeletePendingSyncedPostIsCalledThenThatPostIsDeleted() = runTest {
+        // GIVEN
+        val list = listOf(
+            createPostDto(),
+            createPostDto(hash = "other-$mockHash"),
+            createPostDto(hash = "not-synced-add", href = "href-add", pendingSync = PendingSyncDto.ADD),
+            createPostDto(hash = "not-synced-update", href = "href-update", pendingSync = PendingSyncDto.UPDATE),
+            createPostDto(hash = "not-synced-delete", href = "href-delete", pendingSync = PendingSyncDto.DELETE),
+        )
+        postsDao.savePosts(list)
+
+        // WHEN
+        postsDao.deletePendingSyncPost(url = "href-add")
+
+        // THEN
+        val result = postsDao.getAllPosts()
+        assertThat(result).isEqualTo(
+            listOf(
+                createPostDto(),
+                createPostDto(hash = "other-$mockHash"),
+                createPostDto(hash = "not-synced-update", href = "href-update", pendingSync = PendingSyncDto.UPDATE),
+                createPostDto(hash = "not-synced-delete", href = "href-delete", pendingSync = PendingSyncDto.DELETE),
+            )
+        )
+    }
 }

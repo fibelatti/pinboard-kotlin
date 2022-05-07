@@ -7,7 +7,6 @@ import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 
 class SyncBookmarksWorker(
@@ -32,7 +31,7 @@ class SyncBookmarksWorker(
             pageLimit = AppConfig.DEFAULT_PAGE_SIZE,
             pageOffset = 0,
             forceRefresh = false,
-        ).take(2).toList().all { it is Success }
+        ).toList().all { it is Success }
 
         return if (success) Result.success() else Result.retry()
     }

@@ -8,9 +8,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -33,6 +33,7 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.mainActivity
+import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -152,13 +153,7 @@ class EditPostFragment @Inject constructor(
 
                 val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
 
-                ViewCompat.setPaddingRelative(
-                    view,
-                    initialPadding.start,
-                    initialPadding.top,
-                    initialPadding.end,
-                    initialPadding.bottom + imeInsets.bottom,
-                )
+                view.updatePadding(bottom = initialPadding.bottom + imeInsets.bottom)
 
                 // In case what's below the focused view is also important
                 val scrollOffset = resources.getDimensionPixelSize(R.dimen.scroll_offset)
@@ -177,13 +172,7 @@ class EditPostFragment @Inject constructor(
                     view.smoothScrollY(focusedViewBottom)
                 }
             } else {
-                ViewCompat.setPaddingRelative(
-                    view,
-                    initialPadding.start,
-                    initialPadding.top,
-                    initialPadding.end,
-                    initialPadding.bottom
-                )
+                view.updatePadding(bottom = initialPadding.bottom)
 
                 mainActivity?.updateTitleLayout { hideActionButton() }
             }
@@ -305,6 +294,14 @@ class EditPostFragment @Inject constructor(
 
         with(content.post) {
             with(binding.layoutAddPost) {
+                textViewPendingSync.isVisible = pendingSync != null
+                when (pendingSync) {
+                    PendingSync.ADD -> textViewPendingSync.setText(R.string.posts_pending_add_expanded)
+                    PendingSync.UPDATE -> textViewPendingSync.setText(R.string.posts_pending_update_expanded)
+                    PendingSync.DELETE -> textViewPendingSync.setText(R.string.posts_pending_delete_expanded)
+                    null -> Unit
+                }
+
                 editTextUrl.setText(url)
                 editTextTitle.setText(title)
                 editTextDescription.setText(description)

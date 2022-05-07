@@ -116,6 +116,13 @@
     <string name="posts_url_error">Unfortunately, Pinkt can\'t open this bookmark. Try opening it in your default browser</string>
     <string name="posts_open_in_browser">Open in browser</string>
 
+    <string name="posts_pending_add">Pending add</string>
+    <string name="posts_pending_add_expanded">This bookmark will be added when network becomes available</string>
+    <string name="posts_pending_update">Pending update</string>
+    <string name="posts_pending_update_expanded">This bookmark will be updated when network becomes available</string>
+    <string name="posts_pending_delete">Pending delete</string>
+    <string name="posts_pending_delete_expanded">This bookmark will be deleted when network becomes available</string>
+
     <!-- Offline -->
     <string name="offline_alert">No connection available</string>
     <string name="offline_retry">Retry</string>

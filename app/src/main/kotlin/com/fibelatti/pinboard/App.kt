@@ -2,11 +2,12 @@ package com.fibelatti.pinboard
 
 import android.app.Application
 import androidx.work.Configuration
-import androidx.work.DelegatingWorkerFactory
 import com.fibelatti.pinboard.features.InjectingWorkerFactory
+import com.fibelatti.pinboard.features.sync.PendingSyncManager
 import com.fibelatti.pinboard.features.sync.PeriodicSyncManager
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.google.android.material.color.DynamicColors
+import com.google.android.material.color.DynamicColorsOptions
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
@@ -15,6 +16,9 @@ class App : Application(), Configuration.Provider {
 
     @Inject
     lateinit var periodicSyncManager: PeriodicSyncManager
+
+    @Inject
+    lateinit var pendingSyncManager: PendingSyncManager
 
     @Inject
     lateinit var injectingWorkerFactory: InjectingWorkerFactory
@@ -32,14 +36,11 @@ class App : Application(), Configuration.Provider {
         DynamicColors.applyToActivitiesIfAvailable(this, dynamicColorsOptions)
 
         periodicSyncManager.enqueueWork()
+        pendingSyncManager.enqueueWorkOnNetworkAvailable()
     }
 
     override fun getWorkManagerConfiguration(): Configuration = Configuration.Builder()
         .setMinimumLoggingLevel(android.util.Log.INFO)
-        .setWorkerFactory(
-            DelegatingWorkerFactory().apply {
-                addFactory(injectingWorkerFactory)
-            }
-        )
+        .setWorkerFactory(injectingWorkerFactory)
         .build()
 }

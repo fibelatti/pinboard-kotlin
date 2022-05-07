@@ -10,6 +10,22 @@
     android:padding="@dimen/padding_small">
 
     <TextView
+        android:id="@+id/textViewPendingSync"
+        style="@style/AppTheme.Text.Caveat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawablePadding="@dimen/padding_xsmall"
+        android:gravity="center_vertical"
+        android:paddingVertical="@dimen/padding_xsmall"
+        android:textColor="?attr/colorPrimary"
+        android:textStyle="italic"
+        android:visibility="gone"
+        app:drawableStartCompat="@drawable/ic_pending_sync"
+        app:drawableTint="?attr/colorPrimary"
+        tools:text="@string/posts_pending_add"
+        tools:visibility="visible" />
+
+    <TextView
         android:id="@+id/textViewLinkTitle"
         style="@style/AppTheme.Text.ListItem"
         android:layout_width="match_parent"

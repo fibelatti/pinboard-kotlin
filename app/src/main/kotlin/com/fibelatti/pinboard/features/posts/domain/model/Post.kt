@@ -10,5 +10,6 @@ data class Post(
     val time: String = "",
     val private: Boolean,
     val readLater: Boolean,
-    val tags: List<Tag>? = null
+    val tags: List<Tag>? = null,
+    val pendingSync: PendingSync? = null,
 )

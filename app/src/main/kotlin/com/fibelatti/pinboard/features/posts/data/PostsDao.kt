@@ -16,6 +16,9 @@ interface PostsDao {
     @Query("delete from $POST_TABLE_NAME")
     suspend fun deleteAllPosts()
 
+    @Query("delete from $POST_TABLE_NAME where pendingSync is null")
+    suspend fun deleteAllSyncedPosts()
+
     @Query("delete from $POST_TABLE_NAME where href = :url")
     suspend fun deletePost(url: String)
 
@@ -61,6 +64,12 @@ interface PostsDao {
 
     @Query("select tags from $POST_TABLE_NAME where tags != ''")
     suspend fun getAllPostTags(): List<String>
+
+    @Query("select * from $POST_TABLE_NAME where pendingSync is not null")
+    suspend fun getPendingSyncPosts(): List<PostDto>
+
+    @Query("delete from $POST_TABLE_NAME where href = :url and pendingSync is not null")
+    suspend fun deletePendingSyncPost(url: String)
 
     companion object {
 
