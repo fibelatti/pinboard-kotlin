@@ -217,12 +217,8 @@ dependencies {
     testImplementation(libs.arch.core.testing)
 
     androidTestImplementation(libs.truth)
-    androidTestImplementation(libs.annotations)
     androidTestImplementation(libs.runner)
-    androidTestImplementation(libs.fibelatti.core.test)
     androidTestImplementation(libs.coroutines.test)
-    androidTestImplementation(libs.kotlin.test.junit)
-    androidTestImplementation(libs.arch.core.testing)
     androidTestImplementation(libs.room.testing)
 }
 
