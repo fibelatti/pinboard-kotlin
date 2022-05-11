@@ -72,7 +72,7 @@ dependencyResolutionManagement {
 
             library("runner", "androidx.test:runner:1.4.0")
             library("truth", "com.google.truth:truth:1.1.3")
-            library("mockk", "io.mockk:mockk:1.12.3")
+            library("mockk", "io.mockk:mockk:1.12.4")
             library("coroutines-test", "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
             library("arch-core-testing", "androidx.arch.core:core-testing:2.1.0")
             library("room-testing", "androidx.room:room-testing:$roomVersion")
