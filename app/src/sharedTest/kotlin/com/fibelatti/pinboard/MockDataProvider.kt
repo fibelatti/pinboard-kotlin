@@ -7,10 +7,8 @@ import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.GetPostDto
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
-import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagsDto
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import java.net.URLEncoder
 
@@ -59,8 +57,7 @@ object MockDataProvider {
     // endregion
 
     // region Data classes
-    fun createGenericResponse(responseCode: ApiResultCodes): GenericResponseDto =
-        GenericResponseDto(responseCode.code)
+    fun createGenericResponse(responseCode: ApiResultCodes): GenericResponseDto = GenericResponseDto(responseCode.code)
 
     fun createPostDto(
         href: String = URLEncoder.encode(mockUrlValid, AppConfig.API_ENCODING),
@@ -113,16 +110,6 @@ object MockDataProvider {
         user = mockUser,
         posts = posts
     )
-
-    fun createSuggestedTagsDto(
-        popular: List<String> = mockTagsString,
-        recommended: List<String> = mockTagsString,
-    ): SuggestedTagsDto = SuggestedTagsDto(popular, recommended)
-
-    fun createSuggestedTags(
-        popular: List<Tag> = mockTags,
-        recommended: List<Tag> = mockTags,
-    ): SuggestedTags = SuggestedTags(popular, recommended)
 
     fun createTag(
         name: String = mockTagString1,

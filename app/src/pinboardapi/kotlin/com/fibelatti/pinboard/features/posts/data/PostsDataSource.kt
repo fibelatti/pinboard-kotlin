@@ -26,12 +26,10 @@ import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
-import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagDtoMapper
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
-import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import kotlinx.coroutines.CoroutineScope
@@ -43,7 +41,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
-import java.lang.IllegalStateException
 import java.util.UUID
 import javax.inject.Inject
 
@@ -52,7 +49,6 @@ class PostsDataSource @Inject constructor(
     private val postsApi: PostsApi,
     private val postsDao: PostsDao,
     private val postDtoMapper: PostDtoMapper,
-    private val suggestedTagDtoMapper: SuggestedTagDtoMapper,
     private val dateFormatter: DateFormatter,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
     private val rateLimitRunner: RateLimitRunner,
@@ -397,12 +393,6 @@ class PostsDataSource @Inject constructor(
             .filter { it.startsWith(tag, ignoreCase = true) }
             .distinct()
             .sorted()
-    }
-
-    override suspend fun getSuggestedTagsForUrl(url: String): Result<SuggestedTags> = resultFromNetwork {
-        withContext(Dispatchers.IO) {
-            postsApi.getSuggestedTagsForUrl(url)
-        }.let(suggestedTagDtoMapper::map)
     }
 
     override suspend fun getPendingSyncPosts(): Result<List<Post>> = resultFrom {

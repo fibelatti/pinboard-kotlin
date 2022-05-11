@@ -36,13 +36,10 @@ import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
-import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagDtoMapper
-import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagsDto
 import com.fibelatti.pinboard.features.posts.data.model.UpdateDto
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
-import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
@@ -78,7 +75,6 @@ class PostsDataSourceTest {
     private val mockApi = mockk<PostsApi>()
     private val mockDao = mockk<PostsDao>(relaxUnitFun = true)
     private val mockPostDtoMapper = mockk<PostDtoMapper>()
-    private val mockSuggestedTagsDtoMapper = mockk<SuggestedTagDtoMapper>()
     private val mockDateFormatter = mockk<DateFormatter>(relaxed = true)
     private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider> {
         every { isConnected() } returns true
@@ -90,8 +86,6 @@ class PostsDataSourceTest {
     private val mockListPostDto = listOf(mockPostDto)
     private val mockPost = mockk<Post>()
     private val mockListPost = listOf(mockPost)
-    private val mockSuggestedTagsDto = mockk<SuggestedTagsDto>()
-    private val mockSuggestedTags = mockk<SuggestedTags>()
 
     private val dataSource = spyk(
         PostsDataSource(
@@ -99,7 +93,6 @@ class PostsDataSourceTest {
             mockApi,
             mockDao,
             mockPostDtoMapper,
-            mockSuggestedTagsDtoMapper,
             mockDateFormatter,
             mockConnectivityInfoProvider,
             mockRunner,
@@ -1760,35 +1753,6 @@ class PostsDataSourceTest {
                     mockTagStringHtml
                 )
             )
-        }
-    }
-
-    @Nested
-    inner class GetSuggestedTagsForUrlTests {
-
-        @Test
-        fun `GIVEN that the api returns an error WHEN getSuggestedTagsForUrl is called THEN Failure is returned`() {
-            // GIVEN
-            coEvery { mockApi.getSuggestedTagsForUrl(mockUrlValid) } throws Exception()
-
-            // WHEN
-            val result = runBlocking { dataSource.getSuggestedTagsForUrl(mockUrlValid) }
-
-            // THEN
-            assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
-        }
-
-        @Test
-        fun `WHEN getSuggestedTagsForUrl is called THEN Success is returned`() {
-            // GIVEN
-            coEvery { mockApi.getSuggestedTagsForUrl(mockUrlValid) } returns mockSuggestedTagsDto
-            every { mockSuggestedTagsDtoMapper.map(mockSuggestedTagsDto) } returns mockSuggestedTags
-
-            // WHEN
-            val result = runBlocking { dataSource.getSuggestedTagsForUrl(mockUrlValid) }
-
-            // THEN
-            assertThat(result.getOrNull()).isEqualTo(mockSuggestedTags)
         }
     }
 

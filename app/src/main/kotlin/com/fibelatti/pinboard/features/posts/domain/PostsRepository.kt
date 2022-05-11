@@ -3,7 +3,6 @@ package com.fibelatti.pinboard.features.posts.domain
 import com.fibelatti.core.functional.Result
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
-import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.flow.Flow
 
@@ -44,8 +43,6 @@ interface PostsRepository {
     suspend fun getPost(url: String): Result<Post>
 
     suspend fun searchExistingPostTag(tag: String): Result<List<String>>
-
-    suspend fun getSuggestedTagsForUrl(url: String): Result<SuggestedTags>
 
     suspend fun getPendingSyncPosts(): Result<List<Post>>
 

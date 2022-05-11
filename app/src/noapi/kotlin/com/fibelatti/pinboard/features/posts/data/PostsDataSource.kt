@@ -2,7 +2,6 @@ package com.fibelatti.pinboard.features.posts.data
 
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.extension.orFalse
-import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.catching
@@ -18,7 +17,6 @@ import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
-import com.fibelatti.pinboard.features.posts.domain.model.SuggestedTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -188,8 +186,6 @@ class PostsDataSource @Inject constructor(
             .sorted()
     }
 
-    override suspend fun getSuggestedTagsForUrl(url: String): Result<SuggestedTags> =
-        Failure(IllegalStateException("getSuggestedTagsForUrl should not be called in this flavor"))
     override suspend fun getPendingSyncPosts(): Result<List<Post>> = Success(emptyList())
 
     override suspend fun clearCache(): Result<Unit> = resultFrom {

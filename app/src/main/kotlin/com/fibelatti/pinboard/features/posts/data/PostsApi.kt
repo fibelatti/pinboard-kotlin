@@ -3,7 +3,6 @@ package com.fibelatti.pinboard.features.posts.data
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.GetPostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
-import com.fibelatti.pinboard.features.posts.data.model.SuggestedTagsDto
 import com.fibelatti.pinboard.features.posts.data.model.UpdateDto
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -35,7 +34,4 @@ interface PostsApi {
         @Query("start") offset: Int? = null,
         @Query("results") limit: Int? = null
     ): List<PostDto>
-
-    @GET("posts/suggest")
-    suspend fun getSuggestedTagsForUrl(@Query("url") url: String): SuggestedTagsDto
 }
