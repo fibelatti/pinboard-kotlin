@@ -1013,44 +1013,41 @@ class PostsDataSourceTest {
             }
 
             @Test
-            fun `WHEN first call result list has the same size as API_PAGE_SIZE THEN getAdditionalPages is called`() =
-                runTest {
-                    // GIVEN
-                    val mockListPostDto = mockk<List<PostDto>>()
-                    coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
-                    coEvery {
-                        mockApi.getAllPosts(
-                            offset = 0,
-                            limit = API_PAGE_SIZE
-                        )
-                    } returns mockListPostDto
-                    every { mockListPostDto.size } returns API_PAGE_SIZE
-                    every { dataSource.getAdditionalPages() } returns Unit
-                    coEvery { dataSource.savePosts(any()) } returns Unit
-
-                    // WHEN
-                    val result = dataSource.getAllPosts(
-                        newestFirst = true,
-                        searchTerm = "",
-                        tags = null,
-                        untaggedOnly = false,
-                        postVisibility = PostVisibility.None,
-                        readLaterOnly = false,
-                        countLimit = -1,
-                        pageLimit = -1,
-                        pageOffset = 0,
-                        forceRefresh = false,
+            fun `WHEN first call result is successful THEN getAdditionalPages is called`() = runTest {
+                // GIVEN
+                coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
+                coEvery {
+                    mockApi.getAllPosts(
+                        offset = 0,
+                        limit = API_PAGE_SIZE
                     )
+                } returns mockListPostDto
+                every { dataSource.getAdditionalPages(initialOffset = 1) } returns Unit
+                coEvery { dataSource.savePosts(any()) } returns Unit
 
-                    // THEN
-                    assertThat(result.toList().map { it.getOrThrow() })
-                        .isEqualTo(listOf(mockLocalData, mockUpToDateLocalData))
-                    coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
-                    coVerify { mockDao.deleteAllSyncedPosts() }
-                    coVerify { dataSource.savePosts(mockListPostDto) }
-                    verify { dataSource.getAdditionalPages() }
-                    coVerify { mockUserRepository.lastUpdate = mockFutureTime }
-                }
+                // WHEN
+                val result = dataSource.getAllPosts(
+                    newestFirst = true,
+                    searchTerm = "",
+                    tags = null,
+                    untaggedOnly = false,
+                    postVisibility = PostVisibility.None,
+                    readLaterOnly = false,
+                    countLimit = -1,
+                    pageLimit = -1,
+                    pageOffset = 0,
+                    forceRefresh = false,
+                )
+
+                // THEN
+                assertThat(result.toList().map { it.getOrThrow() })
+                    .isEqualTo(listOf(mockLocalData, mockUpToDateLocalData))
+                coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
+                coVerify { mockDao.deleteAllSyncedPosts() }
+                coVerify { dataSource.savePosts(mockListPostDto) }
+                verify { dataSource.getAdditionalPages(initialOffset = 1) }
+                coVerify { mockUserRepository.lastUpdate = mockFutureTime }
+            }
         }
     }
 
@@ -1060,55 +1057,46 @@ class PostsDataSourceTest {
         @Test
         fun `getAdditionalPages should run at least once`() = runTest {
             // GIVEN
-            val mockPosts = mockk<List<PostDto>>()
-
             coEvery {
                 mockApi.getAllPosts(
                     offset = API_PAGE_SIZE,
                     limit = API_PAGE_SIZE
                 )
-            } returns mockPosts
+            } returns mockListPostDto
             coEvery { dataSource.savePosts(any()) } returns Unit
 
             // WHEN
-            dataSource.getAdditionalPages()
+            dataSource.getAdditionalPages(initialOffset = API_PAGE_SIZE)
 
             // THEN
-            coVerify { dataSource.savePosts(mockPosts) }
+            coVerify { dataSource.savePosts(mockListPostDto) }
             coVerify { mockApi.getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
         }
 
         @Test
-        fun `getAdditionalPages should run again if the first time returned the same as the page size`() = runTest {
+        fun `getAdditionalPages should run again if the page is not empty`() = runTest {
             // GIVEN
-            val mockPosts = mockk<List<PostDto>>()
-            every { mockPosts.size } returnsMany listOf(
-                API_PAGE_SIZE,
-                API_PAGE_SIZE,
-                API_PAGE_SIZE - 1
-            )
-
             coEvery {
                 mockApi.getAllPosts(
                     offset = API_PAGE_SIZE,
                     limit = API_PAGE_SIZE
                 )
-            } returns mockPosts
+            } returns mockListPostDto
             coEvery {
                 mockApi.getAllPosts(
-                    offset = API_PAGE_SIZE * 2,
+                    offset = API_PAGE_SIZE + mockListPostDto.size,
                     limit = API_PAGE_SIZE
                 )
-            } returns mockPosts
+            } returns emptyList()
             coEvery { dataSource.savePosts(any()) } returns Unit
 
             // WHEN
-            dataSource.getAdditionalPages()
+            dataSource.getAdditionalPages(initialOffset = API_PAGE_SIZE)
 
             // THEN
-            coVerify(exactly = 2) { dataSource.savePosts(mockPosts) }
+            coVerify(exactly = 1) { dataSource.savePosts(any()) }
             coVerify { mockApi.getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
-            coVerify { mockApi.getAllPosts(offset = API_PAGE_SIZE * 2, limit = API_PAGE_SIZE) }
+            coVerify { mockApi.getAllPosts(offset = API_PAGE_SIZE + mockListPostDto.size, limit = API_PAGE_SIZE) }
         }
     }
 

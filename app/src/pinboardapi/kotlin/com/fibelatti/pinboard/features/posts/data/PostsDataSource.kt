@@ -247,9 +247,7 @@ class PostsDataSource @Inject constructor(
 
                 userRepository.lastUpdate = apiLastUpdate
 
-                if (posts.size == API_PAGE_SIZE) {
-                    getAdditionalPages()
-                }
+                getAdditionalPages(initialOffset = posts.size)
             }.let { localData(true) }
         }
 
@@ -257,26 +255,23 @@ class PostsDataSource @Inject constructor(
     }
 
     @VisibleForTesting
-    fun getAdditionalPages() {
+    fun getAdditionalPages(initialOffset: Int) {
         pagedRequestsScope.launch {
-            try {
-                var currentOffset = API_PAGE_SIZE
+            runCatching {
+                var currentOffset = initialOffset
 
                 while (currentOffset != 0) {
                     val additionalPosts = rateLimitRunner.run {
                         postsApi.getAllPosts(offset = currentOffset, limit = API_PAGE_SIZE)
                     }
 
-                    savePosts(additionalPosts)
-
-                    if (additionalPosts.size == API_PAGE_SIZE) {
+                    if (additionalPosts.isNotEmpty()) {
+                        savePosts(additionalPosts)
                         currentOffset += additionalPosts.size
                     } else {
                         currentOffset = 0
                     }
                 }
-            } catch (ignored: Exception) {
-                // If it fails it can be resumed later
             }
         }
     }
