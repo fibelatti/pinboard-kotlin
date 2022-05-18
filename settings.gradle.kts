@@ -55,7 +55,7 @@ dependencyResolutionManagement {
             library("retrofit", "com.squareup.retrofit2:retrofit:$retrofitVersion")
             library("converter-moshi", "com.squareup.retrofit2:converter-moshi:$retrofitVersion")
 
-            library("jsoup", "org.jsoup:jsoup:1.14.3")
+            library("jsoup", "org.jsoup:jsoup:1.15.1")
             library("play-core", "com.google.android.play:core:1.10.3")
             library("play-core-ktx", "com.google.android.play:core-ktx:1.8.1")
             library("leakcanary", "com.squareup.leakcanary:leakcanary-android:2.9.1")
