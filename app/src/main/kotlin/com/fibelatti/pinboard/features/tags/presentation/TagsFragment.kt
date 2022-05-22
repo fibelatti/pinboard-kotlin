@@ -18,9 +18,9 @@ import com.fibelatti.pinboard.databinding.FragmentTagsBinding
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.RefreshTags
-import com.fibelatti.pinboard.features.mainActivity
+import com.fibelatti.pinboard.features.bottomBarHost
+import com.fibelatti.pinboard.features.titleLayoutHost
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -82,7 +82,7 @@ class TagsFragment @Inject constructor(
     }
 
     private fun setupActivityViews() {
-        mainActivity?.updateTitleLayout {
+        titleLayoutHost.update {
             setTitle(R.string.tags_title)
             hideSubTitle()
             setNavigateUp {
@@ -91,7 +91,7 @@ class TagsFragment @Inject constructor(
             }
         }
 
-        mainActivity?.updateViews { bottomAppBar, fab ->
+        bottomBarHost.update { bottomAppBar, fab ->
             bottomAppBar.run {
                 navigationIcon = null
                 menu.clear()

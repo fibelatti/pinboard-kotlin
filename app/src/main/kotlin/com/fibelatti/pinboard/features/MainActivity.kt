@@ -56,13 +56,15 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
-val Fragment.mainActivity: MainActivity? get() = activity as? MainActivity
+val Fragment.titleLayoutHost: TitleLayoutHost get() = requireActivity() as TitleLayoutHost
+val Fragment.bottomBarHost: BottomBarHost get() = requireActivity() as BottomBarHost
+
 var Intent.fromBuilder by IntentDelegate.Boolean("FROM_BUILDER", false)
 
 @AndroidEntryPoint
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
 
-    companion object {
+    private companion object {
 
         private const val FLEXIBLE_UPDATE_REQUEST = 1001
     }
@@ -193,12 +195,12 @@ class MainActivity : BaseActivity() {
         }.exhaustive
     }
 
-    fun updateTitleLayout(titleUpdates: TitleLayout.() -> Unit) {
+    override fun update(titleUpdates: TitleLayout.() -> Unit) {
         binding.layoutTitle.visible()
         binding.layoutTitle.run(titleUpdates)
     }
 
-    fun updateViews(update: (BottomAppBar, FloatingActionButton) -> Unit = { _, _ -> }) {
+    override fun update(update: (BottomAppBar, FloatingActionButton) -> Unit) {
         update(binding.bottomAppBar, binding.fabMain)
     }
 
@@ -226,4 +228,14 @@ class MainActivity : BaseActivity() {
             intent.fromBuilder = true
         }
     }
+}
+
+interface TitleLayoutHost {
+
+    fun update(titleUpdates: TitleLayout.() -> Unit)
+}
+
+interface BottomBarHost {
+
+    fun update(update: (BottomAppBar, FloatingActionButton) -> Unit)
 }

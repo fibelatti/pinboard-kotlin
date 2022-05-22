@@ -24,8 +24,9 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.RefreshPopular
 import com.fibelatti.pinboard.features.appstate.ViewPost
-import com.fibelatti.pinboard.features.mainActivity
+import com.fibelatti.pinboard.features.bottomBarHost
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.titleLayoutHost
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -89,13 +90,13 @@ class PopularPostsFragment @Inject constructor(
     private fun setupViewModels() {
         lifecycleScope.launch {
             appStateViewModel.popularPostsContent.collect { content ->
-                mainActivity?.updateTitleLayout {
+                titleLayoutHost.update {
                     setTitle(R.string.popular_title)
                     hideSubTitle()
                     setNavigateUp { navigateBack() }
                 }
 
-                mainActivity?.updateViews { bottomAppBar, fab ->
+                bottomBarHost.update { bottomAppBar, fab ->
                     bottomAppBar.run {
                         navigationIcon = null
                         menu.clear()

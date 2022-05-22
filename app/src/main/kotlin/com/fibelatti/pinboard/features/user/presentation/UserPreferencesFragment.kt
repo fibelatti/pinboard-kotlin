@@ -28,10 +28,11 @@ import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.extension.smoothScrollY
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentUserPreferencesBinding
-import com.fibelatti.pinboard.features.mainActivity
+import com.fibelatti.pinboard.features.bottomBarHost
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
+import com.fibelatti.pinboard.features.titleLayoutHost
 import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -70,7 +71,7 @@ class UserPreferencesFragment @Inject constructor(
     }
 
     override fun onDestroy() {
-        mainActivity?.updateViews { bottomAppBar, _ ->
+        bottomBarHost.update { bottomAppBar, _ ->
             bottomAppBar.hideKeyboard()
         }
         activity?.supportFragmentManager?.setFragmentResult(TAG, bundleOf())
@@ -78,12 +79,12 @@ class UserPreferencesFragment @Inject constructor(
     }
 
     private fun setupActivityViews() {
-        mainActivity?.updateTitleLayout {
+        titleLayoutHost.update {
             setTitle(R.string.user_preferences_title)
             hideSubTitle()
             setNavigateUp { navigateBack() }
         }
-        mainActivity?.updateViews { bottomAppBar, fab ->
+        bottomBarHost.update { bottomAppBar, fab ->
             bottomAppBar.run {
                 navigationIcon = null
                 menu.clear()

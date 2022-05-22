@@ -18,10 +18,10 @@ import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentNoteDetailBinding
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.NoteDetailContent
-import com.fibelatti.pinboard.features.mainActivity
+import com.fibelatti.pinboard.features.bottomBarHost
 import com.fibelatti.pinboard.features.notes.domain.model.Note
+import com.fibelatti.pinboard.features.titleLayoutHost
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -64,13 +64,13 @@ class NoteDetailsFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun setupActivityViews() {
-        mainActivity?.updateTitleLayout {
+        titleLayoutHost.update {
             hideTitle()
             hideSubTitle()
             setNavigateUp { navigateBack() }
         }
 
-        mainActivity?.updateViews { bottomAppBar, fab ->
+        bottomBarHost.update { bottomAppBar, fab ->
             bottomAppBar.run {
                 navigationIcon = null
                 menu.clear()

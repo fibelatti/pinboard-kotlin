@@ -32,9 +32,10 @@ import com.fibelatti.pinboard.databinding.FragmentEditPostBinding
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.NavigateBack
-import com.fibelatti.pinboard.features.mainActivity
+import com.fibelatti.pinboard.features.bottomBarHost
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.titleLayoutHost
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -102,10 +103,10 @@ class EditPostFragment @Inject constructor(
 
     override fun onDestroy() {
         super.onDestroy()
-        mainActivity?.updateTitleLayout {
+        titleLayoutHost.update {
             hideActionButton()
         }
-        mainActivity?.updateViews { bottomAppBar, _ ->
+        bottomBarHost.update { bottomAppBar, _ ->
             bottomAppBar.hideKeyboard()
             bottomAppBar.isVisible = true
         }
@@ -149,7 +150,7 @@ class EditPostFragment @Inject constructor(
     private fun handleKeyboardVisibility() {
         binding.root.doOnApplyWindowInsets { view, insets, initialPadding, _ ->
             if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
-                mainActivity?.updateTitleLayout { setActionButton(R.string.hint_save, ::saveLink) }
+                titleLayoutHost.update { setActionButton(R.string.hint_save, ::saveLink) }
 
                 val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
 
@@ -174,16 +175,16 @@ class EditPostFragment @Inject constructor(
             } else {
                 view.updatePadding(bottom = initialPadding.bottom)
 
-                mainActivity?.updateTitleLayout { hideActionButton() }
+                titleLayoutHost.update { hideActionButton() }
             }
         }
     }
 
     private fun saveLink() {
-        mainActivity?.updateTitleLayout {
+        titleLayoutHost.update {
             hideActionButton()
         }
-        mainActivity?.updateViews { _, fab ->
+        bottomBarHost.update { _, fab ->
             fab.hide()
         }
         binding.root.hideKeyboard()
@@ -256,13 +257,13 @@ class EditPostFragment @Inject constructor(
     }
 
     private fun setupActivityViews() {
-        mainActivity?.updateTitleLayout {
+        titleLayoutHost.update {
             setTitle(R.string.posts_add_title)
             hideSubTitle()
             setNavigateUp(R.drawable.ic_close) { onBackPressed() }
         }
 
-        mainActivity?.updateViews { bottomAppBar, fab ->
+        bottomBarHost.update { bottomAppBar, fab ->
             // Using invisible() instead of gone() otherwise the fab will misbehave when
             // starting this fragment from share
             bottomAppBar.invisible()
@@ -276,7 +277,7 @@ class EditPostFragment @Inject constructor(
 
     private fun showPostDetails(content: EditPostContent) {
         setupActivityViews()
-        mainActivity?.updateViews { bottomAppBar, _ ->
+        bottomBarHost.update { bottomAppBar, _ ->
             bottomAppBar.run {
                 navigationIcon = null
                 replaceMenu(R.menu.menu_details)
@@ -353,6 +354,6 @@ class EditPostFragment @Inject constructor(
     }
 
     private fun showFab() {
-        mainActivity?.updateViews { _, fab -> fab.show() }
+        bottomBarHost.update { _, fab -> fab.show() }
     }
 }

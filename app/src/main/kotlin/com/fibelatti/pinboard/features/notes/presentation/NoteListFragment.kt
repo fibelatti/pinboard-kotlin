@@ -21,17 +21,17 @@ import com.fibelatti.pinboard.databinding.FragmentNoteListBinding
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.RefreshNotes
 import com.fibelatti.pinboard.features.appstate.ViewNote
-import com.fibelatti.pinboard.features.mainActivity
+import com.fibelatti.pinboard.features.bottomBarHost
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
+import com.fibelatti.pinboard.features.titleLayoutHost
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class NoteListFragment @Inject constructor(
-    private val noteListAdapter: NoteListAdapter
+    private val noteListAdapter: NoteListAdapter,
 ) : BaseFragment() {
 
     companion object {
@@ -48,7 +48,7 @@ class NoteListFragment @Inject constructor(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View = FragmentNoteListBinding.inflate(inflater, container, false).root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -124,12 +124,12 @@ class NoteListFragment @Inject constructor(
 
     private fun setupActivityViews() {
         // Reset the navigate up action here since navigation to another fragment messes it up
-        mainActivity?.updateTitleLayout {
+        titleLayoutHost.update {
             setTitle(R.string.notes_title)
             hideSubTitle()
             setNavigateUp { navigateBack() }
         }
-        mainActivity?.updateViews { bottomAppBar, fab ->
+        bottomBarHost.update { bottomAppBar, fab ->
             bottomAppBar.run {
                 navigationIcon = null
                 menu.clear()
@@ -152,7 +152,7 @@ class NoteListFragment @Inject constructor(
             binding.recyclerViewNotes.visible()
             binding.layoutEmptyList.gone()
 
-            mainActivity?.updateTitleLayout {
+            titleLayoutHost.update {
                 setTitle(getString(R.string.notes_title))
                 setSubTitle(
                     resources.getQuantityString(

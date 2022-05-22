@@ -51,8 +51,9 @@ import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.appstate.ViewCategory
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
-import com.fibelatti.pinboard.features.mainActivity
+import com.fibelatti.pinboard.features.bottomBarHost
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.titleLayoutHost
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -183,8 +184,8 @@ class PostListFragment @Inject constructor(
     }
 
     private fun updateContent(content: PostListContent) {
-        mainActivity?.updateTitleLayout { hideNavigateUp() }
-        mainActivity?.updateViews { bottomAppBar, fab ->
+        titleLayoutHost.update { hideNavigateUp() }
+        bottomBarHost.update { bottomAppBar, fab ->
             bottomAppBar.run {
                 setNavigationIcon(R.drawable.ic_menu)
                 replaceMenu(R.menu.menu_main)
@@ -204,7 +205,7 @@ class PostListFragment @Inject constructor(
 
         when (content.shouldLoad) {
             ShouldLoadFirstPage, ShouldForceLoad -> {
-                mainActivity?.updateTitleLayout {
+                titleLayoutHost.update {
                     setTitle(getCategoryTitle(content.category))
                     hideSubTitle()
                 }
@@ -239,7 +240,7 @@ class PostListFragment @Inject constructor(
         binding.progressBar.goneIf(content.shouldLoad == Loaded)
         binding.recyclerViewPosts.onRequestNextPageCompleted()
 
-        mainActivity?.updateTitleLayout {
+        titleLayoutHost.update {
             setTitle(getCategoryTitle(content.category))
             setSubTitle(buildPostCountSubTitle(content.totalCount, content.sortType))
         }
@@ -280,7 +281,7 @@ class PostListFragment @Inject constructor(
     }
 
     private fun showEmptyLayout() {
-        mainActivity?.updateTitleLayout { hideSubTitle() }
+        titleLayoutHost.update { hideSubTitle() }
         binding.recyclerViewPosts.gone()
         binding.layoutEmptyList.apply {
             visible()

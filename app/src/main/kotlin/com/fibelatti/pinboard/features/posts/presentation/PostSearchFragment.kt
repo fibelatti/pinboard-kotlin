@@ -33,10 +33,11 @@ import com.fibelatti.pinboard.features.appstate.RefreshSearchTags
 import com.fibelatti.pinboard.features.appstate.RemoveSearchTag
 import com.fibelatti.pinboard.features.appstate.Search
 import com.fibelatti.pinboard.features.appstate.SetTerm
-import com.fibelatti.pinboard.features.mainActivity
+import com.fibelatti.pinboard.features.bottomBarHost
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagsAdapter
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
+import com.fibelatti.pinboard.features.titleLayoutHost
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -62,7 +63,7 @@ class PostSearchFragment @Inject constructor(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View = FragmentSearchPostBinding.inflate(inflater, container, false).root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -141,7 +142,7 @@ class PostSearchFragment @Inject constructor(
     }
 
     private fun setupActivityViews() {
-        mainActivity?.updateTitleLayout {
+        titleLayoutHost.update {
             setTitle(R.string.search_title)
             hideSubTitle()
             setNavigateUp {
@@ -150,7 +151,7 @@ class PostSearchFragment @Inject constructor(
             }
         }
 
-        mainActivity?.updateViews { bottomAppBar, fab ->
+        bottomBarHost.update { bottomAppBar, fab ->
             bottomAppBar.run {
                 navigationIcon = null
                 replaceMenu(R.menu.menu_search)

@@ -35,8 +35,9 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
-import com.fibelatti.pinboard.features.mainActivity
+import com.fibelatti.pinboard.features.bottomBarHost
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.titleLayoutHost
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -84,7 +85,7 @@ class PostDetailFragment @Inject constructor(
     }
 
     override fun onDestroyView() {
-        mainActivity?.updateTitleLayout { hideActionButton() }
+        titleLayoutHost.update { hideActionButton() }
         postWebViewClient?.callback = null
         super.onDestroyView()
     }
@@ -115,7 +116,7 @@ class PostDetailFragment @Inject constructor(
         lifecycleScope.launch {
             postDetailViewModel.updated.collect {
                 binding.root.showBanner(getString(R.string.posts_marked_as_read_feedback))
-                mainActivity?.updateTitleLayout { hideActionButton() }
+                titleLayoutHost.update { hideActionButton() }
             }
         }
         lifecycleScope.launch {
@@ -154,13 +155,13 @@ class PostDetailFragment @Inject constructor(
             showWebView(post)
         }
 
-        mainActivity?.updateTitleLayout {
+        titleLayoutHost.update {
             hideTitle()
             hideSubTitle()
             setNavigateUp { navigateBack() }
         }
 
-        mainActivity?.updateViews { bottomAppBar, fab ->
+        bottomBarHost.update { bottomAppBar, fab ->
             bottomAppBar.run {
                 navigationIcon = null
                 replaceMenu(menu)
@@ -179,7 +180,7 @@ class PostDetailFragment @Inject constructor(
     }
 
     private fun showFileView(post: Post) {
-        mainActivity?.updateTitleLayout { hideActionButton() }
+        titleLayoutHost.update { hideActionButton() }
 
         binding.layoutFileView.root.visible()
         binding.layoutScrollViewWeb.gone()
@@ -209,7 +210,7 @@ class PostDetailFragment @Inject constructor(
         }
 
         if (post.readLater) {
-            mainActivity?.updateTitleLayout {
+            titleLayoutHost.update {
                 setActionButton(R.string.hint_mark_as_read) {
                     postDetailViewModel.markAsRead(post)
                 }
