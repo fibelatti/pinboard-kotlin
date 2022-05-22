@@ -4,18 +4,19 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.createPost
+import com.fibelatti.pinboard.collectIn
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostDeleted
 import com.fibelatti.pinboard.features.appstate.PostSaved
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.DeletePost
 import com.fibelatti.pinboard.isEmpty
+import com.fibelatti.pinboard.runUnconfinedTest
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 
 internal class PostDetailViewModelTest : BaseViewModelTest() {
@@ -33,73 +34,74 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
     )
 
     @Test
-    fun `WHEN deletePost fails THEN deleteError should receive a value`() {
+    fun `WHEN deletePost fails THEN deleteError should receive a value`() = runUnconfinedTest {
         // GIVEN
         val error = Exception()
         coEvery { mockDeletePost(mockPost.url) } returns Failure(error)
 
+        val deleted = postDetailViewModel.deleted.collectIn(this)
+
         // WHEN
         postDetailViewModel.deletePost(mockPost)
 
         // THEN
-        runBlocking {
-            assertThat(postDetailViewModel.loading.first()).isEqualTo(false)
-            assertThat(postDetailViewModel.deleteError.first()).isEqualTo(error)
-            assertThat(postDetailViewModel.deleted.isEmpty()).isTrue()
-        }
+        assertThat(postDetailViewModel.loading.first()).isEqualTo(false)
+        assertThat(postDetailViewModel.deleteError.first()).isEqualTo(error)
+        assertThat(deleted).isEmpty()
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 
     @Test
-    fun `WHEN deletePost succeeds THEN appStateRepository should run PostDeleted`() {
+    fun `WHEN deletePost succeeds THEN appStateRepository should run PostDeleted`() = runUnconfinedTest {
         // GIVEN
         coEvery { mockDeletePost(mockPost.url) } returns Success(Unit)
+
+        val deleted = postDetailViewModel.deleted.collectIn(this)
 
         // WHEN
         postDetailViewModel.deletePost(mockPost)
 
         // THEN
-        runBlocking {
-            assertThat(postDetailViewModel.loading.first()).isEqualTo(true)
-            assertThat(postDetailViewModel.error.isEmpty()).isTrue()
-            assertThat(postDetailViewModel.deleted.first()).isEqualTo(Unit)
-        }
+        assertThat(postDetailViewModel.loading.first()).isEqualTo(true)
+        assertThat(postDetailViewModel.error.isEmpty()).isTrue()
+        assertThat(deleted.first()).isEqualTo(Unit)
 
         coVerify { mockAppStateRepository.runAction(PostDeleted) }
     }
 
     @Test
-    fun `WHEN markAsRead fails THEN updateError should receive a value`() {
+    fun `WHEN markAsRead fails THEN updateError should receive a value`() = runUnconfinedTest {
         // GIVEN
         val error = Exception()
         coEvery { mockAddPost(any()) } returns Failure(error)
 
+        val updated = postDetailViewModel.updated.collectIn(this)
+
         // WHEN
         postDetailViewModel.markAsRead(mockPost)
 
         // THEN
-        runBlocking {
-            assertThat(postDetailViewModel.loading.first()).isEqualTo(false)
-            assertThat(postDetailViewModel.updateError.first()).isEqualTo(error)
-            assertThat(postDetailViewModel.updated.isEmpty()).isTrue()
-        }
+        assertThat(postDetailViewModel.loading.first()).isEqualTo(false)
+        assertThat(postDetailViewModel.updateError.first()).isEqualTo(error)
+        assertThat(updated).isEmpty()
+
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 
     @Test
-    fun `WHEN markAsRead succeeds THEN appStateRepository should run PostSaved`() {
+    fun `WHEN markAsRead succeeds THEN appStateRepository should run PostSaved`() = runUnconfinedTest {
         // GIVEN
         coEvery { mockAddPost(any()) } returns Success(mockPost)
+
+        val updated = postDetailViewModel.updated.collectIn(this)
 
         // WHEN
         postDetailViewModel.markAsRead(mockPost)
 
         // THEN
-        runBlocking {
-            assertThat(postDetailViewModel.loading.first()).isEqualTo(false)
-            assertThat(postDetailViewModel.updateError.isEmpty()).isTrue()
-            assertThat(postDetailViewModel.updated.first()).isEqualTo(Unit)
-        }
+        assertThat(postDetailViewModel.loading.first()).isEqualTo(false)
+        assertThat(postDetailViewModel.updateError.isEmpty()).isTrue()
+        assertThat(updated.first()).isEqualTo(Unit)
 
         coVerify { mockAppStateRepository.runAction(PostSaved(mockPost)) }
     }

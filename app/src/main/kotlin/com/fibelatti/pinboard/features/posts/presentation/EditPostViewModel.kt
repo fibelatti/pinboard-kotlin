@@ -14,6 +14,7 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -36,8 +37,8 @@ class EditPostViewModel @Inject constructor(
     private val _invalidUrlError = MutableStateFlow("")
     val invalidUrlTitleError: StateFlow<String> get() = _invalidUrlTitleError
     private val _invalidUrlTitleError = MutableStateFlow("")
-    val saved: Flow<Unit> get() = _saved.filterNotNull()
-    private val _saved = MutableStateFlow<Unit?>(null)
+    val saved: Flow<Unit> get() = _saved
+    private val _saved = MutableSharedFlow<Unit>()
 
     fun searchForTag(tag: String, currentTags: List<Tag>) {
         launch {
@@ -59,7 +60,7 @@ class EditPostViewModel @Inject constructor(
                 _loading.value = true
                 addPost(params)
                     .onSuccess {
-                        _saved.value = Unit
+                        _saved.emit(Unit)
                         appStateRepository.runAction(PostSaved(it))
                     }
                     .onFailure { error ->

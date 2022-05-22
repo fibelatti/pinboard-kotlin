@@ -12,11 +12,12 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPopularPosts
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class PopularPostsViewModel @Inject constructor(
@@ -29,8 +30,8 @@ class PopularPostsViewModel @Inject constructor(
     val loading: Flow<Boolean> get() = _loading.filterNotNull()
     private val _loading = MutableStateFlow<Boolean?>(null)
 
-    val saved: Flow<Unit> get() = _saved.filterNotNull()
-    private val _saved = MutableStateFlow<Unit?>(null)
+    val saved: Flow<Unit> get() = _saved
+    private val _saved = MutableSharedFlow<Unit>()
 
     fun getPosts() {
         launch {
@@ -60,7 +61,7 @@ class PopularPostsViewModel @Inject constructor(
         addPost(AddPost.Params(post))
             .onSuccess {
                 _loading.value = false
-                _saved.value = Unit
+                _saved.emit(Unit)
                 appStateRepository.runAction(PostSaved(it))
             }
             .onFailure { error ->

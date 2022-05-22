@@ -13,12 +13,14 @@ import com.fibelatti.pinboard.MockDataProvider.mockUrlInvalid
 import com.fibelatti.pinboard.MockDataProvider.mockUrlTitle
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.collectIn
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostSaved
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetSuggestedTags
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import com.fibelatti.pinboard.isEmpty
+import com.fibelatti.pinboard.runUnconfinedTest
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -76,7 +78,9 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `GIVEN url is blank WHEN saveLink is called THEN invalidUrlError will receive a value`() {
+    fun `GIVEN url is blank WHEN saveLink is called THEN invalidUrlError will receive a value`() = runUnconfinedTest {
+        val saved = editPostViewModel.saved.collectIn(this)
+
         // WHEN
         editPostViewModel.saveLink(
             url = "",
@@ -88,71 +92,71 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         )
 
         // THEN
-        runBlocking {
-            assertThat(editPostViewModel.invalidUrlError.first()).isEqualTo("R.string.validation_error_empty_url")
-            assertThat(editPostViewModel.saved.isEmpty()).isTrue()
-        }
+        assertThat(editPostViewModel.invalidUrlError.first()).isEqualTo("R.string.validation_error_empty_url")
+        assertThat(saved).isEmpty()
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 
     @Test
-    fun `GIVEN title is blank WHEN saveLink is called THEN invalidUrlTitleError will received a value`() {
-        // WHEN
-        editPostViewModel.saveLink(
-            url = mockUrlValid,
-            title = "",
-            description = mockUrlDescription,
-            private = true,
-            readLater = true,
-            tags = mockTags
-        )
+    fun `GIVEN title is blank WHEN saveLink is called THEN invalidUrlTitleError will received a value`() =
+        runUnconfinedTest {
+            val saved = editPostViewModel.saved.collectIn(this)
 
-        // THEN
-        runBlocking {
-            assertThat(editPostViewModel.invalidUrlTitleError.first()).isEqualTo("R.string.validation_error_empty_title")
-            assertThat(editPostViewModel.saved.isEmpty()).isTrue()
-        }
-        coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
-    }
-
-    @Test
-    fun `GIVEN addPost returns InvalidUrlException WHEN saveLink is called THEN invalidUrlError will receive a value`() {
-        // GIVEN
-        coEvery {
-            mockAddPost(
-                AddPost.Params(
-                    url = mockUrlInvalid,
-                    title = mockUrlTitle,
-                    description = mockUrlDescription,
-                    private = true,
-                    readLater = true,
-                    tags = mockTags
-                )
+            // WHEN
+            editPostViewModel.saveLink(
+                url = mockUrlValid,
+                title = "",
+                description = mockUrlDescription,
+                private = true,
+                readLater = true,
+                tags = mockTags
             )
-        } returns Failure(InvalidUrlException())
 
-        // WHEN
-        editPostViewModel.saveLink(
-            url = mockUrlInvalid,
-            title = mockUrlTitle,
-            description = mockUrlDescription,
-            private = true,
-            readLater = true,
-            tags = mockTags
-        )
+            // THEN
+            assertThat(editPostViewModel.invalidUrlTitleError.first()).isEqualTo("R.string.validation_error_empty_title")
+            assertThat(saved).isEmpty()
+            coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
+        }
 
-        // THEN
-        runBlocking {
+    @Test
+    fun `GIVEN addPost returns InvalidUrlException WHEN saveLink is called THEN invalidUrlError will receive a value`() =
+        runUnconfinedTest {
+            // GIVEN
+            coEvery {
+                mockAddPost(
+                    AddPost.Params(
+                        url = mockUrlInvalid,
+                        title = mockUrlTitle,
+                        description = mockUrlDescription,
+                        private = true,
+                        readLater = true,
+                        tags = mockTags
+                    )
+                )
+            } returns Failure(InvalidUrlException())
+
+            val saved = editPostViewModel.saved.collectIn(this)
+
+            // WHEN
+            editPostViewModel.saveLink(
+                url = mockUrlInvalid,
+                title = mockUrlTitle,
+                description = mockUrlDescription,
+                private = true,
+                readLater = true,
+                tags = mockTags
+            )
+
+            // THEN
             assertThat(editPostViewModel.loading.first()).isEqualTo(false)
             assertThat(editPostViewModel.invalidUrlError.first()).isEqualTo("R.string.validation_error_invalid_url")
             assertThat(editPostViewModel.invalidUrlTitleError.first()).isEqualTo("")
-            assertThat(editPostViewModel.saved.isEmpty()).isTrue()
+            assertThat(saved).isEmpty()
+            coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
         }
-        coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
-    }
 
     @Test
-    fun `GIVEN addPost returns an error WHEN saveLink is called THEN error will receive a value`() {
+    fun `GIVEN addPost returns an error WHEN saveLink is called THEN error will receive a value`() = runUnconfinedTest {
         // GIVEN
         val error = Exception()
         coEvery {
@@ -168,6 +172,8 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
             )
         } returns Failure(error)
 
+        val saved = editPostViewModel.saved.collectIn(this)
+
         // WHEN
         editPostViewModel.saveLink(
             url = mockUrlValid,
@@ -179,53 +185,52 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         )
 
         // THEN
-        runBlocking {
-            assertThat(editPostViewModel.loading.first()).isEqualTo(false)
-            assertThat(editPostViewModel.invalidUrlError.first()).isEqualTo("")
-            assertThat(editPostViewModel.invalidUrlTitleError.first()).isEqualTo("")
-            assertThat(editPostViewModel.error.first()).isEqualTo(error)
-            assertThat(editPostViewModel.saved.isEmpty()).isTrue()
-        }
+        assertThat(editPostViewModel.loading.first()).isEqualTo(false)
+        assertThat(editPostViewModel.invalidUrlError.first()).isEqualTo("")
+        assertThat(editPostViewModel.invalidUrlTitleError.first()).isEqualTo("")
+        assertThat(editPostViewModel.error.first()).isEqualTo(error)
+        assertThat(saved).isEmpty()
 
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 
     @Test
-    fun `GIVEN addPost is successful WHEN saveLink is called THEN AppStateRepository should run PostSaved`() {
-        // GIVEN
-        val post = createPost()
-        coEvery {
-            mockAddPost(
-                AddPost.Params(
-                    url = mockUrlValid,
-                    title = mockUrlTitle,
-                    description = mockUrlDescription,
-                    private = true,
-                    readLater = true,
-                    tags = mockTags
+    fun `GIVEN addPost is successful WHEN saveLink is called THEN AppStateRepository should run PostSaved`() =
+        runUnconfinedTest {
+            // GIVEN
+            val post = createPost()
+            coEvery {
+                mockAddPost(
+                    AddPost.Params(
+                        url = mockUrlValid,
+                        title = mockUrlTitle,
+                        description = mockUrlDescription,
+                        private = true,
+                        readLater = true,
+                        tags = mockTags
+                    )
                 )
+            } returns Success(post)
+
+            val saved = editPostViewModel.saved.collectIn(this)
+
+            // WHEN
+            editPostViewModel.saveLink(
+                url = mockUrlValid,
+                title = mockUrlTitle,
+                description = mockUrlDescription,
+                private = true,
+                readLater = true,
+                tags = mockTags
             )
-        } returns Success(post)
 
-        // WHEN
-        editPostViewModel.saveLink(
-            url = mockUrlValid,
-            title = mockUrlTitle,
-            description = mockUrlDescription,
-            private = true,
-            readLater = true,
-            tags = mockTags
-        )
-
-        // THEN
-        runBlocking {
+            // THEN
             assertThat(editPostViewModel.loading.first()).isEqualTo(true)
             assertThat(editPostViewModel.invalidUrlError.first()).isEqualTo("")
             assertThat(editPostViewModel.invalidUrlTitleError.first()).isEqualTo("")
             assertThat(editPostViewModel.error.isEmpty()).isTrue()
-            assertThat(editPostViewModel.saved.first()).isEqualTo(Unit)
-        }
+            assertThat(saved).isEqualTo(listOf(Unit))
 
-        coVerify { mockAppStateRepository.runAction(PostSaved(post)) }
-    }
+            coVerify { mockAppStateRepository.runAction(PostSaved(post)) }
+        }
 }
