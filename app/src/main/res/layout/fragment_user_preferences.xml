@@ -16,13 +16,24 @@
         android:paddingEnd="@dimen/padding_regular"
         android:paddingBottom="@dimen/padding_xlarge">
 
+        <com.fibelatti.pinboard.core.android.customview.SettingToggle
+            android:id="@+id/toggleAutoUpdate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            app:layout_constraintBottom_toTopOf="@id/layoutPeriodicSync"
+            app:layout_constraintTop_toTopOf="parent"
+            app:settingDescription="@string/user_preferences_auto_update_description"
+            app:settingTitle="@string/user_preferences_auto_update" />
+
         <LinearLayout
             android:id="@+id/layoutPeriodicSync"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
             android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@+id/layoutAppearance"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/toggleAutoUpdate">
 
             <TextView
                 style="@style/AppTheme.Text.SectionTitle.Primary"

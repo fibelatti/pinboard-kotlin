@@ -64,11 +64,6 @@ var Intent.fromBuilder by IntentDelegate.Boolean("FROM_BUILDER", false)
 @AndroidEntryPoint
 class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
 
-    private companion object {
-
-        private const val FLEXIBLE_UPDATE_REQUEST = 1001
-    }
-
     private val appStateViewModel: AppStateViewModel by viewModels()
 
     @Inject
@@ -93,21 +88,13 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
         setupBackNavigation()
         setupView()
         setupViewModels()
-
-        inAppUpdateManager.checkForAvailableUpdates(this, FLEXIBLE_UPDATE_REQUEST, ::onUpdateDownloadComplete)
+        setupAutoUpdate()
     }
 
     override fun onResume() {
         super.onResume()
         onResumeDelegate?.invoke()
         onResumeDelegate = null
-    }
-
-    private fun onUpdateDownloadComplete() {
-        Snackbar.make(binding.root, getString(R.string.in_app_update_ready), Snackbar.LENGTH_INDEFINITE).apply {
-            setAction(R.string.in_app_update_install) { inAppUpdateManager.completeUpdate() }
-            show()
-        }
     }
 
     private fun setupBackNavigation() {
@@ -153,6 +140,16 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
         appStateViewModel.content
             .onEach(::handleContent)
             .launchIn(lifecycleScope)
+    }
+
+    private fun setupAutoUpdate() {
+        if (userRepository.autoUpdate) {
+            inAppUpdateManager.checkForAvailableUpdates(this) {
+                Snackbar.make(binding.root, R.string.in_app_update_ready, Snackbar.LENGTH_LONG).apply {
+                    setAction(R.string.in_app_update_install) { inAppUpdateManager.completeUpdate() }
+                }.show()
+            }
+        }
     }
 
     private fun handleContent(content: Content) {

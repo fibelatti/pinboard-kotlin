@@ -172,6 +172,8 @@
 
     <!-- User Preferences -->
     <string name="user_preferences_title">Preferences</string>
+    <string name="user_preferences_auto_update">Auto-update</string>
+    <string name="user_preferences_auto_update_description">View in-app notifications when an app update is available</string>
     <string name="user_preferences_periodic_sync">Background sync</string>
     <string name="user_preferences_periodic_sync_description">Automatically pull new bookmarks added to your collection on a regular interval</string>
     <string name="user_preferences_periodic_sync_caveat">When the app is in the foreground your bookmarks are kept in sync regardless of this preference, given that the Pinboard service is available</string>

@@ -18,6 +18,9 @@ const val KEY_AUTH_TOKEN = "AUTH_TOKEN"
 const val KEY_LAST_UPDATE = "LAST_UPDATE"
 
 @VisibleForTesting
+const val KEY_AUTO_UPDATE = "AUTO_UPDATE"
+
+@VisibleForTesting
 const val KEY_PERIODIC_SYNC = "PERIODIC_SYNC"
 
 @VisibleForTesting
@@ -69,6 +72,10 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
     var lastUpdate: String
         get() = sharedPreferences.get(KEY_LAST_UPDATE, currentLastUpdate)
         set(value) = sharedPreferences.put(KEY_LAST_UPDATE, value).also { currentLastUpdate = value }
+
+    var autoUpdate: Boolean
+        get() = sharedPreferences.get(KEY_AUTO_UPDATE, true)
+        set(value) = sharedPreferences.put(KEY_AUTO_UPDATE, value)
 
     @Suppress("MagicNumber")
     var periodicSync: Long

@@ -133,6 +133,11 @@ class UserPreferencesFragment @Inject constructor(
     private fun setupViewModels() {
         userPreferencesViewModel.currentPreferences
             .onEach {
+                binding.toggleAutoUpdate.setActiveAndOnChangedListener(
+                    it.autoUpdate,
+                    userPreferencesViewModel::saveAutoUpdate
+                )
+
                 setupPeriodicSync(it.periodicSync)
                 setupAppearance(it.appearance, it.applyDynamicColors)
                 setupPreferredDateFormat(it.preferredDateFormat)

@@ -32,6 +32,13 @@ class UserDataSource @Inject constructor(
             userSharedPreferences.lastUpdate = value
         }
 
+    override var autoUpdate: Boolean
+        get() = userSharedPreferences.autoUpdate
+        set(value) {
+            userSharedPreferences.autoUpdate = value
+            updateCurrentPreferences()
+        }
+
     @Suppress("MagicNumber")
     override var periodicSync: PeriodicSync
         get() = when (userSharedPreferences.periodicSync) {
@@ -153,6 +160,7 @@ class UserDataSource @Inject constructor(
     }
 
     private fun getPreferences(): UserPreferences = UserPreferences(
+        autoUpdate = autoUpdate,
         periodicSync = periodicSync,
         appearance = appearance,
         applyDynamicColors = applyDynamicColors,

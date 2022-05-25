@@ -8,6 +8,7 @@ import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 
 data class UserPreferences(
+    val autoUpdate: Boolean,
     val periodicSync: PeriodicSync,
     val appearance: Appearance,
     val applyDynamicColors: Boolean,

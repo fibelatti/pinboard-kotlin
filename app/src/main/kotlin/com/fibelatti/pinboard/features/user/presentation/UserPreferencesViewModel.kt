@@ -34,6 +34,10 @@ class UserPreferencesViewModel @Inject constructor(
     val suggestedTags: Flow<List<String>> get() = _suggestedTags.filterNotNull()
     private val _suggestedTags = MutableStateFlow<List<String>?>(null)
 
+    fun saveAutoUpdate(value: Boolean) {
+        userRepository.autoUpdate = value
+    }
+
     fun savePeriodicSync(periodicSync: PeriodicSync) {
         userRepository.periodicSync = periodicSync
         periodicSyncManager.enqueueWork(shouldReplace = true)
