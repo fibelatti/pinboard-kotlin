@@ -17,7 +17,7 @@ class InAppReviewManager @Inject constructor(
 
     companion object {
 
-        private const val ONE_MONTH_IN_MILLIS: Long = 2592000000
+        private const val ONE_MONTH_IN_MILLIS: Long = 2_592_000_000
 
         private const val KEY_REVIEW_REQUESTED = "REVIEW_REQUESTED"
     }
@@ -28,12 +28,12 @@ class InAppReviewManager @Inject constructor(
     private val packageName = context.packageName
 
     fun checkForPlayStoreReview(activity: FragmentActivity) {
-        val monthOldInstall = System.currentTimeMillis() - installTimeFromPackageManager() >
-            ONE_MONTH_IN_MILLIS
+        val monthOldInstall = System.currentTimeMillis() - installTimeFromPackageManager() > ONE_MONTH_IN_MILLIS
         if (monthOldInstall && !reviewPreferences.get(KEY_REVIEW_REQUESTED, false)) {
+            reviewPreferences.put(KEY_REVIEW_REQUESTED, true)
+
             reviewManager.requestReviewFlow().addOnCompleteListener { request ->
                 if (request.isSuccessful) {
-                    reviewPreferences.put(KEY_REVIEW_REQUESTED, true)
                     reviewManager.launchReviewFlow(activity, request.result)
                 }
             }

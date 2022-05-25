@@ -81,9 +81,10 @@ class PostListFragment @Inject constructor(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        activity?.supportFragmentManager?.setFragmentResultListener(UserPreferencesFragment.TAG, this) { _, _ ->
-            activity?.let(inAppReviewManager::checkForPlayStoreReview)
-        }
+        activity?.supportFragmentManager?.setFragmentResultListener(
+            UserPreferencesFragment.TAG,
+            this
+        ) { _, _ -> activity?.let(inAppReviewManager::checkForPlayStoreReview) }
     }
 
     override fun onCreateView(
