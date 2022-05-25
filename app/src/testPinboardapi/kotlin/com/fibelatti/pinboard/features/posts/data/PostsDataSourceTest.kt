@@ -8,6 +8,7 @@ import com.fibelatti.pinboard.MockDataProvider.createGenericResponse
 import com.fibelatti.pinboard.MockDataProvider.createGetPostDto
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.createPostDto
+import com.fibelatti.pinboard.MockDataProvider.createPostRemoteDto
 import com.fibelatti.pinboard.MockDataProvider.mockFutureTime
 import com.fibelatti.pinboard.MockDataProvider.mockHash
 import com.fibelatti.pinboard.MockDataProvider.mockTag1
@@ -36,6 +37,8 @@ import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
+import com.fibelatti.pinboard.features.posts.data.model.PostRemoteDto
+import com.fibelatti.pinboard.features.posts.data.model.PostRemoteDtoMapper
 import com.fibelatti.pinboard.features.posts.data.model.UpdateDto
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -74,6 +77,7 @@ class PostsDataSourceTest {
     private val mockUserRepository = mockk<UserRepository>(relaxed = true)
     private val mockApi = mockk<PostsApi>()
     private val mockDao = mockk<PostsDao>(relaxUnitFun = true)
+    private val mockPostRemoteDtoMapper = mockk<PostRemoteDtoMapper>()
     private val mockPostDtoMapper = mockk<PostDtoMapper>()
     private val mockDateFormatter = mockk<DateFormatter>(relaxed = true)
     private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider> {
@@ -83,20 +87,23 @@ class PostsDataSourceTest {
     private val mockIoScope = TestScope(UnconfinedTestDispatcher())
 
     private val mockPostDto = mockk<PostDto>()
+    private val mockPostRemoteDto = mockk<PostRemoteDto>()
     private val mockListPostDto = listOf(mockPostDto)
+    private val mockListPostRemoteDto = listOf(mockPostRemoteDto)
     private val mockPost = mockk<Post>()
     private val mockListPost = listOf(mockPost)
 
     private val dataSource = spyk(
         PostsDataSource(
-            mockUserRepository,
-            mockApi,
-            mockDao,
-            mockPostDtoMapper,
-            mockDateFormatter,
-            mockConnectivityInfoProvider,
-            mockRunner,
-            mockIoScope
+            userRepository = mockUserRepository,
+            postsApi = mockApi,
+            postsDao = mockDao,
+            postDtoMapper = mockPostDtoMapper,
+            postRemoteDtoMapper = mockPostRemoteDtoMapper,
+            dateFormatter = mockDateFormatter,
+            connectivityInfoProvider = mockConnectivityInfoProvider,
+            rateLimitRunner = mockRunner,
+            pagedRequestsScope = mockIoScope,
         )
     )
 
@@ -254,7 +261,8 @@ class PostsDataSourceTest {
                         )
                     } returns createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS)
                     coEvery { mockDao.getPost(mockUrlValid) } returns null
-                    coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto(posts = mockListPostDto)
+                    coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto(posts = mockListPostRemoteDto)
+                    every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
                     every { mockPostDtoMapper.map(mockPostDto) } returns mockPost
 
                     // WHEN
@@ -290,6 +298,7 @@ class PostsDataSourceTest {
                     } returns createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS)
                     coEvery { mockDao.getPost(mockUrlValid) } returns null
                     coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto(posts = emptyList())
+                    every { mockPostRemoteDtoMapper.mapList(emptyList()) } returns emptyList()
 
                     // WHEN
                     val result = dataSource.add(
@@ -325,7 +334,8 @@ class PostsDataSourceTest {
                         replace = AppConfig.PinboardApiLiterals.YES
                     )
                 } returns createGenericResponse(ApiResultCodes.DONE)
-                coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto(posts = mockListPostDto)
+                coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto(posts = mockListPostRemoteDto)
+                every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
                 coEvery { mockDao.savePosts(mockListPostDto) } just Runs
                 every { mockPostDtoMapper.map(mockPostDto) } returns mockPost
 
@@ -816,7 +826,8 @@ class PostsDataSourceTest {
                         offset = 0,
                         limit = API_PAGE_SIZE
                     )
-                } returns mockListPostDto
+                } returns mockListPostRemoteDto
+                every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
                 coEvery { dataSource.savePosts(any()) } returns Unit
 
                 // WHEN
@@ -874,14 +885,16 @@ class PostsDataSourceTest {
             fun `WHEN force refresh is true THEN then api data is returned`() = runTest {
                 // GIVEN
                 val mockListPostDto = mockk<List<PostDto>>()
+                val mockListPostRemoteDto = mockk<List<PostRemoteDto>>()
                 coEvery { mockApi.update() } returns UpdateDto(mockTime)
                 coEvery {
                     mockApi.getAllPosts(
                         offset = 0,
                         limit = API_PAGE_SIZE
                     )
-                } returns mockListPostDto
-                every { mockListPostDto.size } returns API_PAGE_SIZE - 1
+                } returns mockListPostRemoteDto
+                every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
+                every { mockListPostRemoteDto.size } returns API_PAGE_SIZE - 1
                 coEvery { dataSource.savePosts(any()) } returns Unit
 
                 // WHEN
@@ -951,7 +964,7 @@ class PostsDataSourceTest {
                         offset = 0,
                         limit = API_PAGE_SIZE
                     )
-                } returns mockListPostDto
+                } returns mockListPostRemoteDto
                 coEvery { mockDao.deleteAllSyncedPosts() } throws Exception()
 
                 // WHEN
@@ -986,7 +999,8 @@ class PostsDataSourceTest {
                         offset = 0,
                         limit = API_PAGE_SIZE
                     )
-                } returns mockListPostDto
+                } returns mockListPostRemoteDto
+                every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
                 coEvery { dataSource.savePosts(any()) } throws Exception()
 
                 // WHEN
@@ -1021,7 +1035,8 @@ class PostsDataSourceTest {
                         offset = 0,
                         limit = API_PAGE_SIZE
                     )
-                } returns mockListPostDto
+                } returns mockListPostRemoteDto
+                every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
                 every { dataSource.getAdditionalPages(initialOffset = 1) } returns Unit
                 coEvery { dataSource.savePosts(any()) } returns Unit
 
@@ -1062,7 +1077,8 @@ class PostsDataSourceTest {
                     offset = API_PAGE_SIZE,
                     limit = API_PAGE_SIZE
                 )
-            } returns mockListPostDto
+            } returns mockListPostRemoteDto
+            every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
             coEvery { dataSource.savePosts(any()) } returns Unit
 
             // WHEN
@@ -1081,13 +1097,14 @@ class PostsDataSourceTest {
                     offset = API_PAGE_SIZE,
                     limit = API_PAGE_SIZE
                 )
-            } returns mockListPostDto
+            } returns mockListPostRemoteDto
             coEvery {
                 mockApi.getAllPosts(
                     offset = API_PAGE_SIZE + mockListPostDto.size,
                     limit = API_PAGE_SIZE
                 )
             } returns emptyList()
+            every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
             coEvery { dataSource.savePosts(any()) } returns Unit
 
             // WHEN
@@ -1687,6 +1704,7 @@ class PostsDataSourceTest {
 
             coEvery { mockDao.getPost(mockUrlValid) } returns null
             coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto()
+            every { mockPostRemoteDtoMapper.mapList(listOf(createPostRemoteDto())) } returns listOf(createPostDto())
             every { mockPostDtoMapper.map(createPostDto()) } returns post
 
             // WHEN

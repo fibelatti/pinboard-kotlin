@@ -378,7 +378,7 @@ class PostsDataSource @Inject constructor(
 
     override suspend fun getPost(url: String): Result<Post> = resultFromNetwork {
         val post = postsDao.getPost(url) ?: withContext(Dispatchers.IO) {
-            postsApi.getPost(url).posts.firstOrNull()?.let(postRemoteDtoMapper::map)
+            postsApi.getPost(url).posts.let(postRemoteDtoMapper::mapList).firstOrNull()
         }
 
         post?.let(postDtoMapper::map) ?: throw InvalidRequestException()

@@ -7,6 +7,7 @@ import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.GetPostDto
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
+import com.fibelatti.pinboard.features.posts.data.model.PostRemoteDto
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -81,6 +82,26 @@ object MockDataProvider {
         pendingSync = pendingSync,
     )
 
+    fun createPostRemoteDto(
+        href: String = URLEncoder.encode(mockUrlValid, AppConfig.API_ENCODING),
+        description: String? = mockUrlTitle,
+        extended: String? = mockUrlDescription,
+        hash: String = mockHash,
+        time: String = mockTime,
+        shared: String = PinboardApiLiterals.YES,
+        toread: String = PinboardApiLiterals.NO,
+        tags: String = mockTagsResponse,
+    ): PostRemoteDto = PostRemoteDto(
+        href = href,
+        description = description,
+        extended = extended,
+        hash = hash,
+        time = time,
+        shared = shared,
+        toread = toread,
+        tags = tags,
+    )
+
     fun createPost(
         hash: String = mockHash,
         time: String = mockTime,
@@ -104,7 +125,7 @@ object MockDataProvider {
     )
 
     fun createGetPostDto(
-        posts: List<PostDto> = listOf(createPostDto()),
+        posts: List<PostRemoteDto> = listOf(createPostRemoteDto()),
     ): GetPostDto = GetPostDto(
         date = mockTime,
         user = mockUser,
