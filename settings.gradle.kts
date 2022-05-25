@@ -17,7 +17,7 @@ dependencyResolutionManagement {
             val junit5Version = "5.8.2"
 
             // Classpath
-            library("android-gradle-plugin", "com.android.tools.build:gradle:7.2.0")
+            library("android-gradle-plugin", "com.android.tools.build:gradle:7.2.1")
             library("kotlin-gradle-plugin", "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
             library("hilt-gradle-plugin", "com.google.dagger:hilt-android-gradle-plugin:$hiltVersion")
 
