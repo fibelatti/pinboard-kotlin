@@ -26,6 +26,7 @@ import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
+import com.fibelatti.pinboard.features.posts.data.model.PostRemoteDtoMapper
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -49,6 +50,7 @@ class PostsDataSource @Inject constructor(
     private val postsApi: PostsApi,
     private val postsDao: PostsDao,
     private val postDtoMapper: PostDtoMapper,
+    private val postRemoteDtoMapper: PostRemoteDtoMapper,
     private val dateFormatter: DateFormatter,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
     private val rateLimitRunner: RateLimitRunner,
@@ -128,6 +130,7 @@ class PostsDataSource @Inject constructor(
                 ApiResultCodes.DONE.code -> {
                     postsDao.deletePendingSyncPost(url)
                     postsApi.getPost(url).posts
+                        .let(postRemoteDtoMapper::mapList)
                         .also { postsDao.savePosts(it) }
                         .first().let(postDtoMapper::map)
                 }
@@ -243,7 +246,7 @@ class PostsDataSource @Inject constructor(
                 }
             }.mapCatching { posts ->
                 postsDao.deleteAllSyncedPosts()
-                savePosts(posts)
+                savePosts(posts.let(postRemoteDtoMapper::mapList))
 
                 userRepository.lastUpdate = apiLastUpdate
 
@@ -266,7 +269,7 @@ class PostsDataSource @Inject constructor(
                     }
 
                     if (additionalPosts.isNotEmpty()) {
-                        savePosts(additionalPosts)
+                        savePosts(additionalPosts.let(postRemoteDtoMapper::mapList))
                         currentOffset += additionalPosts.size
                     } else {
                         currentOffset = 0
@@ -375,7 +378,7 @@ class PostsDataSource @Inject constructor(
 
     override suspend fun getPost(url: String): Result<Post> = resultFromNetwork {
         val post = postsDao.getPost(url) ?: withContext(Dispatchers.IO) {
-            postsApi.getPost(url).posts.firstOrNull()
+            postsApi.getPost(url).posts.firstOrNull()?.let(postRemoteDtoMapper::map)
         }
 
         post?.let(postDtoMapper::map) ?: throw InvalidRequestException()

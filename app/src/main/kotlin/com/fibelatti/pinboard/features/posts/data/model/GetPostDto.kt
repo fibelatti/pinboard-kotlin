@@ -6,5 +6,5 @@ import com.squareup.moshi.JsonClass
 data class GetPostDto(
     val date: String,
     val user: String,
-    val posts: List<PostDto>
+    val posts: List<PostRemoteDto>,
 )

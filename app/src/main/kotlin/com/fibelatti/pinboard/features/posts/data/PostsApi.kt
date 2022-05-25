@@ -2,7 +2,7 @@ package com.fibelatti.pinboard.features.posts.data
 
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.GetPostDto
-import com.fibelatti.pinboard.features.posts.data.model.PostDto
+import com.fibelatti.pinboard.features.posts.data.model.PostRemoteDto
 import com.fibelatti.pinboard.features.posts.data.model.UpdateDto
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -20,7 +20,7 @@ interface PostsApi {
         @Query("shared") public: String? = null,
         @Query("toread") readLater: String? = null,
         @Query("tags", encoded = true) tags: String? = null,
-        @Query("replace") replace: String? = null
+        @Query("replace") replace: String? = null,
     ): GenericResponseDto
 
     @GET("posts/delete")
@@ -32,6 +32,6 @@ interface PostsApi {
     @GET("posts/all")
     suspend fun getAllPosts(
         @Query("start") offset: Int? = null,
-        @Query("results") limit: Int? = null
-    ): List<PostDto>
+        @Query("results") limit: Int? = null,
+    ): List<PostRemoteDto>
 }
