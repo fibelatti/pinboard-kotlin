@@ -5,8 +5,11 @@
     android:id="@+id/settingToggleRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
     android:paddingTop="@dimen/padding_small"
-    android:paddingBottom="@dimen/padding_small">
+    android:paddingBottom="@dimen/padding_small"
+    android:screenReaderFocusable="true"
+    tools:targetApi="p">
 
     <TextView
         android:id="@+id/settingTitle"
@@ -14,6 +17,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_small"
+        android:textIsSelectable="false"
         android:textSize="@dimen/text_size_small"
         app:layout_constraintBottom_toTopOf="@id/settingDescription"
         app:layout_constraintEnd_toStartOf="@id/settingSwitch"
@@ -28,6 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_xsmall"
         android:layout_marginEnd="@dimen/margin_small"
+        android:textIsSelectable="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/settingSwitch"
         app:layout_constraintStart_toStartOf="parent"

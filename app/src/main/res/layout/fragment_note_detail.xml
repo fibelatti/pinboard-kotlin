@@ -3,9 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:colorBackground"
-    android:clickable="true"
-    android:focusable="true">
+    android:background="?android:colorBackground">
 
     <include
         android:id="@+id/layoutProgressBar"
@@ -51,6 +49,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_xsmall"
+                android:textIsSelectable="false"
                 tools:text="Saved at 01/01/2019" />
 
             <TextView
@@ -59,6 +58,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_xsmall"
+                android:textIsSelectable="false"
                 tools:text="Last updated at 01/01/2019" />
 
             <include

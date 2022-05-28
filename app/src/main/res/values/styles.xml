@@ -99,6 +99,7 @@
     <style name="AppTheme.TextButton.Menu">
         <item name="android:layout_width">match_parent</item>
         <item name="android:textColor">@color/color_onSurface</item>
+        <item name="android:textIsSelectable">false</item>
         <item name="android:gravity">start|center_vertical</item>
     </style>
 

@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.heightWrapContent
-import com.fibelatti.core.extension.onKeyboardSubmit
 import com.fibelatti.core.extension.setupLinks
 import com.fibelatti.core.extension.showError
 import com.fibelatti.core.extension.textAsString
@@ -19,6 +19,7 @@ import com.fibelatti.pinboard.core.android.LinkTransformationMethod
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.extension.isServerException
+import com.fibelatti.pinboard.core.extension.onActionOrKeyboardSubmit
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentAuthBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,7 +42,7 @@ class AuthFragment @Inject constructor() : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View = FragmentAuthBinding.inflate(inflater, container, false).root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -58,8 +59,8 @@ class AuthFragment @Inject constructor() : BaseFragment() {
 
     private fun setupLayout() {
         with(binding.layoutAuthForm) {
-            editTextAuthToken.onKeyboardSubmit {
-                authViewModel.login(editTextAuthToken.textAsString())
+            editTextAuthToken.onActionOrKeyboardSubmit(EditorInfo.IME_ACTION_GO) {
+                authViewModel.login(textAsString())
             }
             buttonAuth.setOnClickListener {
                 progressBar.visible()

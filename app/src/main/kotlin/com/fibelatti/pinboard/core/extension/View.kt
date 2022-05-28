@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.core.extension
 
 import android.animation.ObjectAnimator
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import android.view.animation.AccelerateInterpolator
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.DecelerateInterpolator
+import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updateMargins
@@ -88,4 +90,27 @@ private fun View.getContentView(): ViewGroup {
     }
 
     return parent as ViewGroup
+}
+
+/**
+ * Shorthand function for running the given [block] when the [EditText] receives a [handledAction] or a keyboard
+ * submit.
+ */
+inline fun EditText.onActionOrKeyboardSubmit(
+    vararg handledAction: Int,
+    crossinline block: EditText.() -> Unit,
+) {
+    val handledActions = handledAction.toList()
+
+    setOnEditorActionListener { _, actionId, event ->
+        val shouldHandle = actionId in handledActions ||
+            event != null && event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER
+
+        return@setOnEditorActionListener if (shouldHandle) {
+            block()
+            true
+        } else {
+            false
+        }
+    }
 }

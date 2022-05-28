@@ -4,9 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:colorBackground"
-    android:clickable="true"
-    android:focusable="true">
+    android:background="?android:colorBackground">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -39,18 +37,21 @@
                 style="@style/AppTheme.Text.SectionTitle.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/user_preferences_periodic_sync" />
+                android:text="@string/user_preferences_periodic_sync"
+                android:textIsSelectable="false" />
 
             <TextView
                 style="@style/AppTheme.Text.Caveat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/user_preferences_periodic_sync_description" />
+                android:text="@string/user_preferences_periodic_sync_description"
+                android:textIsSelectable="false" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonPeriodicSync"
                 style="@style/AppTheme.SelectionButton"
                 android:layout_marginTop="@dimen/margin_small"
+                android:textIsSelectable="false"
                 tools:text="@string/user_preferences_periodic_sync_24_hours" />
 
             <TextView
@@ -58,7 +59,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
-                android:text="@string/user_preferences_periodic_sync_caveat" />
+                android:text="@string/user_preferences_periodic_sync_caveat"
+                android:textIsSelectable="false" />
         </LinearLayout>
 
         <LinearLayout
@@ -75,11 +77,13 @@
                 style="@style/AppTheme.Text.SectionTitle.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/user_preferences_appearance" />
+                android:text="@string/user_preferences_appearance"
+                android:textIsSelectable="false" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonAppearance"
                 style="@style/AppTheme.SelectionButton"
+                android:textIsSelectable="false"
                 tools:text="@string/user_preferences_appearance_system_default" />
 
             <com.fibelatti.pinboard.core.android.customview.SettingToggle
@@ -96,11 +100,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_xlarge"
-                android:text="@string/user_preferences_date_format" />
+                android:text="@string/user_preferences_date_format"
+                android:textIsSelectable="false" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonPreferredDateFormat"
                 style="@style/AppTheme.SelectionButton"
+                android:textIsSelectable="false"
                 tools:text="@string/user_preferences_date_format_day_first" />
         </LinearLayout>
 
@@ -117,11 +123,13 @@
                 style="@style/AppTheme.Text.SectionTitle.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/user_preferences_preferred_details_view" />
+                android:text="@string/user_preferences_preferred_details_view"
+                android:textIsSelectable="false" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonPreferredDetailsView"
                 style="@style/AppTheme.SelectionButton"
+                android:textIsSelectable="false"
                 tools:text="@string/user_preferences_preferred_details_in_app_browser" />
 
             <TextView
@@ -129,7 +137,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
-                android:text="@string/user_preferences_preferred_details_view_caveat" />
+                android:text="@string/user_preferences_preferred_details_view_caveat"
+                android:textIsSelectable="false" />
 
             <com.fibelatti.pinboard.core.android.customview.SettingToggle
                 android:id="@+id/toggleMarkAsReadOnOpen"
@@ -153,7 +162,8 @@
                 style="@style/AppTheme.Text.SectionTitle.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/user_preferences_description_title" />
+                android:text="@string/user_preferences_description_title"
+                android:textIsSelectable="false" />
 
             <com.fibelatti.pinboard.core.android.customview.SettingToggle
                 android:id="@+id/toggleAutoFillDescription"
@@ -184,11 +194,13 @@
                 style="@style/AppTheme.Text.SectionTitle.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/user_preferences_edit_after_sharing_title" />
+                android:text="@string/user_preferences_edit_after_sharing_title"
+                android:textIsSelectable="false" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonEditAfterSharing"
                 style="@style/AppTheme.SelectionButton"
+                android:textIsSelectable="false"
                 tools:text="@string/user_preferences_edit_after_sharing_before_saving" />
 
             <TextView
@@ -196,7 +208,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
-                android:text="@string/user_preferences_edit_after_sharing_description" />
+                android:text="@string/user_preferences_edit_after_sharing_description"
+                android:textIsSelectable="false" />
         </LinearLayout>
 
         <LinearLayout
@@ -212,7 +225,8 @@
                 style="@style/AppTheme.Text.SectionTitle.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/user_preferences_default_private" />
+                android:text="@string/user_preferences_default_private"
+                android:textIsSelectable="false" />
 
             <com.fibelatti.pinboard.core.android.customview.SettingToggle
                 android:id="@+id/togglePrivateDefault"
@@ -234,7 +248,8 @@
                 style="@style/AppTheme.Text.SectionTitle.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/user_preferences_default_read_later" />
+                android:text="@string/user_preferences_default_read_later"
+                android:textIsSelectable="false" />
 
             <com.fibelatti.pinboard.core.android.customview.SettingToggle
                 android:id="@+id/toggleReadLaterDefault"
@@ -256,13 +271,15 @@
                 style="@style/AppTheme.Text.SectionTitle.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/user_preferences_default_tags" />
+                android:text="@string/user_preferences_default_tags"
+                android:textIsSelectable="false" />
 
             <TextView
                 style="@style/AppTheme.Text.Caveat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/user_preferences_default_tags_description" />
+                android:text="@string/user_preferences_default_tags_description"
+                android:textIsSelectable="false" />
 
             <com.fibelatti.pinboard.core.android.customview.AddTagsLayout
                 android:id="@+id/layoutAddTags"

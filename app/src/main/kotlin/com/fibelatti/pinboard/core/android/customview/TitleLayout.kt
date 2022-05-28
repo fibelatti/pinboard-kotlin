@@ -9,15 +9,25 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.extension.doOnInitializeAccessibilityNodeInfo
 import com.fibelatti.pinboard.databinding.LayoutTitleBinding
 
 class TitleLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     private val binding = LayoutTitleBinding.inflate(LayoutInflater.from(context), this, true)
+
+    init {
+        binding.textViewTitle.doOnInitializeAccessibilityNodeInfo { info ->
+            info?.isHeading = true
+        }
+        binding.textViewTitle.accessibilityLiveRegion = ACCESSIBILITY_LIVE_REGION_POLITE
+        binding.textViewSubtitle.accessibilityLiveRegion = ACCESSIBILITY_LIVE_REGION_POLITE
+        binding.buttonAction.accessibilityLiveRegion = ACCESSIBILITY_LIVE_REGION_POLITE
+    }
 
     fun setNavigateUp(@DrawableRes iconRes: Int = R.drawable.ic_back_arrow, navigateUp: () -> Unit) {
         binding.buttonNavigateBack.apply {

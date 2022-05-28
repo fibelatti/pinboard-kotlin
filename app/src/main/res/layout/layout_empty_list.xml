@@ -13,13 +13,14 @@
         android:layout_height="@dimen/drawable_board_width"
         android:background="@drawable/drawable_empty_board"
         android:contentDescription="@string/cd_empty_list_placeholder"
+        android:importantForAccessibility="no"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/imageViewIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/cd_empty_list_placeholder"
+        android:importantForAccessibility="no"
         app:layout_constraintBottom_toBottomOf="@+id/viewBoard"
         app:layout_constraintEnd_toEndOf="@+id/viewBoard"
         app:layout_constraintHorizontal_bias="0.95"
@@ -38,6 +39,7 @@
         android:layout_marginEnd="@dimen/margin_xlarge"
         android:gravity="center"
         android:text="@string/posts_empty_title"
+        android:textIsSelectable="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/viewBoard" />
@@ -52,6 +54,7 @@
         android:layout_marginEnd="@dimen/margin_xlarge"
         android:gravity="center"
         android:text="@string/posts_empty_description"
+        android:textIsSelectable="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewEmptyTitle" />

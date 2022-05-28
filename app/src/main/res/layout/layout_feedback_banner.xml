@@ -8,13 +8,14 @@
     <TextView
         android:id="@+id/textViewFeedback"
         style="@style/AppTheme.Text.Detail"
-        android:textColor="?attr/colorOnSurfaceInverse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_large"
-        android:padding="@dimen/padding_regular"
-        android:elevation="8dp"
         android:background="@drawable/background_snackbar"
+        android:elevation="8dp"
+        android:padding="@dimen/padding_regular"
+        android:textColor="?attr/colorOnSurfaceInverse"
+        android:textIsSelectable="false"
         tools:text="@tools:sample/lorem/random" />
 
 </FrameLayout>

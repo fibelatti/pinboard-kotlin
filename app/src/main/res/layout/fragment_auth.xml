@@ -18,7 +18,7 @@
         android:id="@+id/imageViewAppLogo"
         android:layout_width="@dimen/app_icon_size"
         android:layout_height="@dimen/app_icon_size"
-        android:contentDescription="@string/cd_app_logo"
+        android:importantForAccessibility="no"
         android:src="@drawable/ic_pin"
         app:layout_constraintBottom_toTopOf="@id/layoutAuthForm"
         app:layout_constraintEnd_toEndOf="parent"

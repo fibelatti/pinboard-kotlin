@@ -18,6 +18,7 @@
         android:gravity="center_vertical"
         android:paddingVertical="@dimen/padding_xsmall"
         android:textColor="?attr/colorPrimary"
+        android:textIsSelectable="false"
         android:textStyle="italic"
         android:visibility="gone"
         app:drawableStartCompat="@drawable/ic_pending_sync"
@@ -38,6 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_xsmall"
+        android:textIsSelectable="false"
         tools:text="Added on 01/01/2019" />
 
     <LinearLayout
@@ -55,6 +57,7 @@
             android:drawablePadding="@dimen/padding_xsmall"
             android:gravity="center"
             android:text="@string/posts_item_private"
+            android:textIsSelectable="false"
             android:visibility="gone"
             app:drawableStartCompat="@drawable/ic_private"
             tools:visibility="visible" />
@@ -68,6 +71,7 @@
             android:drawablePadding="@dimen/padding_xsmall"
             android:gravity="center"
             android:text="@string/posts_item_read_later"
+            android:textIsSelectable="false"
             android:visibility="gone"
             app:drawableStartCompat="@drawable/ic_read_later"
             tools:visibility="visible" />

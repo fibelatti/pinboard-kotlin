@@ -25,7 +25,9 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.android.customview.TitleLayout
+import com.fibelatti.pinboard.core.extension.doOnInitializeAccessibilityNodeInfo
 import com.fibelatti.pinboard.core.extension.isServerException
+import com.fibelatti.pinboard.core.extension.setupForAccessibility
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.ActivityMainBinding
@@ -87,6 +89,7 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
 
         setupBackNavigation()
         setupView()
+        setupAccessibility()
         setupViewModels()
         setupAutoUpdate()
     }
@@ -133,6 +136,20 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
             createFragment<NavigationMenuFragment>().applyAs<Fragment, BottomSheetDialogFragment> {
                 show(supportFragmentManager, NavigationMenuFragment.TAG)
             }
+        }
+    }
+
+    private fun setupAccessibility() {
+        supportFragmentManager.setupForAccessibility()
+
+        binding.bottomAppBar.doOnInitializeAccessibilityNodeInfo { info ->
+            info?.setTraversalAfter(binding.layoutTitle)
+        }
+        binding.fabMain.doOnInitializeAccessibilityNodeInfo { info ->
+            info?.setTraversalAfter(binding.bottomAppBar)
+        }
+        binding.fragmentHost.doOnInitializeAccessibilityNodeInfo { info ->
+            info?.setTraversalAfter(binding.fabMain)
         }
     }
 

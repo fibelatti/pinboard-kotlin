@@ -49,13 +49,15 @@
         android:layout_marginTop="@dimen/margin_regular"
         android:layout_marginEnd="@dimen/margin_large"
         android:gravity="center"
-        android:text="@string/posts_url_error" />
+        android:text="@string/posts_url_error"
+        android:textIsSelectable="false" />
 
     <Button
         android:id="@+id/buttonErrorAction"
         style="@style/AppTheme.Button"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/margin_large"
-        android:text="@string/posts_open_in_browser" />
+        android:text="@string/posts_open_in_browser"
+        android:textIsSelectable="false" />
 
 </LinearLayout>

@@ -12,12 +12,14 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center_vertical"
-        android:text="@string/offline_alert" />
+        android:text="@string/offline_alert"
+        android:textIsSelectable="false" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonRetryConnection"
         style="@style/AppTheme.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/offline_retry" />
+        android:text="@string/offline_retry"
+        android:textIsSelectable="false" />
 </LinearLayout>

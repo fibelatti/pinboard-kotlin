@@ -10,12 +10,14 @@
         android:id="@+id/buttonQuickActionShare"
         style="@style/AppTheme.QuickActionButton"
         android:text="@string/hint_share"
+        android:textIsSelectable="false"
         app:icon="@drawable/ic_share" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonQuickActionSave"
         style="@style/AppTheme.QuickActionButton"
         android:text="@string/hint_save"
+        android:textIsSelectable="false"
         app:icon="@drawable/ic_save" />
 
 </LinearLayout>

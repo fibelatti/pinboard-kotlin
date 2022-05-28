@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -24,6 +25,7 @@ import com.fibelatti.core.extension.textAsString
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.di.MainVariant
+import com.fibelatti.pinboard.core.extension.onActionOrKeyboardSubmit
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.core.extension.smoothScrollY
@@ -114,7 +116,7 @@ class EditPostFragment @Inject constructor(
 
     private fun onBackPressed() {
         val isContentUnchanged = originalPost?.run {
-            with(binding.layoutAddPost) {
+            with(binding) {
                 hash.isNotEmpty() &&
                     url == editTextUrl.textAsString() &&
                     title == editTextTitle.textAsString() &&
@@ -140,7 +142,12 @@ class EditPostFragment @Inject constructor(
 
     private fun setupLayout() {
         handleKeyboardVisibility()
-        binding.layoutAddPost.togglePrivate.isVisible = mainVariant
+
+        binding.editTextUrl.onActionOrKeyboardSubmit(EditorInfo.IME_ACTION_NEXT) {
+            binding.editTextTitle.requestFocus()
+        }
+
+        binding.togglePrivate.isVisible = mainVariant
         binding.layoutAddTags.setup(
             afterTagInput = editPostViewModel::searchForTag,
             onTagRemoved = editPostViewModel::searchForTag
@@ -189,7 +196,7 @@ class EditPostFragment @Inject constructor(
         }
         binding.root.hideKeyboard()
 
-        with(binding.layoutAddPost) {
+        with(binding) {
             editPostViewModel.saveLink(
                 editTextUrl.textAsString(),
                 editTextTitle.textAsString(),
@@ -207,8 +214,8 @@ class EditPostFragment @Inject constructor(
                 setupActivityViews()
 
                 if (!isRecreating) {
-                    binding.layoutAddPost.togglePrivate.isActive = it.defaultPrivate
-                    binding.layoutAddPost.toggleReadLater.isActive = it.defaultReadLater
+                    binding.togglePrivate.isActive = it.defaultPrivate
+                    binding.toggleReadLater.isActive = it.defaultReadLater
                     binding.layoutAddTags.showTags(it.defaultTags)
                 }
             }
@@ -294,7 +301,7 @@ class EditPostFragment @Inject constructor(
         }
 
         with(content.post) {
-            with(binding.layoutAddPost) {
+            with(binding) {
                 textViewPendingSync.isVisible = pendingSync != null
                 when (pendingSync) {
                     PendingSync.ADD -> textViewPendingSync.setText(R.string.posts_pending_add_expanded)
@@ -338,19 +345,19 @@ class EditPostFragment @Inject constructor(
     private fun handleInvalidUrlError(message: String) {
         message.takeIf(String::isNotEmpty)
             ?.let {
-                binding.layoutAddPost.textInputLayoutUrl.showError(it)
+                binding.textInputLayoutUrl.showError(it)
                 showFab()
             }
-            ?: binding.layoutAddPost.textInputLayoutUrl.clearError()
+            ?: binding.textInputLayoutUrl.clearError()
     }
 
     private fun handleInvalidTitleError(message: String) {
         message.takeIf(String::isNotEmpty)
             ?.let {
-                binding.layoutAddPost.textInputLayoutTitle.showError(it)
+                binding.textInputLayoutTitle.showError(it)
                 showFab()
             }
-            ?: binding.layoutAddPost.textInputLayoutTitle.clearError()
+            ?: binding.textInputLayoutTitle.clearError()
     }
 
     private fun showFab() {

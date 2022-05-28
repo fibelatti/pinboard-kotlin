@@ -23,7 +23,8 @@
             android:layout_height="wrap_content"
             android:imeOptions="actionSearch"
             android:inputType="text"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:textIsSelectable="false" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
@@ -36,6 +37,7 @@
         android:layout_marginEnd="@dimen/margin_regular"
         android:layout_marginBottom="@dimen/margin_regular"
         android:text="@string/search_term_caveat"
+        android:textIsSelectable="false"
         android:textSize="@dimen/text_size_xsmall" />
 
     <TextView
@@ -46,6 +48,7 @@
         android:layout_marginStart="@dimen/margin_regular"
         android:layout_marginEnd="@dimen/margin_regular"
         android:text="@string/search_selected_tags"
+        android:textIsSelectable="false"
         android:visibility="gone" />
 
     <HorizontalScrollView
@@ -76,6 +79,7 @@
         android:backgroundTint="?attr/colorPrimaryContainer"
         android:paddingHorizontal="@dimen/padding_regular"
         android:paddingVertical="@dimen/padding_small"
+        android:textIsSelectable="false"
         android:visibility="gone"
         tools:text="10 bookmarks match the current query"
         tools:visibility="visible" />
@@ -87,7 +91,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_regular"
         android:layout_marginEnd="@dimen/margin_regular"
-        android:text="@string/search_tags" />
+        android:text="@string/search_tags"
+        android:textIsSelectable="false" />
 
     <com.fibelatti.pinboard.features.tags.presentation.TagListLayout
         android:id="@+id/tagListLayout"

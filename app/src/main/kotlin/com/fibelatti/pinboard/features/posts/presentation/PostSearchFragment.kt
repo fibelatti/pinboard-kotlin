@@ -24,6 +24,7 @@ import com.fibelatti.core.extension.textAsString
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.blink
+import com.fibelatti.pinboard.core.extension.onActionOrKeyboardSubmit
 import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentSearchPostBinding
 import com.fibelatti.pinboard.features.appstate.AddSearchTag
@@ -80,13 +81,10 @@ class PostSearchFragment @Inject constructor(
         binding.editTextSearchTerm.doAfterTextChanged { editable ->
             appStateViewModel.runAction(SetTerm(editable.toString()))
         }
-        binding.editTextSearchTerm.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                binding.editTextSearchTerm.hideKeyboard()
-                appStateViewModel.runAction(Search(binding.editTextSearchTerm.textAsString()))
-                return@setOnEditorActionListener true
-            }
-            return@setOnEditorActionListener false
+
+        binding.editTextSearchTerm.onActionOrKeyboardSubmit(EditorInfo.IME_ACTION_SEARCH) {
+            hideKeyboard()
+            appStateViewModel.runAction(Search(textAsString()))
         }
 
         binding.tagListLayout.setAdapter(tagsAdapter) { appStateViewModel.runAction(AddSearchTag(it)) }

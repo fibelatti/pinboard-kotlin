@@ -33,22 +33,26 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonTagSortingAtoZ"
             style="?attr/materialButtonOutlinedStyle"
-            android:text="@string/tags_sorting_a_to_z" />
+            android:text="@string/tags_sorting_a_to_z"
+            android:textIsSelectable="false" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonTagSortingMoreFirst"
             style="?attr/materialButtonOutlinedStyle"
-            android:text="@string/tags_sorting_more_first" />
+            android:text="@string/tags_sorting_more_first"
+            android:textIsSelectable="false" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonTagSortingLessFirst"
             style="?attr/materialButtonOutlinedStyle"
-            android:text="@string/tags_sorting_less_first" />
+            android:text="@string/tags_sorting_less_first"
+            android:textIsSelectable="false" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonTagSortingFilter"
             style="?attr/materialButtonOutlinedStyle"
-            android:text="@string/tags_sorting_filter" />
+            android:text="@string/tags_sorting_filter"
+            android:textIsSelectable="false" />
 
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
@@ -70,7 +74,8 @@
             android:layout_height="wrap_content"
             android:imeOptions="actionDone"
             android:importantForAutofill="no"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:textIsSelectable="false" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout

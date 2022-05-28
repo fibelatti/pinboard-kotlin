@@ -7,4 +7,5 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/margin_small"
     android:layout_marginBottom="@dimen/margin_small"
+    android:textIsSelectable="false"
     tools:text="@tools:sample/lorem" />

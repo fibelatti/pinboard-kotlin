@@ -4,6 +4,7 @@ import android.animation.LayoutTransition
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -12,6 +13,7 @@ import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.extension.onActionOrKeyboardSubmit
 import com.fibelatti.pinboard.databinding.LayoutTagListBinding
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
@@ -19,7 +21,7 @@ import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
 class TagListLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = 0,
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
     private val binding = LayoutTagListBinding.inflate(LayoutInflater.from(context), this)
@@ -37,6 +39,10 @@ class TagListLayout @JvmOverloads constructor(
 
         binding.editTextTagFilter.doAfterTextChanged {
             tagsAdapter?.filter(query = it.toString())
+        }
+        binding.editTextTagFilter.onActionOrKeyboardSubmit(EditorInfo.IME_ACTION_DONE) {
+            hideKeyboard()
+            clearFocus()
         }
     }
 
