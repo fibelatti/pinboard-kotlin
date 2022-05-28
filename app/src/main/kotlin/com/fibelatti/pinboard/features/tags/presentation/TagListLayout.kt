@@ -6,12 +6,11 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
+import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import com.fibelatti.core.extension.clearText
-import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.hideKeyboard
-import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.extension.onActionOrKeyboardSubmit
 import com.fibelatti.pinboard.databinding.LayoutTagListBinding
@@ -93,7 +92,7 @@ class TagListLayout @JvmOverloads constructor(
         binding.textInputLayoutTagFilter.isVisible = filterVisible
         binding.recyclerViewTags.scrollToPosition(0)
 
-        tagsAdapter?.let { onSortingSelected(it.getItems(), tagSorting) }
+        tagsAdapter?.let { onSortingSelected(it.items, tagSorting) }
     }
 
     fun setInputFocusChangeListener(onInputFocused: (hasFocus: Boolean) -> Unit) {
@@ -101,17 +100,17 @@ class TagListLayout @JvmOverloads constructor(
     }
 
     fun showLoading() {
-        binding.progressBar.visible()
-        binding.buttonGroupTagSorting.gone()
-        binding.recyclerViewTags.gone()
-        binding.layoutEmptyList.gone()
+        binding.progressBar.isVisible = true
+        binding.buttonGroupTagSorting.isGone = true
+        binding.recyclerViewTags.isGone = true
+        binding.layoutEmptyList.isGone = true
     }
 
     fun showTags(list: List<Tag>) {
         if (list.isNotEmpty()) {
-            binding.buttonGroupTagSorting.visible()
-            binding.recyclerViewTags.visible()
-            binding.layoutEmptyList.gone()
+            binding.buttonGroupTagSorting.isVisible = true
+            binding.recyclerViewTags.isVisible = true
+            binding.layoutEmptyList.isGone = true
 
             tagsAdapter?.submitList(list)
 
@@ -122,17 +121,17 @@ class TagListLayout @JvmOverloads constructor(
         } else {
             showEmptyLayout()
         }
-        binding.progressBar.gone()
+        binding.progressBar.isGone = true
     }
 
     private fun showEmptyLayout() {
-        binding.buttonGroupTagSorting.gone()
-        binding.recyclerViewTags.gone()
+        binding.buttonGroupTagSorting.isGone = true
+        binding.recyclerViewTags.isGone = true
         binding.layoutEmptyList.apply {
             setIcon(R.drawable.ic_tag)
             setTitle(R.string.tags_empty_title)
             setDescription(R.string.tags_empty_description)
-            visible()
+            isVisible = true
         }
     }
 

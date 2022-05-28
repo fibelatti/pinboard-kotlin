@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.appstate
 
-import com.fibelatti.core.extension.orZero
 import com.fibelatti.core.functional.Either
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -29,9 +28,9 @@ data class PostListContent(
     override val previousContent: Content = ExternalContent
 
     val totalCount: Int
-        get() = posts?.totalCount.orZero()
+        get() = posts?.totalCount ?: 0
     val currentCount: Int
-        get() = posts?.list?.size.orZero()
+        get() = posts?.list?.size ?: 0
     val currentList: List<Post>
         get() = posts?.list ?: emptyList()
 }
@@ -45,12 +44,12 @@ sealed class ContentWithHistory : Content(), ContentHistory
 
 data class PostDetailContent(
     val post: Post,
-    override val previousContent: PostListContent
+    override val previousContent: PostListContent,
 ) : ContentWithHistory()
 
 data class ExternalBrowserContent(
     val post: Post,
-    override val previousContent: Content
+    override val previousContent: Content,
 ) : ContentWithHistory()
 
 data class SearchContent(
@@ -58,7 +57,7 @@ data class SearchContent(
     val availableTags: List<Tag> = emptyList(),
     val allTags: List<Tag> = emptyList(),
     val shouldLoadTags: Boolean = true,
-    override val previousContent: PostListContent
+    override val previousContent: PostListContent,
 ) : ContentWithHistory()
 
 data class AddPostContent(
@@ -70,40 +69,40 @@ data class AddPostContent(
 
 data class EditPostContent(
     val post: Post,
-    override val previousContent: Content
+    override val previousContent: Content,
 ) : ContentWithHistory()
 
 data class TagListContent(
     val tags: List<Tag>,
     val shouldLoad: Boolean,
     val isConnected: Boolean = true,
-    override val previousContent: PostListContent
+    override val previousContent: PostListContent,
 ) : ContentWithHistory()
 
 data class NoteListContent(
     val notes: List<Note>,
     val shouldLoad: Boolean,
     val isConnected: Boolean = true,
-    override val previousContent: PostListContent
+    override val previousContent: PostListContent,
 ) : ContentWithHistory()
 
 data class NoteDetailContent(
     val id: String,
     val note: Either<Boolean, Note>,
     val isConnected: Boolean = true,
-    override val previousContent: NoteListContent
+    override val previousContent: NoteListContent,
 ) : ContentWithHistory()
 
 data class PopularPostsContent(
     val posts: List<Post>,
     val shouldLoad: Boolean,
     val isConnected: Boolean = true,
-    override val previousContent: PostListContent
+    override val previousContent: PostListContent,
 ) : ContentWithHistory()
 
 data class PopularPostDetailContent(
     val post: Post,
-    override val previousContent: PopularPostsContent
+    override val previousContent: PopularPostsContent,
 ) : ContentWithHistory()
 
 data class UserPreferencesContent(

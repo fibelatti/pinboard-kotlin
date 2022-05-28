@@ -4,17 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.fibelatti.core.extension.gone
-import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.shareText
-import com.fibelatti.core.extension.visible
-import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.core.extension.withItemOffsetDecoration
-import com.fibelatti.core.extension.withLinearLayoutManager
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.showBanner
@@ -69,7 +66,7 @@ class PopularPostsFragment @Inject constructor(
             appStateViewModel.runAction(RefreshPopular)
         }
 
-        binding.recyclerViewPosts.withLinearLayoutManager()
+        binding.recyclerViewPosts
             .withItemOffsetDecoration(R.dimen.padding_small)
             .adapter = popularPostsAdapter
 
@@ -100,30 +97,27 @@ class PopularPostsFragment @Inject constructor(
                     bottomAppBar.run {
                         navigationIcon = null
                         menu.clear()
-                        gone()
+                        isGone = true
                     }
                     fab.hide()
                 }
 
                 if (content.shouldLoad) {
-                    binding.layoutProgressBar.root.visible()
-                    binding.recyclerViewPosts.gone()
-                    binding.layoutEmptyList.gone()
+                    binding.layoutProgressBar.root.isVisible = true
+                    binding.recyclerViewPosts.isGone = true
+                    binding.layoutEmptyList.isGone = true
                     popularPostsViewModel.getPosts()
                 } else {
                     showPosts(content)
                 }
 
-                binding.layoutOfflineAlert.root.goneIf(
-                    content.isConnected,
-                    otherwiseVisibility = View.VISIBLE
-                )
+                binding.layoutOfflineAlert.root.isGone = content.isConnected
             }
         }
         lifecycleScope.launch {
             popularPostsViewModel.loading.collect {
-                binding.layoutProgressBar.root.visibleIf(it, otherwiseVisibility = View.GONE)
-                binding.recyclerViewPosts.goneIf(it, otherwiseVisibility = View.VISIBLE)
+                binding.layoutProgressBar.root.isVisible = it
+                binding.recyclerViewPosts.isGone = it
             }
         }
         lifecycleScope.launch {
@@ -135,20 +129,20 @@ class PopularPostsFragment @Inject constructor(
     }
 
     private fun showPosts(content: PopularPostsContent) {
-        binding.layoutProgressBar.root.gone()
+        binding.layoutProgressBar.root.isGone = true
 
         if (content.posts.isEmpty()) {
-            binding.recyclerViewPosts.gone()
+            binding.recyclerViewPosts.isGone = true
             binding.layoutEmptyList.apply {
-                visible()
+                isVisible = true
                 setTitle(R.string.posts_empty_title)
                 setDescription(R.string.posts_empty_description)
             }
             return
         }
 
-        binding.layoutEmptyList.gone()
-        binding.recyclerViewPosts.visible()
+        binding.layoutEmptyList.isGone = true
+        binding.recyclerViewPosts.isVisible = true
         popularPostsAdapter.submitList(content.posts)
     }
 }

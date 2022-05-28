@@ -4,9 +4,13 @@ import androidx.recyclerview.widget.DiffUtil
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import javax.inject.Inject
 
-class PostListDiffUtil(oldList: List<Post>, newList: List<Post>) {
+class PostListDiffResultFactory @Inject constructor() {
 
-    val result: DiffUtil.DiffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+    fun create(
+        oldList: List<Post>,
+        newList: List<Post>,
+    ): DiffUtil.DiffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+
         override fun getOldListSize(): Int = oldList.size
 
         override fun getNewListSize(): Int = newList.size
@@ -19,9 +23,4 @@ class PostListDiffUtil(oldList: List<Post>, newList: List<Post>) {
             return oldList[oldItemPosition] == newList[newItemPosition]
         }
     })
-}
-
-class PostListDiffUtilFactory @Inject constructor() {
-
-    fun create(oldList: List<Post>, newList: List<Post>): PostListDiffUtil = PostListDiffUtil(oldList, newList)
 }

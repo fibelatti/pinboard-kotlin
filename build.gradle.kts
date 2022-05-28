@@ -26,12 +26,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        jcenter {
-            content {
-                // Remove jcenter once this is migrated
-                includeGroup("com.fibelatti.core")
-            }
-        }
     }
 }
 

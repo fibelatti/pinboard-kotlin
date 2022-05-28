@@ -14,7 +14,6 @@ dependencyResolutionManagement {
             val moshiVersion = "1.13.0"
             val okHttpVersion = "4.9.3"
             val retrofitVersion = "2.9.0"
-            val fibelattiCoreVersion = "2.0.0-alpha4"
             val junit5Version = "5.8.2"
 
             // Classpath
@@ -36,14 +35,14 @@ dependencyResolutionManagement {
             library("material", "com.google.android.material:material:1.6.1")
             library("constraint-layout", "androidx.constraintlayout:constraintlayout:2.1.4")
             library("swipe-refresh-layout", "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-            library("fibelatti-core", "com.fibelatti.core:core:$fibelattiCoreVersion")
-            library("fibelatti-arch-components", "com.fibelatti.core:arch-components:$fibelattiCoreVersion")
             library("lifecycle-java8", "androidx.lifecycle:lifecycle-common-java8:2.4.1")
             library("lifecycle-runtime-ktx", "androidx.lifecycle:lifecycle-runtime-ktx:2.4.1")
             library("room-runtime", "androidx.room:room-ktx:$roomVersion")
             library("room-compiler", "androidx.room:room-compiler:$roomVersion")
             library("work-runtime-ktx", "androidx.work:work-runtime-ktx:2.7.1")
             library("browser", "androidx.browser:browser:1.4.0")
+            library("viewbinding", "androidx.databinding:viewbinding:7.2.1")
+
             library("hilt-android", "com.google.dagger:hilt-android:$hiltVersion")
             library("hilt-compiler", "com.google.dagger:hilt-compiler:$hiltVersion")
 
@@ -62,8 +61,6 @@ dependencyResolutionManagement {
             library("leakcanary", "com.squareup.leakcanary:leakcanary-android:2.9.1")
 
             // Test
-            library("fibelatti-core-test", "com.fibelatti.core:core-test:$fibelattiCoreVersion")
-
             library("junit", "junit:junit:4.13.2")
 
             library("junit5-api", "org.junit.jupiter:junit-jupiter-api:$junit5Version")

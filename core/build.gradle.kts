@@ -45,6 +45,7 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
     implementation(libs.material)
+    implementation(libs.viewbinding)
 
     testCompileOnly(libs.junit)
     testRuntimeOnly(libs.junit5.engine)

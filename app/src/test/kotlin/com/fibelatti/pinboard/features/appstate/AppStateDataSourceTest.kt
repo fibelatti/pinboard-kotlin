@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.core.functional.SingleRunner
-import com.fibelatti.core.test.extension.mock
 import com.fibelatti.pinboard.allSealedSubclasses
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -74,7 +73,7 @@ internal class AppStateDataSourceTest {
     @Test
     fun `reset should set currentContent to the initial value`() = runTest {
         // GIVEN
-        appStateDataSource.updateContent(mock())
+        appStateDataSource.updateContent(mockk())
 
         // WHEN
         appStateDataSource.reset()

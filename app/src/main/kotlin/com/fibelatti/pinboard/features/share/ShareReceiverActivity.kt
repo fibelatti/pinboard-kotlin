@@ -2,10 +2,10 @@ package com.fibelatti.pinboard.features.share
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
-import com.fibelatti.core.extension.toast
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
@@ -43,7 +43,7 @@ class ShareReceiverActivity : BaseActivity() {
         lifecycleScope.launch {
             shareReceiverViewModel.saved.collect { message ->
                 binding.imageViewFeedback.setImageResource(R.drawable.ic_url_saved)
-                toast(message)
+                Toast.makeText(this@ShareReceiverActivity, message, Toast.LENGTH_SHORT).show()
                 delay(500L)
                 finish()
             }
@@ -52,7 +52,7 @@ class ShareReceiverActivity : BaseActivity() {
             shareReceiverViewModel.edit.collect { message ->
                 if (message.isNotEmpty()) {
                     binding.imageViewFeedback.setImageResource(R.drawable.ic_url_saved)
-                    toast(message)
+                    Toast.makeText(this@ShareReceiverActivity, message, Toast.LENGTH_SHORT).show()
                 }
                 startActivity(MainActivity.Builder(this@ShareReceiverActivity).build())
                 finish()

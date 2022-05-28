@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.activityViewModels
@@ -18,8 +19,6 @@ import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.extension.clearError
 import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.hideKeyboard
-import com.fibelatti.core.extension.invisible
-import com.fibelatti.core.extension.orZero
 import com.fibelatti.core.extension.showError
 import com.fibelatti.core.extension.textAsString
 import com.fibelatti.pinboard.R
@@ -170,7 +169,7 @@ class EditPostFragment @Inject constructor(
                     requireActivity().currentFocus?.let { focusedView ->
                         val pos = IntArray(2)
                         focusedView.getLocationOnScreen(pos).run { pos[1] + focusedView.measuredHeight + scrollOffset }
-                    }.orZero()
+                    } ?: 0
                 } catch (ignored: IllegalStateException) {
                     // The activity is gone
                     return@doOnApplyWindowInsets
@@ -271,9 +270,9 @@ class EditPostFragment @Inject constructor(
         }
 
         bottomBarHost.update { bottomAppBar, fab ->
-            // Using invisible() instead of gone() otherwise the fab will misbehave when
+            // Using isInvisible instead of isGone otherwise the fab will misbehave when
             // starting this fragment from share
-            bottomAppBar.invisible()
+            bottomAppBar.isInvisible = true
             fab.run {
                 setImageResource(R.drawable.ic_done)
                 setOnClickListener { saveLink() }

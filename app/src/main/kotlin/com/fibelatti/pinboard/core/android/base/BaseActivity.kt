@@ -9,7 +9,6 @@ import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.FragmentActivity
-import com.fibelatti.core.extension.toast
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.Appearance
@@ -42,7 +41,7 @@ abstract class BaseActivity : AppCompatActivity() {
         }
 
         if (error.isServerException()) {
-            toast(getString(R.string.server_timeout_error), duration = Toast.LENGTH_LONG)
+            Toast.makeText(this, R.string.server_timeout_error, Toast.LENGTH_LONG).show()
         } else {
             sendErrorReport(error)
         }

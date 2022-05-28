@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.notes.data.model
 
-import com.fibelatti.core.extension.empty
 import com.fibelatti.pinboard.MockDataProvider.mockNoteId
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.notes.domain.model.Note
@@ -30,7 +29,7 @@ internal class NoteDtoMapperTest {
         )
 
         // THEN
-        assertThat(result.title).isEqualTo(String.empty())
+        assertThat(result.title).isEmpty()
     }
 
     @Test
@@ -47,7 +46,7 @@ internal class NoteDtoMapperTest {
         )
 
         // THEN
-        assertThat(result.createdAt).isEqualTo(String.empty())
+        assertThat(result.createdAt).isEmpty()
     }
 
     @Test
@@ -64,7 +63,7 @@ internal class NoteDtoMapperTest {
         )
 
         // THEN
-        assertThat(result.updatedAt).isEqualTo(String.empty())
+        assertThat(result.updatedAt).isEmpty()
     }
 
     @Test
@@ -81,7 +80,7 @@ internal class NoteDtoMapperTest {
         )
 
         // THEN
-        assertThat(result.text).isEqualTo(String.empty())
+        assertThat(result.text).isEmpty()
     }
 
     @Test

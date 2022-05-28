@@ -4,7 +4,7 @@ import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.functional.map
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onSuccess
-import com.fibelatti.core.provider.ResourceProvider
+import com.fibelatti.core.android.ResourceProvider
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateRepository

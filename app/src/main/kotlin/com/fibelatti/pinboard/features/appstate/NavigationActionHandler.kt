@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.features.appstate
 
 import androidx.annotation.VisibleForTesting
-import com.fibelatti.core.extension.orFalse
 import com.fibelatti.core.functional.Either
 import com.fibelatti.core.functional.catching
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
@@ -10,15 +9,15 @@ import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class NavigationActionHandler @Inject constructor(
     private val userRepository: UserRepository,
     private val postsRepository: PostsRepository,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
-    @IoScope private val markAsReadRequestScope: CoroutineScope
+    @IoScope private val markAsReadRequestScope: CoroutineScope,
 ) : ActionHandler<NavigationAction>() {
 
     override suspend fun runAction(action: NavigationAction, currentContent: Content): Content {
@@ -130,8 +129,8 @@ class NavigationActionHandler @Inject constructor(
     private fun viewAddPost(currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
             AddPostContent(
-                defaultPrivate = userRepository.defaultPrivate.orFalse(),
-                defaultReadLater = userRepository.defaultReadLater.orFalse(),
+                defaultPrivate = userRepository.defaultPrivate ?: false,
+                defaultReadLater = userRepository.defaultReadLater ?: false,
                 defaultTags = userRepository.defaultTags,
                 previousContent = it
             )

@@ -8,18 +8,17 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.fibelatti.core.android.IntentDelegate
-import com.fibelatti.core.android.base.BaseIntentBuilder
+import com.fibelatti.core.android.BaseIntentBuilder
+import com.fibelatti.core.android.intentExtras
 import com.fibelatti.core.extension.applyAs
 import com.fibelatti.core.extension.createFragment
 import com.fibelatti.core.extension.doOnApplyWindowInsets
-import com.fibelatti.core.extension.exhaustive
-import com.fibelatti.core.extension.gone
-import com.fibelatti.core.extension.visible
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseActivity
@@ -61,7 +60,7 @@ import javax.inject.Inject
 val Fragment.titleLayoutHost: TitleLayoutHost get() = requireActivity() as TitleLayoutHost
 val Fragment.bottomBarHost: BottomBarHost get() = requireActivity() as BottomBarHost
 
-var Intent.fromBuilder by IntentDelegate.Boolean("FROM_BUILDER", false)
+var Intent.fromBuilder by intentExtras(false)
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
@@ -206,11 +205,11 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
                 appStateViewModel.reset()
                 finish()
             }
-        }.exhaustive
+        }
     }
 
     override fun update(titleUpdates: TitleLayout.() -> Unit) {
-        binding.layoutTitle.visible()
+        binding.layoutTitle.isVisible = true
         binding.layoutTitle.run(titleUpdates)
     }
 
@@ -219,8 +218,8 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
     }
 
     private fun hideControls() {
-        binding.layoutTitle.gone()
-        binding.bottomAppBar.gone()
+        binding.layoutTitle.isGone = true
+        binding.bottomAppBar.isGone = true
         binding.fabMain.hide()
     }
 

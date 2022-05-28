@@ -2,7 +2,7 @@ package com.fibelatti.pinboard.features.share
 
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
-import com.fibelatti.core.provider.ResourceProvider
+import com.fibelatti.core.android.ResourceProvider
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid

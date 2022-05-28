@@ -4,11 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isGone
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.fibelatti.core.extension.gone
-import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.pinboard.R
@@ -26,10 +25,11 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class TagsFragment @Inject constructor(
-    private val tagsAdapter: TagsAdapter
+    private val tagsAdapter: TagsAdapter,
 ) : BaseFragment() {
 
     companion object {
+
         @JvmStatic
         val TAG: String = "TagsFragment"
     }
@@ -42,7 +42,7 @@ class TagsFragment @Inject constructor(
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View = FragmentTagsBinding.inflate(inflater, container, false).root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -70,7 +70,7 @@ class TagsFragment @Inject constructor(
                     tagsViewModel.sortTags(content.tags, binding.tagListLayout.getCurrentTagSorting())
                 }
 
-                binding.layoutOfflineAlert.root.goneIf(content.isConnected, otherwiseVisibility = View.VISIBLE)
+                binding.layoutOfflineAlert.root.isGone = content.isConnected
             }
         }
         lifecycleScope.launch {
@@ -95,7 +95,7 @@ class TagsFragment @Inject constructor(
             bottomAppBar.run {
                 navigationIcon = null
                 menu.clear()
-                gone()
+                isGone = true
             }
             fab.hide()
         }

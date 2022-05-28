@@ -4,16 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.fibelatti.core.extension.gone
-import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.navigateBack
-import com.fibelatti.core.extension.visible
-import com.fibelatti.core.extension.visibleIf
 import com.fibelatti.core.extension.withItemOffsetDecoration
-import com.fibelatti.core.extension.withLinearLayoutManager
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.viewBinding
@@ -92,7 +89,6 @@ class NoteListFragment @Inject constructor(
         }
 
         binding.recyclerViewNotes
-            .withLinearLayoutManager()
             .withItemOffsetDecoration(R.dimen.padding_small)
             .adapter = noteListAdapter
 
@@ -111,10 +107,7 @@ class NoteListFragment @Inject constructor(
                     showNotes(content.notes)
                 }
 
-                binding.layoutOfflineAlert.root.goneIf(
-                    content.isConnected,
-                    otherwiseVisibility = View.VISIBLE
-                )
+                binding.layoutOfflineAlert.root.isGone = content.isConnected
             }
         }
         lifecycleScope.launch {
@@ -133,24 +126,24 @@ class NoteListFragment @Inject constructor(
             bottomAppBar.run {
                 navigationIcon = null
                 menu.clear()
-                gone()
+                isGone = true
             }
             fab.hide()
         }
     }
 
     private fun handleLoading(loading: Boolean) {
-        binding.layoutProgressBar.root.visibleIf(loading, otherwiseVisibility = View.GONE)
-        binding.buttonGroupNoteSorting.goneIf(loading)
-        binding.recyclerViewNotes.goneIf(loading)
-        binding.layoutEmptyList.goneIf(loading)
+        binding.layoutProgressBar.root.isVisible = loading
+        binding.buttonGroupNoteSorting.isGone = loading
+        binding.recyclerViewNotes.isGone = loading
+        binding.layoutEmptyList.isGone = loading
     }
 
     private fun showNotes(list: List<Note>) {
         if (list.isNotEmpty()) {
-            binding.buttonGroupNoteSorting.visible()
-            binding.recyclerViewNotes.visible()
-            binding.layoutEmptyList.gone()
+            binding.buttonGroupNoteSorting.isVisible = true
+            binding.recyclerViewNotes.isVisible = true
+            binding.layoutEmptyList.isGone = true
 
             titleLayoutHost.update {
                 setTitle(getString(R.string.notes_title))
@@ -170,13 +163,13 @@ class NoteListFragment @Inject constructor(
     }
 
     private fun showEmptyLayout() {
-        binding.buttonGroupNoteSorting.gone()
-        binding.recyclerViewNotes.gone()
+        binding.buttonGroupNoteSorting.isGone = true
+        binding.recyclerViewNotes.isGone = true
         binding.layoutEmptyList.apply {
             setIcon(R.drawable.ic_notes)
             setTitle(R.string.notes_empty_title)
             setDescription(R.string.notes_empty_description)
-            visible()
+            isVisible = true
         }
     }
 }

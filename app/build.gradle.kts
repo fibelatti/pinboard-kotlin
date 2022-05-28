@@ -155,8 +155,7 @@ android {
 }
 
 dependencies {
-    implementation(libs.fibelatti.core)
-    implementation(libs.fibelatti.arch.components)
+    implementation(project(":core"))
 
     // Kotlin
     implementation(libs.kotlin)
@@ -208,8 +207,6 @@ dependencies {
     testRuntimeOnly(libs.junit5.vintage)
     testImplementation(libs.junit5.api)
     testImplementation(libs.junit5.params)
-
-    testImplementation(libs.fibelatti.core.test)
 
     testImplementation(libs.truth)
     testImplementation(libs.mockk)

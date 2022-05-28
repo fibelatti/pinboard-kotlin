@@ -1,11 +1,11 @@
 package com.fibelatti.pinboard.features.appstate
 
+import androidx.recyclerview.widget.DiffUtil
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtil
 
 data class PostList(
     val totalCount: Int,
     val list: List<Post>,
-    val diffUtil: PostListDiffUtil,
-    val alreadyDisplayed: Boolean = false
+    val diffResult: DiffUtil.DiffResult,
+    val alreadyDisplayed: Boolean = false,
 )

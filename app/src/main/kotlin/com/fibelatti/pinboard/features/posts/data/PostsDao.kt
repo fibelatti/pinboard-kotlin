@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.fibelatti.core.extension.remove
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.features.posts.data.model.POST_FTS_TABLE_NAME
 import com.fibelatti.pinboard.features.posts.data.model.POST_TABLE_NAME
@@ -36,7 +35,7 @@ interface PostsDao {
         publicPostsOnly: Boolean = false,
         privatePostsOnly: Boolean = false,
         readLaterOnly: Boolean = false,
-        limit: Int = -1
+        limit: Int = -1,
     ): Int
 
     @Suppress("LongParameterList")
@@ -53,7 +52,7 @@ interface PostsDao {
         privatePostsOnly: Boolean = false,
         readLaterOnly: Boolean = false,
         limit: Int = -1,
-        offset: Int = 0
+        offset: Int = 0,
     ): List<PostDto>
 
     @Query("select tags from $POST_FTS_TABLE_NAME where tags match :tag")
@@ -130,6 +129,6 @@ interface PostsDao {
             .orEmpty()
 
         @JvmStatic
-        fun preFormatTag(tag: String) = "\"${tag.remove("\"")}*\""
+        fun preFormatTag(tag: String) = "\"${tag.replace(oldValue = "\"", newValue = "")}*\""
     }
 }

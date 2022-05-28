@@ -4,9 +4,9 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
+import androidx.core.content.getSystemService
 import com.fibelatti.core.android.AppResourceProvider
-import com.fibelatti.core.extension.getSystemService
-import com.fibelatti.core.provider.ResourceProvider
+import com.fibelatti.core.android.ResourceProvider
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.persistence.getUserPreferences
@@ -17,6 +17,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import java.text.Collator
 import java.util.Locale
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -42,14 +43,8 @@ object AndroidModule {
         application: Application,
     ): ConnectivityManager? = application.getSystemService()
 
-    /**
-     * TODO: Get rid of this dependency.
-     *
-     * The app currently supports a single locale, but otherwise there would be problems with
-     * configuration changes. Injecting the Activity context would solve this but it could lead
-     * to memory leaks since this is injected in ViewModels which could outlive the given [context].
-     */
     @Provides
+    @Singleton
     fun resourceProvider(
         @ApplicationContext context: Context,
     ): ResourceProvider = AppResourceProvider(context)
