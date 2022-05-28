@@ -29,25 +29,21 @@ object AppInfo {
 
     val versionName: String = "$versionMajor.$versionMinor.$versionPatch"
         .also { println("versionName: $it") }
-
-    const val minSdkVersion = 21
-    const val targetSdkVersion = 31
-    const val compileSdkVersion = 31
 }
 
 android {
-    buildFeatures {
-        viewBinding = true
-    }
+    val compileSdkVersion: Int by project
+    val targetSdkVersion: Int by project
+    val minSdkVersion: Int by project
 
-    compileSdk = AppInfo.compileSdkVersion
+    compileSdk = compileSdkVersion
 
     defaultConfig {
         applicationId = AppInfo.applicationId
         versionCode = AppInfo.versionCode
         versionName = AppInfo.versionName
-        minSdk = AppInfo.minSdkVersion
-        targetSdk = AppInfo.targetSdkVersion
+        targetSdk = targetSdkVersion
+        minSdk = minSdkVersion
 
         resourceConfigurations.add("en")
 
@@ -69,6 +65,10 @@ android {
             keyPassword = "android"
             storePassword = "android"
         }
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 
     buildTypes {
