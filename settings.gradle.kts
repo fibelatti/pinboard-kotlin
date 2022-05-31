@@ -32,7 +32,7 @@ dependencyResolutionManagement {
             library("core-ktx", "androidx.core:core-ktx:1.7.0")
             library("activity-ktx", "androidx.activity:activity-ktx:1.4.0")
             library("fragment-ktx", "androidx.fragment:fragment-ktx:1.4.1")
-            library("material", "com.google.android.material:material:1.6.0")
+            library("material", "com.google.android.material:material:1.6.1")
             library("constraint-layout", "androidx.constraintlayout:constraintlayout:2.1.4")
             library("swipe-refresh-layout", "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
             library("fibelatti-core", "com.fibelatti.core:core:$fibelattiCoreVersion")
