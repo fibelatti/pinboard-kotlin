@@ -11,8 +11,8 @@ import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import com.fibelatti.core.extension.clearText
 import com.fibelatti.core.extension.hideKeyboard
+import com.fibelatti.core.extension.onActionOrKeyboardSubmit
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.extension.onActionOrKeyboardSubmit
 import com.fibelatti.pinboard.databinding.LayoutTagListBinding
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting

@@ -8,8 +8,8 @@ import android.widget.FrameLayout
 import androidx.core.widget.doAfterTextChanged
 import com.fibelatti.core.extension.clearText
 import com.fibelatti.core.extension.hideKeyboard
+import com.fibelatti.core.extension.onActionOrKeyboardSubmit
 import com.fibelatti.core.extension.textAsString
-import com.fibelatti.pinboard.core.extension.onActionOrKeyboardSubmit
 import com.fibelatti.pinboard.databinding.LayoutEditTagsBinding
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 

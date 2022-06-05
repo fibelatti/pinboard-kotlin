@@ -4,6 +4,7 @@ import android.animation.LayoutTransition
 import android.text.method.LinkMovementMethod
 import android.text.method.TransformationMethod
 import android.text.util.Linkify
+import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -21,6 +22,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fibelatti.core.android.recyclerview.ItemOffsetDecoration
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+
+fun View.getContentView(): ViewGroup {
+    var parent = parent as View
+    while (parent.id != android.R.id.content) {
+        parent = parent.parent as View
+    }
+
+    return parent as ViewGroup
+}
 
 /**
  * Set `this` height to 0.
@@ -101,10 +111,38 @@ fun TextView.setupLinks(transformationMethod: TransformationMethod? = null) {
 }
 
 /**
+ * @return `this` text as string, or an empty string if text was null
+ */
+fun EditText.textAsString(): String = this.text?.toString().orEmpty()
+
+/**
  * Sets `this` text to an empty string.
  */
 fun EditText.clearText() {
     setText("")
+}
+
+/**
+ * Shorthand function for running the given [block] when the [EditText] receives a [handledAction] or a keyboard
+ * submit.
+ */
+inline fun EditText.onActionOrKeyboardSubmit(
+    vararg handledAction: Int,
+    crossinline block: EditText.() -> Unit,
+) {
+    val handledActions = handledAction.toList()
+
+    setOnEditorActionListener { _, actionId, event ->
+        val shouldHandle = actionId in handledActions ||
+            event != null && event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER
+
+        return@setOnEditorActionListener if (shouldHandle) {
+            block()
+            true
+        } else {
+            false
+        }
+    }
 }
 
 /**
@@ -125,11 +163,6 @@ fun TextInputLayout.showError(errorMessage: String) {
 fun TextInputLayout.clearError() {
     error = null
 }
-
-/**
- * @return `this` text as string, or an empty string if text was null
- */
-fun EditText.textAsString(): String = this.text?.toString().orEmpty()
 
 /**
  * Calls [RecyclerView.addItemDecoration] with [ItemOffsetDecoration] as a parameter.

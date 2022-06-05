@@ -19,12 +19,12 @@ import com.fibelatti.core.extension.applyAs
 import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.navigateBack
+import com.fibelatti.core.extension.onActionOrKeyboardSubmit
 import com.fibelatti.core.extension.textAsString
+import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.blink
-import com.fibelatti.pinboard.core.extension.onActionOrKeyboardSubmit
-import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentSearchPostBinding
 import com.fibelatti.pinboard.features.appstate.AddSearchTag
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
