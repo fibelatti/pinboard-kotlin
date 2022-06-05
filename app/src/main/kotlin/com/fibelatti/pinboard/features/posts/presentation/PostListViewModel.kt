@@ -1,9 +1,8 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import androidx.annotation.VisibleForTesting
-import com.fibelatti.core.extension.exhaustive
-import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onFailure
+import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
@@ -25,10 +24,9 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.GetPostParams
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class PostListViewModel @Inject constructor(
@@ -49,10 +47,10 @@ class PostListViewModel @Inject constructor(
         when (content.category) {
             is All -> {
                 getAll(
-                    content.sortType,
-                    content.searchParameters.term,
-                    content.searchParameters.tags,
-                    offset,
+                    sorting = content.sortType,
+                    searchTerm = content.searchParameters.term,
+                    tags = content.searchParameters.tags,
+                    offset = offset,
                     forceRefresh = content.shouldLoad is ShouldForceLoad,
                 )
             }
@@ -71,7 +69,7 @@ class PostListViewModel @Inject constructor(
             is Untagged -> {
                 getUntagged(content.sortType, content.searchParameters.term, offset)
             }
-        }.exhaustive
+        }
     }
 
     @VisibleForTesting
@@ -84,9 +82,9 @@ class PostListViewModel @Inject constructor(
     ) {
         launchGetAll(
             GetPostParams(
-                sorting,
-                searchTerm,
-                GetPostParams.Tags.Tagged(tags),
+                sorting = sorting,
+                searchTerm = searchTerm,
+                tags = GetPostParams.Tags.Tagged(tags),
                 offset = offset,
                 forceRefresh = forceRefresh,
             )
@@ -98,8 +96,7 @@ class PostListViewModel @Inject constructor(
         launch {
             val params = GetPostParams(sorting, searchTerm, GetPostParams.Tags.Tagged(tags))
             getRecentPosts(params).collect { result ->
-                result.mapCatching { appStateRepository.runAction(SetPosts(it)) }
-                    .onFailure(::handleError)
+                result.onSuccess { appStateRepository.runAction(SetPosts(it)) }.onFailure(::handleError)
             }
         }
     }
@@ -108,10 +105,10 @@ class PostListViewModel @Inject constructor(
     fun getPublic(sorting: SortType, searchTerm: String, tags: List<Tag>, offset: Int) {
         launchGetAll(
             GetPostParams(
-                sorting,
-                searchTerm,
-                GetPostParams.Tags.Tagged(tags),
-                PostVisibility.Public,
+                sorting = sorting,
+                searchTerm = searchTerm,
+                tags = GetPostParams.Tags.Tagged(tags),
+                visibility = PostVisibility.Public,
                 offset = offset
             )
         )
@@ -121,10 +118,10 @@ class PostListViewModel @Inject constructor(
     fun getPrivate(sorting: SortType, searchTerm: String, tags: List<Tag>, offset: Int) {
         launchGetAll(
             GetPostParams(
-                sorting,
-                searchTerm,
-                GetPostParams.Tags.Tagged(tags),
-                PostVisibility.Private,
+                sorting = sorting,
+                searchTerm = searchTerm,
+                tags = GetPostParams.Tags.Tagged(tags),
+                visibility = PostVisibility.Private,
                 offset = offset,
             )
         )
@@ -134,9 +131,9 @@ class PostListViewModel @Inject constructor(
     fun getUnread(sorting: SortType, searchTerm: String, tags: List<Tag>, offset: Int) {
         launchGetAll(
             GetPostParams(
-                sorting,
-                searchTerm,
-                GetPostParams.Tags.Tagged(tags),
+                sorting = sorting,
+                searchTerm = searchTerm,
+                tags = GetPostParams.Tags.Tagged(tags),
                 readLater = true,
                 offset = offset,
             )
@@ -147,9 +144,9 @@ class PostListViewModel @Inject constructor(
     fun getUntagged(sorting: SortType, searchTerm: String, offset: Int) {
         launchGetAll(
             GetPostParams(
-                sorting,
-                searchTerm,
-                GetPostParams.Tags.Untagged,
+                sorting = sorting,
+                searchTerm = searchTerm,
+                tags = GetPostParams.Tags.Untagged,
                 offset = offset,
             )
         )
@@ -159,7 +156,7 @@ class PostListViewModel @Inject constructor(
     fun launchGetAll(params: GetPostParams) {
         launch {
             getAllPosts(params).collect { result ->
-                result.mapCatching {
+                result.onSuccess {
                     val action = if (params.offset == 0) SetPosts(it) else SetNextPostPage(it)
                     appStateRepository.runAction(action)
                 }.onFailure(::handleError)

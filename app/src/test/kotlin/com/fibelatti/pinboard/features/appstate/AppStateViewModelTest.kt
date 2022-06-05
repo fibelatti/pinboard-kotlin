@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.appstate
 
-import com.fibelatti.core.test.extension.mock
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.allSealedSubclasses
 import com.fibelatti.pinboard.core.network.UnauthorizedInterceptor
@@ -37,7 +36,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         val mockUnauthorizedInterceptor = mockk<UnauthorizedInterceptor> {
             every { unauthorized } returns flowOf(Unit)
         }
-        every { mockAppStateRepository.getContent() } returns flowOf(mock())
+        every { mockAppStateRepository.getContent() } returns flowOf(mockk())
 
         AppStateViewModel(mockAppStateRepository, mockUnauthorizedInterceptor)
 

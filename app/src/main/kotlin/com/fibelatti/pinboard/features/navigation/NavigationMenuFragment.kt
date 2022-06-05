@@ -9,15 +9,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.view.WindowCompat
+import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.shareText
+import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.di.MainVariant
-import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentMenuBinding
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -43,6 +43,7 @@ class NavigationMenuFragment @Inject constructor(
 ) : BottomSheetDialogFragment() {
 
     companion object {
+
         @JvmStatic
         val TAG: String = "NavigationMenuFragment"
     }
@@ -85,7 +86,7 @@ class NavigationMenuFragment @Inject constructor(
             val pInfo = view.context.packageManager.getPackageInfo(view.context.packageName, 0)
             binding.menuItemVersion.text = getString(R.string.about_version, pInfo.versionName)
         } catch (ignored: PackageManager.NameNotFoundException) {
-            binding.menuItemVersion.gone()
+            binding.menuItemVersion.isGone = true
         }
 
         binding.menuItemPublic.isVisible = mainVariant

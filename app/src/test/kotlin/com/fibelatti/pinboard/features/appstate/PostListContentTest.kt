@@ -23,7 +23,7 @@ internal class PostListContentTest {
         posts = PostList(
             totalCount = 42,
             list = listOf(createPost()),
-            diffUtil = mockk(),
+            diffResult = mockk(),
             alreadyDisplayed = true
         ),
         showDescription = false,

@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.extension.get
 import com.fibelatti.core.extension.getSharedPreferences
-import com.fibelatti.core.extension.ifNotNullOrEmpty
 import com.fibelatti.core.extension.put
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -136,6 +135,6 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
 
     var defaultTags: List<String>
         get() = sharedPreferences.get(KEY_DEFAULT_TAGS, "")
-            .ifNotNullOrEmpty { it.split(",") }.orEmpty()
+            .takeIf { it.isNotBlank() }?.split(",").orEmpty()
         set(value) = sharedPreferences.put(KEY_DEFAULT_TAGS, value.joinToString(separator = ","))
 }

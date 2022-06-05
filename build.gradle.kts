@@ -3,6 +3,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 apply(from = "detekt.gradle")
 
 buildscript {
+    extra["compileSdkVersion"] = 31
+    extra["targetSdkVersion"] = 31
+    extra["minSdkVersion"] = 21
+
     val jacocoEnabled: String? by project
     extra["jacocoEnabled"] = jacocoEnabled?.toBoolean() ?: false
 
@@ -22,12 +26,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        jcenter {
-            content {
-                // Remove jcenter once this is migrated
-                includeGroup("com.fibelatti.core")
-            }
-        }
     }
 }
 

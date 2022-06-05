@@ -5,24 +5,20 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.extension.animateChangingTransitions
-import com.fibelatti.core.extension.exhaustive
-import com.fibelatti.core.extension.gone
-import com.fibelatti.core.extension.goneIf
 import com.fibelatti.core.extension.shareText
-import com.fibelatti.core.extension.visible
-import com.fibelatti.core.extension.visibleIf
+import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.core.extension.withItemOffsetDecoration
-import com.fibelatti.core.extension.withLinearLayoutManager
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.showBanner
-import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentPostListBinding
 import com.fibelatti.pinboard.features.InAppReviewManager
 import com.fibelatti.pinboard.features.appstate.AddPost
@@ -119,11 +115,10 @@ class PostListFragment @Inject constructor(
                 setPageSize(AppConfig.DEFAULT_PAGE_SIZE)
                 setMinDistanceToLastItem(AppConfig.DEFAULT_PAGE_SIZE / 2)
                 onShouldRequestNextPage = {
-                    binding.progressBar.visible()
+                    binding.progressBar.isVisible = true
                     appStateViewModel.runAction(GetNextPostPage)
                 }
             }
-            .withLinearLayoutManager()
             .withItemOffsetDecoration(R.dimen.padding_small)
             .adapter = postsAdapter
 
@@ -161,7 +156,7 @@ class PostListFragment @Inject constructor(
             appStateViewModel.postListContent.collect(::updateContent)
         }
         lifecycleScope.launch {
-            postDetailViewModel.loading.collect { binding.progressBar.visibleIf(it, otherwiseVisibility = View.GONE) }
+            postDetailViewModel.loading.collect { binding.progressBar.isVisible = it }
         }
         lifecycleScope.launch {
             postDetailViewModel.deleted.collect { binding.root.showBanner(getString(R.string.posts_deleted_feedback)) }
@@ -181,7 +176,7 @@ class PostListFragment @Inject constructor(
 
     override fun handleError(error: Throwable) {
         super.handleError(error)
-        binding.progressBar.gone()
+        binding.progressBar.isGone = true
     }
 
     private fun updateContent(content: PostListContent) {
@@ -194,7 +189,7 @@ class PostListFragment @Inject constructor(
                     menu.removeItem(R.id.menuItemSync)
                 }
                 setOnMenuItemClickListener(::handleMenuClick)
-                visible()
+                isVisible = true
                 show()
             }
             fab.run {
@@ -211,21 +206,15 @@ class PostListFragment @Inject constructor(
                     hideSubTitle()
                 }
 
-                binding.progressBar.visible()
+                binding.progressBar.isVisible = true
                 postListViewModel.loadContent(content)
             }
             is ShouldLoadNextPage -> postListViewModel.loadContent(content)
             Syncing, Loaded -> showPosts(content)
-        }.exhaustive
+        }
 
-        binding.layoutSearchActive.root.visibleIf(
-            content.searchParameters.isActive(),
-            otherwiseVisibility = View.GONE
-        )
-        binding.layoutOfflineAlert.root.goneIf(
-            content.isConnected,
-            otherwiseVisibility = View.VISIBLE
-        )
+        binding.layoutSearchActive.root.isVisible = content.searchParameters.isActive()
+        binding.layoutOfflineAlert.root.isGone = content.isConnected
     }
 
     private fun getCategoryTitle(category: ViewCategory): String = when (category) {
@@ -238,7 +227,7 @@ class PostListFragment @Inject constructor(
     }
 
     private fun showPosts(content: PostListContent) {
-        binding.progressBar.goneIf(content.shouldLoad == Loaded)
+        binding.progressBar.isGone = content.shouldLoad == Loaded
         binding.recyclerViewPosts.onRequestNextPageCompleted()
 
         titleLayoutHost.update {
@@ -258,10 +247,10 @@ class PostListFragment @Inject constructor(
             else -> {
                 postsAdapter.showDescription = content.showDescription
                 if (!content.posts.alreadyDisplayed || postsAdapter.itemCount == 0) {
-                    binding.recyclerViewPosts.visible()
-                    binding.layoutEmptyList.gone()
+                    binding.recyclerViewPosts.isVisible = true
+                    binding.layoutEmptyList.isGone = true
 
-                    postsAdapter.addAll(content.posts.list, content.posts.diffUtil.result)
+                    postsAdapter.submitList(content.posts.list, content.posts.diffResult)
                     appStateViewModel.runAction(PostsDisplayed)
                 }
             }
@@ -283,9 +272,9 @@ class PostListFragment @Inject constructor(
 
     private fun showEmptyLayout() {
         titleLayoutHost.update { hideSubTitle() }
-        binding.recyclerViewPosts.gone()
+        binding.recyclerViewPosts.isGone = true
         binding.layoutEmptyList.apply {
-            visible()
+            isVisible = true
             setTitle(R.string.posts_empty_title)
             setDescription(R.string.posts_empty_description)
         }

@@ -1,21 +1,19 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
-import android.view.View
-import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
-import com.fibelatti.core.extension.gone
-import com.fibelatti.core.extension.inflate
-import com.fibelatti.core.extension.visible
-import com.fibelatti.pinboard.R
+import android.view.LayoutInflater
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
+import com.fibelatti.core.android.recyclerview.BaseListAdapter
+import com.fibelatti.core.android.recyclerview.ViewHolder
 import com.fibelatti.pinboard.databinding.ListItemPopularPostBinding
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import javax.inject.Inject
 
-class PopularPostsAdapter @Inject constructor() :
-    ListAdapter<Post, PopularPostsAdapter.ViewHolder>(DIFF_UTIL) {
+class PopularPostsAdapter @Inject constructor() : BaseListAdapter<Post, ListItemPopularPostBinding>(
+    binding = { parent -> ListItemPopularPostBinding.inflate(LayoutInflater.from(parent.context), parent, false) },
+    itemsTheSame = { oldItem, newItem -> oldItem.url == newItem.url },
+) {
 
     interface QuickActionsCallback {
 
@@ -27,85 +25,56 @@ class PopularPostsAdapter @Inject constructor() :
     var onItemClicked: ((Post) -> Unit)? = null
     var quickActionsCallback: QuickActionsCallback? = null
 
-    override fun getItemCount(): Int = currentList.size
+    private val quickActionsVisible: MutableMap<Int, Boolean> = mutableMapOf()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-        ViewHolder(parent)
+    override fun onBindViewHolder(holder: ViewHolder<ListItemPopularPostBinding>, position: Int) {
+        val binding = holder.binding
+        val item = getItem(position)
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(currentList[position])
-    }
+        binding.textViewLinkTitle.text = item.title
 
-    inner class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-        parent.inflate(R.layout.list_item_popular_post)
-    ) {
+        if (item.tags.isNullOrEmpty()) {
+            binding.chipGroupTags.isGone = true
+        } else {
+            binding.layoutTags(item.tags)
+        }
 
-        private var quickActionsVisible: Boolean = false
+        binding.hideQuickActions(position)
 
-        fun bind(item: Post) = itemView.bindView(item)
+        binding.root.setOnClickListener { onItemClicked?.invoke(item) }
+        binding.root.setOnLongClickListener {
+            if (quickActionsCallback == null) {
+                return@setOnLongClickListener false
+            }
 
-        private fun View.bindView(item: Post) {
-
-            val binding = ListItemPopularPostBinding.bind(this)
-
-            binding.textViewLinkTitle.text = item.title
-
-            if (item.tags.isNullOrEmpty()) {
-                binding.chipGroupTags.gone()
+            if (quickActionsVisible[position] == true) {
+                binding.hideQuickActions(position)
             } else {
-                binding.layoutTags(item.tags)
+                binding.showQuickActions(item, position)
             }
 
-            binding.hideQuickActions()
-
-            setOnClickListener { onItemClicked?.invoke(item) }
-            setOnLongClickListener {
-                if (quickActionsCallback == null) {
-                    return@setOnLongClickListener false
-                }
-
-                if (!quickActionsVisible) {
-                    binding.showQuickActions(item)
-                } else {
-                    binding.hideQuickActions()
-                }
-
-                true
-            }
-        }
-
-        private fun ListItemPopularPostBinding.layoutTags(tags: List<Tag>) {
-            chipGroupTags.visible()
-            chipGroupTags.removeAllViews()
-            for (tag in tags) {
-                chipGroupTags.addValue(tag.name, showRemoveIcon = false)
-            }
-        }
-
-        private fun ListItemPopularPostBinding.showQuickActions(item: Post) {
-            quickActionsVisible = true
-            layoutQuickActions.root.visible()
-
-            layoutQuickActions.buttonQuickActionShare.setOnClickListener { quickActionsCallback?.onShareClicked(item) }
-            layoutQuickActions.buttonQuickActionSave.setOnClickListener { quickActionsCallback?.onSaveClicked(item) }
-        }
-
-        private fun ListItemPopularPostBinding.hideQuickActions() {
-            quickActionsVisible = false
-            layoutQuickActions.root.gone()
+            true
         }
     }
 
-    companion object {
-
-        @JvmStatic
-        private val DIFF_UTIL = object : DiffUtil.ItemCallback<Post>() {
-
-            override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean =
-                oldItem.url == newItem.url
-
-            override fun areContentsTheSame(oldItem: Post, newItem: Post): Boolean =
-                oldItem == newItem
+    private fun ListItemPopularPostBinding.layoutTags(tags: List<Tag>) {
+        chipGroupTags.isVisible = true
+        chipGroupTags.removeAllViews()
+        for (tag in tags) {
+            chipGroupTags.addValue(tag.name, showRemoveIcon = false)
         }
+    }
+
+    private fun ListItemPopularPostBinding.showQuickActions(item: Post, position: Int) {
+        quickActionsVisible[position] = true
+        layoutQuickActions.root.isVisible = true
+
+        layoutQuickActions.buttonQuickActionShare.setOnClickListener { quickActionsCallback?.onShareClicked(item) }
+        layoutQuickActions.buttonQuickActionSave.setOnClickListener { quickActionsCallback?.onSaveClicked(item) }
+    }
+
+    private fun ListItemPopularPostBinding.hideQuickActions(position: Int) {
+        quickActionsVisible[position] = false
+        layoutQuickActions.root.isGone = true
     }
 }

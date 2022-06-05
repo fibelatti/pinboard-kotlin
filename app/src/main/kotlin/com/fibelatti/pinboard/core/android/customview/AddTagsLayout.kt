@@ -5,11 +5,11 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.inputmethod.EditorInfo
 import android.widget.FrameLayout
-import com.fibelatti.core.extension.afterTextChanged
+import androidx.core.widget.doAfterTextChanged
 import com.fibelatti.core.extension.clearText
 import com.fibelatti.core.extension.hideKeyboard
+import com.fibelatti.core.extension.onActionOrKeyboardSubmit
 import com.fibelatti.core.extension.textAsString
-import com.fibelatti.pinboard.core.extension.onActionOrKeyboardSubmit
 import com.fibelatti.pinboard.databinding.LayoutEditTagsBinding
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 
@@ -28,7 +28,8 @@ class AddTagsLayout @JvmOverloads constructor(
         onTagRemoved: (currentInput: String, currentTags: List<Tag>) -> Unit = { _, _ -> },
     ) {
         with(binding) {
-            editTextTags.afterTextChanged { text ->
+            editTextTags.doAfterTextChanged {
+                val text = it.toString()
                 val currentlyFocused = editTextTags.isFocused
 
                 when {

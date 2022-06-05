@@ -4,5 +4,8 @@ import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.retryIO
 
-suspend fun <T> resultFrom(block: suspend () -> T): Result<T> =
-    catching { retryIO { block() } }
+suspend fun <T> resultFrom(block: suspend () -> T): Result<T> = catching {
+    retryIO {
+        block()
+    }
+}

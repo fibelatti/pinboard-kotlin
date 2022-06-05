@@ -1,12 +1,12 @@
 package com.fibelatti.pinboard.features.appstate
 
+import androidx.recyclerview.widget.DiffUtil
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
-import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtil
-import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtilFactory
+import com.fibelatti.pinboard.features.posts.presentation.PostListDiffResultFactory
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
@@ -21,14 +21,14 @@ internal class PostActionHandlerTest {
 
     private val mockUserRepository = mockk<UserRepository>()
     private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider>()
-    private val mockPostListDiffUtilFactory = mockk<PostListDiffUtilFactory>()
+    private val mockPostListDiffResultFactory = mockk<PostListDiffResultFactory>()
 
     private val mockPost = mockk<Post>()
 
     private val postActionHandler = PostActionHandler(
         mockUserRepository,
         mockConnectivityInfoProvider,
-        mockPostListDiffUtilFactory
+        mockPostListDiffResultFactory,
     )
 
     private val initialContent = PostListContent(
@@ -174,13 +174,13 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is PostListContent and actions posts is not null and content is up to date THEN updated content is returned`() {
             // GIVEN
-            val mockDiffUtil = mockk<PostListDiffUtil>()
+            val mockDiffResult = mockk<DiffUtil.DiffResult>()
             every {
-                mockPostListDiffUtilFactory.create(
+                mockPostListDiffResultFactory.create(
                     emptyList(),
                     listOf(createPost())
                 )
-            } returns mockDiffUtil
+            } returns mockDiffResult
 
             val currentContent = PostListContent(
                 category = All,
@@ -210,7 +210,7 @@ internal class PostActionHandlerTest {
             assertThat(result).isEqualTo(
                 PostListContent(
                     category = All,
-                    posts = PostList(1, listOf(createPost()), mockDiffUtil),
+                    posts = PostList(1, listOf(createPost()), mockDiffResult),
                     showDescription = false,
                     sortType = NewestFirst,
                     searchParameters = SearchParameters(),
@@ -223,13 +223,13 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is PostListContent and actions posts is not null and content is not up to date THEN updated content is returned with syncing`() {
             // GIVEN
-            val mockDiffUtil = mockk<PostListDiffUtil>()
+            val mockDiffResult = mockk<DiffUtil.DiffResult>()
             every {
-                mockPostListDiffUtilFactory.create(
+                mockPostListDiffResultFactory.create(
                     emptyList(),
                     listOf(createPost())
                 )
-            } returns mockDiffUtil
+            } returns mockDiffResult
 
             val currentContent = PostListContent(
                 category = All,
@@ -259,7 +259,7 @@ internal class PostActionHandlerTest {
             assertThat(result).isEqualTo(
                 PostListContent(
                     category = All,
-                    posts = PostList(1, listOf(createPost()), mockDiffUtil),
+                    posts = PostList(1, listOf(createPost()), mockDiffResult),
                     showDescription = false,
                     sortType = NewestFirst,
                     searchParameters = SearchParameters(),
@@ -372,7 +372,7 @@ internal class PostActionHandlerTest {
             // GIVEN
             val mockCurrentList = listOf(mockk<Post>())
             val mockNewList = listOf(mockk<Post>())
-            val mockDiffUtil = mockk<PostListDiffUtil>()
+            val mockDiffResult = mockk<DiffUtil.DiffResult>()
 
             val currentContent = PostListContent(
                 category = All,
@@ -385,11 +385,11 @@ internal class PostActionHandlerTest {
             )
 
             every {
-                mockPostListDiffUtilFactory.create(
+                mockPostListDiffResultFactory.create(
                     mockCurrentList,
                     mockCurrentList.plus(mockNewList)
                 )
-            } returns mockDiffUtil
+            } returns mockDiffResult
 
             // WHEN
             val result = runBlocking {
@@ -409,7 +409,7 @@ internal class PostActionHandlerTest {
             assertThat(result).isEqualTo(
                 PostListContent(
                     category = All,
-                    posts = PostList(2, mockCurrentList.plus(mockNewList), mockDiffUtil),
+                    posts = PostList(2, mockCurrentList.plus(mockNewList), mockDiffResult),
                     showDescription = false,
                     sortType = NewestFirst,
                     searchParameters = SearchParameters(),

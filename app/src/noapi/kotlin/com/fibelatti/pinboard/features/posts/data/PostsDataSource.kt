@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.features.posts.data
 
 import androidx.annotation.VisibleForTesting
-import com.fibelatti.core.extension.orFalse
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.catching
@@ -50,8 +49,8 @@ class PostsDataSource @Inject constructor(
             extended = description.orEmpty(),
             hash = existingPost?.hash ?: UUID.randomUUID().toString(),
             time = existingPost?.time ?: dateFormatter.nowAsTzFormat(),
-            shared = if (private.orFalse()) AppConfig.PinboardApiLiterals.NO else AppConfig.PinboardApiLiterals.YES,
-            toread = if (readLater.orFalse()) AppConfig.PinboardApiLiterals.YES else AppConfig.PinboardApiLiterals.NO,
+            shared = if (private == true) AppConfig.PinboardApiLiterals.NO else AppConfig.PinboardApiLiterals.YES,
+            toread = if (readLater == true) AppConfig.PinboardApiLiterals.YES else AppConfig.PinboardApiLiterals.NO,
             tags = tags?.joinToString(AppConfig.PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name }
                 .orEmpty(),
         )

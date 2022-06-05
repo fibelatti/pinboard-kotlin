@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.core.di.modules
 
+import com.fibelatti.core.functional.SingleRunner
 import com.fibelatti.pinboard.core.di.IoScope
 import com.fibelatti.pinboard.core.persistence.database.AppDatabase
 import com.fibelatti.pinboard.features.appstate.AppStateDataSource
@@ -36,6 +37,9 @@ abstract class CoreModule {
         @Provides
         @IoScope
         fun ioScope(): CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+        @Provides
+        fun singleRunner(): SingleRunner = SingleRunner()
 
         @Provides
         fun Retrofit.postsApi(): PostsApi = create()

@@ -1,11 +1,8 @@
 package com.fibelatti.pinboard.core.extension
 
-import android.view.LayoutInflater
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.viewbinding.ViewBinding
-import com.fibelatti.core.extension.inTransaction
+import androidx.fragment.app.commit
 import com.fibelatti.pinboard.R
 
 fun FragmentActivity.popTo(tag: String) {
@@ -19,7 +16,7 @@ fun FragmentActivity.popTo(tag: String) {
 }
 
 fun FragmentActivity.slideFromTheRight(fragment: Fragment, tag: String, addToBackStack: Boolean = true) {
-    inTransaction {
+    supportFragmentManager.commit {
         setCustomAnimations(
             R.anim.slide_right_in,
             R.anim.slide_left_out,
@@ -35,7 +32,7 @@ fun FragmentActivity.slideFromTheRight(fragment: Fragment, tag: String, addToBac
 }
 
 fun FragmentActivity.slideUp(fragment: Fragment, tag: String, addToBackStack: Boolean = true) {
-    inTransaction {
+    supportFragmentManager.commit {
         setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
         add(R.id.fragmentHost, fragment, tag)
 
@@ -44,7 +41,3 @@ fun FragmentActivity.slideUp(fragment: Fragment, tag: String, addToBackStack: Bo
         }
     }
 }
-
-inline fun <T : ViewBinding> AppCompatActivity.viewBinding(
-    crossinline bindingInflater: (LayoutInflater) -> T
-) = lazy(LazyThreadSafetyMode.NONE) { bindingInflater.invoke(layoutInflater) }

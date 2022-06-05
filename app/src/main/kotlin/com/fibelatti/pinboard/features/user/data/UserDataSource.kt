@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.user.data
 
-import com.fibelatti.core.extension.orFalse
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.di.MainVariant
@@ -168,8 +167,8 @@ class UserDataSource @Inject constructor(
         preferredDetailsView = preferredDetailsView,
         autoFillDescription = autoFillDescription,
         showDescriptionInLists = showDescriptionInLists,
-        defaultPrivate = defaultPrivate.orFalse(),
-        defaultReadLater = defaultReadLater.orFalse(),
+        defaultPrivate = defaultPrivate ?: false,
+        defaultReadLater = defaultReadLater ?: false,
         editAfterSharing = editAfterSharing,
         defaultTags = defaultTags,
     )

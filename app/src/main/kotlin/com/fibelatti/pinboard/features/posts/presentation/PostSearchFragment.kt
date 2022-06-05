@@ -18,14 +18,13 @@ import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.applyAs
 import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.hideKeyboard
-import com.fibelatti.core.extension.inflate
 import com.fibelatti.core.extension.navigateBack
+import com.fibelatti.core.extension.onActionOrKeyboardSubmit
 import com.fibelatti.core.extension.textAsString
+import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.blink
-import com.fibelatti.pinboard.core.extension.onActionOrKeyboardSubmit
-import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentSearchPostBinding
 import com.fibelatti.pinboard.features.appstate.AddSearchTag
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -182,8 +181,8 @@ class PostSearchFragment @Inject constructor(
         return true
     }
 
-    private fun createTagChip(value: Tag): View = binding.chipGroupSelectedTags
-        .inflate(R.layout.list_item_chip, false)
+    private fun createTagChip(value: Tag): View = LayoutInflater.from(binding.chipGroupSelectedTags.context)
+        .inflate(R.layout.list_item_chip, binding.chipGroupSelectedTags, false)
         .applyAs<View, TagChip> {
             setValue(value)
             setOnCloseIconClickListener { appStateViewModel.runAction(RemoveSearchTag(value)) }

@@ -15,21 +15,19 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.MenuRes
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.navigateBack
-import com.fibelatti.core.extension.setOnClickListener
 import com.fibelatti.core.extension.shareText
-import com.fibelatti.core.extension.visible
-import com.fibelatti.core.extension.visibleIf
+import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.showBanner
-import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentPostDetailBinding
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPost
@@ -99,7 +97,7 @@ class PostDetailFragment @Inject constructor(
         }
         lifecycleScope.launch {
             postDetailViewModel.loading.collect {
-                binding.layoutProgressBar.root.visibleIf(it, otherwiseVisibility = View.GONE)
+                binding.layoutProgressBar.root.isVisible = it
             }
         }
         lifecycleScope.launch {
@@ -129,7 +127,7 @@ class PostDetailFragment @Inject constructor(
         }
         lifecycleScope.launch {
             popularPostsViewModel.loading.collect {
-                binding.layoutProgressBar.root.visibleIf(it, otherwiseVisibility = View.GONE)
+                binding.layoutProgressBar.root.isVisible = it
             }
         }
         lifecycleScope.launch {
@@ -166,7 +164,7 @@ class PostDetailFragment @Inject constructor(
                 navigationIcon = null
                 replaceMenu(menu)
                 setOnMenuItemClickListener { item -> handleMenuClick(item, post) }
-                visible()
+                isVisible = true
                 show()
             }
             fab.run {
@@ -182,9 +180,9 @@ class PostDetailFragment @Inject constructor(
     private fun showFileView(post: Post) {
         titleLayoutHost.update { hideActionButton() }
 
-        binding.layoutFileView.root.visible()
-        binding.layoutScrollViewWeb.gone()
-        binding.layoutProgressBar.root.gone()
+        binding.layoutFileView.root.isVisible = true
+        binding.layoutScrollViewWeb.isGone = true
+        binding.layoutProgressBar.root.isGone = true
 
         binding.layoutFileView.textViewFileUrlTitle.text = post.title
         binding.layoutFileView.textViewFileUrl.text = post.url
@@ -192,17 +190,18 @@ class PostDetailFragment @Inject constructor(
     }
 
     private fun showWebView(post: Post) {
-        binding.layoutFileView.root.gone()
-        binding.layoutScrollViewWeb.visible()
+        binding.layoutFileView.root.isGone = true
+        binding.layoutScrollViewWeb.isVisible = true
 
         if (!connectivityInfoProvider.isConnected()) {
-            binding.layoutProgressBar.root.gone()
-            binding.layoutUrlError.root.visible()
+            binding.layoutProgressBar.root.isGone = true
+            binding.layoutUrlError.root.isVisible = true
 
             binding.layoutUrlError.textViewErrorUrlTitle.text = post.title
             binding.layoutUrlError.textViewErrorUrl.text = post.url
             binding.layoutUrlError.textViewErrorDescription.setText(R.string.posts_url_offline_error)
-            binding.layoutUrlError.buttonErrorAction.setOnClickListener(R.string.offline_retry) {
+            binding.layoutUrlError.buttonErrorAction.setText(R.string.offline_retry)
+            binding.layoutUrlError.buttonErrorAction.setOnClickListener {
                 showWebView(post)
             }
 
@@ -221,12 +220,12 @@ class PostDetailFragment @Inject constructor(
             postWebViewClient = PostWebViewClient(object : PostWebViewClient.Callback {
 
                 override fun onPageStarted() {
-                    binding.layoutProgressBar.root.visible()
+                    binding.layoutProgressBar.root.isVisible = true
                 }
 
                 override fun onPageFinished() {
-                    binding.layoutProgressBar.root.gone()
-                    binding.layoutUrlError.root.gone()
+                    binding.layoutProgressBar.root.isGone = true
+                    binding.layoutUrlError.root.isGone = true
                 }
 
                 override fun onError() {
@@ -239,7 +238,7 @@ class PostDetailFragment @Inject constructor(
     }
 
     private fun showErrorLayout(post: Post) {
-        binding.layoutUrlError.root.visible()
+        binding.layoutUrlError.root.isVisible = true
 
         binding.layoutUrlError.textViewErrorUrlTitle.text = post.title
         binding.layoutUrlError.textViewErrorUrl.text = post.url

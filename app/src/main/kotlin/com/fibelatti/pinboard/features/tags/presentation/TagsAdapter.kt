@@ -1,30 +1,31 @@
 package com.fibelatti.pinboard.features.tags.presentation
 
-import android.view.View
-import com.fibelatti.core.android.base.BaseAdapter
+import android.view.LayoutInflater
+import com.fibelatti.core.android.recyclerview.BaseAdapter
+import com.fibelatti.core.android.recyclerview.ViewHolder
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.databinding.ListItemTagBinding
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import javax.inject.Inject
 
-class TagsAdapter @Inject constructor() : BaseAdapter<Tag>(hasFilter = true) {
+class TagsAdapter @Inject constructor() : BaseAdapter<Tag, ListItemTagBinding>(
+    binding = { parent -> ListItemTagBinding.inflate(LayoutInflater.from(parent.context), parent, false) },
+    filter = { query, item -> item.name.startsWith(query, ignoreCase = true) },
+) {
 
     var onItemClicked: ((Tag) -> Unit)? = null
 
-    override fun getLayoutRes(): Int = R.layout.list_item_tag
+    override fun onBindViewHolder(holder: ViewHolder<ListItemTagBinding>, position: Int) {
+        with(holder.binding) {
+            val item = items[position]
+            textViewTagName.text = item.name
+            textViewPostCount.text = root.context.resources.getQuantityString(
+                R.plurals.posts_quantity,
+                item.posts,
+                item.posts
+            )
 
-    override fun View.bindView(item: Tag, viewHolder: ViewHolder) {
-        val binding = ListItemTagBinding.bind(this)
-
-        binding.textViewTagName.text = item.name
-        binding.textViewPostCount.text = context.resources.getQuantityString(
-            R.plurals.posts_quantity,
-            item.posts,
-            item.posts
-        )
-
-        setOnClickListener { onItemClicked?.invoke(item) }
+            root.setOnClickListener { onItemClicked?.invoke(item) }
+        }
     }
-
-    override fun filterCriteria(query: String, item: Tag): Boolean = item.name.startsWith(query, ignoreCase = true)
 }

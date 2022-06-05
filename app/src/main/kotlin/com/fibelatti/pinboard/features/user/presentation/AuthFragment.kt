@@ -5,22 +5,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.fibelatti.core.extension.gone
 import com.fibelatti.core.extension.heightWrapContent
+import com.fibelatti.core.extension.onActionOrKeyboardSubmit
 import com.fibelatti.core.extension.setupLinks
 import com.fibelatti.core.extension.showError
 import com.fibelatti.core.extension.textAsString
-import com.fibelatti.core.extension.visible
+import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.LinkTransformationMethod
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.extension.isServerException
-import com.fibelatti.pinboard.core.extension.onActionOrKeyboardSubmit
-import com.fibelatti.pinboard.core.extension.viewBinding
 import com.fibelatti.pinboard.databinding.FragmentAuthBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -63,13 +63,13 @@ class AuthFragment @Inject constructor() : BaseFragment() {
                 authViewModel.login(textAsString())
             }
             buttonAuth.setOnClickListener {
-                progressBar.visible()
-                buttonAuth.gone()
+                progressBar.isVisible = true
+                buttonAuth.isGone = true
                 authViewModel.login(editTextAuthToken.textAsString())
             }
 
             imageViewAuthHelp.setOnClickListener {
-                imageViewAuthHelp.gone()
+                imageViewAuthHelp.isGone = true
                 textViewAuthHelpTitle.heightWrapContent()
                 textViewAuthHelpDescription.heightWrapContent()
                 textViewAuthHelpDescription.setupLinks(LinkTransformationMethod())
@@ -79,8 +79,8 @@ class AuthFragment @Inject constructor() : BaseFragment() {
 
     private fun handleAuthError(message: String) {
         with(binding.layoutAuthForm) {
-            buttonAuth.visible()
-            progressBar.gone()
+            buttonAuth.isVisible = true
+            progressBar.isGone = true
             textInputLayoutAuthToken.showError(message)
         }
     }
@@ -91,8 +91,8 @@ class AuthFragment @Inject constructor() : BaseFragment() {
         }
 
         with(binding.layoutAuthForm) {
-            progressBar.gone()
-            buttonAuth.visible()
+            progressBar.isGone = true
+            buttonAuth.isVisible = true
         }
 
         if (error.isServerException()) {

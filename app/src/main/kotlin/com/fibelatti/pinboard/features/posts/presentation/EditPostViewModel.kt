@@ -1,9 +1,8 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
-import com.fibelatti.core.extension.empty
+import com.fibelatti.core.android.ResourceProvider
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onSuccess
-import com.fibelatti.core.provider.ResourceProvider
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
@@ -87,8 +86,8 @@ class EditPostViewModel @Inject constructor(
         tags: List<Tag>,
         ifValid: (AddPost.Params) -> Unit,
     ) {
-        _invalidUrlError.value = String.empty()
-        _invalidUrlTitleError.value = String.empty()
+        _invalidUrlError.value = ""
+        _invalidUrlTitleError.value = ""
 
         when {
             url.isBlank() -> {

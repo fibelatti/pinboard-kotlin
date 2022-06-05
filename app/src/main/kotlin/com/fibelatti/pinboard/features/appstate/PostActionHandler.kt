@@ -2,14 +2,14 @@ package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
-import com.fibelatti.pinboard.features.posts.presentation.PostListDiffUtilFactory
+import com.fibelatti.pinboard.features.posts.presentation.PostListDiffResultFactory
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
 
 class PostActionHandler @Inject constructor(
     private val userRepository: UserRepository,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
-    private val postListDiffUtilFactory: PostListDiffUtilFactory
+    private val postListDiffResultFactory: PostListDiffResultFactory,
 ) : ActionHandler<PostAction>() {
 
     override suspend fun runAction(action: PostAction, currentContent: Content): Content = when (action) {
@@ -43,11 +43,11 @@ class PostActionHandler @Inject constructor(
 
     private fun setPosts(action: SetPosts, currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) { currentPostList ->
-            val posts = action.postListResult.posts.takeIf { it.isNotEmpty() }?.let {
+            val posts = action.postListResult.posts.takeIf { it.isNotEmpty() }?.let { newList ->
                 PostList(
                     totalCount = action.postListResult.totalCount,
-                    list = it,
-                    diffUtil = postListDiffUtilFactory.create(currentPostList.currentList, it)
+                    list = newList,
+                    diffResult = postListDiffResultFactory.create(currentPostList.currentList, newList)
                 )
             }
             currentPostList.copy(
@@ -71,11 +71,11 @@ class PostActionHandler @Inject constructor(
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) { currentPostList ->
             if (currentPostList.posts != null) {
                 val currentList = currentPostList.currentList
-                val updatedList = currentList.plus(action.postListResult.posts)
+                val updatedList = currentList.union(action.postListResult.posts).toList()
                 val posts = PostList(
                     action.postListResult.totalCount,
                     updatedList,
-                    postListDiffUtilFactory.create(currentList, updatedList)
+                    postListDiffResultFactory.create(currentList, updatedList)
                 )
 
                 currentPostList.copy(posts = posts, shouldLoad = Loaded)

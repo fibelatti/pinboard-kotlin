@@ -4,10 +4,10 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
+import androidx.core.view.children
 import com.fibelatti.core.extension.applyAs
-import com.fibelatti.core.extension.children
-import com.fibelatti.core.extension.inflate
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.google.android.material.chip.ChipGroup
@@ -15,10 +15,11 @@ import com.google.android.material.chip.ChipGroup
 class TagChipGroup @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = com.google.android.material.R.attr.chipGroupStyle
+    defStyleAttr: Int = com.google.android.material.R.attr.chipGroupStyle,
 ) : ChipGroup(context, attrs, defStyleAttr) {
 
     companion object {
+
         private const val SUPER_STATE_KEY = "SUPER_STATE_KEY"
         private const val DYNAMIC_TAGS_KEY = "DYNAMIC_TAGS_KEY"
     }
@@ -27,7 +28,7 @@ class TagChipGroup @JvmOverloads constructor(
     var onTagChipRemoved: (() -> Unit)? = null
     var onTagChipClicked: ((Tag) -> Unit)? = null
 
-    fun getAllTags(): List<Tag> = children.filterIsInstance<TagChip>().mapNotNull(TagChip::getValue)
+    fun getAllTags(): List<Tag> = children.toList().filterIsInstance<TagChip>().mapNotNull(TagChip::getValue)
 
     fun addTag(tag: Tag, index: Int = -1, showRemoveIcon: Boolean = true) {
         addIfNotAlreadyAdded(tag, index, showRemoveIcon)
@@ -51,22 +52,23 @@ class TagChipGroup @JvmOverloads constructor(
     }
 
     private fun createTagChip(value: Tag, showRemoveIcon: Boolean): View {
-        return inflate(R.layout.list_item_chip).applyAs<View, TagChip> {
-            setValue(value)
+        return LayoutInflater.from(context).inflate(R.layout.list_item_chip, this, false)
+            .applyAs<View, TagChip> {
+                setValue(value)
 
-            setOnClickListener {
-                onTagChipClicked?.invoke(value)
-            }
+                setOnClickListener {
+                    onTagChipClicked?.invoke(value)
+                }
 
-            isCloseIconVisible = showRemoveIcon
+                isCloseIconVisible = showRemoveIcon
 
-            if (showRemoveIcon) {
-                setOnCloseIconClickListener {
-                    removeView(this)
-                    onTagChipRemoved?.invoke()
+                if (showRemoveIcon) {
+                    setOnCloseIconClickListener {
+                        removeView(this)
+                        onTagChipRemoved?.invoke()
+                    }
                 }
             }
-        }
     }
 
     override fun onSaveInstanceState(): Parcelable? = Bundle().apply {

@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.features.posts.data
 
 import androidx.annotation.VisibleForTesting
-import com.fibelatti.core.extension.orZero
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.getOrDefault
@@ -108,7 +107,7 @@ class PostsDataSource @Inject constructor(
 
         // The API abuses GET, this aims to avoid getting 414 errors
         val remainingLength = API_MAX_URI_LENGTH - API_BASE_URL_LENGTH - url.length -
-            trimmedTitle.length - publicLiteral?.length.orZero() - readLaterLiteral?.length.orZero() -
+            trimmedTitle.length - (publicLiteral?.length ?: 0) - (readLaterLiteral?.length ?: 0) -
             trimmedTags.length - replaceLiteral.length
 
         return resultFromNetwork {

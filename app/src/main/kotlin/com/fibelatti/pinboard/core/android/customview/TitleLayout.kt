@@ -9,7 +9,7 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.extension.doOnInitializeAccessibilityNodeInfo
+import com.fibelatti.core.extension.doOnInitializeAccessibilityNodeInfo
 import com.fibelatti.pinboard.databinding.LayoutTitleBinding
 
 class TitleLayout @JvmOverloads constructor(
