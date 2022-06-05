@@ -23,7 +23,7 @@ fun FragmentManager.setupForAccessibility() {
 
 fun View.doOnInitializeAccessibilityNodeInfo(block: (info: AccessibilityNodeInfoCompat?) -> Unit) {
     ViewCompat.setAccessibilityDelegate(this, object : AccessibilityDelegateCompat() {
-        override fun onInitializeAccessibilityNodeInfo(host: View?, info: AccessibilityNodeInfoCompat?) {
+        override fun onInitializeAccessibilityNodeInfo(host: View, info: AccessibilityNodeInfoCompat) {
             super.onInitializeAccessibilityNodeInfo(host, info)
             block(info)
         }
