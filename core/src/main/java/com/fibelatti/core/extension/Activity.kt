@@ -15,8 +15,8 @@ import androidx.fragment.app.FragmentFactory
  *
  * @return the new instance
  */
-inline fun <reified T : Fragment> FragmentActivity.createFragment(): Fragment =
-    supportFragmentManager.fragmentFactory.instantiate(T::class.java.classLoader!!, T::class.java.name)
+inline fun <reified T : Fragment> FragmentActivity.createFragment(): T =
+    supportFragmentManager.fragmentFactory.instantiate(T::class.java.classLoader!!, T::class.java.name) as T
 
 /**
  * Creates an intent using [ShareCompat] to share the given [text] to other apps.

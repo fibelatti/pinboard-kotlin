@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.android.BaseIntentBuilder
 import com.fibelatti.core.android.intentExtras
-import com.fibelatti.core.extension.applyAs
 import com.fibelatti.core.extension.createFragment
 import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.doOnInitializeAccessibilityNodeInfo
@@ -49,7 +48,6 @@ import com.fibelatti.pinboard.features.appstate.TagListContent
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
 import com.fibelatti.pinboard.features.navigation.NavigationMenuFragment
 import com.google.android.material.bottomappbar.BottomAppBar
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -132,9 +130,7 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
         }
 
         binding.bottomAppBar.setNavigationOnClickListener {
-            createFragment<NavigationMenuFragment>().applyAs<Fragment, BottomSheetDialogFragment> {
-                show(supportFragmentManager, NavigationMenuFragment.TAG)
-            }
+            createFragment<NavigationMenuFragment>().show(supportFragmentManager, NavigationMenuFragment.TAG)
         }
     }
 
