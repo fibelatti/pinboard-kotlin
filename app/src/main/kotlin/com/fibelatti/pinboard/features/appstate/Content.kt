@@ -7,6 +7,16 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 
 sealed class Content
 
+sealed class ContentWithHistory : Content() {
+
+    abstract val previousContent: Content
+}
+
+interface ConnectionAwareContent {
+
+    val isConnected: Boolean
+}
+
 data class LoginContent(
     val isUnauthorized: Boolean = false,
 ) : ContentWithHistory() {
@@ -21,9 +31,9 @@ data class PostListContent(
     val sortType: SortType,
     val searchParameters: SearchParameters,
     val shouldLoad: ShouldLoad,
-    val isConnected: Boolean = true,
+    override val isConnected: Boolean = true,
     val canForceSync: Boolean = true,
-) : ContentWithHistory() {
+) : ContentWithHistory(), ConnectionAwareContent {
 
     override val previousContent: Content = ExternalContent
 
@@ -34,13 +44,6 @@ data class PostListContent(
     val currentList: List<Post>
         get() = posts?.list ?: emptyList()
 }
-
-private interface ContentHistory {
-
-    val previousContent: Content
-}
-
-sealed class ContentWithHistory : Content(), ContentHistory
 
 data class PostDetailContent(
     val post: Post,
@@ -75,30 +78,30 @@ data class EditPostContent(
 data class TagListContent(
     val tags: List<Tag>,
     val shouldLoad: Boolean,
-    val isConnected: Boolean = true,
+    override val isConnected: Boolean = true,
     override val previousContent: PostListContent,
-) : ContentWithHistory()
+) : ContentWithHistory(), ConnectionAwareContent
 
 data class NoteListContent(
     val notes: List<Note>,
     val shouldLoad: Boolean,
-    val isConnected: Boolean = true,
+    override val isConnected: Boolean = true,
     override val previousContent: PostListContent,
-) : ContentWithHistory()
+) : ContentWithHistory(), ConnectionAwareContent
 
 data class NoteDetailContent(
     val id: String,
     val note: Either<Boolean, Note>,
-    val isConnected: Boolean = true,
+    override val isConnected: Boolean = true,
     override val previousContent: NoteListContent,
-) : ContentWithHistory()
+) : ContentWithHistory(), ConnectionAwareContent
 
 data class PopularPostsContent(
     val posts: List<Post>,
     val shouldLoad: Boolean,
-    val isConnected: Boolean = true,
+    override val isConnected: Boolean = true,
     override val previousContent: PostListContent,
-) : ContentWithHistory()
+) : ContentWithHistory(), ConnectionAwareContent
 
 data class PopularPostDetailContent(
     val post: Post,

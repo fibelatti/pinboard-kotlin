@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.android.BaseIntentBuilder
 import com.fibelatti.core.android.intentExtras
+import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.createFragment
 import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.doOnInitializeAccessibilityNodeInfo
@@ -31,6 +32,7 @@ import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.databinding.ActivityMainBinding
 import com.fibelatti.pinboard.features.appstate.AddPostContent
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.features.appstate.ConnectionAwareContent
 import com.fibelatti.pinboard.features.appstate.Content
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.ExternalBrowserContent
@@ -43,6 +45,8 @@ import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostListContent
+import com.fibelatti.pinboard.features.appstate.Refresh
+import com.fibelatti.pinboard.features.appstate.RefreshPopular
 import com.fibelatti.pinboard.features.appstate.SearchContent
 import com.fibelatti.pinboard.features.appstate.TagListContent
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
@@ -112,6 +116,8 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
             view.updatePadding(top = initialPadding.top + insets.getInsets(WindowInsetsCompat.Type.systemBars()).top)
         }
 
+        binding.layoutContent.animateChangingTransitions()
+
         binding.fabMain.doOnApplyWindowInsets { view, insets, _, _ ->
             view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 bottomMargin = resources.getDimensionPixelSize(R.dimen.margin_small) +
@@ -174,6 +180,25 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
             return
         }
 
+        showContentScreen(content)
+        handleConnectivity(content)
+    }
+
+    private fun handleConnectivity(content: Content) {
+        binding.layoutOfflineAlert.isVisible = content is ConnectionAwareContent && !content.isConnected
+        binding.buttonRetryConnection.isVisible = content is PostListContent || content is PopularPostsContent
+        binding.buttonRetryConnection.setOnClickListener {
+            val action = when (content) {
+                is PostListContent -> Refresh()
+                is PopularPostsContent -> RefreshPopular
+                else -> null
+            }
+
+            action?.let(appStateViewModel::runAction)
+        }
+    }
+
+    private fun showContentScreen(content: Content) {
         when (content) {
             is LoginContent -> {
                 hideControls()

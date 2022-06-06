@@ -5,7 +5,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.inputmethod.EditorInfo
-import android.widget.LinearLayout
+import android.widget.FrameLayout
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -21,17 +21,16 @@ class TagListLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
-) : LinearLayout(context, attrs, defStyleAttr) {
+) : FrameLayout(context, attrs, defStyleAttr) {
 
-    private val binding = LayoutTagListBinding.inflate(LayoutInflater.from(context), this)
+    private val binding = LayoutTagListBinding.inflate(LayoutInflater.from(context), this, true)
 
     private var tagsAdapter: TagsAdapter? = null
 
     val isInputFocused: Boolean get() = binding.editTextTagFilter.isFocused
 
     init {
-        orientation = VERTICAL
-        layoutTransition = LayoutTransition().apply {
+        binding.root.layoutTransition = LayoutTransition().apply {
             enableTransitionType(LayoutTransition.CHANGE_APPEARING)
             enableTransitionType(LayoutTransition.CHANGE_DISAPPEARING)
         }

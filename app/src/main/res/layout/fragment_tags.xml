@@ -1,25 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<com.fibelatti.pinboard.features.tags.presentation.TagListLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tagListLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
-    android:background="?android:colorBackground"
-    android:orientation="vertical">
-
-    <include
-        android:id="@+id/layoutOfflineAlert"
-        layout="@layout/layout_offline_alert"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_regular"
-        android:layout_marginEnd="@dimen/margin_regular"
-        android:visibility="gone"
-        tools:visibility="visible" />
-
-    <com.fibelatti.pinboard.features.tags.presentation.TagListLayout
-        android:id="@+id/tagListLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-</LinearLayout>
+    android:background="?android:colorBackground" />

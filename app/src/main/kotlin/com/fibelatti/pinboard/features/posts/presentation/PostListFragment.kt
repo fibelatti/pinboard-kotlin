@@ -101,9 +101,6 @@ class PostListFragment @Inject constructor(
         binding.layoutSearchActive.buttonClearSearch.setOnClickListener {
             appStateViewModel.runAction(ClearSearch)
         }
-        binding.layoutOfflineAlert.buttonRetryConnection.setOnClickListener {
-            appStateViewModel.runAction(Refresh())
-        }
 
         binding.swipeToRefresh.setOnRefreshListener {
             binding.swipeToRefresh.isRefreshing = false
@@ -214,7 +211,6 @@ class PostListFragment @Inject constructor(
         }
 
         binding.layoutSearchActive.root.isVisible = content.searchParameters.isActive()
-        binding.layoutOfflineAlert.root.isGone = content.isConnected
     }
 
     private fun getCategoryTitle(category: ViewCategory): String = when (category) {

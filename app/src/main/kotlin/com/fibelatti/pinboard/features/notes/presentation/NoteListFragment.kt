@@ -106,8 +106,6 @@ class NoteListFragment @Inject constructor(
                 } else {
                     showNotes(content.notes)
                 }
-
-                binding.layoutOfflineAlert.root.isGone = content.isConnected
             }
         }
         lifecycleScope.launch {

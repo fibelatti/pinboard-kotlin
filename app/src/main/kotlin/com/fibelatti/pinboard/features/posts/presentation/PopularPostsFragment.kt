@@ -57,10 +57,6 @@ class PopularPostsFragment @Inject constructor(
     }
 
     private fun setupLayout() {
-        binding.layoutOfflineAlert.buttonRetryConnection.setOnClickListener {
-            appStateViewModel.runAction(RefreshPopular)
-        }
-
         binding.swipeToRefresh.setOnRefreshListener {
             binding.swipeToRefresh.isRefreshing = false
             appStateViewModel.runAction(RefreshPopular)
@@ -110,8 +106,6 @@ class PopularPostsFragment @Inject constructor(
                 } else {
                     showPosts(content)
                 }
-
-                binding.layoutOfflineAlert.root.isGone = content.isConnected
             }
         }
         lifecycleScope.launch {

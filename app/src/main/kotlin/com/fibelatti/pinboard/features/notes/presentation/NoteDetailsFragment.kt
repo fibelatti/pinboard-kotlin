@@ -52,8 +52,6 @@ class NoteDetailsFragment @Inject constructor() : BaseFragment() {
         lifecycleScope.launch {
             appStateViewModel.noteDetailContent.collect { content ->
                 setupActivityViews()
-                binding.layoutOfflineAlert.root.isGone = content.isConnected
-
                 content.note.either({ getNoteDetails(content) }, ::showNote)
             }
         }

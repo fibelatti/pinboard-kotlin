@@ -69,8 +69,6 @@ class TagsFragment @Inject constructor(
                 } else {
                     tagsViewModel.sortTags(content.tags, binding.tagListLayout.getCurrentTagSorting())
                 }
-
-                binding.layoutOfflineAlert.root.isGone = content.isConnected
             }
         }
         lifecycleScope.launch {
