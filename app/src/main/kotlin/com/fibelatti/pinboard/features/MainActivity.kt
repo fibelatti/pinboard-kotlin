@@ -142,13 +142,13 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
         supportFragmentManager.setupForAccessibility()
 
         binding.bottomAppBar.doOnInitializeAccessibilityNodeInfo { info ->
-            info?.setTraversalAfter(binding.layoutTitle)
+            info.setTraversalAfter(binding.layoutTitle)
         }
         binding.fabMain.doOnInitializeAccessibilityNodeInfo { info ->
-            info?.setTraversalAfter(binding.bottomAppBar)
+            info.setTraversalAfter(binding.bottomAppBar)
         }
         binding.fragmentHost.doOnInitializeAccessibilityNodeInfo { info ->
-            info?.setTraversalAfter(binding.fabMain)
+            info.setTraversalAfter(binding.fabMain)
         }
     }
 

@@ -22,7 +22,7 @@ class TitleLayout @JvmOverloads constructor(
 
     init {
         binding.textViewTitle.doOnInitializeAccessibilityNodeInfo { info ->
-            info?.isHeading = true
+            info.isHeading = true
         }
         binding.textViewTitle.accessibilityLiveRegion = ACCESSIBILITY_LIVE_REGION_POLITE
         binding.textViewSubtitle.accessibilityLiveRegion = ACCESSIBILITY_LIVE_REGION_POLITE
