@@ -12,7 +12,7 @@ dependencyResolutionManagement {
             val hiltVersion = "2.42"
             val roomVersion = "2.4.2"
             val moshiVersion = "1.13.0"
-            val okHttpVersion = "4.9.3"
+            val okHttpVersion = "4.10.0"
             val retrofitVersion = "2.9.0"
             val junit5Version = "5.8.2"
 
