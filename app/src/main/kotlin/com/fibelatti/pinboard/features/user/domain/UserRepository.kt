@@ -40,6 +40,8 @@ interface UserRepository {
 
     var defaultTags: List<Tag>
 
+    fun getUsername(): String
+
     fun hasAuthToken(): Boolean
 
     fun setAuthToken(authToken: String)

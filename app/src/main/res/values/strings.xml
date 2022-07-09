@@ -141,6 +141,11 @@
     <string name="search_tags">Saved tags</string>
     <string name="search_active">Results are filtered</string>
     <string name="search_result_size">%d bookmarks match the current search</string>
+    <string name="search_clear">Clear</string>
+    <string name="search_share">Share</string>
+    <string name="search_share_title">Sharing search results</string>
+    <string name="search_share_query">Share query</string>
+    <string name="search_share_tags">Share tags</string>
 
     <!-- Tags -->
     <string name="tags_title">Tags</string>

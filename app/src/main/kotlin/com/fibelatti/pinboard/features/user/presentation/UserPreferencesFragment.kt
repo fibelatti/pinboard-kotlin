@@ -345,15 +345,6 @@ class UserPreferencesFragment @Inject constructor(
         setOnChangedListener(onChangedListener)
     }
 
-    private fun MaterialButton.selectOnClick(
-        onClickListener: () -> Unit,
-    ) {
-        setOnClickListener {
-            onClickListener()
-            isChecked = true
-        }
-    }
-
     private fun <T> MaterialButton.setupSelectionButton(
         currentSelection: T,
         buttonText: (T) -> Int,

@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.core
 
 object AppConfig {
+
     const val MAIN_PACKAGE_NAME = "com.fibelatti.pinboard"
 
     const val API_BASE_URL = "https://api.pinboard.in/v1/"
@@ -18,9 +19,12 @@ object AppConfig {
     const val DEFAULT_RECENT_QUANTITY = 50
     const val DEFAULT_FILTER_MAX_TAGS = 3
 
+    const val PINBOARD_USER_URL = "https://pinboard.in/u:"
+
     const val PLAY_STORE_BASE_URL = "https://play.google.com/store/apps/details?id="
 
     object PinboardApiLiterals {
+
         const val YES = "yes"
         const val NO = "no"
         const val TAG_SEPARATOR_REQUEST = "+"

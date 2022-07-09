@@ -16,6 +16,8 @@ import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.core.extension.withItemOffsetDecoration
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.core.AppConfig.PINBOARD_USER_URL
+import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.showBanner
@@ -36,6 +38,7 @@ import com.fibelatti.pinboard.features.appstate.Private
 import com.fibelatti.pinboard.features.appstate.Public
 import com.fibelatti.pinboard.features.appstate.Recent
 import com.fibelatti.pinboard.features.appstate.Refresh
+import com.fibelatti.pinboard.features.appstate.SearchParameters
 import com.fibelatti.pinboard.features.appstate.ShouldForceLoad
 import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
 import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
@@ -50,6 +53,7 @@ import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.bottomBarHost
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.titleLayoutHost
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,6 +64,7 @@ import javax.inject.Inject
 class PostListFragment @Inject constructor(
     private val postsAdapter: PostListAdapter,
     private val inAppReviewManager: InAppReviewManager,
+    private val userRepository: UserRepository,
 ) : BaseFragment() {
 
     companion object {
@@ -98,7 +103,7 @@ class PostListFragment @Inject constructor(
     private fun setupLayout() {
         binding.root.animateChangingTransitions()
 
-        binding.layoutSearchActive.buttonClearSearch.setOnClickListener {
+        binding.buttonFilterClear.setOnClickListener {
             appStateViewModel.runAction(ClearSearch)
         }
 
@@ -210,7 +215,43 @@ class PostListFragment @Inject constructor(
             Syncing, Loaded -> showPosts(content)
         }
 
-        binding.layoutSearchActive.root.isVisible = content.searchParameters.isActive()
+        binding.layoutSearchActive.isVisible = content.searchParameters.isActive()
+        binding.buttonFilterShare.setOnClickListener { shareFilteredResults(content.searchParameters) }
+    }
+
+    private fun shareFilteredResults(searchParameters: SearchParameters) {
+        val username = userRepository.getUsername()
+        val queryUrl = "$PINBOARD_USER_URL$username?query=${searchParameters.term}"
+        val tagsUrl = "$PINBOARD_USER_URL$username/${searchParameters.tags.joinToString { "t:${it.name}/" }}"
+
+        when {
+            searchParameters.term.isNotBlank() && searchParameters.tags.isEmpty() -> {
+                requireActivity().shareText(R.string.search_share_title, queryUrl)
+            }
+            searchParameters.term.isBlank() && searchParameters.tags.isNotEmpty() -> {
+                requireActivity().shareText(R.string.search_share_title, tagsUrl)
+            }
+            else -> {
+                SelectionDialog.showSelectionDialog(
+                    context = requireContext(),
+                    title = getString(R.string.search_share_title),
+                    options = ShareSearchOption.values().toList(),
+                    optionName = { option ->
+                        when (option) {
+                            ShareSearchOption.QUERY -> getString(R.string.search_share_query)
+                            ShareSearchOption.TAGS -> getString(R.string.search_share_tags)
+                        }
+                    },
+                    onOptionSelected = { option ->
+                        val url = when (option) {
+                            ShareSearchOption.QUERY -> queryUrl
+                            ShareSearchOption.TAGS -> tagsUrl
+                        }
+                        requireActivity().shareText(R.string.search_share_title, url)
+                    },
+                )
+            }
+        }
     }
 
     private fun getCategoryTitle(category: ViewCategory): String = when (category) {

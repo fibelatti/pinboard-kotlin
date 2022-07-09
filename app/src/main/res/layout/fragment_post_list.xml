@@ -7,17 +7,45 @@
     android:animateLayoutChanges="true"
     android:background="?android:colorBackground">
 
-    <include
+    <LinearLayout
         android:id="@+id/layoutSearchActive"
-        layout="@layout/layout_search_active"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_regular"
+        android:orientation="horizontal"
+        android:paddingVertical="@dimen/padding_xsmall"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible" />
+        tools:visibility="visible">
+
+        <TextView
+            style="@style/AppTheme.Text.Detail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="@string/search_active"
+            android:textIsSelectable="false" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonFilterClear"
+            style="@style/AppTheme.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin_xsmall"
+            android:text="@string/search_clear"
+            android:textIsSelectable="false" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonFilterShare"
+            style="@style/AppTheme.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/search_share"
+            android:textIsSelectable="false" />
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progressBar"

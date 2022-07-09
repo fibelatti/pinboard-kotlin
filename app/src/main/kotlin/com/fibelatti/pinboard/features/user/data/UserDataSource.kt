@@ -173,6 +173,8 @@ class UserDataSource @Inject constructor(
         defaultTags = defaultTags,
     )
 
+    override fun getUsername(): String = userSharedPreferences.authToken.substringBefore(":")
+
     override fun hasAuthToken(): Boolean = userSharedPreferences.authToken.isNotEmpty() || !mainVariant
 
     override fun setAuthToken(authToken: String) {
