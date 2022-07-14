@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.flowOf
 import java.util.UUID
 import javax.inject.Inject
 
-class PostsDataSource @Inject constructor(
+class PostsDataSourceNoApi @Inject constructor(
     private val postsDao: PostsDao,
     private val postDtoMapper: PostDtoMapper,
     private val dateFormatter: DateFormatter

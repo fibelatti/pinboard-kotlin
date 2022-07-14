@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.user.domain
 
 import com.fibelatti.core.functional.Result
+import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.UseCaseWithParams
 import com.fibelatti.core.functional.map
 import com.fibelatti.core.functional.onFailure
@@ -18,6 +19,14 @@ class Login @Inject constructor(
 ) : UseCaseWithParams<Unit, String>() {
 
     override suspend fun run(params: String): Result<Unit> {
+        if (params == "app_review_mode") {
+            userRepository.appReviewMode = true
+            postsRepository.clearCache()
+            appStateRepository.runAction(UserLoggedIn)
+
+            return Success(Unit)
+        }
+
         userRepository.setAuthToken(params.trim())
 
         return postsRepository.update()

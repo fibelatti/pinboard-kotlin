@@ -14,7 +14,8 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
 class LoginTest {
@@ -30,12 +31,12 @@ class LoginTest {
     )
 
     @Test
-    fun `GIVEN repository call fails WHEN Login is called THEN UserLoggedOut runs`() {
+    fun `GIVEN repository call fails WHEN Login is called THEN UserLoggedOut runs`() = runTest {
         // GIVEN
         coEvery { mockPostsRepository.update() } returns Failure(Exception())
 
         // WHEN
-        val result = runBlocking { login(mockApiToken) }
+        val result = login(mockApiToken)
 
         // THEN
         assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
@@ -44,18 +45,34 @@ class LoginTest {
     }
 
     @Test
-    fun `GIVEN repository call is successful WHEN Login is called THEN UserLoggedIn runs`() {
+    fun `GIVEN repository call is successful WHEN Login is called THEN UserLoggedIn runs`() = runTest {
         // GIVEN
         coEvery { mockPostsRepository.update() } returns Success(mockTime)
         coEvery { mockPostsRepository.clearCache() } returns Success(Unit)
 
         // WHEN
-        val result = runBlocking { login(mockApiToken) }
+        val result = login(mockApiToken)
 
         // THEN
         assertThat(result.getOrNull()).isEqualTo(Unit)
         coVerify { mockUserRepository.setAuthToken(mockApiToken) }
         coVerify { mockPostsRepository.clearCache() }
         coVerify { mockAppStateRepository.runAction(UserLoggedIn) }
+    }
+
+    @Test
+    fun `GIVEN app_review_mode is used WHEN Login is called THEN UserLoggedIn runs`() = runTest {
+        // GIVEN
+        coEvery { mockPostsRepository.clearCache() } returns Success(Unit)
+
+        // WHEN
+        val result = login(params = "app_review_mode")
+
+        // THEN
+        assertThat(result.getOrNull()).isEqualTo(Unit)
+        verify { mockUserRepository.appReviewMode = true }
+        coVerify { mockPostsRepository.clearCache() }
+        coVerify { mockAppStateRepository.runAction(UserLoggedIn) }
+        coVerify(exactly = 0) { mockPostsRepository.update() }
     }
 }

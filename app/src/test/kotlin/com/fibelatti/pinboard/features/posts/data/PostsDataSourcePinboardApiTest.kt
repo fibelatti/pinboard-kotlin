@@ -72,7 +72,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.UUID
 
-class PostsDataSourceTest {
+class PostsDataSourcePinboardApiTest {
 
     private val mockUserRepository = mockk<UserRepository>(relaxed = true)
     private val mockApi = mockk<PostsApi>()
@@ -94,7 +94,7 @@ class PostsDataSourceTest {
     private val mockListPost = listOf(mockPost)
 
     private val dataSource = spyk(
-        PostsDataSource(
+        PostsDataSourcePinboardApi(
             userRepository = mockUserRepository,
             postsApi = mockApi,
             postsDao = mockDao,

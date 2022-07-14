@@ -17,6 +17,7 @@ import com.fibelatti.core.extension.shareText
 import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.core.di.AppReviewMode
 import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.databinding.FragmentMenuBinding
 import com.fibelatti.pinboard.features.appstate.All
@@ -40,6 +41,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class NavigationMenuFragment @Inject constructor(
     @MainVariant private val mainVariant: Boolean,
+    @AppReviewMode private val appReviewMode: Boolean,
 ) : BottomSheetDialogFragment() {
 
     companion object {
@@ -91,7 +93,7 @@ class NavigationMenuFragment @Inject constructor(
 
         binding.menuItemPublic.isVisible = mainVariant
         binding.menuItemPrivate.isVisible = mainVariant
-        binding.menuItemNotes.isVisible = mainVariant
+        binding.menuItemNotes.isVisible = mainVariant && !appReviewMode
         binding.menuItemLogout.isVisible = mainVariant
 
         setupCategoryListeners()

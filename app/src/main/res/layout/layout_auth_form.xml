@@ -36,6 +36,7 @@
             android:layout_height="wrap_content"
             android:imeOptions="actionGo"
             android:importantForAutofill="no"
+            android:inputType="text"
             android:maxLines="1"
             android:textIsSelectable="false"
             android:textSize="@dimen/text_size_small" />

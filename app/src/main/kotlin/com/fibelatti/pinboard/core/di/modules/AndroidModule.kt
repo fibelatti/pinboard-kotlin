@@ -8,8 +8,10 @@ import androidx.core.content.getSystemService
 import com.fibelatti.core.android.AppResourceProvider
 import com.fibelatti.core.android.ResourceProvider
 import com.fibelatti.pinboard.BuildConfig
+import com.fibelatti.pinboard.core.di.AppReviewMode
 import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.persistence.getUserPreferences
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,6 +28,10 @@ object AndroidModule {
     @Provides
     @MainVariant
     fun mainVariant(): Boolean = BuildConfig.FLAVOR == "pinboardapi"
+
+    @Provides
+    @AppReviewMode
+    fun appReviewMode(userRepository: UserRepository): Boolean = userRepository.appReviewMode
 
     @Provides
     fun localeDefault(): Locale = Locale.getDefault()

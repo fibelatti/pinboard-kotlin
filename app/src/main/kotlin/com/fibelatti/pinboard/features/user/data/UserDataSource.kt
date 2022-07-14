@@ -25,6 +25,8 @@ class UserDataSource @Inject constructor(
     private val _currentPreferences = MutableStateFlow(getPreferences())
     override val currentPreferences: Flow<UserPreferences> = _currentPreferences.asStateFlow()
 
+    override var appReviewMode: Boolean = false
+
     override var lastUpdate: String
         get() = userSharedPreferences.lastUpdate
         set(value) {
@@ -185,6 +187,8 @@ class UserDataSource @Inject constructor(
 
     override fun clearAuthToken() {
         if (!mainVariant) return
+
+        appReviewMode = false
 
         userSharedPreferences.authToken = ""
         userSharedPreferences.lastUpdate = ""

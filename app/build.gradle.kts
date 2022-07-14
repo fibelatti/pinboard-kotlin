@@ -118,7 +118,6 @@ android {
         forEach { sourceSet -> getByName(sourceSet.name).java.srcDirs("src/${sourceSet.name}/kotlin") }
 
         getByName("test").java.srcDirs("src/sharedTest/kotlin")
-        getByName("testPinboardapi").java.srcDirs("src/test/kotlin", "src/sharedTest/kotlin")
 
         getByName("androidTest") {
             java.srcDirs("src/sharedTest/kotlin")

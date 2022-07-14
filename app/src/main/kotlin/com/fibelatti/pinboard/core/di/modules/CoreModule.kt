@@ -10,7 +10,7 @@ import com.fibelatti.pinboard.features.notes.data.NotesDataSource
 import com.fibelatti.pinboard.features.notes.domain.NotesRepository
 import com.fibelatti.pinboard.features.posts.data.PostsApi
 import com.fibelatti.pinboard.features.posts.data.PostsDao
-import com.fibelatti.pinboard.features.posts.data.PostsDataSource
+import com.fibelatti.pinboard.features.posts.data.PostsDataSourceProxy
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.tags.data.TagsApi
 import com.fibelatti.pinboard.features.tags.data.TagsDataSource
@@ -61,7 +61,7 @@ abstract class CoreModule {
     abstract fun UserDataSource.userRepository(): UserRepository
 
     @Binds
-    abstract fun PostsDataSource.postsRepository(): PostsRepository
+    abstract fun PostsDataSourceProxy.postsRepository(): PostsRepository
 
     @Binds
     abstract fun TagsDataSource.tagsRepository(): TagsRepository

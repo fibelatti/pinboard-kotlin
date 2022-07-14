@@ -44,7 +44,7 @@ import kotlinx.coroutines.withTimeout
 import java.util.UUID
 import javax.inject.Inject
 
-class PostsDataSource @Inject constructor(
+class PostsDataSourcePinboardApi @Inject constructor(
     private val userRepository: UserRepository,
     private val postsApi: PostsApi,
     private val postsDao: PostsDao,

@@ -30,6 +30,7 @@ class TagsDataSourceTest {
         mockPostsDao,
         mockConnectivityInfoProvider,
         mainVariant = true,
+        appReviewMode = false,
     )
 
     @Nested

@@ -12,6 +12,8 @@ interface UserRepository {
 
     val currentPreferences: Flow<UserPreferences>
 
+    var appReviewMode: Boolean
+
     var lastUpdate: String
 
     var autoUpdate: Boolean

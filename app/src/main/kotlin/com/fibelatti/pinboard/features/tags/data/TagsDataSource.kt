@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.tags.data
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.pinboard.core.di.AppReviewMode
 import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.resultFromNetwork
@@ -20,11 +21,14 @@ class TagsDataSource @Inject constructor(
     private val postsDao: PostsDao,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
     @MainVariant private val mainVariant: Boolean,
+    @AppReviewMode private val appReviewMode: Boolean,
 ) : TagsRepository {
 
     override fun getAllTags(): Flow<Result<List<Tag>>> = flow {
         emit(getLocalTags())
-        if (mainVariant && connectivityInfoProvider.isConnected()) emit(getRemoteTags())
+        if (mainVariant && !appReviewMode && connectivityInfoProvider.isConnected()) {
+            emit(getRemoteTags())
+        }
     }
 
     private suspend fun getLocalTags(): Result<List<Tag>> = resultFrom {

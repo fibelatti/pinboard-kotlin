@@ -606,6 +606,7 @@ internal class UserDataSourceTest {
                     mockUserSharedPreferences.authToken = ""
                     mockUserSharedPreferences.lastUpdate = ""
                 }
+                assertThat(userDataSource.appReviewMode).isFalse()
             }
 
             @Test
