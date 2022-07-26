@@ -7,10 +7,9 @@ import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.getOrThrow
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.pinboard.core.AppConfig.API_BASE_URL_LENGTH
-import com.fibelatti.pinboard.core.AppConfig.API_MAX_LENGTH
-import com.fibelatti.pinboard.core.AppConfig.API_MAX_URI_LENGTH
 import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
+import com.fibelatti.pinboard.core.AppConfig.PinboardApiMaxLength
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.di.IoScope
 import com.fibelatti.pinboard.core.extension.containsHtmlChars
@@ -22,6 +21,7 @@ import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.core.network.RateLimitRunner
 import com.fibelatti.pinboard.core.network.resultFromNetwork
 import com.fibelatti.pinboard.core.util.DateFormatter
+import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import retrofit2.HttpException
 import java.util.UUID
 import javax.inject.Inject
 
@@ -57,6 +58,8 @@ class PostsDataSourcePinboardApi @Inject constructor(
 ) : PostsRepository {
 
     companion object {
+
+        private const val HTTP_URI_TOO_LONG = 414
 
         private const val SERVER_DOWN_TIMEOUT_SHORT = 10_000L
         private const val SERVER_DOWN_TIMEOUT_LONG = 15_000L
@@ -93,35 +96,43 @@ class PostsDataSourcePinboardApi @Inject constructor(
         tags: List<Tag>?,
         replace: Boolean,
     ): Result<Post> {
-        val trimmedTitle = title.take(API_MAX_LENGTH)
-        val publicLiteral = private?.let {
-            if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES
-        }
-        val readLaterLiteral = readLater?.let {
-            if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO
-        }
+        val trimmedTitle = title.take(PinboardApiMaxLength.TEXT_TYPE.value)
+        val publicLiteral = private?.let { if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES }
+        val readLaterLiteral = readLater?.let { if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO }
         val trimmedTags = tags.orEmpty().joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST) {
             it.name.replace(oldValue = "+", newValue = "%2b")
-        }.take(API_MAX_LENGTH)
+        }.take(PinboardApiMaxLength.TEXT_TYPE.value)
         val replaceLiteral = if (replace) PinboardApiLiterals.YES else PinboardApiLiterals.NO
 
         // The API abuses GET, this aims to avoid getting 414 errors
-        val remainingLength = API_MAX_URI_LENGTH - API_BASE_URL_LENGTH - url.length -
+        val currentLength = API_BASE_URL_LENGTH - url.length -
             trimmedTitle.length - (publicLiteral?.length ?: 0) - (readLaterLiteral?.length ?: 0) -
             trimmedTags.length - replaceLiteral.length
+
+        val add: suspend (Int) -> GenericResponseDto = { descriptionLength: Int ->
+            postsApi.add(
+                url = url,
+                title = trimmedTitle,
+                description = description?.take(descriptionLength),
+                public = publicLiteral,
+                readLater = readLaterLiteral,
+                tags = trimmedTags,
+                replace = replaceLiteral,
+            )
+        }
 
         return resultFromNetwork {
             val result = withContext(Dispatchers.IO) {
                 withTimeout(SERVER_DOWN_TIMEOUT_LONG) {
-                    postsApi.add(
-                        url = url,
-                        title = trimmedTitle,
-                        description = description?.take(remainingLength),
-                        public = publicLiteral,
-                        readLater = readLaterLiteral,
-                        tags = trimmedTags,
-                        replace = replaceLiteral
-                    )
+                    try {
+                        add(PinboardApiMaxLength.URI.value - currentLength)
+                    } catch (httpException: HttpException) {
+                        if (httpException.code() == HTTP_URI_TOO_LONG) {
+                            add(PinboardApiMaxLength.SAFE_URI.value - currentLength)
+                        } else {
+                            throw httpException
+                        }
+                    }
                 }
             }
 

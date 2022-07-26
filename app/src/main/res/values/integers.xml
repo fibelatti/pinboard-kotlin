@@ -5,5 +5,4 @@
     <integer name="anim_time_long">500</integer>
 
     <integer name="api_max_title_length">255</integer>
-    <integer name="api_max_description_length">1000</integer>
 </resources>

@@ -16,11 +16,6 @@ internal class AppConfigTest {
     }
 
     @Test
-    fun `API_MAX_LENGTH should be 255`() {
-        assertThat(AppConfig.API_MAX_LENGTH).isEqualTo(255)
-    }
-
-    @Test
     fun `DEFAULT_PAGE_SIZE should be 100`() {
         assertThat(AppConfig.DEFAULT_PAGE_SIZE).isEqualTo(100)
     }

@@ -6,14 +6,13 @@ object AppConfig {
 
     const val API_BASE_URL = "https://api.pinboard.in/v1/"
     const val API_ENCODING = "UTF-8"
-    const val API_MAX_LENGTH = 255
-    const val API_MAX_URI_LENGTH = 2000
+
     const val API_BASE_URL_LENGTH = 90
 
     const val API_PAGE_SIZE = 5000
 
     // Pinboard API requires a minimum of 3 seconds between each request
-    const val API_THROTTLE_TIME = 3000L
+    const val API_THROTTLE_TIME = 3_000L
 
     const val DEFAULT_PAGE_SIZE = 100
     const val DEFAULT_RECENT_QUANTITY = 50
@@ -29,5 +28,19 @@ object AppConfig {
         const val NO = "no"
         const val TAG_SEPARATOR_REQUEST = "+"
         const val TAG_SEPARATOR_RESPONSE = " "
+    }
+
+    enum class PinboardApiMaxLength(val value: Int) {
+        TEXT_TYPE(value = 255),
+
+        /**
+         * This is the upper limit to prevent data loss when adding bookmarks with long descriptions.
+         */
+        URI(value = 3_000),
+
+        /**
+         * The REST API abuses GET, this is a safe limit to avoid 414 but it can result in data loss.
+         */
+        SAFE_URI(value = 2_000),
     }
 }
