@@ -14,20 +14,24 @@ internal class ConnectivityInfoProviderTest {
     private val mockNetworkB = mockk<Network>()
     private val mockNetworkC = mockk<Network>()
 
-    private val mockNetworkACapabilities = mockk<NetworkCapabilities>().also {
-        every { it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) } returns true
+    private val mockNetworkACapabilities = mockk<NetworkCapabilities> {
+        every { hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) } returns true
     }
-    private val mockNetworkBCapabilities = mockk<NetworkCapabilities>().also {
-        every { it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) } returns false
-    }
-
-    private val mockConnectivityManager = mockk<ConnectivityManager>().also {
-        every { it.getNetworkCapabilities(mockNetworkA) } returns mockNetworkACapabilities
-        every { it.getNetworkCapabilities(mockNetworkB) } returns mockNetworkBCapabilities
-        every { it.getNetworkCapabilities(mockNetworkC) } returns null
+    private val mockNetworkBCapabilities = mockk<NetworkCapabilities> {
+        every { hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) } returns false
     }
 
-    private val connectivityInfoProvider = ConnectivityInfoProvider(mockConnectivityManager, mainVariant = true)
+    private val mockConnectivityManager = mockk<ConnectivityManager> {
+        every { getNetworkCapabilities(mockNetworkA) } returns mockNetworkACapabilities
+        every { getNetworkCapabilities(mockNetworkB) } returns mockNetworkBCapabilities
+        every { getNetworkCapabilities(mockNetworkC) } returns null
+        every { getNetworkCapabilities(null) } returns null
+    }
+
+    private val connectivityInfoProvider = ConnectivityInfoProvider(
+        connectivityManager = mockConnectivityManager,
+        mainVariant = true,
+    )
 
     @Test
     fun `WHEN ConnectivityManager is null THEN isConnected should return false`() {
@@ -35,33 +39,29 @@ internal class ConnectivityInfoProviderTest {
     }
 
     @Test
-    fun `WHEN allNetworks returns empty THEN isConnected should return false`() {
-        every { mockConnectivityManager.allNetworks } returns emptyArray()
+    fun `WHEN activeNetwork returns null THEN isConnected should return false`() {
+        every { mockConnectivityManager.activeNetwork } returns null
 
         assertThat(connectivityInfoProvider.isConnected()).isFalse()
     }
 
     @Test
     fun `WHEN the network has no capabilities THEN isConnected should return false`() {
-        every { mockConnectivityManager.allNetworks } returns arrayOf(mockNetworkC)
+        every { mockConnectivityManager.activeNetwork } returns mockNetworkC
 
         assertThat(connectivityInfoProvider.isConnected()).isFalse()
     }
 
     @Test
     fun `WHEN the network has no internet capability THEN isConnected should return false`() {
-        every { mockConnectivityManager.allNetworks } returns arrayOf(mockNetworkB, mockNetworkC)
+        every { mockConnectivityManager.activeNetwork } returns mockNetworkB
 
         assertThat(connectivityInfoProvider.isConnected()).isFalse()
     }
 
     @Test
-    fun `WHEN at least one network has internet capability THEN isConnected should return true`() {
-        every { mockConnectivityManager.allNetworks } returns arrayOf(
-            mockNetworkA,
-            mockNetworkB,
-            mockNetworkC
-        )
+    fun `WHEN the network has internet capability THEN isConnected should return true`() {
+        every { mockConnectivityManager.activeNetwork } returns mockNetworkA
 
         assertThat(connectivityInfoProvider.isConnected()).isTrue()
     }

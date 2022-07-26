@@ -11,9 +11,9 @@ class ConnectivityInfoProvider @Inject constructor(
 ) {
 
     fun isConnected(): Boolean = if (mainVariant) {
-        connectivityManager != null && connectivityManager.allNetworks
-            .mapNotNull(connectivityManager::getNetworkCapabilities)
-            .any { it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) }
+        connectivityManager?.getNetworkCapabilities(connectivityManager.activeNetwork)
+            ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            ?: false
     } else {
         true
     }
