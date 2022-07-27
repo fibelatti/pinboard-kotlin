@@ -10,7 +10,7 @@ dependencyResolutionManagement {
             val kotlinVersion = "1.7.10"
             val coroutinesVersion = "1.6.4"
             val hiltVersion = "2.43"
-            val roomVersion = "2.4.2"
+            val roomVersion = "2.4.3"
             val moshiVersion = "1.13.0"
             val okHttpVersion = "4.10.0"
             val retrofitVersion = "2.9.0"
