@@ -10,6 +10,7 @@ dependencyResolutionManagement {
             val kotlinVersion = "1.7.10"
             val coroutinesVersion = "1.6.4"
             val hiltVersion = "2.43"
+            val lifecycleVersion = "2.5.1"
             val roomVersion = "2.4.3"
             val moshiVersion = "1.13.0"
             val okHttpVersion = "4.10.0"
@@ -35,8 +36,8 @@ dependencyResolutionManagement {
             library("material", "com.google.android.material:material:1.6.1")
             library("constraint-layout", "androidx.constraintlayout:constraintlayout:2.1.4")
             library("swipe-refresh-layout", "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-            library("lifecycle-java8", "androidx.lifecycle:lifecycle-common-java8:2.5.1")
-            library("lifecycle-runtime-ktx", "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+            library("lifecycle-java8", "androidx.lifecycle:lifecycle-common-java8:$lifecycleVersion")
+            library("lifecycle-runtime-ktx", "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
             library("room-runtime", "androidx.room:room-ktx:$roomVersion")
             library("room-compiler", "androidx.room:room-compiler:$roomVersion")
             library("work-runtime-ktx", "androidx.work:work-runtime-ktx:2.7.1")
