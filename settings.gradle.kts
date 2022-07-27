@@ -35,7 +35,7 @@ dependencyResolutionManagement {
             library("material", "com.google.android.material:material:1.6.1")
             library("constraint-layout", "androidx.constraintlayout:constraintlayout:2.1.4")
             library("swipe-refresh-layout", "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-            library("lifecycle-java8", "androidx.lifecycle:lifecycle-common-java8:2.5.0")
+            library("lifecycle-java8", "androidx.lifecycle:lifecycle-common-java8:2.5.1")
             library("lifecycle-runtime-ktx", "androidx.lifecycle:lifecycle-runtime-ktx:2.5.0")
             library("room-runtime", "androidx.room:room-ktx:$roomVersion")
             library("room-compiler", "androidx.room:room-compiler:$roomVersion")
