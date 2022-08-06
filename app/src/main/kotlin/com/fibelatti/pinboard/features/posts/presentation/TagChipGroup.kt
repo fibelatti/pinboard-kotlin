@@ -69,7 +69,7 @@ class TagChipGroup @JvmOverloads constructor(
         }
     }
 
-    override fun onSaveInstanceState(): Parcelable? = Bundle().apply {
+    override fun onSaveInstanceState(): Parcelable = Bundle().apply {
         putParcelable(SUPER_STATE_KEY, super.onSaveInstanceState())
         putParcelableArrayList(DYNAMIC_TAGS_KEY, ArrayList(getAllTags()))
     }

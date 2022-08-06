@@ -67,16 +67,12 @@ private fun View.requestApplyInsetsWhenAttached() {
     } else {
         // We're not attached to the hierarchy, add a listener to request when we are.
         addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-            override fun onViewAttachedToWindow(view: View?) {
-                if (view == null) {
-                    return
-                }
-
+            override fun onViewAttachedToWindow(view: View) {
                 view.removeOnAttachStateChangeListener(this)
                 ViewCompat.requestApplyInsets(view)
             }
 
-            override fun onViewDetachedFromWindow(v: View?) {
+            override fun onViewDetachedFromWindow(v: View) {
                 // Intentionally empty
             }
         })
