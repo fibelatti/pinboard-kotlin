@@ -32,7 +32,7 @@ dependencyResolutionManagement {
             library("appcompat", "androidx.appcompat:appcompat:1.4.2")
             library("core-ktx", "androidx.core:core-ktx:1.8.0")
             library("activity-ktx", "androidx.activity:activity-ktx:1.5.1")
-            library("fragment-ktx", "androidx.fragment:fragment-ktx:1.5.1")
+            library("fragment-ktx", "androidx.fragment:fragment-ktx:1.5.2")
             library("material", "com.google.android.material:material:1.6.1")
             library("constraint-layout", "androidx.constraintlayout:constraintlayout:2.1.4")
             library("swipe-refresh-layout", "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
