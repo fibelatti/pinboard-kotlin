@@ -29,7 +29,7 @@ dependencyResolutionManagement {
             library("coroutines-core", "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
             library("coroutines-android", "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
 
-            library("appcompat", "androidx.appcompat:appcompat:1.4.2")
+            library("appcompat", "androidx.appcompat:appcompat:1.5.0")
             library("core-ktx", "androidx.core:core-ktx:1.8.0")
             library("activity-ktx", "androidx.activity:activity-ktx:1.5.1")
             library("fragment-ktx", "androidx.fragment:fragment-ktx:1.5.2")
