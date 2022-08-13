@@ -28,11 +28,11 @@ import com.fibelatti.pinboard.core.android.customview.SettingToggle
 import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.extension.smoothScrollY
 import com.fibelatti.pinboard.databinding.FragmentUserPreferencesBinding
-import com.fibelatti.pinboard.features.bottomBarHost
+import com.fibelatti.pinboard.features.BottomBarHost.Companion.bottomBarHost
+import com.fibelatti.pinboard.features.TitleLayoutHost.Companion.titleLayoutHost
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
-import com.fibelatti.pinboard.features.titleLayoutHost
 import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay

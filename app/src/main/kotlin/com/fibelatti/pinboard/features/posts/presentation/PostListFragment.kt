@@ -22,7 +22,9 @@ import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.databinding.FragmentPostListBinding
+import com.fibelatti.pinboard.features.BottomBarHost.Companion.bottomBarHost
 import com.fibelatti.pinboard.features.InAppReviewManager
+import com.fibelatti.pinboard.features.TitleLayoutHost.Companion.titleLayoutHost
 import com.fibelatti.pinboard.features.appstate.AddPost
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -50,9 +52,7 @@ import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.appstate.ViewCategory
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
-import com.fibelatti.pinboard.features.bottomBarHost
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.fibelatti.pinboard.features.titleLayoutHost
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder

@@ -59,11 +59,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
-val Fragment.titleLayoutHost: TitleLayoutHost get() = requireActivity() as TitleLayoutHost
-val Fragment.bottomBarHost: BottomBarHost get() = requireActivity() as BottomBarHost
-
-var Intent.fromBuilder by intentExtras(false)
-
 @AndroidEntryPoint
 class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
 
@@ -262,14 +257,29 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
             intent.fromBuilder = true
         }
     }
+
+    companion object {
+
+        var Intent.fromBuilder by intentExtras(false)
+    }
 }
 
 interface TitleLayoutHost {
 
     fun update(titleUpdates: TitleLayout.() -> Unit)
+
+    companion object {
+
+        val Fragment.titleLayoutHost: TitleLayoutHost get() = requireActivity() as TitleLayoutHost
+    }
 }
 
 interface BottomBarHost {
 
     fun update(update: (BottomAppBar, FloatingActionButton) -> Unit)
+
+    companion object {
+
+        val Fragment.bottomBarHost: BottomBarHost get() = requireActivity() as BottomBarHost
+    }
 }

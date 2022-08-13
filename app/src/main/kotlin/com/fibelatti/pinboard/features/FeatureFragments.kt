@@ -9,6 +9,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.extension.popTo
 import com.fibelatti.pinboard.core.extension.slideFromTheRight
 import com.fibelatti.pinboard.core.extension.slideUp
+import com.fibelatti.pinboard.features.MainActivity.Companion.fromBuilder
 import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteListFragment
 import com.fibelatti.pinboard.features.posts.domain.model.Post
