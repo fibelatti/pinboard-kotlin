@@ -8,6 +8,8 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updateMargins
 import com.fibelatti.core.extension.getContentView
@@ -43,6 +45,8 @@ fun View.smoothScrollY(scrollBy: Int) {
 @Suppress("MagicNumber")
 fun View.showBanner(message: String) {
     val contentView = getContentView()
+    val insetMargin = ViewCompat.getRootWindowInsets(this)?.getInsets(WindowInsetsCompat.Type.statusBars())
+        ?.top?.plus(resources.getDimensionPixelSize(R.dimen.margin_small))
     val banner = LayoutFeedbackBannerBinding.inflate(
         LayoutInflater.from(context),
         contentView,
@@ -50,7 +54,7 @@ fun View.showBanner(message: String) {
     ).apply {
         root.updateLayoutParams<FrameLayout.LayoutParams> {
             gravity = Gravity.CENTER_HORIZONTAL
-            updateMargins(top = resources.getDimensionPixelSize(R.dimen.margin_xlarge))
+            updateMargins(top = insetMargin ?: resources.getDimensionPixelSize(R.dimen.margin_xlarge))
         }
         root.alpha = 0F
 
