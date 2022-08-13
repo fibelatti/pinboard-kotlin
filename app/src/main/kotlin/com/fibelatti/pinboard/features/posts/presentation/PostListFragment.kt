@@ -272,26 +272,20 @@ class PostListFragment @Inject constructor(
             setSubTitle(buildPostCountSubTitle(content.totalCount, content.sortType))
         }
 
-        when {
-            content.posts == null && content.shouldLoad == Loaded -> {
-                showEmptyLayout()
-                return
-            }
-            content.posts == null -> {
-                // Still syncing with the API
-                return
-            }
-            else -> {
-                postsAdapter.showDescription = content.showDescription
-                if (!content.posts.alreadyDisplayed || postsAdapter.itemCount == 0) {
-                    binding.recyclerViewPosts.isVisible = true
-                    binding.layoutEmptyList.isGone = true
+        if (content.posts == null && content.shouldLoad == Loaded) {
+            showEmptyLayout()
+        } else if (content.posts != null) {
+            postsAdapter.showDescription = content.showDescription
+            if (!content.posts.alreadyDisplayed || postsAdapter.itemCount == 0) {
+                binding.recyclerViewPosts.isVisible = true
+                binding.layoutEmptyList.isGone = true
 
-                    postsAdapter.submitList(content.posts.list, content.posts.diffResult)
-                    appStateViewModel.runAction(PostsDisplayed)
-                }
+                postsAdapter.submitList(content.posts.list, content.posts.diffResult)
+                appStateViewModel.runAction(PostsDisplayed)
             }
         }
+
+        activity?.reportFullyDrawn()
     }
 
     private fun buildPostCountSubTitle(count: Int, sortType: SortType): String {

@@ -75,6 +75,8 @@ class AuthFragment @Inject constructor() : BaseFragment() {
                 textViewAuthHelpDescription.setupLinks(LinkTransformationMethod())
             }
         }
+
+        activity?.reportFullyDrawn()
     }
 
     private fun handleAuthError(message: String) {
