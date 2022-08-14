@@ -13,12 +13,7 @@ import javax.inject.Singleton
 @Singleton
 class AppStateDataSource @Inject constructor(
     private val userRepository: UserRepository,
-    private val navigationActionHandler: NavigationActionHandler,
-    private val postActionHandler: PostActionHandler,
-    private val searchActionHandler: SearchActionHandler,
-    private val tagActionHandler: TagActionHandler,
-    private val noteActionHandler: NoteActionHandler,
-    private val popularActionHandler: PopularActionHandler,
+    private val actionHandlers: Map<Class<out Action>, @JvmSuppressWildcards ActionHandler<*>>,
     private val singleRunner: SingleRunner,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
 ) : AppStateRepository {
@@ -34,29 +29,38 @@ class AppStateDataSource @Inject constructor(
     override suspend fun runAction(action: Action) {
         singleRunner.afterPrevious {
             val content = currentContent.value
-            val newContent = when (action) {
-                is AuthAction -> {
-                    when (action) {
-                        is UserLoggedIn -> getInitialPostListContent()
-                        is UserLoggedOut,
-                        is UserUnauthorized -> {
-                            userRepository.clearAuthToken()
-                            LoginContent(isUnauthorized = action is UserUnauthorized)
-                        }
+
+            val newContent = if (action is AuthAction) {
+                when (action) {
+                    is UserLoggedIn -> getInitialPostListContent()
+                    is UserLoggedOut, is UserUnauthorized -> {
+                        userRepository.clearAuthToken()
+                        LoginContent(isUnauthorized = action is UserUnauthorized)
                     }
                 }
-                is NavigationAction -> navigationActionHandler.runAction(action, content)
-                is PostAction -> postActionHandler.runAction(action, content)
-                is SearchAction -> searchActionHandler.runAction(action, content)
-                is TagAction -> tagActionHandler.runAction(action, content)
-                is NoteAction -> noteActionHandler.runAction(action, content)
-                is PopularAction -> popularActionHandler.runAction(action, content)
+            } else {
+                @Suppress("UNCHECKED_CAST")
+                val handler = actionHandlers[action.getActionType()] as? ActionHandler<Action>
+                handler?.runAction(action, content) ?: content
             }
 
             if (newContent != content) {
                 updateContent(newContent)
             }
         }
+    }
+
+    private fun Action.getActionType(): Class<out Action> {
+        val thisType = this::class.java
+        if (thisType == Action::class.java) return thisType
+
+        var supertype = thisType.superclass
+        while (supertype.superclass != Action::class.java) {
+            supertype = supertype.superclass
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        return supertype as Class<Action>
     }
 
     @VisibleForTesting

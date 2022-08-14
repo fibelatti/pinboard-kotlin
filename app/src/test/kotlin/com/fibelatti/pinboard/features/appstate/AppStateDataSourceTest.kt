@@ -13,7 +13,6 @@ import io.mockk.mockkClass
 import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -28,12 +27,23 @@ internal class AppStateDataSourceTest {
     private val mockUserRepository = mockk<UserRepository>(relaxed = true) {
         every { hasAuthToken() } returns true
     }
+
     private val mockNavigationActionHandler = mockk<NavigationActionHandler>()
     private val mockPostActionHandler = mockk<PostActionHandler>()
     private val mockSearchActionHandler = mockk<SearchActionHandler>()
     private val mockTagActionHandler = mockk<TagActionHandler>()
     private val mockNoteActionHandler = mockk<NoteActionHandler>()
     private val mockPopularActionHandler = mockk<PopularActionHandler>()
+
+    private val handlers: Map<Class<out Action>, ActionHandler<*>> = mapOf(
+        NavigationAction::class.java to mockNavigationActionHandler,
+        PostAction::class.java to mockPostActionHandler,
+        SearchAction::class.java to mockSearchActionHandler,
+        TagAction::class.java to mockTagActionHandler,
+        NoteAction::class.java to mockNoteActionHandler,
+        PopularAction::class.java to mockPopularActionHandler,
+    )
+
     private val singleRunner = SingleRunner()
     private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider> {
         every { isConnected() } returns false
@@ -41,15 +51,10 @@ internal class AppStateDataSourceTest {
 
     private val appStateDataSource: AppStateDataSource = spyk(
         AppStateDataSource(
-            mockUserRepository,
-            mockNavigationActionHandler,
-            mockPostActionHandler,
-            mockSearchActionHandler,
-            mockTagActionHandler,
-            mockNoteActionHandler,
-            mockPopularActionHandler,
-            singleRunner,
-            mockConnectivityInfoProvider,
+            userRepository = mockUserRepository,
+            actionHandlers = handlers,
+            singleRunner = singleRunner,
+            connectivityInfoProvider = mockConnectivityInfoProvider,
         )
     )
 
@@ -238,7 +243,7 @@ internal class AppStateDataSourceTest {
     inner class DuplicateContentTests {
 
         @Test
-        fun `WHEN NavigationActionHandler return the same content THEN value is never updated`() {
+        fun `WHEN NavigationActionHandler return the same content THEN value is never updated`() = runTest {
             // GIVEN
             val mockAction = mockk<NavigationAction>()
             coEvery {
@@ -246,14 +251,14 @@ internal class AppStateDataSourceTest {
             } returns expectedInitialValue
 
             // WHEN
-            runBlocking { appStateDataSource.runAction(mockAction) }
+            appStateDataSource.runAction(mockAction)
 
             // THEN
             coVerify(exactly = 0) { appStateDataSource.updateContent(any()) }
         }
 
         @Test
-        fun `WHEN PostActionHandler return the same content THEN value is never updated`() {
+        fun `WHEN PostActionHandler return the same content THEN value is never updated`() = runTest {
             // GIVEN
             val mockAction = mockk<PostAction>()
             coEvery {
@@ -261,14 +266,14 @@ internal class AppStateDataSourceTest {
             } returns expectedInitialValue
 
             // WHEN
-            runBlocking { appStateDataSource.runAction(mockAction) }
+            appStateDataSource.runAction(mockAction)
 
             // THEN
             coVerify(exactly = 0) { appStateDataSource.updateContent(any()) }
         }
 
         @Test
-        fun `WHEN SearchActionHandler return the same content THEN value is never updated`() {
+        fun `WHEN SearchActionHandler return the same content THEN value is never updated`() = runTest {
             // GIVEN
             val mockAction = mockk<SearchAction>()
             coEvery {
@@ -276,14 +281,14 @@ internal class AppStateDataSourceTest {
             } returns expectedInitialValue
 
             // WHEN
-            runBlocking { appStateDataSource.runAction(mockAction) }
+            appStateDataSource.runAction(mockAction)
 
             // THEN
             coVerify(exactly = 0) { appStateDataSource.updateContent(any()) }
         }
 
         @Test
-        fun `WHEN TagActionHandler return the same content THEN value is never updated`() {
+        fun `WHEN TagActionHandler return the same content THEN value is never updated`() = runTest {
             // GIVEN
             val mockAction = mockk<TagAction>()
             coEvery {
@@ -291,14 +296,14 @@ internal class AppStateDataSourceTest {
             } returns expectedInitialValue
 
             // WHEN
-            runBlocking { appStateDataSource.runAction(mockAction) }
+            appStateDataSource.runAction(mockAction)
 
             // THEN
             coVerify(exactly = 0) { appStateDataSource.updateContent(any()) }
         }
 
         @Test
-        fun `WHEN NoteActionHandler return the same content THEN value is never updated`() {
+        fun `WHEN NoteActionHandler return the same content THEN value is never updated`() = runTest {
             // GIVEN
             val mockAction = mockk<NoteAction>()
             coEvery {
@@ -306,14 +311,14 @@ internal class AppStateDataSourceTest {
             } returns expectedInitialValue
 
             // WHEN
-            runBlocking { appStateDataSource.runAction(mockAction) }
+            appStateDataSource.runAction(mockAction)
 
             // THEN
             coVerify(exactly = 0) { appStateDataSource.updateContent(any()) }
         }
 
         @Test
-        fun `WHEN PopularActionHandler return the same content THEN value is never updated`() {
+        fun `WHEN PopularActionHandler return the same content THEN value is never updated`() = runTest {
             // GIVEN
             val mockAction = mockk<PopularAction>()
             coEvery {
@@ -321,7 +326,7 @@ internal class AppStateDataSourceTest {
             } returns expectedInitialValue
 
             // WHEN
-            runBlocking { appStateDataSource.runAction(mockAction) }
+            appStateDataSource.runAction(mockAction)
 
             // THEN
             coVerify(exactly = 0) { appStateDataSource.updateContent(any()) }
