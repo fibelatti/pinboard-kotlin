@@ -4,7 +4,7 @@ import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.jupiter.api.Test
@@ -32,29 +32,29 @@ internal class ResultFromNetworkKtTest {
     }
 
     @Test
-    fun `resultFromNetwork should retry HttpExceptions`() {
-        runBlocking { resultFromNetwork { httpExceptionBlock() } }
+    fun `resultFromNetwork should retry HttpExceptions`() = runTest {
+        resultFromNetwork { httpExceptionBlock() }
 
         assertThat(httpExceptionBlockExecutionCounter).isEqualTo(3)
     }
 
     @Test
-    fun `resultFromNetwork should return a Failure when an HttpException happens`() {
-        val result: Result<Any> = runBlocking { resultFromNetwork { httpExceptionBlock() } }
+    fun `resultFromNetwork should return a Failure when an HttpException happens`() = runTest {
+        val result: Result<Any> = resultFromNetwork { httpExceptionBlock() }
 
         assertThat(result.exceptionOrNull()).isInstanceOf(HttpException::class.java)
     }
 
     @Test
-    fun `resultFromNetwork should retry IOExceptions`() {
-        runBlocking { resultFromNetwork { ioExceptionBlock() } }
+    fun `resultFromNetwork should retry IOExceptions`() = runTest {
+        resultFromNetwork { ioExceptionBlock() }
 
         assertThat(ioExceptionBlockExecutionCounter).isEqualTo(5)
     }
 
     @Test
-    fun `resultFromNetwork should return a Failure when an IOException happens`() {
-        val result: Result<Any> = runBlocking { resultFromNetwork { ioExceptionBlock() } }
+    fun `resultFromNetwork should return a Failure when an IOException happens`() = runTest {
+        val result: Result<Any> = resultFromNetwork { ioExceptionBlock() }
 
         assertThat(result.exceptionOrNull()).isInstanceOf(IOException::class.java)
     }
