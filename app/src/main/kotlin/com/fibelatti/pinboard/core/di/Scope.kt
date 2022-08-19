@@ -5,4 +5,9 @@ import javax.inject.Qualifier
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.VALUE_PARAMETER)
-annotation class IoScope
+annotation class Scope(val appDispatcher: AppDispatchers)
+
+enum class AppDispatchers {
+    DEFAULT,
+    IO,
+}

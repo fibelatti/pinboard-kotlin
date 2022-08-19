@@ -4,7 +4,8 @@ import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.functional.Either
 import com.fibelatti.core.functional.catching
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
-import com.fibelatti.pinboard.core.di.IoScope
+import com.fibelatti.pinboard.core.di.AppDispatchers
+import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -17,7 +18,7 @@ class NavigationActionHandler @Inject constructor(
     private val userRepository: UserRepository,
     private val postsRepository: PostsRepository,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
-    @IoScope private val markAsReadRequestScope: CoroutineScope,
+    @Scope(AppDispatchers.IO) private val markAsReadRequestScope: CoroutineScope,
 ) : ActionHandler<NavigationAction>() {
 
     override suspend fun runAction(action: NavigationAction, currentContent: Content): Content {

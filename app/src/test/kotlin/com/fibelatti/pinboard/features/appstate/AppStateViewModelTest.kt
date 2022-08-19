@@ -8,11 +8,10 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -36,7 +35,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         val mockUnauthorizedInterceptor = mockk<UnauthorizedInterceptor> {
             every { unauthorized } returns flowOf(Unit)
         }
-        every { mockAppStateRepository.getContent() } returns flowOf(mockk())
+        every { mockAppStateRepository.content } returns flowOf(mockk())
 
         AppStateViewModel(mockAppStateRepository, mockUnauthorizedInterceptor)
 
@@ -46,16 +45,14 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `WHEN getContent is called THEN repository content should be returned`() {
+    fun `WHEN getContent is called THEN repository content should be returned`() = runTest {
         // GIVEN
         val mockContent = mockk<Content>()
 
-        every { mockAppStateRepository.getContent() } returns flowOf(mockContent)
+        every { mockAppStateRepository.content } returns flowOf(mockContent)
 
         // THEN
-        runBlocking {
-            assertThat(appStateViewModel.content.first()).isEqualTo(mockContent)
-        }
+        assertThat(appStateViewModel.content.first()).isEqualTo(mockContent)
     }
 
     @Test
@@ -64,7 +61,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         appStateViewModel.reset()
 
         // THEN
-        verify { mockAppStateRepository.reset() }
+        coVerify { mockAppStateRepository.reset() }
     }
 
     @Test
@@ -85,145 +82,127 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
 
         @ParameterizedTest
         @MethodSource("testCases")
-        fun `Only post list content should be emitted to postListContent`(content: Content) {
+        fun `Only post list content should be emitted to postListContent`(content: Content) = runTest {
             // GIVEN
-            every { mockAppStateRepository.getContent() } returns flowOf(content)
+            every { mockAppStateRepository.content } returns flowOf(content)
 
             // THEN
-            runBlocking {
-                if (content is PostListContent) {
-                    assertThat(appStateViewModel.postListContent.first()).isEqualTo(content)
-                } else {
-                    assertThat(appStateViewModel.postListContent.isEmpty()).isTrue()
-                }
+            if (content is PostListContent) {
+                assertThat(appStateViewModel.postListContent.first()).isEqualTo(content)
+            } else {
+                assertThat(appStateViewModel.postListContent.isEmpty()).isTrue()
             }
         }
 
         @ParameterizedTest
         @MethodSource("testCases")
-        fun `Only post detail content should be emitted to postDetailContent`(content: Content) {
+        fun `Only post detail content should be emitted to postDetailContent`(content: Content) = runTest {
             // GIVEN
-            every { mockAppStateRepository.getContent() } returns flowOf(content)
+            every { mockAppStateRepository.content } returns flowOf(content)
 
             // THEN
-            runBlocking {
-                if (content is PostDetailContent) {
-                    assertThat(appStateViewModel.postDetailContent.first()).isEqualTo(content)
-                } else {
-                    assertThat(appStateViewModel.postDetailContent.isEmpty()).isTrue()
-                }
+            if (content is PostDetailContent) {
+                assertThat(appStateViewModel.postDetailContent.first()).isEqualTo(content)
+            } else {
+                assertThat(appStateViewModel.postDetailContent.isEmpty()).isTrue()
             }
         }
 
         @ParameterizedTest
         @MethodSource("testCases")
-        fun `Only add post content should be emitted to addPostContent`(content: Content) {
+        fun `Only add post content should be emitted to addPostContent`(content: Content) = runTest {
             // GIVEN
-            every { mockAppStateRepository.getContent() } returns flowOf(content)
+            every { mockAppStateRepository.content } returns flowOf(content)
 
             // THEN
-            runBlocking {
-                if (content is AddPostContent) {
-                    assertThat(appStateViewModel.addPostContent.first()).isEqualTo(content)
-                } else {
-                    assertThat(appStateViewModel.addPostContent.isEmpty()).isTrue()
-                }
+            if (content is AddPostContent) {
+                assertThat(appStateViewModel.addPostContent.first()).isEqualTo(content)
+            } else {
+                assertThat(appStateViewModel.addPostContent.isEmpty()).isTrue()
             }
         }
 
         @ParameterizedTest
         @MethodSource("testCases")
-        fun `Only edit post content should be emitted to editPostContent`(content: Content) {
+        fun `Only edit post content should be emitted to editPostContent`(content: Content) = runTest {
             // GIVEN
-            every { mockAppStateRepository.getContent() } returns flowOf(content)
+            every { mockAppStateRepository.content } returns flowOf(content)
 
             // THEN
-            runBlocking {
-                if (content is EditPostContent) {
-                    assertThat(appStateViewModel.editPostContent.first()).isEqualTo(content)
-                } else {
-                    assertThat(appStateViewModel.editPostContent.isEmpty()).isTrue()
-                }
+            if (content is EditPostContent) {
+                assertThat(appStateViewModel.editPostContent.first()).isEqualTo(content)
+            } else {
+                assertThat(appStateViewModel.editPostContent.isEmpty()).isTrue()
             }
         }
 
         @ParameterizedTest
         @MethodSource("testCases")
-        fun `Only search content should be emitted to searchContent`(content: Content) {
+        fun `Only search content should be emitted to searchContent`(content: Content) = runTest {
             // GIVEN
-            every { mockAppStateRepository.getContent() } returns flowOf(content)
+            every { mockAppStateRepository.content } returns flowOf(content)
 
             // THEN
-            runBlocking {
-                if (content is SearchContent) {
-                    assertThat(appStateViewModel.searchContent.first()).isEqualTo(content)
-                } else {
-                    assertThat(appStateViewModel.searchContent.isEmpty()).isTrue()
-                }
+            if (content is SearchContent) {
+                assertThat(appStateViewModel.searchContent.first()).isEqualTo(content)
+            } else {
+                assertThat(appStateViewModel.searchContent.isEmpty()).isTrue()
             }
         }
 
         @ParameterizedTest
         @MethodSource("testCases")
-        fun `Only tag list content should be emitted to tagListContent`(content: Content) {
+        fun `Only tag list content should be emitted to tagListContent`(content: Content) = runTest {
             // GIVEN
-            every { mockAppStateRepository.getContent() } returns flowOf(content)
+            every { mockAppStateRepository.content } returns flowOf(content)
 
             // THEN
-            runBlocking {
-                if (content is TagListContent) {
-                    assertThat(appStateViewModel.tagListContent.first()).isEqualTo(content)
-                } else {
-                    assertThat(appStateViewModel.tagListContent.isEmpty()).isTrue()
-                }
+            if (content is TagListContent) {
+                assertThat(appStateViewModel.tagListContent.first()).isEqualTo(content)
+            } else {
+                assertThat(appStateViewModel.tagListContent.isEmpty()).isTrue()
             }
         }
 
         @ParameterizedTest
         @MethodSource("testCases")
-        fun `Only note list content should be emitted to noteListContent`(content: Content) {
+        fun `Only note list content should be emitted to noteListContent`(content: Content) = runTest {
             // GIVEN
-            every { mockAppStateRepository.getContent() } returns flowOf(content)
+            every { mockAppStateRepository.content } returns flowOf(content)
 
             // THEN
-            runBlocking {
-                if (content is NoteListContent) {
-                    assertThat(appStateViewModel.noteListContent.first()).isEqualTo(content)
-                } else {
-                    assertThat(appStateViewModel.noteListContent.isEmpty()).isTrue()
-                }
+            if (content is NoteListContent) {
+                assertThat(appStateViewModel.noteListContent.first()).isEqualTo(content)
+            } else {
+                assertThat(appStateViewModel.noteListContent.isEmpty()).isTrue()
             }
         }
 
         @ParameterizedTest
         @MethodSource("testCases")
-        fun `Only note detail content should be emitted to noteDetailContent`(content: Content) {
+        fun `Only note detail content should be emitted to noteDetailContent`(content: Content) = runTest {
             // GIVEN
-            every { mockAppStateRepository.getContent() } returns flowOf(content)
+            every { mockAppStateRepository.content } returns flowOf(content)
 
             // THEN
-            runBlocking {
-                if (content is NoteDetailContent) {
-                    assertThat(appStateViewModel.noteDetailContent.first()).isEqualTo(content)
-                } else {
-                    assertThat(appStateViewModel.noteDetailContent.isEmpty()).isTrue()
-                }
+            if (content is NoteDetailContent) {
+                assertThat(appStateViewModel.noteDetailContent.first()).isEqualTo(content)
+            } else {
+                assertThat(appStateViewModel.noteDetailContent.isEmpty()).isTrue()
             }
         }
 
         @ParameterizedTest
         @MethodSource("testCases")
-        fun `Only popular posts content should be emitted to popularPostsContent`(content: Content) {
+        fun `Only popular posts content should be emitted to popularPostsContent`(content: Content) = runTest {
             // GIVEN
-            every { mockAppStateRepository.getContent() } returns flowOf(content)
+            every { mockAppStateRepository.content } returns flowOf(content)
 
             // THEN
-            runBlocking {
-                if (content is PopularPostsContent) {
-                    assertThat(appStateViewModel.popularPostsContent.first()).isEqualTo(content)
-                } else {
-                    assertThat(appStateViewModel.popularPostsContent.isEmpty()).isTrue()
-                }
+            if (content is PopularPostsContent) {
+                assertThat(appStateViewModel.popularPostsContent.first()).isEqualTo(content)
+            } else {
+                assertThat(appStateViewModel.popularPostsContent.isEmpty()).isTrue()
             }
         }
 
@@ -231,33 +210,29 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         @MethodSource("testCases")
         fun `Only popular post details content should be emitted to popularPostDetailContent`(
             content: Content,
-        ) {
+        ) = runTest {
             // GIVEN
-            every { mockAppStateRepository.getContent() } returns flowOf(content)
+            every { mockAppStateRepository.content } returns flowOf(content)
 
             // THEN
-            runBlocking {
-                if (content is PopularPostDetailContent) {
-                    assertThat(appStateViewModel.popularPostDetailContent.first()).isEqualTo(content)
-                } else {
-                    assertThat(appStateViewModel.popularPostDetailContent.isEmpty()).isTrue()
-                }
+            if (content is PopularPostDetailContent) {
+                assertThat(appStateViewModel.popularPostDetailContent.first()).isEqualTo(content)
+            } else {
+                assertThat(appStateViewModel.popularPostDetailContent.isEmpty()).isTrue()
             }
         }
 
         @ParameterizedTest
         @MethodSource("testCases")
-        fun `Only user preferences content should be emitted to userPreferencesContent`(content: Content) {
+        fun `Only user preferences content should be emitted to userPreferencesContent`(content: Content) = runTest {
             // GIVEN
-            every { mockAppStateRepository.getContent() } returns flowOf(content)
+            every { mockAppStateRepository.content } returns flowOf(content)
 
             // THEN
-            runBlocking {
-                if (content is UserPreferencesContent) {
-                    assertThat(appStateViewModel.userPreferencesContent.first()).isEqualTo(content)
-                } else {
-                    assertThat(appStateViewModel.userPreferencesContent.isEmpty()).isTrue()
-                }
+            if (content is UserPreferencesContent) {
+                assertThat(appStateViewModel.userPreferencesContent.first()).isEqualTo(content)
+            } else {
+                assertThat(appStateViewModel.userPreferencesContent.isEmpty()).isTrue()
             }
         }
 

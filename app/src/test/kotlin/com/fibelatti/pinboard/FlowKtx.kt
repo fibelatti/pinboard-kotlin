@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
@@ -33,7 +34,7 @@ suspend fun <T> Flow<T>.isEmpty(): Boolean = withTimeoutOrNull(timeMillis = 50L)
  * @receiver the [Flow] under test
  * @return a [List] with the collected values
  */
-suspend fun <T> Flow<T>.collectIn(scope: TestScope, autoCancellationDelayMillis: Long = 50L): List<T> {
+suspend fun <T> Flow<T>.collectIn(scope: CoroutineScope, autoCancellationDelayMillis: Long = 50L): List<T> {
     val result = mutableListOf<T>()
     val job = scope.launch {
         toList(result)

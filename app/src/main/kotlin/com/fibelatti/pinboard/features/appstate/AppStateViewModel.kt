@@ -17,7 +17,7 @@ class AppStateViewModel @Inject constructor(
     unauthorizedInterceptor: UnauthorizedInterceptor,
 ) : BaseViewModel() {
 
-    val content: Flow<Content> = appStateRepository.getContent()
+    val content: Flow<Content> = appStateRepository.content
 
     val postListContent: Flow<PostListContent> get() = filteredContent()
     val postDetailContent: Flow<PostDetailContent> get() = filteredContent()
@@ -38,7 +38,7 @@ class AppStateViewModel @Inject constructor(
     }
 
     fun reset() {
-        appStateRepository.reset()
+        launch { appStateRepository.reset() }
     }
 
     fun runAction(action: Action) {

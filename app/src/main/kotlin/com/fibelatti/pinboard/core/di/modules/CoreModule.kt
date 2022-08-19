@@ -1,7 +1,8 @@
 package com.fibelatti.pinboard.core.di.modules
 
 import com.fibelatti.core.functional.SingleRunner
-import com.fibelatti.pinboard.core.di.IoScope
+import com.fibelatti.pinboard.core.di.AppDispatchers
+import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.core.persistence.database.AppDatabase
 import com.fibelatti.pinboard.features.appstate.AppStateDataSource
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
@@ -35,8 +36,12 @@ abstract class CoreModule {
     companion object {
 
         @Provides
-        @IoScope
+        @Scope(AppDispatchers.IO)
         fun ioScope(): CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+        @Provides
+        @Scope(AppDispatchers.DEFAULT)
+        fun defaultScope(): CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
         @Provides
         fun singleRunner(): SingleRunner = SingleRunner()

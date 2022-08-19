@@ -1,12 +1,15 @@
 package com.fibelatti.pinboard.features.appstate
 
-import androidx.annotation.VisibleForTesting
-import com.fibelatti.core.functional.SingleRunner
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.pinboard.core.di.AppDispatchers
+import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,23 +17,27 @@ import javax.inject.Singleton
 class AppStateDataSource @Inject constructor(
     private val userRepository: UserRepository,
     private val actionHandlers: Map<Class<out Action>, @JvmSuppressWildcards ActionHandler<*>>,
-    private val singleRunner: SingleRunner,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
+    @Scope(AppDispatchers.DEFAULT) scope: CoroutineScope,
 ) : AppStateRepository {
 
-    private val currentContent: MutableStateFlow<Content> = MutableStateFlow(getInitialContent())
+    private val userActions: MutableSharedFlow<suspend (Content) -> Content> = MutableSharedFlow()
 
-    override fun getContent(): Flow<Content> = currentContent.asStateFlow()
+    override val content: Flow<Content> = userActions
+        .scan(getInitialContent()) { content, actions -> actions(content) }
+        .stateIn(
+            scope = scope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = getInitialContent(),
+        )
 
-    override fun reset() {
-        updateContent(getInitialContent())
+    override suspend fun reset() {
+        userActions.emit { getInitialContent() }
     }
 
     override suspend fun runAction(action: Action) {
-        singleRunner.afterPrevious {
-            val content = currentContent.value
-
-            val newContent = if (action is AuthAction) {
+        userActions.emit { content ->
+            return@emit if (action is AuthAction) {
                 when (action) {
                     is UserLoggedIn -> getInitialPostListContent()
                     is UserLoggedOut, is UserUnauthorized -> {
@@ -42,10 +49,6 @@ class AppStateDataSource @Inject constructor(
                 @Suppress("UNCHECKED_CAST")
                 val handler = actionHandlers[action.getActionType()] as? ActionHandler<Action>
                 handler?.runAction(action, content) ?: content
-            }
-
-            if (newContent != content) {
-                updateContent(newContent)
             }
         }
     }
@@ -63,14 +66,13 @@ class AppStateDataSource @Inject constructor(
         return supertype as Class<Action>
     }
 
-    @VisibleForTesting
-    fun getInitialContent(): Content = if (userRepository.hasAuthToken()) {
+    private fun getInitialContent(): Content = if (userRepository.hasAuthToken()) {
         getInitialPostListContent()
     } else {
         LoginContent()
     }
 
-    private fun getInitialPostListContent() = PostListContent(
+    private fun getInitialPostListContent(): Content = PostListContent(
         category = All,
         posts = null,
         showDescription = userRepository.showDescriptionInLists,
@@ -79,9 +81,4 @@ class AppStateDataSource @Inject constructor(
         shouldLoad = ShouldLoadFirstPage,
         isConnected = connectivityInfoProvider.isConnected(),
     )
-
-    @VisibleForTesting
-    fun updateContent(content: Content) {
-        currentContent.value = content
-    }
 }

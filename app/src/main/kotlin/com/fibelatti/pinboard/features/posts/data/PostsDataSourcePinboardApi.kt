@@ -11,7 +11,8 @@ import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiMaxLength
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
-import com.fibelatti.pinboard.core.di.IoScope
+import com.fibelatti.pinboard.core.di.AppDispatchers
+import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.core.extension.containsHtmlChars
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
 import com.fibelatti.pinboard.core.functional.resultFrom
@@ -54,7 +55,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
     private val dateFormatter: DateFormatter,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
     private val rateLimitRunner: RateLimitRunner,
-    @IoScope private val pagedRequestsScope: CoroutineScope,
+    @Scope(AppDispatchers.IO) private val pagedRequestsScope: CoroutineScope,
 ) : PostsRepository {
 
     companion object {

@@ -4,9 +4,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface AppStateRepository {
 
-    fun getContent(): Flow<Content>
+    val content: Flow<Content>
 
-    fun reset()
+    suspend fun reset()
 
     suspend fun runAction(action: Action)
 }
