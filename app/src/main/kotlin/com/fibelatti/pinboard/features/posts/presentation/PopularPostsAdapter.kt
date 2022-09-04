@@ -11,21 +11,14 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import javax.inject.Inject
 
 class PopularPostsAdapter @Inject constructor() : BaseListAdapter<Post, ListItemPopularPostBinding>(
-    binding = { parent -> ListItemPopularPostBinding.inflate(LayoutInflater.from(parent.context), parent, false) },
+    binding = { parent ->
+        ListItemPopularPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+    },
     itemsTheSame = { oldItem, newItem -> oldItem.url == newItem.url },
 ) {
 
-    interface QuickActionsCallback {
-
-        fun onShareClicked(item: Post)
-
-        fun onSaveClicked(item: Post)
-    }
-
     var onItemClicked: ((Post) -> Unit)? = null
-    var quickActionsCallback: QuickActionsCallback? = null
-
-    private val quickActionsVisible: MutableMap<Int, Boolean> = mutableMapOf()
+    var onItemLongClicked: ((Post) -> Unit)? = null
 
     override fun onBindViewHolder(holder: ViewHolder<ListItemPopularPostBinding>, position: Int) {
         val binding = holder.binding
@@ -39,20 +32,9 @@ class PopularPostsAdapter @Inject constructor() : BaseListAdapter<Post, ListItem
             binding.layoutTags(item.tags)
         }
 
-        binding.hideQuickActions(position)
-
         binding.root.setOnClickListener { onItemClicked?.invoke(item) }
         binding.root.setOnLongClickListener {
-            if (quickActionsCallback == null) {
-                return@setOnLongClickListener false
-            }
-
-            if (quickActionsVisible[position] == true) {
-                binding.hideQuickActions(position)
-            } else {
-                binding.showQuickActions(item, position)
-            }
-
+            onItemLongClicked?.invoke(item)
             true
         }
     }
@@ -63,18 +45,5 @@ class PopularPostsAdapter @Inject constructor() : BaseListAdapter<Post, ListItem
         for (tag in tags) {
             chipGroupTags.addValue(tag.name, showRemoveIcon = false)
         }
-    }
-
-    private fun ListItemPopularPostBinding.showQuickActions(item: Post, position: Int) {
-        quickActionsVisible[position] = true
-        layoutQuickActions.root.isVisible = true
-
-        layoutQuickActions.buttonQuickActionShare.setOnClickListener { quickActionsCallback?.onShareClicked(item) }
-        layoutQuickActions.buttonQuickActionSave.setOnClickListener { quickActionsCallback?.onSaveClicked(item) }
-    }
-
-    private fun ListItemPopularPostBinding.hideQuickActions(position: Int) {
-        quickActionsVisible[position] = false
-        layoutQuickActions.root.isGone = true
     }
 }

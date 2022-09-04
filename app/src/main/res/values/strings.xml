@@ -175,6 +175,14 @@
     <!-- Popular -->
     <string name="popular_title">Popular bookmarks</string>
 
+    <!-- Quick Actions -->
+    <string name="quick_actions_title">Quick Actions</string>
+    <string name="quick_actions_edit">Edit bookmark</string>
+    <string name="quick_actions_delete">Delete bookmark</string>
+    <string name="quick_actions_save">Save to mine</string>
+    <string name="quick_actions_share">Share bookmark</string>
+    <string name="quick_actions_open_in_browser">Open in browser</string>
+
     <!-- User Preferences -->
     <string name="user_preferences_title">Preferences</string>
     <string name="user_preferences_auto_update">Auto-update</string>

@@ -1,9 +1,12 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
@@ -14,6 +17,7 @@ import com.fibelatti.core.extension.shareText
 import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.core.extension.withItemOffsetDecoration
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.databinding.FragmentPopularPostsBinding
@@ -25,7 +29,8 @@ import com.fibelatti.pinboard.features.appstate.RefreshPopular
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -67,22 +72,33 @@ class PopularPostsFragment @Inject constructor(
             .adapter = popularPostsAdapter
 
         popularPostsAdapter.onItemClicked = { appStateViewModel.runAction(ViewPost(it)) }
-        popularPostsAdapter.quickActionsCallback =
-            object : PopularPostsAdapter.QuickActionsCallback {
+        popularPostsAdapter.onItemLongClicked = ::showQuickActionsDialogs
+    }
 
-                override fun onShareClicked(item: Post) {
-                    requireActivity().shareText(R.string.posts_share_title, item.url)
-                }
-
-                override fun onSaveClicked(item: Post) {
-                    popularPostsViewModel.saveLink(item)
+    private fun showQuickActionsDialogs(post: Post) {
+        SelectionDialog.showSelectionDialog(
+            context = requireContext(),
+            title = getString(R.string.quick_actions_title),
+            options = PopularPostQuickActions.allOptions(post),
+            optionName = { option -> getString(option.title) },
+            onOptionSelected = { option ->
+                when (option) {
+                    is PopularPostQuickActions.Save -> popularPostsViewModel.saveLink(option.post)
+                    is PopularPostQuickActions.Share -> requireActivity().shareText(
+                        R.string.posts_share_title,
+                        option.post.url,
+                    )
+                    is PopularPostQuickActions.OpenBrowser -> startActivity(
+                        Intent(Intent.ACTION_VIEW, Uri.parse(option.post.url))
+                    )
                 }
             }
+        )
     }
 
     private fun setupViewModels() {
-        lifecycleScope.launch {
-            appStateViewModel.popularPostsContent.collect { content ->
+        appStateViewModel.popularPostsContent
+            .onEach { content ->
                 titleLayoutHost.update {
                     setTitle(R.string.popular_title)
                     hideSubTitle()
@@ -107,19 +123,22 @@ class PopularPostsFragment @Inject constructor(
                     showPosts(content)
                 }
             }
-        }
-        lifecycleScope.launch {
-            popularPostsViewModel.loading.collect {
+            .launchIn(lifecycleScope)
+
+        popularPostsViewModel.loading
+            .onEach {
                 binding.layoutProgressBar.root.isVisible = it
                 binding.recyclerViewPosts.isGone = it
             }
-        }
-        lifecycleScope.launch {
-            popularPostsViewModel.saved.collect { binding.root.showBanner(getString(R.string.posts_saved_feedback)) }
-        }
-        lifecycleScope.launch {
-            popularPostsViewModel.error.collect(::handleError)
-        }
+            .launchIn(lifecycleScope)
+        popularPostsViewModel.saved
+            .onEach {
+                binding.root.showBanner(getString(R.string.posts_saved_feedback))
+            }
+            .launchIn(lifecycleScope)
+        popularPostsViewModel.error
+            .onEach(::handleError)
+            .launchIn(lifecycleScope)
     }
 
     private fun showPosts(content: PopularPostsContent) {
@@ -138,5 +157,33 @@ class PopularPostsFragment @Inject constructor(
         binding.layoutEmptyList.isGone = true
         binding.recyclerViewPosts.isVisible = true
         popularPostsAdapter.submitList(content.posts)
+    }
+}
+
+private sealed class PopularPostQuickActions(@StringRes val title: Int) {
+
+    abstract val post: Post
+
+    data class Save(
+        override val post: Post,
+    ) : PopularPostQuickActions(title = R.string.quick_actions_save)
+
+    data class Share(
+        override val post: Post,
+    ) : PopularPostQuickActions(title = R.string.quick_actions_share)
+
+    data class OpenBrowser(
+        override val post: Post,
+    ) : PopularPostQuickActions(title = R.string.quick_actions_open_in_browser)
+
+    companion object {
+
+        fun allOptions(
+            post: Post,
+        ): List<PopularPostQuickActions> = listOf(
+            Save(post),
+            Share(post),
+            OpenBrowser(post),
+        )
     }
 }

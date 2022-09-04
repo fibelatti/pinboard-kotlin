@@ -17,17 +17,10 @@ import javax.inject.Inject
 class PostListAdapter @Inject constructor(
     private val dateFormatter: DateFormatter,
 ) : BaseAdapter<Post, ListItemPostBinding>(
-    binding = { parent -> ListItemPostBinding.inflate(LayoutInflater.from(parent.context), parent, false) },
+    binding = { parent ->
+        ListItemPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+    },
 ) {
-
-    interface QuickActionsCallback {
-
-        fun onShareClicked(item: Post)
-
-        fun onEditClicked(item: Post)
-
-        fun onDeleteClicked(item: Post)
-    }
 
     var showDescription: Boolean = false
         set(value) {
@@ -35,10 +28,8 @@ class PostListAdapter @Inject constructor(
             notifyDataSetChanged()
         }
     var onItemClicked: ((Post) -> Unit)? = null
+    var onItemLongClicked: ((Post) -> Unit)? = null
     var onTagClicked: ((Tag) -> Unit)? = null
-    var quickActionsCallback: QuickActionsCallback? = null
-
-    private val quickActionsVisible: MutableMap<Int, Boolean> = mutableMapOf()
 
     fun submitList(newItems: List<Post>, diffResult: DiffUtil.DiffResult) {
         submitList(newItems) { diffResult.dispatchUpdatesTo(this) }
@@ -78,20 +69,9 @@ class PostListAdapter @Inject constructor(
             binding.layoutTags(item.tags)
         }
 
-        binding.hideQuickActions(position)
-
         binding.root.setOnClickListener { onItemClicked?.invoke(item) }
         binding.root.setOnLongClickListener {
-            if (quickActionsCallback == null) {
-                return@setOnLongClickListener false
-            }
-
-            if (quickActionsVisible[position] == true) {
-                binding.hideQuickActions(position)
-            } else {
-                binding.showQuickActions(item, position)
-            }
-
+            onItemLongClicked?.invoke(item)
             true
         }
         binding.chipGroupTags.onTagChipClicked = onTagClicked
@@ -103,25 +83,5 @@ class PostListAdapter @Inject constructor(
         for (tag in tags) {
             chipGroupTags.addValue(tag.name, showRemoveIcon = false)
         }
-    }
-
-    private fun ListItemPostBinding.showQuickActions(item: Post, position: Int) {
-        quickActionsVisible[position] = true
-        layoutQuickActions.root.isVisible = true
-
-        layoutQuickActions.buttonQuickActionEdit.setOnClickListener {
-            quickActionsCallback?.onEditClicked(item)
-        }
-        layoutQuickActions.buttonQuickActionShare.setOnClickListener {
-            quickActionsCallback?.onShareClicked(item)
-        }
-        layoutQuickActions.buttonQuickActionDelete.setOnClickListener {
-            quickActionsCallback?.onDeleteClicked(item)
-        }
-    }
-
-    private fun ListItemPostBinding.hideQuickActions(position: Int) {
-        quickActionsVisible[position] = false
-        layoutQuickActions.root.isGone = true
     }
 }

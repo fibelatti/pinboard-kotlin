@@ -26,10 +26,4 @@
         android:id="@+id/chipGroupTags"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-
-    <include
-        android:id="@+id/layoutQuickActions"
-        layout="@layout/layout_popular_quick_actions"
-        android:visibility="gone"
-        tools:visibility="visible" />
 </LinearLayout>

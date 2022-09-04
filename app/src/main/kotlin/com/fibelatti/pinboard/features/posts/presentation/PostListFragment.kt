@@ -1,10 +1,13 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
@@ -57,7 +60,8 @@ import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -125,21 +129,30 @@ class PostListFragment @Inject constructor(
             .adapter = postsAdapter
 
         postsAdapter.onItemClicked = { appStateViewModel.runAction(ViewPost(it)) }
+        postsAdapter.onItemLongClicked = ::showQuickActionsDialog
         postsAdapter.onTagClicked = { appStateViewModel.runAction(PostsForTag(it)) }
-        postsAdapter.quickActionsCallback = object : PostListAdapter.QuickActionsCallback {
+    }
 
-            override fun onShareClicked(item: Post) {
-                requireActivity().shareText(R.string.posts_share_title, item.url)
+    private fun showQuickActionsDialog(post: Post) {
+        SelectionDialog.showSelectionDialog(
+            context = requireContext(),
+            title = getString(R.string.quick_actions_title),
+            options = PostQuickActions.allOptions(post),
+            optionName = { option -> getString(option.title) },
+            onOptionSelected = { option ->
+                when (option) {
+                    is PostQuickActions.OpenBrowser -> startActivity(
+                        Intent(Intent.ACTION_VIEW, Uri.parse(option.post.url))
+                    )
+                    is PostQuickActions.Share -> requireActivity().shareText(
+                        R.string.posts_share_title,
+                        option.post.url,
+                    )
+                    is PostQuickActions.Edit -> appStateViewModel.runAction(EditPost(option.post))
+                    is PostQuickActions.Delete -> deletePost(option.post)
+                }
             }
-
-            override fun onEditClicked(item: Post) {
-                appStateViewModel.runAction(EditPost(item))
-            }
-
-            override fun onDeleteClicked(item: Post) {
-                deletePost(item)
-            }
-        }
+        )
     }
 
     private fun deletePost(post: Post) {
@@ -151,29 +164,33 @@ class PostListFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        lifecycleScope.launch {
-            postListViewModel.error.collect(::handleError)
-        }
-        lifecycleScope.launch {
-            appStateViewModel.postListContent.collect(::updateContent)
-        }
-        lifecycleScope.launch {
-            postDetailViewModel.loading.collect { binding.progressBar.isVisible = it }
-        }
-        lifecycleScope.launch {
-            postDetailViewModel.deleted.collect { binding.root.showBanner(getString(R.string.posts_deleted_feedback)) }
-        }
-        lifecycleScope.launch {
-            postDetailViewModel.deleteError.collect {
+        postListViewModel.error
+            .onEach(::handleError)
+            .launchIn(lifecycleScope)
+
+        appStateViewModel.postListContent
+            .onEach(::updateContent)
+            .launchIn(lifecycleScope)
+
+        postDetailViewModel.loading
+            .onEach { binding.progressBar.isVisible = it }
+            .launchIn(lifecycleScope)
+        postDetailViewModel.deleted
+            .onEach {
+                binding.root.showBanner(getString(R.string.posts_deleted_feedback))
+            }
+            .launchIn(lifecycleScope)
+        postDetailViewModel.deleteError
+            .onEach {
                 MaterialAlertDialogBuilder(requireContext()).apply {
                     setMessage(R.string.posts_deleted_error)
                     setPositiveButton(R.string.hint_ok) { dialog, _ -> dialog?.dismiss() }
                 }.show()
             }
-        }
-        lifecycleScope.launch {
-            postDetailViewModel.error.collect(::handleError)
-        }
+            .launchIn(lifecycleScope)
+        postDetailViewModel.error
+            .onEach(::handleError)
+            .launchIn(lifecycleScope)
     }
 
     override fun handleError(error: Throwable) {
@@ -319,5 +336,38 @@ class PostListFragment @Inject constructor(
         }
 
         return true
+    }
+}
+
+private sealed class PostQuickActions(@StringRes val title: Int) {
+
+    abstract val post: Post
+
+    data class Edit(
+        override val post: Post,
+    ) : PostQuickActions(title = R.string.quick_actions_edit)
+
+    data class Delete(
+        override val post: Post,
+    ) : PostQuickActions(title = R.string.quick_actions_delete)
+
+    data class Share(
+        override val post: Post,
+    ) : PostQuickActions(title = R.string.quick_actions_share)
+
+    data class OpenBrowser(
+        override val post: Post,
+    ) : PostQuickActions(title = R.string.quick_actions_open_in_browser)
+
+    companion object {
+
+        fun allOptions(
+            post: Post,
+        ): List<PostQuickActions> = listOf(
+            Edit(post),
+            Delete(post),
+            Share(post),
+            OpenBrowser(post),
+        )
     }
 }
