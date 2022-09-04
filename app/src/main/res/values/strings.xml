@@ -34,7 +34,7 @@
     <string name="menu_navigation_recent">Recent</string>
     <string name="menu_navigation_public">Public</string>
     <string name="menu_navigation_private">Private</string>
-    <string name="menu_navigation_unread">Unread</string>
+    <string name="menu_navigation_unread">Read Later</string>
     <string name="menu_navigation_untagged">Untagged</string>
     <string name="menu_navigation_tags">Tags</string>
     <string name="menu_navigation_notes">Notes</string>
@@ -66,7 +66,7 @@
     <string name="posts_title_recent">Recent Bookmarks</string>
     <string name="posts_title_public">Public Bookmarks</string>
     <string name="posts_title_private">Private Bookmarks</string>
-    <string name="posts_title_unread">Unread Bookmarks</string>
+    <string name="posts_title_unread">Read Later Bookmarks</string>
     <string name="posts_title_untagged">Untagged Bookmarks</string>
 
     <plurals name="posts_quantity">
