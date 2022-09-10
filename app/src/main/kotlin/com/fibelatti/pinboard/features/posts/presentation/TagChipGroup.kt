@@ -74,6 +74,7 @@ class TagChipGroup @JvmOverloads constructor(
         putParcelableArrayList(DYNAMIC_TAGS_KEY, ArrayList(getAllTags()))
     }
 
+    @Suppress("DEPRECATION")
     override fun onRestoreInstanceState(state: Parcelable?) {
         if (state !is Bundle) {
             return

@@ -42,6 +42,7 @@ class InAppReviewManager @Inject constructor(
 
     private fun installTimeFromPackageManager(): Long {
         return try {
+            @Suppress("DEPRECATION")
             val info = packageManager.getPackageInfo(packageName, 0)
             val field: Field = PackageInfo::class.java.getField("firstInstallTime")
             return field.getLong(info)

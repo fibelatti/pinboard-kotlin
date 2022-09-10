@@ -3,8 +3,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 apply(from = "detekt.gradle")
 
 buildscript {
-    extra["compileSdkVersion"] = 32
-    extra["targetSdkVersion"] = 32
+    extra["compileSdkVersion"] = 33
+    extra["targetSdkVersion"] = 33
     extra["minSdkVersion"] = 21
 
     val jacocoEnabled: String? by project

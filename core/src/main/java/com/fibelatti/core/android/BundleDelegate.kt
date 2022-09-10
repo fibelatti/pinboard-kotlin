@@ -34,7 +34,7 @@ private class BundleDelegate<T>(
     private val default: T? = null,
 ) : ReadWriteProperty<Bundle, T> {
 
-    @Suppress("UNCHECKED_CAST")
+    @Suppress("UNCHECKED_CAST", "DEPRECATION")
     override operator fun getValue(
         thisRef: Bundle,
         property: KProperty<*>,

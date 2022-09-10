@@ -85,6 +85,7 @@ class NavigationMenuFragment @Inject constructor(
         super.onViewCreated(view, savedInstanceState)
 
         try {
+            @Suppress("DEPRECATION")
             val pInfo = view.context.packageManager.getPackageInfo(view.context.packageName, 0)
             binding.menuItemVersion.text = getString(R.string.about_version, pInfo.versionName)
         } catch (ignored: PackageManager.NameNotFoundException) {

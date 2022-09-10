@@ -7,5 +7,6 @@ import androidx.fragment.app.FragmentActivity
  * Shorthand function to invoke [FragmentActivity.onBackPressed] of the parent [FragmentActivity].
  */
 fun Fragment.navigateBack() {
+    @Suppress("DEPRECATION")
     activity?.onBackPressed()
 }
