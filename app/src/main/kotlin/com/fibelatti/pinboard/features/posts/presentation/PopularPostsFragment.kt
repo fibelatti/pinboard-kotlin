@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -81,6 +82,7 @@ class PopularPostsFragment @Inject constructor(
             title = getString(R.string.quick_actions_title),
             options = PopularPostQuickActions.allOptions(post),
             optionName = { option -> getString(option.title) },
+            optionIcon = PopularPostQuickActions::icon,
             onOptionSelected = { option ->
                 when (option) {
                     is PopularPostQuickActions.Save -> popularPostsViewModel.saveLink(option.post)
@@ -160,21 +162,33 @@ class PopularPostsFragment @Inject constructor(
     }
 }
 
-private sealed class PopularPostQuickActions(@StringRes val title: Int) {
+private sealed class PopularPostQuickActions(
+    @StringRes val title: Int,
+    @DrawableRes val icon: Int,
+) {
 
     abstract val post: Post
 
     data class Save(
         override val post: Post,
-    ) : PopularPostQuickActions(title = R.string.quick_actions_save)
+    ) : PopularPostQuickActions(
+        title = R.string.quick_actions_save,
+        icon = R.drawable.ic_save,
+    )
 
     data class Share(
         override val post: Post,
-    ) : PopularPostQuickActions(title = R.string.quick_actions_share)
+    ) : PopularPostQuickActions(
+        title = R.string.quick_actions_share,
+        icon = R.drawable.ic_share,
+    )
 
     data class OpenBrowser(
         override val post: Post,
-    ) : PopularPostQuickActions(title = R.string.quick_actions_open_in_browser)
+    ) : PopularPostQuickActions(
+        title = R.string.quick_actions_open_in_browser,
+        icon = R.drawable.ic_open_in_browser,
+    )
 
     companion object {
 

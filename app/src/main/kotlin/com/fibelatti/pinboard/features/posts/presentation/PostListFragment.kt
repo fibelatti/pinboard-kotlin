@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -139,17 +140,22 @@ class PostListFragment @Inject constructor(
             title = getString(R.string.quick_actions_title),
             options = PostQuickActions.allOptions(post),
             optionName = { option -> getString(option.title) },
+            optionIcon = PostQuickActions::icon,
             onOptionSelected = { option ->
                 when (option) {
-                    is PostQuickActions.OpenBrowser -> startActivity(
-                        Intent(Intent.ACTION_VIEW, Uri.parse(option.post.url))
-                    )
+                    is PostQuickActions.Edit -> appStateViewModel.runAction(EditPost(option.post))
+                    is PostQuickActions.Delete -> deletePost(option.post)
                     is PostQuickActions.Share -> requireActivity().shareText(
                         R.string.posts_share_title,
                         option.post.url,
                     )
-                    is PostQuickActions.Edit -> appStateViewModel.runAction(EditPost(option.post))
-                    is PostQuickActions.Delete -> deletePost(option.post)
+                    is PostQuickActions.ExpandDescription -> PostDescriptionDialog.showPostDescriptionDialog(
+                        context = requireContext(),
+                        post = post,
+                    )
+                    is PostQuickActions.OpenBrowser -> startActivity(
+                        Intent(Intent.ACTION_VIEW, Uri.parse(option.post.url))
+                    )
                 }
             }
         )
@@ -176,9 +182,7 @@ class PostListFragment @Inject constructor(
             .onEach { binding.progressBar.isVisible = it }
             .launchIn(lifecycleScope)
         postDetailViewModel.deleted
-            .onEach {
-                binding.root.showBanner(getString(R.string.posts_deleted_feedback))
-            }
+            .onEach { binding.root.showBanner(getString(R.string.posts_deleted_feedback)) }
             .launchIn(lifecycleScope)
         postDetailViewModel.deleteError
             .onEach {
@@ -339,35 +343,62 @@ class PostListFragment @Inject constructor(
     }
 }
 
-private sealed class PostQuickActions(@StringRes val title: Int) {
+private sealed class PostQuickActions(
+    @StringRes val title: Int,
+    @DrawableRes val icon: Int,
+) {
 
     abstract val post: Post
 
     data class Edit(
         override val post: Post,
-    ) : PostQuickActions(title = R.string.quick_actions_edit)
+    ) : PostQuickActions(
+        title = R.string.quick_actions_edit,
+        icon = R.drawable.ic_edit,
+    )
 
     data class Delete(
         override val post: Post,
-    ) : PostQuickActions(title = R.string.quick_actions_delete)
+    ) : PostQuickActions(
+        title = R.string.quick_actions_delete,
+        icon = R.drawable.ic_delete,
+    )
 
     data class Share(
         override val post: Post,
-    ) : PostQuickActions(title = R.string.quick_actions_share)
+    ) : PostQuickActions(
+        title = R.string.quick_actions_share,
+        icon = R.drawable.ic_share,
+    )
+
+    data class ExpandDescription(
+        override val post: Post,
+    ) : PostQuickActions(
+        title = R.string.quick_actions_expand_description,
+        icon = R.drawable.ic_expand,
+    )
 
     data class OpenBrowser(
         override val post: Post,
-    ) : PostQuickActions(title = R.string.quick_actions_open_in_browser)
+    ) : PostQuickActions(
+        title = R.string.quick_actions_open_in_browser,
+        icon = R.drawable.ic_open_in_browser,
+    )
 
     companion object {
 
         fun allOptions(
             post: Post,
-        ): List<PostQuickActions> = listOf(
-            Edit(post),
-            Delete(post),
-            Share(post),
-            OpenBrowser(post),
-        )
+        ): List<PostQuickActions> = buildList {
+            add(Edit(post))
+            add(Delete(post))
+            add(Share(post))
+
+            if (post.description.isNotBlank()) {
+                add(ExpandDescription(post))
+            }
+
+            add(OpenBrowser(post))
+        }
     }
 }

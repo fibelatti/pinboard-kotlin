@@ -14,6 +14,7 @@ object SelectionDialog {
         title: String,
         options: List<T>,
         optionName: (T) -> String,
+        optionIcon: (T) -> Int? = { null },
         onOptionSelected: (T) -> Unit,
     ) {
         BottomSheetDialog(context).apply {
@@ -24,7 +25,7 @@ object SelectionDialog {
             dialogLayout.selectionTitle.text = title
 
             for (option in options) {
-                createSelectionOption(dialogLayout.layoutOptions, option, optionName, onOptionSelected)
+                createSelectionOption(dialogLayout.layoutOptions, option, optionName, optionIcon, onOptionSelected)
                     .let(dialogLayout.layoutOptions::addView)
             }
         }.show()
@@ -34,10 +35,12 @@ object SelectionDialog {
         parentView: ViewGroup,
         option: T,
         optionName: (T) -> String,
+        optionIcon: (T) -> Int? = { null },
         onOptionSelected: (T) -> Unit,
     ): View = ListItemSelectionBinding.inflate(layoutInflater, parentView, false)
         .apply {
             root.text = optionName(option)
+            optionIcon(option)?.let(root::setIconResource)
             root.setOnClickListener {
                 onOptionSelected(option)
                 dismiss()
