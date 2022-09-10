@@ -60,9 +60,6 @@ import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -84,7 +81,6 @@ class PostsDataSourcePinboardApiTest {
         every { isConnected() } returns true
     }
     private val mockRunner = TestRateLimitRunner()
-    private val mockIoScope = TestScope(UnconfinedTestDispatcher())
 
     private val mockPostDto = mockk<PostDto>()
     private val mockPostRemoteDto = mockk<PostRemoteDto>()
@@ -103,7 +99,6 @@ class PostsDataSourcePinboardApiTest {
             dateFormatter = mockDateFormatter,
             connectivityInfoProvider = mockConnectivityInfoProvider,
             rateLimitRunner = mockRunner,
-            pagedRequestsScope = mockIoScope,
         )
     )
 
@@ -111,24 +106,24 @@ class PostsDataSourcePinboardApiTest {
     inner class UpdateTests {
 
         @Test
-        fun `GIVEN that the api returns an error WHEN update is called THEN Failure is returned`() {
+        fun `GIVEN that the api returns an error WHEN update is called THEN Failure is returned`() = runTest {
             // GIVEN
             coEvery { mockApi.update() } throws Exception()
 
             // WHEN
-            val result = runBlocking { dataSource.update() }
+            val result = dataSource.update()
 
             // THEN
             assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
         }
 
         @Test
-        fun `WHEN update is called THEN Success is returned`() {
+        fun `WHEN update is called THEN Success is returned`() = runTest {
             // GIVEN
             coEvery { mockApi.update() } returns UpdateDto(mockTime)
 
             // WHEN
-            val result = runBlocking { dataSource.update() }
+            val result = dataSource.update()
 
             // THEN
             assertThat(result.getOrNull()).isEqualTo(mockTime)
@@ -262,7 +257,7 @@ class PostsDataSourcePinboardApiTest {
                     } returns createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS)
                     coEvery { mockDao.getPost(mockUrlValid) } returns null
                     coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto(posts = mockListPostRemoteDto)
-                    every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
+                    every { mockPostRemoteDtoMapper.map(mockPostRemoteDto) } returns mockPostDto
                     every { mockPostDtoMapper.map(mockPostDto) } returns mockPost
 
                     // WHEN
@@ -1037,7 +1032,7 @@ class PostsDataSourcePinboardApiTest {
                     )
                 } returns mockListPostRemoteDto
                 every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
-                every { dataSource.getAdditionalPages(initialOffset = 1) } returns Unit
+                coEvery { dataSource.getAdditionalPages(initialOffset = 1) } returns Unit
                 coEvery { dataSource.savePosts(any()) } returns Unit
 
                 // WHEN
@@ -1060,7 +1055,7 @@ class PostsDataSourcePinboardApiTest {
                 coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
                 coVerify { mockDao.deleteAllSyncedPosts() }
                 coVerify { dataSource.savePosts(mockListPostDto) }
-                verify { dataSource.getAdditionalPages(initialOffset = 1) }
+                coVerify { dataSource.getAdditionalPages(initialOffset = 1) }
                 coVerify { mockUserRepository.lastUpdate = mockFutureTime }
             }
         }
@@ -1196,7 +1191,7 @@ class PostsDataSourcePinboardApiTest {
     inner class GetLocalDataSizeTests {
 
         @Test
-        fun `WHEN tags is empty THEN tag1 tag2 and tag3 are sent as empty`() {
+        fun `WHEN tags is empty THEN tag1 tag2 and tag3 are sent as empty`() = runTest {
             // GIVEN
             coEvery {
                 mockDao.getPostCount(
@@ -1213,16 +1208,14 @@ class PostsDataSourcePinboardApiTest {
             } returns 0
 
             // WHEN
-            val result = runBlocking {
-                dataSource.getLocalDataSize(
-                    searchTerm = mockUrlTitle,
-                    tags = emptyList(),
-                    untaggedOnly = false,
-                    postVisibility = PostVisibility.None,
-                    readLaterOnly = false,
-                    countLimit = -1
-                )
-            }
+            val result = dataSource.getLocalDataSize(
+                searchTerm = mockUrlTitle,
+                tags = emptyList(),
+                untaggedOnly = false,
+                postVisibility = PostVisibility.None,
+                readLaterOnly = false,
+                countLimit = -1
+            )
 
             // THEN
             coVerify {
@@ -1242,7 +1235,7 @@ class PostsDataSourcePinboardApiTest {
         }
 
         @Test
-        fun `WHEN tags size is 1 THEN tag2 and tag3 are sent as empty`() {
+        fun `WHEN tags size is 1 THEN tag2 and tag3 are sent as empty`() = runTest {
             // GIVEN
             coEvery {
                 mockDao.getPostCount(
@@ -1259,16 +1252,14 @@ class PostsDataSourcePinboardApiTest {
             } returns 0
 
             // WHEN
-            val result = runBlocking {
-                dataSource.getLocalDataSize(
-                    searchTerm = mockUrlTitle,
-                    tags = listOf(mockTag1),
-                    untaggedOnly = false,
-                    postVisibility = PostVisibility.None,
-                    readLaterOnly = false,
-                    countLimit = -1
-                )
-            }
+            val result = dataSource.getLocalDataSize(
+                searchTerm = mockUrlTitle,
+                tags = listOf(mockTag1),
+                untaggedOnly = false,
+                postVisibility = PostVisibility.None,
+                readLaterOnly = false,
+                countLimit = -1
+            )
 
             // THEN
             coVerify {
@@ -1288,7 +1279,7 @@ class PostsDataSourcePinboardApiTest {
         }
 
         @Test
-        fun `WHEN tags size is 2 THEN tag3 is sent as empty`() {
+        fun `WHEN tags size is 2 THEN tag3 is sent as empty`() = runTest {
             // GIVEN
             coEvery {
                 mockDao.getPostCount(
@@ -1305,16 +1296,14 @@ class PostsDataSourcePinboardApiTest {
             } returns 0
 
             // WHEN
-            val result = runBlocking {
-                dataSource.getLocalDataSize(
-                    searchTerm = mockUrlTitle,
-                    tags = listOf(mockTag1, mockTag2),
-                    untaggedOnly = false,
-                    postVisibility = PostVisibility.None,
-                    readLaterOnly = false,
-                    countLimit = -1
-                )
-            }
+            val result = dataSource.getLocalDataSize(
+                searchTerm = mockUrlTitle,
+                tags = listOf(mockTag1, mockTag2),
+                untaggedOnly = false,
+                postVisibility = PostVisibility.None,
+                readLaterOnly = false,
+                countLimit = -1
+            )
 
             // THEN
             coVerify {
@@ -1334,7 +1323,7 @@ class PostsDataSourcePinboardApiTest {
         }
 
         @Test
-        fun `WHEN tags size is 3 THEN all tags are sent`() {
+        fun `WHEN tags size is 3 THEN all tags are sent`() = runTest {
             // GIVEN
             coEvery {
                 mockDao.getPostCount(
@@ -1351,16 +1340,14 @@ class PostsDataSourcePinboardApiTest {
             } returns 0
 
             // WHEN
-            val result = runBlocking {
-                dataSource.getLocalDataSize(
-                    searchTerm = mockUrlTitle,
-                    tags = listOf(mockTag1, mockTag2, mockTag3),
-                    untaggedOnly = false,
-                    postVisibility = PostVisibility.None,
-                    readLaterOnly = false,
-                    countLimit = -1
-                )
-            }
+            val result = dataSource.getLocalDataSize(
+                searchTerm = mockUrlTitle,
+                tags = listOf(mockTag1, mockTag2, mockTag3),
+                untaggedOnly = false,
+                postVisibility = PostVisibility.None,
+                readLaterOnly = false,
+                countLimit = -1
+            )
 
             // THEN
             coVerify {
@@ -1419,7 +1406,7 @@ class PostsDataSourcePinboardApiTest {
         }
 
         @Test
-        fun `WHEN local data size is 0 THEN PostListResult is returned and getAllPosts is not called`() {
+        fun `WHEN local data size is 0 THEN PostListResult is returned and getAllPosts is not called`() = runTest {
             // GIVEN
             coEvery {
                 dataSource.getLocalDataSize(
@@ -1433,20 +1420,18 @@ class PostsDataSourcePinboardApiTest {
             } returns 0
 
             // WHEN
-            val result = runBlocking {
-                dataSource.getLocalData(
-                    newestFirst = true,
-                    searchTerm = mockUrlTitle,
-                    tags = emptyList(),
-                    untaggedOnly = false,
-                    postVisibility = PostVisibility.None,
-                    readLaterOnly = false,
-                    countLimit = -1,
-                    pageLimit = -1,
-                    pageOffset = 0,
-                    upToDate = upToDate
-                )
-            }
+            val result = dataSource.getLocalData(
+                newestFirst = true,
+                searchTerm = mockUrlTitle,
+                tags = emptyList(),
+                untaggedOnly = false,
+                postVisibility = PostVisibility.None,
+                readLaterOnly = false,
+                countLimit = -1,
+                pageLimit = -1,
+                pageOffset = 0,
+                upToDate = upToDate
+            )
 
             // THEN
             assertThat(result.getOrThrow()).isEqualTo(
@@ -1459,22 +1444,20 @@ class PostsDataSourcePinboardApiTest {
         }
 
         @Test
-        fun `WHEN tags is empty THEN tag1 tag2 and tag3 are sent as empty`() {
+        fun `WHEN tags is empty THEN tag1 tag2 and tag3 are sent as empty`() = runTest {
             // WHEN
-            val result = runBlocking {
-                dataSource.getLocalData(
-                    newestFirst = true,
-                    searchTerm = mockUrlTitle,
-                    tags = emptyList(),
-                    untaggedOnly = false,
-                    postVisibility = PostVisibility.None,
-                    readLaterOnly = false,
-                    countLimit = -1,
-                    pageLimit = -1,
-                    pageOffset = 0,
-                    upToDate = upToDate
-                )
-            }
+            val result = dataSource.getLocalData(
+                newestFirst = true,
+                searchTerm = mockUrlTitle,
+                tags = emptyList(),
+                untaggedOnly = false,
+                postVisibility = PostVisibility.None,
+                readLaterOnly = false,
+                countLimit = -1,
+                pageLimit = -1,
+                pageOffset = 0,
+                upToDate = upToDate
+            )
 
             // THEN
             coVerify {
@@ -1502,22 +1485,20 @@ class PostsDataSourcePinboardApiTest {
         }
 
         @Test
-        fun `WHEN tags size is 1 THEN tag2 and tag3 are sent as empty`() {
+        fun `WHEN tags size is 1 THEN tag2 and tag3 are sent as empty`() = runTest {
             // WHEN
-            val result = runBlocking {
-                dataSource.getLocalData(
-                    newestFirst = true,
-                    searchTerm = mockUrlTitle,
-                    tags = listOf(mockTag1),
-                    untaggedOnly = false,
-                    postVisibility = PostVisibility.None,
-                    readLaterOnly = false,
-                    countLimit = -1,
-                    pageLimit = -1,
-                    pageOffset = 0,
-                    upToDate = upToDate
-                )
-            }
+            val result = dataSource.getLocalData(
+                newestFirst = true,
+                searchTerm = mockUrlTitle,
+                tags = listOf(mockTag1),
+                untaggedOnly = false,
+                postVisibility = PostVisibility.None,
+                readLaterOnly = false,
+                countLimit = -1,
+                pageLimit = -1,
+                pageOffset = 0,
+                upToDate = upToDate
+            )
 
             // THEN
             coVerify {
@@ -1545,22 +1526,20 @@ class PostsDataSourcePinboardApiTest {
         }
 
         @Test
-        fun `WHEN tags size is 2 THEN tag3 is sent as empty`() {
+        fun `WHEN tags size is 2 THEN tag3 is sent as empty`() = runTest {
             // WHEN
-            val result = runBlocking {
-                dataSource.getLocalData(
-                    newestFirst = true,
-                    searchTerm = mockUrlTitle,
-                    tags = listOf(mockTag1, mockTag2),
-                    untaggedOnly = false,
-                    postVisibility = PostVisibility.None,
-                    readLaterOnly = false,
-                    countLimit = -1,
-                    pageLimit = -1,
-                    pageOffset = 0,
-                    upToDate = upToDate
-                )
-            }
+            val result = dataSource.getLocalData(
+                newestFirst = true,
+                searchTerm = mockUrlTitle,
+                tags = listOf(mockTag1, mockTag2),
+                untaggedOnly = false,
+                postVisibility = PostVisibility.None,
+                readLaterOnly = false,
+                countLimit = -1,
+                pageLimit = -1,
+                pageOffset = 0,
+                upToDate = upToDate
+            )
 
             // THEN
             coVerify {
@@ -1588,22 +1567,20 @@ class PostsDataSourcePinboardApiTest {
         }
 
         @Test
-        fun `WHEN tags size is 3 THEN all tags are sent`() {
+        fun `WHEN tags size is 3 THEN all tags are sent`() = runTest {
             // WHEN
-            val result = runBlocking {
-                dataSource.getLocalData(
-                    newestFirst = true,
-                    searchTerm = mockUrlTitle,
-                    tags = listOf(mockTag1, mockTag2, mockTag3),
-                    untaggedOnly = false,
-                    postVisibility = PostVisibility.None,
-                    readLaterOnly = false,
-                    countLimit = -1,
-                    pageLimit = -1,
-                    pageOffset = 0,
-                    upToDate = upToDate
-                )
-            }
+            val result = dataSource.getLocalData(
+                newestFirst = true,
+                searchTerm = mockUrlTitle,
+                tags = listOf(mockTag1, mockTag2, mockTag3),
+                untaggedOnly = false,
+                postVisibility = PostVisibility.None,
+                readLaterOnly = false,
+                countLimit = -1,
+                pageLimit = -1,
+                pageOffset = 0,
+                upToDate = upToDate
+            )
 
             // THEN
             coVerify {
@@ -1631,7 +1608,7 @@ class PostsDataSourcePinboardApiTest {
         }
 
         @Test
-        fun `WHEN getGetAll posts fails THEN Failure is returned`() {
+        fun `WHEN getGetAll posts fails THEN Failure is returned`() = runTest {
             // GIVEN
             coEvery {
                 mockDao.getAllPosts(
@@ -1650,20 +1627,18 @@ class PostsDataSourcePinboardApiTest {
             } throws Exception()
 
             // WHEN
-            val result = runBlocking {
-                dataSource.getLocalData(
-                    newestFirst = true,
-                    searchTerm = mockUrlTitle,
-                    tags = emptyList(),
-                    untaggedOnly = false,
-                    postVisibility = PostVisibility.None,
-                    readLaterOnly = false,
-                    countLimit = -1,
-                    pageLimit = -1,
-                    pageOffset = 0,
-                    upToDate = upToDate
-                )
-            }
+            val result = dataSource.getLocalData(
+                newestFirst = true,
+                searchTerm = mockUrlTitle,
+                tags = emptyList(),
+                untaggedOnly = false,
+                postVisibility = PostVisibility.None,
+                readLaterOnly = false,
+                countLimit = -1,
+                pageLimit = -1,
+                pageOffset = 0,
+                upToDate = upToDate
+            )
 
             // THEN
             assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
@@ -1674,41 +1649,41 @@ class PostsDataSourcePinboardApiTest {
     inner class GetPostTests {
 
         @Test
-        fun `GIVEN that the api returns an error WHEN getPost is called THEN Failure is returned`() {
+        fun `GIVEN that the api returns an error WHEN getPost is called THEN Failure is returned`() = runTest {
             // GIVEN
             coEvery { mockApi.getPost(mockUrlValid) } throws Exception()
 
             // WHEN
-            val result = runBlocking { dataSource.getPost(mockUrlValid) }
+            val result = dataSource.getPost(mockUrlValid)
 
             // THEN
             assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
         }
 
         @Test
-        fun `GIVEN the list is empty WHEN getPost is called THEN Failure is returned`() {
+        fun `GIVEN the list is empty WHEN getPost is called THEN Failure is returned`() = runTest {
             // GIVEN
             coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto(posts = emptyList())
 
             // WHEN
-            val result = runBlocking { dataSource.getPost(mockUrlValid) }
+            val result = dataSource.getPost(mockUrlValid)
 
             // THEN
             assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
         }
 
         @Test
-        fun `WHEN getPost is called THEN Success is returned`() {
+        fun `WHEN getPost is called THEN Success is returned`() = runTest {
             // GIVEN
             val post = createPost()
 
             coEvery { mockDao.getPost(mockUrlValid) } returns null
             coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto()
-            every { mockPostRemoteDtoMapper.mapList(listOf(createPostRemoteDto())) } returns listOf(createPostDto())
+            every { mockPostRemoteDtoMapper.map(createPostRemoteDto()) } returns createPostDto()
             every { mockPostDtoMapper.map(createPostDto()) } returns post
 
             // WHEN
-            val result = runBlocking { dataSource.getPost(mockUrlValid) }
+            val result = dataSource.getPost(mockUrlValid)
 
             // THEN
             assertThat(result.getOrNull()).isEqualTo(post)
@@ -1719,19 +1694,19 @@ class PostsDataSourcePinboardApiTest {
     inner class SearchExistingPostTagTest {
 
         @Test
-        fun `WHEN the db call fails THEN Failure is returned`() {
+        fun `WHEN the db call fails THEN Failure is returned`() = runTest {
             // GIVEN
             coEvery { mockDao.searchExistingPostTag(any()) } throws Exception()
 
             // WHEN
-            val result = runBlocking { dataSource.searchExistingPostTag(mockTagString1) }
+            val result = dataSource.searchExistingPostTag(mockTagString1)
 
             // THEN
             assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
         }
 
         @Test
-        fun `WHEN the db call succeeds THEN distinct and sorted values are returned`() {
+        fun `WHEN the db call succeeds THEN distinct and sorted values are returned`() = runTest {
             // GIVEN
             coEvery { mockDao.searchExistingPostTag(any()) } returns
                 listOf(
@@ -1747,8 +1722,7 @@ class PostsDataSourcePinboardApiTest {
                 .commonPrefixWith(mockTagStringHtmlEscaped)
 
             // WHEN
-
-            val result = runBlocking { dataSource.searchExistingPostTag(commonPrefix) }
+            val result = dataSource.searchExistingPostTag(commonPrefix)
 
             // THEN
             assertThat(result.getOrNull()).isEqualTo(
@@ -1795,9 +1769,9 @@ class PostsDataSourcePinboardApiTest {
     inner class ClearCache {
 
         @Test
-        fun `WHEN clearCache is called THEN dao deleteAllPosts is called`() {
+        fun `WHEN clearCache is called THEN dao deleteAllPosts is called`() = runTest {
             // WHEN
-            runBlocking { dataSource.clearCache() }
+            dataSource.clearCache()
 
             // THEN
             coVerify { mockDao.deleteAllPosts() }

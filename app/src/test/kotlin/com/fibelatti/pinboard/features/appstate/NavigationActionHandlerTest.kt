@@ -11,14 +11,13 @@ import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearMocks
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -31,14 +30,12 @@ internal class NavigationActionHandlerTest {
     private val mockUserRepository = mockk<UserRepository>(relaxed = true)
     private val mockPostsRepository = mockk<PostsRepository>()
     private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider>()
-    private val mockIoScope = spyk(CoroutineScope(Dispatchers.Unconfined))
 
     private val navigationActionHandler = spyk(
         NavigationActionHandler(
             mockUserRepository,
             mockPostsRepository,
             mockConnectivityInfoProvider,
-            mockIoScope
         )
     )
 
@@ -56,14 +53,12 @@ internal class NavigationActionHandlerTest {
     inner class NavigateBackTests {
 
         @Test
-        fun `WHEN currentContent is not ContentWithHistory THEN same content is returned`() {
+        fun `WHEN currentContent is not ContentWithHistory THEN same content is returned`() = runTest {
             // GIVEN
             val content = mockk<ExternalContent>()
 
             // WHEN
-            val result = runBlocking {
-                navigationActionHandler.runAction(NavigateBack, content)
-            }
+            val result = navigationActionHandler.runAction(NavigateBack, content)
 
             // THEN
             assertThat(result).isEqualTo(content)
@@ -72,8 +67,8 @@ internal class NavigationActionHandlerTest {
         @ParameterizedTest
         @MethodSource("testCases")
         fun `WHEN currentContent is ContentWithHistory THEN previousContent is returned`(
-            contentWithHistory: ContentWithHistory
-        ) {
+            contentWithHistory: ContentWithHistory,
+        ) = runTest {
             // GIVEN
             val returnedContent = when (contentWithHistory) {
                 is NoteDetailContent -> mockk<NoteListContent>()
@@ -87,9 +82,7 @@ internal class NavigationActionHandlerTest {
             every { mockUserRepository.showDescriptionInLists } returns randomBoolean
 
             // WHEN
-            val result = runBlocking {
-                navigationActionHandler.runAction(NavigateBack, contentWithHistory)
-            }
+            val result = navigationActionHandler.runAction(NavigateBack, contentWithHistory)
 
             // THEN
             if (contentWithHistory is UserPreferencesContent) {
@@ -114,14 +107,14 @@ internal class NavigationActionHandlerTest {
 
         @ParameterizedTest
         @MethodSource("testCases")
-        fun `WHEN action is ViewCategory THEN a PostListContent is returned`(category: ViewCategory) {
+        fun `WHEN action is ViewCategory THEN a PostListContent is returned`(category: ViewCategory) = runTest {
             // GIVEN
             val randomBoolean = randomBoolean()
             every { mockUserRepository.showDescriptionInLists } returns randomBoolean
             every { mockConnectivityInfoProvider.isConnected() } returns false
 
             // WHEN
-            val result = runBlocking { navigationActionHandler.runAction(category, mockk()) }
+            val result = navigationActionHandler.runAction(category, mockk())
 
             // THEN
             assertThat(result).isEqualTo(
@@ -152,149 +145,141 @@ internal class NavigationActionHandlerTest {
 
         @BeforeEach
         fun setup() {
-            every { navigationActionHandler.markAsRead(any()) } returns mockShouldLoad
+            coEvery { navigationActionHandler.markAsRead(any()) } returns mockShouldLoad
         }
 
         @Test
-        fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
+        fun `WHEN currentContent is not PostListContent THEN same content is returned`() = runTest {
             // GIVEN
             val content = mockk<PostDetailContent>()
 
             // WHEN
-            val result = runBlocking {
-                navigationActionHandler.runAction(ViewPost(createPost()), content)
-            }
+            val result = navigationActionHandler.runAction(ViewPost(createPost()), content)
 
             // THEN
             assertThat(result).isEqualTo(content)
         }
 
         @Test
-        fun `WHEN currentContent is PostListContent and PreferredDetailsView is InAppBrowser THEN PostDetailContent is returned`() {
-            // GIVEN
-            every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.InAppBrowser(
-                randomBoolean
-            )
-
-            // WHEN
-            val result = runBlocking {
-                navigationActionHandler.runAction(ViewPost(createPost()), previousContent)
-            }
-
-            // THEN
-            verify { navigationActionHandler.markAsRead(any()) }
-            assertThat(result).isEqualTo(
-                PostDetailContent(
-                    post = createPost(),
-                    previousContent = previousContent.copy(shouldLoad = mockShouldLoad)
+        fun `WHEN currentContent is PostListContent and PreferredDetailsView is InAppBrowser THEN PostDetailContent is returned`() =
+            runTest {
+                // GIVEN
+                every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.InAppBrowser(
+                    randomBoolean
                 )
-            )
-        }
+
+                // WHEN
+                val result = navigationActionHandler.runAction(ViewPost(createPost()), previousContent)
+
+                // THEN
+                coVerify { navigationActionHandler.markAsRead(any()) }
+                assertThat(result).isEqualTo(
+                    PostDetailContent(
+                        post = createPost(),
+                        previousContent = previousContent.copy(shouldLoad = mockShouldLoad)
+                    )
+                )
+            }
 
         @Test
-        fun `WHEN currentContent is PostListContent and PreferredDetailsView is ExternalBrowser THEN ExternalBrowserContent is returned`() {
-            // GIVEN
-            every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.ExternalBrowser(
-                randomBoolean
-            )
-
-            // WHEN
-            val result = runBlocking {
-                navigationActionHandler.runAction(ViewPost(createPost()), previousContent)
-            }
-
-            // THEN
-            verify { navigationActionHandler.markAsRead(any()) }
-            assertThat(result).isEqualTo(
-                ExternalBrowserContent(
-                    post = createPost(),
-                    previousContent = previousContent.copy(shouldLoad = mockShouldLoad)
+        fun `WHEN currentContent is PostListContent and PreferredDetailsView is ExternalBrowser THEN ExternalBrowserContent is returned`() =
+            runTest {
+                // GIVEN
+                every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.ExternalBrowser(
+                    randomBoolean
                 )
-            )
-        }
+
+                // WHEN
+                val result = navigationActionHandler.runAction(ViewPost(createPost()), previousContent)
+
+                // THEN
+                coVerify { navigationActionHandler.markAsRead(any()) }
+                assertThat(result).isEqualTo(
+                    ExternalBrowserContent(
+                        post = createPost(),
+                        previousContent = previousContent.copy(shouldLoad = mockShouldLoad)
+                    )
+                )
+            }
 
         @Test
-        fun `WHEN currentContent is PostListContent and PreferredDetailsView is Edit THEN EditPostContent is returned`() {
-            // GIVEN
-            every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.Edit
+        fun `WHEN currentContent is PostListContent and PreferredDetailsView is Edit THEN EditPostContent is returned`() =
+            runTest {
+                // GIVEN
+                every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.Edit
 
-            // WHEN
-            val result = runBlocking {
-                navigationActionHandler.runAction(ViewPost(createPost()), previousContent)
-            }
+                // WHEN
+                val result = navigationActionHandler.runAction(ViewPost(createPost()), previousContent)
 
-            // THEN
-            assertThat(result).isEqualTo(
-                EditPostContent(
-                    post = createPost(),
-                    previousContent = previousContent
+                // THEN
+                assertThat(result).isEqualTo(
+                    EditPostContent(
+                        post = createPost(),
+                        previousContent = previousContent
+                    )
                 )
-            )
-        }
+            }
 
         @Test
-        fun `WHEN currentContent is PopularPostsContent and PreferredDetailsView is InAppBrowser THEN PopularPostDetailContent is returned`() {
-            // GIVEN
-            val mockPopularPostsContent = mockk<PopularPostsContent>()
-            every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.InAppBrowser(
-                randomBoolean
-            )
-
-            // WHEN
-            val result = runBlocking {
-                navigationActionHandler.runAction(ViewPost(createPost()), mockPopularPostsContent)
-            }
-
-            // THEN
-            assertThat(result).isEqualTo(
-                PopularPostDetailContent(
-                    post = createPost(),
-                    previousContent = mockPopularPostsContent
+        fun `WHEN currentContent is PopularPostsContent and PreferredDetailsView is InAppBrowser THEN PopularPostDetailContent is returned`() =
+            runTest {
+                // GIVEN
+                val mockPopularPostsContent = mockk<PopularPostsContent>()
+                every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.InAppBrowser(
+                    randomBoolean
                 )
-            )
-        }
+
+                // WHEN
+                val result = navigationActionHandler.runAction(ViewPost(createPost()), mockPopularPostsContent)
+
+                // THEN
+                assertThat(result).isEqualTo(
+                    PopularPostDetailContent(
+                        post = createPost(),
+                        previousContent = mockPopularPostsContent
+                    )
+                )
+            }
 
         @Test
-        fun `WHEN currentContent is PopularPostsContent and PreferredDetailsView is ExternalBrowser THEN ExternalBrowserContent is returned`() {
-            // GIVEN
-            val mockPopularPostsContent = mockk<PopularPostsContent>()
-            every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.ExternalBrowser(
-                randomBoolean
-            )
-
-            // WHEN
-            val result = runBlocking {
-                navigationActionHandler.runAction(ViewPost(createPost()), mockPopularPostsContent)
-            }
-
-            // THEN
-            assertThat(result).isEqualTo(
-                ExternalBrowserContent(
-                    post = createPost(),
-                    previousContent = mockPopularPostsContent
+        fun `WHEN currentContent is PopularPostsContent and PreferredDetailsView is ExternalBrowser THEN ExternalBrowserContent is returned`() =
+            runTest {
+                // GIVEN
+                val mockPopularPostsContent = mockk<PopularPostsContent>()
+                every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.ExternalBrowser(
+                    randomBoolean
                 )
-            )
-        }
+
+                // WHEN
+                val result = navigationActionHandler.runAction(ViewPost(createPost()), mockPopularPostsContent)
+
+                // THEN
+                assertThat(result).isEqualTo(
+                    ExternalBrowserContent(
+                        post = createPost(),
+                        previousContent = mockPopularPostsContent
+                    )
+                )
+            }
 
         @Test
-        fun `WHEN currentContent is PopularPostsContent and PreferredDetailsView is Edit THEN PopularPostDetailContent is returned`() {
-            // GIVEN
-            val mockPopularPostsContent = mockk<PopularPostsContent>()
-            every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.Edit
+        fun `WHEN currentContent is PopularPostsContent and PreferredDetailsView is Edit THEN PopularPostDetailContent is returned`() =
+            runTest {
+                // GIVEN
+                val mockPopularPostsContent = mockk<PopularPostsContent>()
+                every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.Edit
 
-            // WHEN
-            val result = runBlocking {
-                navigationActionHandler.runAction(ViewPost(createPost()), mockPopularPostsContent)
-            }
+                // WHEN
+                val result = navigationActionHandler.runAction(ViewPost(createPost()), mockPopularPostsContent)
 
-            // THEN
-            assertThat(result).isEqualTo(
-                PopularPostDetailContent(
-                    post = createPost(),
-                    previousContent = mockPopularPostsContent
+                // THEN
+                assertThat(result).isEqualTo(
+                    PopularPostDetailContent(
+                        post = createPost(),
+                        previousContent = mockPopularPostsContent
+                    )
                 )
-            )
-        }
+            }
     }
 
     @Nested
@@ -303,7 +288,7 @@ internal class NavigationActionHandlerTest {
         private val post = createPost()
 
         @Test
-        fun `WHEN post readLater is false THEN Loaded is returned`() {
+        fun `WHEN post readLater is false THEN Loaded is returned`() = runTest {
             // GIVEN
             val notReadLater = post.copy(readLater = false)
 
@@ -315,7 +300,7 @@ internal class NavigationActionHandlerTest {
         }
 
         @Test
-        fun `WHEN user repository getMarkAsReadOnOpen returns false THEN Loaded is returned`() {
+        fun `WHEN user repository getMarkAsReadOnOpen returns false THEN Loaded is returned`() = runTest {
             // GIVEN
             val readLater = post.copy(readLater = true)
             every { mockUserRepository.markAsReadOnOpen } returns false
@@ -328,63 +313,63 @@ internal class NavigationActionHandlerTest {
         }
 
         @Test
-        fun `WHEN post readLater is false AND user repository getMarkAsReadOnOpen returns true THEN posts repository add is called`() {
-            // GIVEN
-            val readLater = post.copy(readLater = true)
-            every { mockUserRepository.markAsReadOnOpen } returns true
+        fun `WHEN post readLater is false AND user repository getMarkAsReadOnOpen returns true THEN posts repository add is called`() =
+            runTest {
+                // GIVEN
+                val readLater = post.copy(readLater = true)
+                every { mockUserRepository.markAsReadOnOpen } returns true
 
-            // WHEN
-            navigationActionHandler.markAsRead(readLater)
+                // WHEN
+                navigationActionHandler.markAsRead(readLater)
 
-            // THEN
-            coVerify {
-                mockPostsRepository.add(
-                    url = readLater.url,
-                    title = readLater.title,
-                    description = readLater.description,
-                    private = readLater.private,
-                    readLater = false,
-                    tags = readLater.tags,
-                    replace = true
-                )
+                // THEN
+                coVerify {
+                    mockPostsRepository.add(
+                        url = readLater.url,
+                        title = readLater.title,
+                        description = readLater.description,
+                        private = readLater.private,
+                        readLater = false,
+                        tags = readLater.tags,
+                        replace = true
+                    )
+                }
             }
-        }
 
         @Test
-        fun `WHEN post readLater is false AND user repository getMarkAsReadOnOpen returns true THEN ShouldLoadFirstPage is returned`() {
-            // GIVEN
-            val readLater = post.copy(readLater = true)
-            every { mockUserRepository.markAsReadOnOpen } returns true
+        fun `WHEN post readLater is false AND user repository getMarkAsReadOnOpen returns true THEN ShouldLoadFirstPage is returned`() =
+            runTest {
+                // GIVEN
+                val readLater = post.copy(readLater = true)
+                every { mockUserRepository.markAsReadOnOpen } returns true
 
-            // WHEN
-            val result = navigationActionHandler.markAsRead(readLater)
+                // WHEN
+                val result = navigationActionHandler.markAsRead(readLater)
 
-            // THEN
-            assertThat(result).isEqualTo(ShouldLoadFirstPage)
-        }
+                // THEN
+                assertThat(result).isEqualTo(ShouldLoadFirstPage)
+            }
     }
 
     @Nested
     inner class ViewSearchTests {
 
         @Test
-        fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
+        fun `WHEN currentContent is not PostListContent THEN same content is returned`() = runTest {
             // GIVEN
             val content = mockk<PostDetailContent>()
 
             // WHEN
-            val result = runBlocking { navigationActionHandler.runAction(ViewSearch, content) }
+            val result = navigationActionHandler.runAction(ViewSearch, content)
 
             // THEN
             assertThat(result).isEqualTo(content)
         }
 
         @Test
-        fun `WHEN currentContent is PostListContent THEN SearchContent is returned`() {
+        fun `WHEN currentContent is PostListContent THEN SearchContent is returned`() = runTest {
             // WHEN
-            val result = runBlocking {
-                navigationActionHandler.runAction(ViewSearch, previousContent)
-            }
+            val result = navigationActionHandler.runAction(ViewSearch, previousContent)
 
             // THEN
             assertThat(result).isEqualTo(
@@ -410,21 +395,21 @@ internal class NavigationActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
+        fun `WHEN currentContent is not PostListContent THEN same content is returned`() = runTest {
             // GIVEN
             val content = mockk<PostDetailContent>()
 
             // WHEN
-            val result = runBlocking { navigationActionHandler.runAction(AddPost, content) }
+            val result = navigationActionHandler.runAction(AddPost, content)
 
             // THEN
             assertThat(result).isEqualTo(content)
         }
 
         @Test
-        fun `WHEN currentContent is PostListContent THEN AddPostContent is returned`() {
+        fun `WHEN currentContent is PostListContent THEN AddPostContent is returned`() = runTest {
             // WHEN
-            val result = runBlocking { navigationActionHandler.runAction(AddPost, previousContent) }
+            val result = navigationActionHandler.runAction(AddPost, previousContent)
 
             // THEN
             assertThat(result).isEqualTo(
@@ -438,12 +423,12 @@ internal class NavigationActionHandlerTest {
         }
 
         @Test
-        fun `WHEN getDefaultPrivate returns null THEN defaultPrivate is set to false`() {
+        fun `WHEN getDefaultPrivate returns null THEN defaultPrivate is set to false`() = runTest {
             // GIVEN
             every { mockUserRepository.defaultPrivate } returns null
 
             // WHEN
-            val result = runBlocking { navigationActionHandler.runAction(AddPost, previousContent) }
+            val result = navigationActionHandler.runAction(AddPost, previousContent)
 
             // THEN
             assertThat(result).isEqualTo(
@@ -457,12 +442,12 @@ internal class NavigationActionHandlerTest {
         }
 
         @Test
-        fun `WHEN getDefaultReadLater returns null THEN defaultReadLater is set to false`() {
+        fun `WHEN getDefaultReadLater returns null THEN defaultReadLater is set to false`() = runTest {
             // GIVEN
             every { mockUserRepository.defaultReadLater } returns null
 
             // WHEN
-            val result = runBlocking { navigationActionHandler.runAction(AddPost, previousContent) }
+            val result = navigationActionHandler.runAction(AddPost, previousContent)
 
             // THEN
             assertThat(result).isEqualTo(
@@ -480,26 +465,24 @@ internal class NavigationActionHandlerTest {
     inner class ViewTagsTests {
 
         @Test
-        fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
+        fun `WHEN currentContent is not PostListContent THEN same content is returned`() = runTest {
             // GIVEN
             val content = mockk<PostDetailContent>()
 
             // WHEN
-            val result = runBlocking { navigationActionHandler.runAction(ViewTags, content) }
+            val result = navigationActionHandler.runAction(ViewTags, content)
 
             // THEN
             assertThat(result).isEqualTo(content)
         }
 
         @Test
-        fun `WHEN currentContent is PostListContent THEN TagListContent is returned`() {
+        fun `WHEN currentContent is PostListContent THEN TagListContent is returned`() = runTest {
             // GIVEN
             every { mockConnectivityInfoProvider.isConnected() } returns false
 
             // WHEN
-            val result = runBlocking {
-                navigationActionHandler.runAction(ViewTags, previousContent)
-            }
+            val result = navigationActionHandler.runAction(ViewTags, previousContent)
 
             // THEN
             assertThat(result).isEqualTo(
@@ -519,26 +502,24 @@ internal class NavigationActionHandlerTest {
     inner class ViewNotesTests {
 
         @Test
-        fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
+        fun `WHEN currentContent is not PostListContent THEN same content is returned`() = runTest {
             // GIVEN
             val content = mockk<PostDetailContent>()
 
             // WHEN
-            val result = runBlocking { navigationActionHandler.runAction(ViewNotes, content) }
+            val result = navigationActionHandler.runAction(ViewNotes, content)
 
             // THEN
             assertThat(result).isEqualTo(content)
         }
 
         @Test
-        fun `WHEN currentContent is PostListContent THEN NoteListContent is returned`() {
+        fun `WHEN currentContent is PostListContent THEN NoteListContent is returned`() = runTest {
             // GIVEN
             every { mockConnectivityInfoProvider.isConnected() } returns false
 
             // WHEN
-            val result = runBlocking {
-                navigationActionHandler.runAction(ViewNotes, previousContent)
-            }
+            val result = navigationActionHandler.runAction(ViewNotes, previousContent)
 
             // THEN
             assertThat(result).isEqualTo(
@@ -558,21 +539,19 @@ internal class NavigationActionHandlerTest {
     inner class ViewNoteTests {
 
         @Test
-        fun `WHEN currentContent is not NoteListContent THEN same content is returned`() {
+        fun `WHEN currentContent is not NoteListContent THEN same content is returned`() = runTest {
             // GIVEN
             val content = mockk<PostDetailContent>()
 
             // WHEN
-            val result = runBlocking {
-                navigationActionHandler.runAction(ViewNote("some-id"), content)
-            }
+            val result = navigationActionHandler.runAction(ViewNote("some-id"), content)
 
             // THEN
             assertThat(result).isEqualTo(content)
         }
 
         @Test
-        fun `WHEN currentContent is NoteListContent THEN NoteDetailContent is returned`() {
+        fun `WHEN currentContent is NoteListContent THEN NoteDetailContent is returned`() = runTest {
             // GIVEN
             every { mockConnectivityInfoProvider.isConnected() } returns false
 
@@ -584,9 +563,7 @@ internal class NavigationActionHandlerTest {
             )
 
             // WHEN
-            val result = runBlocking {
-                navigationActionHandler.runAction(ViewNote("some-id"), initialContent)
-            }
+            val result = navigationActionHandler.runAction(ViewNote("some-id"), initialContent)
 
             // THEN
             assertThat(result).isEqualTo(
@@ -606,30 +583,26 @@ internal class NavigationActionHandlerTest {
     inner class ViewPopularTests {
 
         @Test
-        fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
+        fun `WHEN currentContent is not PostListContent THEN same content is returned`() = runTest {
             // GIVEN
             val content = mockk<PostDetailContent>()
 
             // WHEN
-            val result = runBlocking {
-                navigationActionHandler.runAction(ViewPopular, content)
-            }
+            val result = navigationActionHandler.runAction(ViewPopular, content)
 
             // THEN
             assertThat(result).isEqualTo(content)
         }
 
         @Test
-        fun `WHEN currentContent is PostListContent THEN PopularPostsContent is returned`() {
+        fun `WHEN currentContent is PostListContent THEN PopularPostsContent is returned`() = runTest {
             // GIVEN
             val mockCurrentContent = mockk<PostListContent>()
             val mockBoolean = randomBoolean()
             every { mockConnectivityInfoProvider.isConnected() } returns mockBoolean
 
             // WHEN
-            val result = runBlocking {
-                navigationActionHandler.runAction(ViewPopular, mockCurrentContent)
-            }
+            val result = navigationActionHandler.runAction(ViewPopular, mockCurrentContent)
 
             // THEN
             assertThat(result).isEqualTo(
@@ -649,21 +622,21 @@ internal class NavigationActionHandlerTest {
     inner class ViewPreferencesTests {
 
         @Test
-        fun `WHEN currentContent is not PostListContent THEN same content is returned`() {
+        fun `WHEN currentContent is not PostListContent THEN same content is returned`() = runTest {
             // GIVEN
             val content = mockk<PostDetailContent>()
 
             // WHEN
-            val result = runBlocking { navigationActionHandler.runAction(ViewPreferences, content) }
+            val result = navigationActionHandler.runAction(ViewPreferences, content)
 
             // THEN
             assertThat(result).isEqualTo(content)
         }
 
         @Test
-        fun `WHEN currentContent is PostListContent THEN UserPreferencesContent is returned`() {
+        fun `WHEN currentContent is PostListContent THEN UserPreferencesContent is returned`() = runTest {
             // WHEN
-            val result = runBlocking { navigationActionHandler.runAction(ViewPreferences, previousContent) }
+            val result = navigationActionHandler.runAction(ViewPreferences, previousContent)
 
             // THEN
             assertThat(result).isEqualTo(

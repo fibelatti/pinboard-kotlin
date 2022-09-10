@@ -4,21 +4,19 @@ import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.functional.Either
 import com.fibelatti.core.functional.catching
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
-import com.fibelatti.pinboard.core.di.AppDispatchers
-import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class NavigationActionHandler @Inject constructor(
     private val userRepository: UserRepository,
     private val postsRepository: PostsRepository,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
-    @Scope(AppDispatchers.IO) private val markAsReadRequestScope: CoroutineScope,
 ) : ActionHandler<NavigationAction>() {
 
     override suspend fun runAction(action: NavigationAction, currentContent: Content): Content {
@@ -60,7 +58,7 @@ class NavigationActionHandler @Inject constructor(
         )
     }
 
-    private fun viewPost(action: ViewPost, currentContent: Content): Content {
+    private suspend fun viewPost(action: ViewPost, currentContent: Content): Content {
         val preferredDetailsView = userRepository.preferredDetailsView
 
         return when (currentContent) {
@@ -100,21 +98,24 @@ class NavigationActionHandler @Inject constructor(
     }
 
     @VisibleForTesting
-    fun markAsRead(post: Post): ShouldLoad {
+    suspend fun markAsRead(post: Post): ShouldLoad {
         return if (post.readLater && userRepository.markAsReadOnOpen) {
-            markAsReadRequestScope.launch {
-                catching {
-                    postsRepository.add(
-                        url = post.url,
-                        title = post.title,
-                        description = post.description,
-                        private = post.private,
-                        readLater = false,
-                        tags = post.tags,
-                        replace = true
-                    )
+            withContext(NonCancellable) {
+                launch {
+                    catching {
+                        postsRepository.add(
+                            url = post.url,
+                            title = post.title,
+                            description = post.description,
+                            private = post.private,
+                            readLater = false,
+                            tags = post.tags,
+                            replace = true
+                        )
+                    }
                 }
             }
+
             ShouldLoadFirstPage
         } else {
             Loaded

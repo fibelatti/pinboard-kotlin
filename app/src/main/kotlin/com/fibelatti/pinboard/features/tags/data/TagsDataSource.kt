@@ -10,10 +10,8 @@ import com.fibelatti.pinboard.core.network.resultFromNetwork
 import com.fibelatti.pinboard.features.posts.data.PostsDao
 import com.fibelatti.pinboard.features.tags.domain.TagsRepository
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class TagsDataSource @Inject constructor(
@@ -41,8 +39,8 @@ class TagsDataSource @Inject constructor(
             .sortedBy { it.name }
     }
 
-    private suspend fun getRemoteTags(): Result<List<Tag>> = withContext(Dispatchers.IO) {
-        resultFromNetwork { tagsApi.getTags() }
+    private suspend fun getRemoteTags(): Result<List<Tag>> = resultFromNetwork {
+        tagsApi.getTags()
     }.mapCatching { tagsAndPostCount ->
         tagsAndPostCount
             .map { (tag, postCount) -> Tag(tag, postCount.toInt()) }

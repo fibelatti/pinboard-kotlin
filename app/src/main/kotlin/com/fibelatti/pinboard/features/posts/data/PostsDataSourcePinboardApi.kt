@@ -11,8 +11,6 @@ import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiMaxLength
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
-import com.fibelatti.pinboard.core.di.AppDispatchers
-import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.core.extension.containsHtmlChars
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
 import com.fibelatti.pinboard.core.functional.resultFrom
@@ -33,14 +31,12 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withTimeout
 import retrofit2.HttpException
 import java.util.UUID
@@ -55,7 +51,6 @@ class PostsDataSourcePinboardApi @Inject constructor(
     private val dateFormatter: DateFormatter,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
     private val rateLimitRunner: RateLimitRunner,
-    @Scope(AppDispatchers.IO) private val pagedRequestsScope: CoroutineScope,
 ) : PostsRepository {
 
     companion object {
@@ -66,11 +61,11 @@ class PostsDataSourcePinboardApi @Inject constructor(
         private const val SERVER_DOWN_TIMEOUT_LONG = 15_000L
     }
 
+    private var pagedRequestsJob: Job? = null
+
     override suspend fun update(): Result<String> = resultFromNetwork {
-        withContext(Dispatchers.IO) {
-            withTimeout(SERVER_DOWN_TIMEOUT_SHORT) {
-                postsApi.update().updateTime
-            }
+        withTimeout(SERVER_DOWN_TIMEOUT_SHORT) {
+            postsApi.update().updateTime
         }
     }
 
@@ -123,16 +118,14 @@ class PostsDataSourcePinboardApi @Inject constructor(
         }
 
         return resultFromNetwork {
-            val result = withContext(Dispatchers.IO) {
-                withTimeout(SERVER_DOWN_TIMEOUT_LONG) {
-                    try {
-                        add(PinboardApiMaxLength.URI.value - currentLength)
-                    } catch (httpException: HttpException) {
-                        if (httpException.code() == HTTP_URI_TOO_LONG) {
-                            add(PinboardApiMaxLength.SAFE_URI.value - currentLength)
-                        } else {
-                            throw httpException
-                        }
+            val result = withTimeout(SERVER_DOWN_TIMEOUT_LONG) {
+                try {
+                    add(PinboardApiMaxLength.URI.value - currentLength)
+                } catch (httpException: HttpException) {
+                    if (httpException.code() == HTTP_URI_TOO_LONG) {
+                        add(PinboardApiMaxLength.SAFE_URI.value - currentLength)
+                    } else {
+                        throw httpException
                     }
                 }
             }
@@ -185,7 +178,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
     }
 
     private suspend fun deletePostRemote(url: String): Result<Unit> = resultFromNetwork {
-        withContext(Dispatchers.IO) { postsApi.delete(url) }
+        postsApi.delete(url)
     }.mapCatching { result ->
         if (result.resultCode == ApiResultCodes.DONE.code) {
             postsDao.deletePost(url)
@@ -249,28 +242,25 @@ class PostsDataSourcePinboardApi @Inject constructor(
         localData: suspend (upToDate: Boolean) -> Result<PostListResult>,
         apiLastUpdate: String,
     ) {
-        pagedRequestsScope.coroutineContext.cancelChildren()
-        val apiData = suspend {
-            resultFromNetwork {
-                withContext(Dispatchers.IO) {
-                    postsApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE)
-                }
-            }.mapCatching { posts ->
+        pagedRequestsJob?.cancel()
+
+        val apiData = resultFromNetwork { postsApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
+            .mapCatching { posts ->
                 postsDao.deleteAllSyncedPosts()
                 savePosts(posts.let(postRemoteDtoMapper::mapList))
 
                 userRepository.lastUpdate = apiLastUpdate
 
                 getAdditionalPages(initialOffset = posts.size)
-            }.let { localData(true) }
-        }
+            }
+            .let { localData(true) }
 
-        emit(apiData())
+        emit(apiData)
     }
 
     @VisibleForTesting
-    fun getAdditionalPages(initialOffset: Int) {
-        pagedRequestsScope.launch {
+    suspend fun getAdditionalPages(initialOffset: Int) = supervisorScope {
+        pagedRequestsJob = launch {
             runCatching {
                 var currentOffset = initialOffset
 
@@ -388,9 +378,8 @@ class PostsDataSourcePinboardApi @Inject constructor(
         this?.getOrNull(index)?.name?.let(PostsDao.Companion::preFormatTag).orEmpty()
 
     override suspend fun getPost(url: String): Result<Post> = resultFromNetwork {
-        val post = postsDao.getPost(url) ?: withContext(Dispatchers.IO) {
-            postsApi.getPost(url).posts.let(postRemoteDtoMapper::mapList).firstOrNull()
-        }
+        val post = postsDao.getPost(url)
+            ?: postsApi.getPost(url).posts.firstOrNull()?.let(postRemoteDtoMapper::map)
 
         post?.let(postDtoMapper::map) ?: throw InvalidRequestException()
     }

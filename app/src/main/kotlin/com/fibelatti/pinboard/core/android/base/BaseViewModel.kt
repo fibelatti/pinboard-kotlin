@@ -1,15 +1,13 @@
 package com.fibelatti.pinboard.core.android.base
 
-import androidx.annotation.CallSuper
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlin.coroutines.CoroutineContext
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlin.coroutines.CoroutineContext
 
 /**
  * [ViewModel] that also implements [CoroutineScope], allowing coroutines to be launched from it.
@@ -18,27 +16,14 @@ import kotlinx.coroutines.flow.filterNotNull
  */
 abstract class BaseViewModel : ViewModel(), CoroutineScope {
 
-    /**
-     * A [SupervisorJob] that will be the parent of any coroutines launched by inheritors of this [ViewModel].
-     */
-    private val parentJob = SupervisorJob()
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + parentJob
+        get() = viewModelScope.coroutineContext
 
     /**
      * A [Flow] of [Throwable] that will hold any error state that happened in this [ViewModel].
      */
     val error: Flow<Throwable> get() = _error.filterNotNull()
     private val _error = MutableStateFlow<Throwable?>(null)
-
-    /**
-     * Cancels the [parentJob].
-     */
-    @CallSuper
-    override fun onCleared() {
-        super.onCleared()
-        parentJob.cancel()
-    }
 
     /**
      * Calls [MutableLiveData.postValue] on [_error] with the received error as its argument.
