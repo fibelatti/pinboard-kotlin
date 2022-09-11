@@ -240,7 +240,7 @@
     <string name="about_share">Share Pinkt</string>
     <string name="about_rate">Rate Pinkt on Google Play</string>
     <string name="about_developer">Developed with ❤ by Filipe Belatti</string>
-    <string name="about_version">Version: %s</string>
+    <string name="about_version">App version: %s</string>
 
     <!-- Share -->
     <string name="share_to_pinkt">Save to pinboard</string>

@@ -97,23 +97,23 @@
 
         <TextView
             android:id="@+id/menuItemAbout"
-            style="@style/AppTheme.Text.Detail"
+            style="@style/AppTheme.Text.Caveat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_small"
             android:layout_marginTop="@dimen/margin_small"
             android:text="@string/about_developer"
-            android:textIsSelectable="false" />
+            android:textIsSelectable="false"
+            app:fontFamily="@font/jetbrainsmono" />
 
         <TextView
             android:id="@+id/menuItemVersion"
-            style="@style/AppTheme.Text.Detail"
+            style="@style/AppTheme.Text.Caveat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_small"
             android:layout_marginBottom="@dimen/margin_regular"
             android:text="@string/about_version"
-            android:textIsSelectable="false" />
+            android:textIsSelectable="false"
+            app:fontFamily="@font/jetbrainsmono" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

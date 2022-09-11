@@ -27,7 +27,9 @@ object AppInfo {
     val versionCode: Int = (versionMajor * 1000000 + versionMinor * 10000 + versionPatch * 100 + versionBuild)
         .also { println("versionCode: $it") }
 
-    val versionName: String = "$versionMajor.$versionMinor.$versionPatch"
+    val versionName: String = StringBuilder("$versionMajor.$versionMinor")
+        .apply { if (versionPatch != 0) append(".$versionPatch") }
+        .toString()
         .also { println("versionName: $it") }
 }
 
