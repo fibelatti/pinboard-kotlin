@@ -12,7 +12,6 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.shareText
 import com.fibelatti.core.extension.viewBinding
@@ -20,6 +19,7 @@ import com.fibelatti.core.extension.withItemOffsetDecoration
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.databinding.FragmentPopularPostsBinding
 import com.fibelatti.pinboard.features.BottomBarHost.Companion.bottomBarHost
@@ -30,7 +30,6 @@ import com.fibelatti.pinboard.features.appstate.RefreshPopular
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
@@ -125,22 +124,20 @@ class PopularPostsFragment @Inject constructor(
                     showPosts(content)
                 }
             }
-            .launchIn(lifecycleScope)
+            .launchInAndFlowWith(viewLifecycleOwner)
 
         popularPostsViewModel.loading
             .onEach {
                 binding.layoutProgressBar.root.isVisible = it
                 binding.recyclerViewPosts.isGone = it
             }
-            .launchIn(lifecycleScope)
+            .launchInAndFlowWith(viewLifecycleOwner)
         popularPostsViewModel.saved
-            .onEach {
-                binding.root.showBanner(getString(R.string.posts_saved_feedback))
-            }
-            .launchIn(lifecycleScope)
+            .onEach { binding.root.showBanner(getString(R.string.posts_saved_feedback)) }
+            .launchInAndFlowWith(viewLifecycleOwner)
         popularPostsViewModel.error
             .onEach(::handleError)
-            .launchIn(lifecycleScope)
+            .launchInAndFlowWith(viewLifecycleOwner)
     }
 
     private fun showPosts(content: PopularPostsContent) {

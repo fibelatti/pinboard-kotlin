@@ -7,12 +7,12 @@ import android.view.ViewGroup
 import androidx.core.view.isGone
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.databinding.FragmentTagsBinding
 import com.fibelatti.pinboard.features.BottomBarHost.Companion.bottomBarHost
 import com.fibelatti.pinboard.features.TitleLayoutHost.Companion.titleLayoutHost
@@ -20,7 +20,7 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.RefreshTags
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -59,8 +59,8 @@ class TagsFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        lifecycleScope.launch {
-            appStateViewModel.tagListContent.collect { content ->
+        appStateViewModel.tagListContent
+            .onEach { content ->
                 setupActivityViews()
 
                 if (content.shouldLoad) {
@@ -70,13 +70,14 @@ class TagsFragment @Inject constructor(
                     tagsViewModel.sortTags(content.tags, binding.tagListLayout.getCurrentTagSorting())
                 }
             }
-        }
-        lifecycleScope.launch {
-            tagsViewModel.tags.collect(binding.tagListLayout::showTags)
-        }
-        lifecycleScope.launch {
-            tagsViewModel.error.collect(::handleError)
-        }
+            .launchInAndFlowWith(viewLifecycleOwner)
+
+        tagsViewModel.tags
+            .onEach(binding.tagListLayout::showTags)
+            .launchInAndFlowWith(viewLifecycleOwner)
+        tagsViewModel.error
+            .onEach(::handleError)
+            .launchInAndFlowWith(viewLifecycleOwner)
     }
 
     private fun setupActivityViews() {

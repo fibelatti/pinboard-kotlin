@@ -5,19 +5,19 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
-import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.extension.isServerException
+import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.databinding.ActivityShareBinding
 import com.fibelatti.pinboard.features.MainActivity
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.onEach
 import retrofit2.HttpException
 import java.net.HttpURLConnection
 
@@ -40,55 +40,50 @@ class ShareReceiverActivity : BaseActivity() {
 
     @Suppress("MagicNumber")
     private fun setupViewModels(shareReceiverViewModel: ShareReceiverViewModel) {
-        lifecycleScope.launch {
-            shareReceiverViewModel.saved.collect { message ->
+        shareReceiverViewModel.saved
+            .onEach { message ->
                 binding.imageViewFeedback.setImageResource(R.drawable.ic_url_saved)
-                Toast.makeText(this@ShareReceiverActivity, message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                 delay(500L)
                 finish()
             }
-        }
-        lifecycleScope.launch {
-            shareReceiverViewModel.edit.collect { message ->
+            .launchInAndFlowWith(this)
+        shareReceiverViewModel.edit
+            .onEach { message ->
                 if (message.isNotEmpty()) {
                     binding.imageViewFeedback.setImageResource(R.drawable.ic_url_saved)
-                    Toast.makeText(this@ShareReceiverActivity, message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                 }
-                startActivity(MainActivity.Builder(this@ShareReceiverActivity).build())
+                startActivity(MainActivity.Builder(this).build())
                 finish()
             }
-        }
-        lifecycleScope.launch {
-            shareReceiverViewModel.failed.collect { error ->
+            .launchInAndFlowWith(this)
+        shareReceiverViewModel.failed
+            .onEach { error ->
                 binding.imageViewFeedback.setImageResource(R.drawable.ic_url_saved_error)
 
                 val loginFailedCodes = listOf(
                     HttpURLConnection.HTTP_UNAUTHORIZED,
-                    HttpURLConnection.HTTP_INTERNAL_ERROR
+                    HttpURLConnection.HTTP_INTERNAL_ERROR,
                 )
-                when {
-                    error is InvalidUrlException -> {
-                        MaterialAlertDialogBuilder(this@ShareReceiverActivity).apply {
-                            setMessage(R.string.validation_error_invalid_url_rationale)
-                            setPositiveButton(R.string.hint_ok) { _, _ -> finish() }
-                        }.show()
+                val errorMessage = when {
+                    error is InvalidUrlException -> R.string.validation_error_invalid_url_rationale
+                    error.isServerException() -> R.string.server_timeout_error
+                    error is HttpException && error.code() in loginFailedCodes -> R.string.auth_logged_out_feedback
+                    else -> {
+                        sendErrorReport(error) { finish() }
+                        return@onEach
                     }
-                    error.isServerException() -> {
-                        MaterialAlertDialogBuilder(this@ShareReceiverActivity).apply {
-                            setMessage(R.string.server_timeout_error)
-                            setPositiveButton(R.string.hint_ok) { _, _ -> finish() }
-                        }.show()
-                    }
-                    error is HttpException && error.code() in loginFailedCodes -> {
-                        MaterialAlertDialogBuilder(this@ShareReceiverActivity).apply {
-                            setMessage(R.string.auth_logged_out_feedback)
-                            setPositiveButton(R.string.hint_ok) { _, _ -> finish() }
-                        }.show()
-                    }
-                    else -> sendErrorReport(error) { finish() }
                 }
+
+                MaterialAlertDialogBuilder(this)
+                    .apply {
+                        setMessage(errorMessage)
+                        setPositiveButton(R.string.hint_ok) { _, _ -> finish() }
+                    }
+                    .show()
             }
-        }
+            .launchInAndFlowWith(this)
     }
 
     private fun Intent.checkForExtraText(onExtraTextFound: (String) -> Unit) {

@@ -12,6 +12,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkClass
 import io.mockk.verify
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -52,6 +53,7 @@ internal class AppStateDataSourceTest {
             actionHandlers = handlers,
             connectivityInfoProvider = mockConnectivityInfoProvider,
             scope = TestScope(UnconfinedTestDispatcher()),
+            sharingStarted = SharingStarted.WhileSubscribed(),
         )
     }
 

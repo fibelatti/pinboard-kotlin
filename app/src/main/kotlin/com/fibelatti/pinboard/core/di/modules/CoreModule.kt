@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.core.di.modules
 
-import com.fibelatti.core.functional.SingleRunner
 import com.fibelatti.pinboard.core.di.AppDispatchers
 import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.core.persistence.database.AppDatabase
@@ -26,6 +25,7 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.SharingStarted
 import retrofit2.Retrofit
 import retrofit2.create
 
@@ -34,6 +34,8 @@ import retrofit2.create
 abstract class CoreModule {
 
     companion object {
+
+        private const val DEFAULT_STATE_TIMEOUT = 5_000L
 
         @Provides
         @Scope(AppDispatchers.IO)
@@ -44,7 +46,10 @@ abstract class CoreModule {
         fun defaultScope(): CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
         @Provides
-        fun singleRunner(): SingleRunner = SingleRunner()
+        fun sharingStarted(): SharingStarted = SharingStarted.WhileSubscribed(
+            stopTimeoutMillis = DEFAULT_STATE_TIMEOUT,
+            replayExpirationMillis = DEFAULT_STATE_TIMEOUT,
+        )
 
         @Provides
         fun Retrofit.postsApi(): PostsApi = create()

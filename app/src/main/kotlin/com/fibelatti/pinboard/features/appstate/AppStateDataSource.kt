@@ -19,6 +19,7 @@ class AppStateDataSource @Inject constructor(
     private val actionHandlers: Map<Class<out Action>, @JvmSuppressWildcards ActionHandler<*>>,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
     @Scope(AppDispatchers.DEFAULT) scope: CoroutineScope,
+    sharingStarted: SharingStarted,
 ) : AppStateRepository {
 
     private val userActions: MutableSharedFlow<suspend (Content) -> Content> = MutableSharedFlow()
@@ -27,7 +28,7 @@ class AppStateDataSource @Inject constructor(
         .scan(getInitialContent()) { content, actions -> actions(content) }
         .stateIn(
             scope = scope,
-            started = SharingStarted.WhileSubscribed(),
+            started = sharingStarted,
             initialValue = getInitialContent(),
         )
 

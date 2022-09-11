@@ -19,13 +19,13 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.shareText
 import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.databinding.FragmentPostDetailBinding
@@ -38,7 +38,7 @@ import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -89,53 +89,49 @@ class PostDetailFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        lifecycleScope.launch {
-            appStateViewModel.postDetailContent.collect(::updateViews)
-        }
-        lifecycleScope.launch {
-            appStateViewModel.popularPostDetailContent.collect(::updateViews)
-        }
-        lifecycleScope.launch {
-            postDetailViewModel.loading.collect {
-                binding.layoutProgressBar.root.isVisible = it
-            }
-        }
-        lifecycleScope.launch {
-            postDetailViewModel.deleted.collect { binding.root.showBanner(getString(R.string.posts_deleted_feedback)) }
-        }
-        lifecycleScope.launch {
-            postDetailViewModel.deleteError.collect {
+        appStateViewModel.postDetailContent
+            .onEach(::updateViews)
+            .launchInAndFlowWith(viewLifecycleOwner)
+        appStateViewModel.popularPostDetailContent
+            .onEach(::updateViews)
+            .launchInAndFlowWith(viewLifecycleOwner)
+
+        postDetailViewModel.loading
+            .onEach { binding.layoutProgressBar.root.isVisible = it }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        postDetailViewModel.deleted
+            .onEach { binding.root.showBanner(getString(R.string.posts_deleted_feedback)) }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        postDetailViewModel.deleteError
+            .onEach {
                 MaterialAlertDialogBuilder(requireContext()).apply {
                     setMessage(R.string.posts_deleted_error)
                     setPositiveButton(R.string.hint_ok) { dialog, _ -> dialog?.dismiss() }
                 }.show()
             }
-        }
-        lifecycleScope.launch {
-            postDetailViewModel.updated.collect {
+            .launchInAndFlowWith(viewLifecycleOwner)
+        postDetailViewModel.updated
+            .onEach {
                 binding.root.showBanner(getString(R.string.posts_marked_as_read_feedback))
                 titleLayoutHost.update { hideActionButton() }
             }
-        }
-        lifecycleScope.launch {
-            postDetailViewModel.updateError.collect {
-                binding.root.showBanner(getString(R.string.posts_marked_as_read_error))
-            }
-        }
-        lifecycleScope.launch {
-            postDetailViewModel.error.collect(::handleError)
-        }
-        lifecycleScope.launch {
-            popularPostsViewModel.loading.collect {
-                binding.layoutProgressBar.root.isVisible = it
-            }
-        }
-        lifecycleScope.launch {
-            popularPostsViewModel.saved.collect { binding.root.showBanner(getString(R.string.posts_saved_feedback)) }
-        }
-        lifecycleScope.launch {
-            popularPostsViewModel.error.collect(::handleError)
-        }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        postDetailViewModel.updateError
+            .onEach { binding.root.showBanner(getString(R.string.posts_marked_as_read_error)) }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        postDetailViewModel.error
+            .onEach(::handleError)
+            .launchInAndFlowWith(viewLifecycleOwner)
+
+        popularPostsViewModel.loading
+            .onEach { binding.layoutProgressBar.root.isVisible = it }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        popularPostsViewModel.saved
+            .onEach { binding.root.showBanner(getString(R.string.posts_saved_feedback)) }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        popularPostsViewModel.error
+            .onEach(::handleError)
+            .launchInAndFlowWith(viewLifecycleOwner)
     }
 
     private fun updateViews(postDetailContent: PostDetailContent) {

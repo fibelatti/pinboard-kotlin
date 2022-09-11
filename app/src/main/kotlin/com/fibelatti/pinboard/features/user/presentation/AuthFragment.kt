@@ -8,7 +8,6 @@ import android.view.inputmethod.EditorInfo
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.extension.heightWrapContent
 import com.fibelatti.core.extension.onActionOrKeyboardSubmit
 import com.fibelatti.core.extension.setupLinks
@@ -21,9 +20,10 @@ import com.fibelatti.pinboard.core.android.LinkTransformationMethod
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.extension.isServerException
+import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.databinding.FragmentAuthBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -49,12 +49,12 @@ class AuthFragment @Inject constructor() : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         setupLayout()
 
-        lifecycleScope.launch {
-            authViewModel.apiTokenError.collect(::handleAuthError)
-        }
-        lifecycleScope.launch {
-            authViewModel.error.collect(::handleError)
-        }
+        authViewModel.apiTokenError
+            .onEach(::handleAuthError)
+            .launchInAndFlowWith(viewLifecycleOwner)
+        authViewModel.error
+            .onEach(::handleError)
+            .launchInAndFlowWith(viewLifecycleOwner)
     }
 
     private fun setupLayout() {

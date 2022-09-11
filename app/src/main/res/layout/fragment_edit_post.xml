@@ -4,9 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:colorBackground"
-    android:clickable="true"
-    android:focusable="true">
+    android:background="?android:colorBackground">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -14,6 +12,7 @@
         android:animateLayoutChanges="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
@@ -129,9 +128,11 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <include
-            android:id="@+id/layoutProgressBar"
-            layout="@layout/layout_progress_bar"
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@style/AppTheme.ProgressBarStyle"
+            android:layout_gravity="top|center_horizontal"
+            android:layout_marginTop="200dp"
             android:visibility="gone"
             tools:visibility="gone" />
     </FrameLayout>

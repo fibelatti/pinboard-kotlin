@@ -13,7 +13,6 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.shareText
 import com.fibelatti.core.extension.viewBinding
@@ -23,6 +22,7 @@ import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppConfig.PINBOARD_USER_URL
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.databinding.FragmentPostListBinding
@@ -61,7 +61,6 @@ import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
@@ -172,18 +171,18 @@ class PostListFragment @Inject constructor(
     private fun setupViewModels() {
         postListViewModel.error
             .onEach(::handleError)
-            .launchIn(lifecycleScope)
+            .launchInAndFlowWith(viewLifecycleOwner)
 
         appStateViewModel.postListContent
             .onEach(::updateContent)
-            .launchIn(lifecycleScope)
+            .launchInAndFlowWith(viewLifecycleOwner)
 
         postDetailViewModel.loading
             .onEach { binding.progressBar.isVisible = it }
-            .launchIn(lifecycleScope)
+            .launchInAndFlowWith(viewLifecycleOwner)
         postDetailViewModel.deleted
             .onEach { binding.root.showBanner(getString(R.string.posts_deleted_feedback)) }
-            .launchIn(lifecycleScope)
+            .launchInAndFlowWith(viewLifecycleOwner)
         postDetailViewModel.deleteError
             .onEach {
                 MaterialAlertDialogBuilder(requireContext()).apply {
@@ -191,10 +190,10 @@ class PostListFragment @Inject constructor(
                     setPositiveButton(R.string.hint_ok) { dialog, _ -> dialog?.dismiss() }
                 }.show()
             }
-            .launchIn(lifecycleScope)
+            .launchInAndFlowWith(viewLifecycleOwner)
         postDetailViewModel.error
             .onEach(::handleError)
-            .launchIn(lifecycleScope)
+            .launchInAndFlowWith(viewLifecycleOwner)
     }
 
     override fun handleError(error: Throwable) {

@@ -8,12 +8,12 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.core.extension.withItemOffsetDecoration
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.databinding.FragmentNoteListBinding
 import com.fibelatti.pinboard.features.BottomBarHost.Companion.bottomBarHost
 import com.fibelatti.pinboard.features.TitleLayoutHost.Companion.titleLayoutHost
@@ -23,7 +23,7 @@ import com.fibelatti.pinboard.features.appstate.ViewNote
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -96,8 +96,8 @@ class NoteListFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        lifecycleScope.launch {
-            appStateViewModel.noteListContent.collect { content ->
+        appStateViewModel.noteListContent
+            .onEach { content ->
                 setupActivityViews()
                 handleLoading(content.shouldLoad)
 
@@ -107,10 +107,11 @@ class NoteListFragment @Inject constructor(
                     showNotes(content.notes)
                 }
             }
-        }
-        lifecycleScope.launch {
-            noteListViewModel.error.collect(::handleError)
-        }
+            .launchInAndFlowWith(viewLifecycleOwner)
+
+        noteListViewModel.error
+            .onEach(::handleError)
+            .launchInAndFlowWith(viewLifecycleOwner)
     }
 
     private fun setupActivityViews() {

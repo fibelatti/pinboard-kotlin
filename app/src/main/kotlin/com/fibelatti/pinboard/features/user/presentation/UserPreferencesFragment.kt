@@ -13,7 +13,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.hideKeyboard
@@ -26,6 +25,7 @@ import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.android.customview.SettingToggle
 import com.fibelatti.pinboard.core.di.MainVariant
+import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.smoothScrollY
 import com.fibelatti.pinboard.databinding.FragmentUserPreferencesBinding
 import com.fibelatti.pinboard.features.BottomBarHost.Companion.bottomBarHost
@@ -36,7 +36,6 @@ import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -165,8 +164,7 @@ class UserPreferencesFragment @Inject constructor(
 
                 binding.layoutAddTags.showTags(it.defaultTags)
             }
-            .flowWithLifecycle(lifecycle)
-            .launchIn(lifecycleScope)
+            .launchInAndFlowWith(viewLifecycleOwner)
 
         userPreferencesViewModel.appearanceChanged
             .onEach { newAppearance ->
@@ -176,15 +174,11 @@ class UserPreferencesFragment @Inject constructor(
                     else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
                 }
             }
-            .flowWithLifecycle(lifecycle)
-            .launchIn(lifecycleScope)
+            .launchInAndFlowWith(viewLifecycleOwner)
 
         userPreferencesViewModel.suggestedTags
-            .onEach {
-                binding.layoutAddTags.showSuggestedValuesAsTags(it, showRemoveIcon = false)
-            }
-            .flowWithLifecycle(lifecycle)
-            .launchIn(lifecycleScope)
+            .onEach { binding.layoutAddTags.showSuggestedValuesAsTags(it, showRemoveIcon = false) }
+            .launchInAndFlowWith(viewLifecycleOwner)
     }
 
     private fun setupPeriodicSync(periodicSync: PeriodicSync) {
@@ -235,8 +229,8 @@ class UserPreferencesFragment @Inject constructor(
 
         binding.toggleDynamicColors.setActiveAndOnChangedListener(applyDynamicColors) {
             userPreferencesViewModel.saveApplyDynamicColors(it)
-            lifecycleScope.launch {
-                delay(300L) // Simply to animate the switch
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(300L) // Wait until the switch is done animating
                 ActivityCompat.recreate(requireActivity())
             }
         }

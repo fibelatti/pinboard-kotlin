@@ -10,12 +10,12 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.extension.clearError
 import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.hideKeyboard
@@ -26,6 +26,7 @@ import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.di.MainVariant
+import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.core.extension.smoothScrollY
@@ -39,7 +40,7 @@ import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -208,8 +209,14 @@ class EditPostFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        lifecycleScope.launch {
-            appStateViewModel.addPostContent.collect {
+        setupAppStateViewModel()
+        setupEditPostViewModel()
+        setupPostDetailViewModel()
+    }
+
+    private fun setupAppStateViewModel() {
+        appStateViewModel.addPostContent
+            .onEach {
                 setupActivityViews()
 
                 if (!isRecreating) {
@@ -218,48 +225,52 @@ class EditPostFragment @Inject constructor(
                     binding.layoutAddTags.showTags(it.defaultTags)
                 }
             }
-        }
-        lifecycleScope.launch {
-            appStateViewModel.editPostContent.collect(::showPostDetails)
-        }
-        lifecycleScope.launch {
-            editPostViewModel.loading.collect {
-                binding.layoutProgressBar.root.isVisible = it
+            .launchInAndFlowWith(viewLifecycleOwner)
+        appStateViewModel.editPostContent
+            .onEach(::showPostDetails)
+            .launchInAndFlowWith(viewLifecycleOwner)
+    }
+
+    private fun setupEditPostViewModel() {
+        editPostViewModel.loading
+            .onEach {
+                binding.layoutContent.isGone = it
+                binding.progressBar.isVisible = it
             }
-        }
-        lifecycleScope.launch {
-            editPostViewModel.suggestedTags.collect {
-                binding.layoutAddTags.showSuggestedValuesAsTags(it, showRemoveIcon = false)
-            }
-        }
-        lifecycleScope.launch {
-            editPostViewModel.saved.collect { binding.root.showBanner(getString(R.string.posts_saved_feedback)) }
-        }
-        lifecycleScope.launch {
-            editPostViewModel.invalidUrlError.collect(::handleInvalidUrlError)
-        }
-        lifecycleScope.launch {
-            editPostViewModel.invalidUrlTitleError.collect(::handleInvalidTitleError)
-        }
-        lifecycleScope.launch {
-            editPostViewModel.error.collect {
+            .launchInAndFlowWith(viewLifecycleOwner)
+        editPostViewModel.suggestedTags
+            .onEach { binding.layoutAddTags.showSuggestedValuesAsTags(it, showRemoveIcon = false) }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        editPostViewModel.saved
+            .onEach { binding.root.showBanner(getString(R.string.posts_saved_feedback)) }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        editPostViewModel.invalidUrlError
+            .onEach(::handleInvalidUrlError)
+            .launchInAndFlowWith(viewLifecycleOwner)
+        editPostViewModel.invalidUrlTitleError
+            .onEach(::handleInvalidTitleError)
+            .launchInAndFlowWith(viewLifecycleOwner)
+        editPostViewModel.error
+            .onEach {
                 handleError(it)
                 showFab()
             }
-        }
-        lifecycleScope.launch {
-            postDetailViewModel.loading.collect {
-                binding.layoutProgressBar.root.isVisible = it
+            .launchInAndFlowWith(viewLifecycleOwner)
+    }
+
+    private fun setupPostDetailViewModel() {
+        postDetailViewModel.loading
+            .onEach {
+                binding.layoutContent.isGone = it
+                binding.progressBar.isVisible = it
             }
-        }
-        lifecycleScope.launch {
-            postDetailViewModel.deleted.collect {
-                binding.root.showBanner(getString(R.string.posts_deleted_feedback))
-            }
-        }
-        lifecycleScope.launch {
-            postDetailViewModel.error.collect(::handleError)
-        }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        postDetailViewModel.deleted
+            .onEach { binding.root.showBanner(getString(R.string.posts_deleted_feedback)) }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        postDetailViewModel.error
+            .onEach(::handleError)
+            .launchInAndFlowWith(viewLifecycleOwner)
     }
 
     private fun setupActivityViews() {

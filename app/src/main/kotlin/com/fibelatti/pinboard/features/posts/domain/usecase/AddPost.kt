@@ -6,6 +6,8 @@ import com.fibelatti.core.functional.map
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class AddPost @Inject constructor(
@@ -15,15 +17,17 @@ class AddPost @Inject constructor(
 
     override suspend fun run(params: Params): Result<Post> =
         validateUrl(params.url).map {
-            postsRepository.add(
-                url = params.url,
-                title = params.title,
-                description = params.description,
-                private = params.private,
-                readLater = params.readLater,
-                tags = params.tags,
-                replace = params.replace
-            )
+            withContext(NonCancellable) {
+                postsRepository.add(
+                    url = params.url,
+                    title = params.title,
+                    description = params.description,
+                    private = params.private,
+                    readLater = params.readLater,
+                    tags = params.tags,
+                    replace = params.replace
+                )
+            }
         }
 
     data class Params(
