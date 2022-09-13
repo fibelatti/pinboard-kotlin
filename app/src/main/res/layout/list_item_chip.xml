@@ -7,6 +7,5 @@
     android:layout_height="wrap_content"
     android:checkable="false"
     android:textAlignment="center"
-    android:textAppearance="@style/AppTheme.ChipTextAppearance"
     app:closeIconVisible="true"
     tools:text="Some text" />

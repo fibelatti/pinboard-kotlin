@@ -16,6 +16,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             android:paddingStart="@dimen/padding_regular"
             android:paddingEnd="@dimen/padding_regular"
             android:paddingBottom="@dimen/fab_offset_bottom"

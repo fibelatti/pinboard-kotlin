@@ -215,17 +215,20 @@
         <item name="android:textColor">?attr/colorSecondary</item>
     </style>
 
-    <style name="AppTheme.TagChip" parent="Widget.Material3.Chip.Suggestion">
-        <item name="chipMinHeight">@dimen/clickable_area</item>
-        <item name="shapeAppearanceOverlay">@style/AppTheme.ChipAppearanceOverlay</item>
+    <style name="AppTheme.TagChip" parent="Widget.Material3.Chip.Suggestion.Elevated">
         <item name="android:textAppearance">@style/AppTheme.ChipTextAppearance</item>
+        <item name="android:textColor">?attr/colorOnPrimaryContainer</item>
+        <item name="android:elevation">2dp</item>
+        <item name="chipMinHeight">@dimen/clickable_area</item>
+        <item name="closeIconTint">?attr/colorOnPrimaryContainer</item>
+        <item name="shapeAppearanceOverlay">@style/AppTheme.ChipAppearanceOverlay</item>
     </style>
 
-    <style name="AppTheme.ChipAppearanceOverlay" parent="ShapeAppearanceOverlay.MaterialComponents.Chip">
+    <style name="AppTheme.ChipAppearanceOverlay" parent="ShapeAppearanceOverlay.Material3.Chip">
         <item name="cornerSize">20%</item>
     </style>
 
-    <style name="AppTheme.ChipTextAppearance" parent="TextAppearance.MaterialComponents.Chip">
+    <style name="AppTheme.ChipTextAppearance" parent="TextAppearance.Material3.LabelSmall">
         <item name="android:textSize">@dimen/text_size_xsmall</item>
         <item name="fontFamily">sans-serif-medium</item>
     </style>

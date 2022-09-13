@@ -21,6 +21,11 @@ class AddTagsLayout @JvmOverloads constructor(
 
     private val binding = LayoutEditTagsBinding.inflate(LayoutInflater.from(context), this, true)
 
+    init {
+        clipChildren = false
+        clipToPadding = false
+    }
+
     @Suppress("MagicNumber")
     fun setup(
         afterTagInput: (currentInput: String, currentTags: List<Tag>) -> Unit = { _, _ -> },
@@ -80,11 +85,6 @@ class AddTagsLayout @JvmOverloads constructor(
         }
     }
 
-    fun showSuggestedTags(tags: List<Tag>, showRemoveIcon: Boolean = true) {
-        binding.chipGroupSuggestedTags.removeAllViews()
-        tags.forEach { binding.chipGroupSuggestedTags.addTag(it, showRemoveIcon = showRemoveIcon) }
-    }
-
     fun showSuggestedValuesAsTags(tags: List<String>, showRemoveIcon: Boolean = true) {
         binding.chipGroupSuggestedTags.removeAllViews()
         tags.forEach { binding.chipGroupSuggestedTags.addValue(it, showRemoveIcon = showRemoveIcon) }
@@ -93,11 +93,6 @@ class AddTagsLayout @JvmOverloads constructor(
     fun showTags(tags: List<Tag>, showRemoveIcon: Boolean = true) {
         binding.chipGroupTags.removeAllViews()
         tags.forEach { binding.chipGroupTags.addTag(it, showRemoveIcon = showRemoveIcon) }
-    }
-
-    fun showValuesAsTags(tags: List<String>, showRemoveIcon: Boolean = true) {
-        binding.chipGroupTags.removeAllViews()
-        tags.forEach { binding.chipGroupTags.addValue(it, showRemoveIcon = showRemoveIcon) }
     }
 
     fun getTags(): List<Tag> = binding.chipGroupTags.getAllTags()

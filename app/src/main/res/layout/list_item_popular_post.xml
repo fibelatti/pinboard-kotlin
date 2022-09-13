@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/background_post_item"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     android:elevation="2dp"
     android:orientation="vertical"
     android:padding="@dimen/padding_small">
