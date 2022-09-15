@@ -109,7 +109,7 @@ internal class PostsDataSourceProxyTest {
         fun `getAllPosts calls the expected data source`() = runTest {
             val expectedResult = mockk<Result<PostListResult>>()
 
-            coEvery {
+            every {
                 postsDataSourcePinboardApi.getAllPosts(
                     newestFirst = booleanArg,
                     searchTerm = stringArg,
@@ -305,7 +305,7 @@ internal class PostsDataSourceProxyTest {
         fun `getAllPosts calls the expected data source`() = runTest {
             val expectedResult = mockk<Result<PostListResult>>()
 
-            coEvery {
+            every {
                 postsDataSourceNoApi.getAllPosts(
                     newestFirst = booleanArg,
                     searchTerm = stringArg,
@@ -496,7 +496,7 @@ internal class PostsDataSourceProxyTest {
         fun `getAllPosts calls the expected data source`() = runTest {
             val expectedResult = mockk<Result<PostListResult>>()
 
-            coEvery {
+            every {
                 postsDataSourceNoApi.getAllPosts(
                     newestFirst = booleanArg,
                     searchTerm = stringArg,

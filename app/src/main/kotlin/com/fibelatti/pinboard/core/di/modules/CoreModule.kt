@@ -35,8 +35,6 @@ abstract class CoreModule {
 
     companion object {
 
-        private const val DEFAULT_STATE_TIMEOUT = 5_000L
-
         @Provides
         @Scope(AppDispatchers.IO)
         fun ioScope(): CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -46,10 +44,7 @@ abstract class CoreModule {
         fun defaultScope(): CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
         @Provides
-        fun sharingStarted(): SharingStarted = SharingStarted.WhileSubscribed(
-            stopTimeoutMillis = DEFAULT_STATE_TIMEOUT,
-            replayExpirationMillis = DEFAULT_STATE_TIMEOUT,
-        )
+        fun sharingStarted(): SharingStarted = SharingStarted.Lazily
 
         @Provides
         fun Retrofit.postsApi(): PostsApi = create()

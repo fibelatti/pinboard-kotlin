@@ -8,20 +8,19 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetAllPosts @Inject constructor(
-    private val postsRepository: PostsRepository
+    private val postsRepository: PostsRepository,
 ) {
 
-    suspend operator fun invoke(params: GetPostParams): Flow<Result<PostListResult>> =
-        postsRepository.getAllPosts(
-            newestFirst = params.sorting == NewestFirst,
-            searchTerm = params.searchTerm,
-            tags = (params.tags as? GetPostParams.Tags.Tagged)?.tags,
-            untaggedOnly = params.tags is GetPostParams.Tags.Untagged,
-            postVisibility = params.visibility,
-            readLaterOnly = params.readLater,
-            countLimit = -1,
-            pageLimit = params.limit,
-            pageOffset = params.offset,
-            forceRefresh = params.forceRefresh,
-        )
+    operator fun invoke(params: GetPostParams): Flow<Result<PostListResult>> = postsRepository.getAllPosts(
+        newestFirst = params.sorting == NewestFirst,
+        searchTerm = params.searchTerm,
+        tags = (params.tags as? GetPostParams.Tags.Tagged)?.tags,
+        untaggedOnly = params.tags is GetPostParams.Tags.Untagged,
+        postVisibility = params.visibility,
+        readLaterOnly = params.readLater,
+        countLimit = -1,
+        pageLimit = params.limit,
+        pageOffset = params.offset,
+        forceRefresh = params.forceRefresh,
+    )
 }

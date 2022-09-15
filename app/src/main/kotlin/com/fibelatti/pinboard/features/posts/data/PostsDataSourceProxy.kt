@@ -47,7 +47,7 @@ class PostsDataSourceProxy @Inject constructor(
         url = url,
     )
 
-    override suspend fun getAllPosts(
+    override fun getAllPosts(
         newestFirst: Boolean,
         searchTerm: String,
         tags: List<Tag>?,

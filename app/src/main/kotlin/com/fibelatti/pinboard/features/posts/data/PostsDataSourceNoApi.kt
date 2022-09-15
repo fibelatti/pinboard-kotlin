@@ -18,14 +18,14 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flow
 import java.util.UUID
 import javax.inject.Inject
 
 class PostsDataSourceNoApi @Inject constructor(
     private val postsDao: PostsDao,
     private val postDtoMapper: PostDtoMapper,
-    private val dateFormatter: DateFormatter
+    private val dateFormatter: DateFormatter,
 ) : PostsRepository {
 
     override suspend fun update(): Result<String> = Success(dateFormatter.nowAsTzFormat())
@@ -37,7 +37,7 @@ class PostsDataSourceNoApi @Inject constructor(
         private: Boolean?,
         readLater: Boolean?,
         tags: List<Tag>?,
-        replace: Boolean
+        replace: Boolean,
     ): Result<Post> {
         val existingPost = resultFrom {
             postsDao.getPost(url)
@@ -65,7 +65,7 @@ class PostsDataSourceNoApi @Inject constructor(
         postsDao.deletePost(url)
     }
 
-    override suspend fun getAllPosts(
+    override fun getAllPosts(
         newestFirst: Boolean,
         searchTerm: String,
         tags: List<Tag>?,
@@ -76,23 +76,25 @@ class PostsDataSourceNoApi @Inject constructor(
         pageLimit: Int,
         pageOffset: Int,
         forceRefresh: Boolean,
-    ): Flow<Result<PostListResult>> = flowOf(
-        getLocalData(
-            newestFirst,
-            searchTerm,
-            tags,
-            untaggedOnly,
-            postVisibility,
-            readLaterOnly,
-            countLimit,
-            pageLimit,
-            pageOffset
+    ): Flow<Result<PostListResult>> = flow {
+        val data = getLocalData(
+            newestFirst = newestFirst,
+            searchTerm = searchTerm,
+            tags = tags,
+            untaggedOnly = untaggedOnly,
+            postVisibility = postVisibility,
+            readLaterOnly = readLaterOnly,
+            countLimit = countLimit,
+            pageLimit = pageLimit,
+            pageOffset = pageOffset,
         )
-    )
+
+        emit(data)
+    }
 
     override suspend fun getQueryResultSize(
         searchTerm: String,
-        tags: List<Tag>?
+        tags: List<Tag>?,
     ): Int = catching {
         getLocalDataSize(
             searchTerm = searchTerm,
@@ -111,7 +113,7 @@ class PostsDataSourceNoApi @Inject constructor(
         untaggedOnly: Boolean,
         postVisibility: PostVisibility,
         readLaterOnly: Boolean,
-        countLimit: Int
+        countLimit: Int,
     ): Int = postsDao.getPostCount(
         term = PostsDao.preFormatTerm(searchTerm),
         tag1 = tags.getAndFormat(0),
@@ -135,7 +137,7 @@ class PostsDataSourceNoApi @Inject constructor(
         readLaterOnly: Boolean,
         countLimit: Int,
         pageLimit: Int,
-        pageOffset: Int
+        pageOffset: Int,
     ): Result<PostListResult> = resultFrom {
         val localDataSize = getLocalDataSize(
             searchTerm,

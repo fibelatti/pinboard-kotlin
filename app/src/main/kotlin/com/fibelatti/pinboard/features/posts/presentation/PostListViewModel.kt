@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import androidx.annotation.VisibleForTesting
+import androidx.lifecycle.viewModelScope
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
@@ -25,7 +26,8 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
@@ -93,12 +95,13 @@ class PostListViewModel @Inject constructor(
 
     @VisibleForTesting
     fun getRecent(sorting: SortType, searchTerm: String, tags: List<Tag>) {
-        launch {
-            val params = GetPostParams(sorting, searchTerm, GetPostParams.Tags.Tagged(tags))
-            getRecentPosts(params).collect { result ->
-                result.onSuccess { appStateRepository.runAction(SetPosts(it)) }.onFailure(::handleError)
+        val params = GetPostParams(sorting, searchTerm, GetPostParams.Tags.Tagged(tags))
+        getRecentPosts(params)
+            .onEach { result ->
+                result.onSuccess { appStateRepository.runAction(SetPosts(it)) }
+                    .onFailure(::handleError)
             }
-        }
+            .launchIn(viewModelScope)
     }
 
     @VisibleForTesting
@@ -154,13 +157,13 @@ class PostListViewModel @Inject constructor(
 
     @VisibleForTesting
     fun launchGetAll(params: GetPostParams) {
-        launch {
-            getAllPosts(params).collect { result ->
-                result.onSuccess {
-                    val action = if (params.offset == 0) SetPosts(it) else SetNextPostPage(it)
+        getAllPosts(params)
+            .onEach { result ->
+                result.onSuccess { postListResult ->
+                    val action = if (params.offset == 0) SetPosts(postListResult) else SetNextPostPage(postListResult)
                     appStateRepository.runAction(action)
                 }.onFailure(::handleError)
             }
-        }
+            .launchIn(viewModelScope)
     }
 }

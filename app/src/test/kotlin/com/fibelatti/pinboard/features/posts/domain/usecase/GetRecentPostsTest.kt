@@ -7,11 +7,11 @@ import com.fibelatti.pinboard.core.AppConfig.DEFAULT_RECENT_QUANTITY
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
-import io.mockk.coEvery
-import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -25,7 +25,7 @@ class GetRecentPostsTest {
 
     @BeforeEach
     fun setup() {
-        coEvery {
+        every {
             mockPostsRepository.getAllPosts(
                 newestFirst = any(),
                 searchTerm = any(),
@@ -42,127 +42,132 @@ class GetRecentPostsTest {
     }
 
     @Test
-    fun `GIVEN search term was set in the params WHEN getRecentPosts is called THEN repository is called with the expected params`() {
-        // GIVEN
-        val params = GetPostParams(searchTerm = mockUrlValid)
+    fun `GIVEN search term was set in the params WHEN getRecentPosts is called THEN repository is called with the expected params`() =
+        runTest {
+            // GIVEN
+            val params = GetPostParams(searchTerm = mockUrlValid)
 
-        // WHEN
-        runBlocking { getRecentPosts(params) }
+            // WHEN
+            getRecentPosts(params)
 
-        // THEN
-        coVerify {
-            mockPostsRepository.getAllPosts(
-                newestFirst = true,
-                searchTerm = mockUrlValid,
-                tags = null,
-                untaggedOnly = false,
-                postVisibility = PostVisibility.None,
-                readLaterOnly = false,
-                countLimit = DEFAULT_RECENT_QUANTITY,
-                pageLimit = DEFAULT_RECENT_QUANTITY,
-                pageOffset = 0,
-                forceRefresh = false,
-            )
+            // THEN
+            verify {
+                mockPostsRepository.getAllPosts(
+                    newestFirst = true,
+                    searchTerm = mockUrlValid,
+                    tags = null,
+                    untaggedOnly = false,
+                    postVisibility = PostVisibility.None,
+                    readLaterOnly = false,
+                    countLimit = DEFAULT_RECENT_QUANTITY,
+                    pageLimit = DEFAULT_RECENT_QUANTITY,
+                    pageOffset = 0,
+                    forceRefresh = false,
+                )
+            }
         }
-    }
 
     @Test
-    fun `GIVEN tagParams was None WHEN getRecentPosts is called THEN repository is called with the expected params`() {
-        // GIVEN
-        val params = GetPostParams(tags = GetPostParams.Tags.None)
+    fun `GIVEN tagParams was None WHEN getRecentPosts is called THEN repository is called with the expected params`() =
+        runTest {
+            // GIVEN
+            val params = GetPostParams(tags = GetPostParams.Tags.None)
 
-        // WHEN
-        runBlocking { getRecentPosts(params) }
+            // WHEN
+            getRecentPosts(params)
 
-        // THEN
-        coVerify {
-            mockPostsRepository.getAllPosts(
-                newestFirst = true,
-                searchTerm = "",
-                tags = null,
-                untaggedOnly = false,
-                postVisibility = PostVisibility.None,
-                readLaterOnly = false,
-                countLimit = DEFAULT_RECENT_QUANTITY,
-                pageLimit = DEFAULT_RECENT_QUANTITY,
-                pageOffset = 0,
-                forceRefresh = false,
-            )
+            // THEN
+            verify {
+                mockPostsRepository.getAllPosts(
+                    newestFirst = true,
+                    searchTerm = "",
+                    tags = null,
+                    untaggedOnly = false,
+                    postVisibility = PostVisibility.None,
+                    readLaterOnly = false,
+                    countLimit = DEFAULT_RECENT_QUANTITY,
+                    pageLimit = DEFAULT_RECENT_QUANTITY,
+                    pageOffset = 0,
+                    forceRefresh = false,
+                )
+            }
         }
-    }
 
     @Test
-    fun `GIVEN tagParams was Untagged WHEN getRecentPosts is called THEN repository is called with the expected params`() {
-        // GIVEN
-        val params = GetPostParams(tags = GetPostParams.Tags.Untagged)
+    fun `GIVEN tagParams was Untagged WHEN getRecentPosts is called THEN repository is called with the expected params`() =
+        runTest {
+            // GIVEN
+            val params = GetPostParams(tags = GetPostParams.Tags.Untagged)
 
-        // WHEN
-        runBlocking { getRecentPosts(params) }
+            // WHEN
+            getRecentPosts(params)
 
-        // THEN
-        coVerify {
-            mockPostsRepository.getAllPosts(
-                newestFirst = true,
-                searchTerm = "",
-                tags = null,
-                untaggedOnly = false,
-                postVisibility = PostVisibility.None,
-                readLaterOnly = false,
-                countLimit = DEFAULT_RECENT_QUANTITY,
-                pageLimit = DEFAULT_RECENT_QUANTITY,
-                pageOffset = 0,
-                forceRefresh = false,
-            )
+            // THEN
+            verify {
+                mockPostsRepository.getAllPosts(
+                    newestFirst = true,
+                    searchTerm = "",
+                    tags = null,
+                    untaggedOnly = false,
+                    postVisibility = PostVisibility.None,
+                    readLaterOnly = false,
+                    countLimit = DEFAULT_RECENT_QUANTITY,
+                    pageLimit = DEFAULT_RECENT_QUANTITY,
+                    pageOffset = 0,
+                    forceRefresh = false,
+                )
+            }
         }
-    }
 
     @Test
-    fun `GIVEN tagParams was Tagged WHEN getRecentPosts is called THEN repository is called with the expected params`() {
-        // GIVEN
-        val params = GetPostParams(tags = GetPostParams.Tags.Tagged(mockTags))
+    fun `GIVEN tagParams was Tagged WHEN getRecentPosts is called THEN repository is called with the expected params`() =
+        runTest {
+            // GIVEN
+            val params = GetPostParams(tags = GetPostParams.Tags.Tagged(mockTags))
 
-        // WHEN
-        runBlocking { getRecentPosts(params) }
+            // WHEN
+            getRecentPosts(params)
 
-        // THEN
-        coVerify {
-            mockPostsRepository.getAllPosts(
-                newestFirst = true,
-                searchTerm = "",
-                tags = mockTags,
-                untaggedOnly = false,
-                postVisibility = PostVisibility.None,
-                readLaterOnly = false,
-                countLimit = DEFAULT_RECENT_QUANTITY,
-                pageLimit = DEFAULT_RECENT_QUANTITY,
-                pageOffset = 0,
-                forceRefresh = false,
-            )
+            // THEN
+            verify {
+                mockPostsRepository.getAllPosts(
+                    newestFirst = true,
+                    searchTerm = "",
+                    tags = mockTags,
+                    untaggedOnly = false,
+                    postVisibility = PostVisibility.None,
+                    readLaterOnly = false,
+                    countLimit = DEFAULT_RECENT_QUANTITY,
+                    pageLimit = DEFAULT_RECENT_QUANTITY,
+                    pageOffset = 0,
+                    forceRefresh = false,
+                )
+            }
         }
-    }
 
     @Test
-    fun `GIVEN forceRefresh was set in the params WHEN getRecentPosts is called THEN repository is called with the expected params`() {
-        // GIVEN
-        val params = GetPostParams(forceRefresh = true)
+    fun `GIVEN forceRefresh was set in the params WHEN getRecentPosts is called THEN repository is called with the expected params`() =
+        runTest {
+            // GIVEN
+            val params = GetPostParams(forceRefresh = true)
 
-        // WHEN
-        runBlocking { getRecentPosts(params) }
+            // WHEN
+            getRecentPosts(params)
 
-        // THEN
-        coVerify {
-            mockPostsRepository.getAllPosts(
-                newestFirst = true,
-                searchTerm = "",
-                tags = null,
-                untaggedOnly = false,
-                postVisibility = PostVisibility.None,
-                readLaterOnly = false,
-                countLimit = DEFAULT_RECENT_QUANTITY,
-                pageLimit = DEFAULT_RECENT_QUANTITY,
-                pageOffset = 0,
-                forceRefresh = true,
-            )
+            // THEN
+            verify {
+                mockPostsRepository.getAllPosts(
+                    newestFirst = true,
+                    searchTerm = "",
+                    tags = null,
+                    untaggedOnly = false,
+                    postVisibility = PostVisibility.None,
+                    readLaterOnly = false,
+                    countLimit = DEFAULT_RECENT_QUANTITY,
+                    pageLimit = DEFAULT_RECENT_QUANTITY,
+                    pageOffset = 0,
+                    forceRefresh = true,
+                )
+            }
         }
-    }
 }

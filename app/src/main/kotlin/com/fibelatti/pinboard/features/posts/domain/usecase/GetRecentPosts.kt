@@ -9,20 +9,19 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetRecentPosts @Inject constructor(
-    private val postsRepository: PostsRepository
+    private val postsRepository: PostsRepository,
 ) {
 
-    suspend operator fun invoke(params: GetPostParams): Flow<Result<PostListResult>> =
-        postsRepository.getAllPosts(
-            newestFirst = true,
-            searchTerm = params.searchTerm,
-            tags = (params.tags as? GetPostParams.Tags.Tagged)?.tags,
-            untaggedOnly = false,
-            postVisibility = PostVisibility.None,
-            readLaterOnly = false,
-            countLimit = DEFAULT_RECENT_QUANTITY,
-            pageLimit = DEFAULT_RECENT_QUANTITY,
-            pageOffset = 0,
-            forceRefresh = params.forceRefresh,
-        )
+    operator fun invoke(params: GetPostParams): Flow<Result<PostListResult>> = postsRepository.getAllPosts(
+        newestFirst = true,
+        searchTerm = params.searchTerm,
+        tags = (params.tags as? GetPostParams.Tags.Tagged)?.tags,
+        untaggedOnly = false,
+        postVisibility = PostVisibility.None,
+        readLaterOnly = false,
+        countLimit = DEFAULT_RECENT_QUANTITY,
+        pageLimit = DEFAULT_RECENT_QUANTITY,
+        pageOffset = 0,
+        forceRefresh = params.forceRefresh,
+    )
 }

@@ -194,7 +194,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
         postsDao.savePosts(listOf(existingPost.copy(pendingSync = PendingSyncDto.DELETE)))
     }
 
-    override suspend fun getAllPosts(
+    override fun getAllPosts(
         newestFirst: Boolean,
         searchTerm: String,
         tags: List<Tag>?,

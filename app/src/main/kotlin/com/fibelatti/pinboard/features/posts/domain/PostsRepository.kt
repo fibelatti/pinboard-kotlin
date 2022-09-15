@@ -22,7 +22,7 @@ interface PostsRepository {
 
     suspend fun delete(url: String): Result<Unit>
 
-    suspend fun getAllPosts(
+    fun getAllPosts(
         newestFirst: Boolean,
         searchTerm: String,
         tags: List<Tag>?,
