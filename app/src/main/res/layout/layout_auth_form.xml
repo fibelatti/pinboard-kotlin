@@ -6,6 +6,7 @@
     android:layout_marginStart="@dimen/margin_regular"
     android:layout_marginEnd="@dimen/margin_regular"
     android:background="@drawable/background_contrast_rounded"
+    android:backgroundTint="?attr/colorSurfaceVariant"
     android:elevation="2dp"
     android:orientation="vertical"
     android:padding="@dimen/padding_regular"
