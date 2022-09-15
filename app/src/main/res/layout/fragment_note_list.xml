@@ -72,9 +72,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:paddingStart="@dimen/padding_regular"
             android:paddingTop="@dimen/padding_regular"
-            android:paddingEnd="@dimen/padding_regular"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/list_item_note" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

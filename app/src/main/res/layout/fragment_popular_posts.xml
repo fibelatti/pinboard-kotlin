@@ -29,8 +29,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:paddingStart="@dimen/padding_regular"
-            android:paddingEnd="@dimen/padding_regular"
             android:paddingBottom="@dimen/fab_offset_bottom"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/list_item_popular_post" />

@@ -3,10 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/background_post_item"
+    android:background="?attr/colorSurface"
     android:elevation="2dp"
     android:orientation="vertical"
-    android:padding="@dimen/padding_small">
+    android:paddingHorizontal="@dimen/padding_regular"
+    android:paddingVertical="@dimen/padding_small">
 
     <TextView
         android:id="@+id/textViewNoteTitle"
