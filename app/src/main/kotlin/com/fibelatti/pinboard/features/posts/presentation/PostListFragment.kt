@@ -235,7 +235,7 @@ class PostListFragment @Inject constructor(
             Syncing, Loaded -> showPosts(content)
         }
 
-        binding.layoutSearchActive.isVisible = content.searchParameters.isActive()
+        binding.groupSearchActive.isVisible = content.searchParameters.isActive()
         binding.buttonFilterShare.setOnClickListener { shareFilteredResults(content.searchParameters) }
     }
 
