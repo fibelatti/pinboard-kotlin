@@ -38,6 +38,8 @@ android {
     val targetSdkVersion: Int by project
     val minSdkVersion: Int by project
 
+    namespace = "com.fibelatti.pinboard"
+
     compileSdk = compileSdkVersion
 
     defaultConfig {

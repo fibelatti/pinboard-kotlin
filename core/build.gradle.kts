@@ -8,6 +8,8 @@ android {
     val targetSdkVersion: Int by project
     val minSdkVersion: Int by project
 
+    namespace = "com.fibelatti.core"
+
     compileSdk = compileSdkVersion
 
     defaultConfig {
