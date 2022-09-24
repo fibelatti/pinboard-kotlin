@@ -34,6 +34,7 @@ import com.fibelatti.pinboard.features.appstate.AddPostContent
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ConnectionAwareContent
 import com.fibelatti.pinboard.features.appstate.Content
+import com.fibelatti.pinboard.features.appstate.ContentWithHistory
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.ExternalBrowserContent
 import com.fibelatti.pinboard.features.appstate.ExternalContent
@@ -71,6 +72,13 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
 
     private var isRecreating: Boolean = false
 
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+
+        override fun handleOnBackPressed() {
+            appStateViewModel.runAction(NavigateBack)
+        }
+    }
+
     private val binding by viewBinding(ActivityMainBinding::inflate)
 
     // An action that will run once when the Activity is resumed and will be set to null afterwards
@@ -82,7 +90,8 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
 
         isRecreating = savedInstanceState != null
 
-        setupBackNavigation()
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+
         setupView()
         setupAccessibility()
         setupViewModels()
@@ -95,12 +104,9 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
         onResumeDelegate = null
     }
 
-    private fun setupBackNavigation() {
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                appStateViewModel.runAction(NavigateBack)
-            }
-        })
+    override fun onDestroy() {
+        appStateViewModel.reset()
+        super.onDestroy()
     }
 
     private fun setupView() {
@@ -165,6 +171,8 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
     }
 
     private fun handleContent(content: Content) {
+        onBackPressedCallback.isEnabled = (content as? ContentWithHistory)?.previousContent !is ExternalContent
+
         if (isRecreating) {
             isRecreating = false
             return

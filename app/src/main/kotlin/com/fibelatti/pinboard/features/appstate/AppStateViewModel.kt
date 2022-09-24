@@ -4,12 +4,15 @@ import androidx.lifecycle.viewModelScope
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.core.network.UnauthorizedInterceptor
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @HiltViewModel
 class AppStateViewModel @Inject constructor(
@@ -38,7 +41,11 @@ class AppStateViewModel @Inject constructor(
     }
 
     fun reset() {
-        launch { appStateRepository.reset() }
+        launch(Dispatchers.Main.immediate) {
+            withContext(NonCancellable) {
+                appStateRepository.reset()
+            }
+        }
     }
 
     fun runAction(action: Action) {
