@@ -44,7 +44,7 @@ abstract class CoreModule {
         fun defaultScope(): CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
         @Provides
-        fun sharingStarted(): SharingStarted = SharingStarted.Lazily
+        fun sharingStarted(): SharingStarted = SharingStarted.Eagerly
 
         @Provides
         fun Retrofit.postsApi(): PostsApi = create()
