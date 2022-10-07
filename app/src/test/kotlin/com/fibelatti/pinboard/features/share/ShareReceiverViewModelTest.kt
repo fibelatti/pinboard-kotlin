@@ -1,15 +1,17 @@
 package com.fibelatti.pinboard.features.share
 
+import com.fibelatti.core.android.ResourceProvider
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
-import com.fibelatti.core.android.ResourceProvider
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.EditPostFromShare
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
+import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.ExtractUrl
@@ -33,21 +35,27 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     private val mockExtractUrl = mockk<ExtractUrl>()
     private val mockGetUrlPreview = mockk<GetUrlPreview>()
     private val mockAddPost = mockk<AddPost>()
+    private val mockPostsRepository = mockk<PostsRepository> {
+        coEvery { getPost(any()) } returns Failure(InvalidRequestException())
+    }
     private val mockUserRepository = mockk<UserRepository>()
     private val mockAppStateRepository = mockk<AppStateRepository>(relaxUnitFun = true)
     private val mockResourceProvider = mockk<ResourceProvider> {
         every { getString(R.string.posts_saved_feedback) } returns "R.string.posts_saved_feedback"
+        every { getString(R.string.posts_existing_feedback) } returns "R.string.posts_existing_feedback"
     }
 
+    private val post = mockk<Post>()
     private val error = Exception()
 
     private val shareReceiverViewModel = ShareReceiverViewModel(
-        mockExtractUrl,
-        mockGetUrlPreview,
-        mockAddPost,
-        mockUserRepository,
-        mockAppStateRepository,
-        mockResourceProvider
+        extractUrl = mockExtractUrl,
+        getUrlPreview = mockGetUrlPreview,
+        addPost = mockAddPost,
+        postsRepository = mockPostsRepository,
+        userRepository = mockUserRepository,
+        appStateRepository = mockAppStateRepository,
+        resourceProvider = mockResourceProvider
     )
 
     @Test
@@ -76,6 +84,56 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         assertThat(shareReceiverViewModel.failed.first()).isEqualTo(error)
         coVerify(exactly = 0) { mockAddPost.invoke(any()) }
     }
+
+    @Test
+    fun `GIVEN getEditAfterSharing is SkipEdit WHEN an existing post is found THEN save should receive a value`() =
+        runTest {
+            // GIVEN
+            coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
+            coEvery { mockGetUrlPreview(mockUrlValid) } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
+            coEvery { mockPostsRepository.getPost(mockUrlValid) } returns Success(post)
+            every { mockUserRepository.editAfterSharing } returns EditAfterSharing.SkipEdit
+
+            // WHEN
+            shareReceiverViewModel.saveUrl(mockUrlValid)
+
+            // THEN
+            assertThat(shareReceiverViewModel.saved.first()).isEqualTo("R.string.posts_existing_feedback")
+        }
+
+    @Test
+    fun `GIVEN getEditAfterSharing is BeforeSaving WHEN an existing post is found THEN save should receive a value`() =
+        runTest {
+            // GIVEN
+            coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
+            coEvery { mockGetUrlPreview(mockUrlValid) } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
+            coEvery { mockPostsRepository.getPost(mockUrlValid) } returns Success(post)
+            every { mockUserRepository.editAfterSharing } returns EditAfterSharing.BeforeSaving
+
+            // WHEN
+            shareReceiverViewModel.saveUrl(mockUrlValid)
+
+            // THEN
+            assertThat(shareReceiverViewModel.edit.first()).isEqualTo("R.string.posts_existing_feedback")
+            coVerify { mockAppStateRepository.runAction(EditPostFromShare(post)) }
+        }
+
+    @Test
+    fun `GIVEN getEditAfterSharing is AfterSaving WHEN an existing post is found THEN save should receive a value`() =
+        runTest {
+            // GIVEN
+            coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
+            coEvery { mockGetUrlPreview(mockUrlValid) } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
+            coEvery { mockPostsRepository.getPost(mockUrlValid) } returns Success(post)
+            every { mockUserRepository.editAfterSharing } returns EditAfterSharing.AfterSaving
+
+            // WHEN
+            shareReceiverViewModel.saveUrl(mockUrlValid)
+
+            // THEN
+            assertThat(shareReceiverViewModel.edit.first()).isEqualTo("R.string.posts_existing_feedback")
+            coVerify { mockAppStateRepository.runAction(EditPostFromShare(post)) }
+        }
 
     @Test
     fun `GIVEN getEditAfterSharing is BeforeSaving THEN edit should receive an empty value AND EditPostFromShare should run`() =

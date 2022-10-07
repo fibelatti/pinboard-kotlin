@@ -108,6 +108,7 @@
     <string name="posts_add_tags_add">Add tag</string>
 
     <string name="posts_saved_feedback">Bookmark saved successfully!</string>
+    <string name="posts_existing_feedback">Existing bookmark found!</string>
 
     <string name="posts_item_private">Private</string>
     <string name="posts_item_read_later">Read later</string>
