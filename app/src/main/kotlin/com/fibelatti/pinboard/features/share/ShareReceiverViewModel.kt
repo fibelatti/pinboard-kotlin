@@ -46,8 +46,8 @@ class ShareReceiverViewModel @Inject constructor(
 
     fun saveUrl(url: String) {
         launch {
-            extractUrl(url).mapCatching { extractedUrl ->
-                val urlPreview = async { getUrlPreview(extractedUrl) }
+            extractUrl(url).mapCatching { (extractedUrl, highlightedText) ->
+                val urlPreview = async { getUrlPreview(GetUrlPreview.Params(extractedUrl, highlightedText)) }
                 val existingPost = async { postsRepository.getPost(url = extractedUrl) }
 
                 urlPreview.await().getOrThrow() to existingPost.await().getOrNull()

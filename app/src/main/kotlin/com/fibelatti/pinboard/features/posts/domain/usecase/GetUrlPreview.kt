@@ -17,15 +17,18 @@ import javax.inject.Inject
 class GetUrlPreview @Inject constructor(
     @UrlParser private val okHttpClient: OkHttpClient,
     private val userRepository: UserRepository,
-) : UseCaseWithParams<UrlPreview, String>() {
+) : UseCaseWithParams<UrlPreview, GetUrlPreview.Params>() {
 
-    override suspend fun run(params: String): Result<UrlPreview> = catching {
+    override suspend fun run(params: Params): Result<UrlPreview> = catching {
         val request = Request.Builder()
-            .url(params)
+            .url(params.url)
             .apply {
                 // Prevent async loading of metadata
-                if (params.contains("twitter.com")) {
-                    header("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://google.com/bot.html)")
+                if (params.url.contains("twitter.com")) {
+                    header(
+                        name = "User-Agent",
+                        value = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://google.com/bot.html)"
+                    )
                 }
             }
             .build()
@@ -37,12 +40,24 @@ class GetUrlPreview @Inject constructor(
         }
 
         val title = document.getMetaProperty("og:title") ?: document.title().ifBlank { url }
-        val description = document.getMetaProperty("og:description").takeIf { userRepository.autoFillDescription }
+        val description = params.highlightedText
+            ?: document.getMetaProperty("og:description").takeIf { userRepository.autoFillDescription }
 
         UrlPreview(url, title, description)
-    }.onFailureReturn(UrlPreview(url = params, title = params))
+    }.onFailureReturn(
+        UrlPreview(
+            url = params.url,
+            title = params.url,
+            description = params.highlightedText,
+        )
+    )
 
     private fun Document.getMetaProperty(
         property: String,
     ): String? = select("meta[property=$property]").firstOrNull()?.attr("content")?.ifBlank { null }
+
+    data class Params(
+        val url: String,
+        val highlightedText: String? = null,
+    )
 }

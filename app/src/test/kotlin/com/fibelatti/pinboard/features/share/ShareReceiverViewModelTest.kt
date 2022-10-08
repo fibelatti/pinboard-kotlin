@@ -74,8 +74,8 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     @Test
     fun `WHEN GetUrlPreview fails THEN failed should receive a value`() = runTest {
         // GIVEN
-        coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
-        coEvery { mockGetUrlPreview(mockUrlValid) } returns Failure(error)
+        coEvery { mockExtractUrl(mockUrlValid) } returns Success(ExtractUrl.ExtractedUrl(mockUrlValid))
+        coEvery { mockGetUrlPreview(GetUrlPreview.Params(mockUrlValid)) } returns Failure(error)
 
         // WHEN
         shareReceiverViewModel.saveUrl(mockUrlValid)
@@ -89,8 +89,10 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     fun `GIVEN getEditAfterSharing is SkipEdit WHEN an existing post is found THEN save should receive a value`() =
         runTest {
             // GIVEN
-            coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
-            coEvery { mockGetUrlPreview(mockUrlValid) } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
+            coEvery { mockExtractUrl(mockUrlValid) } returns Success(ExtractUrl.ExtractedUrl(mockUrlValid))
+            coEvery {
+                mockGetUrlPreview(GetUrlPreview.Params(mockUrlValid))
+            } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
             coEvery { mockPostsRepository.getPost(mockUrlValid) } returns Success(post)
             every { mockUserRepository.editAfterSharing } returns EditAfterSharing.SkipEdit
 
@@ -105,8 +107,10 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     fun `GIVEN getEditAfterSharing is BeforeSaving WHEN an existing post is found THEN save should receive a value`() =
         runTest {
             // GIVEN
-            coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
-            coEvery { mockGetUrlPreview(mockUrlValid) } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
+            coEvery { mockExtractUrl(mockUrlValid) } returns Success(ExtractUrl.ExtractedUrl(mockUrlValid))
+            coEvery {
+                mockGetUrlPreview(GetUrlPreview.Params(mockUrlValid))
+            } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
             coEvery { mockPostsRepository.getPost(mockUrlValid) } returns Success(post)
             every { mockUserRepository.editAfterSharing } returns EditAfterSharing.BeforeSaving
 
@@ -122,8 +126,10 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     fun `GIVEN getEditAfterSharing is AfterSaving WHEN an existing post is found THEN save should receive a value`() =
         runTest {
             // GIVEN
-            coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
-            coEvery { mockGetUrlPreview(mockUrlValid) } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
+            coEvery { mockExtractUrl(mockUrlValid) } returns Success(ExtractUrl.ExtractedUrl(mockUrlValid))
+            coEvery {
+                mockGetUrlPreview(GetUrlPreview.Params(mockUrlValid))
+            } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
             coEvery { mockPostsRepository.getPost(mockUrlValid) } returns Success(post)
             every { mockUserRepository.editAfterSharing } returns EditAfterSharing.AfterSaving
 
@@ -143,8 +149,10 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
             val defaultReadLater = randomBoolean()
             val defaultTags = mockk<List<Tag>>()
 
-            coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
-            coEvery { mockGetUrlPreview(mockUrlValid) } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
+            coEvery { mockExtractUrl(mockUrlValid) } returns Success(ExtractUrl.ExtractedUrl(mockUrlValid))
+            coEvery {
+                mockGetUrlPreview(GetUrlPreview.Params(mockUrlValid))
+            } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
             every { mockUserRepository.defaultPrivate } returns defaultPrivate
             every { mockUserRepository.defaultReadLater } returns defaultReadLater
             every { mockUserRepository.defaultTags } returns defaultTags
@@ -178,8 +186,10 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         val defaultReadLater = randomBoolean()
         val defaultTags = mockk<List<Tag>>()
 
-        coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
-        coEvery { mockGetUrlPreview(mockUrlValid) } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
+        coEvery { mockExtractUrl(mockUrlValid) } returns Success(ExtractUrl.ExtractedUrl(mockUrlValid))
+        coEvery {
+            mockGetUrlPreview(GetUrlPreview.Params(mockUrlValid))
+        } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
         every { mockUserRepository.defaultPrivate } returns defaultPrivate
         every { mockUserRepository.defaultReadLater } returns defaultReadLater
         every { mockUserRepository.defaultTags } returns defaultTags
@@ -214,8 +224,10 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         val defaultReadLater = randomBoolean()
         val defaultTags = mockk<List<Tag>>()
 
-        coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
-        coEvery { mockGetUrlPreview(mockUrlValid) } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
+        coEvery { mockExtractUrl(mockUrlValid) } returns Success(ExtractUrl.ExtractedUrl(mockUrlValid))
+        coEvery {
+            mockGetUrlPreview(GetUrlPreview.Params(mockUrlValid))
+        } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
         every { mockUserRepository.defaultPrivate } returns defaultPrivate
         every { mockUserRepository.defaultReadLater } returns defaultReadLater
         every { mockUserRepository.defaultTags } returns defaultTags
@@ -251,8 +263,10 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         val defaultReadLater = randomBoolean()
         val defaultTags = mockk<List<Tag>>()
 
-        coEvery { mockExtractUrl(mockUrlValid) } returns Success(mockUrlValid)
-        coEvery { mockGetUrlPreview(mockUrlValid) } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
+        coEvery { mockExtractUrl(mockUrlValid) } returns Success(ExtractUrl.ExtractedUrl(mockUrlValid))
+        coEvery {
+            mockGetUrlPreview(GetUrlPreview.Params(mockUrlValid))
+        } returns Success(UrlPreview(mockUrlValid, mockUrlValid))
         every { mockUserRepository.defaultPrivate } returns defaultPrivate
         every { mockUserRepository.defaultReadLater } returns defaultReadLater
         every { mockUserRepository.defaultTags } returns defaultTags

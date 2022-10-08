@@ -10,20 +10,34 @@ import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
 import javax.inject.Inject
 
-class ExtractUrl @Inject constructor() : UseCaseWithParams<String, String>() {
+class ExtractUrl @Inject constructor() : UseCaseWithParams<ExtractUrl.ExtractedUrl, String>() {
 
-    override suspend fun run(params: String): Result<String> {
+    override suspend fun run(params: String): Result<ExtractedUrl> {
         val schemes = ValidUrlScheme.ALL_SCHEMES.map { "$it://" }
-
-        val index = schemes.mapNotNull { scheme -> params.indexOf(scheme).takeIf { it >= 0 } }
-            .minOrNull() ?: return Failure(InvalidUrlException())
+        val firstSchemeIndex = schemes.mapNotNull { scheme -> params.indexOf(scheme).takeIf { it >= 0 } }
+            .minOrNull()
+            ?: return Failure(InvalidUrlException())
+        val sourceUrl = params.substring(startIndex = firstSchemeIndex)
+            .substringBefore(delimiter = "#:~:text=")
+        val highlightedText = params.substring(startIndex = 0, endIndex = firstSchemeIndex)
+            .trim()
+            .takeIf { it.startsWith("\"") && it.endsWith("\"") }
+            ?.let { it.substring(startIndex = 1, endIndex = it.length - 1) }
 
         return try {
-            withContext(Dispatchers.Default) {
-                Success(URLDecoder.decode(params.substring(index), "UTF-8"))
-            }
+            Success(
+                ExtractedUrl(
+                    url = withContext(Dispatchers.IO) { URLDecoder.decode(sourceUrl, "UTF-8") },
+                    highlightedText = highlightedText,
+                )
+            )
         } catch (ignored: UnsupportedEncodingException) {
             Failure(InvalidUrlException())
         }
     }
+
+    data class ExtractedUrl(
+        val url: String,
+        val highlightedText: String? = null,
+    )
 }
