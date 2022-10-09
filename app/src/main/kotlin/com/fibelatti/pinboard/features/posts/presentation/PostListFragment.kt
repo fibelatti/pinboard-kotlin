@@ -134,7 +134,7 @@ class PostListFragment @Inject constructor(
     }
 
     private fun showQuickActionsDialog(post: Post) {
-        SelectionDialog.showSelectionDialog(
+        SelectionDialog.show(
             context = requireContext(),
             title = getString(R.string.quick_actions_title),
             options = PostQuickActions.allOptions(post),
@@ -252,7 +252,7 @@ class PostListFragment @Inject constructor(
                 requireActivity().shareText(R.string.search_share_title, tagsUrl)
             }
             else -> {
-                SelectionDialog.showSelectionDialog(
+                SelectionDialog.show(
                     context = requireContext(),
                     title = getString(R.string.search_share_title),
                     options = ShareSearchOption.values().toList(),

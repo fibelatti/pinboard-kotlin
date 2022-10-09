@@ -67,7 +67,7 @@ class TagsFragment @Inject constructor(
     }
 
     private fun showTagQuickActions(tag: Tag) {
-        SelectionDialog.showSelectionDialog(
+        SelectionDialog.show(
             context = requireContext(),
             title = getString(R.string.quick_actions_title),
             options = TagQuickActions.allOptions(tag),

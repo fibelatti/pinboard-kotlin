@@ -76,7 +76,7 @@ class PopularPostsFragment @Inject constructor(
     }
 
     private fun showQuickActionsDialogs(post: Post) {
-        SelectionDialog.showSelectionDialog(
+        SelectionDialog.show(
             context = requireContext(),
             title = getString(R.string.quick_actions_title),
             options = PopularPostQuickActions.allOptions(post),

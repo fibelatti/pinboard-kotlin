@@ -348,7 +348,7 @@ class UserPreferencesFragment @Inject constructor(
     ) = apply {
         setText(buttonText(currentSelection))
         setOnClickListener {
-            SelectionDialog.showSelectionDialog(
+            SelectionDialog.show(
                 context = requireContext(),
                 title = getString(title),
                 options = options(),

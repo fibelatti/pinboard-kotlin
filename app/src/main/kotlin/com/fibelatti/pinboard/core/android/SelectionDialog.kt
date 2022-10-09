@@ -9,7 +9,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 
 object SelectionDialog {
 
-    fun <T> showSelectionDialog(
+    fun <T> show(
         context: Context,
         title: String,
         options: List<T>,
