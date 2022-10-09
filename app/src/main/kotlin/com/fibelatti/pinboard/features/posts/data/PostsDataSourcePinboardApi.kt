@@ -139,7 +139,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
                         .first().let(postDtoMapper::map)
                 }
                 ApiResultCodes.ITEM_ALREADY_EXISTS.code -> getPost(url).getOrThrow()
-                else -> throw ApiException()
+                else -> throw ApiException(result.resultCode)
             }
         }
     }
@@ -183,7 +183,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
         if (result.resultCode == ApiResultCodes.DONE.code) {
             postsDao.deletePost(url)
         } else {
-            throw ApiException()
+            throw ApiException(result.resultCode)
         }
     }
 

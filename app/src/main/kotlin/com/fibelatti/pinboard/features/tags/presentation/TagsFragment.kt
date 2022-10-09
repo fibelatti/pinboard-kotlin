@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.core.view.isGone
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -11,6 +13,7 @@ import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.databinding.FragmentTagsBinding
@@ -19,6 +22,7 @@ import com.fibelatti.pinboard.features.TitleLayoutHost.Companion.titleLayoutHost
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.RefreshTags
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
@@ -53,9 +57,34 @@ class TagsFragment @Inject constructor(
     }
 
     private fun setupLayout() {
-        binding.tagListLayout.setAdapter(tagsAdapter) { appStateViewModel.runAction(PostsForTag(it)) }
+        binding.tagListLayout.setAdapter(
+            tagsAdapter,
+            onClickListener = { appStateViewModel.runAction(PostsForTag(it)) },
+            onLongClickListener = ::showTagQuickActions,
+        )
         binding.tagListLayout.setOnRefreshListener { appStateViewModel.runAction(RefreshTags) }
         binding.tagListLayout.setSortingClickListener(tagsViewModel::sortTags)
+    }
+
+    private fun showTagQuickActions(tag: Tag) {
+        SelectionDialog.showSelectionDialog(
+            context = requireContext(),
+            title = getString(R.string.quick_actions_title),
+            options = TagQuickActions.allOptions(tag),
+            optionName = { getString(it.title) },
+            optionIcon = TagQuickActions::icon,
+            onOptionSelected = { option ->
+                when (option) {
+                    is TagQuickActions.Rename -> {
+                        RenameTagDialog.show(
+                            context = requireContext(),
+                            tag = option.tag,
+                            onRename = tagsViewModel::renameTag
+                        )
+                    }
+                }
+            }
+        )
     }
 
     private fun setupViewModels() {
@@ -64,7 +93,7 @@ class TagsFragment @Inject constructor(
                 setupActivityViews()
 
                 if (content.shouldLoad) {
-                    binding.tagListLayout.showLoading()
+                    binding.tagListLayout.isLoading = true
                     tagsViewModel.getAll(TagsViewModel.Source.MENU)
                 } else {
                     tagsViewModel.sortTags(content.tags, binding.tagListLayout.getCurrentTagSorting())
@@ -74,6 +103,9 @@ class TagsFragment @Inject constructor(
 
         tagsViewModel.tags
             .onEach(binding.tagListLayout::showTags)
+            .launchInAndFlowWith(viewLifecycleOwner)
+        tagsViewModel.loading
+            .onEach { loading -> binding.tagListLayout.isLoading = loading }
             .launchInAndFlowWith(viewLifecycleOwner)
         tagsViewModel.error
             .onEach(::handleError)
@@ -98,5 +130,29 @@ class TagsFragment @Inject constructor(
             }
             fab.hide()
         }
+    }
+}
+
+private sealed class TagQuickActions(
+    @StringRes val title: Int,
+    @DrawableRes val icon: Int,
+) {
+
+    abstract val tag: Tag
+
+    data class Rename(
+        override val tag: Tag,
+    ) : TagQuickActions(
+        title = R.string.quick_actions_rename,
+        icon = R.drawable.ic_edit,
+    )
+
+    companion object {
+
+        fun allOptions(
+            tag: Tag,
+        ): List<TagQuickActions> = listOf(
+            Rename(tag),
+        )
     }
 }

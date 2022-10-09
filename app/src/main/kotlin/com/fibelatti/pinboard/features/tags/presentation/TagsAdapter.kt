@@ -14,6 +14,7 @@ class TagsAdapter @Inject constructor() : BaseAdapter<Tag, ListItemTagBinding>(
 ) {
 
     var onItemClicked: ((Tag) -> Unit)? = null
+    var onItemLongClicked: ((Tag) -> Unit)? = null
 
     override fun onBindViewHolder(holder: ViewHolder<ListItemTagBinding>, position: Int) {
         with(holder.binding) {
@@ -26,6 +27,10 @@ class TagsAdapter @Inject constructor() : BaseAdapter<Tag, ListItemTagBinding>(
             )
 
             root.setOnClickListener { onItemClicked?.invoke(item) }
+            root.setOnLongClickListener {
+                onItemLongClicked?.invoke(item)
+                onItemLongClicked != null
+            }
         }
     }
 }

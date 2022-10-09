@@ -25,7 +25,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_regular"
-        app:singleSelection="true">
+        android:visibility="gone"
+        app:singleSelection="true"
+        tools:visibility="visible">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonTagSortingAtoZ"
@@ -76,7 +78,9 @@
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeToRefresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewTags"

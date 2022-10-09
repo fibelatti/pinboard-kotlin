@@ -8,7 +8,7 @@ import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 import java.net.SocketTimeoutException
 
-class ApiException : Throwable()
+class ApiException(resultCode: String? = null) : Throwable(message = resultCode)
 
 class InvalidRequestException : Throwable()
 
@@ -24,7 +24,7 @@ class InvalidRequestException : Throwable()
 @Suppress("MagicNumber")
 inline fun catchingSocketTimeoutException(
     chain: Interceptor.Chain,
-    block: () -> Request
+    block: () -> Request,
 ): Response {
     return try {
         chain.proceed(block())

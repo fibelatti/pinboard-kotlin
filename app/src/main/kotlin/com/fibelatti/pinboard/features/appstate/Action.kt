@@ -71,7 +71,7 @@ object ClearSearch : SearchAction()
 sealed class TagAction : Action()
 
 object RefreshTags : TagAction()
-data class SetTags(val tags: List<Tag>) : TagAction()
+data class SetTags(val tags: List<Tag>, val shouldReloadPosts: Boolean = false) : TagAction()
 data class PostsForTag(val tag: Tag) : TagAction()
 // endregion
 

@@ -28,6 +28,7 @@ class TagListLayout @JvmOverloads constructor(
     private var tagsAdapter: TagsAdapter? = null
 
     val isInputFocused: Boolean get() = binding.editTextTagFilter.isFocused
+    var isLoading: Boolean by binding.progressBar::isVisible
 
     init {
         binding.root.layoutTransition = LayoutTransition().apply {
@@ -44,9 +45,14 @@ class TagListLayout @JvmOverloads constructor(
         }
     }
 
-    fun setAdapter(adapter: TagsAdapter, onClickListener: (Tag) -> Unit = {}) {
+    fun setAdapter(
+        adapter: TagsAdapter,
+        onClickListener: (Tag) -> Unit = {},
+        onLongClickListener: (Tag) -> Unit = {},
+    ) {
         tagsAdapter = adapter
         adapter.onItemClicked = onClickListener
+        adapter.onItemLongClicked = onLongClickListener
         binding.recyclerViewTags.adapter = adapter
     }
 
@@ -98,17 +104,10 @@ class TagListLayout @JvmOverloads constructor(
         binding.editTextTagFilter.setOnFocusChangeListener { _, hasFocus -> onInputFocused(hasFocus) }
     }
 
-    fun showLoading() {
-        binding.progressBar.isVisible = true
-        binding.buttonGroupTagSorting.isGone = true
-        binding.recyclerViewTags.isGone = true
-        binding.layoutEmptyList.isGone = true
-    }
-
     fun showTags(list: List<Tag>) {
         if (list.isNotEmpty()) {
             binding.buttonGroupTagSorting.isVisible = true
-            binding.recyclerViewTags.isVisible = true
+            binding.swipeToRefresh.isVisible = true
             binding.layoutEmptyList.isGone = true
 
             tagsAdapter?.submitList(list)
@@ -125,7 +124,7 @@ class TagListLayout @JvmOverloads constructor(
 
     private fun showEmptyLayout() {
         binding.buttonGroupTagSorting.isGone = true
-        binding.recyclerViewTags.isGone = true
+        binding.swipeToRefresh.isGone = true
         binding.layoutEmptyList.apply {
             setIcon(R.drawable.ic_tag)
             setTitle(R.string.tags_empty_title)

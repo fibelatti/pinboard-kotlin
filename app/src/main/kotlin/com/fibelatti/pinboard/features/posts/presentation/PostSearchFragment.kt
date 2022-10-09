@@ -85,7 +85,10 @@ class PostSearchFragment @Inject constructor(
             appStateViewModel.runAction(Search(textAsString()))
         }
 
-        binding.tagListLayout.setAdapter(tagsAdapter) { appStateViewModel.runAction(AddSearchTag(it)) }
+        binding.tagListLayout.setAdapter(
+            tagsAdapter,
+            onClickListener = { appStateViewModel.runAction(AddSearchTag(it)) }
+        )
         binding.tagListLayout.setOnRefreshListener { appStateViewModel.runAction(RefreshSearchTags) }
         binding.tagListLayout.setSortingClickListener(tagsViewModel::sortTags)
         binding.tagListLayout.setInputFocusChangeListener { hasFocus ->
@@ -123,7 +126,7 @@ class PostSearchFragment @Inject constructor(
                 }
 
                 if (content.shouldLoadTags) {
-                    binding.tagListLayout.showLoading()
+                    binding.tagListLayout.isLoading = true
                     tagsViewModel.getAll(TagsViewModel.Source.SEARCH)
                 } else {
                     tagsViewModel.sortTags(content.availableTags, binding.tagListLayout.getCurrentTagSorting())

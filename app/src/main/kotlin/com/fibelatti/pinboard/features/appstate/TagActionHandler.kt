@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class TagActionHandler @Inject constructor(
     private val userRepository: UserRepository,
-    private val connectivityInfoProvider: ConnectivityInfoProvider
+    private val connectivityInfoProvider: ConnectivityInfoProvider,
 ) : ActionHandler<TagAction>() {
 
     override suspend fun runAction(action: TagAction, currentContent: Content): Content {
@@ -27,10 +27,16 @@ class TagActionHandler @Inject constructor(
     }
 
     private fun setTags(action: SetTags, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<TagListContent>(currentContent) {
-            it.copy(
+        return runOnlyForCurrentContentOfType<TagListContent>(currentContent) { tagListContent ->
+            tagListContent.copy(
                 tags = action.tags,
-                shouldLoad = false
+                shouldLoad = false,
+                previousContent = if (action.shouldReloadPosts) {
+                    userRepository.lastUpdate = ""
+                    tagListContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
+                } else {
+                    tagListContent.previousContent
+                }
             )
         }
     }

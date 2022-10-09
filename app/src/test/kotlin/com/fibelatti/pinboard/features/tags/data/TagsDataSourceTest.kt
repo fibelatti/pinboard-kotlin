@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.tags.data
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.features.posts.data.PostsDao
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.google.common.truth.Truth.assertThat
@@ -151,6 +152,47 @@ class TagsDataSourceTest {
                     Tag("tag3", 1),
                 )
             )
+        }
+    }
+
+    @Nested
+    inner class RenameTagTests {
+
+        @Test
+        fun `WHEN the result is done THEN the tags are returned`() = runTest {
+            // GIVEN
+            coEvery { mockApi.renameTag(any(), any()) } returns RenameTagResponseDto(result = "done")
+            coEvery { mockApi.getTags() } returns mapOf("new-name" to "1")
+
+            // WHEN
+            val result = dataSource.renameTag(oldName = "old-name", newName = "new-name")
+
+            // THEN
+            assertThat(result.getOrNull()).isEqualTo(listOf(Tag("new-name", 1)))
+        }
+
+        @Test
+        fun `WHEN the result is not done THEN an APIException is returned`() = runTest {
+            // GIVEN
+            coEvery { mockApi.renameTag(any(), any()) } returns RenameTagResponseDto(result = "something-else")
+
+            // WHEN
+            val result = dataSource.renameTag(oldName = "old-name", newName = "new-name")
+
+            // THEN
+            assertThat(result.exceptionOrNull()).isInstanceOf(ApiException::class.java)
+        }
+
+        @Test
+        fun `WHEN the network call fails THEN the error is returned`() = runTest {
+            // GIVEN
+            coEvery { mockApi.renameTag(any(), any()) } throws Exception()
+
+            // WHEN
+            val result = dataSource.renameTag(oldName = "old-name", newName = "new-name")
+
+            // THEN
+            assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
         }
     }
 }

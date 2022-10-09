@@ -184,6 +184,7 @@
     <string name="quick_actions_share">Share bookmark</string>
     <string name="quick_actions_expand_description">Expand description</string>
     <string name="quick_actions_open_in_browser">Open in browser</string>
+    <string name="quick_actions_rename">Rename</string>
 
     <!-- User Preferences -->
     <string name="user_preferences_title">Preferences</string>
@@ -250,7 +251,7 @@
 
     <!-- Error -->
     <string name="error_send_email">Send email</string>
-    <string name="error_report_rationale">Looks like something went wrong. If you wish, you can click Report below to send me an email with the details of the error to help with troubleshooting.</string>
+    <string name="error_report_rationale">Looks like something went wrong.\n\nTap <b>Report</b> to launch your default email app with the error details which you can send to help with troubleshooting.</string>
     <string name="error_report">Report</string>
     <string name="error_ignore">Ignore</string>
 

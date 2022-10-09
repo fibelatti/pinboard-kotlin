@@ -2,6 +2,8 @@ package com.fibelatti.pinboard.features.tags.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.fibelatti.core.functional.getOrThrow
+import com.fibelatti.core.functional.onFailure
+import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.SetSearchTags
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,6 +30,8 @@ class TagsViewModel @Inject constructor(
 
     val tags: Flow<List<Tag>> get() = _tags.filterNotNull()
     private val _tags = MutableStateFlow<List<Tag>?>(null)
+    val loading: Flow<Boolean> get() = _loading.filterNotNull()
+    private val _loading = MutableStateFlow<Boolean?>(null)
 
     fun getAll(source: Source) {
         _tags.value = null
@@ -48,6 +53,16 @@ class TagsViewModel @Inject constructor(
             TagSorting.AtoZ -> tags.sortedBy(Tag::name)
             TagSorting.MoreFirst -> tags.sortedByDescending(Tag::posts)
             TagSorting.LessFirst -> tags.sortedBy(Tag::posts)
+        }
+    }
+
+    fun renameTag(tag: Tag, newName: String) {
+        viewModelScope.launch {
+            _loading.value = true
+            tagsRepository.renameTag(oldName = tag.name, newName = newName)
+                .onSuccess { tags -> appStateRepository.runAction(SetTags(tags, shouldReloadPosts = true)) }
+                .onFailure(::handleError)
+            _loading.value = false
         }
     }
 
