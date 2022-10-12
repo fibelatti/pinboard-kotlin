@@ -9,7 +9,7 @@ object AppConfig {
 
     const val API_BASE_URL_LENGTH = 90
 
-    const val API_PAGE_SIZE = 5000
+    const val API_PAGE_SIZE = 10_000
 
     // Pinboard API requires a minimum of 3 seconds between each request
     const val API_THROTTLE_TIME = 3_000L
