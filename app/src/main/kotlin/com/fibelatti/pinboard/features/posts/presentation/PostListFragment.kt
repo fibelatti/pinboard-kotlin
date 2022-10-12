@@ -22,6 +22,7 @@ import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppConfig.PINBOARD_USER_URL
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.copyToClipboard
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.showBanner
@@ -144,6 +145,7 @@ class PostListFragment @Inject constructor(
                 when (option) {
                     is PostQuickActions.Edit -> appStateViewModel.runAction(EditPost(option.post))
                     is PostQuickActions.Delete -> deletePost(option.post)
+                    is PostQuickActions.CopyUrl -> requireContext().copyToClipboard(post.title, post.url)
                     is PostQuickActions.Share -> requireActivity().shareText(
                         R.string.posts_share_title,
                         option.post.url,
@@ -363,6 +365,13 @@ private sealed class PostQuickActions(
         icon = R.drawable.ic_delete,
     )
 
+    data class CopyUrl(
+        override val post: Post,
+    ) : PostQuickActions(
+        title = R.string.quick_actions_copy_url,
+        icon = R.drawable.ic_copy
+    )
+
     data class Share(
         override val post: Post,
     ) : PostQuickActions(
@@ -391,6 +400,7 @@ private sealed class PostQuickActions(
         ): List<PostQuickActions> = buildList {
             add(Edit(post))
             add(Delete(post))
+            add(CopyUrl(post))
             add(Share(post))
 
             if (post.description.isNotBlank()) {

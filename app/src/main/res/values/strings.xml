@@ -25,6 +25,8 @@
     <string name="generic_msg_error">Oops, something went wrong</string>
     <string name="server_timeout_error">It looks like there\'s a problem with Pinboard. Please try again in a while.</string>
 
+    <string name="feedback_copied_to_clipboard">Copied to the clipboard</string>
+
     <!-- Menus -->
     <string name="menu_main_sync">Sync bookmarks</string>
     <string name="menu_main_search">Search</string>
@@ -181,6 +183,7 @@
     <string name="quick_actions_edit">Edit bookmark</string>
     <string name="quick_actions_delete">Delete bookmark</string>
     <string name="quick_actions_save">Save to mine</string>
+    <string name="quick_actions_copy_url">Copy URL</string>
     <string name="quick_actions_share">Share bookmark</string>
     <string name="quick_actions_expand_description">Expand description</string>
     <string name="quick_actions_open_in_browser">Open in browser</string>

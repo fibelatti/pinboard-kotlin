@@ -19,6 +19,7 @@ import com.fibelatti.core.extension.withItemOffsetDecoration
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.copyToClipboard
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.databinding.FragmentPopularPostsBinding
@@ -85,6 +86,7 @@ class PopularPostsFragment @Inject constructor(
             onOptionSelected = { option ->
                 when (option) {
                     is PopularPostQuickActions.Save -> popularPostsViewModel.saveLink(option.post)
+                    is PopularPostQuickActions.CopyUrl -> requireContext().copyToClipboard(post.title, post.url)
                     is PopularPostQuickActions.Share -> requireActivity().shareText(
                         R.string.posts_share_title,
                         option.post.url,
@@ -173,6 +175,13 @@ private sealed class PopularPostQuickActions(
         icon = R.drawable.ic_save,
     )
 
+    data class CopyUrl(
+        override val post: Post,
+    ) : PopularPostQuickActions(
+        title = R.string.quick_actions_copy_url,
+        icon = R.drawable.ic_copy
+    )
+
     data class Share(
         override val post: Post,
     ) : PopularPostQuickActions(
@@ -193,6 +202,7 @@ private sealed class PopularPostQuickActions(
             post: Post,
         ): List<PopularPostQuickActions> = listOf(
             Save(post),
+            CopyUrl(post),
             Share(post),
             OpenBrowser(post),
         )
