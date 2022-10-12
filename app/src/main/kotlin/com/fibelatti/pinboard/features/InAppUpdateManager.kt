@@ -2,21 +2,19 @@ package com.fibelatti.pinboard.features
 
 import android.content.Context
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
+import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
-import com.google.android.play.core.install.InstallState
-import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
-import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class InAppUpdateManager @Inject constructor(
-    @ActivityContext context: Context,
+    @ApplicationContext context: Context,
 ) {
 
     private companion object {
@@ -25,62 +23,40 @@ class InAppUpdateManager @Inject constructor(
     }
 
     private val inAppUpdateManager: AppUpdateManager = AppUpdateManagerFactory.create(context)
+    private var currentAppUpdateInfo: AppUpdateInfo? = null
 
-    fun checkForAvailableUpdates(
-        activity: FragmentActivity,
-        onDownloadComplete: () -> Unit,
-    ) {
-        val installStateUpdatedListener = object : InstallStateUpdatedListener {
-
-            override fun onStateUpdate(state: InstallState) {
-                val shouldNotify = state.installStatus() == InstallStatus.DOWNLOADED &&
-                    activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
-
-                if (shouldNotify) {
-                    inAppUpdateManager.unregisterListener(this)
-                    onDownloadComplete.invoke()
-                }
-            }
-        }
-
-        val lifecycleObserver = object : DefaultLifecycleObserver {
-
-            override fun onResume(owner: LifecycleOwner) {
-                inAppUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
-                    when (appUpdateInfo.installStatus()) {
-                        InstallStatus.DOWNLOADED -> onDownloadComplete.invoke()
-                        InstallStatus.INSTALLING, InstallStatus.INSTALLED,
-                        InstallStatus.FAILED, InstallStatus.CANCELED,
-                        -> owner.lifecycle.removeObserver(this)
-                        else -> Unit
-                    }
-                }
-            }
-
-            override fun onDestroy(owner: LifecycleOwner) {
-                owner.lifecycle.removeObserver(this)
-                inAppUpdateManager.unregisterListener(installStateUpdatedListener)
-            }
-        }
-
+    suspend fun isUpdateAvailable(): Boolean = suspendCoroutine { continuation ->
         inAppUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
-            val updateAvailable = appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
-                appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
+            currentAppUpdateInfo = appUpdateInfo
 
-            if (updateAvailable) {
-                activity.lifecycle.addObserver(lifecycleObserver)
-                inAppUpdateManager.registerListener(installStateUpdatedListener)
-                inAppUpdateManager.startUpdateFlowForResult(
-                    appUpdateInfo,
-                    AppUpdateType.FLEXIBLE,
-                    activity,
-                    FLEXIBLE_UPDATE_REQUEST
-                )
-            }
+            val updateAvailable = appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE ||
+                appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED
+
+            continuation.resume(updateAvailable)
         }
     }
 
-    fun completeUpdate() {
+    suspend fun downloadUpdate(fragmentActivity: FragmentActivity) = suspendCoroutine { continuation ->
+        val appUpdateInfo = requireNotNull(currentAppUpdateInfo)
+
+        if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
+            continuation.resume(Unit)
+        } else {
+            inAppUpdateManager.registerListener { state ->
+                if (state.installStatus() == InstallStatus.DOWNLOADED) {
+                    continuation.resume(Unit)
+                }
+            }
+            inAppUpdateManager.startUpdateFlowForResult(
+                appUpdateInfo,
+                AppUpdateType.FLEXIBLE,
+                fragmentActivity,
+                FLEXIBLE_UPDATE_REQUEST,
+            )
+        }
+    }
+
+    fun installUpdate() {
         inAppUpdateManager.completeUpdate()
     }
 }

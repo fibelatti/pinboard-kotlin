@@ -13,6 +13,9 @@ import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.fibelatti.core.android.BaseIntentBuilder
 import com.fibelatti.core.android.intentExtras
 import com.fibelatti.core.extension.animateChangingTransitions
@@ -56,7 +59,9 @@ import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -161,11 +166,20 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
     }
 
     private fun setupAutoUpdate() {
-        if (userRepository.autoUpdate) {
-            inAppUpdateManager.checkForAvailableUpdates(this) {
-                Snackbar.make(binding.root, R.string.in_app_update_ready, Snackbar.LENGTH_LONG).apply {
-                    setAction(R.string.in_app_update_install) { inAppUpdateManager.completeUpdate() }
-                }.show()
+        if (!userRepository.autoUpdate) return
+
+        var autoUpdateJob: Job? = null
+        autoUpdateJob = lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                if (inAppUpdateManager.isUpdateAvailable()) {
+                    inAppUpdateManager.downloadUpdate(fragmentActivity = this@MainActivity)
+
+                    Snackbar.make(binding.root, R.string.in_app_update_ready, Snackbar.LENGTH_LONG)
+                        .apply { setAction(R.string.in_app_update_install) { inAppUpdateManager.installUpdate() } }
+                        .show()
+                } else {
+                    autoUpdateJob?.cancel()
+                }
             }
         }
     }
