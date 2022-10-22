@@ -17,8 +17,8 @@ class PostDtoMapperTest {
     inner class MapTests {
 
         @Test
-        fun `GIVEN url has unescaped percent characters THEN Post is returned AND the url is fixed`() {
-            val url = "http://example.com/test?q=%1$"
+        fun `GIVEN url has unescaped characters THEN Post is returned AND the url is fixed`() {
+            val url = "http://example.com/test?q=%1$+something"
 
             assertThat(mapper.map(createPostDto(href = url))).isEqualTo(createPost(url = url))
         }

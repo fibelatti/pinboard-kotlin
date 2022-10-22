@@ -37,11 +37,13 @@ data class PostDto(
 class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
 
     override fun map(param: PostDto): Post = with(param) {
+        val preparedUrl = listOf(
+            ::preparePercentForDecoding,
+            ::preparePlusForDecoding,
+        ).fold(href) { current, preparation -> preparation(current) }
+
         Post(
-            url = URLDecoder.decode(
-                href.replace("%(?![0-9a-fA-F]{2})".toRegex(), "%25"),
-                API_ENCODING
-            ),
+            url = URLDecoder.decode(preparedUrl, API_ENCODING),
             title = description ?: "No title",
             description = extended.orEmpty(),
             hash = hash,
@@ -64,6 +66,16 @@ class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
             },
         )
     }
+
+    private fun preparePercentForDecoding(source: String): String = source.replace(
+        regex = "%(?![0-9a-fA-F]{2})".toRegex(),
+        replacement = "%25",
+    )
+
+    private fun preparePlusForDecoding(source: String): String = source.replace(
+        oldValue = "+",
+        newValue = "%2B",
+    )
 
     override fun mapReverse(param: Post): PostDto = with(param) {
         PostDto(
