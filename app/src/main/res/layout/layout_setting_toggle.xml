@@ -39,16 +39,12 @@
         app:layout_constraintTop_toBottomOf="@id/settingTitle"
         tools:text="Setting subtitle" />
 
-    <androidx.appcompat.widget.SwitchCompat
+    <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/settingSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:thumb="@drawable/shape_setting_toggle_thumb"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/settingTitle"
-        app:layout_constraintTop_toTopOf="parent"
-        app:thumbTint="@color/selector_setting_toggle_thumb"
-        app:track="@drawable/shape_setting_toggle_track"
-        app:trackTint="@color/selector_setting_toggle_track" />
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -56,13 +56,14 @@
 
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottomAppBar"
-        style="@style/Widget.Material3.BottomAppBar"
+        style="@style/Widget.Material3.BottomAppBar.Legacy"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:animateLayoutChanges="true"
         android:backgroundTint="?attr/colorSurface"
         android:visibility="gone"
+        app:fabAnchorMode="embed"
         app:hideOnScroll="true"
         app:layout_scrollFlags="scroll|enterAlways"
         tools:visibility="visible" />
