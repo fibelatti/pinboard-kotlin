@@ -5,18 +5,27 @@ import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
+import com.fibelatti.pinboard.core.di.AppDispatchers
+import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostSaved
+import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetSuggestedTags
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,6 +35,8 @@ class EditPostViewModel @Inject constructor(
     private val getSuggestedTags: GetSuggestedTags,
     private val addPost: AddPost,
     private val resourceProvider: ResourceProvider,
+    @Scope(AppDispatchers.DEFAULT) scope: CoroutineScope,
+    sharingStarted: SharingStarted,
 ) : BaseViewModel() {
 
     val loading: Flow<Boolean> get() = _loading.filterNotNull()
@@ -39,6 +50,33 @@ class EditPostViewModel @Inject constructor(
     val saved: Flow<Unit> get() = _saved
     private val _saved = MutableSharedFlow<Unit>()
 
+    // Source of all changes to the screen state, takes null to enable it being initialized with initializePost
+    private val interactions: MutableSharedFlow<(Post?) -> Post> = MutableSharedFlow()
+    private val _postState: StateFlow<IndexedValue<Post>?> = interactions
+        .scan(initial = null) { post: Post?, interaction -> interaction(post) }
+        .filterNotNull() // interactions never return null but the scan return type is inferred by the initial value
+        .withIndex() // add an index to easily figure out if the value has changed
+        .stateIn(
+            scope = scope,
+            started = sharingStarted,
+            initialValue = null,
+        )
+    val postState: Flow<Post> get() = _postState.filterNotNull().map { it.value }
+
+    fun initializePost(post: Post) {
+        launch {
+            if (_postState.value == null) {
+                interactions.emit { post }
+            }
+        }
+    }
+
+    fun updatePost(body: (Post) -> Post) {
+        launch {
+            interactions.emit { current -> body(requireNotNull(current)) }
+        }
+    }
+
     fun searchForTag(tag: String, currentTags: List<Tag>) {
         launch {
             getSuggestedTags(GetSuggestedTags.Params(tag, currentTags))
@@ -46,68 +84,56 @@ class EditPostViewModel @Inject constructor(
         }
     }
 
-    fun saveLink(
-        url: String,
-        title: String,
-        description: String,
-        private: Boolean,
-        readLater: Boolean,
-        tags: List<Tag>,
-    ) {
+    fun saveLink() {
         launch {
-            validateData(url, title, description, private, readLater, tags) { params ->
-                _loading.value = true
-                addPost(params)
-                    .onSuccess {
-                        _saved.emit(Unit)
-                        appStateRepository.runAction(PostSaved(it))
-                    }
-                    .onFailure { error ->
-                        _loading.value = false
-                        when (error) {
-                            is InvalidUrlException -> {
-                                _invalidUrlError.value = resourceProvider.getString(
-                                    R.string.validation_error_invalid_url
-                                )
-                            }
-                            else -> handleError(error)
+            val params = validateData() ?: return@launch
+
+            _loading.value = true
+
+            addPost(params)
+                .onSuccess {
+                    _saved.emit(Unit)
+                    appStateRepository.runAction(PostSaved(it))
+                }
+                .onFailure { error ->
+                    _loading.value = false
+                    when (error) {
+                        is InvalidUrlException -> {
+                            _invalidUrlError.value = resourceProvider.getString(
+                                R.string.validation_error_invalid_url
+                            )
                         }
+                        else -> handleError(error)
                     }
-            }
+                }
         }
     }
 
-    private inline fun validateData(
-        url: String,
-        title: String,
-        description: String,
-        private: Boolean,
-        readLater: Boolean,
-        tags: List<Tag>,
-        ifValid: (AddPost.Params) -> Unit,
-    ) {
+    fun hasPendingChanges(): Boolean = _postState.value.let { it?.index != null && it.index != 0 }
+
+    private fun validateData(): AddPost.Params? {
         _invalidUrlError.value = ""
         _invalidUrlTitleError.value = ""
 
+        val post = _postState.value?.value ?: return null
+
         when {
-            url.isBlank() -> {
+            post.url.isBlank() -> {
                 _invalidUrlError.value = resourceProvider.getString(R.string.validation_error_empty_url)
             }
-            title.isBlank() -> {
+            post.title.isBlank() -> {
                 _invalidUrlTitleError.value = resourceProvider.getString(R.string.validation_error_empty_title)
             }
-            else -> {
-                ifValid(
-                    AddPost.Params(
-                        url = url,
-                        title = title,
-                        description = description,
-                        private = private,
-                        readLater = readLater,
-                        tags = tags
-                    )
-                )
-            }
+            else -> return AddPost.Params(
+                url = post.url,
+                title = post.title,
+                description = post.description,
+                private = post.private,
+                readLater = post.readLater,
+                tags = post.tags,
+            )
         }
+
+        return null
     }
 }

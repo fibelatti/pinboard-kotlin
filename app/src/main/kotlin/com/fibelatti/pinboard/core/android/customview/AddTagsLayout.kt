@@ -29,10 +29,16 @@ class AddTagsLayout @JvmOverloads constructor(
     @Suppress("MagicNumber")
     fun setup(
         afterTagInput: (currentInput: String, currentTags: List<Tag>) -> Unit = { _, _ -> },
-        onTagAdded: (tag: String, currentTags: List<Tag>) -> Unit = { _, _ -> },
-        onTagRemoved: (currentInput: String, currentTags: List<Tag>) -> Unit = { _, _ -> },
+        onTagAdded: (currentTags: List<Tag>) -> Unit = {},
+        onTagRemoved: (currentTags: List<Tag>) -> Unit = {},
     ) {
         with(binding) {
+            val addTag = { tagName: String ->
+                chipGroupTags.addValue(tagName, index = 0)
+                editTextTags.clearText()
+                onTagAdded(chipGroupTags.getAllTags())
+            }
+
             editTextTags.doAfterTextChanged {
                 val text = it.toString()
                 val currentlyFocused = editTextTags.isFocused
@@ -43,11 +49,7 @@ class AddTagsLayout @JvmOverloads constructor(
                         editTextTags.setText(".")
                         editTextTags.setSelection(1)
                     }
-                    text.isNotBlank() && text.endsWith(" ") -> {
-                        chipGroupTags.addValue(text, index = 0)
-                        editTextTags.clearText()
-                        onTagAdded(text, chipGroupTags.getAllTags())
-                    }
+                    text.isNotBlank() && text.endsWith(" ") -> addTag(text)
                     text.isNotBlank() -> afterTagInput(text, chipGroupTags.getAllTags())
                     else -> chipGroupSuggestedTags.removeAllViews()
                 }
@@ -57,30 +59,24 @@ class AddTagsLayout @JvmOverloads constructor(
             editTextTags.onActionOrKeyboardSubmit(EditorInfo.IME_ACTION_SEND) {
                 when (val text = textAsString().trim()) {
                     "" -> hideKeyboard()
-                    else -> {
-                        chipGroupTags.addValue(text, index = 0)
-                        editTextTags.clearText()
-                        onTagAdded(text, chipGroupTags.getAllTags())
-                    }
+                    else -> addTag(text)
                 }
             }
             buttonTagsAdd.setOnClickListener {
-                editTextTags.textAsString().takeIf(kotlin.String::isNotBlank)?.let {
-                    chipGroupTags.addValue(it, index = 0)
-                    editTextTags.clearText()
-                    onTagAdded(it, chipGroupTags.getAllTags())
-                }
+                editTextTags.textAsString().takeIf(kotlin.String::isNotBlank)?.let(addTag)
             }
             chipGroupTags.onTagChipRemoved = {
+                val allTags = chipGroupTags.getAllTags()
+                onTagRemoved(allTags)
                 editTextTags.textAsString().takeIf(String::isNotBlank)?.let {
-                    onTagRemoved(it, chipGroupTags.getAllTags())
+                    afterTagInput(it, allTags)
                 }
             }
 
-            chipGroupSuggestedTags.onTagChipClicked = {
-                chipGroupTags.addTag(it, index = 0)
+            chipGroupSuggestedTags.onTagChipClicked = { tag ->
+                chipGroupTags.addTag(tag, index = 0)
                 editTextTags.clearText()
-                onTagAdded(it.name, chipGroupTags.getAllTags())
+                onTagAdded(chipGroupTags.getAllTags())
             }
         }
     }
@@ -94,6 +90,4 @@ class AddTagsLayout @JvmOverloads constructor(
         binding.chipGroupTags.removeAllViews()
         tags.forEach { binding.chipGroupTags.addTag(it, showRemoveIcon = showRemoveIcon) }
     }
-
-    fun getTags(): List<Tag> = binding.chipGroupTags.getAllTags()
 }

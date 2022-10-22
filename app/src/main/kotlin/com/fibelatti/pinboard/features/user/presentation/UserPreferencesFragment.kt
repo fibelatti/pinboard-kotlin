@@ -101,11 +101,8 @@ class UserPreferencesFragment @Inject constructor(
 
         binding.layoutAddTags.setup(
             afterTagInput = userPreferencesViewModel::searchForTag,
-            onTagAdded = { _, currentTags -> userPreferencesViewModel.saveDefaultTags(currentTags) },
-            onTagRemoved = { tag, currentTags ->
-                userPreferencesViewModel.saveDefaultTags(currentTags)
-                userPreferencesViewModel.searchForTag(tag, currentTags)
-            }
+            onTagAdded = userPreferencesViewModel::saveDefaultTags,
+            onTagRemoved = userPreferencesViewModel::saveDefaultTags,
         )
     }
 

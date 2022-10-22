@@ -23,8 +23,8 @@ class TagChipGroup @JvmOverloads constructor(
         private const val DYNAMIC_TAGS_KEY = "DYNAMIC_TAGS_KEY"
     }
 
-    var onTagChipAdded: (() -> Unit)? = null
-    var onTagChipRemoved: (() -> Unit)? = null
+    var onTagChipAdded: ((Tag) -> Unit)? = null
+    var onTagChipRemoved: ((Tag) -> Unit)? = null
     var onTagChipClicked: ((Tag) -> Unit)? = null
 
     fun getAllTags(): List<Tag> = children.toList().filterIsInstance<TagChip>().mapNotNull(TagChip::getValue)
@@ -46,7 +46,7 @@ class TagChipGroup @JvmOverloads constructor(
     private fun addIfNotAlreadyAdded(tag: Tag, index: Int = -1, showRemoveIcon: Boolean) {
         if (children.none { (it as? TagChip)?.getValue() == tag }) {
             addView(createTagChip(tag, showRemoveIcon), index)
-            onTagChipAdded?.invoke()
+            onTagChipAdded?.invoke(tag)
         }
     }
 
@@ -63,7 +63,7 @@ class TagChipGroup @JvmOverloads constructor(
             if (showRemoveIcon) {
                 setOnCloseIconClickListener {
                     removeView(this)
-                    onTagChipRemoved?.invoke()
+                    onTagChipRemoved?.invoke(value)
                 }
             }
         }
