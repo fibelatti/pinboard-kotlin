@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Theme colors -->
@@ -52,10 +52,17 @@
         <item name="checkboxStyle">@style/AppTheme.Checkbox</item>
         <item name="materialButtonOutlinedStyle">@style/AppTheme.GroupButtonItem</item>
         <item name="textInputStyle">@style/AppTheme.InputLayout</item>
+
+        <item name="materialAlertDialogTheme">@style/AppTheme.MaterialDialog</item>
     </style>
 
     <style name="AppTheme.Overlay" parent="ThemeOverlay.Material3.DynamicColors.DayNight">
         <item name="android:colorBackground">@color/color_background</item>
+    </style>
+
+    <style name="AppTheme.MaterialDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="android:windowBlurBehindEnabled" tools:targetApi="s">true</item>
+        <item name="android:windowBlurBehindRadius" tools:targetApi="s">10dp</item>
     </style>
 
     <!-- Animation -->
