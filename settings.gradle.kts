@@ -69,7 +69,7 @@ dependencyResolutionManagement {
             library("junit5-params", "org.junit.jupiter:junit-jupiter-params:$junit5Version")
             library("junit5-vintage", "org.junit.vintage:junit-vintage-engine:$junit5Version")
 
-            library("runner", "androidx.test:runner:1.4.0")
+            library("runner", "androidx.test:runner:1.5.1")
             library("truth", "com.google.truth:truth:1.1.3")
             library("mockk", "io.mockk:mockk:1.13.1")
             library("coroutines-test", "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
