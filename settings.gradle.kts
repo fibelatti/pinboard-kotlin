@@ -9,7 +9,7 @@ dependencyResolutionManagement {
         create("libs") {
             val kotlinVersion = "1.7.21"
             val coroutinesVersion = "1.6.4"
-            val hiltVersion = "2.44"
+            val hiltVersion = "2.44.1"
             val lifecycleVersion = "2.5.1"
             val roomVersion = "2.4.3"
             val moshiVersion = "1.14.0"
