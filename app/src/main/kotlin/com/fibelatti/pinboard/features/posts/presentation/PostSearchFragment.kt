@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.doOnLayout
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -18,6 +19,7 @@ import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.onActionOrKeyboardSubmit
+import com.fibelatti.core.extension.showKeyboard
 import com.fibelatti.core.extension.textAsString
 import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.pinboard.R
@@ -100,6 +102,11 @@ class PostSearchFragment @Inject constructor(
         }
 
         setupActivityViews()
+
+        binding.root.doOnLayout {
+            binding.editTextSearchTerm.requestFocus()
+            binding.editTextSearchTerm.showKeyboard()
+        }
     }
 
     private fun setupViewModels() {
