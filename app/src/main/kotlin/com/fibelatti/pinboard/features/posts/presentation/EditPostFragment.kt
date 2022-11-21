@@ -288,8 +288,20 @@ class EditPostFragment @Inject constructor(
                 }
 
                 editTextUrl.setText(url)
+                if (editTextUrl.hasFocus()) {
+                    editTextUrl.setSelection(editTextUrl.length())
+                }
+
                 editTextTitle.setText(title)
+                if (editTextTitle.hasFocus()) {
+                    editTextTitle.setSelection(editTextTitle.length())
+                }
+
                 editTextDescription.setText(description)
+                if (editTextDescription.hasFocus()) {
+                    editTextDescription.setSelection(editTextDescription.length())
+                }
+
                 togglePrivate.isActive = private
                 toggleReadLater.isActive = readLater
 
