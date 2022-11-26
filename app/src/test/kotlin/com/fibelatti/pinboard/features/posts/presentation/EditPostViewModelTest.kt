@@ -16,9 +16,9 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.collectIn
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostSaved
+import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
-import com.fibelatti.pinboard.features.posts.domain.usecase.GetSuggestedTags
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import com.fibelatti.pinboard.isEmpty
 import com.fibelatti.pinboard.runUnconfinedTest
@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test
 internal class EditPostViewModelTest : BaseViewModelTest() {
 
     private val mockAppStateRepository = mockk<AppStateRepository>(relaxed = true)
-    private val mockGetSuggestedTags = mockk<GetSuggestedTags>()
+    private val mockPostsRepository = mockk<PostsRepository>()
     private val mockAddPost = mockk<AddPost>()
     private val mockResourceProvider = mockk<ResourceProvider> {
         every { getString(R.string.validation_error_invalid_url) } returns "R.string.validation_error_invalid_url"
@@ -47,7 +47,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
 
     private val editPostViewModel = EditPostViewModel(
         appStateRepository = mockAppStateRepository,
-        getSuggestedTags = mockGetSuggestedTags,
+        postsRepository = mockPostsRepository,
         addPost = mockAddPost,
         resourceProvider = mockResourceProvider,
         scope = TestScope(UnconfinedTestDispatcher()),
@@ -95,7 +95,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
     fun `GIVEN getSuggestedTags will fail WHEN searchForTag is called THEN suggestedTags should never receive values`() =
         runTest {
             // GIVEN
-            coEvery { mockGetSuggestedTags(any()) } returns Failure(Exception())
+            coEvery { mockPostsRepository.searchExistingPostTag(any(), any()) } returns Failure(Exception())
 
             // WHEN
             editPostViewModel.searchForTag(mockTagString1, mockk())
@@ -109,10 +109,12 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         runTest {
             // GIVEN
             val result = listOf(mockTagString1, mockTagString2)
-            coEvery { mockGetSuggestedTags(any()) } returns Success(result)
+            coEvery {
+                mockPostsRepository.searchExistingPostTag(tag = mockTagString1, currentTags = emptyList())
+            } returns Success(result)
 
             // WHEN
-            editPostViewModel.searchForTag(mockTagString1, mockk())
+            editPostViewModel.searchForTag(tag = mockTagString1, currentTags = emptyList())
 
             // THEN
             assertThat(editPostViewModel.suggestedTags.first()).isEqualTo(result)

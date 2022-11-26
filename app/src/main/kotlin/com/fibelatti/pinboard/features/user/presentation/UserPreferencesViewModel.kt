@@ -5,8 +5,8 @@ import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
+import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
-import com.fibelatti.pinboard.features.posts.domain.usecase.GetSuggestedTags
 import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.sync.PeriodicSyncManager
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -23,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class UserPreferencesViewModel @Inject constructor(
     private val userRepository: UserRepository,
-    private val getSuggestedTags: GetSuggestedTags,
+    private val postsRepository: PostsRepository,
     private val periodicSyncManager: PeriodicSyncManager,
 ) : BaseViewModel() {
 
@@ -89,7 +89,10 @@ class UserPreferencesViewModel @Inject constructor(
 
     fun searchForTag(tag: String, currentTags: List<Tag>) {
         launch {
-            _suggestedTags.value = getSuggestedTags(GetSuggestedTags.Params(tag, currentTags)).getOrNull()
+            _suggestedTags.value = postsRepository.searchExistingPostTag(
+                tag = tag,
+                currentTags = currentTags,
+            ).getOrNull()
         }
     }
 }

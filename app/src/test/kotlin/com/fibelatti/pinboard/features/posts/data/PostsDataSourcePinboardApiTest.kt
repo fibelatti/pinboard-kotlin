@@ -1734,6 +1734,64 @@ class PostsDataSourcePinboardApiTest {
                 )
             )
         }
+
+        @Test
+        fun `WHEN the db call succeeds THEN current tags are filtered out`() = runTest {
+            // GIVEN
+            coEvery { mockDao.searchExistingPostTag(any()) } returns
+                listOf(
+                    mockTagString1,
+                    "$mockTagString2 $mockTagString1",
+                    "$mockTagString1 $mockTagString2 $mockTagString3",
+                    mockTagStringHtmlEscaped
+                )
+
+            val commonPrefix = mockTagString1
+                .commonPrefixWith(mockTagString2)
+                .commonPrefixWith(mockTagString3)
+                .commonPrefixWith(mockTagStringHtmlEscaped)
+
+            // WHEN
+            val result = dataSource.searchExistingPostTag(
+                tag = commonPrefix,
+                currentTags = listOf(Tag(name = mockTagString1))
+            )
+
+            // THEN
+            assertThat(result.getOrNull()).isEqualTo(
+                listOf(
+                    mockTagString2,
+                    mockTagString3,
+                    mockTagStringHtml
+                )
+            )
+        }
+
+        @Test
+        fun `WHEN tag is empty THEN top db tags are returned`() = runTest {
+            // GIVEN
+            coEvery { mockDao.getAllPostTags() } returns listOf(
+                mockTagString1,
+                "$mockTagString2 $mockTagString1",
+                "$mockTagString1 $mockTagString2 $mockTagString3",
+                mockTagStringHtmlEscaped
+            )
+
+            // WHEN
+            val result = dataSource.searchExistingPostTag(
+                tag = "",
+                currentTags = listOf(Tag(name = mockTagString3))
+            )
+
+            // THEN
+            assertThat(result.getOrNull()).isEqualTo(
+                listOf(
+                    mockTagString1,
+                    mockTagString2,
+                    mockTagStringHtml
+                )
+            )
+        }
     }
 
     @Nested

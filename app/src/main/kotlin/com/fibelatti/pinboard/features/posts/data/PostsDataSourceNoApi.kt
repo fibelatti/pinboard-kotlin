@@ -7,6 +7,7 @@ import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.core.extension.replaceHtmlChars
 import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.core.util.DateFormatter
@@ -178,13 +179,31 @@ class PostsDataSourceNoApi @Inject constructor(
         postsDao.getPost(url)?.let(postDtoMapper::map) ?: throw InvalidRequestException()
     }
 
-    override suspend fun searchExistingPostTag(tag: String): Result<List<String>> = resultFrom {
-        val concatenatedTags = postsDao.searchExistingPostTag(PostsDao.preFormatTag(tag))
+    @Suppress("MagicNumber")
+    override suspend fun searchExistingPostTag(
+        tag: String,
+        currentTags: List<Tag>,
+    ): Result<List<String>> = resultFrom {
+        val tagNames = currentTags.map(Tag::name)
 
-        concatenatedTags.flatMap { it.split(" ") }
-            .distinct()
-            .filter { it.startsWith(tag, ignoreCase = true) }
-            .sorted()
+        if (tag.isNotEmpty()) {
+            postsDao.searchExistingPostTag(PostsDao.preFormatTag(tag))
+                .flatMap { it.replaceHtmlChars().split(" ") }
+                .filter { it.startsWith(tag, ignoreCase = true) && it !in tagNames }
+                .distinct()
+                .sorted()
+        } else {
+            postsDao.getAllPostTags()
+                .flatMap { it.replaceHtmlChars().split(" ") }
+                .groupBy { it }
+                .map { (tag, postList) -> Tag(tag, postList.size) }
+                .sortedByDescending { it.posts }
+                .asSequence()
+                .map { it.name }
+                .filter { it !in tagNames }
+                .take(20)
+                .toList()
+        }
     }
 
     override suspend fun getPendingSyncPosts(): Result<List<Post>> = Success(emptyList())

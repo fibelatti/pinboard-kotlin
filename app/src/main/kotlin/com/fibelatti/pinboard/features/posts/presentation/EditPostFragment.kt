@@ -229,6 +229,8 @@ class EditPostFragment @Inject constructor(
             .take(1) // The UI updates itself, so take only 1 for the initial setup
             .onEach(::showPostDetails)
             .launchInAndFlowWith(viewLifecycleOwner)
+
+        editPostViewModel.searchForTag(tag = "", currentTags = emptyList())
     }
 
     private fun setupPostDetailViewModel() {
@@ -310,6 +312,8 @@ class EditPostFragment @Inject constructor(
         }
 
         setPostChangedListeners()
+
+        editPostViewModel.searchForTag(tag = "", currentTags = post.tags.orEmpty())
     }
 
     private fun setPostChangedListeners() {
@@ -329,7 +333,7 @@ class EditPostFragment @Inject constructor(
             editPostViewModel.updatePost { post -> post.copy(readLater = newValue) }
         }
         binding.layoutAddTags.setup(
-            afterTagInput = editPostViewModel::searchForTag,
+            afterTextChanged = editPostViewModel::searchForTag,
             onTagAdded = { currentTags -> editPostViewModel.updatePost { post -> post.copy(tags = currentTags) } },
             onTagRemoved = { currentTags -> editPostViewModel.updatePost { post -> post.copy(tags = currentTags) } },
         )

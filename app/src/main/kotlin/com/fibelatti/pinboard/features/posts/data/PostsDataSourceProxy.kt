@@ -87,8 +87,10 @@ class PostsDataSourceProxy @Inject constructor(
 
     override suspend fun searchExistingPostTag(
         tag: String,
+        currentTags: List<Tag>,
     ): Result<List<String>> = repository.searchExistingPostTag(
         tag = tag,
+        currentTags = currentTags,
     )
 
     override suspend fun getPendingSyncPosts(): Result<List<Post>> = repository.getPendingSyncPosts()

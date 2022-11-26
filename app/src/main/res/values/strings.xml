@@ -153,6 +153,7 @@
     <!-- Tags -->
     <string name="tags_title">Tags</string>
     <string name="tags_empty_title">No tags</string>
+    <string name="tags_added_title">Added tags</string>
     <string name="tags_empty_description">There are no tags for your saved bookmarks</string>
     <string name="tags_sorting_a_to_z">A to Z</string>
     <string name="tags_sorting_more_first">More first</string>

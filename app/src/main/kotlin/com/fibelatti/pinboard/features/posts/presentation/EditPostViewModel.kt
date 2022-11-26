@@ -9,9 +9,9 @@ import com.fibelatti.pinboard.core.di.AppDispatchers
 import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostSaved
+import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
-import com.fibelatti.pinboard.features.posts.domain.usecase.GetSuggestedTags
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,7 +32,7 @@ import javax.inject.Inject
 @HiltViewModel
 class EditPostViewModel @Inject constructor(
     private val appStateRepository: AppStateRepository,
-    private val getSuggestedTags: GetSuggestedTags,
+    private val postsRepository: PostsRepository,
     private val addPost: AddPost,
     private val resourceProvider: ResourceProvider,
     @Scope(AppDispatchers.DEFAULT) scope: CoroutineScope,
@@ -79,8 +79,10 @@ class EditPostViewModel @Inject constructor(
 
     fun searchForTag(tag: String, currentTags: List<Tag>) {
         launch {
-            getSuggestedTags(GetSuggestedTags.Params(tag, currentTags))
-                .onSuccess { _suggestedTags.value = it }
+            postsRepository.searchExistingPostTag(
+                tag = tag,
+                currentTags = currentTags,
+            ).onSuccess { _suggestedTags.value = it }
         }
     }
 

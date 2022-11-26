@@ -384,13 +384,31 @@ class PostsDataSourcePinboardApi @Inject constructor(
         post?.let(postDtoMapper::map) ?: throw InvalidRequestException()
     }
 
-    override suspend fun searchExistingPostTag(tag: String): Result<List<String>> = resultFromNetwork {
-        val concatenatedTags = postsDao.searchExistingPostTag(PostsDao.preFormatTag(tag))
+    @Suppress("MagicNumber")
+    override suspend fun searchExistingPostTag(
+        tag: String,
+        currentTags: List<Tag>,
+    ): Result<List<String>> = resultFrom {
+        val tagNames = currentTags.map(Tag::name)
 
-        concatenatedTags.flatMap { it.replaceHtmlChars().split(" ") }
-            .filter { it.startsWith(tag, ignoreCase = true) }
-            .distinct()
-            .sorted()
+        if (tag.isNotEmpty()) {
+            postsDao.searchExistingPostTag(PostsDao.preFormatTag(tag))
+                .flatMap { it.replaceHtmlChars().split(" ") }
+                .filter { it.startsWith(tag, ignoreCase = true) && it !in tagNames }
+                .distinct()
+                .sorted()
+        } else {
+            postsDao.getAllPostTags()
+                .flatMap { it.replaceHtmlChars().split(" ") }
+                .groupBy { it }
+                .map { (tag, postList) -> Tag(tag, postList.size) }
+                .sortedByDescending { it.posts }
+                .asSequence()
+                .map { it.name }
+                .filter { it !in tagNames }
+                .take(20)
+                .toList()
+        }
     }
 
     override suspend fun getPendingSyncPosts(): Result<List<Post>> = resultFrom {

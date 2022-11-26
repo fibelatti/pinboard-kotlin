@@ -3,16 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:animateLayoutChanges="true"
     android:clipChildren="false"
     android:clipToPadding="false"
+    android:paddingTop="@dimen/padding_small"
     android:paddingBottom="@dimen/padding_xlarge">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutTags"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_xsmall"
         android:hint="@string/posts_add_tags"
         android:textIsSelectable="false"
         app:layout_constraintBottom_toTopOf="@+id/scrollViewSuggestedTags"
@@ -48,10 +47,11 @@
         android:id="@+id/scrollViewSuggestedTags"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_small"
+        android:layout_marginTop="@dimen/margin_regular"
         android:clipChildren="false"
         android:clipToPadding="false"
-        app:layout_constraintBottom_toTopOf="@+id/scrollViewCurrentTags"
+        android:scrollbarStyle="outsideInset"
+        app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayoutTags">
@@ -62,6 +62,34 @@
             android:layout_height="wrap_content"
             app:singleLine="true" />
     </HorizontalScrollView>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/divider_size"
+        android:layout_marginHorizontal="@dimen/margin_xsmall"
+        android:layout_marginTop="@dimen/margin_small"
+        android:background="?attr/colorOnSurface"
+        android:focusable="false"
+        android:importantForAccessibility="no"
+        app:layout_constraintBottom_toTopOf="@id/titleAddedTags"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/scrollViewSuggestedTags" />
+
+    <TextView
+        android:id="@+id/titleAddedTags"
+        style="@style/AppTheme.Text.Detail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_regular"
+        android:text="@string/tags_empty_title"
+        android:textColor="?attr/colorPrimary"
+        android:textIsSelectable="false"
+        app:layout_constraintBottom_toTopOf="@id/scrollViewCurrentTags"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider" />
 
     <ScrollView
         android:id="@+id/scrollViewCurrentTags"
@@ -74,9 +102,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scrollViewSuggestedTags"
+        app:layout_constraintTop_toBottomOf="@+id/titleAddedTags"
         app:layout_constraintVertical_bias="0.0"
-        app:layout_constraintVertical_chainStyle="packed">
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_goneMarginTop="@dimen/margin_small">
 
         <com.fibelatti.pinboard.features.posts.presentation.TagChipGroup
             android:id="@+id/chipGroupTags"

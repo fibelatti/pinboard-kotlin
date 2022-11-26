@@ -17,7 +17,7 @@ interface PostsRepository {
         private: Boolean?,
         readLater: Boolean?,
         tags: List<Tag>?,
-        replace: Boolean
+        replace: Boolean,
     ): Result<Post>
 
     suspend fun delete(url: String): Result<Unit>
@@ -42,7 +42,10 @@ interface PostsRepository {
 
     suspend fun getPost(url: String): Result<Post>
 
-    suspend fun searchExistingPostTag(tag: String): Result<List<String>>
+    suspend fun searchExistingPostTag(
+        tag: String,
+        currentTags: List<Tag> = emptyList(),
+    ): Result<List<String>>
 
     suspend fun getPendingSyncPosts(): Result<List<Post>>
 

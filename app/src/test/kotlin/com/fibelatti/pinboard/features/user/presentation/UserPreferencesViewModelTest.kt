@@ -7,8 +7,8 @@ import com.fibelatti.pinboard.MockDataProvider
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
+import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
-import com.fibelatti.pinboard.features.posts.domain.usecase.GetSuggestedTags
 import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.sync.PeriodicSyncManager
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -32,15 +32,15 @@ import org.junit.jupiter.api.Test
 internal class UserPreferencesViewModelTest : BaseViewModelTest() {
 
     private val mockUserRepository = mockk<UserRepository>(relaxed = true)
-    private val mockGetSuggestedTags = mockk<GetSuggestedTags>()
+    private val mockPostsRepository = mockk<PostsRepository>()
     private val mockPeriodicSyncManager = mockk<PeriodicSyncManager> {
         every { enqueueWork(any()) } just runs
     }
 
     private val userPreferencesViewModel = UserPreferencesViewModel(
-        mockUserRepository,
-        mockGetSuggestedTags,
-        mockPeriodicSyncManager,
+        userRepository = mockUserRepository,
+        postsRepository = mockPostsRepository,
+        periodicSyncManager = mockPeriodicSyncManager,
     )
 
     @Test
@@ -218,7 +218,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
     @Test
     fun `GIVEN getSuggestedTags will fail WHEN searchForTag is called THEN suggestedTags should never receive values`() {
         // GIVEN
-        coEvery { mockGetSuggestedTags(any()) } returns Failure(Exception())
+        coEvery { mockPostsRepository.searchExistingPostTag(any(), any()) } returns Failure(Exception())
 
         // WHEN
         userPreferencesViewModel.searchForTag(MockDataProvider.mockTagString1, mockk())
@@ -233,10 +233,15 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
     fun `GIVEN getSuggestedTags will succeed WHEN searchForTag is called THEN suggestedTags should receive its response`() {
         // GIVEN
         val result = listOf(MockDataProvider.mockTagString1, MockDataProvider.mockTagString2)
-        coEvery { mockGetSuggestedTags(any()) } returns Success(result)
+        coEvery {
+            mockPostsRepository.searchExistingPostTag(tag = MockDataProvider.mockTagString1, currentTags = emptyList())
+        } returns Success(result)
 
         // WHEN
-        userPreferencesViewModel.searchForTag(MockDataProvider.mockTagString1, mockk())
+        userPreferencesViewModel.searchForTag(
+            tag = MockDataProvider.mockTagString1,
+            currentTags = emptyList(),
+        )
 
         // THEN
         runBlocking {
