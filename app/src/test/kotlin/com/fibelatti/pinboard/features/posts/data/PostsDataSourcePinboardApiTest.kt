@@ -160,7 +160,8 @@ class PostsDataSourcePinboardApiTest {
                 private = null,
                 readLater = null,
                 tags = mockTags,
-                replace = true
+                replace = true,
+                hash = null,
             )
 
             // THEN
@@ -192,7 +193,8 @@ class PostsDataSourcePinboardApiTest {
                     private = null,
                     readLater = null,
                     tags = mockTags,
-                    replace = true
+                    replace = true,
+                    hash = null,
                 )
 
                 // THEN
@@ -230,7 +232,8 @@ class PostsDataSourcePinboardApiTest {
                         private = null,
                         readLater = null,
                         tags = mockTags,
-                        replace = true
+                        replace = true,
+                        hash = null,
                     )
 
                     // THEN
@@ -266,7 +269,8 @@ class PostsDataSourcePinboardApiTest {
                         private = null,
                         readLater = null,
                         tags = mockTags,
-                        replace = true
+                        replace = true,
+                        hash = null,
                     )
 
                     // THEN
@@ -301,7 +305,8 @@ class PostsDataSourcePinboardApiTest {
                         private = null,
                         readLater = null,
                         tags = mockTags,
-                        replace = true
+                        replace = true,
+                        hash = null,
                     )
 
                     // THEN
@@ -315,6 +320,17 @@ class PostsDataSourcePinboardApiTest {
         fun `GIVEN that the api returns 200 and the result code is DONE WHEN add is called THEN Success is returned`() =
             runTest {
                 // GIVEN
+                val expectedPost = Post(
+                    url = mockUrlValid,
+                    title = mockUrlTitle,
+                    description = "",
+                    hash = mockHash,
+                    time = mockTime,
+                    private = false,
+                    readLater = false,
+                    tags = mockTags,
+                )
+
                 coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
                 coEvery {
                     mockApi.add(
@@ -327,10 +343,13 @@ class PostsDataSourcePinboardApiTest {
                         replace = AppConfig.PinboardApiLiterals.YES
                     )
                 } returns createGenericResponse(ApiResultCodes.DONE)
-                coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto(posts = mockListPostRemoteDto)
-                every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
-                coEvery { mockDao.savePosts(mockListPostDto) } just Runs
-                every { mockPostDtoMapper.map(mockPostDto) } returns mockPost
+                mockkStatic(UUID::class)
+                every { UUID.randomUUID() } returns mockk {
+                    every { this@mockk.toString() } returns mockHash
+                }
+                every { mockDateFormatter.nowAsTzFormat() } returns mockTime
+                every { mockPostDtoMapper.mapReverse(expectedPost) } returns mockPostDto
+                coEvery { dataSource.savePosts(listOf(mockPostDto)) } returns Unit
 
                 // WHEN
                 val result = dataSource.add(
@@ -340,13 +359,14 @@ class PostsDataSourcePinboardApiTest {
                     private = null,
                     readLater = null,
                     tags = mockTags,
-                    replace = true
+                    replace = true,
+                    hash = null,
                 )
 
                 // THEN
                 coVerify { mockDao.deletePendingSyncPost(mockUrlValid) }
-                coVerify { mockDao.savePosts(mockListPostDto) }
-                assertThat(result.getOrNull()).isEqualTo(mockPost)
+                coVerify { dataSource.savePosts(listOf(mockPostDto)) }
+                assertThat(result.getOrNull()).isEqualTo(expectedPost)
             }
 
         @Test
@@ -375,7 +395,8 @@ class PostsDataSourcePinboardApiTest {
                 private = null,
                 readLater = null,
                 tags = inputTags,
-                replace = false
+                replace = false,
+                hash = null,
             )
 
             // THEN
@@ -432,7 +453,8 @@ class PostsDataSourcePinboardApiTest {
                 private = testCases.private,
                 readLater = testCases.readLater,
                 tags = mockTags,
-                replace = testCases.replace
+                replace = testCases.replace,
+                hash = null,
             )
 
             // THEN
@@ -510,6 +532,7 @@ class PostsDataSourcePinboardApiTest {
                     readLater = readLater,
                     tags = mockTags,
                     replace = replace,
+                    hash = null,
                 )
 
                 // THEN
@@ -534,6 +557,7 @@ class PostsDataSourcePinboardApiTest {
                     readLater = readLater,
                     tags = mockTags,
                     replace = replace,
+                    hash = null,
                 )
 
                 // THEN
@@ -558,6 +582,7 @@ class PostsDataSourcePinboardApiTest {
                     readLater = readLater,
                     tags = mockTags,
                     replace = replace,
+                    hash = null,
                 )
 
                 // THEN
@@ -580,6 +605,7 @@ class PostsDataSourcePinboardApiTest {
                     readLater = readLater,
                     tags = mockTags,
                     replace = replace,
+                    hash = null,
                 )
 
                 // THEN

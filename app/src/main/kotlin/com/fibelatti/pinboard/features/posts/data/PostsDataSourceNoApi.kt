@@ -39,6 +39,7 @@ class PostsDataSourceNoApi @Inject constructor(
         readLater: Boolean?,
         tags: List<Tag>?,
         replace: Boolean,
+        hash: String?,
     ): Result<Post> {
         val existingPost = resultFrom {
             postsDao.getPost(url)
@@ -48,7 +49,7 @@ class PostsDataSourceNoApi @Inject constructor(
             href = existingPost?.href ?: url,
             description = title,
             extended = description.orEmpty(),
-            hash = existingPost?.hash ?: UUID.randomUUID().toString(),
+            hash = existingPost?.hash ?: hash ?: UUID.randomUUID().toString(),
             time = existingPost?.time ?: dateFormatter.nowAsTzFormat(),
             shared = if (private == true) AppConfig.PinboardApiLiterals.NO else AppConfig.PinboardApiLiterals.YES,
             toread = if (readLater == true) AppConfig.PinboardApiLiterals.YES else AppConfig.PinboardApiLiterals.NO,

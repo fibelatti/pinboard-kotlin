@@ -110,7 +110,8 @@ class NavigationActionHandler @Inject constructor(
                             private = post.private,
                             readLater = false,
                             tags = post.tags,
-                            replace = true
+                            replace = true,
+                            hash = post.hash,
                         )
                     }
                 }

@@ -40,6 +40,7 @@ class PendingSyncWorker(
                                 readLater = post.readLater,
                                 tags = post.tags,
                                 replace = true,
+                                hash = post.hash,
                             )
                         }
                         PendingSync.DELETE -> postsRepository.delete(post.url)

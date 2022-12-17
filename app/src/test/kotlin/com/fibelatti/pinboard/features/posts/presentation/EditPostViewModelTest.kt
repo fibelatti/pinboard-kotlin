@@ -183,7 +183,8 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                         description = mockUrlDescription,
                         private = true,
                         readLater = true,
-                        tags = mockTags
+                        tags = mockTags,
+                        hash = "",
                     )
                 )
             } returns Failure(InvalidUrlException())
@@ -224,7 +225,8 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                     description = mockUrlDescription,
                     private = true,
                     readLater = true,
-                    tags = mockTags
+                    tags = mockTags,
+                    hash = "",
                 )
             )
         } returns Failure(error)
@@ -268,7 +270,8 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                         description = mockUrlDescription,
                         private = true,
                         readLater = true,
-                        tags = mockTags
+                        tags = mockTags,
+                        hash = "",
                     )
                 )
             } returns Success(post)

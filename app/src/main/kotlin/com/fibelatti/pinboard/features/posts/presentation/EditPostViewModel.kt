@@ -138,6 +138,7 @@ class EditPostViewModel @Inject constructor(
                 private = post.private,
                 readLater = post.readLater,
                 tags = post.tags,
+                hash = post.hash,
             )
         }
 

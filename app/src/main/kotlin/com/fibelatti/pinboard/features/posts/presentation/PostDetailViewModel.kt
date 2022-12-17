@@ -64,6 +64,7 @@ class PostDetailViewModel @Inject constructor(
                     readLater = false,
                     tags = post.tags,
                     replace = true,
+                    hash = post.hash,
                 )
             ).onSuccess {
                 _loading.value = false

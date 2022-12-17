@@ -18,6 +18,7 @@ interface PostsRepository {
         readLater: Boolean?,
         tags: List<Tag>?,
         replace: Boolean,
+        hash: String?,
     ): Result<Post>
 
     suspend fun delete(url: String): Result<Unit>

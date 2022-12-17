@@ -60,6 +60,7 @@ internal class PendingSyncWorkerTest {
                 readLater = post.readLater,
                 tags = post.tags,
                 replace = true,
+                hash = post.hash,
             )
         } returns Success(post)
 
@@ -84,6 +85,7 @@ internal class PendingSyncWorkerTest {
                 readLater = post.readLater,
                 tags = post.tags,
                 replace = true,
+                hash = post.hash,
             )
         } returns Success(post)
 
@@ -123,6 +125,7 @@ internal class PendingSyncWorkerTest {
                 readLater = postAdd.readLater,
                 tags = postAdd.tags,
                 replace = true,
+                hash = postAdd.hash,
             )
         } returns Failure(Exception())
         coEvery { postsRepository.delete(url = postDelete.url) } returns Success(Unit)
@@ -149,6 +152,7 @@ internal class PendingSyncWorkerTest {
                 readLater = postAdd.readLater,
                 tags = postAdd.tags,
                 replace = true,
+                hash = postAdd.hash,
             )
         } returns Success(postAdd)
         coEvery { postsRepository.delete(url = postDelete.url) } returns Success(Unit)

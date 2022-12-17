@@ -50,13 +50,14 @@ class AddPostTest {
         coEvery { mockValidateUrl(mockUrlValid) } returns Success(mockUrlValid)
         coEvery {
             mockPostsRepository.add(
-                params.url,
-                params.title,
-                params.description,
-                params.private,
-                params.readLater,
-                params.tags,
-                params.replace
+                url = params.url,
+                title = params.title,
+                description = params.description,
+                private = params.private,
+                readLater = params.readLater,
+                tags = params.tags,
+                replace = params.replace,
+                hash = params.hash,
             )
         } returns Failure(ApiException())
 
@@ -75,13 +76,14 @@ class AddPostTest {
         coEvery { mockValidateUrl(mockUrlValid) } returns Success(mockUrlValid)
         coEvery {
             mockPostsRepository.add(
-                params.url,
-                params.title,
-                params.description,
-                params.private,
-                params.readLater,
-                params.tags,
-                params.replace
+                url = params.url,
+                title = params.title,
+                description = params.description,
+                private = params.private,
+                readLater = params.readLater,
+                tags = params.tags,
+                replace = params.replace,
+                hash = params.hash,
             )
         } returns Success(mockPost)
 

@@ -331,7 +331,8 @@ internal class NavigationActionHandlerTest {
                         private = readLater.private,
                         readLater = false,
                         tags = readLater.tags,
-                        replace = true
+                        replace = true,
+                        hash = readLater.hash,
                     )
                 }
             }

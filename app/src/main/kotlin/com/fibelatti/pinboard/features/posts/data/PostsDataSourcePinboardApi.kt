@@ -76,10 +76,15 @@ class PostsDataSourcePinboardApi @Inject constructor(
         readLater: Boolean?,
         tags: List<Tag>?,
         replace: Boolean,
-    ): Result<Post> = if (connectivityInfoProvider.isConnected()) {
-        addPostRemote(url, title, description, private, readLater, tags, replace)
-    } else {
-        addPostLocal(url, title, description, private, readLater, tags)
+        hash: String?,
+    ): Result<Post> {
+        val nonEmptyHash = hash?.takeIf { it.isNotEmpty() } ?: UUID.randomUUID().toString()
+
+        return if (connectivityInfoProvider.isConnected()) {
+            addPostRemote(url, title, description, private, readLater, tags, replace, nonEmptyHash)
+        } else {
+            addPostLocal(url, title, description, private, readLater, tags, nonEmptyHash)
+        }
     }
 
     private suspend fun addPostRemote(
@@ -90,6 +95,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
         readLater: Boolean?,
         tags: List<Tag>?,
         replace: Boolean,
+        hash: String,
     ): Result<Post> {
         val trimmedTitle = title.take(PinboardApiMaxLength.TEXT_TYPE.value)
         val publicLiteral = private?.let { if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES }
@@ -132,10 +138,21 @@ class PostsDataSourcePinboardApi @Inject constructor(
             when (result.resultCode) {
                 ApiResultCodes.DONE.code -> {
                     postsDao.deletePendingSyncPost(url)
-                    postsApi.getPost(url).posts
-                        .let(postRemoteDtoMapper::mapList)
-                        .also { postsDao.savePosts(it) }
-                        .first().let(postDtoMapper::map)
+
+                    val post = Post(
+                        url = url,
+                        title = title,
+                        description = description.orEmpty(),
+                        hash = hash,
+                        time = dateFormatter.nowAsTzFormat(),
+                        private = private ?: false,
+                        readLater = readLater ?: false,
+                        tags = tags,
+                    )
+
+                    savePosts(listOf(postDtoMapper.mapReverse(post)))
+
+                    return@resultFromNetwork post
                 }
                 ApiResultCodes.ITEM_ALREADY_EXISTS.code -> getPost(url).getOrThrow()
                 else -> throw ApiException(result.resultCode)
@@ -150,6 +167,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
         private: Boolean?,
         readLater: Boolean?,
         tags: List<Tag>?,
+        hash: String,
     ): Result<Post> = resultFrom {
         val existingPost = postsDao.getPost(url)
 
@@ -157,7 +175,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
             href = existingPost?.href ?: url,
             description = title,
             extended = description,
-            hash = existingPost?.hash ?: UUID.randomUUID().toString(),
+            hash = existingPost?.hash ?: hash,
             time = existingPost?.time ?: dateFormatter.nowAsTzFormat(),
             shared = if (private == true) PinboardApiLiterals.NO else PinboardApiLiterals.YES,
             toread = if (readLater == true) PinboardApiLiterals.YES else PinboardApiLiterals.NO,
