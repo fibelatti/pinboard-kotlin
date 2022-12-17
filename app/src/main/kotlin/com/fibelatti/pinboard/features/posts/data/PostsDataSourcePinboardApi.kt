@@ -8,6 +8,7 @@ import com.fibelatti.core.functional.getOrThrow
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.pinboard.core.AppConfig.API_BASE_URL_LENGTH
 import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
+import com.fibelatti.pinboard.core.AppConfig.MALFORMED_OBJECT_THRESHOLD
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiMaxLength
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
@@ -17,7 +18,6 @@ import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.ApiResultCodes
 import com.fibelatti.pinboard.core.network.InvalidRequestException
-import com.fibelatti.pinboard.core.network.RateLimitRunner
 import com.fibelatti.pinboard.core.network.resultFromNetwork
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
@@ -50,7 +50,6 @@ class PostsDataSourcePinboardApi @Inject constructor(
     private val postRemoteDtoMapper: PostRemoteDtoMapper,
     private val dateFormatter: DateFormatter,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
-    private val rateLimitRunner: RateLimitRunner,
 ) : PostsRepository {
 
     companion object {
@@ -260,17 +259,21 @@ class PostsDataSourcePinboardApi @Inject constructor(
 
     @VisibleForTesting
     suspend fun getAdditionalPages(initialOffset: Int) = supervisorScope {
+        if (API_PAGE_SIZE - initialOffset > MALFORMED_OBJECT_THRESHOLD) return@supervisorScope
+
         pagedRequestsJob = launch {
             runCatching {
                 var currentOffset = initialOffset
 
                 while (currentOffset != 0) {
-                    val additionalPosts = rateLimitRunner.run {
-                        postsApi.getAllPosts(offset = currentOffset, limit = API_PAGE_SIZE)
-                    }
+                    val additionalPosts = postsApi.getAllPosts(
+                        offset = currentOffset,
+                        limit = API_PAGE_SIZE,
+                    )
 
-                    if (additionalPosts.isNotEmpty()) {
-                        savePosts(additionalPosts.let(postRemoteDtoMapper::mapList))
+                    savePosts(postRemoteDtoMapper.mapList(additionalPosts))
+
+                    if (API_PAGE_SIZE - additionalPosts.size < MALFORMED_OBJECT_THRESHOLD) {
                         currentOffset += additionalPosts.size
                     } else {
                         currentOffset = 0
@@ -282,6 +285,8 @@ class PostsDataSourcePinboardApi @Inject constructor(
 
     @VisibleForTesting
     suspend fun savePosts(posts: List<PostDto>) {
+        if (posts.isEmpty()) return
+
         val updatedPosts = posts.map { post ->
             if (post.tags.containsHtmlChars() || post.href.contains("%20")) {
                 post.copy(

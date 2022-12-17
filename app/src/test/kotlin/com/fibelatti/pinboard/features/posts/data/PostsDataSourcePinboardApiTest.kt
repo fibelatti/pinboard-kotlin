@@ -25,7 +25,6 @@ import com.fibelatti.pinboard.MockDataProvider.mockTime
 import com.fibelatti.pinboard.MockDataProvider.mockUrlDescription
 import com.fibelatti.pinboard.MockDataProvider.mockUrlTitle
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
-import com.fibelatti.pinboard.TestRateLimitRunner
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
@@ -52,6 +51,7 @@ import io.mockk.Runs
 import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -80,7 +80,6 @@ class PostsDataSourcePinboardApiTest {
     private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider> {
         every { isConnected() } returns true
     }
-    private val mockRunner = TestRateLimitRunner()
 
     private val mockPostDto = mockk<PostDto>()
     private val mockPostRemoteDto = mockk<PostRemoteDto>()
@@ -98,7 +97,6 @@ class PostsDataSourcePinboardApiTest {
             postRemoteDtoMapper = mockPostRemoteDtoMapper,
             dateFormatter = mockDateFormatter,
             connectivityInfoProvider = mockConnectivityInfoProvider,
-            rateLimitRunner = mockRunner,
         )
     )
 
@@ -1065,7 +1063,7 @@ class PostsDataSourcePinboardApiTest {
     inner class GetAdditionalPagesTest {
 
         @Test
-        fun `getAdditionalPages should run at least once`() = runTest {
+        fun `getAdditionalPages should run at least once when the initial offset is below the threshold`() = runTest {
             // GIVEN
             coEvery {
                 mockApi.getAllPosts(
@@ -1085,30 +1083,78 @@ class PostsDataSourcePinboardApiTest {
         }
 
         @Test
-        fun `getAdditionalPages should run again if the page is not empty`() = runTest {
+        fun `getAdditionalPages should not run when the initial offsite is above the threshold`() = runTest {
+            // WHEN
+            dataSource.getAdditionalPages(initialOffset = 8000)
+
+            // THEN
+            verify {
+                mockDao wasNot Called
+                mockApi wasNot Called
+            }
+        }
+
+        @Test
+        fun `getAdditionalPages should run again if the next page is above the threshold`() = runTest {
+            // GIVEN
+            val mockResponse = mockk<List<PostRemoteDto>> {
+                every { size } returns API_PAGE_SIZE
+            }
+            coEvery {
+                mockApi.getAllPosts(
+                    offset = API_PAGE_SIZE,
+                    limit = API_PAGE_SIZE
+                )
+            } returns mockResponse
+            coEvery {
+                mockApi.getAllPosts(
+                    offset = API_PAGE_SIZE * 2,
+                    limit = API_PAGE_SIZE
+                )
+            } returns emptyList()
+            every { mockPostRemoteDtoMapper.mapList(mockResponse) } returns mockListPostDto
+            coEvery { dataSource.savePosts(mockListPostDto) } returns Unit
+
+            // WHEN
+            dataSource.getAdditionalPages(initialOffset = API_PAGE_SIZE)
+
+            // THEN
+            coVerify(exactly = 1) { dataSource.savePosts(mockListPostDto) }
+            coVerify { mockApi.getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
+            coVerify { mockApi.getAllPosts(offset = API_PAGE_SIZE * 2, limit = API_PAGE_SIZE) }
+            confirmVerified(mockApi)
+        }
+
+        @Test
+        fun `getAdditionalPages should stop running if the next page is below the threshold`() = runTest {
             // GIVEN
             coEvery {
                 mockApi.getAllPosts(
                     offset = API_PAGE_SIZE,
                     limit = API_PAGE_SIZE
                 )
-            } returns mockListPostRemoteDto
+            } returns mockk {
+                every { size } returns API_PAGE_SIZE
+            }
             coEvery {
                 mockApi.getAllPosts(
-                    offset = API_PAGE_SIZE + mockListPostDto.size,
+                    offset = API_PAGE_SIZE * 2,
                     limit = API_PAGE_SIZE
                 )
-            } returns emptyList()
-            every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
+            } returns mockk {
+                every { size } returns 8000
+            }
+            every { mockPostRemoteDtoMapper.mapList(any()) } returns mockListPostDto
             coEvery { dataSource.savePosts(any()) } returns Unit
 
             // WHEN
             dataSource.getAdditionalPages(initialOffset = API_PAGE_SIZE)
 
             // THEN
-            coVerify(exactly = 1) { dataSource.savePosts(any()) }
+            coVerify(exactly = 2) { dataSource.savePosts(mockListPostDto) }
             coVerify { mockApi.getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
-            coVerify { mockApi.getAllPosts(offset = API_PAGE_SIZE + mockListPostDto.size, limit = API_PAGE_SIZE) }
+            coVerify { mockApi.getAllPosts(offset = API_PAGE_SIZE * 2, limit = API_PAGE_SIZE) }
+            confirmVerified(mockApi)
         }
     }
 
