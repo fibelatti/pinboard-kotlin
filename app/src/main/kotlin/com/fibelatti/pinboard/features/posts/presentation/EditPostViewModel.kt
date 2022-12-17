@@ -16,6 +16,7 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,6 +51,8 @@ class EditPostViewModel @Inject constructor(
     val saved: Flow<Unit> get() = _saved
     private val _saved = MutableSharedFlow<Unit>()
 
+    private var searchJob: Job? = null
+
     // Source of all changes to the screen state, takes null to enable it being initialized with initializePost
     private val interactions: MutableSharedFlow<(Post?) -> Post> = MutableSharedFlow()
     private val _postState: StateFlow<IndexedValue<Post>?> = interactions
@@ -78,7 +81,9 @@ class EditPostViewModel @Inject constructor(
     }
 
     fun searchForTag(tag: String, currentTags: List<Tag>) {
-        launch {
+        if (searchJob?.isActive == true) searchJob?.cancel()
+
+        searchJob = launch {
             postsRepository.searchExistingPostTag(
                 tag = tag,
                 currentTags = currentTags,

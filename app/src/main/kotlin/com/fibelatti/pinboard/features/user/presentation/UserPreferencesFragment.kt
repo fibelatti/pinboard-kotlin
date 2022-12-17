@@ -100,7 +100,7 @@ class UserPreferencesFragment @Inject constructor(
         binding.toggleDynamicColors.isVisible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
         binding.layoutAddTags.setup(
-            afterTextChanged = userPreferencesViewModel::searchForTag,
+            onTextChanged = userPreferencesViewModel::searchForTag,
             onTagAdded = userPreferencesViewModel::saveDefaultTags,
             onTagRemoved = userPreferencesViewModel::saveDefaultTags,
         )

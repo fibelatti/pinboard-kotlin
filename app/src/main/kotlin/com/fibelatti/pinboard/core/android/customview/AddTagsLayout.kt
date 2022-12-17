@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.inputmethod.EditorInfo
 import android.widget.FrameLayout
 import androidx.core.view.isVisible
-import androidx.core.widget.doAfterTextChanged
+import androidx.core.widget.doOnTextChanged
 import com.fibelatti.core.extension.clearText
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.onActionOrKeyboardSubmit
@@ -30,7 +30,7 @@ class AddTagsLayout @JvmOverloads constructor(
 
     @Suppress("MagicNumber")
     fun setup(
-        afterTextChanged: (currentInput: String, currentTags: List<Tag>) -> Unit = { _, _ -> },
+        onTextChanged: (currentInput: String, currentTags: List<Tag>) -> Unit = { _, _ -> },
         onTagAdded: (currentTags: List<Tag>) -> Unit = {},
         onTagRemoved: (currentTags: List<Tag>) -> Unit = {},
     ) {
@@ -42,8 +42,8 @@ class AddTagsLayout @JvmOverloads constructor(
                 onTagAdded(chipGroupTags.getAllTags())
             }
 
-            editTextTags.doAfterTextChanged {
-                val text = it.toString()
+            editTextTags.doOnTextChanged { input, _, _, _ ->
+                val text = input.toString()
                 val currentlyFocused = editTextTags.isFocused
 
                 when {
@@ -53,7 +53,7 @@ class AddTagsLayout @JvmOverloads constructor(
                         editTextTags.setSelection(1)
                     }
                     text.isNotBlank() && text.endsWith(" ") -> addTag(text)
-                    else -> afterTextChanged(text, chipGroupTags.getAllTags())
+                    else -> onTextChanged(text, chipGroupTags.getAllTags())
                 }
 
                 if (currentlyFocused) editTextTags.postDelayed({ editTextTags.requestFocus() }, 100L)
@@ -71,7 +71,7 @@ class AddTagsLayout @JvmOverloads constructor(
                 val allTags = chipGroupTags.getAllTags()
                 setCurrentTagsTitle()
                 onTagRemoved(allTags)
-                afterTextChanged(editTextTags.textAsString(), allTags)
+                onTextChanged(editTextTags.textAsString(), allTags)
             }
 
             chipGroupSuggestedTags.onTagChipClicked = { tag ->

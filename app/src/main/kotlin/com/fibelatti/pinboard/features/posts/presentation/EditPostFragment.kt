@@ -333,7 +333,7 @@ class EditPostFragment @Inject constructor(
             editPostViewModel.updatePost { post -> post.copy(readLater = newValue) }
         }
         binding.layoutAddTags.setup(
-            afterTextChanged = editPostViewModel::searchForTag,
+            onTextChanged = editPostViewModel::searchForTag,
             onTagAdded = { currentTags -> editPostViewModel.updatePost { post -> post.copy(tags = currentTags) } },
             onTagRemoved = { currentTags -> editPostViewModel.updatePost { post -> post.copy(tags = currentTags) } },
         )

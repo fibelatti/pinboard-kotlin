@@ -13,6 +13,7 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -33,6 +34,8 @@ class UserPreferencesViewModel @Inject constructor(
 
     val suggestedTags: Flow<List<String>> get() = _suggestedTags.filterNotNull()
     private val _suggestedTags = MutableStateFlow<List<String>?>(null)
+
+    private var searchJob: Job? = null
 
     fun saveAutoUpdate(value: Boolean) {
         userRepository.autoUpdate = value
@@ -88,7 +91,9 @@ class UserPreferencesViewModel @Inject constructor(
     }
 
     fun searchForTag(tag: String, currentTags: List<Tag>) {
-        launch {
+        if (searchJob?.isActive == true) searchJob?.cancel()
+
+        searchJob = launch {
             _suggestedTags.value = postsRepository.searchExistingPostTag(
                 tag = tag,
                 currentTags = currentTags,
