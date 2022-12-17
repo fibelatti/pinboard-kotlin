@@ -44,10 +44,18 @@ class ShareReceiverViewModel @Inject constructor(
     val failed: Flow<Throwable> get() = _failed.filterNotNull()
     private val _failed = MutableStateFlow<Throwable?>(null)
 
-    fun saveUrl(url: String) {
+    fun saveUrl(url: String, title: String?) {
         launch {
             extractUrl(url).mapCatching { (extractedUrl, highlightedText) ->
-                val urlPreview = async { getUrlPreview(GetUrlPreview.Params(extractedUrl, highlightedText)) }
+                val urlPreview = async {
+                    getUrlPreview(
+                        GetUrlPreview.Params(
+                            url = extractedUrl,
+                            title = title,
+                            highlightedText = highlightedText,
+                        )
+                    )
+                }
                 val existingPost = async { postsRepository.getPost(url = extractedUrl) }
 
                 urlPreview.await().getOrThrow() to existingPost.await().getOrNull()

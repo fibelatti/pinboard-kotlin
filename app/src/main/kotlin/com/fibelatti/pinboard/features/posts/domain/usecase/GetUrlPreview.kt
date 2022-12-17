@@ -20,6 +20,22 @@ class GetUrlPreview @Inject constructor(
 ) : UseCaseWithParams<UrlPreview, GetUrlPreview.Params>() {
 
     override suspend fun run(params: Params): Result<UrlPreview> = catching {
+        if (userRepository.autoFillDescription) {
+            fetchTitleAndDescription(params)
+        } else {
+            createUrlPreview(params)
+        }
+    }.onFailureReturn(
+        createUrlPreview(params)
+    )
+
+    private fun createUrlPreview(params: Params): UrlPreview = UrlPreview(
+        url = params.url,
+        title = params.title ?: params.url,
+        description = params.highlightedText,
+    )
+
+    private suspend fun fetchTitleAndDescription(params: Params): UrlPreview {
         val request = Request.Builder()
             .url(params.url)
             .apply {
@@ -39,18 +55,13 @@ class GetUrlPreview @Inject constructor(
             }
         }
 
-        val title = document.getMetaProperty("og:title") ?: document.title().ifBlank { url }
+        val title = document.getMetaProperty(property = "og:title")
+            ?: document.title().ifBlank { params.title ?: url }
         val description = params.highlightedText
-            ?: document.getMetaProperty("og:description").takeIf { userRepository.autoFillDescription }
+            ?: document.getMetaProperty(property = "og:description")
 
-        UrlPreview(url, title, description)
-    }.onFailureReturn(
-        UrlPreview(
-            url = params.url,
-            title = params.url,
-            description = params.highlightedText,
-        )
-    )
+        return UrlPreview(url, title, description)
+    }
 
     private fun Document.getMetaProperty(
         property: String,
@@ -58,6 +69,7 @@ class GetUrlPreview @Inject constructor(
 
     data class Params(
         val url: String,
+        val title: String? = null,
         val highlightedText: String? = null,
     )
 }

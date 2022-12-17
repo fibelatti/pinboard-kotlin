@@ -1,9 +1,9 @@
 package com.fibelatti.pinboard.features.share
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.core.app.ShareCompat
 import androidx.core.view.WindowCompat
 import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.pinboard.R
@@ -35,7 +35,17 @@ class ShareReceiverActivity : BaseActivity() {
         val shareReceiverViewModel: ShareReceiverViewModel by viewModels()
 
         setupViewModels(shareReceiverViewModel)
-        intent?.checkForExtraText(shareReceiverViewModel::saveUrl)
+
+        val intentReader = ShareCompat.IntentReader(this)
+        val url = intentReader.text.toString().ifEmpty {
+            finish()
+            return
+        }
+
+        shareReceiverViewModel.saveUrl(
+            url = url,
+            title = intentReader.subject,
+        )
     }
 
     @Suppress("MagicNumber")
@@ -84,11 +94,5 @@ class ShareReceiverActivity : BaseActivity() {
                     .show()
             }
             .launchInAndFlowWith(this)
-    }
-
-    private fun Intent.checkForExtraText(onExtraTextFound: (String) -> Unit) {
-        takeIf { it.action == Intent.ACTION_SEND && it.type == "text/plain" }
-            ?.getStringExtra(Intent.EXTRA_TEXT)
-            ?.let(onExtraTextFound)
     }
 }
