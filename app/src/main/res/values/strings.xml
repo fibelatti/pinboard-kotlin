@@ -192,6 +192,10 @@
 
     <!-- User Preferences -->
     <string name="user_preferences_title">Preferences</string>
+
+    <string name="user_preferences_section_app">App preferences</string>
+    <string name="user_preferences_section_bookmarking">Bookmarking preferences</string>
+
     <string name="user_preferences_auto_update">Auto-update</string>
     <string name="user_preferences_auto_update_description">View in-app notifications when an app update is available</string>
     <string name="user_preferences_periodic_sync">Background sync</string>
@@ -219,24 +223,21 @@
     <string name="user_preferences_preferred_details_view_caveat">Long press list items when browsing bookmarks to access share and edit shortcuts</string>
     <string name="user_preferences_preferred_details_view_mark_as_read_on_open">Mark as read on open</string>
     <string name="user_preferences_preferred_details_view_mark_as_read_on_open_caveat">Automatically update the bookmark to remove the read later flag</string>
-    <string name="user_preferences_description_title">Bookmarks description</string>
-    <string name="user_preferences_description_auto_fill">Auto fill description</string>
-    <string name="user_preferences_description_auto_fill_description">Automatically try to get the bookmark description from the website when saving</string>
+    <string name="user_preferences_description_auto_fill">Auto-fill title and description</string>
+    <string name="user_preferences_description_auto_fill_description">Automatically get the details from the page when sharing its URL to Pinkt. May increase the loading time when saving a bookmark via the share action</string>
     <string name="user_preferences_description_visible_in_lists">Show description in lists</string>
     <string name="user_preferences_description_visible_in_lists_description">Show the first 5 lines of the description when browsing bookmarks</string>
-    <string name="user_preferences_default_private">Private bookmarks</string>
     <string name="user_preferences_default_private_label">Private by default</string>
     <string name="user_preferences_default_private_description">If active bookmarks shared to Pinkt are saved as private, otherwise your default Pinboard preferences apply</string>
-    <string name="user_preferences_default_read_later">Read later bookmarks</string>
     <string name="user_preferences_default_read_later_label">Read later by default</string>
     <string name="user_preferences_default_read_later_description">If active bookmarks shared to Pinkt are saved as read later, otherwise your default Pinboard preferences apply</string>
     <string name="user_preferences_default_tags">Default tags</string>
-    <string name="user_preferences_default_tags_description">These tags will be added to all bookmarks created with Pinkt or shared to Pinkt</string>
-    <string name="user_preferences_edit_after_sharing_title">Editing — Sharing &amp; Popular</string>
+    <string name="user_preferences_default_tags_description">Tags to be added to all bookmarks created with or shared to Pinkt</string>
+    <string name="user_preferences_edit_after_sharing_title">Open editor when sharing</string>
     <string name="user_preferences_edit_after_sharing_before_saving">Before saving</string>
     <string name="user_preferences_edit_after_sharing_after_saving">After saving</string>
     <string name="user_preferences_edit_after_sharing_skip">Skip editing</string>
-    <string name="user_preferences_edit_after_sharing_description">Use this settings to control whether the edit screen should be displayed before or after saving a bookmark to Pinboard. This applies when sharing to Pinkt or saving from the list of popular bookmarks</string>
+    <string name="user_preferences_edit_after_sharing_description">Controls when the edit screen should be displayed when saving a bookmark to Pinboard. Applies when sharing a URL to Pinkt or saving from the list of popular bookmarks</string>
 
     <!-- In-app Update -->
     <string name="in_app_update_ready">An app update is ready to install</string>

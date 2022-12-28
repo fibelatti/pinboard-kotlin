@@ -94,8 +94,8 @@ class UserPreferencesFragment @Inject constructor(
     }
 
     private fun setupViews() {
-        binding.layoutPeriodicSync.isVisible = mainVariant
-        binding.layoutPrivateDefault.isVisible = mainVariant
+        binding.groupBackgroundSync.isVisible = mainVariant
+        binding.togglePrivateDefault.isVisible = mainVariant
 
         binding.toggleDynamicColors.isVisible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
