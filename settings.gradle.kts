@@ -11,7 +11,7 @@ dependencyResolutionManagement {
             val coroutinesVersion = "1.6.4"
             val hiltVersion = "2.44.2"
             val lifecycleVersion = "2.5.1"
-            val roomVersion = "2.4.3"
+            val roomVersion = "2.5.0"
             val moshiVersion = "1.14.0"
             val okHttpVersion = "4.10.0"
             val retrofitVersion = "2.9.0"
