@@ -15,7 +15,7 @@ dependencyResolutionManagement {
             val moshiVersion = "1.14.0"
             val okHttpVersion = "4.10.0"
             val retrofitVersion = "2.9.0"
-            val junit5Version = "5.9.1"
+            val junit5Version = "5.9.2"
 
             // Classpath
             library("android-gradle-plugin", "com.android.tools.build:gradle:7.3.1")
