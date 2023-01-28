@@ -20,7 +20,7 @@ object AppInfo {
     const val applicationId = "com.fibelatti.pinboard"
 
     private const val versionMajor = 1
-    private const val versionMinor = 22
+    private const val versionMinor = 23
     private const val versionPatch = 0
     private const val versionBuild = 0
 
