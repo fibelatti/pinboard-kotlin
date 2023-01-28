@@ -110,7 +110,10 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
     }
 
     override fun onDestroy() {
-        appStateViewModel.reset()
+        if (!isChangingConfigurations) {
+            appStateViewModel.reset()
+        }
+
         super.onDestroy()
     }
 
