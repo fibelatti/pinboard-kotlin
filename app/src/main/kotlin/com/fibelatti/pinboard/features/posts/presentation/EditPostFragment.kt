@@ -92,6 +92,11 @@ class EditPostFragment @Inject constructor(
         setupViewModels()
     }
 
+    override fun onResume() {
+        super.onResume()
+        restoreSelection()
+    }
+
     override fun onDestroyView() {
         // Needs to be manually removed because the activity is used as the lifecycleOwner
         onBackPressedCallback.remove()
@@ -290,19 +295,9 @@ class EditPostFragment @Inject constructor(
                 }
 
                 editTextUrl.setText(url)
-                if (editTextUrl.hasFocus()) {
-                    editTextUrl.setSelection(editTextUrl.length())
-                }
-
                 editTextTitle.setText(title)
-                if (editTextTitle.hasFocus()) {
-                    editTextTitle.setSelection(editTextTitle.length())
-                }
-
                 editTextDescription.setText(description)
-                if (editTextDescription.hasFocus()) {
-                    editTextDescription.setSelection(editTextDescription.length())
-                }
+                restoreSelection()
 
                 togglePrivate.isActive = private
                 toggleReadLater.isActive = readLater
@@ -314,6 +309,18 @@ class EditPostFragment @Inject constructor(
         setPostChangedListeners()
 
         editPostViewModel.searchForTag(tag = "", currentTags = post.tags.orEmpty())
+    }
+
+    private fun restoreSelection() = with(binding) {
+        if (editTextUrl.hasFocus()) {
+            editTextUrl.setSelection(editTextUrl.length())
+        }
+        if (editTextTitle.hasFocus()) {
+            editTextTitle.setSelection(editTextTitle.length())
+        }
+        if (editTextDescription.hasFocus()) {
+            editTextDescription.setSelection(editTextDescription.length())
+        }
     }
 
     private fun setPostChangedListeners() {
