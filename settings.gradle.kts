@@ -7,6 +7,7 @@ include(":core")
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
+            val agpVersion = "7.4.0"
             val kotlinVersion = "1.8.0"
             val coroutinesVersion = "1.6.4"
             val hiltVersion = "2.44.2"
@@ -18,7 +19,7 @@ dependencyResolutionManagement {
             val junit5Version = "5.9.2"
 
             // Classpath
-            library("android-gradle-plugin", "com.android.tools.build:gradle:7.4.0")
+            library("android-gradle-plugin", "com.android.tools.build:gradle:$agpVersion")
             library("kotlin-gradle-plugin", "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
             library("hilt-gradle-plugin", "com.google.dagger:hilt-android-gradle-plugin:$hiltVersion")
 
@@ -42,7 +43,7 @@ dependencyResolutionManagement {
             library("room-compiler", "androidx.room:room-compiler:$roomVersion")
             library("work-runtime-ktx", "androidx.work:work-runtime-ktx:2.7.1")
             library("browser", "androidx.browser:browser:1.4.0")
-            library("viewbinding", "androidx.databinding:viewbinding:7.4.0")
+            library("viewbinding", "androidx.databinding:viewbinding:$agpVersion")
 
             library("hilt-android", "com.google.dagger:hilt-android:$hiltVersion")
             library("hilt-compiler", "com.google.dagger:hilt-compiler:$hiltVersion")
