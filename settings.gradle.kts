@@ -41,7 +41,7 @@ dependencyResolutionManagement {
             library("lifecycle-runtime-ktx", "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
             library("room-runtime", "androidx.room:room-ktx:$roomVersion")
             library("room-compiler", "androidx.room:room-compiler:$roomVersion")
-            library("work-runtime-ktx", "androidx.work:work-runtime-ktx:2.7.1")
+            library("work-runtime-ktx", "androidx.work:work-runtime-ktx:2.8.0")
             library("browser", "androidx.browser:browser:1.5.0")
             library("viewbinding", "androidx.databinding:viewbinding:$agpVersion")
 
