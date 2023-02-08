@@ -42,7 +42,7 @@ dependencyResolutionManagement {
             library("room-runtime", "androidx.room:room-ktx:$roomVersion")
             library("room-compiler", "androidx.room:room-compiler:$roomVersion")
             library("work-runtime-ktx", "androidx.work:work-runtime-ktx:2.7.1")
-            library("browser", "androidx.browser:browser:1.4.0")
+            library("browser", "androidx.browser:browser:1.5.0")
             library("viewbinding", "androidx.databinding:viewbinding:$agpVersion")
 
             library("hilt-android", "com.google.dagger:hilt-android:$hiltVersion")
