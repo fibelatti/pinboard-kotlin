@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
+import com.fibelatti.core.extension.ifNullOrBlank
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.UseCaseWithParams
 import com.fibelatti.core.functional.catching
@@ -31,7 +32,7 @@ class GetUrlPreview @Inject constructor(
 
     private fun createUrlPreview(params: Params): UrlPreview = UrlPreview(
         url = params.url,
-        title = params.title ?: params.url,
+        title = params.title.ifNullOrBlank { params.url },
         description = params.highlightedText,
     )
 
@@ -56,16 +57,17 @@ class GetUrlPreview @Inject constructor(
         }
 
         val title = document.getMetaProperty(property = "og:title")
-            ?: document.title().ifBlank { params.title ?: url }
+            ?: document.title().ifBlank { params.title.ifNullOrBlank { url } }
         val description = params.highlightedText
             ?: document.getMetaProperty(property = "og:description")
 
         return UrlPreview(url, title, description)
     }
 
-    private fun Document.getMetaProperty(
-        property: String,
-    ): String? = select("meta[property=$property]").firstOrNull()?.attr("content")?.ifBlank { null }
+    private fun Document.getMetaProperty(property: String): String? = select("meta[property=$property]")
+        .firstOrNull()
+        ?.attr("content")
+        ?.ifBlank { null }
 
     data class Params(
         val url: String,
