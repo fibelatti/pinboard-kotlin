@@ -10,7 +10,7 @@ dependencyResolutionManagement {
             val agpVersion = "7.4.1"
             val kotlinVersion = "1.8.10"
             val coroutinesVersion = "1.6.4"
-            val hiltVersion = "2.44.2"
+            val hiltVersion = "2.45"
             val lifecycleVersion = "2.5.1"
             val roomVersion = "2.5.0"
             val moshiVersion = "1.14.0"
