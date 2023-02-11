@@ -33,7 +33,7 @@ class PeriodicSyncManager @Inject constructor(
             .build()
         workManager.enqueueUniquePeriodicWork(
             SyncBookmarksWorker.UNIQUE_WORK_NAME,
-            if (shouldReplace) ExistingPeriodicWorkPolicy.REPLACE else ExistingPeriodicWorkPolicy.KEEP,
+            if (shouldReplace) ExistingPeriodicWorkPolicy.UPDATE else ExistingPeriodicWorkPolicy.KEEP,
             work
         )
     }
