@@ -2,19 +2,23 @@ name: Android CI
 
 on: [ push ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   unit_tests:
     name: Unit Tests
     runs-on: ubuntu-latest
     steps:
       - name: Project Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.3.0
 
       - name: Setup Android Build
         uses: ./.github/actions/setup-android-build
 
       - name: Run Tests
-        run: ./gradlew clean testPinboardapiDebugUnitTest --stacktrace
+        run: ./gradlew testPinboardapiDebugUnitTest --stacktrace
 
   build:
     name: Build
@@ -22,16 +26,17 @@ jobs:
 
     steps:
       - name: Project Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.3.0
 
       - name: Setup Android Build
         uses: ./.github/actions/setup-android-build
 
       - name: Build
-        run: ./gradlew clean assemblePinboardapi --stacktrace
+        run: ./gradlew assemblePinboardapi --stacktrace
 
       - name: Upload Pinboard API APK
-        uses: actions/upload-artifact@v3
+        if: success()
+        uses: actions/upload-artifact@v3.1.2
         with:
           path: app/build/outputs/apk/pinboardapi/debug/app-pinboardapi-debug.apk
 
@@ -41,7 +46,7 @@ jobs:
     needs: [ unit_tests, build ]
     steps:
       - name: Project Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.3.0
 
       - name: Setup Android Build
         uses: ./.github/actions/setup-android-build
@@ -51,4 +56,4 @@ jobs:
         with:
           api-level: 29
           arch: x86_64
-          script: ./gradlew clean :app:connectedAndroidTest --stacktrace
+          script: ./gradlew :app:connectedAndroidTest --stacktrace

@@ -7,11 +7,15 @@ runs:
     - name: Setup JDK
       uses: actions/setup-java@v3.10.0
       with:
-        distribution: 'adopt'
-        java-version: 11
+        distribution: 'corretto'
+        java-version: 17
 
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2.3.3
+      with:
+        generate-job-summary: false
+        gradle-home-cache-strict-match: true
+        gradle-home-cache-cleanup: true
 
     - name: Optimize for Gradle build
       shell: bash
