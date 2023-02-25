@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.features.share
 
-import com.fibelatti.core.android.ResourceProvider
 import com.fibelatti.core.functional.Failure
+import com.fibelatti.core.functional.ScreenState
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.createPost
@@ -61,10 +61,6 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     }
     private val mockUserRepository = mockk<UserRepository>()
     private val mockAppStateRepository = mockk<AppStateRepository>(relaxUnitFun = true)
-    private val mockResourceProvider = mockk<ResourceProvider> {
-        every { getString(R.string.posts_saved_feedback) } returns "R.string.posts_saved_feedback"
-        every { getString(R.string.posts_existing_feedback) } returns "R.string.posts_existing_feedback"
-    }
 
     private val post = mockk<Post>()
     private val error = Exception()
@@ -76,7 +72,6 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         postsRepository = mockPostsRepository,
         userRepository = mockUserRepository,
         appStateRepository = mockAppStateRepository,
-        resourceProvider = mockResourceProvider
     )
 
     @Test
@@ -88,7 +83,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         shareReceiverViewModel.saveUrl(url = mockUrlValid, title = mockUrlTitle)
 
         // THEN
-        assertThat(shareReceiverViewModel.failed.first()).isEqualTo(error)
+        assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(ScreenState.Error(error))
         coVerify(exactly = 0) { mockAddPost.invoke(any()) }
     }
 
@@ -101,7 +96,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         shareReceiverViewModel.saveUrl(url = mockUrlValid, title = mockUrlTitle)
 
         // THEN
-        assertThat(shareReceiverViewModel.failed.first()).isEqualTo(error)
+        assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(ScreenState.Error(error))
         coVerify(exactly = 0) { mockAddPost.invoke(any()) }
     }
 
@@ -116,7 +111,11 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
             shareReceiverViewModel.saveUrl(url = mockUrlValid, title = mockUrlTitle)
 
             // THEN
-            assertThat(shareReceiverViewModel.saved.first()).isEqualTo("R.string.posts_existing_feedback")
+            assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(
+                ScreenState.Loaded(
+                    ShareReceiverViewModel.SharingResult.Saved(message = R.string.posts_existing_feedback)
+                )
+            )
         }
 
     @Test
@@ -130,7 +129,11 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
             shareReceiverViewModel.saveUrl(url = mockUrlValid, title = mockUrlTitle)
 
             // THEN
-            assertThat(shareReceiverViewModel.edit.first()).isEqualTo("R.string.posts_existing_feedback")
+            assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(
+                ScreenState.Loaded(
+                    ShareReceiverViewModel.SharingResult.Edit(message = R.string.posts_existing_feedback)
+                )
+            )
             coVerify { mockAppStateRepository.runAction(EditPostFromShare(post)) }
         }
 
@@ -145,7 +148,11 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
             shareReceiverViewModel.saveUrl(url = mockUrlValid, title = mockUrlTitle)
 
             // THEN
-            assertThat(shareReceiverViewModel.edit.first()).isEqualTo("R.string.posts_existing_feedback")
+            assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(
+                ScreenState.Loaded(
+                    ShareReceiverViewModel.SharingResult.Edit(message = R.string.posts_existing_feedback)
+                )
+            )
             coVerify { mockAppStateRepository.runAction(EditPostFromShare(post)) }
         }
 
@@ -175,10 +182,16 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
             shareReceiverViewModel.saveUrl(url = mockUrlValid, title = mockUrlTitle)
 
             // THEN
-            verify { mockUserRepository.defaultPrivate }
-            verify { mockUserRepository.defaultReadLater }
-            verify { mockUserRepository.defaultTags }
-            assertThat(shareReceiverViewModel.edit.first()).isEqualTo("")
+            verify {
+                mockUserRepository.defaultPrivate
+                mockUserRepository.defaultReadLater
+                mockUserRepository.defaultTags
+            }
+            assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(
+                ScreenState.Loaded(
+                    ShareReceiverViewModel.SharingResult.Edit(message = null)
+                )
+            )
             coVerify { mockAppStateRepository.runAction(EditPostFromShare(expectedPost)) }
             coVerify(exactly = 0) { mockAddPost.invoke(any()) }
         }
@@ -211,10 +224,12 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         shareReceiverViewModel.saveUrl(url = mockUrlValid, title = mockUrlTitle)
 
         // THEN
-        verify { mockUserRepository.defaultPrivate }
-        verify { mockUserRepository.defaultReadLater }
-        verify { mockUserRepository.defaultTags }
-        assertThat(shareReceiverViewModel.failed.first()).isEqualTo(error)
+        verify {
+            mockUserRepository.defaultPrivate
+            mockUserRepository.defaultReadLater
+            mockUserRepository.defaultTags
+        }
+        assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(ScreenState.Error(error))
     }
 
     @Test
@@ -246,10 +261,16 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         shareReceiverViewModel.saveUrl(url = mockUrlValid, title = mockUrlTitle)
 
         // THEN
-        verify { mockUserRepository.defaultPrivate }
-        verify { mockUserRepository.defaultReadLater }
-        verify { mockUserRepository.defaultTags }
-        assertThat(shareReceiverViewModel.saved.first()).isEqualTo("R.string.posts_saved_feedback")
+        verify {
+            mockUserRepository.defaultPrivate
+            mockUserRepository.defaultReadLater
+            mockUserRepository.defaultTags
+        }
+        assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(
+            ScreenState.Loaded(
+                ShareReceiverViewModel.SharingResult.Saved(message = R.string.posts_saved_feedback)
+            )
+        )
     }
 
     @Test
@@ -282,10 +303,16 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         shareReceiverViewModel.saveUrl(url = mockUrlValid, title = mockUrlTitle)
 
         // THEN
-        verify { mockUserRepository.defaultPrivate }
-        verify { mockUserRepository.defaultReadLater }
-        verify { mockUserRepository.defaultTags }
-        assertThat(shareReceiverViewModel.edit.first()).isEqualTo("R.string.posts_saved_feedback")
+        verify {
+            mockUserRepository.defaultPrivate
+            mockUserRepository.defaultReadLater
+            mockUserRepository.defaultTags
+        }
+        assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(
+            ScreenState.Loaded(
+                ShareReceiverViewModel.SharingResult.Edit(message = R.string.posts_saved_feedback)
+            )
+        )
         coVerify { mockAppStateRepository.runAction(EditPostFromShare(post)) }
     }
 }

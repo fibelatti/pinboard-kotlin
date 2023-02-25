@@ -1,6 +1,9 @@
 package com.fibelatti.pinboard.features.share
 
-import com.fibelatti.core.android.ResourceProvider
+import androidx.annotation.StringRes
+import com.fibelatti.core.functional.ScreenState
+import com.fibelatti.core.functional.emitError
+import com.fibelatti.core.functional.emitLoaded
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.functional.getOrThrow
 import com.fibelatti.core.functional.mapCatching
@@ -22,7 +25,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,15 +37,10 @@ class ShareReceiverViewModel @Inject constructor(
     private val postsRepository: PostsRepository,
     private val userRepository: UserRepository,
     private val appStateRepository: AppStateRepository,
-    private val resourceProvider: ResourceProvider,
 ) : BaseViewModel() {
 
-    val saved: Flow<String> get() = _saved.filterNotNull()
-    private val _saved = MutableStateFlow<String?>(null)
-    val edit: Flow<String> get() = _edit.filterNotNull()
-    private val _edit = MutableStateFlow<String?>(null)
-    val failed: Flow<Throwable> get() = _failed.filterNotNull()
-    private val _failed = MutableStateFlow<Throwable?>(null)
+    val screenState: Flow<ScreenState<SharingResult>> get() = _screenState.asStateFlow()
+    private val _screenState = MutableStateFlow<ScreenState<SharingResult>>(ScreenState.Loading.FromEmpty)
 
     fun saveUrl(url: String, title: String?) {
         launch {
@@ -65,17 +63,18 @@ class ShareReceiverViewModel @Inject constructor(
                     userRepository.editAfterSharing is EditAfterSharing.BeforeSaving -> {
                         editBookmark(urlPreview = urlPreview)
                     }
+
                     else -> addBookmark(urlPreview = urlPreview)
                 }
-            }.onFailure { _failed.value = it }
+            }.onFailure(_screenState::emitError)
         }
     }
 
     private suspend fun handleExistingPost(post: Post) {
         if (userRepository.editAfterSharing is EditAfterSharing.SkipEdit) {
-            _saved.value = resourceProvider.getString(R.string.posts_existing_feedback)
+            _screenState.emitLoaded(SharingResult.Saved(message = R.string.posts_existing_feedback))
         } else {
-            _edit.value = resourceProvider.getString(R.string.posts_existing_feedback)
+            _screenState.emitLoaded(SharingResult.Edit(message = R.string.posts_existing_feedback))
             appStateRepository.runAction(EditPostFromShare(post))
         }
     }
@@ -91,7 +90,7 @@ class ShareReceiverViewModel @Inject constructor(
             tags = userRepository.defaultTags,
         )
 
-        _edit.value = ""
+        _screenState.emitLoaded(SharingResult.Edit())
         appStateRepository.runAction(EditPostFromShare(newPost))
     }
 
@@ -109,11 +108,25 @@ class ShareReceiverViewModel @Inject constructor(
             )
         ).onSuccess {
             if (userRepository.editAfterSharing is EditAfterSharing.AfterSaving) {
-                _edit.value = resourceProvider.getString(R.string.posts_saved_feedback)
+                _screenState.emitLoaded(SharingResult.Edit(message = R.string.posts_saved_feedback))
                 appStateRepository.runAction(EditPostFromShare(it))
             } else {
-                _saved.value = resourceProvider.getString(R.string.posts_saved_feedback)
+                _screenState.emitLoaded(SharingResult.Saved())
             }
-        }.onFailure { _failed.value = it }
+        }.onFailure(_screenState::emitError)
+    }
+
+    sealed class SharingResult {
+
+        @get:StringRes
+        abstract val message: Int?
+
+        data class Saved(
+            @StringRes override val message: Int? = R.string.posts_saved_feedback,
+        ) : SharingResult()
+
+        data class Edit(
+            @StringRes override val message: Int? = null,
+        ) : SharingResult()
     }
 }

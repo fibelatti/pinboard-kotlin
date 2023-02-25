@@ -6,6 +6,7 @@ import androidx.activity.viewModels
 import androidx.core.app.ShareCompat
 import androidx.core.view.WindowCompat
 import com.fibelatti.core.extension.viewBinding
+import com.fibelatti.core.functional.onScreenState
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
@@ -17,7 +18,6 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.onEach
 import retrofit2.HttpException
 import java.net.HttpURLConnection
 
@@ -48,51 +48,52 @@ class ShareReceiverActivity : BaseActivity() {
         )
     }
 
-    @Suppress("MagicNumber")
     private fun setupViewModels(shareReceiverViewModel: ShareReceiverViewModel) {
-        shareReceiverViewModel.saved
-            .onEach { message ->
-                binding.imageViewFeedback.setImageResource(R.drawable.ic_url_saved)
-                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-                delay(500L)
-                finish()
-            }
+        shareReceiverViewModel.screenState
+            .onScreenState(onLoaded = ::onLoaded, onError = ::onError)
             .launchInAndFlowWith(this)
-        shareReceiverViewModel.edit
-            .onEach { message ->
-                if (message.isNotEmpty()) {
-                    binding.imageViewFeedback.setImageResource(R.drawable.ic_url_saved)
-                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-                }
+    }
+
+    @Suppress("MagicNumber")
+    private suspend fun onLoaded(result: ShareReceiverViewModel.SharingResult) {
+        when (result) {
+            is ShareReceiverViewModel.SharingResult.Edit -> {
+                binding.imageViewFeedback.setImageResource(R.drawable.ic_url_saved)
+                result.message?.let { Toast.makeText(this, it, Toast.LENGTH_SHORT).show() }
                 startActivity(MainActivity.Builder(this).build())
                 finish()
             }
-            .launchInAndFlowWith(this)
-        shareReceiverViewModel.failed
-            .onEach { error ->
-                binding.imageViewFeedback.setImageResource(R.drawable.ic_url_saved_error)
-
-                val loginFailedCodes = listOf(
-                    HttpURLConnection.HTTP_UNAUTHORIZED,
-                    HttpURLConnection.HTTP_INTERNAL_ERROR,
-                )
-                val errorMessage = when {
-                    error is InvalidUrlException -> R.string.validation_error_invalid_url_rationale
-                    error.isServerException() -> R.string.server_timeout_error
-                    error is HttpException && error.code() in loginFailedCodes -> R.string.auth_logged_out_feedback
-                    else -> {
-                        sendErrorReport(error) { finish() }
-                        return@onEach
-                    }
-                }
-
-                MaterialAlertDialogBuilder(this)
-                    .apply {
-                        setMessage(errorMessage)
-                        setPositiveButton(R.string.hint_ok) { _, _ -> finish() }
-                    }
-                    .show()
+            is ShareReceiverViewModel.SharingResult.Saved -> {
+                binding.imageViewFeedback.setImageResource(R.drawable.ic_url_saved)
+                result.message?.let { Toast.makeText(this, it, Toast.LENGTH_SHORT).show() }
+                delay(500L)
+                finish()
             }
-            .launchInAndFlowWith(this)
+        }
+    }
+
+    private fun onError(error: Throwable) {
+        binding.imageViewFeedback.setImageResource(R.drawable.ic_url_saved_error)
+
+        val loginFailedCodes = listOf(
+            HttpURLConnection.HTTP_UNAUTHORIZED,
+            HttpURLConnection.HTTP_INTERNAL_ERROR,
+        )
+        val errorMessage = when {
+            error is InvalidUrlException -> R.string.validation_error_invalid_url_rationale
+            error.isServerException() -> R.string.server_timeout_error
+            error is HttpException && error.code() in loginFailedCodes -> R.string.auth_logged_out_feedback
+            else -> {
+                sendErrorReport(error) { finish() }
+                return
+            }
+        }
+
+        MaterialAlertDialogBuilder(this)
+            .apply {
+                setMessage(errorMessage)
+                setPositiveButton(R.string.hint_ok) { _, _ -> finish() }
+            }
+            .show()
     }
 }
