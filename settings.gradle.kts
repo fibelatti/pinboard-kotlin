@@ -7,7 +7,7 @@ include(":core")
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            val agpVersion = "7.4.1"
+            val agpVersion = "7.4.2"
             val kotlinVersion = "1.8.10"
             val coroutinesVersion = "1.6.4"
             val hiltVersion = "2.45"
