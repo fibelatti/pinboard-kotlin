@@ -3,6 +3,7 @@ rootProject.buildFileName = "build.gradle.kts"
 
 include(":app")
 include(":core")
+include(":ui")
 
 dependencyResolutionManagement {
     versionCatalogs {
@@ -10,6 +11,7 @@ dependencyResolutionManagement {
             val agpVersion = "7.4.2"
             val kotlinVersion = "1.8.10"
             val coroutinesVersion = "1.6.4"
+            val composeUiVersion = "1.3.3"
             val hiltVersion = "2.45"
             val lifecycleVersion = "2.6.0"
             val roomVersion = "2.5.0"
@@ -45,8 +47,16 @@ dependencyResolutionManagement {
             library("browser", "androidx.browser:browser:1.5.0")
             library("viewbinding", "androidx.databinding:viewbinding:$agpVersion")
 
+            library("compose-runtime", "androidx.compose.runtime:runtime:1.3.3")
+            library("compose-material", "androidx.compose.material3:material3:1.0.1")
+            library("compose-ui", "androidx.compose.ui:ui:$composeUiVersion")
+            library("compose-ui-tooling", "androidx.compose.ui:ui-tooling:$composeUiVersion")
+            library("compose-ui-tooling-preview", "androidx.compose.ui:ui-tooling-preview:$composeUiVersion")
+            library("compose-activity", "androidx.activity:activity-compose:1.6.1")
+
             library("hilt-android", "com.google.dagger:hilt-android:$hiltVersion")
             library("hilt-compiler", "com.google.dagger:hilt-compiler:$hiltVersion")
+            library("hilt-navigation-compose", "androidx.hilt:hilt-navigation-compose:1.0.0")
 
             library("moshi", "com.squareup.moshi:moshi-kotlin:$moshiVersion")
             library("moshi-codegen", "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")

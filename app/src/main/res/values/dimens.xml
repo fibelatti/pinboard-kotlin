@@ -53,9 +53,6 @@
 
     <dimen name="user_preferences_tag_list_min_height">100dp</dimen>
 
-    <dimen name="share_receiver_image_size">50dp</dimen>
-    <dimen name="share_receiver_loading_size">120dp</dimen>
-
     <dimen name="drawable_board_width">200dp</dimen>
 
     <dimen name="post_list_animation_logo_margin">28dp</dimen>

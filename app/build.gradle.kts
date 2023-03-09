@@ -1,8 +1,8 @@
 plugins {
     id("com.android.application")
-    id("kotlin-android")
-    id("kotlin-parcelize")
-    id("kotlin-kapt")
+    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.parcelize")
+    id("org.jetbrains.kotlin.kapt")
     id("dagger.hilt.android.plugin")
 }
 
@@ -39,8 +39,12 @@ android {
     val minSdkVersion: Int by project
 
     namespace = "com.fibelatti.pinboard"
-
     compileSdk = compileSdkVersion
+
+    buildFeatures {
+        compose = true
+        viewBinding = true
+    }
 
     defaultConfig {
         applicationId = AppInfo.applicationId
@@ -69,10 +73,6 @@ android {
             keyPassword = "android"
             storePassword = "android"
         }
-    }
-
-    buildFeatures {
-        viewBinding = true
     }
 
     buildTypes {
@@ -129,36 +129,19 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility(JavaVersion.VERSION_11)
-        targetCompatibility(JavaVersion.VERSION_11)
-    }
-
-    kotlinOptions {
-        freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.4.3"
     }
 
     packagingOptions {
         resources.excludes.add("META-INF/LICENSE.md")
         resources.excludes.add("META-INF/LICENSE-notice.md")
     }
-
-    testOptions {
-        animationsDisabled = true
-
-        unitTests {
-            isReturnDefaultValues = true
-            isIncludeAndroidResources = true
-
-            all {
-                it.useJUnitPlatform()
-            }
-        }
-    }
 }
 
 dependencies {
     implementation(project(":core"))
+    implementation(project(":ui"))
 
     // Kotlin
     implementation(libs.kotlin)
@@ -185,9 +168,17 @@ dependencies {
 
     implementation(libs.browser)
 
+    implementation(libs.compose.runtime)
+    implementation(libs.compose.material)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.tooling.preview)
+    debugImplementation(libs.compose.ui.tooling)
+    implementation(libs.compose.activity)
+
     // Misc
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
 
     implementation(libs.moshi)
     kapt(libs.moshi.codegen)

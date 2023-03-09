@@ -1,11 +1,10 @@
 plugins {
     id("com.android.library")
-    id("kotlin-android")
+    id("org.jetbrains.kotlin.android")
 }
 
 android {
     val compileSdkVersion: Int by project
-    val targetSdkVersion: Int by project
     val minSdkVersion: Int by project
 
     namespace = "com.fibelatti.core"
@@ -13,30 +12,7 @@ android {
     compileSdk = compileSdkVersion
 
     defaultConfig {
-        targetSdk = targetSdkVersion
         minSdk = minSdkVersion
-    }
-
-    compileOptions {
-        sourceCompatibility(JavaVersion.VERSION_11)
-        targetCompatibility(JavaVersion.VERSION_11)
-    }
-
-    kotlinOptions {
-        freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
-    }
-
-    testOptions {
-        animationsDisabled = true
-
-        unitTests {
-            isReturnDefaultValues = true
-            isIncludeAndroidResources = true
-
-            all {
-                it.useJUnitPlatform()
-            }
-        }
     }
 }
 
