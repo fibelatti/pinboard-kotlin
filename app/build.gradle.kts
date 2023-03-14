@@ -160,6 +160,7 @@ dependencies {
 
     implementation(libs.lifecycle.java8)
     implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.lifecycle.runtime.compose)
 
     implementation(libs.room.runtime)
     kapt(libs.room.compiler)
@@ -171,9 +172,8 @@ dependencies {
     implementation(libs.compose.runtime)
     implementation(libs.compose.material)
     implementation(libs.compose.ui)
-    implementation(libs.compose.ui.tooling.preview)
+    debugImplementation(libs.compose.ui.tooling.preview)
     debugImplementation(libs.compose.ui.tooling)
-    implementation(libs.compose.activity)
 
     // Misc
     implementation(libs.hilt.android)
