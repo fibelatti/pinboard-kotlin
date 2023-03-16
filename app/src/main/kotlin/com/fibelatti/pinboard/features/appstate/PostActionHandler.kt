@@ -129,6 +129,7 @@ class PostActionHandler @Inject constructor(
 
     private fun postSaved(action: PostSaved, currentContent: Content): Content {
         return when (currentContent) {
+            is PostListContent -> currentContent.copy(shouldLoad = ShouldLoadFirstPage)
             is AddPostContent -> currentContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
             is PostDetailContent -> {
                 currentContent.copy(

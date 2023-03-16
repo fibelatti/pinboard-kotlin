@@ -52,7 +52,7 @@ class PostDetailViewModel @Inject constructor(
         }
     }
 
-    fun markAsRead(post: Post) {
+    fun toggleReadLater(post: Post) {
         launch {
             _loading.value = true
             addPost(
@@ -61,7 +61,7 @@ class PostDetailViewModel @Inject constructor(
                     title = post.title,
                     description = post.description,
                     private = post.private,
-                    readLater = false,
+                    readLater = !post.readLater,
                     tags = post.tags,
                     replace = true,
                     hash = post.hash,

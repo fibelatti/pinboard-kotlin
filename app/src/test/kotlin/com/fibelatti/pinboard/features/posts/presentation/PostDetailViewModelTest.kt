@@ -11,6 +11,7 @@ import com.fibelatti.pinboard.features.appstate.PostSaved
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.DeletePost
 import com.fibelatti.pinboard.isEmpty
+import com.fibelatti.pinboard.randomBoolean
 import com.fibelatti.pinboard.runUnconfinedTest
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
@@ -70,7 +71,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `WHEN markAsRead fails THEN updateError should receive a value`() = runUnconfinedTest {
+    fun `WHEN toggleReadLater fails THEN updateError should receive a value`() = runUnconfinedTest {
         // GIVEN
         val error = Exception()
         coEvery { mockAddPost(any()) } returns Failure(error)
@@ -78,7 +79,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
         val updated = postDetailViewModel.updated.collectIn(this)
 
         // WHEN
-        postDetailViewModel.markAsRead(mockPost)
+        postDetailViewModel.toggleReadLater(mockPost)
 
         // THEN
         assertThat(postDetailViewModel.loading.first()).isEqualTo(false)
@@ -89,20 +90,36 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `WHEN markAsRead succeeds THEN appStateRepository should run PostSaved`() = runUnconfinedTest {
+    fun `WHEN toggleReadLater succeeds THEN appStateRepository should run PostSaved`() = runUnconfinedTest {
         // GIVEN
-        coEvery { mockAddPost(any()) } returns Success(mockPost)
+        val randomBoolean = randomBoolean()
+        val post = createPost(readLater = randomBoolean)
+        val expectedParams = AddPost.Params(
+            url = post.url,
+            title = post.title,
+            description = post.description,
+            private = post.private,
+            readLater = !randomBoolean,
+            tags = post.tags,
+            replace = true,
+            hash = post.hash,
+        )
+
+        coEvery { mockAddPost(expectedParams) } returns Success(mockPost)
 
         val updated = postDetailViewModel.updated.collectIn(this)
 
         // WHEN
-        postDetailViewModel.markAsRead(mockPost)
+        postDetailViewModel.toggleReadLater(post)
 
         // THEN
         assertThat(postDetailViewModel.loading.first()).isEqualTo(false)
         assertThat(postDetailViewModel.updateError.isEmpty()).isTrue()
         assertThat(updated.first()).isEqualTo(Unit)
 
-        coVerify { mockAppStateRepository.runAction(PostSaved(mockPost)) }
+        coVerify {
+            mockAddPost(expectedParams)
+            mockAppStateRepository.runAction(PostSaved(mockPost))
+        }
     }
 }

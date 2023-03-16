@@ -94,8 +94,8 @@
     <string name="posts_deleted_feedback">Bookmark removed successfully</string>
     <string name="posts_deleted_error">An error happened and the bookmark could not be removed. If the problem persists please delete it using the web version of Pinboard.</string>
 
-    <string name="posts_marked_as_read_feedback">Bookmark marked as read successfully</string>
-    <string name="posts_marked_as_read_error">An error happened and the bookmark could not be updated.</string>
+    <string name="posts_marked_as_read_feedback">Read Later flag updated successfully</string>
+    <string name="posts_marked_as_read_error">Failed to update the Read Later flag. Please try again</string>
 
     <string name="posts_add_title">Save bookmark</string>
     <string name="posts_add_url">URL</string>
@@ -181,6 +181,8 @@
 
     <!-- Quick Actions -->
     <string name="quick_actions_title">Quick Actions</string>
+    <string name="quick_actions_add_read_later">Add to Read Later</string>
+    <string name="quick_actions_remove_read_later">Remove from Read Later</string>
     <string name="quick_actions_edit">Edit bookmark</string>
     <string name="quick_actions_delete">Delete bookmark</string>
     <string name="quick_actions_save">Save to mine</string>

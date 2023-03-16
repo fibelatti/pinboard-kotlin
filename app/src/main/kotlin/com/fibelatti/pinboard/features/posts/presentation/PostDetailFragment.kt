@@ -207,7 +207,7 @@ class PostDetailFragment @Inject constructor(
         if (post.readLater) {
             titleLayoutHost.update {
                 setActionButton(R.string.hint_mark_as_read) {
-                    postDetailViewModel.markAsRead(post)
+                    postDetailViewModel.toggleReadLater(post)
                 }
             }
         }

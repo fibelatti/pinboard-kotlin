@@ -143,19 +143,29 @@ class PostListFragment @Inject constructor(
             optionIcon = PostQuickActions::icon,
             onOptionSelected = { option ->
                 when (option) {
-                    is PostQuickActions.Edit -> appStateViewModel.runAction(EditPost(option.post))
-                    is PostQuickActions.Delete -> deletePost(option.post)
-                    is PostQuickActions.CopyUrl -> requireContext().copyToClipboard(post.title, post.url)
+                    is PostQuickActions.ToggleReadLater -> postDetailViewModel.toggleReadLater(
+                        post = option.post,
+                    )
+                    is PostQuickActions.Edit -> appStateViewModel.runAction(
+                        action = EditPost(option.post),
+                    )
+                    is PostQuickActions.Delete -> deletePost(
+                        post = option.post,
+                    )
+                    is PostQuickActions.CopyUrl -> requireContext().copyToClipboard(
+                        label = post.title,
+                        text = post.url,
+                    )
                     is PostQuickActions.Share -> requireActivity().shareText(
-                        R.string.posts_share_title,
-                        option.post.url,
+                        title = R.string.posts_share_title,
+                        text = option.post.url,
                     )
                     is PostQuickActions.ExpandDescription -> PostDescriptionDialog.showPostDescriptionDialog(
                         context = requireContext(),
                         post = post,
                     )
                     is PostQuickActions.OpenBrowser -> startActivity(
-                        Intent(Intent.ACTION_VIEW, Uri.parse(option.post.url))
+                        Intent(Intent.ACTION_VIEW, Uri.parse(option.post.url)),
                     )
                 }
             }
@@ -192,6 +202,12 @@ class PostListFragment @Inject constructor(
                     setPositiveButton(R.string.hint_ok) { dialog, _ -> dialog?.dismiss() }
                 }.show()
             }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        postDetailViewModel.updated
+            .onEach { binding.root.showBanner(getString(R.string.posts_marked_as_read_feedback)) }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        postDetailViewModel.updateError
+            .onEach { binding.root.showBanner(getString(R.string.posts_marked_as_read_error)) }
             .launchInAndFlowWith(viewLifecycleOwner)
         postDetailViewModel.error
             .onEach(::handleError)
@@ -351,6 +367,17 @@ private sealed class PostQuickActions(
 
     abstract val post: Post
 
+    data class ToggleReadLater(
+        override val post: Post,
+    ) : PostQuickActions(
+        title = if (post.readLater) {
+            R.string.quick_actions_remove_read_later
+        } else {
+            R.string.quick_actions_add_read_later
+        },
+        icon = R.drawable.ic_read_later,
+    )
+
     data class Edit(
         override val post: Post,
     ) : PostQuickActions(
@@ -398,6 +425,7 @@ private sealed class PostQuickActions(
         fun allOptions(
             post: Post,
         ): List<PostQuickActions> = buildList {
+            add(ToggleReadLater(post))
             add(Edit(post))
             add(Delete(post))
             add(CopyUrl(post))
