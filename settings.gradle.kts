@@ -14,7 +14,7 @@ dependencyResolutionManagement {
             val composeUiVersion = "1.3.3"
             val hiltVersion = "2.45"
             val lifecycleVersion = "2.6.0"
-            val roomVersion = "2.5.0"
+            val roomVersion = "2.5.1"
             val moshiVersion = "1.14.0"
             val okHttpVersion = "4.10.0"
             val retrofitVersion = "2.9.0"
