@@ -55,7 +55,7 @@ dependencyResolutionManagement {
             library("compose-ui", "androidx.compose.ui:ui:$composeUiVersion")
             library("compose-ui-tooling", "androidx.compose.ui:ui-tooling:$composeUiVersion")
             library("compose-ui-tooling-preview", "androidx.compose.ui:ui-tooling-preview:$composeUiVersion")
-            library("compose-activity", "androidx.activity:activity-compose:1.6.1")
+            library("compose-activity", "androidx.activity:activity-compose:1.7.0")
 
             library("hilt-android", "com.google.dagger:hilt-android:$hiltVersion")
             library("hilt-compiler", "com.google.dagger:hilt-compiler:$hiltVersion")
