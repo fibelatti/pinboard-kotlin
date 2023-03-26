@@ -51,7 +51,8 @@ dependencyResolutionManagement {
             library("viewbinding", "androidx.databinding:viewbinding:$agpVersion")
 
             library("compose-runtime", "androidx.compose.runtime:runtime:1.4.0")
-            library("compose-material", "androidx.compose.material3:material3:1.0.1")
+            library("compose-material", "androidx.compose.material:material:1.4.0")
+            library("compose-material3", "androidx.compose.material3:material3:1.0.1")
             library("compose-ui", "androidx.compose.ui:ui:$composeUiVersion")
             library("compose-ui-tooling", "androidx.compose.ui:ui-tooling:$composeUiVersion")
             library("compose-ui-tooling-preview", "androidx.compose.ui:ui-tooling-preview:$composeUiVersion")

@@ -6,30 +6,32 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.isGone
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import com.fibelatti.core.extension.getAttributeColor
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.navigateBack
-import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
-import com.fibelatti.pinboard.databinding.FragmentTagsBinding
 import com.fibelatti.pinboard.features.BottomBarHost.Companion.bottomBarHost
 import com.fibelatti.pinboard.features.TitleLayoutHost.Companion.titleLayoutHost
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.RefreshTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import com.fibelatti.pinboard.features.user.domain.UserRepository
+import com.fibelatti.ui.theme.ExtendedTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class TagsFragment @Inject constructor(
-    private val tagsAdapter: TagsAdapter,
+    private val userRepository: UserRepository,
 ) : BaseFragment() {
 
     companion object {
@@ -41,13 +43,11 @@ class TagsFragment @Inject constructor(
     private val appStateViewModel: AppStateViewModel by activityViewModels()
     private val tagsViewModel: TagsViewModel by viewModels()
 
-    private val binding by viewBinding(FragmentTagsBinding::bind)
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View = FragmentTagsBinding.inflate(inflater, container, false).root
+    ): View = ComposeView(inflater.context)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,14 +56,18 @@ class TagsFragment @Inject constructor(
         setupViewModels()
     }
 
-    private fun setupLayout() {
-        binding.tagListLayout.setAdapter(
-            tagsAdapter,
-            onClickListener = { appStateViewModel.runAction(PostsForTag(it)) },
-            onLongClickListener = ::showTagQuickActions,
-        )
-        binding.tagListLayout.setOnRefreshListener { appStateViewModel.runAction(RefreshTags) }
-        binding.tagListLayout.setSortingClickListener(tagsViewModel::sortTags)
+    private fun setupLayout() = with(requireView() as ComposeView) {
+        setBackgroundColor(context.getAttributeColor(android.R.attr.colorBackground))
+        setContent {
+            ExtendedTheme(dynamicColor = userRepository.applyDynamicColors) {
+                TagList(
+                    tagsViewModel = tagsViewModel,
+                    onTagClicked = { appStateViewModel.runAction(PostsForTag(it)) },
+                    onTagLongClicked = ::showTagQuickActions,
+                    onPullToRefresh = { appStateViewModel.runAction(RefreshTags) }
+                )
+            }
+        }
     }
 
     private fun showTagQuickActions(tag: Tag) {
@@ -93,20 +97,13 @@ class TagsFragment @Inject constructor(
                 setupActivityViews()
 
                 if (content.shouldLoad) {
-                    binding.tagListLayout.isLoading = true
                     tagsViewModel.getAll(TagsViewModel.Source.MENU)
                 } else {
-                    tagsViewModel.sortTags(content.tags, binding.tagListLayout.getCurrentTagSorting())
+                    tagsViewModel.sortTags(content.tags)
                 }
             }
             .launchInAndFlowWith(viewLifecycleOwner)
 
-        tagsViewModel.tags
-            .onEach(binding.tagListLayout::showTags)
-            .launchInAndFlowWith(viewLifecycleOwner)
-        tagsViewModel.loading
-            .onEach { loading -> binding.tagListLayout.isLoading = loading }
-            .launchInAndFlowWith(viewLifecycleOwner)
         tagsViewModel.error
             .onEach(::handleError)
             .launchInAndFlowWith(viewLifecycleOwner)

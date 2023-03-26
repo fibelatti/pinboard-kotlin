@@ -10,7 +10,7 @@ sealed interface ScreenState<out T> {
 
         object FromEmpty : Loading<Nothing>
 
-        data class FromData<T>(val previousData: T? = null) : Loading<T>
+        data class FromData<T>(val previousData: T) : Loading<T>
     }
 
     data class Loaded<T>(val data: T) : ScreenState<T>

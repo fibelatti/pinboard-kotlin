@@ -38,15 +38,17 @@ import com.fibelatti.pinboard.features.appstate.RemoveSearchTag
 import com.fibelatti.pinboard.features.appstate.Search
 import com.fibelatti.pinboard.features.appstate.SetTerm
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import com.fibelatti.pinboard.features.tags.presentation.TagsAdapter
+import com.fibelatti.pinboard.features.tags.presentation.TagList
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
+import com.fibelatti.pinboard.features.user.domain.UserRepository
+import com.fibelatti.ui.theme.ExtendedTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class PostSearchFragment @Inject constructor(
-    private val tagsAdapter: TagsAdapter,
+    private val userRepository: UserRepository,
 ) : BaseFragment() {
 
     companion object {
@@ -87,18 +89,14 @@ class PostSearchFragment @Inject constructor(
             appStateViewModel.runAction(Search(textAsString()))
         }
 
-        binding.tagListLayout.setAdapter(
-            tagsAdapter,
-            onClickListener = { appStateViewModel.runAction(AddSearchTag(it)) }
-        )
-        binding.tagListLayout.setOnRefreshListener { appStateViewModel.runAction(RefreshSearchTags) }
-        binding.tagListLayout.setSortingClickListener(tagsViewModel::sortTags)
-        binding.tagListLayout.setInputFocusChangeListener { hasFocus ->
-            val imeVisible = ViewCompat.getRootWindowInsets(requireView())
-                ?.isVisible(WindowInsetsCompat.Type.ime()) ?: false
-
-            binding.textInputLayoutSearchTerm.isGone = hasFocus && imeVisible
-            binding.textViewSearchTermCaveat.isGone = hasFocus && imeVisible
+        binding.tagListComposeView.setContent {
+            ExtendedTheme(dynamicColor = userRepository.applyDynamicColors) {
+                TagList(
+                    tagsViewModel = tagsViewModel,
+                    onTagClicked = { appStateViewModel.runAction(AddSearchTag(it)) },
+                    onPullToRefresh = { appStateViewModel.runAction(RefreshSearchTags) }
+                )
+            }
         }
 
         setupActivityViews()
@@ -133,16 +131,21 @@ class PostSearchFragment @Inject constructor(
                 }
 
                 if (content.shouldLoadTags) {
-                    binding.tagListLayout.isLoading = true
                     tagsViewModel.getAll(TagsViewModel.Source.SEARCH)
                 } else {
-                    tagsViewModel.sortTags(content.availableTags, binding.tagListLayout.getCurrentTagSorting())
+                    tagsViewModel.sortTags(content.availableTags)
                 }
             }
             .launchInAndFlowWith(viewLifecycleOwner)
 
-        tagsViewModel.tags
-            .onEach(binding.tagListLayout::showTags)
+        tagsViewModel.state
+            .onEach {
+                val imeVisible = ViewCompat.getRootWindowInsets(requireView())
+                    ?.isVisible(WindowInsetsCompat.Type.ime()) ?: false
+
+                binding.textInputLayoutSearchTerm.isGone = imeVisible && it.isSearching
+                binding.textViewSearchTermCaveat.isGone = imeVisible && it.isSearching
+            }
             .launchInAndFlowWith(viewLifecycleOwner)
         tagsViewModel.error
             .onEach(::handleError)
@@ -185,8 +188,8 @@ class PostSearchFragment @Inject constructor(
     private fun handleKeyboardVisibility() {
         binding.root.doOnApplyWindowInsets { _, insets, _, _ ->
             val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
-            binding.textInputLayoutSearchTerm.isGone = imeVisible && binding.tagListLayout.isInputFocused
-            binding.textViewSearchTermCaveat.isGone = imeVisible && binding.tagListLayout.isInputFocused
+            binding.textInputLayoutSearchTerm.isGone = imeVisible && tagsViewModel.state.value.isSearching
+            binding.textViewSearchTermCaveat.isGone = imeVisible && tagsViewModel.state.value.isSearching
         }
     }
 

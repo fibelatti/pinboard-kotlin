@@ -12,13 +12,13 @@ import com.fibelatti.pinboard.features.tags.domain.TagsRepository
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,46 +28,82 @@ class TagsViewModel @Inject constructor(
     private val appStateRepository: AppStateRepository,
 ) : BaseViewModel() {
 
-    val tags: Flow<List<Tag>> get() = _tags.filterNotNull()
-    private val _tags = MutableStateFlow<List<Tag>?>(null)
-    val loading: Flow<Boolean> get() = _loading.filterNotNull()
-    private val _loading = MutableStateFlow<Boolean?>(null)
+    val state: StateFlow<State> get() = _state.asStateFlow()
+    private val _state = MutableStateFlow(State())
 
     fun getAll(source: Source) {
-        _tags.value = null
         tagsRepository.getAllTags()
             .map { result ->
                 val tags = result.getOrThrow()
-                return@map when (source) {
+                val action = when (source) {
                     Source.MENU -> SetTags(tags)
                     Source.SEARCH -> SetSearchTags(tags)
                 }
+                appStateRepository.runAction(action)
             }
-            .onEach(appStateRepository::runAction)
             .catch { cause -> handleError(cause) }
             .launchIn(viewModelScope)
     }
 
-    fun sortTags(tags: List<Tag>, sorting: TagSorting) {
-        _tags.value = when (sorting) {
-            TagSorting.AtoZ -> tags.sortedBy(Tag::name)
-            TagSorting.MoreFirst -> tags.sortedByDescending(Tag::posts)
-            TagSorting.LessFirst -> tags.sortedBy(Tag::posts)
+    fun sortTags(
+        tags: List<Tag> = _state.value.allTags,
+        sorting: TagSorting = _state.value.currentSorting,
+        searchQuery: String = _state.value.currentQuery,
+    ) {
+        _state.update { currentState ->
+            val sorted = when (sorting) {
+                TagSorting.AtoZ -> tags.sortedBy(Tag::name)
+                TagSorting.MoreFirst -> tags.sortedByDescending(Tag::posts)
+                TagSorting.LessFirst -> tags.sortedBy(Tag::posts)
+            }
+
+            currentState.copy(
+                allTags = sorted,
+                currentSorting = sorting,
+                currentQuery = searchQuery,
+                isLoading = false,
+            )
         }
     }
 
+    fun searchFocusChanged(focused: Boolean) {
+        _state.update { currentState -> currentState.copy(isSearching = focused) }
+    }
+
+    fun searchTags(query: String) {
+        _state.update { currentState -> currentState.copy(currentQuery = query) }
+    }
+
     fun renameTag(tag: Tag, newName: String) {
-        viewModelScope.launch {
-            _loading.value = true
-            tagsRepository.renameTag(oldName = tag.name, newName = newName)
-                .onSuccess { tags -> appStateRepository.runAction(SetTags(tags, shouldReloadPosts = true)) }
-                .onFailure(::handleError)
-            _loading.value = false
+        launch {
+            _state.update { it.copy(isLoading = true) }
+            _state.update { currentState ->
+                tagsRepository.renameTag(oldName = tag.name, newName = newName)
+                    .onSuccess { tags -> appStateRepository.runAction(SetTags(tags, shouldReloadPosts = true)) }
+                    .onFailure(::handleError)
+
+                currentState.copy(isLoading = false)
+            }
         }
     }
 
     enum class Source {
         MENU,
         SEARCH
+    }
+
+    data class State(
+        val allTags: List<Tag> = emptyList(),
+        val currentSorting: TagSorting = TagSorting.AtoZ,
+        val currentQuery: String = "",
+        val isLoading: Boolean = true,
+        val isSearching: Boolean = false,
+    ) {
+
+        val filteredTags: List<Tag>
+            get() = allTags.run {
+                val queryIsBlank = currentQuery.isBlank()
+                filter { queryIsBlank || it.name.startsWith(currentQuery, ignoreCase = true) }
+            }
     }
 }
