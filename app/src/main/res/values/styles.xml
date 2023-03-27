@@ -205,21 +205,10 @@
         <item name="android:textSize">@dimen/text_size_xsmall</item>
     </style>
 
-    <style name="AppTheme.Text.Tag">
-        <item name="android:paddingEnd">@dimen/padding_xsmall</item>
-        <item name="android:textColor">?attr/colorPrimary</item>
-        <item name="android:textSize">@dimen/text_size_xsmall</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
     <style name="AppTheme.Text.ListItem">
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/color_onSurface</item>
         <item name="android:textSize">@dimen/text_size_regular</item>
-    </style>
-
-    <style name="AppTheme.Text.ListItem.Tag">
-        <item name="android:textColor">?attr/colorSecondary</item>
     </style>
 
     <style name="AppTheme.TagChip" parent="Widget.Material3.Chip.Suggestion.Elevated">

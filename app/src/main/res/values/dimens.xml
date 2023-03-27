@@ -5,7 +5,6 @@
     <dimen name="text_size_small">14sp</dimen>
     <dimen name="text_size_regular">16sp</dimen>
     <dimen name="text_size_large">20sp</dimen>
-    <dimen name="text_size_xlarge">24sp</dimen>
 
     <dimen name="padding_xsmall">4dp</dimen>
     <dimen name="padding_small">8dp</dimen>
@@ -20,25 +19,14 @@
     <dimen name="margin_xlarge">32dp</dimen>
 
     <dimen name="clickable_area">40dp</dimen>
-    <dimen name="clickable_icon_padding">10dp</dimen>
-    <dimen name="clickable_icon_margin">10dp</dimen>
 
     <dimen name="button_height">48dp</dimen>
-    <dimen name="button_width">320dp</dimen>
 
     <dimen name="divider_size">1dp</dimen>
 
-    <dimen name="radius_small">4dp</dimen>
     <dimen name="radius_regular">8dp</dimen>
 
-    <dimen name="extended_fab_height">56dp</dimen>
-    <dimen name="extended_fab_corner_radius">32dp</dimen>
-    <dimen name="extended_fab_icon_size_small">16dp</dimen>
-    <dimen name="extended_fab_icon_size">24dp</dimen>
-
     <dimen name="app_icon_size">80dp</dimen>
-    <dimen name="app_icon_size_splash">160dp</dimen>
-    <dimen name="app_icon_offset">50dp</dimen>
 
     <dimen name="max_input_width">320dp</dimen>
 
@@ -49,13 +37,8 @@
     <dimen name="fab_offset_bottom">100dp</dimen>
 
     <dimen name="post_detail_icon_size">60dp</dimen>
-    <dimen name="post_detail_tags_suggested_min_height">80dp</dimen>
-
-    <dimen name="user_preferences_tag_list_min_height">100dp</dimen>
 
     <dimen name="drawable_board_width">200dp</dimen>
-
-    <dimen name="post_list_animation_logo_margin">28dp</dimen>
 
     <dimen name="quick_action_icon_size">16dp</dimen>
 
