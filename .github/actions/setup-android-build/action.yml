@@ -19,6 +19,4 @@ runs:
 
     - name: Optimize for Gradle build
       shell: bash
-      run: |
-        mkdir -p ~/.gradle
-        cp .github/ci-gradle.properties ~/.gradle/gradle.properties
+      run: ${{ github.action_path }}/setup-gradle-properties.sh
