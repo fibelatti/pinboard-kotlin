@@ -9,7 +9,7 @@ dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
             val agpVersion = "7.4.2"
-            val kotlinVersion = "1.8.10"
+            val kotlinVersion = "1.8.20"
             val coroutinesVersion = "1.6.4"
             val composeUiVersion = "1.4.0"
             val hiltVersion = "2.45"
