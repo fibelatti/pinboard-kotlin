@@ -99,7 +99,7 @@
         tools:text="@tools:sample/lorem/random"
         tools:visibility="visible" />
 
-    <com.fibelatti.pinboard.features.posts.presentation.TagChipGroup
+    <com.fibelatti.pinboard.features.posts.presentation.TagChipGroupLayout
         android:id="@+id/chipGroupTags"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

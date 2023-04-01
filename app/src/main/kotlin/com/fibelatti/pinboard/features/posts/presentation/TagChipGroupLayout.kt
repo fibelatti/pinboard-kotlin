@@ -11,7 +11,7 @@ import com.fibelatti.pinboard.databinding.ListItemChipBinding
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.google.android.material.chip.ChipGroup
 
-class TagChipGroup @JvmOverloads constructor(
+class TagChipGroupLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = com.google.android.material.R.attr.chipGroupStyle,
