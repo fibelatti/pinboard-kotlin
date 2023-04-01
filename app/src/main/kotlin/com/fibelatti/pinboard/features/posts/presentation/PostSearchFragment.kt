@@ -6,6 +6,11 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.sp
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnLayout
@@ -28,7 +33,6 @@ import com.fibelatti.pinboard.core.android.composable.AppTheme
 import com.fibelatti.pinboard.core.extension.blink
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.databinding.FragmentSearchPostBinding
-import com.fibelatti.pinboard.databinding.ListItemChipBinding
 import com.fibelatti.pinboard.features.BottomBarHost.Companion.bottomBarHost
 import com.fibelatti.pinboard.features.TitleLayoutHost.Companion.titleLayoutHost
 import com.fibelatti.pinboard.features.appstate.AddSearchTag
@@ -41,6 +45,8 @@ import com.fibelatti.pinboard.features.appstate.SetTerm
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagList
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
+import com.fibelatti.ui.components.ChipGroup
+import com.fibelatti.ui.components.SingleLineChipGroup
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
@@ -120,11 +126,9 @@ class PostSearchFragment @Inject constructor() : BaseFragment() {
 
                 val hasSelectedTags = content.searchParameters.tags.isNotEmpty()
                 binding.textViewSelectedTagsTitle.isVisible = hasSelectedTags
-                binding.layoutChipContainer.isVisible = hasSelectedTags
-                binding.chipGroupSelectedTags.removeAllViews()
-
-                for (tag in content.searchParameters.tags) {
-                    binding.chipGroupSelectedTags.addView(createTagChip(tag))
+                binding.chipGroupSelectedTags.isVisible = hasSelectedTags
+                binding.chipGroupSelectedTags.setContent {
+                    SelectedTags(content.searchParameters.tags)
                 }
 
                 if (content.shouldLoadTags) {
@@ -153,6 +157,32 @@ class PostSearchFragment @Inject constructor() : BaseFragment() {
                 binding.textViewQueryResultSize.text = getString(R.string.search_result_size, querySize)
             }
             .launchInAndFlowWith(viewLifecycleOwner)
+    }
+
+    @Composable
+    private fun SelectedTags(tags: List<Tag>) {
+        AppTheme {
+            SingleLineChipGroup(
+                items = tags.map {
+                    ChipGroup.Item(
+                        text = it.name,
+                        icon = painterResource(id = R.drawable.ic_close)
+                    )
+                },
+                onItemClick = {},
+                onItemIconClick = { item ->
+                    appStateViewModel.runAction(RemoveSearchTag(tags.first { it.name == item.text }))
+                },
+                itemColors = ChipGroup.colors(
+                    unselectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    unselectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                ),
+                itemTextStyle = MaterialTheme.typography.labelSmall.copy(
+                    fontSize = 12.sp,
+                    fontFamily = FontFamily.SansSerif,
+                )
+            )
+        }
     }
 
     private fun setupActivityViews() {
@@ -196,14 +226,5 @@ class PostSearchFragment @Inject constructor() : BaseFragment() {
         }
 
         return true
-    }
-
-    private fun createTagChip(value: Tag): View = ListItemChipBinding.inflate(
-        LayoutInflater.from(binding.chipGroupSelectedTags.context),
-        binding.chipGroupSelectedTags,
-        false
-    ).root.apply {
-        setValue(value)
-        setOnCloseIconClickListener { appStateViewModel.runAction(RemoveSearchTag(value)) }
     }
 }
