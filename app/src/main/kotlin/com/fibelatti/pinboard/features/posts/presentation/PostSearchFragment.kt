@@ -24,6 +24,7 @@ import com.fibelatti.core.extension.textAsString
 import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.android.composable.AppTheme
 import com.fibelatti.pinboard.core.extension.blink
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.databinding.FragmentSearchPostBinding
@@ -40,16 +41,12 @@ import com.fibelatti.pinboard.features.appstate.SetTerm
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagList
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
-import com.fibelatti.pinboard.features.user.domain.UserRepository
-import com.fibelatti.ui.theme.ExtendedTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class PostSearchFragment @Inject constructor(
-    private val userRepository: UserRepository,
-) : BaseFragment() {
+class PostSearchFragment @Inject constructor() : BaseFragment() {
 
     companion object {
 
@@ -90,7 +87,7 @@ class PostSearchFragment @Inject constructor(
         }
 
         binding.tagListComposeView.setContent {
-            ExtendedTheme(dynamicColor = userRepository.applyDynamicColors) {
+            AppTheme {
                 TagList(
                     tagsViewModel = tagsViewModel,
                     onTagClicked = { appStateViewModel.runAction(AddSearchTag(it)) },

@@ -6,8 +6,8 @@ import androidx.activity.viewModels
 import androidx.core.app.ShareCompat
 import androidx.core.view.WindowCompat
 import com.fibelatti.pinboard.core.android.base.BaseActivity
+import com.fibelatti.pinboard.core.android.composable.AppTheme
 import com.fibelatti.pinboard.features.MainActivity
-import com.fibelatti.ui.theme.ExtendedTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -17,7 +17,7 @@ class ShareReceiverActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            ExtendedTheme(dynamicColor = userRepository.applyDynamicColors) {
+            AppTheme {
                 ShareReceiverScreen(
                     onEdit = {
                         startActivity(MainActivity.Builder(this).build())

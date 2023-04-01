@@ -16,6 +16,7 @@ import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.android.composable.AppTheme
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.features.BottomBarHost.Companion.bottomBarHost
 import com.fibelatti.pinboard.features.TitleLayoutHost.Companion.titleLayoutHost
@@ -23,16 +24,12 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.RefreshTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import com.fibelatti.pinboard.features.user.domain.UserRepository
-import com.fibelatti.ui.theme.ExtendedTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class TagsFragment @Inject constructor(
-    private val userRepository: UserRepository,
-) : BaseFragment() {
+class TagsFragment @Inject constructor() : BaseFragment() {
 
     companion object {
 
@@ -59,7 +56,7 @@ class TagsFragment @Inject constructor(
     private fun setupLayout() = with(requireView() as ComposeView) {
         setBackgroundColor(context.getAttributeColor(android.R.attr.colorBackground))
         setContent {
-            ExtendedTheme(dynamicColor = userRepository.applyDynamicColors) {
+            AppTheme {
                 TagList(
                     tagsViewModel = tagsViewModel,
                     onTagClicked = { appStateViewModel.runAction(PostsForTag(it)) },
