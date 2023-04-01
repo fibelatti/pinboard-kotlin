@@ -1,8 +1,6 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import android.view.LayoutInflater
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.text.font.FontFamily
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import com.fibelatti.core.android.recyclerview.BaseListAdapter
@@ -39,13 +37,6 @@ class PopularPostsAdapter @Inject constructor() : BaseListAdapter<Post, ListItem
                     MultilineChipGroup(
                         items = item.tags.map { tag -> ChipGroup.Item(text = tag.name) },
                         onItemClick = {},
-                        itemColors = ChipGroup.colors(
-                            unselectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            unselectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        ),
-                        itemTextStyle = MaterialTheme.typography.labelMedium.copy(
-                            fontFamily = FontFamily.SansSerif,
-                        )
                     )
                 }
             }

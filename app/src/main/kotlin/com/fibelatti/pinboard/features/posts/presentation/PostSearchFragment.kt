@@ -6,11 +6,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.unit.sp
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnLayout
@@ -173,14 +170,6 @@ class PostSearchFragment @Inject constructor() : BaseFragment() {
                 onItemIconClick = { item ->
                     appStateViewModel.runAction(RemoveSearchTag(tags.first { it.name == item.text }))
                 },
-                itemColors = ChipGroup.colors(
-                    unselectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    unselectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                ),
-                itemTextStyle = MaterialTheme.typography.labelSmall.copy(
-                    fontSize = 12.sp,
-                    fontFamily = FontFamily.SansSerif,
-                )
             )
         }
     }

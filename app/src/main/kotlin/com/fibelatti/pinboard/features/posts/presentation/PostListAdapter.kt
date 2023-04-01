@@ -2,8 +2,6 @@ package com.fibelatti.pinboard.features.posts.presentation
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.text.font.FontFamily
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
@@ -81,13 +79,6 @@ class PostListAdapter @Inject constructor(
                         onItemClick = { chipGroupItem ->
                             onTagClicked?.invoke(item.tags.first { it.name == chipGroupItem.text })
                         },
-                        itemColors = ChipGroup.colors(
-                            unselectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            unselectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        ),
-                        itemTextStyle = MaterialTheme.typography.labelMedium.copy(
-                            fontFamily = FontFamily.SansSerif,
-                        )
                     )
                 }
             }
