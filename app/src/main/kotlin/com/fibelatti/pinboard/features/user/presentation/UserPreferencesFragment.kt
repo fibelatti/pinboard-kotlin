@@ -23,6 +23,7 @@ import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.android.composable.AppTheme
 import com.fibelatti.pinboard.core.android.customview.SettingToggle
 import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
@@ -33,6 +34,8 @@ import com.fibelatti.pinboard.features.TitleLayoutHost.Companion.titleLayoutHost
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
+import com.fibelatti.pinboard.features.tags.presentation.TagManager
+import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
 import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -52,6 +55,7 @@ class UserPreferencesFragment @Inject constructor(
     }
 
     private val userPreferencesViewModel: UserPreferencesViewModel by viewModels()
+    private val tagManagerViewModel: TagManagerViewModel by viewModels()
 
     private val binding by viewBinding(FragmentUserPreferencesBinding::bind)
 
@@ -99,11 +103,11 @@ class UserPreferencesFragment @Inject constructor(
 
         binding.toggleDynamicColors.isVisible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
-        binding.layoutAddTags.setup(
-            onTextChanged = userPreferencesViewModel::searchForTag,
-            onTagAdded = userPreferencesViewModel::saveDefaultTags,
-            onTagRemoved = userPreferencesViewModel::saveDefaultTags,
-        )
+        binding.composeViewTagManager.setContent {
+            AppTheme {
+                TagManager(tagManagerViewModel = tagManagerViewModel)
+            }
+        }
     }
 
     private fun handleKeyboardVisibility() {
@@ -159,7 +163,7 @@ class UserPreferencesFragment @Inject constructor(
                     userPreferencesViewModel::saveDefaultReadLater
                 )
 
-                binding.layoutAddTags.showTags(it.defaultTags)
+                tagManagerViewModel.setTags(it.defaultTags)
 
                 userPreferencesViewModel.searchForTag(tag = "", currentTags = it.defaultTags)
             }
@@ -176,7 +180,14 @@ class UserPreferencesFragment @Inject constructor(
             .launchInAndFlowWith(viewLifecycleOwner)
 
         userPreferencesViewModel.suggestedTags
-            .onEach { binding.layoutAddTags.showSuggestedValuesAsTags(it, showRemoveIcon = false) }
+            .onEach(tagManagerViewModel::setSuggestedTags)
+            .launchInAndFlowWith(viewLifecycleOwner)
+
+        tagManagerViewModel.state
+            .onEach {
+                userPreferencesViewModel.searchForTag(it.currentQuery, it.tags)
+                userPreferencesViewModel.saveDefaultTags(it.tags)
+            }
             .launchInAndFlowWith(viewLifecycleOwner)
     }
 

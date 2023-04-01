@@ -12,8 +12,7 @@
         android:clipChildren="false"
         android:clipToPadding="false"
         android:orientation="vertical"
-        android:paddingStart="@dimen/padding_regular"
-        android:paddingEnd="@dimen/padding_regular"
+        android:paddingHorizontal="@dimen/padding_regular"
         android:paddingBottom="@dimen/padding_xlarge">
 
         <TextView
@@ -343,17 +342,15 @@
             android:layout_marginTop="@dimen/margin_xsmall"
             android:text="@string/user_preferences_default_tags_description"
             android:textIsSelectable="false"
-            app:layout_constraintBottom_toTopOf="@id/layoutAddTags"
+            app:layout_constraintBottom_toTopOf="@id/composeViewTagManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textViewDefaultTagsTitle" />
 
-        <com.fibelatti.pinboard.core.android.customview.AddTagsLayout
-            android:id="@+id/layoutAddTags"
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/composeViewTagManager"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:clipChildren="false"
-            android:clipToPadding="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

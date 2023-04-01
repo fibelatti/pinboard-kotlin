@@ -156,6 +156,7 @@ dependencies {
     implementation(libs.fragment.ktx)
     implementation(libs.material)
     implementation(libs.constraint.layout)
+    implementation(libs.constraint.layout.compose)
     implementation(libs.swipe.refresh.layout)
 
     implementation(libs.lifecycle.java8)

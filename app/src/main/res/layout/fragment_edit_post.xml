@@ -120,8 +120,8 @@
                 app:layout_constraintTop_toBottomOf="@id/textInputUrlDescription"
                 app:settingTitle="@string/posts_add_read_later" />
 
-            <com.fibelatti.pinboard.core.android.customview.AddTagsLayout
-                android:id="@+id/layoutAddTags"
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/composeViewTagManager"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"

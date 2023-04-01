@@ -25,6 +25,7 @@ import com.fibelatti.core.extension.showError
 import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.android.composable.AppTheme
 import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.show
@@ -37,6 +38,8 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.tags.presentation.TagManager
+import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
@@ -57,6 +60,7 @@ class EditPostFragment @Inject constructor(
     private val appStateViewModel: AppStateViewModel by activityViewModels()
     private val editPostViewModel: EditPostViewModel by viewModels()
     private val postDetailViewModel: PostDetailViewModel by viewModels()
+    private val tagManagerViewModel: TagManagerViewModel by viewModels()
 
     private val binding by viewBinding(FragmentEditPostBinding::bind)
 
@@ -180,6 +184,13 @@ class EditPostFragment @Inject constructor(
         setupAppStateViewModel()
         setupEditPostViewModel()
         setupPostDetailViewModel()
+
+        tagManagerViewModel.state
+            .onEach {
+                editPostViewModel.searchForTag(it.currentQuery, it.tags)
+                editPostViewModel.updatePost { post -> post.copy(tags = it.tags) }
+            }
+            .launchInAndFlowWith(viewLifecycleOwner)
     }
 
     private fun setupAppStateViewModel() {
@@ -212,7 +223,7 @@ class EditPostFragment @Inject constructor(
             }
             .launchInAndFlowWith(viewLifecycleOwner)
         editPostViewModel.suggestedTags
-            .onEach { binding.layoutAddTags.showSuggestedValuesAsTags(it, showRemoveIcon = false) }
+            .onEach(tagManagerViewModel::setSuggestedTags)
             .launchInAndFlowWith(viewLifecycleOwner)
         editPostViewModel.saved
             .onEach { binding.root.showBanner(getString(R.string.posts_saved_feedback)) }
@@ -302,7 +313,7 @@ class EditPostFragment @Inject constructor(
                 togglePrivate.isActive = private
                 toggleReadLater.isActive = readLater
 
-                tags?.let(layoutAddTags::showTags)
+                tags?.let(tagManagerViewModel::setTags)
             }
         }
 
@@ -339,11 +350,11 @@ class EditPostFragment @Inject constructor(
         binding.toggleReadLater.setOnChangedListener { newValue ->
             editPostViewModel.updatePost { post -> post.copy(readLater = newValue) }
         }
-        binding.layoutAddTags.setup(
-            onTextChanged = editPostViewModel::searchForTag,
-            onTagAdded = { currentTags -> editPostViewModel.updatePost { post -> post.copy(tags = currentTags) } },
-            onTagRemoved = { currentTags -> editPostViewModel.updatePost { post -> post.copy(tags = currentTags) } },
-        )
+        binding.composeViewTagManager.setContent {
+            AppTheme {
+                TagManager(tagManagerViewModel = tagManagerViewModel)
+            }
+        }
     }
 
     private fun handleMenuClick(item: MenuItem?, post: Post): Boolean {

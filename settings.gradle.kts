@@ -38,6 +38,7 @@ dependencyResolutionManagement {
             library("fragment-ktx", "androidx.fragment:fragment-ktx:1.5.6")
             library("material", "com.google.android.material:material:1.8.0")
             library("constraint-layout", "androidx.constraintlayout:constraintlayout:2.1.4")
+            library("constraint-layout-compose", "androidx.constraintlayout:constraintlayout-compose:1.0.1")
             library("swipe-refresh-layout", "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
             library("lifecycle-java8", "androidx.lifecycle:lifecycle-common-java8:$lifecycleVersion")
             library("lifecycle-runtime-ktx", "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
