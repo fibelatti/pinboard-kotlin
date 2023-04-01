@@ -25,7 +25,7 @@
         android:layout_marginTop="@dimen/margin_small"
         android:layout_marginBottom="@dimen/margin_small" />
 
-    <com.fibelatti.pinboard.features.posts.presentation.TagChipGroupLayout
+    <androidx.compose.ui.platform.ComposeView
         android:id="@+id/chipGroupTags"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

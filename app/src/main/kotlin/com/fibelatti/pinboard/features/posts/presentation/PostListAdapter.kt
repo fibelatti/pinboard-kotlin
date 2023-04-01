@@ -1,17 +1,23 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.text.font.FontFamily
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import com.fibelatti.core.android.recyclerview.BaseAdapter
 import com.fibelatti.core.android.recyclerview.ViewHolder
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.composable.AppTheme
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.databinding.ListItemPostBinding
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import com.fibelatti.ui.components.ChipGroup
+import com.fibelatti.ui.components.MultilineChipGroup
 import javax.inject.Inject
 
 class PostListAdapter @Inject constructor(
@@ -23,6 +29,7 @@ class PostListAdapter @Inject constructor(
 ) {
 
     var showDescription: Boolean = false
+        @SuppressLint("NotifyDataSetChanged")
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -66,22 +73,30 @@ class PostListAdapter @Inject constructor(
         if (item.tags.isNullOrEmpty()) {
             binding.chipGroupTags.isGone = true
         } else {
-            binding.layoutTags(item.tags)
+            binding.chipGroupTags.isVisible = true
+            binding.chipGroupTags.setContent {
+                AppTheme {
+                    MultilineChipGroup(
+                        items = item.tags.map { tag -> ChipGroup.Item(text = tag.name) },
+                        onItemClick = { chipGroupItem ->
+                            onTagClicked?.invoke(item.tags.first { it.name == chipGroupItem.text })
+                        },
+                        itemColors = ChipGroup.colors(
+                            unselectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            unselectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        ),
+                        itemTextStyle = MaterialTheme.typography.labelMedium.copy(
+                            fontFamily = FontFamily.SansSerif,
+                        )
+                    )
+                }
+            }
         }
 
         binding.root.setOnClickListener { onItemClicked?.invoke(item) }
         binding.root.setOnLongClickListener {
             onItemLongClicked?.invoke(item)
             true
-        }
-        binding.chipGroupTags.onTagChipClicked = onTagClicked
-    }
-
-    private fun ListItemPostBinding.layoutTags(tags: List<Tag>) {
-        chipGroupTags.isVisible = true
-        chipGroupTags.removeAllViews()
-        for (tag in tags) {
-            chipGroupTags.addValue(tag.name, showRemoveIcon = false)
         }
     }
 }

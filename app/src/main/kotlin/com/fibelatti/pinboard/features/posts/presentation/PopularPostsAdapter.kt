@@ -1,13 +1,17 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import android.view.LayoutInflater
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.text.font.FontFamily
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import com.fibelatti.core.android.recyclerview.BaseListAdapter
 import com.fibelatti.core.android.recyclerview.ViewHolder
+import com.fibelatti.pinboard.core.android.composable.AppTheme
 import com.fibelatti.pinboard.databinding.ListItemPopularPostBinding
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import com.fibelatti.ui.components.ChipGroup
+import com.fibelatti.ui.components.MultilineChipGroup
 import javax.inject.Inject
 
 class PopularPostsAdapter @Inject constructor() : BaseListAdapter<Post, ListItemPopularPostBinding>(
@@ -29,21 +33,28 @@ class PopularPostsAdapter @Inject constructor() : BaseListAdapter<Post, ListItem
         if (item.tags.isNullOrEmpty()) {
             binding.chipGroupTags.isGone = true
         } else {
-            binding.layoutTags(item.tags)
+            binding.chipGroupTags.isVisible = true
+            binding.chipGroupTags.setContent {
+                AppTheme {
+                    MultilineChipGroup(
+                        items = item.tags.map { tag -> ChipGroup.Item(text = tag.name) },
+                        onItemClick = {},
+                        itemColors = ChipGroup.colors(
+                            unselectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            unselectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        ),
+                        itemTextStyle = MaterialTheme.typography.labelMedium.copy(
+                            fontFamily = FontFamily.SansSerif,
+                        )
+                    )
+                }
+            }
         }
 
         binding.root.setOnClickListener { onItemClicked?.invoke(item) }
         binding.root.setOnLongClickListener {
             onItemLongClicked?.invoke(item)
             true
-        }
-    }
-
-    private fun ListItemPopularPostBinding.layoutTags(tags: List<Tag>) {
-        chipGroupTags.isVisible = true
-        chipGroupTags.removeAllViews()
-        for (tag in tags) {
-            chipGroupTags.addValue(tag.name, showRemoveIcon = false)
         }
     }
 }
