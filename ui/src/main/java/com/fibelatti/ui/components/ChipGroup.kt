@@ -146,16 +146,17 @@ fun SingleLineChipGroup(
     itemColors: ChipGroup.Colors = ChipGroup.colors(),
     itemTextStyle: TextStyle = MaterialTheme.typography.labelMedium,
     spacing: Dp = ChipGroup.Spacing,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     LazyRow(
         modifier = modifier,
-        contentPadding = PaddingValues(end = spacing),
+        contentPadding = contentPadding,
+        horizontalArrangement = Arrangement.spacedBy(spacing)
     ) {
         items(items.size) { index ->
             Chip(
                 item = items[index],
                 onClick = onItemClick,
-                modifier = Modifier.padding(start = if (index > 0) spacing else 0.dp),
                 onIconClick = onItemIconClick,
                 shape = itemShape,
                 tonalElevation = itemTonalElevation,
