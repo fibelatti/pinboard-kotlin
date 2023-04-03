@@ -128,7 +128,7 @@ fun TagManager(
             textStyle = ExtendedTheme.typography.detail,
             label = { Text(text = stringResource(id = R.string.posts_add_tags)) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-            keyboardActions = KeyboardActions(onSend = { keyboardAction() }),
+            keyboardActions = KeyboardActions { keyboardAction() },
             singleLine = true,
             maxLines = 1,
         )

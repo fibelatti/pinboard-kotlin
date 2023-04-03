@@ -60,6 +60,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun TagList(
+    modifier: Modifier = Modifier,
     tagsViewModel: TagsViewModel = hiltViewModel(),
     onTagClicked: (Tag) -> Unit = {},
     onTagLongClicked: (Tag) -> Unit = {},
@@ -70,6 +71,7 @@ fun TagList(
     TagList(
         items = state.filteredTags,
         isLoading = state.isLoading,
+        modifier = modifier,
         onSortOptionClicked = { sorting ->
             tagsViewModel.sortTags(
                 sorting = when (sorting) {
@@ -82,7 +84,6 @@ fun TagList(
             )
         },
         searchQuery = state.currentQuery,
-        onSearchInputFocusChanged = tagsViewModel::searchFocusChanged,
         onSearchInputChanged = tagsViewModel::searchTags,
         onTagClicked = onTagClicked,
         onTagLongClicked = onTagLongClicked,
@@ -94,6 +95,7 @@ fun TagList(
 fun TagList(
     items: List<Tag>,
     isLoading: Boolean,
+    modifier: Modifier = Modifier,
     onSortOptionClicked: (TagList.Sorting) -> Unit = {},
     searchQuery: String = "",
     onSearchInputChanged: (newValue: String) -> Unit = {},
@@ -103,7 +105,7 @@ fun TagList(
     onPullToRefresh: () -> Unit = {},
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp),
     ) {
@@ -112,7 +114,10 @@ fun TagList(
             enter = fadeIn() + expandVertically(),
             exit = fadeOut() + shrinkVertically(),
         ) {
-            LinearProgressIndicator(color = MaterialTheme.colorScheme.primary)
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.primary,
+            )
         }
 
         if (items.isEmpty() && searchQuery.isBlank()) {
@@ -201,14 +206,14 @@ private fun TagList(
                 .onFocusChanged { onSearchInputFocusChanged(it.hasFocus) },
             label = { Text(text = stringResource(id = R.string.tag_filter_hint)) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+            keyboardActions = KeyboardActions { focusManager.clearFocus() },
             singleLine = true,
             maxLines = 1,
         )
     }
 
     if (!showFilter) {
-        focusManager.clearFocus()
+        onSearchInputFocusChanged(false)
         currentQuery = ""
     }
 

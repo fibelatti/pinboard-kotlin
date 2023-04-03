@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.tags.presentation
 
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import com.fibelatti.core.functional.getOrThrow
 import com.fibelatti.core.functional.onFailure
@@ -66,10 +67,6 @@ class TagsViewModel @Inject constructor(
         }
     }
 
-    fun searchFocusChanged(focused: Boolean) {
-        _state.update { currentState -> currentState.copy(isSearching = focused) }
-    }
-
     fun searchTags(query: String) {
         _state.update { currentState -> currentState.copy(currentQuery = query) }
     }
@@ -92,12 +89,12 @@ class TagsViewModel @Inject constructor(
         SEARCH
     }
 
+    @Stable
     data class State(
         val allTags: List<Tag> = emptyList(),
         val currentSorting: TagSorting = TagSorting.AtoZ,
         val currentQuery: String = "",
         val isLoading: Boolean = true,
-        val isSearching: Boolean = false,
     ) {
 
         val filteredTags: List<Tag>

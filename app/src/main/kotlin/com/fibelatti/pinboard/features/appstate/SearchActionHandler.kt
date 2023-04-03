@@ -12,7 +12,7 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
             is SetSearchTags -> setSearchTags(action, currentContent)
             is AddSearchTag -> addSearchTag(action, currentContent)
             is RemoveSearchTag -> removeSearchTag(action, currentContent)
-            is Search -> search(action, currentContent)
+            is Search -> search(currentContent)
             is ClearSearch -> clearSearch(currentContent)
         }
     }
@@ -71,12 +71,12 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
         }
     }
 
-    private fun search(action: Search, currentContent: Content): Content {
+    private fun search(currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<SearchContent>(currentContent) {
             it.previousContent.copy(
                 category = All,
                 sortType = NewestFirst,
-                searchParameters = it.searchParameters.copy(term = action.term),
+                searchParameters = it.searchParameters.copy(term = it.searchParameters.term),
                 shouldLoad = ShouldLoadFirstPage,
             )
         }
