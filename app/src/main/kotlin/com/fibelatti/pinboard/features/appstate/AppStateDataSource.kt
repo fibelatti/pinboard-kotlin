@@ -5,9 +5,9 @@ import com.fibelatti.pinboard.core.di.AppDispatchers
 import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
@@ -24,7 +24,7 @@ class AppStateDataSource @Inject constructor(
 
     private val userActions: MutableSharedFlow<suspend (Content) -> Content> = MutableSharedFlow()
 
-    override val content: Flow<Content> = userActions
+    override val content: StateFlow<Content> = userActions
         .scan(getInitialContent()) { content, actions -> actions(content) }
         .stateIn(
             scope = scope,
