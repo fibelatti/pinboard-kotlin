@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
@@ -58,6 +59,7 @@ class EditPostViewModel @Inject constructor(
     private val _postState: StateFlow<IndexedValue<Post>?> = interactions
         .scan(initial = null) { post: Post?, interaction -> interaction(post) }
         .filterNotNull() // interactions never return null but the scan return type is inferred by the initial value
+        .distinctUntilChanged() // ignore interactions that result in no changes
         .withIndex() // add an index to easily figure out if the value has changed
         .stateIn(
             scope = scope,

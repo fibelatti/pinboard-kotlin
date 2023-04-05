@@ -8,6 +8,7 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -35,7 +36,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         val mockUnauthorizedInterceptor = mockk<UnauthorizedInterceptor> {
             every { unauthorized } returns flowOf(Unit)
         }
-        every { mockAppStateRepository.content } returns flowOf(mockk())
+        every { mockAppStateRepository.content } returns MutableStateFlow(mockk())
 
         AppStateViewModel(mockAppStateRepository, mockUnauthorizedInterceptor)
 
@@ -49,7 +50,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         // GIVEN
         val mockContent = mockk<Content>()
 
-        every { mockAppStateRepository.content } returns flowOf(mockContent)
+        every { mockAppStateRepository.content } returns MutableStateFlow(mockContent)
 
         // THEN
         assertThat(appStateViewModel.content.first()).isEqualTo(mockContent)
@@ -84,7 +85,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         @MethodSource("testCases")
         fun `Only post list content should be emitted to postListContent`(content: Content) = runTest {
             // GIVEN
-            every { mockAppStateRepository.content } returns flowOf(content)
+            every { mockAppStateRepository.content } returns MutableStateFlow(content)
 
             // THEN
             if (content is PostListContent) {
@@ -98,7 +99,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         @MethodSource("testCases")
         fun `Only post detail content should be emitted to postDetailContent`(content: Content) = runTest {
             // GIVEN
-            every { mockAppStateRepository.content } returns flowOf(content)
+            every { mockAppStateRepository.content } returns MutableStateFlow(content)
 
             // THEN
             if (content is PostDetailContent) {
@@ -112,7 +113,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         @MethodSource("testCases")
         fun `Only add post content should be emitted to addPostContent`(content: Content) = runTest {
             // GIVEN
-            every { mockAppStateRepository.content } returns flowOf(content)
+            every { mockAppStateRepository.content } returns MutableStateFlow(content)
 
             // THEN
             if (content is AddPostContent) {
@@ -126,7 +127,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         @MethodSource("testCases")
         fun `Only edit post content should be emitted to editPostContent`(content: Content) = runTest {
             // GIVEN
-            every { mockAppStateRepository.content } returns flowOf(content)
+            every { mockAppStateRepository.content } returns MutableStateFlow(content)
 
             // THEN
             if (content is EditPostContent) {
@@ -140,7 +141,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         @MethodSource("testCases")
         fun `Only search content should be emitted to searchContent`(content: Content) = runTest {
             // GIVEN
-            every { mockAppStateRepository.content } returns flowOf(content)
+            every { mockAppStateRepository.content } returns MutableStateFlow(content)
 
             // THEN
             if (content is SearchContent) {
@@ -154,7 +155,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         @MethodSource("testCases")
         fun `Only tag list content should be emitted to tagListContent`(content: Content) = runTest {
             // GIVEN
-            every { mockAppStateRepository.content } returns flowOf(content)
+            every { mockAppStateRepository.content } returns MutableStateFlow(content)
 
             // THEN
             if (content is TagListContent) {
@@ -168,7 +169,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         @MethodSource("testCases")
         fun `Only note list content should be emitted to noteListContent`(content: Content) = runTest {
             // GIVEN
-            every { mockAppStateRepository.content } returns flowOf(content)
+            every { mockAppStateRepository.content } returns MutableStateFlow(content)
 
             // THEN
             if (content is NoteListContent) {
@@ -182,7 +183,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         @MethodSource("testCases")
         fun `Only note detail content should be emitted to noteDetailContent`(content: Content) = runTest {
             // GIVEN
-            every { mockAppStateRepository.content } returns flowOf(content)
+            every { mockAppStateRepository.content } returns MutableStateFlow(content)
 
             // THEN
             if (content is NoteDetailContent) {
@@ -196,7 +197,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         @MethodSource("testCases")
         fun `Only popular posts content should be emitted to popularPostsContent`(content: Content) = runTest {
             // GIVEN
-            every { mockAppStateRepository.content } returns flowOf(content)
+            every { mockAppStateRepository.content } returns MutableStateFlow(content)
 
             // THEN
             if (content is PopularPostsContent) {
@@ -212,7 +213,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
             content: Content,
         ) = runTest {
             // GIVEN
-            every { mockAppStateRepository.content } returns flowOf(content)
+            every { mockAppStateRepository.content } returns MutableStateFlow(content)
 
             // THEN
             if (content is PopularPostDetailContent) {
@@ -226,7 +227,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         @MethodSource("testCases")
         fun `Only user preferences content should be emitted to userPreferencesContent`(content: Content) = runTest {
             // GIVEN
-            every { mockAppStateRepository.content } returns flowOf(content)
+            every { mockAppStateRepository.content } returns MutableStateFlow(content)
 
             // THEN
             if (content is UserPreferencesContent) {

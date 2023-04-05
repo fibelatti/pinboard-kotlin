@@ -63,7 +63,7 @@ data class SetTerm(val term: String) : SearchAction()
 data class SetSearchTags(val tags: List<Tag>) : SearchAction()
 data class AddSearchTag(val tag: Tag) : SearchAction()
 data class RemoveSearchTag(val tag: Tag) : SearchAction()
-data class Search(val term: String) : SearchAction()
+object Search : SearchAction()
 object ClearSearch : SearchAction()
 // endregion
 

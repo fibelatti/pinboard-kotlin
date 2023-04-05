@@ -36,6 +36,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.fibelatti.ui.components.ToggleButtonGroup.SquareCorner
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -57,7 +58,6 @@ fun ColumnToggleButtonGroup(
 ) {
     Column(modifier = modifier) {
         var currentSelectedIndex by rememberSaveable { mutableStateOf(selectedIndex) }
-        val squareCorner = CornerSize(0.dp)
         val mode = when {
             items.all { it.text != "" && it.icon == EmptyPainter } -> ToggleButtonGroup.Mode.TextOnly
             items.all { it.text == "" && it.icon != EmptyPainter } -> ToggleButtonGroup.Mode.IconOnly
@@ -75,9 +75,9 @@ fun ColumnToggleButtonGroup(
                     .defaultMinSize(minHeight = buttonHeight)
                     .offset(y = borderSize * -index),
                 buttonShape = when (index) {
-                    0 -> shape.copy(bottomStart = squareCorner, bottomEnd = squareCorner)
-                    items.size - 1 -> shape.copy(topStart = squareCorner, topEnd = squareCorner)
-                    else -> shape.copy(all = squareCorner)
+                    0 -> shape.copy(bottomStart = SquareCorner, bottomEnd = SquareCorner)
+                    items.size - 1 -> shape.copy(topStart = SquareCorner, topEnd = SquareCorner)
+                    else -> shape.copy(all = SquareCorner)
                 },
                 border = border,
                 containerColor = if (isButtonSelected) colors.selectedButtonColor else colors.unselectedButtonColor,
@@ -177,7 +177,7 @@ private fun ToggleButton(
         colors = ButtonDefaults.outlinedButtonColors(containerColor = containerColor),
         elevation = elevation,
         border = border,
-        contentPadding = PaddingValues(),
+        contentPadding = ToggleButtonGroup.ButtonPaddingValues,
     ) {
         ButtonContent(
             item = item,
@@ -307,8 +307,10 @@ private fun TextContent(
 
 object ToggleButtonGroup {
 
-    internal val ButtonHeight: Dp = 48.dp
     internal val BorderSize: Dp = 1.dp
+    internal val ButtonHeight: Dp = 48.dp
+    internal val ButtonPaddingValues = PaddingValues()
+    internal val SquareCorner = CornerSize(0.dp)
 
     @Immutable
     data class Item(

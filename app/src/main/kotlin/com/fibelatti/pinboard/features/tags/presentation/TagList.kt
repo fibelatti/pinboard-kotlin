@@ -60,6 +60,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun TagList(
+    modifier: Modifier = Modifier,
     tagsViewModel: TagsViewModel = hiltViewModel(),
     onTagClicked: (Tag) -> Unit = {},
     onTagLongClicked: (Tag) -> Unit = {},
@@ -70,6 +71,7 @@ fun TagList(
     TagList(
         items = state.filteredTags,
         isLoading = state.isLoading,
+        modifier = modifier,
         onSortOptionClicked = { sorting ->
             tagsViewModel.sortTags(
                 sorting = when (sorting) {
@@ -81,8 +83,7 @@ fun TagList(
                 searchQuery = "",
             )
         },
-        searchQuery = state.currentQuery,
-        onSearchInputFocusChanged = tagsViewModel::searchFocusChanged,
+        searchInput = state.currentQuery,
         onSearchInputChanged = tagsViewModel::searchTags,
         onTagClicked = onTagClicked,
         onTagLongClicked = onTagLongClicked,
@@ -94,8 +95,9 @@ fun TagList(
 fun TagList(
     items: List<Tag>,
     isLoading: Boolean,
+    modifier: Modifier = Modifier,
     onSortOptionClicked: (TagList.Sorting) -> Unit = {},
-    searchQuery: String = "",
+    searchInput: String = "",
     onSearchInputChanged: (newValue: String) -> Unit = {},
     onSearchInputFocusChanged: (hasFocus: Boolean) -> Unit = {},
     onTagClicked: (Tag) -> Unit = {},
@@ -103,7 +105,7 @@ fun TagList(
     onPullToRefresh: () -> Unit = {},
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp),
     ) {
@@ -112,10 +114,13 @@ fun TagList(
             enter = fadeIn() + expandVertically(),
             exit = fadeOut() + shrinkVertically(),
         ) {
-            LinearProgressIndicator(color = MaterialTheme.colorScheme.primary)
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.primary,
+            )
         }
 
-        if (items.isEmpty() && searchQuery.isBlank()) {
+        if (items.isEmpty() && searchInput.isBlank()) {
             AndroidView(
                 factory = { context: Context ->
                     EmptyListLayout(context).apply {
@@ -129,6 +134,7 @@ fun TagList(
             TagList(
                 items = items,
                 onSortOptionClicked = onSortOptionClicked,
+                searchInput = searchInput,
                 onSearchInputChanged = onSearchInputChanged,
                 onSearchInputFocusChanged = onSearchInputFocusChanged,
                 onTagClicked = onTagClicked,
@@ -147,6 +153,7 @@ fun TagList(
 private fun TagList(
     items: List<Tag>,
     onSortOptionClicked: (TagList.Sorting) -> Unit,
+    searchInput: String,
     onSearchInputChanged: (newValue: String) -> Unit,
     onSearchInputFocusChanged: (hasFocus: Boolean) -> Unit,
     onTagClicked: (Tag) -> Unit,
@@ -171,6 +178,11 @@ private fun TagList(
 
             onSortOptionClicked(sorting)
 
+            if (!showFilter) {
+                onSearchInputChanged("")
+                onSearchInputFocusChanged(false)
+            }
+
             scope.launch {
                 listState.scrollToItem(index = 0)
             }
@@ -181,7 +193,6 @@ private fun TagList(
         textStyle = ExtendedTheme.typography.caveat,
     )
 
-    var currentQuery by rememberSaveable { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
 
     AnimatedVisibility(
@@ -190,26 +201,18 @@ private fun TagList(
         exit = fadeOut() + shrinkVertically(),
     ) {
         OutlinedTextField(
-            value = currentQuery,
-            onValueChange = { newValue ->
-                currentQuery = newValue
-                onSearchInputChanged(newValue)
-            },
+            value = searchInput,
+            onValueChange = onSearchInputChanged,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
                 .onFocusChanged { onSearchInputFocusChanged(it.hasFocus) },
             label = { Text(text = stringResource(id = R.string.tag_filter_hint)) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+            keyboardActions = KeyboardActions { focusManager.clearFocus() },
             singleLine = true,
             maxLines = 1,
         )
-    }
-
-    if (!showFilter) {
-        focusManager.clearFocus()
-        currentQuery = ""
     }
 
     var refreshing by rememberSaveable { mutableStateOf(false) }

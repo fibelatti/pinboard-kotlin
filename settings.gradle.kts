@@ -11,7 +11,7 @@ dependencyResolutionManagement {
             val agpVersion = "7.4.2"
             val kotlinVersion = "1.8.10"
             val coroutinesVersion = "1.6.4"
-            val composeUiVersion = "1.4.0"
+            val composeUiVersion = "1.4.1"
             val hiltVersion = "2.45"
             val lifecycleVersion = "2.6.1"
             val roomVersion = "2.5.1"
@@ -33,7 +33,7 @@ dependencyResolutionManagement {
             library("coroutines-android", "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
 
             library("appcompat", "androidx.appcompat:appcompat:1.6.1")
-            library("core-ktx", "androidx.core:core-ktx:1.9.0")
+            library("core-ktx", "androidx.core:core-ktx:1.10.0")
             library("activity-ktx", "androidx.activity:activity-ktx:1.7.0")
             library("fragment-ktx", "androidx.fragment:fragment-ktx:1.5.6")
             library("material", "com.google.android.material:material:1.8.0")
@@ -52,7 +52,7 @@ dependencyResolutionManagement {
             library("viewbinding", "androidx.databinding:viewbinding:$agpVersion")
 
             library("compose-runtime", "androidx.compose.runtime:runtime:1.4.1")
-            library("compose-material", "androidx.compose.material:material:1.4.0")
+            library("compose-material", "androidx.compose.material:material:1.4.1")
             library("compose-material3", "androidx.compose.material3:material3:1.0.1")
             library("compose-ui", "androidx.compose.ui:ui:$composeUiVersion")
             library("compose-ui-tooling", "androidx.compose.ui:ui-tooling:$composeUiVersion")

@@ -11,7 +11,6 @@ import com.fibelatti.pinboard.features.tags.domain.TagsRepository
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
 import com.fibelatti.pinboard.isEmpty
-import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coJustRun
@@ -87,7 +86,6 @@ internal class TagsViewModelTest : BaseViewModelTest() {
                 currentSorting = TagSorting.AtoZ,
                 currentQuery = "",
                 isLoading = false,
-                isSearching = false,
             )
         )
     }
@@ -106,7 +104,6 @@ internal class TagsViewModelTest : BaseViewModelTest() {
                 currentSorting = TagSorting.MoreFirst,
                 currentQuery = "",
                 isLoading = false,
-                isSearching = false,
             )
         )
     }
@@ -125,20 +122,7 @@ internal class TagsViewModelTest : BaseViewModelTest() {
                 currentSorting = TagSorting.LessFirst,
                 currentQuery = "",
                 isLoading = false,
-                isSearching = false,
             )
-        )
-    }
-
-    @Test
-    fun `WHEN searchFocusChanged is called THEN  a new state is emitted`() = runTest {
-        val currentState = tagsViewModel.state.first()
-        val randomBoolean = randomBoolean()
-
-        tagsViewModel.searchFocusChanged(randomBoolean)
-
-        assertThat(tagsViewModel.state.first()).isEqualTo(
-            currentState.copy(isSearching = randomBoolean)
         )
     }
 
