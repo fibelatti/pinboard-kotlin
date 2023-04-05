@@ -30,7 +30,10 @@ class TagManagerViewModel @Inject constructor() : BaseViewModel() {
             .map(::Tag)
 
         _state.update { current ->
-            current.copy(tags = current.tags.toMutableList().apply { addAll(index, newTags) })
+            current.copy(
+                tags = current.tags.toMutableList().apply { addAll(index, newTags) },
+                currentQuery = "",
+            )
         }
     }
 

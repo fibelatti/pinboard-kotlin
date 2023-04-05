@@ -15,9 +15,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.onKeyEvent
@@ -47,7 +44,8 @@ fun TagManager(
     val state by tagManagerViewModel.state.collectAsStateWithLifecycle()
 
     TagManager(
-        onTagInputChanged = tagManagerViewModel::setQuery,
+        searchTagInput = state.currentQuery,
+        onSearchTagInputChanged = tagManagerViewModel::setQuery,
         onAddTagClicked = tagManagerViewModel::addTag,
         suggestedTags = state.suggestedTags,
         onSuggestedTagClicked = tagManagerViewModel::addTag,
@@ -60,7 +58,8 @@ fun TagManager(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 fun TagManager(
-    onTagInputChanged: (String) -> Unit = {},
+    searchTagInput: String = "",
+    onSearchTagInputChanged: (String) -> Unit = {},
     onAddTagClicked: (String) -> Unit = {},
     suggestedTags: List<String> = emptyList(),
     onSuggestedTagClicked: (String) -> Unit = {},
@@ -73,19 +72,12 @@ fun TagManager(
             .fillMaxWidth()
             .padding(top = 8.dp, bottom = 32.dp),
     ) {
-        var currentInput by rememberSaveable { mutableStateOf("") }
-        val updateInput = { newValue: String ->
-            currentInput = newValue
-            onTagInputChanged(newValue)
-        }
-
         val keyboardController = LocalSoftwareKeyboardController.current
         val keyboardAction = {
-            when (val text = currentInput.trim()) {
+            when (val text = searchTagInput.trim()) {
                 "" -> keyboardController?.hide()
                 else -> {
                     onAddTagClicked(text)
-                    updateInput("")
                 }
             }
         }
@@ -99,16 +91,13 @@ fun TagManager(
         ) = createRefs()
 
         OutlinedTextField(
-            value = currentInput,
+            value = searchTagInput,
             onValueChange = { newValue ->
                 when {
                     // Handle keyboards that add a space after punctuation, . is used for private tags
-                    newValue == ". " -> updateInput(".")
-                    newValue.isNotBlank() && newValue.endsWith(" ") -> {
-                        onAddTagClicked(newValue)
-                        updateInput("")
-                    }
-                    else -> updateInput(newValue)
+                    newValue == ". " -> onSearchTagInputChanged(".")
+                    newValue.isNotBlank() && newValue.endsWith(" ") -> onAddTagClicked(newValue)
+                    else -> onSearchTagInputChanged(newValue)
                 }
             },
             modifier = Modifier
@@ -135,9 +124,8 @@ fun TagManager(
 
         ElevatedButton(
             onClick = {
-                if (currentInput.isNotBlank()) {
-                    onAddTagClicked(currentInput)
-                    updateInput("")
+                if (searchTagInput.isNotBlank()) {
+                    onAddTagClicked(searchTagInput)
                 }
             },
             modifier = Modifier.constrainAs(clAddTagButton) {
@@ -156,10 +144,7 @@ fun TagManager(
         if (suggestedTags.isNotEmpty()) {
             SingleLineChipGroup(
                 items = suggestedTags.map { tag -> ChipGroup.Item(text = tag) },
-                onItemClick = { item ->
-                    onSuggestedTagClicked(suggestedTags.first { it == item.text })
-                    updateInput("")
-                },
+                onItemClick = { item -> onSuggestedTagClicked(suggestedTags.first { it == item.text }) },
                 modifier = Modifier
                     .constrainAs(clSuggestedTags) {
                         start.linkTo(parent.start)
