@@ -83,7 +83,7 @@ fun TagList(
                 searchQuery = "",
             )
         },
-        searchQuery = state.currentQuery,
+        searchInput = state.currentQuery,
         onSearchInputChanged = tagsViewModel::searchTags,
         onTagClicked = onTagClicked,
         onTagLongClicked = onTagLongClicked,
@@ -97,7 +97,7 @@ fun TagList(
     isLoading: Boolean,
     modifier: Modifier = Modifier,
     onSortOptionClicked: (TagList.Sorting) -> Unit = {},
-    searchQuery: String = "",
+    searchInput: String = "",
     onSearchInputChanged: (newValue: String) -> Unit = {},
     onSearchInputFocusChanged: (hasFocus: Boolean) -> Unit = {},
     onTagClicked: (Tag) -> Unit = {},
@@ -120,7 +120,7 @@ fun TagList(
             )
         }
 
-        if (items.isEmpty() && searchQuery.isBlank()) {
+        if (items.isEmpty() && searchInput.isBlank()) {
             AndroidView(
                 factory = { context: Context ->
                     EmptyListLayout(context).apply {
@@ -134,6 +134,7 @@ fun TagList(
             TagList(
                 items = items,
                 onSortOptionClicked = onSortOptionClicked,
+                searchInput = searchInput,
                 onSearchInputChanged = onSearchInputChanged,
                 onSearchInputFocusChanged = onSearchInputFocusChanged,
                 onTagClicked = onTagClicked,
@@ -152,6 +153,7 @@ fun TagList(
 private fun TagList(
     items: List<Tag>,
     onSortOptionClicked: (TagList.Sorting) -> Unit,
+    searchInput: String,
     onSearchInputChanged: (newValue: String) -> Unit,
     onSearchInputFocusChanged: (hasFocus: Boolean) -> Unit,
     onTagClicked: (Tag) -> Unit,
@@ -176,6 +178,11 @@ private fun TagList(
 
             onSortOptionClicked(sorting)
 
+            if (!showFilter) {
+                onSearchInputChanged("")
+                onSearchInputFocusChanged(false)
+            }
+
             scope.launch {
                 listState.scrollToItem(index = 0)
             }
@@ -186,7 +193,6 @@ private fun TagList(
         textStyle = ExtendedTheme.typography.caveat,
     )
 
-    var currentQuery by rememberSaveable { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
 
     AnimatedVisibility(
@@ -195,11 +201,8 @@ private fun TagList(
         exit = fadeOut() + shrinkVertically(),
     ) {
         OutlinedTextField(
-            value = currentQuery,
-            onValueChange = { newValue ->
-                currentQuery = newValue
-                onSearchInputChanged(newValue)
-            },
+            value = searchInput,
+            onValueChange = onSearchInputChanged,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
@@ -210,11 +213,6 @@ private fun TagList(
             singleLine = true,
             maxLines = 1,
         )
-    }
-
-    if (!showFilter) {
-        onSearchInputFocusChanged(false)
-        currentQuery = ""
     }
 
     var refreshing by rememberSaveable { mutableStateOf(false) }

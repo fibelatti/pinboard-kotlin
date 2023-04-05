@@ -247,7 +247,7 @@ fun SearchBookmarksScreen(
             items = availableTags,
             isLoading = isLoadingTags,
             onSortOptionClicked = onTagsSortOptionClicked,
-            searchQuery = tagsSearchTerm,
+            searchInput = tagsSearchTerm,
             onSearchInputChanged = onTagsSearchInputChanged,
             onSearchInputFocusChanged = { hasFocus -> tagSearchFocused = hasFocus },
             onTagClicked = onAvailableTagClicked,
