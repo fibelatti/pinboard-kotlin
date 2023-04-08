@@ -2,7 +2,6 @@
 
 package com.fibelatti.pinboard.features.tags.presentation
 
-import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -39,16 +38,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.android.customview.EmptyListLayout
+import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
 import com.fibelatti.ui.components.RowToggleButtonGroup
@@ -121,14 +120,10 @@ fun TagList(
         }
 
         if (items.isEmpty() && searchInput.isBlank()) {
-            AndroidView(
-                factory = { context: Context ->
-                    EmptyListLayout(context).apply {
-                        setIcon(R.drawable.ic_tag)
-                        setTitle(R.string.tags_empty_title)
-                        setDescription(R.string.tags_empty_description)
-                    }
-                }
+            EmptyListContent(
+                icon = painterResource(id = R.drawable.ic_tag),
+                title = stringResource(id = R.string.tags_empty_title),
+                description = stringResource(id = R.string.tags_empty_description)
             )
         } else {
             TagList(
