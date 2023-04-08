@@ -1,12 +1,12 @@
 package com.fibelatti.pinboard.core.android.base
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -20,15 +20,17 @@ abstract class BaseViewModel : ViewModel(), CoroutineScope {
         get() = viewModelScope.coroutineContext
 
     /**
-     * A [Flow] of [Throwable] that will hold any error state that happened in this [ViewModel].
+     * A [Flow] of [Throwable] that will hold the latest error that happened in this [ViewModel]
+     * until [errorHandled] is called.
      */
-    val error: Flow<Throwable> get() = _error.filterNotNull()
+    val error: StateFlow<Throwable?> get() = _error.asStateFlow()
     private val _error = MutableStateFlow<Throwable?>(null)
 
-    /**
-     * Calls [MutableLiveData.postValue] on [_error] with the received error as its argument.
-     */
     protected fun handleError(error: Throwable) {
         _error.value = error
+    }
+
+    fun errorHandled() {
+        _error.value = null
     }
 }

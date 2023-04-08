@@ -52,7 +52,7 @@ class PostSearchFragment @Inject constructor() : BaseFragment() {
         setupActivityViews()
 
         tagsViewModel.error
-            .onEach(::handleError)
+            .onEach { throwable -> handleError(throwable, tagsViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)
     }
 

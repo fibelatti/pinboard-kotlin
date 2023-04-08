@@ -20,7 +20,7 @@ abstract class BaseFragment : Fragment() {
         }
     }
 
-    open fun handleError(error: Throwable) {
-        (activity as BaseActivity).handleError(error)
+    open fun handleError(error: Throwable?, postAction: () -> Unit = {}) {
+        (activity as BaseActivity).handleError(error, postAction)
     }
 }

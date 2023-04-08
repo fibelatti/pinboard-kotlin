@@ -35,15 +35,18 @@ abstract class BaseActivity : AppCompatActivity() {
         setupTheme()
     }
 
-    open fun handleError(error: Throwable) {
+    open fun handleError(error: Throwable?, postAction: () -> Unit = {}) {
+        error ?: return
+
         if (BuildConfig.DEBUG) {
             error.printStackTrace()
         }
 
         if (error.isServerException()) {
             Toast.makeText(this, R.string.server_timeout_error, Toast.LENGTH_LONG).show()
+            postAction()
         } else {
-            sendErrorReport(error)
+            sendErrorReport(error, postAction = postAction)
         }
     }
 
@@ -92,11 +95,14 @@ fun FragmentActivity.sendErrorReport(
             }
             startActivity(Intent.createChooser(emailIntent, getString(R.string.error_send_email)))
             dialog?.dismiss()
-            postAction.invoke()
+            postAction()
         }
         setNegativeButton(R.string.error_ignore) { dialog, _ ->
             dialog?.dismiss()
-            postAction.invoke()
+            postAction()
+        }
+        setOnDismissListener {
+            postAction()
         }
     }.show()
 }

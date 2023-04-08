@@ -53,7 +53,7 @@ class AuthFragment @Inject constructor() : BaseFragment() {
             .onEach(::handleAuthError)
             .launchInAndFlowWith(viewLifecycleOwner)
         authViewModel.error
-            .onEach(::handleError)
+            .onEach { throwable -> handleError(throwable, authViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)
     }
 
@@ -87,7 +87,9 @@ class AuthFragment @Inject constructor() : BaseFragment() {
         }
     }
 
-    override fun handleError(error: Throwable) {
+    override fun handleError(error: Throwable?, postAction: () -> Unit) {
+        error ?: return
+
         if (BuildConfig.DEBUG) {
             error.printStackTrace()
         }
@@ -99,8 +101,9 @@ class AuthFragment @Inject constructor() : BaseFragment() {
 
         if (error.isServerException()) {
             binding.layoutAuthForm.textInputLayoutAuthToken.showError(getString(R.string.server_timeout_error))
+            postAction()
         } else {
-            activity?.sendErrorReport(error, altMessage = getString(R.string.auth_error))
+            activity?.sendErrorReport(error, altMessage = getString(R.string.auth_error), postAction = postAction)
         }
     }
 }

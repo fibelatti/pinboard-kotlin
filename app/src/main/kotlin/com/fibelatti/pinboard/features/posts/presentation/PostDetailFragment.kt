@@ -120,7 +120,7 @@ class PostDetailFragment @Inject constructor(
             .onEach { binding.root.showBanner(getString(R.string.posts_marked_as_read_error)) }
             .launchInAndFlowWith(viewLifecycleOwner)
         postDetailViewModel.error
-            .onEach(::handleError)
+            .onEach { throwable -> handleError(throwable, postDetailViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)
 
         popularPostsViewModel.loading
@@ -130,7 +130,7 @@ class PostDetailFragment @Inject constructor(
             .onEach { binding.root.showBanner(getString(R.string.posts_saved_feedback)) }
             .launchInAndFlowWith(viewLifecycleOwner)
         popularPostsViewModel.error
-            .onEach(::handleError)
+            .onEach { throwable -> handleError(throwable, popularPostsViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)
     }
 

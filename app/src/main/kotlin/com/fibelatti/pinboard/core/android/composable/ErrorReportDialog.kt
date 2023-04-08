@@ -1,7 +1,10 @@
+@file:Suppress("UNUSED")
+
 package com.fibelatti.pinboard.core.android.composable
 
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -14,10 +17,30 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import java.io.PrintWriter
 import java.io.StringWriter
+
+@Composable
+fun ErrorReport(
+    throwable: Throwable,
+    modifier: Modifier = Modifier,
+    altMessage: String = "",
+    postAction: () -> Unit = {},
+) {
+    if (BuildConfig.DEBUG) {
+        throwable.printStackTrace()
+    }
+
+    if (throwable.isServerException()) {
+        Toast.makeText(LocalContext.current, R.string.server_timeout_error, Toast.LENGTH_LONG).show()
+        postAction()
+    } else {
+        ErrorReportDialog(throwable, modifier, altMessage, postAction)
+    }
+}
 
 @Composable
 fun ErrorReportDialog(

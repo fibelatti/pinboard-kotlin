@@ -102,7 +102,7 @@ class TagsFragment @Inject constructor() : BaseFragment() {
             .launchInAndFlowWith(viewLifecycleOwner)
 
         tagsViewModel.error
-            .onEach(::handleError)
+            .onEach { throwable -> handleError(throwable, tagsViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)
     }
 

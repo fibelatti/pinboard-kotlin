@@ -182,7 +182,7 @@ class PostListFragment @Inject constructor(
 
     private fun setupViewModels() {
         postListViewModel.error
-            .onEach(::handleError)
+            .onEach { throwable -> handleError(throwable, postListViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)
 
         appStateViewModel.postListContent
@@ -210,13 +210,13 @@ class PostListFragment @Inject constructor(
             .onEach { binding.root.showBanner(getString(R.string.posts_marked_as_read_error)) }
             .launchInAndFlowWith(viewLifecycleOwner)
         postDetailViewModel.error
-            .onEach(::handleError)
+            .onEach { throwable -> handleError(throwable, postDetailViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)
     }
 
-    override fun handleError(error: Throwable) {
-        super.handleError(error)
+    override fun handleError(error: Throwable?, postAction: () -> Unit) {
         binding.progressBar.isGone = true
+        super.handleError(error, postAction)
     }
 
     private fun updateContent(content: PostListContent) {

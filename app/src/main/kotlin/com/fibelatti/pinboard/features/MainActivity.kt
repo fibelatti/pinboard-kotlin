@@ -263,15 +263,18 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
         binding.fabMain.hide()
     }
 
-    override fun handleError(error: Throwable) {
+    override fun handleError(error: Throwable?, postAction: () -> Unit) {
+        error ?: return
+
         if (BuildConfig.DEBUG) {
             error.printStackTrace()
         }
 
         if (error.isServerException()) {
             binding.root.showBanner(getString(R.string.server_timeout_error))
+            postAction()
         } else {
-            sendErrorReport(error)
+            sendErrorReport(error, postAction = postAction)
         }
     }
 

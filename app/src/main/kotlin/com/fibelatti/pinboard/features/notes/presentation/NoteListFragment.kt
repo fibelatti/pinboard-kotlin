@@ -110,7 +110,7 @@ class NoteListFragment @Inject constructor(
             .launchInAndFlowWith(viewLifecycleOwner)
 
         noteListViewModel.error
-            .onEach(::handleError)
+            .onEach { throwable -> handleError(throwable, noteListViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)
     }
 

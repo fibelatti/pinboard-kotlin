@@ -235,8 +235,8 @@ class EditPostFragment @Inject constructor(
             .onEach(::handleInvalidTitleError)
             .launchInAndFlowWith(viewLifecycleOwner)
         editPostViewModel.error
-            .onEach {
-                handleError(it)
+            .onEach { throwable ->
+                handleError(throwable, editPostViewModel::errorHandled)
                 showFab()
             }
             .launchInAndFlowWith(viewLifecycleOwner)
@@ -260,7 +260,7 @@ class EditPostFragment @Inject constructor(
             .onEach { binding.root.showBanner(getString(R.string.posts_deleted_feedback)) }
             .launchInAndFlowWith(viewLifecycleOwner)
         postDetailViewModel.error
-            .onEach(::handleError)
+            .onEach { throwable -> handleError(throwable, postDetailViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)
     }
 

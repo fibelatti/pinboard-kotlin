@@ -241,7 +241,7 @@
 
     <!-- Error -->
     <string name="error_send_email">Send email</string>
-    <string name="error_report_rationale">Looks like something went wrong.\n\nTap <b>Report</b> to launch your default email app with the error details which you can send to help with troubleshooting.</string>
+    <string name="error_report_rationale">Looks like something went wrong.\n\nYou can report this error by email which helps with troubleshooting and fixing.</string>
     <string name="error_report">Report</string>
     <string name="error_ignore">Ignore</string>
 
