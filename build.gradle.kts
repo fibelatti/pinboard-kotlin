@@ -34,8 +34,8 @@ subprojects {
     afterEvaluate {
         extensions.findByType(CommonExtension::class.java)?.apply {
             compileOptions {
-                sourceCompatibility(JavaVersion.VERSION_11)
-                targetCompatibility(JavaVersion.VERSION_11)
+                sourceCompatibility(JavaVersion.VERSION_17)
+                targetCompatibility(JavaVersion.VERSION_17)
             }
 
             testOptions {
@@ -54,7 +54,7 @@ subprojects {
 
         tasks.withType<KotlinCompile>().all {
             kotlinOptions.apply {
-                jvmTarget = "11"
+                jvmTarget = "17"
                 freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
             }
         }
