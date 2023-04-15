@@ -16,7 +16,7 @@ import io.mockk.Called
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
 class AddPostTest {
@@ -32,12 +32,12 @@ class AddPostTest {
     )
 
     @Test
-    fun `GIVEN ValidateUrl fails WHEN AddPost is called THEN Failure is returned`() {
+    fun `GIVEN ValidateUrl fails WHEN AddPost is called THEN Failure is returned`() = runTest {
         // GIVEN
         coEvery { mockValidateUrl(mockUrlValid) } returns Failure(InvalidRequestException())
 
         // WHEN
-        val result = runBlocking { addPost(params) }
+        val result = addPost(params)
 
         // THEN
         assertThat(result.exceptionOrNull()).isInstanceOf(InvalidRequestException::class.java)
@@ -45,7 +45,7 @@ class AddPostTest {
     }
 
     @Test
-    fun `GIVEN posts repository add fails WHEN AddPost is called THEN Failure is returned`() {
+    fun `GIVEN posts repository add fails WHEN AddPost is called THEN Failure is returned`() = runTest {
         // GIVEN
         coEvery { mockValidateUrl(mockUrlValid) } returns Success(mockUrlValid)
         coEvery {
@@ -62,7 +62,7 @@ class AddPostTest {
         } returns Failure(ApiException())
 
         // WHEN
-        val result = runBlocking { addPost(AddPost.Params(mockUrlValid, mockUrlTitle)) }
+        val result = addPost(AddPost.Params(mockUrlValid, mockUrlTitle))
 
         // THEN
         assertThat(result.exceptionOrNull()).isInstanceOf(ApiException::class.java)
@@ -70,7 +70,7 @@ class AddPostTest {
     }
 
     @Test
-    fun `GIVEN posts repository add succeeds WHEN AddPost is called THEN Success is returned`() {
+    fun `GIVEN posts repository add succeeds WHEN AddPost is called THEN Success is returned`() = runTest {
         // GIVEN
         val mockPost = mockk<Post>()
         coEvery { mockValidateUrl(mockUrlValid) } returns Success(mockUrlValid)
@@ -88,7 +88,7 @@ class AddPostTest {
         } returns Success(mockPost)
 
         // WHEN
-        val result = runBlocking { addPost(AddPost.Params(mockUrlValid, mockUrlTitle)) }
+        val result = addPost(AddPost.Params(mockUrlValid, mockUrlTitle))
 
         // THEN
         assertThat(result.getOrNull()).isEqualTo(mockPost)

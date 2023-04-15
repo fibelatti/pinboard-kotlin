@@ -14,7 +14,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
 internal class NoteDetailsViewModelTest : BaseViewModelTest() {
@@ -28,7 +28,7 @@ internal class NoteDetailsViewModelTest : BaseViewModelTest() {
     )
 
     @Test
-    fun `WHEN getNote fails THEN error should receive a value`() {
+    fun `WHEN getNote fails THEN error should receive a value`() = runTest {
         // GIVEN
         val error = Exception()
         coEvery { mockNotesRepository.getNote(any()) } returns Failure(error)
@@ -37,14 +37,12 @@ internal class NoteDetailsViewModelTest : BaseViewModelTest() {
         noteDetailsViewModel.getNoteDetails(mockNoteId)
 
         // THEN
-        runBlocking {
-            assertThat(noteDetailsViewModel.error.first()).isEqualTo(error)
-        }
+        assertThat(noteDetailsViewModel.error.first()).isEqualTo(error)
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 
     @Test
-    fun `WHEN getAllNotes succeeds THEN AppStateRepository should run SetNotes`() {
+    fun `WHEN getAllNotes succeeds THEN AppStateRepository should run SetNotes`() = runTest {
         // GIVEN
         val mockNote = mockk<Note>()
         coEvery { mockNotesRepository.getNote(mockNoteId) } returns Success(mockNote)
@@ -54,8 +52,6 @@ internal class NoteDetailsViewModelTest : BaseViewModelTest() {
 
         // THEN
         coVerify { mockAppStateRepository.runAction(SetNote(mockNote)) }
-        runBlocking {
-            assertThat(noteDetailsViewModel.error.isEmpty()).isTrue()
-        }
+        assertThat(noteDetailsViewModel.error.isEmpty()).isTrue()
     }
 }

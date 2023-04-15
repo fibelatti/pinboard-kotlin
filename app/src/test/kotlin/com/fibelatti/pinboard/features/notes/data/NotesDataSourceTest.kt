@@ -11,7 +11,7 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
@@ -26,19 +26,19 @@ internal class NotesDataSourceTest {
     inner class GetAllNotesTests {
 
         @Test
-        fun `GIVEN api returns an error WHEN getAllNotes is called THEN Failure is returned`() {
+        fun `GIVEN api returns an error WHEN getAllNotes is called THEN Failure is returned`() = runTest {
             // GIVEN
             coEvery { mockApi.getAllNotes() } throws Exception()
 
             // WHEN
-            val result = runBlocking { dataSource.getAllNotes() }
+            val result = dataSource.getAllNotes()
 
             // THEN
             assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
         }
 
         @Test
-        fun `GIVEN api returns successfully WHEN getAllNotes is called THEN Success is returned`() {
+        fun `GIVEN api returns successfully WHEN getAllNotes is called THEN Success is returned`() = runTest {
             // GIVEN
             val mockNoteListDto = mockk<NoteListDto>()
             val mockNotesDto = mockk<List<NoteDto>>()
@@ -49,7 +49,7 @@ internal class NotesDataSourceTest {
             every { mockNoteDtoMapper.mapList(mockNotesDto) } returns mockNotes
 
             // WHEN
-            val result = runBlocking { dataSource.getAllNotes() }
+            val result = dataSource.getAllNotes()
 
             // THEN
             assertThat(result.getOrNull()).isEqualTo(mockNotes)
@@ -60,19 +60,19 @@ internal class NotesDataSourceTest {
     inner class GetNoteTests {
 
         @Test
-        fun `GIVEN api returns an error WHEN getNote is called THEN Failure is returned`() {
+        fun `GIVEN api returns an error WHEN getNote is called THEN Failure is returned`() = runTest {
             // GIVEN
             coEvery { mockApi.getNote(mockNoteId) } throws Exception()
 
             // WHEN
-            val result = runBlocking { dataSource.getNote(mockNoteId) }
+            val result = dataSource.getNote(mockNoteId)
 
             // THEN
             assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
         }
 
         @Test
-        fun `GIVEN api returns successfully WHEN getNote is called THEN Success is returned`() {
+        fun `GIVEN api returns successfully WHEN getNote is called THEN Success is returned`() = runTest {
             // GIVEN
             val mockNoteDto = mockk<NoteDto>()
             val mockNote = mockk<Note>()
@@ -81,7 +81,7 @@ internal class NotesDataSourceTest {
             every { mockNoteDtoMapper.map(mockNoteDto) } returns mockNote
 
             // WHEN
-            val result = runBlocking { dataSource.getNote(mockNoteId) }
+            val result = dataSource.getNote(mockNoteId)
 
             // THEN
             assertThat(result.getOrNull()).isEqualTo(mockNote)

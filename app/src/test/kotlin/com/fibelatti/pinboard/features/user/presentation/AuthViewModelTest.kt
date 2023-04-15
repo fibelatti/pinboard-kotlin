@@ -1,8 +1,8 @@
 package com.fibelatti.pinboard.features.user.presentation
 
+import com.fibelatti.core.android.ResourceProvider
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
-import com.fibelatti.core.android.ResourceProvider
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.mockApiToken
 import com.fibelatti.pinboard.R
@@ -17,7 +17,7 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.jupiter.api.Nested
@@ -42,7 +42,7 @@ class AuthViewModelTest : BaseViewModelTest() {
     inner class LoginTest {
 
         @Test
-        fun `GIVEN Login is successful WHEN login is called THEN nothing else happens`() {
+        fun `GIVEN Login is successful WHEN login is called THEN nothing else happens`() = runTest {
             // GIVEN
             coEvery { mockLogin(mockApiToken) } returns Success(Unit)
 
@@ -50,60 +50,56 @@ class AuthViewModelTest : BaseViewModelTest() {
             viewModel.login(mockApiToken)
 
             // THEN
-            runBlocking {
-                assertThat(viewModel.error.isEmpty()).isTrue()
-                assertThat(viewModel.apiTokenError.isEmpty()).isTrue()
-            }
+            assertThat(viewModel.error.isEmpty()).isTrue()
+            assertThat(viewModel.apiTokenError.isEmpty()).isTrue()
         }
 
         @Test
-        fun `GIVEN Login fails and error code is 401 WHEN login is called THEN apiTokenError should receive a value`() {
-            // GIVEN
-            val error = HttpException(
-                Response.error<GenericResponseDto>(
-                    HttpURLConnection.HTTP_UNAUTHORIZED,
-                    "{}".toResponseBody("application/json".toMediaTypeOrNull())
+        fun `GIVEN Login fails and error code is 401 WHEN login is called THEN apiTokenError should receive a value`() =
+            runTest {
+                // GIVEN
+                val error = HttpException(
+                    Response.error<GenericResponseDto>(
+                        HttpURLConnection.HTTP_UNAUTHORIZED,
+                        "{}".toResponseBody("application/json".toMediaTypeOrNull())
+                    )
                 )
-            )
 
-            coEvery { mockLogin(mockApiToken) } returns Failure(error)
-            every { mockResourceProvider.getString(R.string.auth_token_error) } returns "R.string.auth_token_error"
+                coEvery { mockLogin(mockApiToken) } returns Failure(error)
+                every { mockResourceProvider.getString(R.string.auth_token_error) } returns "R.string.auth_token_error"
 
-            // WHEN
-            viewModel.login(mockApiToken)
+                // WHEN
+                viewModel.login(mockApiToken)
 
-            // THEN
-            runBlocking {
+                // THEN
                 assertThat(viewModel.error.isEmpty()).isTrue()
                 assertThat(viewModel.apiTokenError.first()).isEqualTo("R.string.auth_token_error")
             }
-        }
 
         @Test
-        fun `GIVEN Login fails and error code is 500 WHEN login is called THEN apiTokenError should receive a value`() {
-            // GIVEN
-            val error = HttpException(
-                Response.error<GenericResponseDto>(
-                    HttpURLConnection.HTTP_INTERNAL_ERROR,
-                    "{}".toResponseBody("application/json".toMediaTypeOrNull())
+        fun `GIVEN Login fails and error code is 500 WHEN login is called THEN apiTokenError should receive a value`() =
+            runTest {
+                // GIVEN
+                val error = HttpException(
+                    Response.error<GenericResponseDto>(
+                        HttpURLConnection.HTTP_INTERNAL_ERROR,
+                        "{}".toResponseBody("application/json".toMediaTypeOrNull())
+                    )
                 )
-            )
 
-            coEvery { mockLogin(mockApiToken) } returns Failure(error)
-            every { mockResourceProvider.getString(R.string.auth_token_error) } returns "R.string.auth_token_error"
+                coEvery { mockLogin(mockApiToken) } returns Failure(error)
+                every { mockResourceProvider.getString(R.string.auth_token_error) } returns "R.string.auth_token_error"
 
-            // WHEN
-            viewModel.login(mockApiToken)
+                // WHEN
+                viewModel.login(mockApiToken)
 
-            // THEN
-            runBlocking {
+                // THEN
                 assertThat(viewModel.error.isEmpty()).isTrue()
                 assertThat(viewModel.apiTokenError.first()).isEqualTo("R.string.auth_token_error")
             }
-        }
 
         @Test
-        fun `GIVEN Login fails WHEN login is called THEN error should receive a value`() {
+        fun `GIVEN Login fails WHEN login is called THEN error should receive a value`() = runTest {
             // GIVEN
             val error = Exception()
             coEvery { mockLogin(mockApiToken) } returns Failure(error)
@@ -112,10 +108,8 @@ class AuthViewModelTest : BaseViewModelTest() {
             viewModel.login(mockApiToken)
 
             // THEN
-            runBlocking {
-                assertThat(viewModel.error.first()).isEqualTo(error)
-                assertThat(viewModel.apiTokenError.isEmpty()).isTrue()
-            }
+            assertThat(viewModel.error.first()).isEqualTo(error)
+            assertThat(viewModel.apiTokenError.isEmpty()).isTrue()
         }
     }
 

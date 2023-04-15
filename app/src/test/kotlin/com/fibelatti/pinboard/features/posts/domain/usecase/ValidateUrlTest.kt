@@ -4,7 +4,7 @@ import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.pinboard.MockDataProvider
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -30,21 +30,22 @@ class ValidateUrlTest {
 
     @ParameterizedTest
     @MethodSource("validUrls")
-    fun `GIVEN that a valid url is received WHEN validateUrl is called THEN Success is returned`(url: String) {
-        // WHEN
-        val result = runBlocking { validateUrl(url) }
+    fun `GIVEN that a valid url is received WHEN validateUrl is called THEN Success is returned`(url: String) =
+        runTest {
+            // WHEN
+            val result = validateUrl(url)
 
-        // THEN
-        assertThat(result.getOrNull()).isEqualTo(url)
-    }
+            // THEN
+            assertThat(result.getOrNull()).isEqualTo(url)
+        }
 
     @ParameterizedTest
     @MethodSource("invalidUrls")
     fun `GIVEN that an invalid url is received WHEN validateUrl is called THEN Failure is returned`(
-        invalidUrl: String
-    ) {
+        invalidUrl: String,
+    ) = runTest {
         // WHEN
-        val result = runBlocking { validateUrl(invalidUrl) }
+        val result = validateUrl(invalidUrl)
 
         // THEN
         assertThat(result.exceptionOrNull()).isInstanceOf(InvalidUrlException::class.java)

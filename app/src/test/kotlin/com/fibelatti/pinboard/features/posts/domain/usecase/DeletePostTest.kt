@@ -11,7 +11,7 @@ import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
 class DeletePostTest {
@@ -25,38 +25,38 @@ class DeletePostTest {
     )
 
     @Test
-    fun `GIVEN ValidateUrl fails WHEN AddPost is called THEN Failure is returned`() {
+    fun `GIVEN ValidateUrl fails WHEN AddPost is called THEN Failure is returned`() = runTest {
         // GIVEN
         coEvery { mockValidateUrl(mockUrlValid) } returns Failure(InvalidRequestException())
 
         // WHEN
-        val result = runBlocking { deletePost(mockUrlValid) }
+        val result = deletePost(mockUrlValid)
 
         // THEN
         assertThat(result.exceptionOrNull()).isInstanceOf(InvalidRequestException::class.java)
     }
 
     @Test
-    fun `GIVEN posts repository add fails WHEN AddPost is called THEN Failure is returned`() {
+    fun `GIVEN posts repository add fails WHEN AddPost is called THEN Failure is returned`() = runTest {
         // GIVEN
         coEvery { mockValidateUrl(mockUrlValid) } returns Success(mockUrlValid)
         coEvery { mockPostsRepository.delete(mockUrlValid) } returns Failure(ApiException())
 
         // WHEN
-        val result = runBlocking { deletePost(mockUrlValid) }
+        val result = deletePost(mockUrlValid)
 
         // THEN
         assertThat(result.exceptionOrNull()).isInstanceOf(ApiException::class.java)
     }
 
     @Test
-    fun `GIVEN posts repository add succeeds WHEN AddPost is called THEN Success is returned`() {
+    fun `GIVEN posts repository add succeeds WHEN AddPost is called THEN Success is returned`() = runTest {
         // GIVEN
         coEvery { mockValidateUrl(mockUrlValid) } returns Success(mockUrlValid)
         coEvery { mockPostsRepository.delete(mockUrlValid) } returns Success(Unit)
 
         // WHEN
-        val result = runBlocking { deletePost(mockUrlValid) }
+        val result = deletePost(mockUrlValid)
 
         // THEN
         assertThat(result.getOrNull()).isEqualTo(Unit)

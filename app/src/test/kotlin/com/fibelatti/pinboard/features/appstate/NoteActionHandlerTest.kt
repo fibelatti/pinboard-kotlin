@@ -7,7 +7,7 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
@@ -30,24 +30,24 @@ internal class NoteActionHandlerTest {
     inner class RefreshNotesTests {
 
         @Test
-        fun `WHEN currentContent is not NoteListContent THEN same content is returned`() {
+        fun `WHEN currentContent is not NoteListContent THEN same content is returned`() = runTest {
             // GIVEN
             val content = mockk<PostListContent>()
 
             // WHEN
-            val result = runBlocking { noteActionHandler.runAction(RefreshNotes, content) }
+            val result = noteActionHandler.runAction(RefreshNotes, content)
 
             // THEN
             assertThat(result).isEqualTo(content)
         }
 
         @Test
-        fun `WHEN currentContent is NoteListContent THEN updated content is returned`() {
+        fun `WHEN currentContent is NoteListContent THEN updated content is returned`() = runTest {
             // GIVEN
             every { mockConnectivityInfoProvider.isConnected() } returns true
 
             // WHEN
-            val result = runBlocking { noteActionHandler.runAction(RefreshNotes, initialContent) }
+            val result = noteActionHandler.runAction(RefreshNotes, initialContent)
 
             // THEN
             assertThat(result).isEqualTo(
@@ -66,27 +66,25 @@ internal class NoteActionHandlerTest {
     inner class SetNotesTests {
 
         @Test
-        fun `WHEN currentContent is not NoteListContent THEN same content is returned`() {
+        fun `WHEN currentContent is not NoteListContent THEN same content is returned`() = runTest {
             // GIVEN
             val content = mockk<PostListContent>()
 
             // WHEN
-            val result = runBlocking { noteActionHandler.runAction(mockk<SetNotes>(), content) }
+            val result = noteActionHandler.runAction(mockk<SetNotes>(), content)
 
             // THEN
             assertThat(result).isEqualTo(content)
         }
 
         @Test
-        fun `WHEN currentContent is NoteListContent THEN updated content is returned`() {
+        fun `WHEN currentContent is NoteListContent THEN updated content is returned`() = runTest {
             // GIVEN
             every { mockConnectivityInfoProvider.isConnected() } returns true
 
             // WHEN
             val newNotes: List<Note> = mockk()
-            val result = runBlocking {
-                noteActionHandler.runAction(SetNotes(newNotes), initialContent)
-            }
+            val result = noteActionHandler.runAction(SetNotes(newNotes), initialContent)
 
             // THEN
             assertThat(result).isEqualTo(
@@ -104,19 +102,19 @@ internal class NoteActionHandlerTest {
     inner class SetNoteTests {
 
         @Test
-        fun `WHEN currentContent is not NoteDetailContent THEN same content is returned`() {
+        fun `WHEN currentContent is not NoteDetailContent THEN same content is returned`() = runTest {
             // GIVEN
             val content = mockk<NoteListContent>()
 
             // WHEN
-            val result = runBlocking { noteActionHandler.runAction(mockk<SetNote>(), content) }
+            val result = noteActionHandler.runAction(mockk<SetNote>(), content)
 
             // THEN
             assertThat(result).isEqualTo(content)
         }
 
         @Test
-        fun `WHEN currentContent is NoteDetailContent THEN updated content is returned`() {
+        fun `WHEN currentContent is NoteDetailContent THEN updated content is returned`() = runTest {
             // WHEN
             val noteDetails: Note = mockk()
             val initialContent = NoteDetailContent(
@@ -126,8 +124,7 @@ internal class NoteActionHandlerTest {
                 previousContent = mockk()
             )
 
-            val result =
-                runBlocking { noteActionHandler.runAction(SetNote(noteDetails), initialContent) }
+            val result = noteActionHandler.runAction(SetNote(noteDetails), initialContent)
 
             // THEN
             assertThat(result).isEqualTo(

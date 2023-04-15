@@ -7,7 +7,7 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
@@ -31,26 +31,24 @@ internal class PopularActionHandlerTest {
     inner class RefreshPopularTests {
 
         @Test
-        fun `WHEN currentContent is not PopularPostsContent THEN same content is returned`() {
+        fun `WHEN currentContent is not PopularPostsContent THEN same content is returned`() = runTest {
             // GIVEN
             val content = mockk<PostListContent>()
 
             // WHEN
-            val result = runBlocking { popularActionHandler.runAction(RefreshPopular, content) }
+            val result = popularActionHandler.runAction(RefreshPopular, content)
 
             // THEN
             assertThat(result).isEqualTo(content)
         }
 
         @Test
-        fun `WHEN currentContent is PopularPostsContent THEN updated content is returned`() {
+        fun `WHEN currentContent is PopularPostsContent THEN updated content is returned`() = runTest {
             // GIVEN
             every { mockConnectivityInfoProvider.isConnected() } returns true
 
             // WHEN
-            val result = runBlocking {
-                popularActionHandler.runAction(RefreshPopular, initialContent)
-            }
+            val result = popularActionHandler.runAction(RefreshPopular, initialContent)
 
             // THEN
             assertThat(result).isEqualTo(
@@ -69,29 +67,25 @@ internal class PopularActionHandlerTest {
     inner class SetPopularPostsTests {
 
         @Test
-        fun `WHEN currentContent is not PopularPostsContent THEN same content is returned`() {
+        fun `WHEN currentContent is not PopularPostsContent THEN same content is returned`() = runTest {
             // GIVEN
             val content = mockk<PostListContent>()
 
             // WHEN
-            val result = runBlocking {
-                popularActionHandler.runAction(mockk<SetPopularPosts>(), content)
-            }
+            val result = popularActionHandler.runAction(mockk<SetPopularPosts>(), content)
 
             // THEN
             assertThat(result).isEqualTo(content)
         }
 
         @Test
-        fun `WHEN currentContent is PopularPostsContent THEN updated content is returned`() {
+        fun `WHEN currentContent is PopularPostsContent THEN updated content is returned`() = runTest {
             // GIVEN
             every { mockConnectivityInfoProvider.isConnected() } returns true
 
             // WHEN
             val newPosts: List<Post> = mockk()
-            val result = runBlocking {
-                popularActionHandler.runAction(SetPopularPosts(newPosts), initialContent)
-            }
+            val result = popularActionHandler.runAction(SetPopularPosts(newPosts), initialContent)
 
             // THEN
             assertThat(result).isEqualTo(

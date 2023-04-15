@@ -26,7 +26,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
 internal class UserPreferencesViewModelTest : BaseViewModelTest() {
@@ -44,19 +44,17 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
     )
 
     @Test
-    fun `currentPreferences should emit the repository values`() {
+    fun `currentPreferences should emit the repository values`() = runTest {
         // GIVEN
         val preferences = mockk<UserPreferences>()
         every { mockUserRepository.currentPreferences } returns flowOf(preferences)
 
         // THEN
-        runBlocking {
-            assertThat(userPreferencesViewModel.currentPreferences.toList()).isEqualTo(listOf(preferences))
-        }
+        assertThat(userPreferencesViewModel.currentPreferences.toList()).isEqualTo(listOf(preferences))
     }
 
     @Test
-    fun `appearanceChanged should emit the current preferences appearance`() {
+    fun `appearanceChanged should emit the current preferences appearance`() = runTest {
         // GIVEN
         val appearance = mockk<Appearance>()
         val preferences = mockk<UserPreferences> {
@@ -65,9 +63,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         every { mockUserRepository.currentPreferences } returns flowOf(preferences)
 
         // THEN
-        runBlocking {
-            assertThat(userPreferencesViewModel.appearanceChanged.toList()).isEqualTo(listOf(appearance))
-        }
+        assertThat(userPreferencesViewModel.appearanceChanged.toList()).isEqualTo(listOf(appearance))
     }
 
     @Test
@@ -216,36 +212,37 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `GIVEN getSuggestedTags will fail WHEN searchForTag is called THEN suggestedTags should never receive values`() {
-        // GIVEN
-        coEvery { mockPostsRepository.searchExistingPostTag(any(), any()) } returns Failure(Exception())
+    fun `GIVEN getSuggestedTags will fail WHEN searchForTag is called THEN suggestedTags should never receive values`() =
+        runTest {
+            // GIVEN
+            coEvery { mockPostsRepository.searchExistingPostTag(any(), any()) } returns Failure(Exception())
 
-        // WHEN
-        userPreferencesViewModel.searchForTag(MockDataProvider.mockTagString1, mockk())
+            // WHEN
+            userPreferencesViewModel.searchForTag(MockDataProvider.mockTagString1, mockk())
 
-        // THEN
-        runBlocking {
+            // THEN
             assertThat(userPreferencesViewModel.suggestedTags.isEmpty()).isTrue()
         }
-    }
 
     @Test
-    fun `GIVEN getSuggestedTags will succeed WHEN searchForTag is called THEN suggestedTags should receive its response`() {
-        // GIVEN
-        val result = listOf(MockDataProvider.mockTagString1, MockDataProvider.mockTagString2)
-        coEvery {
-            mockPostsRepository.searchExistingPostTag(tag = MockDataProvider.mockTagString1, currentTags = emptyList())
-        } returns Success(result)
+    fun `GIVEN getSuggestedTags will succeed WHEN searchForTag is called THEN suggestedTags should receive its response`() =
+        runTest {
+            // GIVEN
+            val result = listOf(MockDataProvider.mockTagString1, MockDataProvider.mockTagString2)
+            coEvery {
+                mockPostsRepository.searchExistingPostTag(
+                    tag = MockDataProvider.mockTagString1,
+                    currentTags = emptyList()
+                )
+            } returns Success(result)
 
-        // WHEN
-        userPreferencesViewModel.searchForTag(
-            tag = MockDataProvider.mockTagString1,
-            currentTags = emptyList(),
-        )
+            // WHEN
+            userPreferencesViewModel.searchForTag(
+                tag = MockDataProvider.mockTagString1,
+                currentTags = emptyList(),
+            )
 
-        // THEN
-        runBlocking {
+            // THEN
             assertThat(userPreferencesViewModel.suggestedTags.first()).isEqualTo(result)
         }
-    }
 }
