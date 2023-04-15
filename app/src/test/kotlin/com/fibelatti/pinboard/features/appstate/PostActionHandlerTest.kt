@@ -622,7 +622,7 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is not handled specifically THEN same content is returned`() = runTest {
             // GIVEN
-            val content = mockk<Content>()
+            val content = mockk<ExternalBrowserContent>()
 
             // WHEN
             val result = postActionHandler.runAction(PostSaved(mockPost), content)
@@ -772,7 +772,7 @@ internal class PostActionHandlerTest {
         fun `WHEN currentContent is PopularPostDetailContent AND getEditAfterSharing is not AfterSaving THEN updated content is returned`() =
             runTest {
                 // GIVEN
-                every { mockUserRepository.editAfterSharing } returns mockk()
+                every { mockUserRepository.editAfterSharing } returns EditAfterSharing.BeforeSaving
                 val currentContent = PopularPostDetailContent(
                     post = mockk(),
                     previousContent = PopularPostsContent(
@@ -964,7 +964,7 @@ internal class PostActionHandlerTest {
         fun `WHEN currentContent is ContentWithHistory and it is not specifically handled THEN previous content is returned`() {
             // GIVEN
             val previousContent = mockk<AddPostContent>()
-            val currentContent = mockk<ContentWithHistory>().also {
+            val currentContent = mockk<EditPostContent>().also {
                 every { it.previousContent } returns previousContent
             }
 

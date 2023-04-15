@@ -15,6 +15,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkClass
 import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
@@ -93,7 +94,7 @@ internal class NavigationActionHandlerTest {
         }
 
         fun testCases(): List<ContentWithHistory> = ContentWithHistory::class.allSealedSubclasses
-            .map { it.objectInstance ?: mockk() }
+            .map { it.objectInstance ?: mockkClass(it) }
     }
 
     @Nested
