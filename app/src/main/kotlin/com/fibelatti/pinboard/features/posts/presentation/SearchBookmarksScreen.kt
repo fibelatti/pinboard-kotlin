@@ -133,7 +133,7 @@ fun SearchBookmarksScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.background)
+            .background(color = ExtendedTheme.colors.backgroundNoOverlay)
     ) {
         var tagSearchFocused by rememberSaveable { mutableStateOf(false) }
         val imeVisible by rememberKeyboardState()
