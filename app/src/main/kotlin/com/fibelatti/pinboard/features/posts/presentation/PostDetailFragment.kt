@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
@@ -26,11 +25,10 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
-import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.databinding.FragmentPostDetailBinding
-import com.fibelatti.pinboard.features.BottomBarHost.Companion.bottomBarHost
-import com.fibelatti.pinboard.features.TitleLayoutHost.Companion.titleLayoutHost
+import com.fibelatti.pinboard.features.MainState
+import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
@@ -39,6 +37,7 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
+import java.util.UUID
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -50,9 +49,12 @@ class PostDetailFragment @Inject constructor(
 
         @JvmStatic
         val TAG: String = "PostDetailFragment"
+
+        private val ACTION_ID = UUID.randomUUID().toString()
     }
 
     private val appStateViewModel: AppStateViewModel by activityViewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
     private val postDetailViewModel: PostDetailViewModel by viewModels()
     private val popularPostsViewModel: PopularPostsViewModel by viewModels()
 
@@ -83,19 +85,63 @@ class PostDetailFragment @Inject constructor(
     }
 
     override fun onDestroyView() {
-        titleLayoutHost.update { hideActionButton() }
         postWebViewClient?.callback = null
+
+        mainViewModel.updateState { currentState ->
+            currentState.copy(
+                actionButton = if (currentState.actionButton.id == ACTION_ID) {
+                    MainState.ActionButtonComponent.Gone
+                } else {
+                    currentState.actionButton
+                }
+            )
+        }
+
         super.onDestroyView()
     }
 
     private fun setupViewModels() {
+        setupAppStateViewModel()
+        setupMainViewModel()
+        setupPostDetailViewModel()
+        setupPopularPostsViewModel()
+    }
+
+    private fun setupAppStateViewModel() {
         appStateViewModel.postDetailContent
             .onEach(::updateViews)
             .launchInAndFlowWith(viewLifecycleOwner)
         appStateViewModel.popularPostDetailContent
             .onEach(::updateViews)
             .launchInAndFlowWith(viewLifecycleOwner)
+    }
 
+    private fun setupMainViewModel() {
+        mainViewModel.navigationClicks(ACTION_ID)
+            .onEach { navigateBack() }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        mainViewModel.actionButtonClicks(ACTION_ID)
+            .onEach { data: Any? -> (data as? Post)?.let(postDetailViewModel::toggleReadLater) }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        mainViewModel.menuItemClicks(ACTION_ID)
+            .onEach { (menuItemId, post) ->
+                if (post !is Post) return@onEach
+                when (menuItemId) {
+                    R.id.menuItemDelete -> deletePost(post)
+                    R.id.menuItemEditLink -> appStateViewModel.runAction(EditPost(post))
+                    R.id.menuItemSave -> popularPostsViewModel.saveLink(post)
+                    R.id.menuItemOpenInBrowser -> openUrlInExternalBrowser(post)
+                }
+            }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        mainViewModel.fabClicks(ACTION_ID)
+            .onEach { data: Any? ->
+                (data as? Post)?.let { requireActivity().shareText(R.string.posts_share_title, it.url) }
+            }
+            .launchInAndFlowWith(viewLifecycleOwner)
+    }
+
+    private fun setupPostDetailViewModel() {
         postDetailViewModel.loading
             .onEach { binding.layoutProgressBar.root.isVisible = it }
             .launchInAndFlowWith(viewLifecycleOwner)
@@ -113,7 +159,9 @@ class PostDetailFragment @Inject constructor(
         postDetailViewModel.updated
             .onEach {
                 binding.root.showBanner(getString(R.string.posts_marked_as_read_feedback))
-                titleLayoutHost.update { hideActionButton() }
+                mainViewModel.updateState { currentState ->
+                    currentState.copy(actionButton = MainState.ActionButtonComponent.Gone)
+                }
             }
             .launchInAndFlowWith(viewLifecycleOwner)
         postDetailViewModel.updateError
@@ -122,7 +170,9 @@ class PostDetailFragment @Inject constructor(
         postDetailViewModel.error
             .onEach { throwable -> handleError(throwable, postDetailViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)
+    }
 
+    private fun setupPopularPostsViewModel() {
         popularPostsViewModel.loading
             .onEach { binding.layoutProgressBar.root.isVisible = it }
             .launchInAndFlowWith(viewLifecycleOwner)
@@ -149,32 +199,30 @@ class PostDetailFragment @Inject constructor(
             showWebView(post)
         }
 
-        titleLayoutHost.update {
-            hideTitle()
-            hideSubTitle()
-            setNavigateUp { navigateBack() }
-        }
-
-        bottomBarHost.update { bottomAppBar, fab ->
-            bottomAppBar.run {
-                navigationIcon = null
-                replaceMenu(menu)
-                setOnMenuItemClickListener { item -> handleMenuClick(item, post) }
-                isVisible = true
-                show()
-            }
-            fab.run {
-                setImageResource(R.drawable.ic_share)
-                setOnClickListener {
-                    requireActivity().shareText(R.string.posts_share_title, post.url)
-                }
-                show()
-            }
+        mainViewModel.updateState { currentState ->
+            currentState.copy(
+                title = MainState.TitleComponent.Gone,
+                subtitle = MainState.TitleComponent.Gone,
+                navigation = MainState.NavigationComponent.Visible(ACTION_ID),
+                bottomAppBar = MainState.BottomAppBarComponent.Visible(
+                    id = ACTION_ID,
+                    menu = menu,
+                    navigationIcon = null,
+                    data = post,
+                ),
+                floatingActionButton = MainState.FabComponent.Visible(
+                    id = ACTION_ID,
+                    icon = R.drawable.ic_share,
+                    data = post,
+                )
+            )
         }
     }
 
     private fun showFileView(post: Post) {
-        titleLayoutHost.update { hideActionButton() }
+        mainViewModel.updateState { currentState ->
+            currentState.copy(actionButton = MainState.ActionButtonComponent.Gone)
+        }
 
         binding.layoutFileView.root.isVisible = true
         binding.layoutScrollViewWeb.isGone = true
@@ -205,10 +253,14 @@ class PostDetailFragment @Inject constructor(
         }
 
         if (post.readLater) {
-            titleLayoutHost.update {
-                setActionButton(R.string.hint_mark_as_read) {
-                    postDetailViewModel.toggleReadLater(post)
-                }
+            mainViewModel.updateState { currentState ->
+                currentState.copy(
+                    actionButton = MainState.ActionButtonComponent.Visible(
+                        id = ACTION_ID,
+                        label = getString(R.string.hint_mark_as_read),
+                        data = post,
+                    )
+                )
             }
         }
 
@@ -254,17 +306,6 @@ class PostDetailFragment @Inject constructor(
         } catch (ignored: ActivityNotFoundException) {
             binding.root.showBanner(getString(R.string.posts_open_with_file_viewer_error))
         }
-    }
-
-    private fun handleMenuClick(item: MenuItem?, post: Post): Boolean {
-        when (item?.itemId) {
-            R.id.menuItemDelete -> deletePost(post)
-            R.id.menuItemEditLink -> appStateViewModel.runAction(EditPost(post))
-            R.id.menuItemSave -> popularPostsViewModel.saveLink(post)
-            R.id.menuItemOpenInBrowser -> openUrlInExternalBrowser(post)
-        }
-
-        return true
     }
 
     private fun deletePost(post: Post) {

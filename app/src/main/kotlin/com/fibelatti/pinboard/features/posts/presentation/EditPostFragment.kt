@@ -11,7 +11,6 @@ import android.view.inputmethod.EditorInfo
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isGone
-import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.doAfterTextChanged
@@ -28,12 +27,11 @@ import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.android.composable.AppTheme
 import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
-import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.core.extension.smoothScrollY
 import com.fibelatti.pinboard.databinding.FragmentEditPostBinding
-import com.fibelatti.pinboard.features.BottomBarHost.Companion.bottomBarHost
-import com.fibelatti.pinboard.features.TitleLayoutHost.Companion.titleLayoutHost
+import com.fibelatti.pinboard.features.MainState
+import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
@@ -44,6 +42,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
+import java.util.UUID
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -55,9 +54,12 @@ class EditPostFragment @Inject constructor(
 
         @JvmStatic
         val TAG: String = "EditPostFragment"
+
+        private val ACTION_ID = UUID.randomUUID().toString()
     }
 
     private val appStateViewModel: AppStateViewModel by activityViewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
     private val editPostViewModel: EditPostViewModel by viewModels()
     private val postDetailViewModel: PostDetailViewModel by viewModels()
     private val tagManagerViewModel: TagManagerViewModel by viewModels()
@@ -104,18 +106,20 @@ class EditPostFragment @Inject constructor(
     override fun onDestroyView() {
         // Needs to be manually removed because the activity is used as the lifecycleOwner
         onBackPressedCallback.remove()
-        super.onDestroyView()
-    }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        titleLayoutHost.update {
-            hideActionButton()
+        mainViewModel.updateState { currentState ->
+            currentState.copy(
+                actionButton = if (currentState.actionButton.id == ACTION_ID) {
+                    MainState.ActionButtonComponent.Gone
+                } else {
+                    currentState.actionButton
+                },
+            )
         }
-        bottomBarHost.update { bottomAppBar, _ ->
-            bottomAppBar.hideKeyboard()
-            bottomAppBar.isVisible = true
-        }
+
+        requireView().hideKeyboard()
+
+        super.onDestroyView()
     }
 
     private fun onBackPressed() {
@@ -143,7 +147,14 @@ class EditPostFragment @Inject constructor(
     private fun handleKeyboardVisibility() {
         binding.root.doOnApplyWindowInsets { view, insets, initialPadding, _ ->
             if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
-                titleLayoutHost.update { setActionButton(R.string.hint_save, ::saveLink) }
+                mainViewModel.updateState { currentState ->
+                    currentState.copy(
+                        actionButton = MainState.ActionButtonComponent.Visible(
+                            label = getString(R.string.hint_save),
+                            id = ACTION_ID,
+                        ),
+                    )
+                }
 
                 val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
 
@@ -168,20 +179,27 @@ class EditPostFragment @Inject constructor(
             } else {
                 view.updatePadding(bottom = initialPadding.bottom)
 
-                titleLayoutHost.update { hideActionButton() }
+                mainViewModel.updateState { currentState ->
+                    currentState.copy(actionButton = MainState.ActionButtonComponent.Gone)
+                }
             }
         }
     }
 
     private fun saveLink() {
-        titleLayoutHost.update { hideActionButton() }
-        bottomBarHost.update { _, fab -> fab.hide() }
+        mainViewModel.updateState { currentState ->
+            currentState.copy(
+                actionButton = MainState.ActionButtonComponent.Gone,
+                floatingActionButton = MainState.FabComponent.Gone,
+            )
+        }
         binding.root.hideKeyboard()
         editPostViewModel.saveLink()
     }
 
     private fun setupViewModels() {
         setupAppStateViewModel()
+        setupMainViewModel()
         setupEditPostViewModel()
         setupPostDetailViewModel()
 
@@ -196,8 +214,6 @@ class EditPostFragment @Inject constructor(
     private fun setupAppStateViewModel() {
         appStateViewModel.addPostContent
             .onEach {
-                setupActivityViews()
-
                 val emptyPost = Post(
                     url = "",
                     title = "",
@@ -212,6 +228,27 @@ class EditPostFragment @Inject constructor(
             .launchInAndFlowWith(viewLifecycleOwner)
         appStateViewModel.editPostContent
             .onEach { editPostViewModel.initializePost(it.post) }
+            .launchInAndFlowWith(viewLifecycleOwner)
+    }
+
+    private fun setupMainViewModel() {
+        mainViewModel.navigationClicks(ACTION_ID)
+            .onEach { onBackPressed() }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        mainViewModel.actionButtonClicks(ACTION_ID)
+            .onEach { saveLink() }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        mainViewModel.menuItemClicks(ACTION_ID)
+            .onEach { (menuItemId, post) ->
+                if (post !is Post) return@onEach
+                when (menuItemId) {
+                    R.id.menuItemDelete -> deletePost(post)
+                    R.id.menuItemOpenInBrowser -> openUrlInExternalBrowser(post)
+                }
+            }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        mainViewModel.fabClicks(ACTION_ID)
+            .onEach { saveLink() }
             .launchInAndFlowWith(viewLifecycleOwner)
     }
 
@@ -264,35 +301,20 @@ class EditPostFragment @Inject constructor(
             .launchInAndFlowWith(viewLifecycleOwner)
     }
 
-    private fun setupActivityViews() {
-        titleLayoutHost.update {
-            setTitle(R.string.posts_add_title)
-            hideSubTitle()
-            setNavigateUp(R.drawable.ic_close) { onBackPressed() }
-        }
-
-        bottomBarHost.update { bottomAppBar, fab ->
-            // Using isInvisible instead of isGone otherwise the fab will misbehave when
-            // starting this fragment from share
-            bottomAppBar.isInvisible = true
-            fab.run {
-                setImageResource(R.drawable.ic_done)
-                setOnClickListener { saveLink() }
-                show()
-            }
-        }
-    }
-
     private fun showPostDetails(post: Post) {
-        setupActivityViews()
-        bottomBarHost.update { bottomAppBar, _ ->
-            bottomAppBar.run {
-                navigationIcon = null
-                replaceMenu(R.menu.menu_details)
-                setOnMenuItemClickListener { item -> handleMenuClick(item, post) }
-                isVisible = true
-                show()
-            }
+        mainViewModel.updateState { currentState ->
+            currentState.copy(
+                title = MainState.TitleComponent.Visible(getString(R.string.posts_add_title)),
+                subtitle = MainState.TitleComponent.Gone,
+                navigation = MainState.NavigationComponent.Visible(id = ACTION_ID, icon = R.drawable.ic_close),
+                bottomAppBar = MainState.BottomAppBarComponent.Visible(
+                    id = ACTION_ID,
+                    menu = R.menu.menu_details,
+                    navigationIcon = null,
+                    data = post,
+                ),
+                floatingActionButton = MainState.FabComponent.Visible(ACTION_ID, R.drawable.ic_done)
+            )
         }
 
         with(post) {
@@ -397,6 +419,8 @@ class EditPostFragment @Inject constructor(
     }
 
     private fun showFab() {
-        bottomBarHost.update { _, fab -> fab.show() }
+        mainViewModel.updateState { currentState ->
+            currentState.copy(floatingActionButton = MainState.FabComponent.Visible(ACTION_ID, R.drawable.ic_done))
+        }
     }
 }

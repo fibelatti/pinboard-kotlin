@@ -15,8 +15,8 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.databinding.FragmentNoteListBinding
-import com.fibelatti.pinboard.features.BottomBarHost.Companion.bottomBarHost
-import com.fibelatti.pinboard.features.TitleLayoutHost.Companion.titleLayoutHost
+import com.fibelatti.pinboard.features.MainState
+import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.RefreshNotes
 import com.fibelatti.pinboard.features.appstate.ViewNote
@@ -24,6 +24,7 @@ import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
+import java.util.UUID
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -35,9 +36,12 @@ class NoteListFragment @Inject constructor(
 
         @JvmStatic
         val TAG: String = "NoteListFragment"
+
+        private val ACTION_ID = UUID.randomUUID().toString()
     }
 
     private val appStateViewModel: AppStateViewModel by activityViewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
     private val noteListViewModel: NoteListViewModel by viewModels()
 
     private val binding by viewBinding(FragmentNoteListBinding::bind)
@@ -98,7 +102,16 @@ class NoteListFragment @Inject constructor(
     private fun setupViewModels() {
         appStateViewModel.noteListContent
             .onEach { content ->
-                setupActivityViews()
+                mainViewModel.updateState { currentState ->
+                    currentState.copy(
+                        title = MainState.TitleComponent.Visible(getString(R.string.notes_title)),
+                        subtitle = MainState.TitleComponent.Gone,
+                        navigation = MainState.NavigationComponent.Visible(ACTION_ID),
+                        bottomAppBar = MainState.BottomAppBarComponent.Gone,
+                        floatingActionButton = MainState.FabComponent.Gone,
+                    )
+                }
+
                 handleLoading(content.shouldLoad)
 
                 if (content.shouldLoad) {
@@ -109,26 +122,13 @@ class NoteListFragment @Inject constructor(
             }
             .launchInAndFlowWith(viewLifecycleOwner)
 
+        mainViewModel.navigationClicks(ACTION_ID)
+            .onEach { navigateBack() }
+            .launchInAndFlowWith(viewLifecycleOwner)
+
         noteListViewModel.error
             .onEach { throwable -> handleError(throwable, noteListViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)
-    }
-
-    private fun setupActivityViews() {
-        // Reset the navigate up action here since navigation to another fragment messes it up
-        titleLayoutHost.update {
-            setTitle(R.string.notes_title)
-            hideSubTitle()
-            setNavigateUp { navigateBack() }
-        }
-        bottomBarHost.update { bottomAppBar, fab ->
-            bottomAppBar.run {
-                navigationIcon = null
-                menu.clear()
-                isGone = true
-            }
-            fab.hide()
-        }
     }
 
     private fun handleLoading(loading: Boolean) {
@@ -144,14 +144,12 @@ class NoteListFragment @Inject constructor(
             binding.recyclerViewNotes.isVisible = true
             binding.layoutEmptyList.isGone = true
 
-            titleLayoutHost.update {
-                setTitle(getString(R.string.notes_title))
-                setSubTitle(
-                    resources.getQuantityString(
-                        R.plurals.notes_quantity,
-                        list.size,
-                        list.size
-                    )
+            mainViewModel.updateState { currentState ->
+                currentState.copy(
+                    title = MainState.TitleComponent.Visible(getString(R.string.notes_title)),
+                    subtitle = MainState.TitleComponent.Visible(
+                        resources.getQuantityString(R.plurals.notes_quantity, list.size, list.size)
+                    ),
                 )
             }
 

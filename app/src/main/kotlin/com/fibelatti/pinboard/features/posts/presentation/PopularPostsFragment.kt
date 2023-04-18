@@ -23,8 +23,8 @@ import com.fibelatti.pinboard.core.extension.copyToClipboard
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.databinding.FragmentPopularPostsBinding
-import com.fibelatti.pinboard.features.BottomBarHost.Companion.bottomBarHost
-import com.fibelatti.pinboard.features.TitleLayoutHost.Companion.titleLayoutHost
+import com.fibelatti.pinboard.features.MainState
+import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.RefreshPopular
@@ -32,6 +32,7 @@ import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
+import java.util.UUID
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -43,9 +44,12 @@ class PopularPostsFragment @Inject constructor(
 
         @JvmStatic
         val TAG: String = "PopularPostsFragment"
+
+        private val ACTION_ID = UUID.randomUUID().toString()
     }
 
     private val appStateViewModel: AppStateViewModel by activityViewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
     private val popularPostsViewModel: PopularPostsViewModel by viewModels()
 
     private val binding by viewBinding(FragmentPopularPostsBinding::bind)
@@ -102,19 +106,14 @@ class PopularPostsFragment @Inject constructor(
     private fun setupViewModels() {
         appStateViewModel.popularPostsContent
             .onEach { content ->
-                titleLayoutHost.update {
-                    setTitle(R.string.popular_title)
-                    hideSubTitle()
-                    setNavigateUp { navigateBack() }
-                }
-
-                bottomBarHost.update { bottomAppBar, fab ->
-                    bottomAppBar.run {
-                        navigationIcon = null
-                        menu.clear()
-                        isGone = true
-                    }
-                    fab.hide()
+                mainViewModel.updateState { currentState ->
+                    currentState.copy(
+                        title = MainState.TitleComponent.Visible(getString(R.string.popular_title)),
+                        subtitle = MainState.TitleComponent.Gone,
+                        navigation = MainState.NavigationComponent.Visible(ACTION_ID),
+                        bottomAppBar = MainState.BottomAppBarComponent.Gone,
+                        floatingActionButton = MainState.FabComponent.Gone,
+                    )
                 }
 
                 if (content.shouldLoad) {
@@ -126,6 +125,10 @@ class PopularPostsFragment @Inject constructor(
                     showPosts(content)
                 }
             }
+            .launchInAndFlowWith(viewLifecycleOwner)
+
+        mainViewModel.navigationClicks(ACTION_ID)
+            .onEach { navigateBack() }
             .launchInAndFlowWith(viewLifecycleOwner)
 
         popularPostsViewModel.loading

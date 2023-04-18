@@ -14,13 +14,14 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.databinding.FragmentNoteDetailBinding
-import com.fibelatti.pinboard.features.BottomBarHost.Companion.bottomBarHost
-import com.fibelatti.pinboard.features.TitleLayoutHost.Companion.titleLayoutHost
+import com.fibelatti.pinboard.features.MainState
+import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
+import java.util.UUID
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -30,9 +31,12 @@ class NoteDetailsFragment @Inject constructor() : BaseFragment() {
 
         @JvmStatic
         val TAG: String = "NoteDetailsFragment"
+
+        private val ACTION_ID = UUID.randomUUID().toString()
     }
 
     private val appStateViewModel: AppStateViewModel by activityViewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
     private val noteDetailsViewModel: NoteDetailsViewModel by viewModels()
 
     private val binding by viewBinding(FragmentNoteDetailBinding::bind)
@@ -45,37 +49,32 @@ class NoteDetailsFragment @Inject constructor() : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        mainViewModel.updateState { currentState ->
+            currentState.copy(
+                title = MainState.TitleComponent.Gone,
+                subtitle = MainState.TitleComponent.Gone,
+                navigation = MainState.NavigationComponent.Visible(ACTION_ID),
+                bottomAppBar = MainState.BottomAppBarComponent.Gone,
+                floatingActionButton = MainState.FabComponent.Gone,
+            )
+        }
+
         setupViewModels()
     }
 
     private fun setupViewModels() {
         appStateViewModel.noteDetailContent
-            .onEach { content ->
-                setupActivityViews()
-                content.note.either({ getNoteDetails(content) }, ::showNote)
-            }
+            .onEach { content -> content.note.either({ getNoteDetails(content) }, ::showNote) }
+            .launchInAndFlowWith(viewLifecycleOwner)
+
+        mainViewModel.navigationClicks(ACTION_ID)
+            .onEach { navigateBack() }
             .launchInAndFlowWith(viewLifecycleOwner)
 
         noteDetailsViewModel.error
             .onEach { throwable -> handleError(throwable, noteDetailsViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)
-    }
-
-    private fun setupActivityViews() {
-        titleLayoutHost.update {
-            hideTitle()
-            hideSubTitle()
-            setNavigateUp { navigateBack() }
-        }
-
-        bottomBarHost.update { bottomAppBar, fab ->
-            bottomAppBar.run {
-                navigationIcon = null
-                menu.clear()
-                isGone = true
-            }
-            fab.hide()
-        }
     }
 
     private fun getNoteDetails(content: NoteDetailContent) {

@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
@@ -24,12 +23,11 @@ import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.copyToClipboard
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
-import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.databinding.FragmentPostListBinding
-import com.fibelatti.pinboard.features.BottomBarHost.Companion.bottomBarHost
 import com.fibelatti.pinboard.features.InAppReviewManager
-import com.fibelatti.pinboard.features.TitleLayoutHost.Companion.titleLayoutHost
+import com.fibelatti.pinboard.features.MainState
+import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AddPost
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -63,6 +61,7 @@ import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
+import java.util.UUID
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -76,9 +75,12 @@ class PostListFragment @Inject constructor(
 
         @JvmStatic
         val TAG: String = "PostListFragment"
+
+        private val ACTION_ID = UUID.randomUUID().toString()
     }
 
     private val appStateViewModel: AppStateViewModel by activityViewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
     private val postListViewModel: PostListViewModel by viewModels()
     private val postDetailViewModel: PostDetailViewModel by viewModels()
 
@@ -185,6 +187,19 @@ class PostListFragment @Inject constructor(
             .onEach { throwable -> handleError(throwable, postListViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)
 
+        mainViewModel.menuItemClicks(ACTION_ID)
+            .onEach { (menuItemId, _) ->
+                when (menuItemId) {
+                    R.id.menuItemSync -> appStateViewModel.runAction(Refresh(force = true))
+                    R.id.menuItemSearch -> appStateViewModel.runAction(ViewSearch)
+                    R.id.menuItemSort -> appStateViewModel.runAction(ToggleSorting)
+                }
+            }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        mainViewModel.fabClicks(ACTION_ID)
+            .onEach { appStateViewModel.runAction(AddPost) }
+            .launchInAndFlowWith(viewLifecycleOwner)
+
         appStateViewModel.postListContent
             .onEach(::updateContent)
             .launchInAndFlowWith(viewLifecycleOwner)
@@ -220,30 +235,29 @@ class PostListFragment @Inject constructor(
     }
 
     private fun updateContent(content: PostListContent) {
-        titleLayoutHost.update { hideNavigateUp() }
-        bottomBarHost.update { bottomAppBar, fab ->
-            bottomAppBar.run {
-                setNavigationIcon(R.drawable.ic_menu)
-                replaceMenu(R.menu.menu_main)
-                if (content.category != All || !content.canForceSync) {
-                    menu.removeItem(R.id.menuItemSync)
-                }
-                setOnMenuItemClickListener(::handleMenuClick)
-                isVisible = true
-                show()
-            }
-            fab.run {
-                setImageResource(R.drawable.ic_pin)
-                setOnClickListener { appStateViewModel.runAction(AddPost) }
-                show()
-            }
+        mainViewModel.updateState { currentState ->
+            currentState.copy(
+                navigation = MainState.NavigationComponent.Gone,
+                bottomAppBar = MainState.BottomAppBarComponent.Visible(
+                    id = ACTION_ID,
+                    menu = if (content.category != All || !content.canForceSync) {
+                        R.menu.menu_main_no_sync
+                    } else {
+                        R.menu.menu_main
+                    },
+                    navigationIcon = R.drawable.ic_menu,
+                ),
+                floatingActionButton = MainState.FabComponent.Visible(ACTION_ID, R.drawable.ic_pin),
+            )
         }
 
         when (content.shouldLoad) {
             ShouldLoadFirstPage, ShouldForceLoad -> {
-                titleLayoutHost.update {
-                    setTitle(getCategoryTitle(content.category))
-                    hideSubTitle()
+                mainViewModel.updateState { currentState ->
+                    currentState.copy(
+                        title = MainState.TitleComponent.Visible(getCategoryTitle(content.category)),
+                        subtitle = MainState.TitleComponent.Gone,
+                    )
                 }
 
                 binding.progressBar.isVisible = true
@@ -305,9 +319,13 @@ class PostListFragment @Inject constructor(
         binding.progressBar.isGone = content.shouldLoad == Loaded
         binding.recyclerViewPosts.onRequestNextPageCompleted()
 
-        titleLayoutHost.update {
-            setTitle(getCategoryTitle(content.category))
-            setSubTitle(buildPostCountSubTitle(content.totalCount, content.sortType))
+        mainViewModel.updateState { currentState ->
+            currentState.copy(
+                title = MainState.TitleComponent.Visible(getCategoryTitle(content.category)),
+                subtitle = MainState.TitleComponent.Visible(
+                    buildPostCountSubTitle(content.totalCount, content.sortType),
+                ),
+            )
         }
 
         if (content.posts == null && content.shouldLoad == Loaded) {
@@ -340,23 +358,16 @@ class PostListFragment @Inject constructor(
     }
 
     private fun showEmptyLayout() {
-        titleLayoutHost.update { hideSubTitle() }
+        mainViewModel.updateState { currentState ->
+            currentState.copy(subtitle = MainState.TitleComponent.Gone)
+        }
+
         binding.recyclerViewPosts.isGone = true
         binding.layoutEmptyList.apply {
             isVisible = true
             setTitle(R.string.posts_empty_title)
             setDescription(R.string.posts_empty_description)
         }
-    }
-
-    private fun handleMenuClick(item: MenuItem?): Boolean {
-        when (item?.itemId) {
-            R.id.menuItemSync -> appStateViewModel.runAction(Refresh(force = true))
-            R.id.menuItemSearch -> appStateViewModel.runAction(ViewSearch)
-            R.id.menuItemSort -> appStateViewModel.runAction(ToggleSorting)
-        }
-
-        return true
     }
 }
 

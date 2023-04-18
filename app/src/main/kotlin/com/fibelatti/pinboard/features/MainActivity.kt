@@ -12,7 +12,6 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -28,9 +27,9 @@ import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
-import com.fibelatti.pinboard.core.android.customview.TitleLayout
 import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
+import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.databinding.ActivityMainBinding
 import com.fibelatti.pinboard.features.appstate.AddPostContent
@@ -55,8 +54,6 @@ import com.fibelatti.pinboard.features.appstate.SearchContent
 import com.fibelatti.pinboard.features.appstate.TagListContent
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
 import com.fibelatti.pinboard.features.navigation.NavigationMenuFragment
-import com.google.android.material.bottomappbar.BottomAppBar
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
@@ -65,9 +62,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
+class MainActivity : BaseActivity() {
 
     private val appStateViewModel: AppStateViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModels()
 
     @Inject
     lateinit var featureFragments: FeatureFragments
@@ -166,6 +164,87 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
         appStateViewModel.content
             .onEach(::handleContent)
             .launchInAndFlowWith(this)
+
+        mainViewModel.state
+            .onEach { state ->
+                updateTitleComponent(state)
+                updateBottomAppBarComponent(state)
+                updateFabComponent(state)
+            }
+            .launchInAndFlowWith(this)
+    }
+
+    private fun updateTitleComponent(state: MainState) = with(binding.layoutTitle) {
+        when (state.title) {
+            is MainState.TitleComponent.Gone -> hideTitle()
+            is MainState.TitleComponent.Visible -> setTitle(state.title.label)
+        }
+        when (state.subtitle) {
+            is MainState.TitleComponent.Gone -> hideSubTitle()
+            is MainState.TitleComponent.Visible -> setSubTitle(state.subtitle.label)
+        }
+        when (state.navigation) {
+            is MainState.NavigationComponent.Gone -> hideNavigation()
+            is MainState.NavigationComponent.Visible -> setNavigation(state.navigation.icon) {
+                mainViewModel.navigationClicked(id = state.navigation.id)
+            }
+        }
+        when (state.actionButton) {
+            is MainState.ActionButtonComponent.Gone -> hideActionButton()
+            is MainState.ActionButtonComponent.Visible -> setActionButton(state.actionButton.label) {
+                mainViewModel.actionButtonClicked(
+                    id = state.actionButton.id,
+                    data = state.actionButton.data,
+                )
+            }
+        }
+    }
+
+    private fun updateBottomAppBarComponent(state: MainState) {
+        when (state.bottomAppBar) {
+            is MainState.BottomAppBarComponent.Gone -> {
+                binding.bottomAppBar.navigationIcon = null
+                binding.bottomAppBar.menu.clear()
+                binding.bottomAppBar.isGone = true
+            }
+            is MainState.BottomAppBarComponent.Visible -> {
+                val icon = state.bottomAppBar.navigationIcon
+                if (icon != null) {
+                    binding.bottomAppBar.setNavigationIcon(icon)
+                } else {
+                    binding.bottomAppBar.navigationIcon = null
+                }
+
+                binding.bottomAppBar.replaceMenu(state.bottomAppBar.menu)
+                binding.bottomAppBar.setOnMenuItemClickListener { menuItem ->
+                    mainViewModel.menuItemClicked(
+                        id = state.bottomAppBar.id,
+                        menuItemId = menuItem.itemId,
+                        data = state.bottomAppBar.data
+                    )
+                    true
+                }
+
+                binding.bottomAppBar.isVisible = true
+                binding.bottomAppBar.show()
+            }
+        }
+    }
+
+    private fun updateFabComponent(state: MainState) {
+        when (state.floatingActionButton) {
+            is MainState.FabComponent.Gone -> binding.fabMain.hide()
+            is MainState.FabComponent.Visible -> {
+                binding.fabMain.setImageResource(state.floatingActionButton.icon)
+                binding.fabMain.setOnClickListener {
+                    mainViewModel.fabClicked(
+                        id = state.floatingActionButton.id,
+                        data = state.floatingActionButton.data,
+                    )
+                }
+                binding.fabMain.show()
+            }
+        }
     }
 
     private fun setupAutoUpdate() {
@@ -189,6 +268,8 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
 
     private fun handleContent(content: Content) {
         onBackPressedCallback.isEnabled = (content as? ContentWithHistory)?.previousContent !is ExternalContent
+
+        binding.layoutTitle.isGone = content is LoginContent
 
         if (isRecreating) {
             isRecreating = false
@@ -226,12 +307,14 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
                 }
                 featureFragments.showLogin()
             }
+
             is PostListContent -> featureFragments.showPostList()
             is PostDetailContent -> featureFragments.showPostDetail()
             is ExternalBrowserContent -> {
                 featureFragments.showPostInExternalBrowser(content.post)
                 onResumeDelegate = { appStateViewModel.runAction(NavigateBack) }
             }
+
             is SearchContent -> featureFragments.showSearch()
             is AddPostContent -> featureFragments.showAddPost()
             is EditPostContent -> featureFragments.showEditPost()
@@ -248,17 +331,7 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
         }
     }
 
-    override fun update(titleUpdates: TitleLayout.() -> Unit) {
-        binding.layoutTitle.isVisible = true
-        binding.layoutTitle.run(titleUpdates)
-    }
-
-    override fun update(update: (BottomAppBar, FloatingActionButton) -> Unit) {
-        update(binding.bottomAppBar, binding.fabMain)
-    }
-
     private fun hideControls() {
-        binding.layoutTitle.isGone = true
         binding.bottomAppBar.isGone = true
         binding.fabMain.hide()
     }
@@ -288,25 +361,5 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
     companion object {
 
         var Intent.fromBuilder by intentExtras(false)
-    }
-}
-
-interface TitleLayoutHost {
-
-    fun update(titleUpdates: TitleLayout.() -> Unit)
-
-    companion object {
-
-        val Fragment.titleLayoutHost: TitleLayoutHost get() = requireActivity() as TitleLayoutHost
-    }
-}
-
-interface BottomBarHost {
-
-    fun update(update: (BottomAppBar, FloatingActionButton) -> Unit)
-
-    companion object {
-
-        val Fragment.bottomBarHost: BottomBarHost get() = requireActivity() as BottomBarHost
     }
 }

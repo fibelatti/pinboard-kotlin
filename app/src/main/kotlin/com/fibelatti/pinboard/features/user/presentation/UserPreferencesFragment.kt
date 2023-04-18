@@ -12,6 +12,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.extension.doOnApplyWindowInsets
@@ -29,8 +30,8 @@ import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.smoothScrollY
 import com.fibelatti.pinboard.databinding.FragmentUserPreferencesBinding
-import com.fibelatti.pinboard.features.BottomBarHost.Companion.bottomBarHost
-import com.fibelatti.pinboard.features.TitleLayoutHost.Companion.titleLayoutHost
+import com.fibelatti.pinboard.features.MainState
+import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
@@ -41,6 +42,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -52,8 +54,11 @@ class UserPreferencesFragment @Inject constructor(
 
         @JvmStatic
         val TAG: String = "UserPreferencesFragment"
+
+        private val ACTION_ID = UUID.randomUUID().toString()
     }
 
+    private val mainViewModel: MainViewModel by activityViewModels()
     private val userPreferencesViewModel: UserPreferencesViewModel by viewModels()
     private val tagManagerViewModel: TagManagerViewModel by viewModels()
 
@@ -67,34 +72,30 @@ class UserPreferencesFragment @Inject constructor(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupActivityViews()
+
+        mainViewModel.updateState { currentState ->
+            currentState.copy(
+                title = MainState.TitleComponent.Visible(getString(R.string.user_preferences_title)),
+                subtitle = MainState.TitleComponent.Gone,
+                navigation = MainState.NavigationComponent.Visible(ACTION_ID),
+                bottomAppBar = MainState.BottomAppBarComponent.Gone,
+                floatingActionButton = MainState.FabComponent.Gone,
+            )
+        }
+
         setupViews()
         handleKeyboardVisibility()
         setupViewModels()
     }
 
-    override fun onDestroy() {
-        bottomBarHost.update { bottomAppBar, _ ->
-            bottomAppBar.hideKeyboard()
-        }
-        activity?.supportFragmentManager?.setFragmentResult(TAG, bundleOf())
-        super.onDestroy()
+    override fun onDestroyView() {
+        requireView().hideKeyboard()
+        super.onDestroyView()
     }
 
-    private fun setupActivityViews() {
-        titleLayoutHost.update {
-            setTitle(R.string.user_preferences_title)
-            hideSubTitle()
-            setNavigateUp { navigateBack() }
-        }
-        bottomBarHost.update { bottomAppBar, fab ->
-            bottomAppBar.run {
-                navigationIcon = null
-                menu.clear()
-                isVisible = false
-            }
-            fab.hide()
-        }
+    override fun onDestroy() {
+        activity?.supportFragmentManager?.setFragmentResult(TAG, bundleOf())
+        super.onDestroy()
     }
 
     private fun setupViews() {
@@ -131,6 +132,10 @@ class UserPreferencesFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
+        mainViewModel.navigationClicks(ACTION_ID)
+            .onEach { navigateBack() }
+            .launchInAndFlowWith(viewLifecycleOwner)
+
         userPreferencesViewModel.currentPreferences
             .onEach {
                 binding.toggleAutoUpdate.setActiveAndOnChangedListener(

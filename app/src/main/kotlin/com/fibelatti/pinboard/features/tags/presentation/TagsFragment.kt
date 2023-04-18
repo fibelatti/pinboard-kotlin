@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.core.view.isGone
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import com.fibelatti.core.extension.getAttributeColor
 import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.pinboard.R
@@ -18,14 +18,16 @@ import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.android.composable.AppTheme
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
-import com.fibelatti.pinboard.features.BottomBarHost.Companion.bottomBarHost
-import com.fibelatti.pinboard.features.TitleLayoutHost.Companion.titleLayoutHost
+import com.fibelatti.pinboard.features.MainState
+import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.RefreshTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import com.fibelatti.ui.theme.ExtendedTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
+import java.util.UUID
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -35,9 +37,12 @@ class TagsFragment @Inject constructor() : BaseFragment() {
 
         @JvmStatic
         val TAG: String = "TagsFragment"
+
+        private val ACTION_ID = UUID.randomUUID().toString()
     }
 
     private val appStateViewModel: AppStateViewModel by activityViewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
     private val tagsViewModel: TagsViewModel by viewModels()
 
     override fun onCreateView(
@@ -49,22 +54,36 @@ class TagsFragment @Inject constructor() : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupLayout()
+        with(requireView() as ComposeView) {
+            setContent {
+                AppTheme {
+                    TagList(
+                        modifier = Modifier.background(color = ExtendedTheme.colors.backgroundNoOverlay),
+                        tagsViewModel = tagsViewModel,
+                        onTagClicked = { appStateViewModel.runAction(PostsForTag(it)) },
+                        onTagLongClicked = ::showTagQuickActions,
+                        onPullToRefresh = { appStateViewModel.runAction(RefreshTags) }
+                    )
+                }
+            }
+        }
+
+        mainViewModel.updateState { currentState ->
+            currentState.copy(
+                title = MainState.TitleComponent.Visible(getString(R.string.tags_title)),
+                subtitle = MainState.TitleComponent.Gone,
+                navigation = MainState.NavigationComponent.Visible(ACTION_ID),
+                bottomAppBar = MainState.BottomAppBarComponent.Gone,
+                floatingActionButton = MainState.FabComponent.Gone,
+            )
+        }
+
         setupViewModels()
     }
 
-    private fun setupLayout() = with(requireView() as ComposeView) {
-        setBackgroundColor(context.getAttributeColor(android.R.attr.colorBackground))
-        setContent {
-            AppTheme {
-                TagList(
-                    tagsViewModel = tagsViewModel,
-                    onTagClicked = { appStateViewModel.runAction(PostsForTag(it)) },
-                    onTagLongClicked = ::showTagQuickActions,
-                    onPullToRefresh = { appStateViewModel.runAction(RefreshTags) }
-                )
-            }
-        }
+    override fun onDestroyView() {
+        requireView().hideKeyboard()
+        super.onDestroyView()
     }
 
     private fun showTagQuickActions(tag: Tag) {
@@ -91,8 +110,6 @@ class TagsFragment @Inject constructor() : BaseFragment() {
     private fun setupViewModels() {
         appStateViewModel.tagListContent
             .onEach { content ->
-                setupActivityViews()
-
                 if (content.shouldLoad) {
                     tagsViewModel.getAll(TagsViewModel.Source.MENU)
                 } else {
@@ -101,29 +118,13 @@ class TagsFragment @Inject constructor() : BaseFragment() {
             }
             .launchInAndFlowWith(viewLifecycleOwner)
 
+        mainViewModel.navigationClicks(ACTION_ID)
+            .onEach { navigateBack() }
+            .launchInAndFlowWith(viewLifecycleOwner)
+
         tagsViewModel.error
             .onEach { throwable -> handleError(throwable, tagsViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)
-    }
-
-    private fun setupActivityViews() {
-        titleLayoutHost.update {
-            setTitle(R.string.tags_title)
-            hideSubTitle()
-            setNavigateUp {
-                hideKeyboard()
-                navigateBack()
-            }
-        }
-
-        bottomBarHost.update { bottomAppBar, fab ->
-            bottomAppBar.run {
-                navigationIcon = null
-                menu.clear()
-                isGone = true
-            }
-            fab.hide()
-        }
     }
 }
 

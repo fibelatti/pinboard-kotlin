@@ -147,7 +147,7 @@
     <!-- Notes -->
     <string name="notes_title">Notes</string>
     <plurals name="notes_quantity">
-        <item quantity="zero">No notes</item>
+        <item quantity="zero">Empty</item>
         <item quantity="one">1 note</item>
         <item quantity="other">%d notes</item>
     </plurals>

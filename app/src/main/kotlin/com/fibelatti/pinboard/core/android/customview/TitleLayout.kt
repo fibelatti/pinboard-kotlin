@@ -5,10 +5,8 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import com.fibelatti.pinboard.R
 import com.fibelatti.core.extension.doOnInitializeAccessibilityNodeInfo
 import com.fibelatti.pinboard.databinding.LayoutTitleBinding
 
@@ -29,21 +27,17 @@ class TitleLayout @JvmOverloads constructor(
         binding.buttonAction.accessibilityLiveRegion = ACCESSIBILITY_LIVE_REGION_POLITE
     }
 
-    fun setNavigateUp(@DrawableRes iconRes: Int = R.drawable.ic_back_arrow, navigateUp: () -> Unit) {
+    fun setNavigation(@DrawableRes iconRes: Int, onClick: OnClickListener) {
         binding.buttonNavigateBack.apply {
             setImageDrawable(ContextCompat.getDrawable(context, iconRes))
-            setOnClickListener { navigateUp() }
+            setOnClickListener(onClick)
             isVisible = true
         }
     }
 
-    fun hideNavigateUp() {
+    fun hideNavigation() {
         binding.buttonNavigateBack.setOnClickListener(null)
         binding.buttonNavigateBack.isVisible = false
-    }
-
-    fun setTitle(@StringRes titleRes: Int) {
-        setTitle(context.getString(titleRes))
     }
 
     fun setTitle(title: String) {
@@ -72,9 +66,9 @@ class TitleLayout @JvmOverloads constructor(
         binding.textViewSubtitle.isVisible = false
     }
 
-    fun setActionButton(@StringRes stringRes: Int, onClick: () -> Unit) {
-        binding.buttonAction.setOnClickListener { onClick() }
-        binding.buttonAction.setText(stringRes)
+    fun setActionButton(label: String, onClick: OnClickListener) {
+        binding.buttonAction.setOnClickListener(onClick)
+        binding.buttonAction.text = label
         binding.buttonAction.isVisible = true
     }
 
