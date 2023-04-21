@@ -11,7 +11,7 @@ dependencyResolutionManagement {
             val agpVersion = "8.0.0"
             val kotlinVersion = "1.8.10"
             val coroutinesVersion = "1.6.4"
-            val composeUiVersion = "1.4.1"
+            val composeUiVersion = "1.4.2"
             val hiltVersion = "2.45"
             val lifecycleVersion = "2.6.1"
             val roomVersion = "2.5.1"
@@ -35,7 +35,7 @@ dependencyResolutionManagement {
             library("appcompat", "androidx.appcompat:appcompat:1.6.1")
             library("core-ktx", "androidx.core:core-ktx:1.10.0")
             library("activity-ktx", "androidx.activity:activity-ktx:1.7.1")
-            library("fragment-ktx", "androidx.fragment:fragment-ktx:1.5.6")
+            library("fragment-ktx", "androidx.fragment:fragment-ktx:1.5.7")
             library("material", "com.google.android.material:material:1.8.0")
             library("constraint-layout", "androidx.constraintlayout:constraintlayout:2.1.4")
             library("constraint-layout-compose", "androidx.constraintlayout:constraintlayout-compose:1.0.1")
@@ -51,13 +51,13 @@ dependencyResolutionManagement {
             library("browser", "androidx.browser:browser:1.5.0")
             library("viewbinding", "androidx.databinding:viewbinding:$agpVersion")
 
-            library("compose-runtime", "androidx.compose.runtime:runtime:1.4.1")
-            library("compose-material", "androidx.compose.material:material:1.4.1")
+            library("compose-runtime", "androidx.compose.runtime:runtime:1.4.2")
+            library("compose-material", "androidx.compose.material:material:1.4.2")
             library("compose-material3", "androidx.compose.material3:material3:1.0.1")
             library("compose-ui", "androidx.compose.ui:ui:$composeUiVersion")
             library("compose-ui-tooling", "androidx.compose.ui:ui-tooling:$composeUiVersion")
             library("compose-ui-tooling-preview", "androidx.compose.ui:ui-tooling-preview:$composeUiVersion")
-            library("compose-activity", "androidx.activity:activity-compose:1.7.0")
+            library("compose-activity", "androidx.activity:activity-compose:1.7.1")
 
             library("hilt-android", "com.google.dagger:hilt-android:$hiltVersion")
             library("hilt-compiler", "com.google.dagger:hilt-compiler:$hiltVersion")
