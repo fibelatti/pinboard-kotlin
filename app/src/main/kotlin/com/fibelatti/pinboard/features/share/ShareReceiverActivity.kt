@@ -1,12 +1,11 @@
 package com.fibelatti.pinboard.features.share
 
 import android.os.Bundle
-import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.app.ShareCompat
 import androidx.core.view.WindowCompat
 import com.fibelatti.pinboard.core.android.base.BaseActivity
-import com.fibelatti.pinboard.core.android.composable.AppTheme
+import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.features.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -16,17 +15,15 @@ class ShareReceiverActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContent {
-            AppTheme {
-                ShareReceiverScreen(
-                    onEdit = {
-                        startActivity(MainActivity.Builder(this).build())
-                        finish()
-                    },
-                    onSaved = { finish() },
-                    errorDialogAction = { finish() },
-                )
-            }
+        setThemedContent {
+            ShareReceiverScreen(
+                onEdit = {
+                    startActivity(MainActivity.Builder(this).build())
+                    finish()
+                },
+                onSaved = { finish() },
+                errorDialogAction = { finish() },
+            )
         }
 
         WindowCompat.setDecorFitsSystemWindows(window, false)

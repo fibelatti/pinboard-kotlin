@@ -24,9 +24,9 @@ import com.fibelatti.core.extension.showError
 import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import com.fibelatti.pinboard.core.android.composable.AppTheme
 import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
+import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.core.extension.smoothScrollY
 import com.fibelatti.pinboard.databinding.FragmentEditPostBinding
@@ -372,10 +372,8 @@ class EditPostFragment @Inject constructor(
         binding.toggleReadLater.setOnChangedListener { newValue ->
             editPostViewModel.updatePost { post -> post.copy(readLater = newValue) }
         }
-        binding.composeViewTagManager.setContent {
-            AppTheme {
-                TagManager(tagManagerViewModel = tagManagerViewModel)
-            }
+        binding.composeViewTagManager.setThemedContent {
+            TagManager(tagManagerViewModel = tagManagerViewModel)
         }
     }
 

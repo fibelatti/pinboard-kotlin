@@ -24,10 +24,10 @@ import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import com.fibelatti.pinboard.core.android.composable.AppTheme
 import com.fibelatti.pinboard.core.android.customview.SettingToggle
 import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
+import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.smoothScrollY
 import com.fibelatti.pinboard.databinding.FragmentUserPreferencesBinding
 import com.fibelatti.pinboard.features.MainState
@@ -104,10 +104,8 @@ class UserPreferencesFragment @Inject constructor(
 
         binding.toggleDynamicColors.isVisible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
-        binding.composeViewTagManager.setContent {
-            AppTheme {
-                TagManager(tagManagerViewModel = tagManagerViewModel)
-            }
+        binding.composeViewTagManager.setThemedContent {
+            TagManager(tagManagerViewModel = tagManagerViewModel)
         }
     }
 
@@ -259,6 +257,7 @@ class UserPreferencesFragment @Inject constructor(
                     PreferredDateFormat.MonthDayYearWithTime -> R.string.user_preferences_date_format_month_first
                     PreferredDateFormat.ShortYearMonthDayWithTime ->
                         R.string.user_preferences_date_format_short_year_first
+
                     PreferredDateFormat.YearMonthDayWithTime -> R.string.user_preferences_date_format_year_first
                 }
             },
@@ -283,6 +282,7 @@ class UserPreferencesFragment @Inject constructor(
                     is PreferredDetailsView.InAppBrowser -> R.string.user_preferences_preferred_details_in_app_browser
                     is PreferredDetailsView.ExternalBrowser ->
                         R.string.user_preferences_preferred_details_external_browser
+
                     is PreferredDetailsView.Edit -> R.string.user_preferences_preferred_details_post_details
                 }
             },
@@ -300,10 +300,12 @@ class UserPreferencesFragment @Inject constructor(
                         userPreferencesViewModel.savePreferredDetailsView(option)
                         binding.toggleMarkAsReadOnOpen.isVisible = true
                     }
+
                     is PreferredDetailsView.ExternalBrowser -> {
                         userPreferencesViewModel.savePreferredDetailsView(option)
                         binding.toggleMarkAsReadOnOpen.isVisible = true
                     }
+
                     is PreferredDetailsView.Edit -> {
                         userPreferencesViewModel.savePreferredDetailsView(option)
                         binding.toggleMarkAsReadOnOpen.isVisible = false

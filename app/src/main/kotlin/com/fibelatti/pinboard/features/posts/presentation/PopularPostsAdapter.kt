@@ -5,7 +5,7 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import com.fibelatti.core.android.recyclerview.BaseListAdapter
 import com.fibelatti.core.android.recyclerview.ViewHolder
-import com.fibelatti.pinboard.core.android.composable.AppTheme
+import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.databinding.ListItemPopularPostBinding
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.components.ChipGroup
@@ -32,13 +32,11 @@ class PopularPostsAdapter @Inject constructor() : BaseListAdapter<Post, ListItem
             binding.chipGroupTags.isGone = true
         } else {
             binding.chipGroupTags.isVisible = true
-            binding.chipGroupTags.setContent {
-                AppTheme {
-                    MultilineChipGroup(
-                        items = item.tags.map { tag -> ChipGroup.Item(text = tag.name) },
-                        onItemClick = {},
-                    )
-                }
+            binding.chipGroupTags.setThemedContent {
+                MultilineChipGroup(
+                    items = item.tags.map { tag -> ChipGroup.Item(text = tag.name) },
+                    onItemClick = {},
+                )
             }
         }
 

@@ -16,8 +16,8 @@ import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import com.fibelatti.pinboard.core.android.composable.AppTheme
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
+import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -54,18 +54,14 @@ class TagsFragment @Inject constructor() : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        with(requireView() as ComposeView) {
-            setContent {
-                AppTheme {
-                    TagList(
-                        modifier = Modifier.background(color = ExtendedTheme.colors.backgroundNoOverlay),
-                        tagsViewModel = tagsViewModel,
-                        onTagClicked = { appStateViewModel.runAction(PostsForTag(it)) },
-                        onTagLongClicked = ::showTagQuickActions,
-                        onPullToRefresh = { appStateViewModel.runAction(RefreshTags) },
-                    )
-                }
-            }
+        setThemedContent {
+            TagList(
+                modifier = Modifier.background(color = ExtendedTheme.colors.backgroundNoOverlay),
+                tagsViewModel = tagsViewModel,
+                onTagClicked = { appStateViewModel.runAction(PostsForTag(it)) },
+                onTagLongClicked = ::showTagQuickActions,
+                onPullToRefresh = { appStateViewModel.runAction(RefreshTags) },
+            )
         }
 
         mainViewModel.updateState { currentState ->

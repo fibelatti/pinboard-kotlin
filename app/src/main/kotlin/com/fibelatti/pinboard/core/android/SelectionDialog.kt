@@ -20,8 +20,8 @@ import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.setViewTreeOwners
-import com.fibelatti.ui.theme.ExtendedTheme
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
 object SelectionDialog {
@@ -38,19 +38,17 @@ object SelectionDialog {
             setViewTreeOwners()
 
             val content = ComposeView(context).apply {
-                setContent {
-                    ExtendedTheme {
-                        SelectionDialogContent(
-                            title = title,
-                            options = options,
-                            optionName = optionName,
-                            optionIcon = optionIcon,
-                            onOptionSelected = { option ->
-                                onOptionSelected(option)
-                                dismiss()
-                            },
-                        )
-                    }
+                setThemedContent {
+                    SelectionDialogContent(
+                        title = title,
+                        options = options,
+                        optionName = optionName,
+                        optionIcon = optionIcon,
+                        onOptionSelected = { option ->
+                            onOptionSelected(option)
+                            dismiss()
+                        },
+                    )
                 }
             }
 

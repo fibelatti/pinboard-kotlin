@@ -27,10 +27,10 @@ import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
-import com.fibelatti.pinboard.core.android.composable.AppTheme
 import com.fibelatti.pinboard.core.android.composable.MainTitle
 import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
+import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.show
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.databinding.ActivityMainBinding
@@ -124,10 +124,8 @@ class MainActivity : BaseActivity() {
             view.updatePadding(top = initialPadding.top + insets.getInsets(WindowInsetsCompat.Type.systemBars()).top)
         }
 
-        binding.composeViewTitle.setContent {
-            AppTheme {
-                MainTitle()
-            }
+        binding.composeViewTitle.setThemedContent {
+            MainTitle()
         }
 
         binding.layoutContent.animateChangingTransitions()

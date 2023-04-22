@@ -11,8 +11,8 @@ import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import com.fibelatti.pinboard.core.android.composable.AppTheme
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
+import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -40,13 +40,11 @@ class PostSearchFragment @Inject constructor() : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (view as ComposeView).setContent {
-            AppTheme {
-                SearchBookmarksScreen(
-                    appStateViewModel = appStateViewModel,
-                    tagsViewModel = tagsViewModel,
-                )
-            }
+        setThemedContent {
+            SearchBookmarksScreen(
+                appStateViewModel = appStateViewModel,
+                tagsViewModel = tagsViewModel,
+            )
         }
 
         mainViewModel.updateState { currentState ->

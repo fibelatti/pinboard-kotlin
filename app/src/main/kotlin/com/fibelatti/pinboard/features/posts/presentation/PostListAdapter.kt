@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.fibelatti.core.android.recyclerview.BaseAdapter
 import com.fibelatti.core.android.recyclerview.ViewHolder
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.android.composable.AppTheme
+import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.databinding.ListItemPostBinding
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
@@ -72,15 +72,13 @@ class PostListAdapter @Inject constructor(
             binding.chipGroupTags.isGone = true
         } else {
             binding.chipGroupTags.isVisible = true
-            binding.chipGroupTags.setContent {
-                AppTheme {
-                    MultilineChipGroup(
-                        items = item.tags.map { tag -> ChipGroup.Item(text = tag.name) },
-                        onItemClick = { chipGroupItem ->
-                            onTagClicked?.invoke(item.tags.first { it.name == chipGroupItem.text })
-                        },
-                    )
-                }
+            binding.chipGroupTags.setThemedContent {
+                MultilineChipGroup(
+                    items = item.tags.map { tag -> ChipGroup.Item(text = tag.name) },
+                    onItemClick = { chipGroupItem ->
+                        onTagClicked?.invoke(item.tags.first { it.name == chipGroupItem.text })
+                    },
+                )
             }
         }
 

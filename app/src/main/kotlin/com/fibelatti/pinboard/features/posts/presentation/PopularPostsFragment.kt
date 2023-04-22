@@ -21,10 +21,10 @@ import com.fibelatti.core.extension.withItemOffsetDecoration
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import com.fibelatti.pinboard.core.android.composable.AppTheme
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.extension.copyToClipboard
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
+import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.databinding.FragmentPopularPostsBinding
 import com.fibelatti.pinboard.features.MainState
@@ -155,14 +155,12 @@ class PopularPostsFragment @Inject constructor(
         if (content.posts.isEmpty()) {
             binding.recyclerViewPosts.isGone = true
             binding.layoutEmptyList.isVisible = true
-            binding.layoutEmptyList.setContent {
-                AppTheme {
-                    EmptyListContent(
-                        icon = painterResource(id = R.drawable.ic_notes),
-                        title = stringResource(id = R.string.posts_empty_title),
-                        description = stringResource(id = R.string.posts_empty_description),
-                    )
-                }
+            binding.layoutEmptyList.setThemedContent {
+                EmptyListContent(
+                    icon = painterResource(id = R.drawable.ic_notes),
+                    title = stringResource(id = R.string.posts_empty_title),
+                    description = stringResource(id = R.string.posts_empty_description),
+                )
             }
             return
         }
