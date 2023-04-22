@@ -6,7 +6,7 @@ apply(from = "detekt.gradle")
 buildscript {
     extra["compileSdkVersion"] = 33
     extra["targetSdkVersion"] = 33
-    extra["minSdkVersion"] = 21
+    extra["minSdkVersion"] = 23
 
     val jacocoEnabled: String? by project
     extra["jacocoEnabled"] = jacocoEnabled?.toBoolean() ?: false
