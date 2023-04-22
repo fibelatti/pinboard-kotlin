@@ -12,11 +12,10 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.fibelatti.pinboard.core.android.customview.TitleLayout
-            android:id="@+id/layoutTitle"
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/compose_view_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?android:colorBackground"
             android:visibility="gone"
             tools:visibility="visible" />
 

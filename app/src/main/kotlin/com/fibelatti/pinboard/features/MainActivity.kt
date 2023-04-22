@@ -27,6 +27,8 @@ import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
+import com.fibelatti.pinboard.core.android.composable.AppTheme
+import com.fibelatti.pinboard.core.android.composable.MainTitle
 import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.show
@@ -118,8 +120,14 @@ class MainActivity : BaseActivity() {
     private fun setupView() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        binding.layoutTitle.doOnApplyWindowInsets { view, insets, initialPadding, _ ->
+        binding.composeViewTitle.doOnApplyWindowInsets { view, insets, initialPadding, _ ->
             view.updatePadding(top = initialPadding.top + insets.getInsets(WindowInsetsCompat.Type.systemBars()).top)
+        }
+
+        binding.composeViewTitle.setContent {
+            AppTheme {
+                MainTitle()
+            }
         }
 
         binding.layoutContent.animateChangingTransitions()
@@ -150,7 +158,7 @@ class MainActivity : BaseActivity() {
         supportFragmentManager.setupForAccessibility()
 
         binding.bottomAppBar.doOnInitializeAccessibilityNodeInfo { info ->
-            info.setTraversalAfter(binding.layoutTitle)
+            info.setTraversalAfter(binding.composeViewTitle)
         }
         binding.fabMain.doOnInitializeAccessibilityNodeInfo { info ->
             info.setTraversalAfter(binding.bottomAppBar)
@@ -167,37 +175,10 @@ class MainActivity : BaseActivity() {
 
         mainViewModel.state
             .onEach { state ->
-                updateTitleComponent(state)
                 updateBottomAppBarComponent(state)
                 updateFabComponent(state)
             }
             .launchInAndFlowWith(this)
-    }
-
-    private fun updateTitleComponent(state: MainState) = with(binding.layoutTitle) {
-        when (state.title) {
-            is MainState.TitleComponent.Gone -> hideTitle()
-            is MainState.TitleComponent.Visible -> setTitle(state.title.label)
-        }
-        when (state.subtitle) {
-            is MainState.TitleComponent.Gone -> hideSubTitle()
-            is MainState.TitleComponent.Visible -> setSubTitle(state.subtitle.label)
-        }
-        when (state.navigation) {
-            is MainState.NavigationComponent.Gone -> hideNavigation()
-            is MainState.NavigationComponent.Visible -> setNavigation(state.navigation.icon) {
-                mainViewModel.navigationClicked(id = state.navigation.id)
-            }
-        }
-        when (state.actionButton) {
-            is MainState.ActionButtonComponent.Gone -> hideActionButton()
-            is MainState.ActionButtonComponent.Visible -> setActionButton(state.actionButton.label) {
-                mainViewModel.actionButtonClicked(
-                    id = state.actionButton.id,
-                    data = state.actionButton.data,
-                )
-            }
-        }
     }
 
     private fun updateBottomAppBarComponent(state: MainState) {
@@ -269,7 +250,7 @@ class MainActivity : BaseActivity() {
     private fun handleContent(content: Content) {
         onBackPressedCallback.isEnabled = (content as? ContentWithHistory)?.previousContent !is ExternalContent
 
-        binding.layoutTitle.isGone = content is LoginContent
+        binding.composeViewTitle.isGone = content is LoginContent
 
         if (isRecreating) {
             isRecreating = false
