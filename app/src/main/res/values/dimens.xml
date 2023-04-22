@@ -32,15 +32,11 @@
 
     <dimen name="progress_bar_size">50dp</dimen>
 
-    <dimen name="title_layout_height">65dp</dimen>
-
     <dimen name="fab_offset_bottom">100dp</dimen>
 
     <dimen name="post_detail_icon_size">60dp</dimen>
 
     <dimen name="drawable_board_width">200dp</dimen>
-
-    <dimen name="quick_action_icon_size">16dp</dimen>
 
     <dimen name="scroll_offset">50dp</dimen>
 </resources>
