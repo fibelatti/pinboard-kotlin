@@ -38,7 +38,7 @@ internal class PostActionHandlerTest {
         sortType = NewestFirst,
         searchParameters = SearchParameters(),
         shouldLoad = Loaded,
-        isConnected = true
+        isConnected = true,
     )
 
     @Nested
@@ -69,8 +69,8 @@ internal class PostActionHandlerTest {
                 assertThat(result).isEqualTo(
                     initialContent.copy(
                         shouldLoad = Loaded,
-                        isConnected = false
-                    )
+                        isConnected = false,
+                    ),
                 )
                 verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
             }
@@ -88,8 +88,8 @@ internal class PostActionHandlerTest {
                 assertThat(result).isEqualTo(
                     initialContent.copy(
                         shouldLoad = ShouldLoadFirstPage,
-                        isConnected = true
-                    )
+                        isConnected = true,
+                    ),
                 )
                 verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
             }
@@ -109,7 +109,7 @@ internal class PostActionHandlerTest {
                         shouldLoad = ShouldForceLoad,
                         isConnected = true,
                         canForceSync = false,
-                    )
+                    ),
                 )
                 verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
             }
@@ -139,9 +139,10 @@ internal class PostActionHandlerTest {
                         PostListResult(
                             totalCount = 0,
                             posts = emptyList(),
-                            upToDate = false
-                        )
-                    ), initialContent
+                            upToDate = false,
+                        ),
+                    ),
+                    initialContent,
                 )
 
                 // THEN
@@ -157,9 +158,10 @@ internal class PostActionHandlerTest {
                         PostListResult(
                             totalCount = 0,
                             posts = emptyList(),
-                            upToDate = true
-                        )
-                    ), initialContent
+                            upToDate = true,
+                        ),
+                    ),
+                    initialContent,
                 )
 
                 // THEN
@@ -174,7 +176,7 @@ internal class PostActionHandlerTest {
                 every {
                     mockPostListDiffResultFactory.create(
                         emptyList(),
-                        listOf(createPost())
+                        listOf(createPost()),
                     )
                 } returns mockDiffResult
 
@@ -185,7 +187,7 @@ internal class PostActionHandlerTest {
                     sortType = NewestFirst,
                     searchParameters = SearchParameters(),
                     shouldLoad = ShouldLoadFirstPage,
-                    isConnected = true
+                    isConnected = true,
                 )
 
                 // WHEN
@@ -194,10 +196,10 @@ internal class PostActionHandlerTest {
                         PostListResult(
                             totalCount = 1,
                             posts = listOf(createPost()),
-                            upToDate = true
-                        )
+                            upToDate = true,
+                        ),
                     ),
-                    currentContent
+                    currentContent,
                 )
 
                 // THEN
@@ -209,8 +211,8 @@ internal class PostActionHandlerTest {
                         sortType = NewestFirst,
                         searchParameters = SearchParameters(),
                         shouldLoad = Loaded,
-                        isConnected = true
-                    )
+                        isConnected = true,
+                    ),
                 )
             }
 
@@ -222,7 +224,7 @@ internal class PostActionHandlerTest {
                 every {
                     mockPostListDiffResultFactory.create(
                         emptyList(),
-                        listOf(createPost())
+                        listOf(createPost()),
                     )
                 } returns mockDiffResult
 
@@ -233,7 +235,7 @@ internal class PostActionHandlerTest {
                     sortType = NewestFirst,
                     searchParameters = SearchParameters(),
                     shouldLoad = ShouldLoadFirstPage,
-                    isConnected = true
+                    isConnected = true,
                 )
 
                 // WHEN
@@ -242,10 +244,10 @@ internal class PostActionHandlerTest {
                         PostListResult(
                             totalCount = 1,
                             posts = listOf(createPost()),
-                            upToDate = false
-                        )
+                            upToDate = false,
+                        ),
                     ),
-                    currentContent
+                    currentContent,
                 )
 
                 // THEN
@@ -257,8 +259,8 @@ internal class PostActionHandlerTest {
                         sortType = NewestFirst,
                         searchParameters = SearchParameters(),
                         shouldLoad = Syncing,
-                        isConnected = true
-                    )
+                        isConnected = true,
+                    ),
                 )
             }
     }
@@ -298,7 +300,7 @@ internal class PostActionHandlerTest {
                     sortType = NewestFirst,
                     searchParameters = SearchParameters(),
                     shouldLoad = Loaded,
-                    isConnected = true
+                    isConnected = true,
                 )
 
                 // WHEN
@@ -335,7 +337,7 @@ internal class PostActionHandlerTest {
                     sortType = NewestFirst,
                     searchParameters = SearchParameters(),
                     shouldLoad = Loaded,
-                    isConnected = true
+                    isConnected = true,
                 )
 
                 // WHEN
@@ -344,10 +346,10 @@ internal class PostActionHandlerTest {
                         PostListResult(
                             totalCount = 1,
                             posts = listOf(createPost()),
-                            upToDate = randomBoolean()
-                        )
+                            upToDate = randomBoolean(),
+                        ),
                     ),
-                    content
+                    content,
                 )
 
                 // THEN
@@ -369,13 +371,13 @@ internal class PostActionHandlerTest {
                     sortType = NewestFirst,
                     searchParameters = SearchParameters(),
                     shouldLoad = ShouldLoadFirstPage,
-                    isConnected = true
+                    isConnected = true,
                 )
 
                 every {
                     mockPostListDiffResultFactory.create(
                         mockCurrentList,
-                        mockCurrentList.plus(mockNewList)
+                        mockCurrentList.plus(mockNewList),
                     )
                 } returns mockDiffResult
 
@@ -385,10 +387,10 @@ internal class PostActionHandlerTest {
                         PostListResult(
                             totalCount = 2,
                             posts = mockNewList,
-                            upToDate = randomBoolean()
-                        )
+                            upToDate = randomBoolean(),
+                        ),
                     ),
-                    currentContent
+                    currentContent,
                 )
 
                 // THEN
@@ -400,8 +402,8 @@ internal class PostActionHandlerTest {
                         sortType = NewestFirst,
                         searchParameters = SearchParameters(),
                         shouldLoad = Loaded,
-                        isConnected = true
-                    )
+                        isConnected = true,
+                    ),
                 )
             }
     }
@@ -433,7 +435,7 @@ internal class PostActionHandlerTest {
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = Loaded,
-                isConnected = true
+                isConnected = true,
             )
 
             // WHEN
@@ -448,8 +450,8 @@ internal class PostActionHandlerTest {
                     sortType = NewestFirst,
                     searchParameters = SearchParameters(),
                     shouldLoad = Loaded,
-                    isConnected = true
-                )
+                    isConnected = true,
+                ),
             )
         }
     }
@@ -491,15 +493,15 @@ internal class PostActionHandlerTest {
                 // WHEN
                 val result = postActionHandler.runAction(
                     ToggleSorting,
-                    initialContent.copy(sortType = NewestFirst)
+                    initialContent.copy(sortType = NewestFirst),
                 )
 
                 // THEN
                 assertThat(result).isEqualTo(
                     initialContent.copy(
                         sortType = OldestFirst,
-                        shouldLoad = ShouldLoadFirstPage
-                    )
+                        shouldLoad = ShouldLoadFirstPage,
+                    ),
                 )
             }
 
@@ -512,15 +514,15 @@ internal class PostActionHandlerTest {
                 // WHEN
                 val result = postActionHandler.runAction(
                     ToggleSorting,
-                    initialContent.copy(sortType = OldestFirst)
+                    initialContent.copy(sortType = OldestFirst),
                 )
 
                 // THEN
                 assertThat(result).isEqualTo(
                     initialContent.copy(
                         sortType = NewestFirst,
-                        shouldLoad = ShouldLoadFirstPage
-                    )
+                        shouldLoad = ShouldLoadFirstPage,
+                    ),
                 )
             }
     }
@@ -553,8 +555,8 @@ internal class PostActionHandlerTest {
             assertThat(result).isEqualTo(
                 EditPostContent(
                     post = mockPost,
-                    previousContent = mockCurrentContent
-                )
+                    previousContent = mockCurrentContent,
+                ),
             )
         }
 
@@ -570,8 +572,8 @@ internal class PostActionHandlerTest {
             assertThat(result).isEqualTo(
                 EditPostContent(
                     post = mockPost,
-                    previousContent = mockCurrentContent
-                )
+                    previousContent = mockCurrentContent,
+                ),
             )
         }
     }
@@ -588,8 +590,8 @@ internal class PostActionHandlerTest {
         assertThat(result).isEqualTo(
             EditPostContent(
                 post = mockPost,
-                previousContent = ExternalContent
-            )
+                previousContent = ExternalContent,
+            ),
         )
     }
 
@@ -627,7 +629,7 @@ internal class PostActionHandlerTest {
             val post = createPost()
             val currentContent = PostDetailContent(
                 post = post,
-                previousContent = initialContent
+                previousContent = initialContent,
             )
 
             // WHEN
@@ -646,7 +648,7 @@ internal class PostActionHandlerTest {
                 defaultPrivate = randomBoolean,
                 defaultReadLater = randomBoolean,
                 defaultTags = emptyList(),
-                previousContent = initialContent
+                previousContent = initialContent,
             )
 
             // WHEN
@@ -662,11 +664,11 @@ internal class PostActionHandlerTest {
                 // GIVEN
                 val postDetail = PostDetailContent(
                     post = mockPost,
-                    previousContent = initialContent
+                    previousContent = initialContent,
                 )
                 val currentContent = EditPostContent(
                     post = mockPost,
-                    previousContent = postDetail
+                    previousContent = postDetail,
                 )
 
                 // WHEN
@@ -676,8 +678,8 @@ internal class PostActionHandlerTest {
                 assertThat(result).isEqualTo(
                     PostDetailContent(
                         post = mockPost,
-                        previousContent = initialContent.copy(shouldLoad = ShouldLoadFirstPage)
-                    )
+                        previousContent = initialContent.copy(shouldLoad = ShouldLoadFirstPage),
+                    ),
                 )
             }
 
@@ -687,7 +689,7 @@ internal class PostActionHandlerTest {
                 // GIVEN
                 val currentContent = EditPostContent(
                     post = mockPost,
-                    previousContent = initialContent
+                    previousContent = initialContent,
                 )
 
                 // WHEN
@@ -703,7 +705,7 @@ internal class PostActionHandlerTest {
                 // GIVEN
                 val currentContent = EditPostContent(
                     post = mockPost,
-                    previousContent = ExternalContent
+                    previousContent = ExternalContent,
                 )
 
                 // WHEN
@@ -723,14 +725,14 @@ internal class PostActionHandlerTest {
                     previousContent = PopularPostsContent(
                         posts = mockk(),
                         shouldLoad = false,
-                        previousContent = initialContent
-                    )
+                        previousContent = initialContent,
+                    ),
                 )
 
                 val expectedContent = currentContent.copy(
                     previousContent = currentContent.previousContent.copy(
-                        previousContent = currentContent.previousContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
-                    )
+                        previousContent = currentContent.previousContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage),
+                    ),
                 )
 
                 // WHEN
@@ -740,8 +742,8 @@ internal class PostActionHandlerTest {
                 assertThat(result).isEqualTo(
                     EditPostContent(
                         post = mockPost,
-                        previousContent = expectedContent
-                    )
+                        previousContent = expectedContent,
+                    ),
                 )
             }
 
@@ -755,14 +757,14 @@ internal class PostActionHandlerTest {
                     previousContent = PopularPostsContent(
                         posts = mockk(),
                         shouldLoad = false,
-                        previousContent = initialContent
-                    )
+                        previousContent = initialContent,
+                    ),
                 )
 
                 val expectedContent = currentContent.copy(
                     previousContent = currentContent.previousContent.copy(
-                        previousContent = currentContent.previousContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
-                    )
+                        previousContent = currentContent.previousContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage),
+                    ),
                 )
 
                 // WHEN
@@ -780,10 +782,10 @@ internal class PostActionHandlerTest {
                 val currentContent = PopularPostsContent(
                     posts = mockk(),
                     shouldLoad = false,
-                    previousContent = initialContent
+                    previousContent = initialContent,
                 )
                 val expectedContent = currentContent.copy(
-                    previousContent = initialContent.copy(shouldLoad = ShouldLoadFirstPage)
+                    previousContent = initialContent.copy(shouldLoad = ShouldLoadFirstPage),
                 )
 
                 // WHEN
@@ -793,8 +795,8 @@ internal class PostActionHandlerTest {
                 assertThat(result).isEqualTo(
                     EditPostContent(
                         post = mockPost,
-                        previousContent = expectedContent
-                    )
+                        previousContent = expectedContent,
+                    ),
                 )
             }
 
@@ -806,10 +808,10 @@ internal class PostActionHandlerTest {
                 val currentContent = PopularPostsContent(
                     posts = mockk(),
                     shouldLoad = false,
-                    previousContent = initialContent
+                    previousContent = initialContent,
                 )
                 val expectedContent = currentContent.copy(
-                    previousContent = initialContent.copy(shouldLoad = ShouldLoadFirstPage)
+                    previousContent = initialContent.copy(shouldLoad = ShouldLoadFirstPage),
                 )
 
                 // WHEN
@@ -819,8 +821,8 @@ internal class PostActionHandlerTest {
                 assertThat(result).isEqualTo(
                     EditPostContent(
                         post = mockPost,
-                        previousContent = expectedContent
-                    )
+                        previousContent = expectedContent,
+                    ),
                 )
             }
 
@@ -832,10 +834,10 @@ internal class PostActionHandlerTest {
                 val currentContent = PopularPostsContent(
                     posts = mockk(),
                     shouldLoad = false,
-                    previousContent = initialContent
+                    previousContent = initialContent,
                 )
                 val expectedContent = currentContent.copy(
-                    previousContent = initialContent.copy(shouldLoad = ShouldLoadFirstPage)
+                    previousContent = initialContent.copy(shouldLoad = ShouldLoadFirstPage),
                 )
 
                 // WHEN
@@ -871,7 +873,7 @@ internal class PostActionHandlerTest {
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
                 shouldLoad = Loaded,
-                isConnected = true
+                isConnected = true,
             )
 
             // WHEN
@@ -892,11 +894,11 @@ internal class PostActionHandlerTest {
                     sortType = NewestFirst,
                     searchParameters = SearchParameters(),
                     shouldLoad = Loaded,
-                    isConnected = true
+                    isConnected = true,
                 )
                 val currentContent = PostDetailContent(
                     post = mockPost,
-                    previousContent = previousContent
+                    previousContent = previousContent,
                 )
 
                 // WHEN
@@ -917,7 +919,7 @@ internal class PostActionHandlerTest {
                     sortType = NewestFirst,
                     searchParameters = SearchParameters(),
                     shouldLoad = Loaded,
-                    isConnected = true
+                    isConnected = true,
                 )
                 val previousContent = mockk<PostDetailContent>().also {
                     every { it.previousContent } returns yetPreviousContent

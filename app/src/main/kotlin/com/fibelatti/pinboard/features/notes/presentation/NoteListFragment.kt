@@ -65,7 +65,7 @@ class NoteListFragment @Inject constructor(
         binding.buttonNoteSortingDateUpdatedDesc.setOnClickListener {
             binding.buttonNoteSortingDateUpdatedDesc.isChecked = true
             noteListAdapter.submitList(
-                noteListViewModel.sort(noteListAdapter.currentList, NoteSorting.ByDateUpdatedDesc)
+                noteListViewModel.sort(noteListAdapter.currentList, NoteSorting.ByDateUpdatedDesc),
             )
             binding.recyclerViewNotes.scrollToPosition(0)
         }
@@ -73,7 +73,7 @@ class NoteListFragment @Inject constructor(
         binding.buttonNoteSortingDateUpdatedAsc.setOnClickListener {
             binding.buttonNoteSortingDateUpdatedAsc.isChecked = true
             noteListAdapter.submitList(
-                noteListViewModel.sort(noteListAdapter.currentList, NoteSorting.ByDateUpdatedAsc)
+                noteListViewModel.sort(noteListAdapter.currentList, NoteSorting.ByDateUpdatedAsc),
             )
             binding.recyclerViewNotes.scrollToPosition(0)
         }
@@ -81,7 +81,7 @@ class NoteListFragment @Inject constructor(
         binding.buttonNoteSortingAtoZ.setOnClickListener {
             binding.buttonNoteSortingAtoZ.isChecked = true
             noteListAdapter.submitList(
-                noteListViewModel.sort(noteListAdapter.currentList, NoteSorting.AtoZ)
+                noteListViewModel.sort(noteListAdapter.currentList, NoteSorting.AtoZ),
             )
             binding.recyclerViewNotes.scrollToPosition(0)
         }
@@ -148,7 +148,7 @@ class NoteListFragment @Inject constructor(
                 currentState.copy(
                     title = MainState.TitleComponent.Visible(getString(R.string.notes_title)),
                     subtitle = MainState.TitleComponent.Visible(
-                        resources.getQuantityString(R.plurals.notes_quantity, list.size, list.size)
+                        resources.getQuantityString(R.plurals.notes_quantity, list.size, list.size),
                     ),
                 )
             }

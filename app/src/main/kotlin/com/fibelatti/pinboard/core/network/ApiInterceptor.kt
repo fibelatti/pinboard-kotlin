@@ -6,7 +6,7 @@ import okhttp3.Response
 import javax.inject.Inject
 
 class ApiInterceptor @Inject constructor(
-    private val userSharedPreferences: UserSharedPreferences
+    private val userSharedPreferences: UserSharedPreferences,
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {

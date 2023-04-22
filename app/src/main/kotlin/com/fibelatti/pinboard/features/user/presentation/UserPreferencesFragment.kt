@@ -140,7 +140,7 @@ class UserPreferencesFragment @Inject constructor(
             .onEach {
                 binding.toggleAutoUpdate.setActiveAndOnChangedListener(
                     it.autoUpdate,
-                    userPreferencesViewModel::saveAutoUpdate
+                    userPreferencesViewModel::saveAutoUpdate,
                 )
 
                 setupPeriodicSync(it.periodicSync)
@@ -150,22 +150,22 @@ class UserPreferencesFragment @Inject constructor(
 
                 binding.toggleAutoFillDescription.setActiveAndOnChangedListener(
                     it.autoFillDescription,
-                    userPreferencesViewModel::saveAutoFillDescription
+                    userPreferencesViewModel::saveAutoFillDescription,
                 )
                 binding.toggleShowDescriptionInLists.setActiveAndOnChangedListener(
                     it.showDescriptionInLists,
-                    userPreferencesViewModel::saveShowDescriptionInLists
+                    userPreferencesViewModel::saveShowDescriptionInLists,
                 )
 
                 setupEditAfterSharing(it.editAfterSharing)
 
                 binding.togglePrivateDefault.setActiveAndOnChangedListener(
                     it.defaultPrivate,
-                    userPreferencesViewModel::saveDefaultPrivate
+                    userPreferencesViewModel::saveDefaultPrivate,
                 )
                 binding.toggleReadLaterDefault.setActiveAndOnChangedListener(
                     it.defaultReadLater,
-                    userPreferencesViewModel::saveDefaultReadLater
+                    userPreferencesViewModel::saveDefaultReadLater,
                 )
 
                 tagManagerViewModel.setTags(it.defaultTags)
@@ -220,7 +220,6 @@ class UserPreferencesFragment @Inject constructor(
         )
     }
 
-    @Suppress("MagicNumber")
     private fun setupAppearance(appearance: Appearance, applyDynamicColors: Boolean) {
         binding.buttonAppearance.setupSelectionButton(
             currentSelection = appearance,
@@ -310,7 +309,7 @@ class UserPreferencesFragment @Inject constructor(
                         binding.toggleMarkAsReadOnOpen.isVisible = false
                     }
                 }
-            }
+            },
         )
 
         binding.toggleMarkAsReadOnOpen.isVisible = preferredDetailsView != PreferredDetailsView.Edit

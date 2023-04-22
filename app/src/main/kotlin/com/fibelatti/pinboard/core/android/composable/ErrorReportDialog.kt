@@ -83,7 +83,7 @@ fun ErrorReportDialog(
                     context.startActivity(Intent.createChooser(emailIntent, chooserTitle))
 
                     dismissDialog()
-                }
+                },
             ) {
                 Text(text = stringResource(id = R.string.error_report))
             }
@@ -96,7 +96,7 @@ fun ErrorReportDialog(
         },
         text = {
             Text(text = altMessage.ifEmpty { stringResource(R.string.error_report_rationale) })
-        }
+        },
     )
 }
 

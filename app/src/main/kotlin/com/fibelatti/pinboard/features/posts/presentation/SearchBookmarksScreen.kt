@@ -133,7 +133,7 @@ fun SearchBookmarksScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = ExtendedTheme.colors.backgroundNoOverlay)
+            .background(color = ExtendedTheme.colors.backgroundNoOverlay),
     ) {
         var tagSearchFocused by rememberSaveable { mutableStateOf(false) }
         val imeVisible by rememberKeyboardState()
@@ -198,7 +198,7 @@ fun SearchBookmarksScreen(
                     items = selectedTags.map {
                         ChipGroup.Item(
                             text = it.name,
-                            icon = painterResource(id = R.drawable.ic_close)
+                            icon = painterResource(id = R.drawable.ic_close),
                         )
                     },
                     onItemClick = {},
@@ -225,7 +225,7 @@ fun SearchBookmarksScreen(
                     .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                     .background(
                         color = MaterialTheme.colorScheme.primaryContainer,
-                        shape = RoundedCornerShape(size = 8.dp)
+                        shape = RoundedCornerShape(size = 8.dp),
                     )
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -271,7 +271,7 @@ private fun ActiveSearchBookmarksScreenPreview() {
         SearchBookmarksScreen(
             selectedTags = listOf(Tag(name = "dev")),
             activeSearchResult = "10 bookmarks match the current query",
-            availableTags = listOf(Tag(name = "compose"), Tag(name = "ui"))
+            availableTags = listOf(Tag(name = "compose"), Tag(name = "ui")),
         )
     }
 }

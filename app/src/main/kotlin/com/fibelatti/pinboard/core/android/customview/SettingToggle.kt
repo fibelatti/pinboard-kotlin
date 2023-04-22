@@ -12,7 +12,7 @@ import com.fibelatti.pinboard.databinding.LayoutSettingToggleBinding
 class SettingToggle @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     private val binding = LayoutSettingToggleBinding.inflate(LayoutInflater.from(context), this, true)

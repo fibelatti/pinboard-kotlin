@@ -232,7 +232,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
             coEvery {
                 mockPostsRepository.searchExistingPostTag(
                     tag = MockDataProvider.mockTagString1,
-                    currentTags = emptyList()
+                    currentTags = emptyList(),
                 )
             } returns Success(result)
 

@@ -24,8 +24,8 @@ internal class ValidUrlSchemeTest {
                 ValidUrlScheme.JAVASCRIPT.scheme,
                 ValidUrlScheme.MAILTO.scheme,
                 ValidUrlScheme.FTP.scheme,
-                ValidUrlScheme.FILE.scheme
-            )
+                ValidUrlScheme.FILE.scheme,
+            ),
         )
     }
 }

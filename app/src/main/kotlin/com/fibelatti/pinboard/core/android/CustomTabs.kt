@@ -25,8 +25,8 @@ class CustomTabsURLSpan(url: String) : URLSpan(url) {
                     .setNavigationBarDividerColor(color)
                     .setToolbarColor(color)
                     .setSecondaryToolbarColor(color)
-                    .build()
-                )
+                    .build(),
+            )
             .build()
             .launchUrl(widget.context, Uri.parse(url))
     }
@@ -49,7 +49,7 @@ class LinkTransformationMethod : TransformationMethod {
                     CustomTabsURLSpan(url),
                     spanStart,
                     spanEnd,
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
                 )
             }
 
@@ -64,7 +64,7 @@ class LinkTransformationMethod : TransformationMethod {
         sourceText: CharSequence?,
         focused: Boolean,
         direction: Int,
-        previouslyFocusedRect: Rect?
+        previouslyFocusedRect: Rect?,
     ) {
         // Intentionally empty
     }

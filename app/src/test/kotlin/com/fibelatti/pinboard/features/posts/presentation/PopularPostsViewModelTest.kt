@@ -37,7 +37,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
         mockAppStateRepository,
         mockUserRepository,
         mockGetPopularPosts,
-        mockAddPost
+        mockAddPost,
     )
 
     @Test
@@ -108,7 +108,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
         runUnconfinedTest {
             // GIVEN
             val post = createPost(
-                tags = null
+                tags = null,
             )
             val randomBoolean = randomBoolean()
             val mockTags = mockk<List<Tag>>()

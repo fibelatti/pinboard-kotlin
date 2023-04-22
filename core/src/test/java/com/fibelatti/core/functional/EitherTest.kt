@@ -238,7 +238,6 @@ class EitherTest {
             assertThrows<Exception> { failure.throwOnFailure() }
         }
 
-        @Suppress("IMPLICIT_NOTHING_AS_TYPE_PARAMETER")
         @Test
         fun `GIVEN Result is Failure WHEN getOrThrow is called THEN error is thrown`() {
             assertThrows<Exception> { failure.getOrThrow() }

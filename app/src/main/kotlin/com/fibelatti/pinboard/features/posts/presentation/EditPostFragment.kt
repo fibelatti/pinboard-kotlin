@@ -313,7 +313,7 @@ class EditPostFragment @Inject constructor(
                     navigationIcon = null,
                     data = post,
                 ),
-                floatingActionButton = MainState.FabComponent.Visible(ACTION_ID, R.drawable.ic_done)
+                floatingActionButton = MainState.FabComponent.Visible(ACTION_ID, R.drawable.ic_done),
             )
         }
 

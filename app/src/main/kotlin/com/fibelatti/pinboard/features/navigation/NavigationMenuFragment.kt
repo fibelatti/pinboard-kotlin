@@ -158,8 +158,8 @@ class NavigationMenuFragment @Inject constructor(
                 R.string.share_title,
                 getString(
                     R.string.share_text,
-                    "${AppConfig.PLAY_STORE_BASE_URL}${AppConfig.MAIN_PACKAGE_NAME}"
-                )
+                    "${AppConfig.PLAY_STORE_BASE_URL}${AppConfig.MAIN_PACKAGE_NAME}",
+                ),
             )
             dismiss()
         }

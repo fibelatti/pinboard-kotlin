@@ -49,7 +49,7 @@ fun MainTitle(
         navigation = state.navigation,
         onNavigationClicked = { mainViewModel.navigationClicked(state.navigation.id) },
         actionButton = state.actionButton,
-        onActionButtonClicked = { data -> mainViewModel.actionButtonClicked(state.actionButton.id, data) }
+        onActionButtonClicked = { data -> mainViewModel.actionButtonClicked(state.actionButton.id, data) },
     )
 }
 
@@ -75,7 +75,7 @@ private fun MainTitle(
                 if (navigation is MainState.NavigationComponent.Visible) {
                     Image(
                         painter = painterResource(id = navigation.icon),
-                        contentDescription = stringResource(id = R.string.cd_navigate_back)
+                        contentDescription = stringResource(id = R.string.cd_navigate_back),
                     )
                 }
             }

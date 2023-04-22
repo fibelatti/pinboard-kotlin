@@ -281,13 +281,13 @@ internal class UserDataSourceTest {
                 // GIVEN
                 val randomBoolean = randomBoolean()
                 every { mockUserSharedPreferences.preferredDetailsView } returns PreferredDetailsView.InAppBrowser(
-                    randomBoolean
+                    randomBoolean,
                 ).value
                 every { mockUserSharedPreferences.markAsReadOnOpen } returns randomBoolean
 
                 // THEN
                 assertThat(userDataSource.preferredDetailsView).isEqualTo(
-                    PreferredDetailsView.InAppBrowser(randomBoolean)
+                    PreferredDetailsView.InAppBrowser(randomBoolean),
                 )
                 verify { mockUserSharedPreferences.markAsReadOnOpen }
             }
@@ -297,13 +297,13 @@ internal class UserDataSourceTest {
                 // GIVEN
                 val randomBoolean = randomBoolean()
                 every { mockUserSharedPreferences.preferredDetailsView } returns PreferredDetailsView.ExternalBrowser(
-                    randomBoolean
+                    randomBoolean,
                 ).value
                 every { mockUserSharedPreferences.markAsReadOnOpen } returns randomBoolean
 
                 // THEN
                 assertThat(userDataSource.preferredDetailsView).isEqualTo(
-                    PreferredDetailsView.ExternalBrowser(randomBoolean)
+                    PreferredDetailsView.ExternalBrowser(randomBoolean),
                 )
                 verify { mockUserSharedPreferences.markAsReadOnOpen }
             }
@@ -315,7 +315,7 @@ internal class UserDataSourceTest {
 
                 // THEN
                 assertThat(userDataSource.preferredDetailsView).isEqualTo(
-                    PreferredDetailsView.Edit
+                    PreferredDetailsView.Edit,
                 )
             }
 
@@ -328,7 +328,7 @@ internal class UserDataSourceTest {
 
                 // THEN
                 assertThat(userDataSource.preferredDetailsView).isEqualTo(
-                    PreferredDetailsView.InAppBrowser(randomBoolean)
+                    PreferredDetailsView.InAppBrowser(randomBoolean),
                 )
             }
 

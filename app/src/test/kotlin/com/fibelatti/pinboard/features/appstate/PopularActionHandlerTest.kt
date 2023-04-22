@@ -16,7 +16,7 @@ internal class PopularActionHandlerTest {
     private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider>()
 
     private val popularActionHandler = PopularActionHandler(
-        mockConnectivityInfoProvider
+        mockConnectivityInfoProvider,
     )
 
     private val mockBoolean = randomBoolean()
@@ -24,7 +24,7 @@ internal class PopularActionHandlerTest {
         posts = mockk(),
         shouldLoad = mockBoolean,
         isConnected = mockBoolean,
-        previousContent = mockk()
+        previousContent = mockk(),
     )
 
     @Nested
@@ -56,8 +56,8 @@ internal class PopularActionHandlerTest {
                     posts = initialContent.posts,
                     shouldLoad = true,
                     isConnected = true,
-                    previousContent = initialContent.previousContent
-                )
+                    previousContent = initialContent.previousContent,
+                ),
             )
             verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
         }
@@ -93,8 +93,8 @@ internal class PopularActionHandlerTest {
                     posts = newPosts,
                     shouldLoad = false,
                     isConnected = initialContent.isConnected,
-                    previousContent = initialContent.previousContent
-                )
+                    previousContent = initialContent.previousContent,
+                ),
             )
         }
     }

@@ -34,7 +34,7 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
             searchContent.copy(
                 availableTags = action.tags.filterNot { it in searchContent.searchParameters.tags },
                 allTags = action.tags,
-                shouldLoadTags = false
+                shouldLoadTags = false,
             )
         }
     }
@@ -46,12 +46,12 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
             currentContent.searchParameters.tags.none { it == action.tag }
         ) {
             val newSearchParameters = currentContent.searchParameters.copy(
-                tags = currentContent.searchParameters.tags.plus(action.tag)
+                tags = currentContent.searchParameters.tags.plus(action.tag),
             )
 
             currentContent.copy(
                 searchParameters = newSearchParameters,
-                availableTags = currentContent.allTags.filterNot { it in newSearchParameters.tags }
+                availableTags = currentContent.allTags.filterNot { it in newSearchParameters.tags },
             )
         } else {
             currentContent
@@ -61,12 +61,12 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
     private fun removeSearchTag(action: RemoveSearchTag, currentContent: Content): Content {
         return runOnlyForCurrentContentOfType<SearchContent>(currentContent) { searchView ->
             val newSearchParameters = searchView.searchParameters.copy(
-                tags = searchView.searchParameters.tags.minus(action.tag)
+                tags = searchView.searchParameters.tags.minus(action.tag),
             )
 
             searchView.copy(
                 searchParameters = newSearchParameters,
-                availableTags = searchView.allTags.filterNot { it in newSearchParameters.tags }
+                availableTags = searchView.allTags.filterNot { it in newSearchParameters.tags },
             )
         }
     }
@@ -87,13 +87,13 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
             is PostListContent -> {
                 currentContent.copy(
                     searchParameters = SearchParameters(),
-                    shouldLoad = ShouldLoadFirstPage
+                    shouldLoad = ShouldLoadFirstPage,
                 )
             }
             is SearchContent -> {
                 currentContent.previousContent.copy(
                     searchParameters = SearchParameters(),
-                    shouldLoad = ShouldLoadFirstPage
+                    shouldLoad = ShouldLoadFirstPage,
                 )
             }
             else -> currentContent

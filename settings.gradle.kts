@@ -5,7 +5,21 @@ include(":app")
 include(":core")
 include(":ui")
 
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
 dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+
     versionCatalogs {
         create("libs") {
             val agpVersion = "8.0.0"

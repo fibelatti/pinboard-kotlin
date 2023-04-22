@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 class AddPost @Inject constructor(
     private val postsRepository: PostsRepository,
-    private val validateUrl: ValidateUrl
+    private val validateUrl: ValidateUrl,
 ) : UseCaseWithParams<Post, AddPost.Params>() {
 
     override suspend fun run(params: Params): Result<Post> =

@@ -44,7 +44,7 @@ class PostSearchFragment @Inject constructor() : BaseFragment() {
             AppTheme {
                 SearchBookmarksScreen(
                     appStateViewModel = appStateViewModel,
-                    tagsViewModel = tagsViewModel
+                    tagsViewModel = tagsViewModel,
                 )
             }
         }

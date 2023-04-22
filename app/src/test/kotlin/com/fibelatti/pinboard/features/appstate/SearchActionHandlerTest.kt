@@ -37,7 +37,7 @@ internal class SearchActionHandlerTest {
             val initialContent = SearchContent(
                 searchParameters = SearchParameters(),
                 shouldLoadTags = false,
-                previousContent = mockPreviousContent
+                previousContent = mockPreviousContent,
             )
 
             // WHEN
@@ -48,8 +48,8 @@ internal class SearchActionHandlerTest {
                 SearchContent(
                     searchParameters = SearchParameters(),
                     shouldLoadTags = true,
-                    previousContent = mockPreviousContent
-                )
+                    previousContent = mockPreviousContent,
+                ),
             )
         }
     }
@@ -75,7 +75,7 @@ internal class SearchActionHandlerTest {
             val mockPreviousContent = mockk<PostListContent>()
             val initialContent = SearchContent(
                 searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
-                previousContent = mockPreviousContent
+                previousContent = mockPreviousContent,
             )
 
             // WHEN
@@ -95,7 +95,7 @@ internal class SearchActionHandlerTest {
                     allTags = emptyList(),
                     shouldLoadTags = true,
                     previousContent = mockPreviousContent,
-                )
+                ),
             )
         }
     }
@@ -121,13 +121,13 @@ internal class SearchActionHandlerTest {
             val mockPreviousContent = mockk<PostListContent>()
             val initialContent = SearchContent(
                 searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
-                previousContent = mockPreviousContent
+                previousContent = mockPreviousContent,
             )
 
             // WHEN
             val result = searchActionHandler.runAction(
                 SetSearchTags(listOf(mockTag1, mockTag2, mockTag3)),
-                initialContent
+                initialContent,
             )
 
             // THEN
@@ -135,13 +135,13 @@ internal class SearchActionHandlerTest {
                 SearchContent(
                     searchParameters = SearchParameters(
                         term = mockUrlValid,
-                        tags = listOf(mockTag1)
+                        tags = listOf(mockTag1),
                     ),
                     availableTags = listOf(mockTag2, mockTag3),
                     allTags = listOf(mockTag1, mockTag2, mockTag3),
                     shouldLoadTags = false,
-                    previousContent = mockPreviousContent
-                )
+                    previousContent = mockPreviousContent,
+                ),
             )
         }
     }
@@ -170,7 +170,7 @@ internal class SearchActionHandlerTest {
                     searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
                     availableTags = listOf(mockTag2, mockTag3),
                     allTags = listOf(mockTag1, mockTag2, mockTag3),
-                    previousContent = mockPreviousContent
+                    previousContent = mockPreviousContent,
                 )
 
                 // WHEN
@@ -188,11 +188,11 @@ internal class SearchActionHandlerTest {
                 val initialContent = SearchContent(
                     searchParameters = SearchParameters(
                         term = mockUrlValid,
-                        tags = listOf(mockTag1, mockTag2, mockTag3)
+                        tags = listOf(mockTag1, mockTag2, mockTag3),
                     ),
                     availableTags = listOf(mockTag4),
                     allTags = listOf(mockTag1, mockTag2, mockTag3, mockTag4),
-                    previousContent = mockPreviousContent
+                    previousContent = mockPreviousContent,
                 )
 
                 // WHEN
@@ -210,7 +210,7 @@ internal class SearchActionHandlerTest {
                 searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
                 availableTags = listOf(mockTag2, mockTag3),
                 allTags = listOf(mockTag1, mockTag2, mockTag3),
-                previousContent = mockPreviousContent
+                previousContent = mockPreviousContent,
             )
 
             // WHEN
@@ -221,12 +221,12 @@ internal class SearchActionHandlerTest {
                 SearchContent(
                     searchParameters = SearchParameters(
                         term = mockUrlValid,
-                        tags = listOf(mockTag1, mockTag2)
+                        tags = listOf(mockTag1, mockTag2),
                     ),
                     availableTags = listOf(mockTag3),
                     allTags = listOf(mockTag1, mockTag2, mockTag3),
-                    previousContent = mockPreviousContent
-                )
+                    previousContent = mockPreviousContent,
+                ),
             )
         }
     }
@@ -254,7 +254,7 @@ internal class SearchActionHandlerTest {
                 searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
                 availableTags = listOf(mockTag2, mockTag3),
                 allTags = listOf(mockTag1, mockTag2, mockTag3),
-                previousContent = mockPreviousContent
+                previousContent = mockPreviousContent,
             )
 
             // WHEN
@@ -264,12 +264,13 @@ internal class SearchActionHandlerTest {
             assertThat(result).isEqualTo(
                 SearchContent(
                     searchParameters = SearchParameters(
-                        term = mockUrlValid, tags = emptyList()
+                        term = mockUrlValid,
+                        tags = emptyList(),
                     ),
                     availableTags = listOf(mockTag1, mockTag2, mockTag3),
                     allTags = listOf(mockTag1, mockTag2, mockTag3),
-                    previousContent = mockPreviousContent
-                )
+                    previousContent = mockPreviousContent,
+                ),
             )
         }
     }
@@ -298,11 +299,11 @@ internal class SearchActionHandlerTest {
                 showDescription = false,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(),
-                shouldLoad = ShouldLoadFirstPage
+                shouldLoad = ShouldLoadFirstPage,
             )
             val initialContent = SearchContent(
                 searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
-                previousContent = mockPreviousContent
+                previousContent = mockPreviousContent,
             )
 
             // WHEN
@@ -316,8 +317,8 @@ internal class SearchActionHandlerTest {
                     showDescription = false,
                     sortType = NewestFirst,
                     searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
-                    shouldLoad = ShouldLoadFirstPage
-                )
+                    shouldLoad = ShouldLoadFirstPage,
+                ),
             )
         }
 
@@ -331,11 +332,11 @@ internal class SearchActionHandlerTest {
                     showDescription = false,
                     sortType = NewestFirst,
                     searchParameters = SearchParameters(),
-                    shouldLoad = ShouldLoadFirstPage
+                    shouldLoad = ShouldLoadFirstPage,
                 )
                 val initialContent = SearchContent(
                     searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
-                    previousContent = mockPreviousContent
+                    previousContent = mockPreviousContent,
                 )
 
                 // WHEN
@@ -349,8 +350,8 @@ internal class SearchActionHandlerTest {
                         showDescription = false,
                         sortType = NewestFirst,
                         searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
-                        shouldLoad = ShouldLoadFirstPage
-                    )
+                        shouldLoad = ShouldLoadFirstPage,
+                    ),
                 )
             }
     }
@@ -379,7 +380,7 @@ internal class SearchActionHandlerTest {
                 showDescription = false,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
-                shouldLoad = Loaded
+                shouldLoad = Loaded,
             )
 
             // WHEN
@@ -393,8 +394,8 @@ internal class SearchActionHandlerTest {
                     showDescription = false,
                     sortType = NewestFirst,
                     searchParameters = SearchParameters(),
-                    shouldLoad = ShouldLoadFirstPage
-                )
+                    shouldLoad = ShouldLoadFirstPage,
+                ),
             )
         }
 
@@ -407,13 +408,13 @@ internal class SearchActionHandlerTest {
                 showDescription = false,
                 sortType = NewestFirst,
                 searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
-                shouldLoad = Loaded
+                shouldLoad = Loaded,
             )
             val searchContent = SearchContent(
                 searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
                 availableTags = listOf(mockTag2, mockTag3),
                 allTags = listOf(mockTag1, mockTag2, mockTag3),
-                previousContent = previousContent
+                previousContent = previousContent,
             )
 
             // WHEN
@@ -427,8 +428,8 @@ internal class SearchActionHandlerTest {
                     showDescription = false,
                     sortType = NewestFirst,
                     searchParameters = SearchParameters(),
-                    shouldLoad = ShouldLoadFirstPage
-                )
+                    shouldLoad = ShouldLoadFirstPage,
+                ),
             )
         }
     }

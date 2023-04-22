@@ -7,13 +7,13 @@ import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.SetNote
 import com.fibelatti.pinboard.features.notes.domain.NotesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class NoteDetailsViewModel @Inject constructor(
     private val notesRepository: NotesRepository,
-    private val appStateRepository: AppStateRepository
+    private val appStateRepository: AppStateRepository,
 ) : BaseViewModel() {
 
     fun getNoteDetails(id: String) {

@@ -21,7 +21,7 @@ class DeletePostTest {
 
     private val deletePost = DeletePost(
         mockPostsRepository,
-        mockValidateUrl
+        mockValidateUrl,
     )
 
     @Test

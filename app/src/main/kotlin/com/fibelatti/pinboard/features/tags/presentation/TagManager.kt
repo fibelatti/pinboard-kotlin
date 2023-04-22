@@ -159,7 +159,7 @@ fun TagManager(
                 itemTextStyle = MaterialTheme.typography.labelSmall.copy(
                     fontSize = 12.sp,
                     fontFamily = FontFamily.SansSerif,
-                )
+                ),
             )
 
             Divider(
@@ -180,7 +180,7 @@ fun TagManager(
                     start.linkTo(parent.start)
                     top.linkTo(
                         anchor = if (suggestedTags.isNotEmpty()) clDivider.bottom else clAddTagInput.bottom,
-                        margin = 16.dp
+                        margin = 16.dp,
                     )
                     end.linkTo(parent.end)
                 }
@@ -209,7 +209,7 @@ fun TagManager(
             ),
             itemTextStyle = MaterialTheme.typography.labelMedium.copy(
                 fontFamily = FontFamily.SansSerif,
-            )
+            ),
         )
     }
 }
@@ -221,7 +221,7 @@ private fun TagManagerPreview() {
         TagManager(
             suggestedTags = listOf("Android", "Dev"),
             currentTagsTitle = stringResource(id = R.string.tags_added_title),
-            currentTags = listOf(Tag(name = "Kotlin"), Tag(name = "Compose"))
+            currentTags = listOf(Tag(name = "Kotlin"), Tag(name = "Compose")),
         )
     }
 }

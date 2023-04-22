@@ -24,7 +24,7 @@ internal class ExtractUrlTest {
             val input = "\"Here's some cool thing for you.\n\nI think you'll like it!\"\nhttps://www.some-url.com"
             val expectedResult = ExtractUrl.ExtractedUrl(
                 url = "https://www.some-url.com",
-                highlightedText = "Here's some cool thing for you.\n\nI think you'll like it!"
+                highlightedText = "Here's some cool thing for you.\n\nI think you'll like it!",
             )
 
             // WHEN
@@ -59,7 +59,7 @@ internal class ExtractUrlTest {
         }
         add(
             "https://web.archive.org/web/20111117040806/http://www.url.com" to
-                Success(ExtractUrl.ExtractedUrl("https://web.archive.org/web/20111117040806/http://www.url.com"))
+                Success(ExtractUrl.ExtractedUrl("https://web.archive.org/web/20111117040806/http://www.url.com")),
         )
         add("Check this not so awesome url www.url.com" to Failure(InvalidUrlException()))
     }

@@ -46,7 +46,7 @@ fun View.doOnApplyWindowInsets(f: (View, WindowInsetsCompat, InitialPadding, Ini
         ViewCompat.getPaddingStart(this),
         paddingTop,
         ViewCompat.getPaddingEnd(this),
-        paddingBottom
+        paddingBottom,
     )
     val initialMargin = (layoutParams as? ViewGroup.MarginLayoutParams)
         ?.run { InitialMargin(leftMargin, topMargin, rightMargin, bottomMargin) }

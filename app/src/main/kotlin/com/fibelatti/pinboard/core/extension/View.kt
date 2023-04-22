@@ -42,7 +42,6 @@ fun View.smoothScrollY(scrollBy: Int) {
         .start()
 }
 
-@Suppress("MagicNumber")
 fun View.showBanner(message: String) {
     val contentView = getContentView()
     val insetMargin = ViewCompat.getRootWindowInsets(this)?.getInsets(WindowInsetsCompat.Type.statusBars())
@@ -50,7 +49,7 @@ fun View.showBanner(message: String) {
     val banner = LayoutFeedbackBannerBinding.inflate(
         LayoutInflater.from(context),
         contentView,
-        false
+        false,
     ).apply {
         root.updateLayoutParams<FrameLayout.LayoutParams> {
             gravity = Gravity.CENTER_HORIZONTAL

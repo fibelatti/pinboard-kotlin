@@ -201,7 +201,7 @@ class MainActivity : BaseActivity() {
                     mainViewModel.menuItemClicked(
                         id = state.bottomAppBar.id,
                         menuItemId = menuItem.itemId,
-                        data = state.bottomAppBar.data
+                        data = state.bottomAppBar.data,
                     )
                     true
                 }

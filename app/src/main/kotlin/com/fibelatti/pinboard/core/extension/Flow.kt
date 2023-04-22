@@ -15,5 +15,5 @@ fun <T> Flow<T>.launchInAndFlowWith(
     lifecycle = lifecycleOwner.lifecycle,
     minActiveState = minActiveState,
 ).launchIn(
-    scope = lifecycleOwner.lifecycleScope
+    scope = lifecycleOwner.lifecycleScope,
 )

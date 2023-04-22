@@ -82,7 +82,7 @@ fun ShareReceiverScreen(icon: Painter) {
             modifier = Modifier
                 .size(120.dp)
                 .align(Alignment.Center),
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.primary,
         )
     }
 }
@@ -128,7 +128,7 @@ fun ShareReceiverErrorDialog(
         },
         text = {
             Text(text = stringResource(id = errorMessage))
-        }
+        },
     )
 }
 

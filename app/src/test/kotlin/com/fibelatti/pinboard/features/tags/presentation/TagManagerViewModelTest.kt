@@ -46,7 +46,7 @@ internal class TagManagerViewModelTest : BaseViewModelTest() {
         assertThat(states).containsExactly(
             TagManagerViewModel.State(),
             TagManagerViewModel.State(
-                tags = listOf(Tag(name = "new-tag-1"), Tag(name = "new-tag-2"))
+                tags = listOf(Tag(name = "new-tag-1"), Tag(name = "new-tag-2")),
             ),
         )
     }

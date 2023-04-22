@@ -97,7 +97,7 @@ class PostsDataSourcePinboardApiTest {
             postRemoteDtoMapper = mockPostRemoteDtoMapper,
             dateFormatter = mockDateFormatter,
             connectivityInfoProvider = mockConnectivityInfoProvider,
-        )
+        ),
     )
 
     @Nested
@@ -148,7 +148,7 @@ class PostsDataSourcePinboardApiTest {
                     public = null,
                     readLater = null,
                     tags = mockTagsRequest,
-                    replace = AppConfig.PinboardApiLiterals.YES
+                    replace = AppConfig.PinboardApiLiterals.YES,
                 )
             } throws Exception()
 
@@ -181,7 +181,7 @@ class PostsDataSourcePinboardApiTest {
                         public = null,
                         readLater = null,
                         tags = mockTagsRequest,
-                        replace = AppConfig.PinboardApiLiterals.YES
+                        replace = AppConfig.PinboardApiLiterals.YES,
                     )
                 } returns createGenericResponse(ApiResultCodes.MISSING_URL)
 
@@ -218,7 +218,7 @@ class PostsDataSourcePinboardApiTest {
                             public = null,
                             readLater = null,
                             tags = mockTagsRequest,
-                            replace = AppConfig.PinboardApiLiterals.YES
+                            replace = AppConfig.PinboardApiLiterals.YES,
                         )
                     } returns createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS)
                     coEvery { mockDao.getPost(mockUrlValid) } returns mockPostDto
@@ -253,7 +253,7 @@ class PostsDataSourcePinboardApiTest {
                             public = null,
                             readLater = null,
                             tags = mockTagsRequest,
-                            replace = AppConfig.PinboardApiLiterals.YES
+                            replace = AppConfig.PinboardApiLiterals.YES,
                         )
                     } returns createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS)
                     coEvery { mockDao.getPost(mockUrlValid) } returns null
@@ -290,7 +290,7 @@ class PostsDataSourcePinboardApiTest {
                             public = null,
                             readLater = null,
                             tags = mockTagsRequest,
-                            replace = AppConfig.PinboardApiLiterals.YES
+                            replace = AppConfig.PinboardApiLiterals.YES,
                         )
                     } returns createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS)
                     coEvery { mockDao.getPost(mockUrlValid) } returns null
@@ -340,7 +340,7 @@ class PostsDataSourcePinboardApiTest {
                         public = null,
                         readLater = null,
                         tags = mockTagsRequest,
-                        replace = AppConfig.PinboardApiLiterals.YES
+                        replace = AppConfig.PinboardApiLiterals.YES,
                     )
                 } returns createGenericResponse(ApiResultCodes.DONE)
                 mockkStatic(UUID::class)
@@ -383,7 +383,7 @@ class PostsDataSourcePinboardApiTest {
                     public = null,
                     readLater = null,
                     tags = expectedTags,
-                    replace = AppConfig.PinboardApiLiterals.NO
+                    replace = AppConfig.PinboardApiLiterals.NO,
                 )
             } returns createGenericResponse(ApiResultCodes.DONE)
 
@@ -408,7 +408,7 @@ class PostsDataSourcePinboardApiTest {
                     public = null,
                     readLater = null,
                     tags = expectedTags,
-                    replace = AppConfig.PinboardApiLiterals.NO
+                    replace = AppConfig.PinboardApiLiterals.NO,
                 )
             }
         }
@@ -441,7 +441,7 @@ class PostsDataSourcePinboardApiTest {
                     public = expectedPublic,
                     readLater = expectedReadLater,
                     tags = mockTagsRequest,
-                    replace = expectedReplace
+                    replace = expectedReplace,
                 )
             } returns createGenericResponse(ApiResultCodes.DONE)
 
@@ -466,7 +466,7 @@ class PostsDataSourcePinboardApiTest {
                     public = expectedPublic,
                     readLater = expectedReadLater,
                     tags = mockTagsRequest,
-                    replace = expectedReplace
+                    replace = expectedReplace,
                 )
             }
         }
@@ -745,7 +745,7 @@ class PostsDataSourcePinboardApiTest {
                         countLimit = -1,
                         pageLimit = -1,
                         pageOffset = 0,
-                        upToDate = true
+                        upToDate = true,
                     )
                 } returns Success(mockLocalData)
 
@@ -786,7 +786,7 @@ class PostsDataSourcePinboardApiTest {
                         countLimit = -1,
                         pageLimit = -1,
                         pageOffset = 0,
-                        upToDate = false
+                        upToDate = false,
                     )
                 } returns Success(mockLocalData)
                 coEvery {
@@ -800,7 +800,7 @@ class PostsDataSourcePinboardApiTest {
                         countLimit = -1,
                         pageLimit = -1,
                         pageOffset = 0,
-                        upToDate = true
+                        upToDate = true,
                     )
                 } returns Success(mockUpToDateLocalData)
             }
@@ -843,7 +843,7 @@ class PostsDataSourcePinboardApiTest {
                 coEvery {
                     mockApi.getAllPosts(
                         offset = 0,
-                        limit = API_PAGE_SIZE
+                        limit = API_PAGE_SIZE,
                     )
                 } returns mockListPostRemoteDto
                 every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
@@ -909,7 +909,7 @@ class PostsDataSourcePinboardApiTest {
                 coEvery {
                     mockApi.getAllPosts(
                         offset = 0,
-                        limit = API_PAGE_SIZE
+                        limit = API_PAGE_SIZE,
                     )
                 } returns mockListPostRemoteDto
                 every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
@@ -937,7 +937,6 @@ class PostsDataSourcePinboardApiTest {
                 coVerify { mockDao.deleteAllSyncedPosts() }
                 coVerify { dataSource.savePosts(mockListPostDto) }
                 coVerify { mockUserRepository.lastUpdate = mockTime }
-
             }
 
             @Test
@@ -947,7 +946,7 @@ class PostsDataSourcePinboardApiTest {
                 coEvery {
                     mockApi.getAllPosts(
                         offset = 0,
-                        limit = API_PAGE_SIZE
+                        limit = API_PAGE_SIZE,
                     )
                 } throws Exception()
 
@@ -981,7 +980,7 @@ class PostsDataSourcePinboardApiTest {
                 coEvery {
                     mockApi.getAllPosts(
                         offset = 0,
-                        limit = API_PAGE_SIZE
+                        limit = API_PAGE_SIZE,
                     )
                 } returns mockListPostRemoteDto
                 coEvery { mockDao.deleteAllSyncedPosts() } throws Exception()
@@ -1016,7 +1015,7 @@ class PostsDataSourcePinboardApiTest {
                 coEvery {
                     mockApi.getAllPosts(
                         offset = 0,
-                        limit = API_PAGE_SIZE
+                        limit = API_PAGE_SIZE,
                     )
                 } returns mockListPostRemoteDto
                 every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
@@ -1052,7 +1051,7 @@ class PostsDataSourcePinboardApiTest {
                 coEvery {
                     mockApi.getAllPosts(
                         offset = 0,
-                        limit = API_PAGE_SIZE
+                        limit = API_PAGE_SIZE,
                     )
                 } returns mockListPostRemoteDto
                 every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
@@ -1094,7 +1093,7 @@ class PostsDataSourcePinboardApiTest {
             coEvery {
                 mockApi.getAllPosts(
                     offset = API_PAGE_SIZE,
-                    limit = API_PAGE_SIZE
+                    limit = API_PAGE_SIZE,
                 )
             } returns mockListPostRemoteDto
             every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
@@ -1129,13 +1128,13 @@ class PostsDataSourcePinboardApiTest {
             coEvery {
                 mockApi.getAllPosts(
                     offset = API_PAGE_SIZE,
-                    limit = API_PAGE_SIZE
+                    limit = API_PAGE_SIZE,
                 )
             } returns mockResponse
             coEvery {
                 mockApi.getAllPosts(
                     offset = API_PAGE_SIZE * 2,
-                    limit = API_PAGE_SIZE
+                    limit = API_PAGE_SIZE,
                 )
             } returns emptyList()
             every { mockPostRemoteDtoMapper.mapList(mockResponse) } returns mockListPostDto
@@ -1157,7 +1156,7 @@ class PostsDataSourcePinboardApiTest {
             coEvery {
                 mockApi.getAllPosts(
                     offset = API_PAGE_SIZE,
-                    limit = API_PAGE_SIZE
+                    limit = API_PAGE_SIZE,
                 )
             } returns mockk {
                 every { size } returns API_PAGE_SIZE
@@ -1165,7 +1164,7 @@ class PostsDataSourcePinboardApiTest {
             coEvery {
                 mockApi.getAllPosts(
                     offset = API_PAGE_SIZE * 2,
-                    limit = API_PAGE_SIZE
+                    limit = API_PAGE_SIZE,
                 )
             } returns mockk {
                 every { size } returns 8000
@@ -1249,7 +1248,7 @@ class PostsDataSourcePinboardApiTest {
                     publicPostsOnly = any(),
                     privatePostsOnly = any(),
                     readLaterOnly = any(),
-                    limit = any()
+                    limit = any(),
                 )
             } throws Exception()
 
@@ -1275,7 +1274,7 @@ class PostsDataSourcePinboardApiTest {
                     publicPostsOnly = any(),
                     privatePostsOnly = any(),
                     readLaterOnly = any(),
-                    limit = any()
+                    limit = any(),
                 )
             } returns 0
 
@@ -1286,7 +1285,7 @@ class PostsDataSourcePinboardApiTest {
                 untaggedOnly = false,
                 postVisibility = PostVisibility.None,
                 readLaterOnly = false,
-                countLimit = -1
+                countLimit = -1,
             )
 
             // THEN
@@ -1300,7 +1299,7 @@ class PostsDataSourcePinboardApiTest {
                     publicPostsOnly = false,
                     privatePostsOnly = false,
                     readLaterOnly = false,
-                    limit = -1
+                    limit = -1,
                 )
             }
             assertThat(result).isEqualTo(0)
@@ -1319,7 +1318,7 @@ class PostsDataSourcePinboardApiTest {
                     publicPostsOnly = any(),
                     privatePostsOnly = any(),
                     readLaterOnly = any(),
-                    limit = any()
+                    limit = any(),
                 )
             } returns 0
 
@@ -1330,7 +1329,7 @@ class PostsDataSourcePinboardApiTest {
                 untaggedOnly = false,
                 postVisibility = PostVisibility.None,
                 readLaterOnly = false,
-                countLimit = -1
+                countLimit = -1,
             )
 
             // THEN
@@ -1344,7 +1343,7 @@ class PostsDataSourcePinboardApiTest {
                     publicPostsOnly = false,
                     privatePostsOnly = false,
                     readLaterOnly = false,
-                    limit = -1
+                    limit = -1,
                 )
             }
             assertThat(result).isEqualTo(0)
@@ -1363,7 +1362,7 @@ class PostsDataSourcePinboardApiTest {
                     publicPostsOnly = any(),
                     privatePostsOnly = any(),
                     readLaterOnly = any(),
-                    limit = any()
+                    limit = any(),
                 )
             } returns 0
 
@@ -1374,7 +1373,7 @@ class PostsDataSourcePinboardApiTest {
                 untaggedOnly = false,
                 postVisibility = PostVisibility.None,
                 readLaterOnly = false,
-                countLimit = -1
+                countLimit = -1,
             )
 
             // THEN
@@ -1388,7 +1387,7 @@ class PostsDataSourcePinboardApiTest {
                     publicPostsOnly = false,
                     privatePostsOnly = false,
                     readLaterOnly = false,
-                    limit = -1
+                    limit = -1,
                 )
             }
             assertThat(result).isEqualTo(0)
@@ -1407,7 +1406,7 @@ class PostsDataSourcePinboardApiTest {
                     publicPostsOnly = any(),
                     privatePostsOnly = any(),
                     readLaterOnly = any(),
-                    limit = any()
+                    limit = any(),
                 )
             } returns 0
 
@@ -1418,7 +1417,7 @@ class PostsDataSourcePinboardApiTest {
                 untaggedOnly = false,
                 postVisibility = PostVisibility.None,
                 readLaterOnly = false,
-                countLimit = -1
+                countLimit = -1,
             )
 
             // THEN
@@ -1432,7 +1431,7 @@ class PostsDataSourcePinboardApiTest {
                     publicPostsOnly = false,
                     privatePostsOnly = false,
                     readLaterOnly = false,
-                    limit = -1
+                    limit = -1,
                 )
             }
             assertThat(result).isEqualTo(0)
@@ -1454,7 +1453,7 @@ class PostsDataSourcePinboardApiTest {
                     untaggedOnly = any(),
                     postVisibility = any(),
                     readLaterOnly = any(),
-                    countLimit = any()
+                    countLimit = any(),
                 )
             } returns mockLocalDataSize
 
@@ -1470,7 +1469,7 @@ class PostsDataSourcePinboardApiTest {
                     privatePostsOnly = any(),
                     readLaterOnly = any(),
                     limit = any(),
-                    offset = any()
+                    offset = any(),
                 )
             } returns mockListPostDto
 
@@ -1487,7 +1486,7 @@ class PostsDataSourcePinboardApiTest {
                     untaggedOnly = any(),
                     postVisibility = any(),
                     readLaterOnly = any(),
-                    countLimit = any()
+                    countLimit = any(),
                 )
             } returns 0
 
@@ -1502,7 +1501,7 @@ class PostsDataSourcePinboardApiTest {
                 countLimit = -1,
                 pageLimit = -1,
                 pageOffset = 0,
-                upToDate = upToDate
+                upToDate = upToDate,
             )
 
             // THEN
@@ -1510,8 +1509,8 @@ class PostsDataSourcePinboardApiTest {
                 PostListResult(
                     totalCount = 0,
                     posts = emptyList(),
-                    upToDate = upToDate
-                )
+                    upToDate = upToDate,
+                ),
             )
         }
 
@@ -1528,7 +1527,7 @@ class PostsDataSourcePinboardApiTest {
                 countLimit = -1,
                 pageLimit = -1,
                 pageOffset = 0,
-                upToDate = upToDate
+                upToDate = upToDate,
             )
 
             // THEN
@@ -1544,15 +1543,15 @@ class PostsDataSourcePinboardApiTest {
                     privatePostsOnly = false,
                     readLaterOnly = false,
                     limit = -1,
-                    offset = 0
+                    offset = 0,
                 )
             }
             assertThat(result.getOrThrow()).isEqualTo(
                 PostListResult(
                     mockLocalDataSize,
                     mockListPost,
-                    upToDate
-                )
+                    upToDate,
+                ),
             )
         }
 
@@ -1569,7 +1568,7 @@ class PostsDataSourcePinboardApiTest {
                 countLimit = -1,
                 pageLimit = -1,
                 pageOffset = 0,
-                upToDate = upToDate
+                upToDate = upToDate,
             )
 
             // THEN
@@ -1585,15 +1584,15 @@ class PostsDataSourcePinboardApiTest {
                     privatePostsOnly = false,
                     readLaterOnly = false,
                     limit = -1,
-                    offset = 0
+                    offset = 0,
                 )
             }
             assertThat(result.getOrThrow()).isEqualTo(
                 PostListResult(
                     mockLocalDataSize,
                     mockListPost,
-                    upToDate
-                )
+                    upToDate,
+                ),
             )
         }
 
@@ -1610,7 +1609,7 @@ class PostsDataSourcePinboardApiTest {
                 countLimit = -1,
                 pageLimit = -1,
                 pageOffset = 0,
-                upToDate = upToDate
+                upToDate = upToDate,
             )
 
             // THEN
@@ -1626,15 +1625,15 @@ class PostsDataSourcePinboardApiTest {
                     privatePostsOnly = false,
                     readLaterOnly = false,
                     limit = -1,
-                    offset = 0
+                    offset = 0,
                 )
             }
             assertThat(result.getOrThrow()).isEqualTo(
                 PostListResult(
                     mockLocalDataSize,
                     mockListPost,
-                    upToDate
-                )
+                    upToDate,
+                ),
             )
         }
 
@@ -1651,7 +1650,7 @@ class PostsDataSourcePinboardApiTest {
                 countLimit = -1,
                 pageLimit = -1,
                 pageOffset = 0,
-                upToDate = upToDate
+                upToDate = upToDate,
             )
 
             // THEN
@@ -1667,15 +1666,15 @@ class PostsDataSourcePinboardApiTest {
                     privatePostsOnly = false,
                     readLaterOnly = false,
                     limit = -1,
-                    offset = 0
+                    offset = 0,
                 )
             }
             assertThat(result.getOrThrow()).isEqualTo(
                 PostListResult(
                     mockLocalDataSize,
                     mockListPost,
-                    upToDate
-                )
+                    upToDate,
+                ),
             )
         }
 
@@ -1694,7 +1693,7 @@ class PostsDataSourcePinboardApiTest {
                     privatePostsOnly = any(),
                     readLaterOnly = any(),
                     limit = any(),
-                    offset = any()
+                    offset = any(),
                 )
             } throws Exception()
 
@@ -1709,7 +1708,7 @@ class PostsDataSourcePinboardApiTest {
                 countLimit = -1,
                 pageLimit = -1,
                 pageOffset = 0,
-                upToDate = upToDate
+                upToDate = upToDate,
             )
 
             // THEN
@@ -1785,7 +1784,7 @@ class PostsDataSourcePinboardApiTest {
                     mockTagString1,
                     "$mockTagString2 $mockTagString1",
                     "$mockTagString1 $mockTagString2 $mockTagString3",
-                    mockTagStringHtmlEscaped
+                    mockTagStringHtmlEscaped,
                 )
 
             val commonPrefix = mockTagString1
@@ -1802,8 +1801,8 @@ class PostsDataSourcePinboardApiTest {
                     mockTagString1,
                     mockTagString2,
                     mockTagString3,
-                    mockTagStringHtml
-                )
+                    mockTagStringHtml,
+                ),
             )
         }
 
@@ -1815,7 +1814,7 @@ class PostsDataSourcePinboardApiTest {
                     mockTagString1,
                     "$mockTagString2 $mockTagString1",
                     "$mockTagString1 $mockTagString2 $mockTagString3",
-                    mockTagStringHtmlEscaped
+                    mockTagStringHtmlEscaped,
                 )
 
             val commonPrefix = mockTagString1
@@ -1826,7 +1825,7 @@ class PostsDataSourcePinboardApiTest {
             // WHEN
             val result = dataSource.searchExistingPostTag(
                 tag = commonPrefix,
-                currentTags = listOf(Tag(name = mockTagString1))
+                currentTags = listOf(Tag(name = mockTagString1)),
             )
 
             // THEN
@@ -1834,8 +1833,8 @@ class PostsDataSourcePinboardApiTest {
                 listOf(
                     mockTagString2,
                     mockTagString3,
-                    mockTagStringHtml
-                )
+                    mockTagStringHtml,
+                ),
             )
         }
 
@@ -1846,13 +1845,13 @@ class PostsDataSourcePinboardApiTest {
                 mockTagString1,
                 "$mockTagString2 $mockTagString1",
                 "$mockTagString1 $mockTagString2 $mockTagString3",
-                mockTagStringHtmlEscaped
+                mockTagStringHtmlEscaped,
             )
 
             // WHEN
             val result = dataSource.searchExistingPostTag(
                 tag = "",
-                currentTags = listOf(Tag(name = mockTagString3))
+                currentTags = listOf(Tag(name = mockTagString3)),
             )
 
             // THEN
@@ -1860,8 +1859,8 @@ class PostsDataSourcePinboardApiTest {
                 listOf(
                     mockTagString1,
                     mockTagString2,
-                    mockTagStringHtml
-                )
+                    mockTagStringHtml,
+                ),
             )
         }
     }

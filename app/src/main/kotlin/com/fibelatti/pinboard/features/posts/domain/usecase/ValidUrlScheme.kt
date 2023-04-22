@@ -6,7 +6,8 @@ enum class ValidUrlScheme(val scheme: String) {
     JAVASCRIPT("javascript"),
     MAILTO("mailto"),
     FTP("ftp"),
-    FILE("file");
+    FILE("file"),
+    ;
 
     companion object {
 
@@ -17,7 +18,7 @@ enum class ValidUrlScheme(val scheme: String) {
             JAVASCRIPT.scheme,
             MAILTO.scheme,
             FTP.scheme,
-            FILE.scheme
+            FILE.scheme,
         )
     }
 }

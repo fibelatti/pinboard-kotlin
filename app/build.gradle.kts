@@ -80,14 +80,15 @@ android {
         getByName("debug") {
             applicationIdSuffix = ".debug"
             isMinifyEnabled = false
-            isTestCoverageEnabled = jacocoEnabled
+            enableUnitTestCoverage = jacocoEnabled
+            enableAndroidTestCoverage = jacocoEnabled
         }
 
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
             setProguardFiles(
-                listOf(getDefaultProguardFile("proguard-android-optimize.txt"), File("proguard-rules.pro"))
+                listOf(getDefaultProguardFile("proguard-android-optimize.txt"), File("proguard-rules.pro")),
             )
         }
     }
@@ -114,7 +115,7 @@ android {
 
             variant.resValues.put(
                 variant.makeResValueKey("string", "app_name"),
-                com.android.build.api.variant.ResValue(appName, null)
+                com.android.build.api.variant.ResValue(appName, null),
             )
         }
     }
@@ -134,7 +135,7 @@ android {
         kotlinCompilerExtensionVersion = "1.4.3"
     }
 
-    packagingOptions {
+    packaging {
         resources.excludes.add("META-INF/LICENSE.md")
         resources.excludes.add("META-INF/LICENSE-notice.md")
     }

@@ -38,7 +38,6 @@ interface PostsDao {
         limit: Int = -1,
     ): Int
 
-    @Suppress("LongParameterList")
     @Query("$SELECT_ALL_FROM_POST $WHERE_SUB_QUERY $ORDER_BY_SUB_QUERY limit :offset, :limit")
     suspend fun getAllPosts(
         newestFirst: Boolean = true,

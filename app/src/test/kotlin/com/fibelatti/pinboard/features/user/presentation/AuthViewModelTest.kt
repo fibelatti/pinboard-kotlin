@@ -35,7 +35,7 @@ class AuthViewModelTest : BaseViewModelTest() {
     private val viewModel = AuthViewModel(
         mockLogin,
         mockAppStateRepository,
-        mockResourceProvider
+        mockResourceProvider,
     )
 
     @Nested
@@ -61,8 +61,8 @@ class AuthViewModelTest : BaseViewModelTest() {
                 val error = HttpException(
                     Response.error<GenericResponseDto>(
                         HttpURLConnection.HTTP_UNAUTHORIZED,
-                        "{}".toResponseBody("application/json".toMediaTypeOrNull())
-                    )
+                        "{}".toResponseBody("application/json".toMediaTypeOrNull()),
+                    ),
                 )
 
                 coEvery { mockLogin(mockApiToken) } returns Failure(error)
@@ -83,8 +83,8 @@ class AuthViewModelTest : BaseViewModelTest() {
                 val error = HttpException(
                     Response.error<GenericResponseDto>(
                         HttpURLConnection.HTTP_INTERNAL_ERROR,
-                        "{}".toResponseBody("application/json".toMediaTypeOrNull())
-                    )
+                        "{}".toResponseBody("application/json".toMediaTypeOrNull()),
+                    ),
                 )
 
                 coEvery { mockLogin(mockApiToken) } returns Failure(error)

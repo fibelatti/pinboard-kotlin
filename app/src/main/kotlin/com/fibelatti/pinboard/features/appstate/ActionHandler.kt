@@ -27,7 +27,7 @@ abstract class ActionHandler<A : Action> {
      */
     inline fun <reified T : Content> runOnlyForCurrentContentOfType(
         currentContent: Content,
-        body: (T) -> Content
+        body: (T) -> Content,
     ): Content {
         return if (currentContent is T) {
             body(currentContent)

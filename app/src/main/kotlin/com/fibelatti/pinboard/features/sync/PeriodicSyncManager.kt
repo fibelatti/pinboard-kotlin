@@ -34,7 +34,7 @@ class PeriodicSyncManager @Inject constructor(
         workManager.enqueueUniquePeriodicWork(
             SyncBookmarksWorker.UNIQUE_WORK_NAME,
             if (shouldReplace) ExistingPeriodicWorkPolicy.UPDATE else ExistingPeriodicWorkPolicy.KEEP,
-            work
+            work,
         )
     }
 }

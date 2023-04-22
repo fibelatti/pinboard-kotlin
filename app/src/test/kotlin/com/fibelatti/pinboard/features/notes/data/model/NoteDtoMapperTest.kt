@@ -24,8 +24,8 @@ internal class NoteDtoMapperTest {
                 title = null,
                 createdAt = null,
                 updatedAt = null,
-                text = null
-            )
+                text = null,
+            ),
         )
 
         // THEN
@@ -41,8 +41,8 @@ internal class NoteDtoMapperTest {
                 title = null,
                 createdAt = null,
                 updatedAt = null,
-                text = null
-            )
+                text = null,
+            ),
         )
 
         // THEN
@@ -58,8 +58,8 @@ internal class NoteDtoMapperTest {
                 title = null,
                 createdAt = null,
                 updatedAt = null,
-                text = null
-            )
+                text = null,
+            ),
         )
 
         // THEN
@@ -75,8 +75,8 @@ internal class NoteDtoMapperTest {
                 title = null,
                 createdAt = null,
                 updatedAt = null,
-                text = null
-            )
+                text = null,
+            ),
         )
 
         // THEN
@@ -100,8 +100,8 @@ internal class NoteDtoMapperTest {
                 title = mockTitle,
                 createdAt = inputDate,
                 updatedAt = inputDate,
-                text = mockText
-            )
+                text = mockText,
+            ),
         )
 
         // THEN
@@ -111,8 +111,8 @@ internal class NoteDtoMapperTest {
                 title = mockTitle,
                 createdAt = outputDate,
                 updatedAt = outputDate,
-                text = mockText
-            )
+                text = mockText,
+            ),
         )
 
         verify(exactly = 2) { mockDateFormatter.notesFormatToDisplayFormat(inputDate) }

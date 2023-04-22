@@ -7,9 +7,9 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
+import org.junit.jupiter.api.Test
 import java.text.SimpleDateFormat
 import java.util.TimeZone
-import org.junit.jupiter.api.Test
 
 internal class DateFormatterTest {
 
@@ -23,7 +23,7 @@ internal class DateFormatterTest {
             dateFormatter.getSimpleDateFormat(PreferredDateFormat.DayMonthYearWithTime.value, timeZone = null)
         } returns dateFormatter.getSimpleDateFormat(
             PreferredDateFormat.DayMonthYearWithTime.value,
-            timeZone = TimeZone.getTimeZone("UTC")
+            timeZone = TimeZone.getTimeZone("UTC"),
         )
 
         assertThat(dateFormatter.tzFormatToDisplayFormat("1991-08-20T11:00:00Z"))
@@ -37,7 +37,7 @@ internal class DateFormatterTest {
             dateFormatter.getSimpleDateFormat(PreferredDateFormat.MonthDayYearWithTime.value, timeZone = null)
         } returns dateFormatter.getSimpleDateFormat(
             PreferredDateFormat.MonthDayYearWithTime.value,
-            timeZone = TimeZone.getTimeZone("UTC")
+            timeZone = TimeZone.getTimeZone("UTC"),
         )
 
         assertThat(dateFormatter.tzFormatToDisplayFormat("1991-08-20T11:00:00Z"))
@@ -51,7 +51,7 @@ internal class DateFormatterTest {
             dateFormatter.getSimpleDateFormat(PreferredDateFormat.DayMonthYearWithTime.value, timeZone = null)
         } returns dateFormatter.getSimpleDateFormat(
             PreferredDateFormat.DayMonthYearWithTime.value,
-            timeZone = TimeZone.getTimeZone("UTC")
+            timeZone = TimeZone.getTimeZone("UTC"),
         )
 
         assertThat(dateFormatter.notesFormatToDisplayFormat("1991-08-20 11:00:00"))
@@ -65,7 +65,7 @@ internal class DateFormatterTest {
             dateFormatter.getSimpleDateFormat(PreferredDateFormat.MonthDayYearWithTime.value, timeZone = null)
         } returns dateFormatter.getSimpleDateFormat(
             PreferredDateFormat.MonthDayYearWithTime.value,
-            timeZone = TimeZone.getTimeZone("UTC")
+            timeZone = TimeZone.getTimeZone("UTC"),
         )
 
         assertThat(dateFormatter.notesFormatToDisplayFormat("1991-08-20 11:00:00"))

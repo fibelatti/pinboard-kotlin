@@ -128,7 +128,7 @@ fun MultilineChipGroup(
 
         layout(
             width = constraints.maxWidth,
-            height = placeables.lastOrNull()?.let { (placeable, origin) -> origin.y + placeable.height } ?: 0
+            height = placeables.lastOrNull()?.let { (placeable, origin) -> origin.y + placeable.height } ?: 0,
         ) {
             placeables.forEach { (placeable, origin) -> placeable.place(origin.x, origin.y) }
         }
@@ -151,7 +151,7 @@ fun SingleLineChipGroup(
     LazyRow(
         modifier = modifier,
         contentPadding = contentPadding,
-        horizontalArrangement = Arrangement.spacedBy(spacing)
+        horizontalArrangement = Arrangement.spacedBy(spacing),
     ) {
         items(items.size) { index ->
             Chip(

@@ -12,7 +12,8 @@ insert_final_newline = true
 end_of_line = crlf
 
 [*.{kt,kts}]
-disabled_rules=import-ordering
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true
 
 [*.yml]
 indent_size = 2

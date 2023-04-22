@@ -62,8 +62,8 @@ class PostDtoMapperTest {
         fun `GIVEN tags contained html WHEN map is called THEN Post is returned AND tags is formatted`() {
             assertThat(mapper.map(createPostDto(tags = "&lt;&gt;&quot;&amp;"))).isEqualTo(
                 createPost(
-                    tags = listOf(Tag("<>\"&"))
-                )
+                    tags = listOf(Tag("<>\"&")),
+                ),
             )
         }
 
@@ -92,8 +92,8 @@ class PostDtoMapperTest {
         fun `GIVEN private is false WHEN map is called THEN PostDto is returned AND shared is yes`() {
             assertThat(mapper.mapReverse(createPost(private = false))).isEqualTo(
                 createPostDto(
-                    shared = PinboardApiLiterals.YES
-                )
+                    shared = PinboardApiLiterals.YES,
+                ),
             )
         }
 
@@ -101,8 +101,8 @@ class PostDtoMapperTest {
         fun `GIVEN toread is true WHEN mapReverse is called THEN PostDto is returned AND toread is yes`() {
             assertThat(mapper.mapReverse(createPost(readLater = true))).isEqualTo(
                 createPostDto(
-                    toread = PinboardApiLiterals.YES
-                )
+                    toread = PinboardApiLiterals.YES,
+                ),
             )
         }
 
@@ -110,8 +110,8 @@ class PostDtoMapperTest {
         fun `GIVEN toread is false WHEN mapReverse is called THEN PostDto is returned AND toread is no`() {
             assertThat(mapper.mapReverse(createPost(readLater = false))).isEqualTo(
                 createPostDto(
-                    toread = PinboardApiLiterals.NO
-                )
+                    toread = PinboardApiLiterals.NO,
+                ),
             )
         }
 

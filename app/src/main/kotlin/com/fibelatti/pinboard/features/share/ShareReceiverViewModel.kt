@@ -51,7 +51,7 @@ class ShareReceiverViewModel @Inject constructor(
                             url = extractedUrl,
                             title = title,
                             highlightedText = highlightedText,
-                        )
+                        ),
                     )
                 }
                 val existingPost = async { postsRepository.getPost(url = extractedUrl) }
@@ -105,7 +105,7 @@ class ShareReceiverViewModel @Inject constructor(
                 private = userRepository.defaultPrivate,
                 readLater = userRepository.defaultReadLater,
                 tags = userRepository.defaultTags,
-            )
+            ),
         ).onSuccess {
             if (userRepository.editAfterSharing is EditAfterSharing.AfterSaving) {
                 _screenState.emitLoaded(SharingResult.Edit(message = R.string.posts_saved_feedback))

@@ -89,7 +89,7 @@ class PostListViewModel @Inject constructor(
                 tags = GetPostParams.Tags.Tagged(tags),
                 offset = offset,
                 forceRefresh = forceRefresh,
-            )
+            ),
         )
     }
 
@@ -112,8 +112,8 @@ class PostListViewModel @Inject constructor(
                 searchTerm = searchTerm,
                 tags = GetPostParams.Tags.Tagged(tags),
                 visibility = PostVisibility.Public,
-                offset = offset
-            )
+                offset = offset,
+            ),
         )
     }
 
@@ -126,7 +126,7 @@ class PostListViewModel @Inject constructor(
                 tags = GetPostParams.Tags.Tagged(tags),
                 visibility = PostVisibility.Private,
                 offset = offset,
-            )
+            ),
         )
     }
 
@@ -139,7 +139,7 @@ class PostListViewModel @Inject constructor(
                 tags = GetPostParams.Tags.Tagged(tags),
                 readLater = true,
                 offset = offset,
-            )
+            ),
         )
     }
 
@@ -151,7 +151,7 @@ class PostListViewModel @Inject constructor(
                 searchTerm = searchTerm,
                 tags = GetPostParams.Tags.Untagged,
                 offset = offset,
-            )
+            ),
         )
     }
 

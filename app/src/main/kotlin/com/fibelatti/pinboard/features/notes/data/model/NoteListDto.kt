@@ -5,5 +5,5 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class NoteListDto(
     val count: Int,
-    val notes: List<NoteDto>
+    val notes: List<NoteDto>,
 )

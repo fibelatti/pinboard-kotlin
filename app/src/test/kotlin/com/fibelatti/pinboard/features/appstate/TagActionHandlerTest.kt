@@ -20,7 +20,7 @@ internal class TagActionHandlerTest {
 
     private val tagActionHandler = TagActionHandler(
         mockUserRepository,
-        mockConnectivityInfoProvider
+        mockConnectivityInfoProvider,
     )
 
     val mockPreviousContent = PostListContent(
@@ -29,13 +29,13 @@ internal class TagActionHandlerTest {
         showDescription = false,
         sortType = NewestFirst,
         searchParameters = SearchParameters(),
-        shouldLoad = Loaded
+        shouldLoad = Loaded,
     )
     private val initialContent = TagListContent(
         tags = emptyList(),
         shouldLoad = true,
         isConnected = true,
-        previousContent = mockPreviousContent
+        previousContent = mockPreviousContent,
     )
 
     @Nested
@@ -67,8 +67,8 @@ internal class TagActionHandlerTest {
                     tags = emptyList(),
                     shouldLoad = false,
                     isConnected = false,
-                    previousContent = mockPreviousContent
-                )
+                    previousContent = mockPreviousContent,
+                ),
             )
             verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
         }
@@ -100,8 +100,8 @@ internal class TagActionHandlerTest {
                     tags = listOf(createTag()),
                     shouldLoad = false,
                     isConnected = true,
-                    previousContent = mockPreviousContent
-                )
+                    previousContent = mockPreviousContent,
+                ),
             )
         }
 
@@ -123,9 +123,9 @@ internal class TagActionHandlerTest {
                     shouldLoad = false,
                     isConnected = true,
                     previousContent = mockPreviousContent.copy(
-                        shouldLoad = ShouldLoadFirstPage
-                    )
-                )
+                        shouldLoad = ShouldLoadFirstPage,
+                    ),
+                ),
             )
             verify {
                 mockUserRepository.lastUpdate = ""
@@ -157,8 +157,8 @@ internal class TagActionHandlerTest {
                         sortType = NewestFirst,
                         searchParameters = SearchParameters(tags = listOf(createTag())),
                         shouldLoad = ShouldLoadFirstPage,
-                        isConnected = true
-                    )
+                        isConnected = true,
+                    ),
                 )
             }
     }

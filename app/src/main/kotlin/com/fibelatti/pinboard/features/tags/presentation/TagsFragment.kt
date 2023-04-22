@@ -62,7 +62,7 @@ class TagsFragment @Inject constructor() : BaseFragment() {
                         tagsViewModel = tagsViewModel,
                         onTagClicked = { appStateViewModel.runAction(PostsForTag(it)) },
                         onTagLongClicked = ::showTagQuickActions,
-                        onPullToRefresh = { appStateViewModel.runAction(RefreshTags) }
+                        onPullToRefresh = { appStateViewModel.runAction(RefreshTags) },
                     )
                 }
             }
@@ -99,11 +99,11 @@ class TagsFragment @Inject constructor() : BaseFragment() {
                         RenameTagDialog.show(
                             context = requireContext(),
                             tag = option.tag,
-                            onRename = tagsViewModel::renameTag
+                            onRename = tagsViewModel::renameTag,
                         )
                     }
                 }
-            }
+            },
         )
     }
 

@@ -76,7 +76,6 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
         get() = sharedPreferences.get(KEY_AUTO_UPDATE, true)
         set(value) = sharedPreferences.put(KEY_AUTO_UPDATE, value)
 
-    @Suppress("MagicNumber")
     var periodicSync: Long
         get() = sharedPreferences.get(KEY_PERIODIC_SYNC, 24)
         set(value) = sharedPreferences.put(KEY_PERIODIC_SYNC, value)

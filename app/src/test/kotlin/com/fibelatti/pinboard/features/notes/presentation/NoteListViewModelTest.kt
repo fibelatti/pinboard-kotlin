@@ -26,7 +26,7 @@ internal class NoteListViewModelTest : BaseViewModelTest() {
     private val noteListViewModel = NoteListViewModel(
         mockNotesRepository,
         mockAppStateRepository,
-        mockDateFormatter
+        mockDateFormatter,
     )
 
     @Test

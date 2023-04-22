@@ -38,7 +38,7 @@ class NavigationActionHandler @Inject constructor(
         return runOnlyForCurrentContentOfType<ContentWithHistory>(currentContent) {
             if (currentContent is UserPreferencesContent) {
                 currentContent.previousContent.copy(
-                    showDescription = userRepository.showDescriptionInLists
+                    showDescription = userRepository.showDescriptionInLists,
                 )
             } else {
                 it.previousContent
@@ -54,7 +54,7 @@ class NavigationActionHandler @Inject constructor(
             sortType = NewestFirst,
             searchParameters = SearchParameters(),
             shouldLoad = ShouldLoadFirstPage,
-            isConnected = connectivityInfoProvider.isConnected()
+            isConnected = connectivityInfoProvider.isConnected(),
         )
     }
 
@@ -68,20 +68,20 @@ class NavigationActionHandler @Inject constructor(
                         val shouldLoad: ShouldLoad = markAsRead(action.post)
                         PostDetailContent(
                             action.post,
-                            previousContent = currentContent.copy(shouldLoad = shouldLoad)
+                            previousContent = currentContent.copy(shouldLoad = shouldLoad),
                         )
                     }
                     is PreferredDetailsView.ExternalBrowser -> {
                         val shouldLoad: ShouldLoad = markAsRead(action.post)
                         ExternalBrowserContent(
                             action.post,
-                            previousContent = currentContent.copy(shouldLoad = shouldLoad)
+                            previousContent = currentContent.copy(shouldLoad = shouldLoad),
                         )
                     }
                     PreferredDetailsView.Edit -> {
                         EditPostContent(
                             post = action.post,
-                            previousContent = currentContent
+                            previousContent = currentContent,
                         )
                     }
                 }
@@ -135,7 +135,7 @@ class NavigationActionHandler @Inject constructor(
                 defaultPrivate = userRepository.defaultPrivate ?: false,
                 defaultReadLater = userRepository.defaultReadLater ?: false,
                 defaultTags = userRepository.defaultTags,
-                previousContent = it
+                previousContent = it,
             )
         }
     }
@@ -146,7 +146,7 @@ class NavigationActionHandler @Inject constructor(
                 tags = emptyList(),
                 shouldLoad = connectivityInfoProvider.isConnected(),
                 isConnected = connectivityInfoProvider.isConnected(),
-                previousContent = it
+                previousContent = it,
             )
         }
     }
@@ -157,7 +157,7 @@ class NavigationActionHandler @Inject constructor(
                 notes = emptyList(),
                 shouldLoad = connectivityInfoProvider.isConnected(),
                 isConnected = connectivityInfoProvider.isConnected(),
-                previousContent = it
+                previousContent = it,
             )
         }
     }
@@ -168,7 +168,7 @@ class NavigationActionHandler @Inject constructor(
                 id = action.id,
                 note = Either.Left(connectivityInfoProvider.isConnected()),
                 isConnected = connectivityInfoProvider.isConnected(),
-                previousContent = it
+                previousContent = it,
             )
         }
     }
@@ -179,7 +179,7 @@ class NavigationActionHandler @Inject constructor(
                 posts = emptyList(),
                 shouldLoad = connectivityInfoProvider.isConnected(),
                 isConnected = connectivityInfoProvider.isConnected(),
-                previousContent = it
+                previousContent = it,
             )
         }
     }

@@ -137,7 +137,7 @@ class TagsDataSourceTest {
                 "tag1 tag2",
                 "tag1",
                 "tag2",
-                "tag3"
+                "tag3",
             )
 
             // WHEN
@@ -150,7 +150,7 @@ class TagsDataSourceTest {
                     Tag("tag1", 2),
                     Tag("tag2", 2),
                     Tag("tag3", 1),
-                )
+                ),
             )
         }
     }

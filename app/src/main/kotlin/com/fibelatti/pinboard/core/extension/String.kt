@@ -10,7 +10,7 @@ val HTML_CHAR_MAP: Map<String, String> = mapOf(
     "&lt;" to "<",
     "&gt;" to ">",
     "&quot;" to "\"",
-    "&amp;" to "&"
+    "&amp;" to "&",
 )
 
 /**

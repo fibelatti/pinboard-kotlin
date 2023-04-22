@@ -11,12 +11,12 @@ const val POST_FTS_TABLE_NAME = "PostsFts"
 @Fts4(
     contentEntity = PostDto::class,
     tokenizer = TOKENIZER_UNICODE61,
-    tokenizerArgs = ["tokenchars=._-=#@&"]
+    tokenizerArgs = ["tokenchars=._-=#@&"],
 )
 @Entity(tableName = POST_FTS_TABLE_NAME)
 data class PostDtoFts(
     val href: String,
     val description: String?,
     val extended: String?,
-    val tags: String
+    val tags: String,
 )

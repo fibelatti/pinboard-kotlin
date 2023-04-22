@@ -23,7 +23,6 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
-@Suppress("MagicNumber")
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
@@ -50,7 +49,7 @@ object NetworkModule {
             CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,
             CipherSuite.TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,
             CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-            CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+            CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
         ) + ConnectionSpec.COMPATIBLE_TLS.cipherSuites.orEmpty()
 
         val spec = ConnectionSpec.Builder(ConnectionSpec.COMPATIBLE_TLS)

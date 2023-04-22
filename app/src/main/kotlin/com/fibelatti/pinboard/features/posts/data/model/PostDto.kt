@@ -20,7 +20,7 @@ const val POST_TABLE_NAME = "Posts"
 @JsonClass(generateAdapter = true)
 @Entity(
     tableName = POST_TABLE_NAME,
-    indices = [Index(value = ["shared"]), Index(value = ["toread"])]
+    indices = [Index(value = ["shared"]), Index(value = ["toread"])],
 )
 data class PostDto(
     val href: String,

@@ -37,7 +37,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         coEvery {
             this@mockk.invoke(params = mockUrlValid)
         } returns Success(
-            ExtractUrl.ExtractedUrl(url = mockUrlValid)
+            ExtractUrl.ExtractedUrl(url = mockUrlValid),
         )
     }
     private val mockGetUrlPreview = mockk<GetUrlPreview> {
@@ -113,8 +113,8 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
             // THEN
             assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(
                 ScreenState.Loaded(
-                    ShareReceiverViewModel.SharingResult.Saved(message = R.string.posts_existing_feedback)
-                )
+                    ShareReceiverViewModel.SharingResult.Saved(message = R.string.posts_existing_feedback),
+                ),
             )
         }
 
@@ -131,8 +131,8 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
             // THEN
             assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(
                 ScreenState.Loaded(
-                    ShareReceiverViewModel.SharingResult.Edit(message = R.string.posts_existing_feedback)
-                )
+                    ShareReceiverViewModel.SharingResult.Edit(message = R.string.posts_existing_feedback),
+                ),
             )
             coVerify { mockAppStateRepository.runAction(EditPostFromShare(post)) }
         }
@@ -150,8 +150,8 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
             // THEN
             assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(
                 ScreenState.Loaded(
-                    ShareReceiverViewModel.SharingResult.Edit(message = R.string.posts_existing_feedback)
-                )
+                    ShareReceiverViewModel.SharingResult.Edit(message = R.string.posts_existing_feedback),
+                ),
             )
             coVerify { mockAppStateRepository.runAction(EditPostFromShare(post)) }
         }
@@ -189,8 +189,8 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
             }
             assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(
                 ScreenState.Loaded(
-                    ShareReceiverViewModel.SharingResult.Edit(message = null)
-                )
+                    ShareReceiverViewModel.SharingResult.Edit(message = null),
+                ),
             )
             coVerify { mockAppStateRepository.runAction(EditPostFromShare(expectedPost)) }
             coVerify(exactly = 0) { mockAddPost.invoke(any()) }
@@ -216,7 +216,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                     readLater = defaultReadLater,
                     tags = defaultTags,
                     replace = true,
-                )
+                ),
             )
         } returns Failure(error)
 
@@ -253,7 +253,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                     readLater = defaultReadLater,
                     tags = defaultTags,
                     replace = true,
-                )
+                ),
             )
         } returns Success(createPost())
 
@@ -268,8 +268,8 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         }
         assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(
             ScreenState.Loaded(
-                ShareReceiverViewModel.SharingResult.Saved(message = R.string.posts_saved_feedback)
-            )
+                ShareReceiverViewModel.SharingResult.Saved(message = R.string.posts_saved_feedback),
+            ),
         )
     }
 
@@ -295,7 +295,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                     readLater = defaultReadLater,
                     tags = defaultTags,
                     replace = true,
-                )
+                ),
             )
         } returns Success(post)
 
@@ -310,8 +310,8 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         }
         assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(
             ScreenState.Loaded(
-                ShareReceiverViewModel.SharingResult.Edit(message = R.string.posts_saved_feedback)
-            )
+                ShareReceiverViewModel.SharingResult.Edit(message = R.string.posts_saved_feedback),
+            ),
         )
         coVerify { mockAppStateRepository.runAction(EditPostFromShare(post)) }
     }

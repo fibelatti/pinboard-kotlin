@@ -29,7 +29,7 @@ class ExtractUrl @Inject constructor() : UseCaseWithParams<ExtractUrl.ExtractedU
                 ExtractedUrl(
                     url = withContext(Dispatchers.IO) { URLDecoder.decode(sourceUrl, "UTF-8") },
                     highlightedText = highlightedText,
-                )
+                ),
             )
         } catch (ignored: UnsupportedEncodingException) {
             Failure(InvalidUrlException())

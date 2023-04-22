@@ -91,7 +91,7 @@ class PostListFragment @Inject constructor(
 
         activity?.supportFragmentManager?.setFragmentResultListener(
             UserPreferencesFragment.TAG,
-            this
+            this,
         ) { _, _ -> activity?.let(inAppReviewManager::checkForPlayStoreReview) }
     }
 
@@ -170,7 +170,7 @@ class PostListFragment @Inject constructor(
                         Intent(Intent.ACTION_VIEW, Uri.parse(option.post.url)),
                     )
                 }
-            }
+            },
         )
     }
 
@@ -353,7 +353,7 @@ class PostListFragment @Inject constructor(
             } else {
                 R.string.posts_sorting_oldest_first
             },
-            countString
+            countString,
         )
     }
 
@@ -407,7 +407,7 @@ private sealed class PostQuickActions(
         override val post: Post,
     ) : PostQuickActions(
         title = R.string.quick_actions_copy_url,
-        icon = R.drawable.ic_copy
+        icon = R.drawable.ic_copy,
     )
 
     data class Share(

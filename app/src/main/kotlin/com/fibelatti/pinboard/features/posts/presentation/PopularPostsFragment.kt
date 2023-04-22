@@ -96,10 +96,10 @@ class PopularPostsFragment @Inject constructor(
                         option.post.url,
                     )
                     is PopularPostQuickActions.OpenBrowser -> startActivity(
-                        Intent(Intent.ACTION_VIEW, Uri.parse(option.post.url))
+                        Intent(Intent.ACTION_VIEW, Uri.parse(option.post.url)),
                     )
                 }
-            }
+            },
         )
     }
 
@@ -182,7 +182,7 @@ private sealed class PopularPostQuickActions(
         override val post: Post,
     ) : PopularPostQuickActions(
         title = R.string.quick_actions_copy_url,
-        icon = R.drawable.ic_copy
+        icon = R.drawable.ic_copy,
     )
 
     data class Share(

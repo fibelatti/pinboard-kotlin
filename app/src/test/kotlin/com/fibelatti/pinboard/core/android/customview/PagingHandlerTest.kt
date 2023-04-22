@@ -51,8 +51,8 @@ internal class PagingHandlerTest {
         assertThat(
             pagingHandler.shouldHandlePaging(
                 itemCount = 106,
-                firstVisibleItemPosition = 105
-            )
+                firstVisibleItemPosition = 105,
+            ),
         ).isFalse()
     }
 

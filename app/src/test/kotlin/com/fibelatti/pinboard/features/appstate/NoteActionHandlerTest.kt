@@ -16,14 +16,14 @@ internal class NoteActionHandlerTest {
     private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider>()
 
     private val noteActionHandler = NoteActionHandler(
-        mockConnectivityInfoProvider
+        mockConnectivityInfoProvider,
     )
 
     val initialContent = NoteListContent(
         notes = mockk(),
         shouldLoad = false,
         isConnected = false,
-        previousContent = mockk()
+        previousContent = mockk(),
     )
 
     @Nested
@@ -55,8 +55,8 @@ internal class NoteActionHandlerTest {
                     notes = initialContent.notes,
                     shouldLoad = true,
                     isConnected = true,
-                    previousContent = initialContent.previousContent
-                )
+                    previousContent = initialContent.previousContent,
+                ),
             )
             verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
         }
@@ -92,8 +92,8 @@ internal class NoteActionHandlerTest {
                     notes = newNotes,
                     shouldLoad = false,
                     isConnected = initialContent.isConnected,
-                    previousContent = initialContent.previousContent
-                )
+                    previousContent = initialContent.previousContent,
+                ),
             )
         }
     }
@@ -121,7 +121,7 @@ internal class NoteActionHandlerTest {
                 id = "some-id",
                 note = Either.Left(true),
                 isConnected = true,
-                previousContent = mockk()
+                previousContent = mockk(),
             )
 
             val result = noteActionHandler.runAction(SetNote(noteDetails), initialContent)
@@ -132,8 +132,8 @@ internal class NoteActionHandlerTest {
                     id = "some-id",
                     note = Either.Right(noteDetails),
                     isConnected = true,
-                    previousContent = initialContent.previousContent
-                )
+                    previousContent = initialContent.previousContent,
+                ),
             )
         }
     }

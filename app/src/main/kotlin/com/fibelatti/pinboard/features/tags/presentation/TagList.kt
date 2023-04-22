@@ -124,7 +124,7 @@ fun TagList(
             EmptyListContent(
                 icon = painterResource(id = R.drawable.ic_tag),
                 title = stringResource(id = R.string.tags_empty_title),
-                description = stringResource(id = R.string.tags_empty_description)
+                description = stringResource(id = R.string.tags_empty_description),
             )
         } else {
             TagList(
@@ -221,13 +221,13 @@ private fun TagList(
                 delay(300L)
                 refreshing = false
             }
-        }
+        },
     )
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .pullRefresh(pullRefreshState)
+            .pullRefresh(pullRefreshState),
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -238,7 +238,7 @@ private fun TagList(
                 TagListItem(
                     item = items[index],
                     onTagClicked = onTagClicked,
-                    onTagLongClicked = onTagLongClicked
+                    onTagLongClicked = onTagLongClicked,
                 )
             }
         }

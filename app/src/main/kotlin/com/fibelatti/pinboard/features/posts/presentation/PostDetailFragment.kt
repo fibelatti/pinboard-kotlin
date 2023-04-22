@@ -69,7 +69,7 @@ class PostDetailFragment @Inject constructor(
         "txt", "rtf",
         "mp3", "wav",
         "gif", "jpg", "jpeg", "png", "svg",
-        "mp4", "3gp", "mpg", "mpeg", "avi"
+        "mp4", "3gp", "mpg", "mpeg", "avi",
     )
     private var postWebViewClient: PostWebViewClient? = null
 
@@ -93,7 +93,7 @@ class PostDetailFragment @Inject constructor(
                     MainState.ActionButtonComponent.Gone
                 } else {
                     currentState.actionButton
-                }
+                },
             )
         }
 
@@ -214,7 +214,7 @@ class PostDetailFragment @Inject constructor(
                     id = ACTION_ID,
                     icon = R.drawable.ic_share,
                     data = post,
-                )
+                ),
             )
         }
     }
@@ -259,7 +259,7 @@ class PostDetailFragment @Inject constructor(
                         id = ACTION_ID,
                         label = getString(R.string.hint_mark_as_read),
                         data = post,
-                    )
+                    ),
                 )
             }
         }

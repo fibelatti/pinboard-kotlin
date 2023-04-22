@@ -61,8 +61,8 @@ internal class PostListViewModelTest : BaseViewModelTest() {
         PostListViewModel(
             mockGetAllPosts,
             mockGetRecentPosts,
-            mockAppStateRepository
-        )
+            mockAppStateRepository,
+        ),
     )
 
     @Nested
@@ -77,7 +77,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                 showDescription = false,
                 sortType = mockk(),
                 searchParameters = mockk(),
-                shouldLoad = Loaded
+                shouldLoad = Loaded,
             )
 
             // WHEN
@@ -94,7 +94,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
             @ParameterizedTest
             @MethodSource("testCases")
             fun `WHEN loadContent is called AND category is All THEN getAll should be called`(
-                testCase: Pair<ShouldLoad, Int>
+                testCase: Pair<ShouldLoad, Int>,
             ) {
                 // GIVEN
                 val (shouldLoad, expectedOffset) = testCase
@@ -126,7 +126,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
             @ParameterizedTest
             @MethodSource("testCases")
             fun `WHEN loadContent is called AND category is Public THEN getPublic should be called`(
-                testCase: Pair<ShouldLoad, Int>
+                testCase: Pair<ShouldLoad, Int>,
             ) {
                 // GIVEN
                 val (shouldLoad, expectedOffset) = testCase
@@ -135,7 +135,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                         mockSortType,
                         mockSearchTerm,
                         mockTags,
-                        offset = expectedOffset
+                        offset = expectedOffset,
                     )
                 } returns Unit
 
@@ -148,7 +148,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                         mockSortType,
                         mockSearchTerm,
                         mockTags,
-                        offset = expectedOffset
+                        offset = expectedOffset,
                     )
                 }
             }
@@ -156,7 +156,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
             @ParameterizedTest
             @MethodSource("testCases")
             fun `WHEN loadContent is called AND category is Private THEN getPrivate should be called`(
-                testCase: Pair<ShouldLoad, Int>
+                testCase: Pair<ShouldLoad, Int>,
             ) {
                 // GIVEN
                 val (shouldLoad, expectedOffset) = testCase
@@ -165,7 +165,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                         mockSortType,
                         mockSearchTerm,
                         mockTags,
-                        offset = expectedOffset
+                        offset = expectedOffset,
                     )
                 } returns Unit
 
@@ -178,7 +178,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                         mockSortType,
                         mockSearchTerm,
                         mockTags,
-                        offset = expectedOffset
+                        offset = expectedOffset,
                     )
                 }
             }
@@ -186,7 +186,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
             @ParameterizedTest
             @MethodSource("testCases")
             fun `WHEN loadContent is called AND category is Unread THEN getUnread should be called`(
-                testCase: Pair<ShouldLoad, Int>
+                testCase: Pair<ShouldLoad, Int>,
             ) {
                 // GIVEN
                 val (shouldLoad, expectedOffset) = testCase
@@ -195,7 +195,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                         mockSortType,
                         mockSearchTerm,
                         mockTags,
-                        offset = expectedOffset
+                        offset = expectedOffset,
                     )
                 } returns Unit
 
@@ -208,7 +208,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                         mockSortType,
                         mockSearchTerm,
                         mockTags,
-                        offset = expectedOffset
+                        offset = expectedOffset,
                     )
                 }
             }
@@ -216,7 +216,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
             @ParameterizedTest
             @MethodSource("testCases")
             fun `WHEN loadContent is called AND category is Untagged THEN getUntagged should be called`(
-                testCase: Pair<ShouldLoad, Int>
+                testCase: Pair<ShouldLoad, Int>,
             ) {
                 // GIVEN
                 val (shouldLoad, expectedOffset) = testCase
@@ -224,7 +224,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     postListViewModel.getUntagged(
                         mockSortType,
                         mockSearchTerm,
-                        offset = expectedOffset
+                        offset = expectedOffset,
                     )
                 } returns Unit
 
@@ -236,7 +236,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     postListViewModel.getUntagged(
                         mockSortType,
                         mockSearchTerm,
-                        offset = expectedOffset
+                        offset = expectedOffset,
                     )
                 }
             }
@@ -256,7 +256,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                 postListViewModel.getRecent(
                     mockSortType,
                     mockSearchTerm,
-                    mockTags
+                    mockTags,
                 )
             } returns Unit
 
@@ -274,7 +274,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                 showDescription = false,
                 sortType = mockSortType,
                 searchParameters = SearchParameters(term = mockSearchTerm, tags = mockTags),
-                shouldLoad = shouldLoad
+                shouldLoad = shouldLoad,
             )
     }
 
@@ -292,8 +292,8 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     mockSearchTerm,
                     GetPostParams.Tags.Tagged(mockTags),
                     offset = mockOffset,
-                    forceRefresh = force
-                )
+                    forceRefresh = force,
+                ),
             )
         }
     }
@@ -331,8 +331,8 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     mockSearchTerm,
                     GetPostParams.Tags.Tagged(mockTags),
                     PostVisibility.Public,
-                    offset = mockOffset
-                )
+                    offset = mockOffset,
+                ),
             )
         }
     }
@@ -350,8 +350,8 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     mockSearchTerm,
                     GetPostParams.Tags.Tagged(mockTags),
                     PostVisibility.Private,
-                    offset = mockOffset
-                )
+                    offset = mockOffset,
+                ),
             )
         }
     }
@@ -369,8 +369,8 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     mockSearchTerm,
                     GetPostParams.Tags.Tagged(mockTags),
                     readLater = true,
-                    offset = mockOffset
-                )
+                    offset = mockOffset,
+                ),
             )
         }
     }
@@ -387,8 +387,8 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     mockSortType,
                     mockSearchTerm,
                     GetPostParams.Tags.Untagged,
-                    offset = mockOffset
-                )
+                    offset = mockOffset,
+                ),
             )
         }
     }

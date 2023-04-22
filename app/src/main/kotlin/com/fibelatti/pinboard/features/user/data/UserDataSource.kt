@@ -40,7 +40,6 @@ class UserDataSource @Inject constructor(
             updateCurrentPreferences()
         }
 
-    @Suppress("MagicNumber")
     override var periodicSync: PeriodicSync
         get() = when (userSharedPreferences.periodicSync) {
             PeriodicSync.Off.hours -> PeriodicSync.Off

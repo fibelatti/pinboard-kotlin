@@ -15,7 +15,7 @@ abstract class BaseDbTest {
         appDatabase = Room
             .inMemoryDatabaseBuilder(
                 InstrumentationRegistry.getInstrumentation().context,
-                AppDatabase::class.java
+                AppDatabase::class.java,
             )
             .build()
     }

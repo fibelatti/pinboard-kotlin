@@ -5,7 +5,7 @@ import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import javax.inject.Inject
 
 class NoteActionHandler @Inject constructor(
-    private val connectivityInfoProvider: ConnectivityInfoProvider
+    private val connectivityInfoProvider: ConnectivityInfoProvider,
 ) : ActionHandler<NoteAction>() {
 
     override suspend fun runAction(action: NoteAction, currentContent: Content): Content {
@@ -20,7 +20,7 @@ class NoteActionHandler @Inject constructor(
         return runOnlyForCurrentContentOfType<NoteListContent>(currentContent) {
             it.copy(
                 shouldLoad = connectivityInfoProvider.isConnected(),
-                isConnected = connectivityInfoProvider.isConnected()
+                isConnected = connectivityInfoProvider.isConnected(),
             )
         }
     }
@@ -29,7 +29,7 @@ class NoteActionHandler @Inject constructor(
         return runOnlyForCurrentContentOfType<NoteListContent>(currentContent) {
             it.copy(
                 notes = action.notes,
-                shouldLoad = false
+                shouldLoad = false,
             )
         }
     }

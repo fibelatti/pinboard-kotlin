@@ -20,8 +20,8 @@ internal class ResultFromNetworkKtTest {
         throw HttpException(
             Response.error<GenericResponseDto>(
                 429,
-                "{}".toResponseBody("application/json".toMediaTypeOrNull())
-            )
+                "{}".toResponseBody("application/json".toMediaTypeOrNull()),
+            ),
         )
     }
 

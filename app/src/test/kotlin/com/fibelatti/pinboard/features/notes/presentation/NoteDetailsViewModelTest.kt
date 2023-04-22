@@ -24,7 +24,7 @@ internal class NoteDetailsViewModelTest : BaseViewModelTest() {
 
     private val noteDetailsViewModel = NoteDetailsViewModel(
         mockNotesRepository,
-        mockAppStateRepository
+        mockAppStateRepository,
     )
 
     @Test

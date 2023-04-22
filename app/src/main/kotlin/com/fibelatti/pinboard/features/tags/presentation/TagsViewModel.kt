@@ -86,7 +86,7 @@ class TagsViewModel @Inject constructor(
 
     enum class Source {
         MENU,
-        SEARCH
+        SEARCH,
     }
 
     @Stable

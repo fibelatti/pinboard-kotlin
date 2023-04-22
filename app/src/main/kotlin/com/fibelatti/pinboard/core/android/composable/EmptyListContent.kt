@@ -46,7 +46,7 @@ fun EmptyListContent(
                 .border(
                     width = 2.dp,
                     color = MaterialTheme.colorScheme.onSurface,
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
                 ),
         )
 
@@ -56,7 +56,7 @@ fun EmptyListContent(
             modifier = Modifier.constrainAs(clIcon) {
                 linkTo(clBoard.start, clBoard.end, bias = 0.95F)
                 linkTo(clBoard.top, clBoard.bottom, bias = 0.9F)
-            }
+            },
         )
 
         Text(

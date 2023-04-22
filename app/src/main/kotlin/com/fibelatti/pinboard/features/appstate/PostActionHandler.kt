@@ -34,7 +34,7 @@ class PostActionHandler @Inject constructor(
                     else -> ShouldLoadFirstPage
                 },
                 isConnected = connectivityInfoProvider.isConnected(),
-                canForceSync = !force
+                canForceSync = !force,
             )
         } else {
             currentContent
@@ -47,12 +47,12 @@ class PostActionHandler @Inject constructor(
                 PostList(
                     totalCount = action.postListResult.totalCount,
                     list = newList,
-                    diffResult = postListDiffResultFactory.create(currentPostList.currentList, newList)
+                    diffResult = postListDiffResultFactory.create(currentPostList.currentList, newList),
                 )
             }
             currentPostList.copy(
                 posts = posts,
-                shouldLoad = if (action.postListResult.upToDate) Loaded else Syncing
+                shouldLoad = if (action.postListResult.upToDate) Loaded else Syncing,
             )
         }
     }
@@ -75,7 +75,7 @@ class PostActionHandler @Inject constructor(
                 val posts = PostList(
                     action.postListResult.totalCount,
                     updatedList,
-                    postListDiffResultFactory.create(currentList, updatedList)
+                    postListDiffResultFactory.create(currentList, updatedList),
                 )
 
                 currentPostList.copy(posts = posts, shouldLoad = Loaded)
@@ -99,7 +99,7 @@ class PostActionHandler @Inject constructor(
                         is NewestFirst -> OldestFirst
                         is OldestFirst -> NewestFirst
                     },
-                    shouldLoad = ShouldLoadFirstPage
+                    shouldLoad = ShouldLoadFirstPage,
                 )
             } else {
                 currentContent.copy(isConnected = false)
@@ -113,7 +113,7 @@ class PostActionHandler @Inject constructor(
         return if (currentContent is PostListContent || currentContent is PostDetailContent) {
             EditPostContent(
                 post = action.post,
-                previousContent = currentContent
+                previousContent = currentContent,
             )
         } else {
             currentContent
@@ -123,7 +123,7 @@ class PostActionHandler @Inject constructor(
     private fun editPostFromShare(action: EditPostFromShare): Content {
         return EditPostContent(
             post = action.post,
-            previousContent = ExternalContent
+            previousContent = ExternalContent,
         )
     }
 
@@ -134,7 +134,7 @@ class PostActionHandler @Inject constructor(
             is PostDetailContent -> {
                 currentContent.copy(
                     post = action.post,
-                    previousContent = currentContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
+                    previousContent = currentContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage),
                 )
             }
             is EditPostContent -> {
@@ -144,7 +144,7 @@ class PostActionHandler @Inject constructor(
 
                         postDetail.copy(
                             post = action.post,
-                            previousContent = postDetail.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
+                            previousContent = postDetail.previousContent.copy(shouldLoad = ShouldLoadFirstPage),
                         )
                     }
                     is PostListContent -> {
@@ -157,9 +157,9 @@ class PostActionHandler @Inject constructor(
                 val updatedCurrentContent = currentContent.copy(
                     previousContent = currentContent.previousContent.copy(
                         previousContent = currentContent.previousContent.previousContent.copy(
-                            shouldLoad = ShouldLoadFirstPage
-                        )
-                    )
+                            shouldLoad = ShouldLoadFirstPage,
+                        ),
+                    ),
                 )
 
                 if (userRepository.editAfterSharing is EditAfterSharing.AfterSaving) {
@@ -171,8 +171,8 @@ class PostActionHandler @Inject constructor(
             is PopularPostsContent -> {
                 val updatedCurrentContent = currentContent.copy(
                     previousContent = currentContent.previousContent.copy(
-                        shouldLoad = ShouldLoadFirstPage
-                    )
+                        shouldLoad = ShouldLoadFirstPage,
+                    ),
                 )
 
                 if (userRepository.editAfterSharing !is EditAfterSharing.SkipEdit) {

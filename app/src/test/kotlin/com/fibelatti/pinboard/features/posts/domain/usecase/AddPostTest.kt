@@ -28,7 +28,7 @@ class AddPostTest {
 
     private val addPost = AddPost(
         mockPostsRepository,
-        mockValidateUrl
+        mockValidateUrl,
     )
 
     @Test

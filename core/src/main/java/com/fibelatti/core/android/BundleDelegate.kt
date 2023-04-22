@@ -12,18 +12,18 @@ fun <T> bundleDelegate(default: T? = null): ReadWriteProperty<Bundle, T> = Bundl
 
 fun <T> intentExtras(default: T? = null): ReadWriteProperty<Intent, T> = bundleDelegate(default).map(
     postWrite = Intent::replaceExtras,
-    mapper = Intent::ensureExtras
+    mapper = Intent::ensureExtras,
 )
 
 fun <T> activityIntent(default: T? = null): ReadWriteProperty<Activity, T> = intentExtras(default).map(
     postWrite = Activity::setIntent,
-    mapper = Activity::getIntent
+    mapper = Activity::getIntent,
 )
 
 fun <T> fragmentArgs(): ReadWriteProperty<Fragment, T> = bundleDelegate<T>().map(mapper = Fragment::ensureArgs)
 
 fun <T> Bundle.asDelegate(default: T? = null): ReadWriteProperty<Any?, T> = bundleDelegate(default).map(
-    mapper = { this }
+    mapper = { this },
 )
 
 private val Intent.ensureExtras: Bundle get() = extras ?: Bundle().also(::putExtras)

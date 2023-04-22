@@ -15,7 +15,7 @@ import javax.inject.Inject
 class Login @Inject constructor(
     private val userRepository: UserRepository,
     private val appStateRepository: AppStateRepository,
-    private val postsRepository: PostsRepository
+    private val postsRepository: PostsRepository,
 ) : UseCaseWithParams<Unit, String>() {
 
     override suspend fun run(params: String): Result<Unit> {

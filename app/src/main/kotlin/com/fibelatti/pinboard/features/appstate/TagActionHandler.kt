@@ -21,7 +21,7 @@ class TagActionHandler @Inject constructor(
         return runOnlyForCurrentContentOfType<TagListContent>(currentContent) {
             it.copy(
                 shouldLoad = connectivityInfoProvider.isConnected(),
-                isConnected = connectivityInfoProvider.isConnected()
+                isConnected = connectivityInfoProvider.isConnected(),
             )
         }
     }
@@ -36,7 +36,7 @@ class TagActionHandler @Inject constructor(
                     tagListContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
                 } else {
                     tagListContent.previousContent
-                }
+                },
             )
         }
     }
@@ -49,7 +49,7 @@ class TagActionHandler @Inject constructor(
             sortType = NewestFirst,
             searchParameters = SearchParameters(tags = listOf(action.tag)),
             shouldLoad = ShouldLoadFirstPage,
-            isConnected = connectivityInfoProvider.isConnected()
+            isConnected = connectivityInfoProvider.isConnected(),
         )
     }
 }

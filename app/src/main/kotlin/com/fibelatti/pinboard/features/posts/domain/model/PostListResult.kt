@@ -10,5 +10,5 @@ package com.fibelatti.pinboard.features.posts.domain.model
 data class PostListResult(
     val totalCount: Int,
     val posts: List<Post>,
-    val upToDate: Boolean
+    val upToDate: Boolean,
 )

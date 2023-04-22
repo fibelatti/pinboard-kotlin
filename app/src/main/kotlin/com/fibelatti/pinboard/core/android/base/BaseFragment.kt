@@ -15,7 +15,7 @@ abstract class BaseFragment : Fragment() {
 
         getViewToApplyInsets(view).doOnApplyWindowInsets { viewToApply, insets, initialPadding, _ ->
             viewToApply.updatePadding(
-                bottom = initialPadding.bottom + insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+                bottom = initialPadding.bottom + insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom,
             )
         }
     }

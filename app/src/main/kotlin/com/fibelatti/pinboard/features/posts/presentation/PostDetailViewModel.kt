@@ -65,7 +65,7 @@ class PostDetailViewModel @Inject constructor(
                     tags = post.tags,
                     replace = true,
                     hash = post.hash,
-                )
+                ),
             ).onSuccess {
                 _loading.value = false
                 _updated.emit(Unit)

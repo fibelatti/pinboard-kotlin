@@ -36,7 +36,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
     private val appStateViewModel by lazy {
         AppStateViewModel(
             appStateRepository = mockAppStateRepository,
-            unauthorizedInterceptor = mockUnauthorizedInterceptor
+            unauthorizedInterceptor = mockUnauthorizedInterceptor,
         )
     }
 

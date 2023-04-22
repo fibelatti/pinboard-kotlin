@@ -10,14 +10,14 @@ import com.fibelatti.pinboard.features.notes.domain.NotesRepository
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class NoteListViewModel @Inject constructor(
     private val notesRepository: NotesRepository,
     private val appStateRepository: AppStateRepository,
-    private val dateFormatter: DateFormatter
+    private val dateFormatter: DateFormatter,
 ) : BaseViewModel() {
 
     fun getAllNotes() {

@@ -19,7 +19,6 @@ Here you will find a codebase that encourages the usage of state using Kotlin Co
 - Android Jetpack, including WorkManager and Room (with FTS)
 - Kotlin, Coroutines and Flows
 - DI using Hilt
-- Detekt
 - CI with GitHub Actions
 
 License

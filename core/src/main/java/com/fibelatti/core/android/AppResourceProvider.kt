@@ -42,7 +42,6 @@ class AppResourceProvider(context: Context) : ResourceProvider {
 
     override fun getString(resId: Int, vararg formatArgs: Any): String = context.getString(resId, *formatArgs)
 
-    @Suppress("TooGenericExceptionCaught")
     override fun getJsonFromAssets(fileName: String): String? {
         return try {
             InputStreamReader(context.assets.open(fileName)).use { reader ->

@@ -21,7 +21,6 @@ class InvalidRequestException : Throwable()
  * @return the original [Response] of the request if no [SocketTimeoutException] happened, a fake
  * response otherwise
  */
-@Suppress("MagicNumber")
 inline fun catchingSocketTimeoutException(
     chain: Interceptor.Chain,
     block: () -> Request,

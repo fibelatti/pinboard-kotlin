@@ -129,7 +129,7 @@ object MockDataProvider {
     ): GetPostDto = GetPostDto(
         date = mockTime,
         user = mockUser,
-        posts = posts
+        posts = posts,
     )
 
     fun createTag(

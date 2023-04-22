@@ -37,7 +37,7 @@ internal class NavigationActionHandlerTest {
             mockUserRepository,
             mockPostsRepository,
             mockConnectivityInfoProvider,
-        )
+        ),
     )
 
     private val previousContent = PostListContent(
@@ -46,7 +46,7 @@ internal class NavigationActionHandlerTest {
         showDescription = false,
         sortType = NewestFirst,
         searchParameters = SearchParameters(),
-        shouldLoad = ShouldLoadFirstPage
+        shouldLoad = ShouldLoadFirstPage,
     )
 
     @Nested
@@ -126,8 +126,8 @@ internal class NavigationActionHandlerTest {
                     sortType = NewestFirst,
                     searchParameters = SearchParameters(),
                     shouldLoad = ShouldLoadFirstPage,
-                    isConnected = false
-                )
+                    isConnected = false,
+                ),
             )
 
             verify { mockConnectivityInfoProvider.isConnected() }
@@ -166,7 +166,7 @@ internal class NavigationActionHandlerTest {
             runTest {
                 // GIVEN
                 every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.InAppBrowser(
-                    randomBoolean
+                    randomBoolean,
                 )
 
                 // WHEN
@@ -177,8 +177,8 @@ internal class NavigationActionHandlerTest {
                 assertThat(result).isEqualTo(
                     PostDetailContent(
                         post = createPost(),
-                        previousContent = previousContent.copy(shouldLoad = mockShouldLoad)
-                    )
+                        previousContent = previousContent.copy(shouldLoad = mockShouldLoad),
+                    ),
                 )
             }
 
@@ -187,7 +187,7 @@ internal class NavigationActionHandlerTest {
             runTest {
                 // GIVEN
                 every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.ExternalBrowser(
-                    randomBoolean
+                    randomBoolean,
                 )
 
                 // WHEN
@@ -198,8 +198,8 @@ internal class NavigationActionHandlerTest {
                 assertThat(result).isEqualTo(
                     ExternalBrowserContent(
                         post = createPost(),
-                        previousContent = previousContent.copy(shouldLoad = mockShouldLoad)
-                    )
+                        previousContent = previousContent.copy(shouldLoad = mockShouldLoad),
+                    ),
                 )
             }
 
@@ -216,8 +216,8 @@ internal class NavigationActionHandlerTest {
                 assertThat(result).isEqualTo(
                     EditPostContent(
                         post = createPost(),
-                        previousContent = previousContent
-                    )
+                        previousContent = previousContent,
+                    ),
                 )
             }
 
@@ -227,7 +227,7 @@ internal class NavigationActionHandlerTest {
                 // GIVEN
                 val mockPopularPostsContent = mockk<PopularPostsContent>()
                 every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.InAppBrowser(
-                    randomBoolean
+                    randomBoolean,
                 )
 
                 // WHEN
@@ -237,8 +237,8 @@ internal class NavigationActionHandlerTest {
                 assertThat(result).isEqualTo(
                     PopularPostDetailContent(
                         post = createPost(),
-                        previousContent = mockPopularPostsContent
-                    )
+                        previousContent = mockPopularPostsContent,
+                    ),
                 )
             }
 
@@ -248,7 +248,7 @@ internal class NavigationActionHandlerTest {
                 // GIVEN
                 val mockPopularPostsContent = mockk<PopularPostsContent>()
                 every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.ExternalBrowser(
-                    randomBoolean
+                    randomBoolean,
                 )
 
                 // WHEN
@@ -258,8 +258,8 @@ internal class NavigationActionHandlerTest {
                 assertThat(result).isEqualTo(
                     ExternalBrowserContent(
                         post = createPost(),
-                        previousContent = mockPopularPostsContent
-                    )
+                        previousContent = mockPopularPostsContent,
+                    ),
                 )
             }
 
@@ -277,8 +277,8 @@ internal class NavigationActionHandlerTest {
                 assertThat(result).isEqualTo(
                     PopularPostDetailContent(
                         post = createPost(),
-                        previousContent = mockPopularPostsContent
-                    )
+                        previousContent = mockPopularPostsContent,
+                    ),
                 )
             }
     }
@@ -378,8 +378,8 @@ internal class NavigationActionHandlerTest {
                 SearchContent(
                     previousContent.searchParameters,
                     shouldLoadTags = true,
-                    previousContent = previousContent
-                )
+                    previousContent = previousContent,
+                ),
             )
         }
     }
@@ -420,7 +420,7 @@ internal class NavigationActionHandlerTest {
                     defaultReadLater = true,
                     defaultTags = mockTags,
                     previousContent = previousContent,
-                )
+                ),
             )
         }
 
@@ -439,7 +439,7 @@ internal class NavigationActionHandlerTest {
                     defaultReadLater = true,
                     defaultTags = mockTags,
                     previousContent = previousContent,
-                )
+                ),
             )
         }
 
@@ -458,7 +458,7 @@ internal class NavigationActionHandlerTest {
                     defaultReadLater = false,
                     defaultTags = mockTags,
                     previousContent = previousContent,
-                )
+                ),
             )
         }
     }
@@ -492,8 +492,8 @@ internal class NavigationActionHandlerTest {
                     tags = emptyList(),
                     shouldLoad = false,
                     isConnected = false,
-                    previousContent = previousContent
-                )
+                    previousContent = previousContent,
+                ),
             )
 
             verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
@@ -529,8 +529,8 @@ internal class NavigationActionHandlerTest {
                     notes = emptyList(),
                     shouldLoad = false,
                     isConnected = false,
-                    previousContent = previousContent
-                )
+                    previousContent = previousContent,
+                ),
             )
 
             verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
@@ -561,7 +561,7 @@ internal class NavigationActionHandlerTest {
                 notes = emptyList(),
                 shouldLoad = false,
                 isConnected = true,
-                previousContent = mockk()
+                previousContent = mockk(),
             )
 
             // WHEN
@@ -573,8 +573,8 @@ internal class NavigationActionHandlerTest {
                     id = "some-id",
                     note = Either.Left(false),
                     isConnected = false,
-                    previousContent = initialContent
-                )
+                    previousContent = initialContent,
+                ),
             )
 
             verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
@@ -612,8 +612,8 @@ internal class NavigationActionHandlerTest {
                     posts = emptyList(),
                     shouldLoad = mockBoolean,
                     isConnected = mockBoolean,
-                    previousContent = mockCurrentContent
-                )
+                    previousContent = mockCurrentContent,
+                ),
             )
 
             verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
@@ -644,7 +644,7 @@ internal class NavigationActionHandlerTest {
             assertThat(result).isEqualTo(
                 UserPreferencesContent(
                     previousContent = previousContent,
-                )
+                ),
             )
         }
     }

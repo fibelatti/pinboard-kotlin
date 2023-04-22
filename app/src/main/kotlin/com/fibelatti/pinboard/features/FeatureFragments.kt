@@ -59,10 +59,12 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
     }
 
     fun showPostInExternalBrowser(post: Post) {
-        activity.startActivity(Intent(Intent.ACTION_VIEW).apply {
-            data = Uri.parse(post.url)
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        })
+        activity.startActivity(
+            Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.parse(post.url)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            },
+        )
     }
 
     fun showSearch() {
@@ -116,7 +118,7 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
             activity.slideUp(
                 activity.createFragment<EditPostFragment>(),
                 EditPostFragment.TAG,
-                addToBackStack = !activity.intent.fromBuilder
+                addToBackStack = !activity.intent.fromBuilder,
             )
         }
     }

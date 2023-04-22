@@ -109,7 +109,7 @@ class EditPostViewModel @Inject constructor(
                     when (error) {
                         is InvalidUrlException -> {
                             _invalidUrlError.value = resourceProvider.getString(
-                                R.string.validation_error_invalid_url
+                                R.string.validation_error_invalid_url,
                             )
                         }
                         else -> handleError(error)

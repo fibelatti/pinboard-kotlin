@@ -18,7 +18,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import java.util.UUID
 
-@Suppress("LargeClass")
 class PostsDaoTest : BaseDbTest() {
 
     // region Data
@@ -29,25 +28,25 @@ class PostsDaoTest : BaseDbTest() {
         hash = randomHash(),
         href = "",
         description = "",
-        extended = ""
+        extended = "",
     )
     private val postWithTermInTheHref = createPostDto(
         hash = randomHash(),
         href = "term with some other stuff",
         description = "",
-        extended = ""
+        extended = "",
     )
     private val postWithTermInTheDescription = createPostDto(
         hash = randomHash(),
         href = "",
         description = "term-with-hyphen",
-        extended = ""
+        extended = "",
     )
     private val postWithTermInTheExtended = createPostDto(
         hash = randomHash(),
         href = "",
         description = "",
-        extended = "term"
+        extended = "term",
     )
 
     private val postWithNoTags = createPostDto(hash = randomHash(), tags = "")
@@ -56,31 +55,31 @@ class PostsDaoTest : BaseDbTest() {
         hash = randomHash(),
         tags = listOf(mockTagString1, mockTagString2)
             .shuffled() // Intentionally shuffled because the order shouldn't matter
-            .joinToString(separator = " ")
+            .joinToString(separator = " "),
     )
     private val postWithThreeTags = createPostDto(
         hash = randomHash(),
         tags = listOf(mockTagString1, mockTagString2, mockTagString3)
             .shuffled() // Intentionally shuffled because the order shouldn't matter
-            .joinToString(separator = " ")
+            .joinToString(separator = " "),
     )
 
     private val postPublic = createPostDto(
         hash = randomHash(),
-        shared = AppConfig.PinboardApiLiterals.YES
+        shared = AppConfig.PinboardApiLiterals.YES,
     )
     private val postPrivate = createPostDto(
         hash = randomHash(),
-        shared = AppConfig.PinboardApiLiterals.NO
+        shared = AppConfig.PinboardApiLiterals.NO,
     )
 
     private val postReadLater = createPostDto(
         hash = randomHash(),
-        toread = AppConfig.PinboardApiLiterals.YES
+        toread = AppConfig.PinboardApiLiterals.YES,
     )
     private val postNotReadLater = createPostDto(
         hash = randomHash(),
-        toread = AppConfig.PinboardApiLiterals.NO
+        toread = AppConfig.PinboardApiLiterals.NO,
     )
 
     private val postFirst = createPostDto(hash = randomHash(), time = mockTime1)
@@ -130,7 +129,7 @@ class PostsDaoTest : BaseDbTest() {
                 createPostDto(hash = "not-synced-add", pendingSync = PendingSyncDto.ADD),
                 createPostDto(hash = "not-synced-update", pendingSync = PendingSyncDto.UPDATE),
                 createPostDto(hash = "not-synced-delete", pendingSync = PendingSyncDto.DELETE),
-            )
+            ),
         )
     }
 
@@ -177,7 +176,6 @@ class PostsDaoTest : BaseDbTest() {
     }
 
     @Test
-    @Suppress("MagicNumber")
     fun givenDbHasDataAndTermFilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
@@ -185,7 +183,7 @@ class PostsDaoTest : BaseDbTest() {
                 postWithoutTerm,
                 postWithTermInTheHref,
                 postWithTermInTheDescription,
-                postWithTermInTheExtended
+                postWithTermInTheExtended,
             )
             postsDao.savePosts(list)
 
@@ -197,7 +195,6 @@ class PostsDaoTest : BaseDbTest() {
         }
 
     @Test
-    @Suppress("MagicNumber")
     fun givenDbHasDataAndTermFilterIsPassedWithMoreThanOneWordWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
@@ -205,13 +202,13 @@ class PostsDaoTest : BaseDbTest() {
                 postWithoutTerm,
                 postWithTermInTheHref,
                 postWithTermInTheDescription,
-                postWithTermInTheExtended
+                postWithTermInTheExtended,
             )
             postsDao.savePosts(list)
 
             // WHEN
             val result = postsDao.getPostCount(
-                term = PostsDao.preFormatTerm("$mockTerm $mockSecondTerm")
+                term = PostsDao.preFormatTerm("$mockTerm $mockSecondTerm"),
             )
 
             // THEN
@@ -226,7 +223,7 @@ class PostsDaoTest : BaseDbTest() {
                 postWithoutTerm,
                 postWithTermInTheHref,
                 postWithTermInTheDescription,
-                postWithTermInTheExtended
+                postWithTermInTheExtended,
             )
             postsDao.savePosts(list)
 
@@ -238,7 +235,6 @@ class PostsDaoTest : BaseDbTest() {
         }
 
     @Test
-    @Suppress("MagicNumber")
     fun givenDbHasDataAndTag1FilterIsPassedWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
@@ -246,7 +242,7 @@ class PostsDaoTest : BaseDbTest() {
                 postWithNoTags,
                 postWithOneTag,
                 postWithTwoTags,
-                postWithThreeTags
+                postWithThreeTags,
             )
             postsDao.savePosts(list)
 
@@ -258,7 +254,6 @@ class PostsDaoTest : BaseDbTest() {
         }
 
     @Test
-    @Suppress("MagicNumber")
     fun givenDbHasDataAndTag1FilterIsPassedAndItContainsAHyphenWhenGetPostCountIsCalledThenCountOfPostsThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
@@ -266,7 +261,7 @@ class PostsDaoTest : BaseDbTest() {
                 postWithNoTags,
                 postWithOneTag,
                 postWithTwoTags,
-                postWithThreeTags
+                postWithThreeTags,
             )
             postsDao.savePosts(list)
 
@@ -285,14 +280,14 @@ class PostsDaoTest : BaseDbTest() {
                 postWithNoTags,
                 postWithOneTag,
                 postWithTwoTags,
-                postWithThreeTags
+                postWithThreeTags,
             )
             postsDao.savePosts(list)
 
             // WHEN
             val result = postsDao.getPostCount(
                 tag1 = PostsDao.preFormatTag(mockTagString1),
-                tag2 = PostsDao.preFormatTag(mockTagString2)
+                tag2 = PostsDao.preFormatTag(mockTagString2),
             )
 
             // THEN
@@ -307,7 +302,7 @@ class PostsDaoTest : BaseDbTest() {
                 postWithNoTags,
                 postWithOneTag,
                 postWithTwoTags,
-                postWithThreeTags
+                postWithThreeTags,
             )
             postsDao.savePosts(list)
 
@@ -315,7 +310,7 @@ class PostsDaoTest : BaseDbTest() {
             val result = postsDao.getPostCount(
                 tag1 = PostsDao.preFormatTag(mockTagString1),
                 tag2 = PostsDao.preFormatTag(mockTagString2),
-                tag3 = PostsDao.preFormatTag(mockTagString3)
+                tag3 = PostsDao.preFormatTag(mockTagString3),
             )
 
             // THEN
@@ -330,7 +325,7 @@ class PostsDaoTest : BaseDbTest() {
                 postWithNoTags,
                 postWithOneTag,
                 postWithTwoTags,
-                postWithThreeTags
+                postWithThreeTags,
             )
             postsDao.savePosts(list)
 
@@ -347,7 +342,7 @@ class PostsDaoTest : BaseDbTest() {
             // GIVEN
             val list = listOf(
                 postPublic,
-                postPrivate
+                postPrivate,
             )
             postsDao.savePosts(list)
 
@@ -364,7 +359,7 @@ class PostsDaoTest : BaseDbTest() {
             // GIVEN
             val list = listOf(
                 postPublic,
-                postPrivate
+                postPrivate,
             )
             postsDao.savePosts(list)
 
@@ -381,7 +376,7 @@ class PostsDaoTest : BaseDbTest() {
             // GIVEN
             val list = listOf(
                 postPublic,
-                postPrivate
+                postPrivate,
             )
             postsDao.savePosts(list)
 
@@ -398,7 +393,7 @@ class PostsDaoTest : BaseDbTest() {
             // GIVEN
             val list = listOf(
                 postReadLater,
-                postNotReadLater
+                postNotReadLater,
             )
             postsDao.savePosts(list)
 
@@ -424,7 +419,7 @@ class PostsDaoTest : BaseDbTest() {
             postPublic,
             postPrivate,
             postReadLater,
-            postNotReadLater
+            postNotReadLater,
         )
         postsDao.savePosts(list)
 
@@ -450,7 +445,7 @@ class PostsDaoTest : BaseDbTest() {
             postPublic,
             postPrivate,
             postReadLater,
-            postNotReadLater
+            postNotReadLater,
         )
         postsDao.savePosts(list)
 
@@ -493,7 +488,7 @@ class PostsDaoTest : BaseDbTest() {
             postSecond,
             postThird,
             postFourth,
-            postFifth
+            postFifth,
         )
         postsDao.savePosts(list)
 
@@ -507,8 +502,8 @@ class PostsDaoTest : BaseDbTest() {
                 postFourth,
                 postThird,
                 postSecond,
-                postFirst
-            )
+                postFirst,
+            ),
         )
     }
 
@@ -520,7 +515,7 @@ class PostsDaoTest : BaseDbTest() {
             postSecond,
             postThird,
             postFourth,
-            postFifth
+            postFifth,
         )
         postsDao.savePosts(list)
 
@@ -534,8 +529,8 @@ class PostsDaoTest : BaseDbTest() {
                 postSecond,
                 postThird,
                 postFourth,
-                postFifth
-            )
+                postFifth,
+            ),
         )
     }
 
@@ -547,13 +542,13 @@ class PostsDaoTest : BaseDbTest() {
                 postWithoutTerm,
                 postWithTermInTheHref,
                 postWithTermInTheDescription,
-                postWithTermInTheExtended
+                postWithTermInTheExtended,
             )
             postsDao.savePosts(list)
 
             // WHEN
             val result = postsDao.getAllPosts(
-                term = PostsDao.preFormatTerm("$mockTerm $mockSecondTerm")
+                term = PostsDao.preFormatTerm("$mockTerm $mockSecondTerm"),
             )
 
             // THEN
@@ -567,7 +562,7 @@ class PostsDaoTest : BaseDbTest() {
             postWithoutTerm,
             postWithTermInTheHref,
             postWithTermInTheDescription,
-            postWithTermInTheExtended
+            postWithTermInTheExtended,
         )
         postsDao.savePosts(list)
 
@@ -579,8 +574,8 @@ class PostsDaoTest : BaseDbTest() {
             listOf(
                 postWithTermInTheHref,
                 postWithTermInTheDescription,
-                postWithTermInTheExtended
-            )
+                postWithTermInTheExtended,
+            ),
         )
     }
 
@@ -592,7 +587,7 @@ class PostsDaoTest : BaseDbTest() {
                 postWithoutTerm,
                 postWithTermInTheHref,
                 postWithTermInTheDescription,
-                postWithTermInTheExtended
+                postWithTermInTheExtended,
             )
             postsDao.savePosts(list)
 
@@ -610,7 +605,7 @@ class PostsDaoTest : BaseDbTest() {
             postWithNoTags,
             postWithOneTag,
             postWithTwoTags,
-            postWithThreeTags
+            postWithThreeTags,
         )
         postsDao.savePosts(list)
 
@@ -629,7 +624,7 @@ class PostsDaoTest : BaseDbTest() {
                 postWithNoTags,
                 postWithOneTag,
                 postWithTwoTags,
-                postWithThreeTags
+                postWithThreeTags,
             )
             postsDao.savePosts(list)
 
@@ -648,14 +643,14 @@ class PostsDaoTest : BaseDbTest() {
                 postWithNoTags,
                 postWithOneTag,
                 postWithTwoTags,
-                postWithThreeTags
+                postWithThreeTags,
             )
             postsDao.savePosts(list)
 
             // WHEN
             val result = postsDao.getAllPosts(
                 tag1 = PostsDao.preFormatTag(mockTagString1),
-                tag2 = PostsDao.preFormatTag(mockTagString2)
+                tag2 = PostsDao.preFormatTag(mockTagString2),
             )
 
             // THEN
@@ -670,7 +665,7 @@ class PostsDaoTest : BaseDbTest() {
                 postWithNoTags,
                 postWithOneTag,
                 postWithTwoTags,
-                postWithThreeTags
+                postWithThreeTags,
             )
             postsDao.savePosts(list)
 
@@ -678,7 +673,7 @@ class PostsDaoTest : BaseDbTest() {
             val result = postsDao.getAllPosts(
                 tag1 = PostsDao.preFormatTag(mockTagString1),
                 tag2 = PostsDao.preFormatTag(mockTagString2),
-                tag3 = PostsDao.preFormatTag(mockTagString3)
+                tag3 = PostsDao.preFormatTag(mockTagString3),
             )
 
             // THEN
@@ -693,7 +688,7 @@ class PostsDaoTest : BaseDbTest() {
                 postWithNoTags,
                 postWithOneTag,
                 postWithTwoTags,
-                postWithThreeTags
+                postWithThreeTags,
             )
             postsDao.savePosts(list)
 
@@ -710,7 +705,7 @@ class PostsDaoTest : BaseDbTest() {
             // GIVEN
             val list = listOf(
                 postPublic,
-                postPrivate
+                postPrivate,
             )
             postsDao.savePosts(list)
 
@@ -727,7 +722,7 @@ class PostsDaoTest : BaseDbTest() {
             // GIVEN
             val list = listOf(
                 postPublic,
-                postPrivate
+                postPrivate,
             )
             postsDao.savePosts(list)
 
@@ -744,7 +739,7 @@ class PostsDaoTest : BaseDbTest() {
             // GIVEN
             val list = listOf(
                 postPublic,
-                postPrivate
+                postPrivate,
             )
             postsDao.savePosts(list)
 
@@ -761,7 +756,7 @@ class PostsDaoTest : BaseDbTest() {
             // GIVEN
             val list = listOf(
                 postReadLater,
-                postNotReadLater
+                postNotReadLater,
             )
             postsDao.savePosts(list)
 
@@ -787,7 +782,7 @@ class PostsDaoTest : BaseDbTest() {
             postPublic,
             postPrivate,
             postReadLater,
-            postNotReadLater
+            postNotReadLater,
         )
         postsDao.savePosts(list)
 
@@ -807,8 +802,8 @@ class PostsDaoTest : BaseDbTest() {
                 postWithThreeTags,
                 postPublic,
                 postPrivate,
-                postReadLater
-            )
+                postReadLater,
+            ),
         )
     }
 
@@ -827,7 +822,7 @@ class PostsDaoTest : BaseDbTest() {
             postPublic,
             postPrivate,
             postReadLater,
-            postNotReadLater
+            postNotReadLater,
         )
         postsDao.savePosts(list)
 
@@ -853,7 +848,7 @@ class PostsDaoTest : BaseDbTest() {
             postPublic,
             postPrivate,
             postReadLater,
-            postNotReadLater
+            postNotReadLater,
         )
         postsDao.savePosts(list)
 
@@ -879,7 +874,7 @@ class PostsDaoTest : BaseDbTest() {
             postPublic,
             postPrivate,
             postReadLater,
-            postNotReadLater
+            postNotReadLater,
         )
         postsDao.savePosts(list)
 
@@ -898,7 +893,7 @@ class PostsDaoTest : BaseDbTest() {
             postWithNoTags,
             postWithOneTag,
             postWithTwoTags,
-            postWithThreeTags
+            postWithThreeTags,
         )
         postsDao.savePosts(list)
 
@@ -910,8 +905,8 @@ class PostsDaoTest : BaseDbTest() {
             listOf(
                 postWithOneTag.tags,
                 postWithTwoTags.tags,
-                postWithThreeTags.tags
-            )
+                postWithThreeTags.tags,
+            ),
         )
     }
 
@@ -923,7 +918,7 @@ class PostsDaoTest : BaseDbTest() {
                 postWithNoTags,
                 postWithOneTag,
                 postWithTwoTags,
-                postWithThreeTags
+                postWithThreeTags,
             )
             postsDao.savePosts(list)
 
@@ -935,8 +930,8 @@ class PostsDaoTest : BaseDbTest() {
                 listOf(
                     postWithOneTag.tags,
                     postWithTwoTags.tags,
-                    postWithThreeTags.tags
-                )
+                    postWithThreeTags.tags,
+                ),
             )
         }
 
@@ -961,7 +956,7 @@ class PostsDaoTest : BaseDbTest() {
                 createPostDto(hash = "not-synced-add", pendingSync = PendingSyncDto.ADD),
                 createPostDto(hash = "not-synced-update", pendingSync = PendingSyncDto.UPDATE),
                 createPostDto(hash = "not-synced-delete", pendingSync = PendingSyncDto.DELETE),
-            )
+            ),
         )
     }
 
@@ -988,7 +983,7 @@ class PostsDaoTest : BaseDbTest() {
                 createPostDto(hash = "other-$mockHash"),
                 createPostDto(hash = "not-synced-update", href = "href-update", pendingSync = PendingSyncDto.UPDATE),
                 createPostDto(hash = "not-synced-delete", href = "href-delete", pendingSync = PendingSyncDto.DELETE),
-            )
+            ),
         )
     }
 }

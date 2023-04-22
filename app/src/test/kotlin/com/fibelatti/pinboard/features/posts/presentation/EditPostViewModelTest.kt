@@ -132,8 +132,8 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                 description = mockUrlDescription,
                 private = true,
                 readLater = true,
-                tags = mockTags
-            )
+                tags = mockTags,
+            ),
         )
 
         // WHEN
@@ -158,8 +158,8 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                     description = mockUrlDescription,
                     private = true,
                     readLater = true,
-                    tags = mockTags
-                )
+                    tags = mockTags,
+                ),
             )
 
             // WHEN
@@ -185,7 +185,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                         readLater = true,
                         tags = mockTags,
                         hash = "",
-                    )
+                    ),
                 )
             } returns Failure(InvalidUrlException())
 
@@ -196,8 +196,8 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                     description = mockUrlDescription,
                     private = true,
                     readLater = true,
-                    tags = mockTags
-                )
+                    tags = mockTags,
+                ),
             )
 
             val saved = editPostViewModel.saved.collectIn(this)
@@ -227,7 +227,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                     readLater = true,
                     tags = mockTags,
                     hash = "",
-                )
+                ),
             )
         } returns Failure(error)
 
@@ -238,8 +238,8 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                 description = mockUrlDescription,
                 private = true,
                 readLater = true,
-                tags = mockTags
-            )
+                tags = mockTags,
+            ),
         )
 
         val saved = editPostViewModel.saved.collectIn(this)
@@ -272,7 +272,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                         readLater = true,
                         tags = mockTags,
                         hash = "",
-                    )
+                    ),
                 )
             } returns Success(post)
 
@@ -283,8 +283,8 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                     description = mockUrlDescription,
                     private = true,
                     readLater = true,
-                    tags = mockTags
-                )
+                    tags = mockTags,
+                ),
             )
 
             val saved = editPostViewModel.saved.collectIn(this)

@@ -19,13 +19,13 @@ const val DATABASE_VERSION_4 = 4 // Release 1.18.0
 @Database(
     entities = [
         PostDto::class,
-        PostDtoFts::class
+        PostDtoFts::class,
     ],
     version = DATABASE_VERSION_4,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = DATABASE_VERSION_3, to = DATABASE_VERSION_4),
-    ]
+    ],
 )
 abstract class AppDatabase : RoomDatabase() {
 

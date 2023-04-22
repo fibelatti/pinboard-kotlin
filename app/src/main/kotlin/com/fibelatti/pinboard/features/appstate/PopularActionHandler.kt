@@ -4,7 +4,7 @@ import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import javax.inject.Inject
 
 class PopularActionHandler @Inject constructor(
-    private val connectivityInfoProvider: ConnectivityInfoProvider
+    private val connectivityInfoProvider: ConnectivityInfoProvider,
 ) : ActionHandler<PopularAction>() {
 
     override suspend fun runAction(action: PopularAction, currentContent: Content): Content {
@@ -18,7 +18,7 @@ class PopularActionHandler @Inject constructor(
         return runOnlyForCurrentContentOfType<PopularPostsContent>(currentContent) {
             it.copy(
                 shouldLoad = connectivityInfoProvider.isConnected(),
-                isConnected = connectivityInfoProvider.isConnected()
+                isConnected = connectivityInfoProvider.isConnected(),
             )
         }
     }
@@ -27,7 +27,7 @@ class PopularActionHandler @Inject constructor(
         return runOnlyForCurrentContentOfType<PopularPostsContent>(currentContent) {
             it.copy(
                 posts = action.posts,
-                shouldLoad = false
+                shouldLoad = false,
             )
         }
     }

@@ -15,7 +15,7 @@ internal class PostListContentTest {
         sortType = mockk(),
         searchParameters = mockk(),
         shouldLoad = mockk(),
-        isConnected = true
+        isConnected = true,
     )
 
     private val nonNullContent = PostListContent(
@@ -24,13 +24,13 @@ internal class PostListContentTest {
             totalCount = 42,
             list = listOf(createPost()),
             diffResult = mockk(),
-            alreadyDisplayed = true
+            alreadyDisplayed = true,
         ),
         showDescription = false,
         sortType = mockk(),
         searchParameters = mockk(),
         shouldLoad = mockk(),
-        isConnected = true
+        isConnected = true,
     )
 
     @Test

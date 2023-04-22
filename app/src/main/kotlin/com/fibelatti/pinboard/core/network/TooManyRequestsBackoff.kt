@@ -16,13 +16,12 @@ import retrofit2.HttpException
  *
  * @return [T] if successful, HttpException if all retries failed
  */
-@Suppress("MagicNumber")
 suspend fun <T> tooManyRequestsBackoff(
     times: Int = 3,
     initialDelay: Long = 500,
     maxDelay: Long = 2000,
     factor: Double = 2.0,
-    block: suspend () -> T
+    block: suspend () -> T,
 ): T {
     var currentDelay = initialDelay
 

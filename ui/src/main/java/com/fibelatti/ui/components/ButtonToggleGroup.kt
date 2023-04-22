@@ -238,7 +238,7 @@ private fun RowScope.ButtonWithIconAndText(
                 item = item,
                 modifier = Modifier.align(Alignment.CenterVertically),
                 color = textColor,
-                style = textStyle
+                style = textStyle,
             )
         }
 
@@ -248,7 +248,7 @@ private fun RowScope.ButtonWithIconAndText(
                 item = item,
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 color = textColor,
-                style = textStyle
+                style = textStyle,
             )
         }
 
@@ -257,7 +257,7 @@ private fun RowScope.ButtonWithIconAndText(
                 item = item,
                 modifier = Modifier.align(Alignment.CenterVertically),
                 color = textColor,
-                style = textStyle
+                style = textStyle,
             )
             IconContent(item = item, modifier = Modifier.align(Alignment.CenterVertically), color = iconColor)
         }
@@ -267,7 +267,7 @@ private fun RowScope.ButtonWithIconAndText(
                 item = item,
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 color = textColor,
-                style = textStyle
+                style = textStyle,
             )
             IconContent(item = item, modifier = Modifier.align(Alignment.CenterHorizontally), color = iconColor)
         }
@@ -284,7 +284,7 @@ private fun IconContent(
         painter = item.icon,
         contentDescription = null,
         modifier = modifier.size(24.dp),
-        colorFilter = ColorFilter.tint(color).takeUnless { color == Color.Transparent || color == Color.Unspecified }
+        colorFilter = ColorFilter.tint(color).takeUnless { color == Color.Transparent || color == Color.Unspecified },
     )
 }
 
@@ -365,7 +365,7 @@ private fun RowToggleButtonGroupPreview() {
         val items = List(4) {
             ToggleButtonGroup.Item(
                 id = "$it",
-                text = "Button $it"
+                text = "Button $it",
             )
         }
 

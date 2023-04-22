@@ -31,12 +31,14 @@ class PagingRecyclerView @JvmOverloads constructor(
                             handlePaging(lm.itemCount, lm.findFirstCompletelyVisibleItemPosition())
                         }
                         else -> {
-                            throw IllegalStateException("PagingRecyclerView supports only " +
-                                "LinearLayoutManager and GridLayoutManager")
+                            throw IllegalStateException(
+                                "PagingRecyclerView supports only " +
+                                    "LinearLayoutManager and GridLayoutManager",
+                            )
                         }
                     }
                 }
-            }
+            },
         )
         scrollListenerSet = true
     }

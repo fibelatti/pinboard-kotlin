@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class NotesDataSource @Inject constructor(
     private val notesApi: NotesApi,
-    private val noteDtoMapper: NoteDtoMapper
+    private val noteDtoMapper: NoteDtoMapper,
 ) : NotesRepository {
 
     override suspend fun getAllNotes(): Result<List<Note>> = resultFromNetwork {

@@ -27,7 +27,7 @@ class GetUrlPreview @Inject constructor(
             createUrlPreview(params)
         }
     }.onFailureReturn(
-        createUrlPreview(params)
+        createUrlPreview(params),
     )
 
     private fun createUrlPreview(params: Params): UrlPreview = UrlPreview(
@@ -44,7 +44,7 @@ class GetUrlPreview @Inject constructor(
                 if (params.url.contains("twitter.com")) {
                     header(
                         name = "User-Agent",
-                        value = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://google.com/bot.html)"
+                        value = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://google.com/bot.html)",
                     )
                 }
             }

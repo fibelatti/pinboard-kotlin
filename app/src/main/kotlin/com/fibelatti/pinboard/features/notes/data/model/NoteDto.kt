@@ -26,7 +26,7 @@ class NoteDtoMapper @Inject constructor(
             title = param.title.orEmpty(),
             createdAt = param.createdAt?.let(dateFormatter::notesFormatToDisplayFormat).orEmpty(),
             updatedAt = param.updatedAt?.let(dateFormatter::notesFormatToDisplayFormat).orEmpty(),
-            text = param.text.orEmpty()
+            text = param.text.orEmpty(),
         )
     }
 }

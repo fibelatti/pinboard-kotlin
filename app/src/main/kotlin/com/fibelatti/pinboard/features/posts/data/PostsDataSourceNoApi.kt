@@ -126,7 +126,7 @@ class PostsDataSourceNoApi @Inject constructor(
         publicPostsOnly = postVisibility is PostVisibility.Public,
         privatePostsOnly = postVisibility is PostVisibility.Private,
         readLaterOnly = readLaterOnly,
-        limit = countLimit
+        limit = countLimit,
     )
 
     @VisibleForTesting
@@ -147,7 +147,7 @@ class PostsDataSourceNoApi @Inject constructor(
             untaggedOnly,
             postVisibility,
             readLaterOnly,
-            countLimit
+            countLimit,
         )
 
         val localData = if (localDataSize > 0) {
@@ -164,7 +164,7 @@ class PostsDataSourceNoApi @Inject constructor(
 
                 readLaterOnly = readLaterOnly,
                 limit = pageLimit,
-                offset = pageOffset
+                offset = pageOffset,
             ).let(postDtoMapper::mapList)
         } else {
             emptyList()
@@ -180,7 +180,6 @@ class PostsDataSourceNoApi @Inject constructor(
         postsDao.getPost(url)?.let(postDtoMapper::map) ?: throw InvalidRequestException()
     }
 
-    @Suppress("MagicNumber")
     override suspend fun searchExistingPostTag(
         tag: String,
         currentTags: List<Tag>,

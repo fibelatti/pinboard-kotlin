@@ -48,7 +48,7 @@ object SelectionDialog {
                             onOptionSelected = { option ->
                                 onOptionSelected(option)
                                 dismiss()
-                            }
+                            },
                         )
                     }
                 }
@@ -71,7 +71,7 @@ private fun <T> SelectionDialogContent(
         modifier = Modifier
             .nestedScroll(rememberNestedScrollInteropConnection())
             .fillMaxWidth()
-            .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+            .padding(start = 16.dp, top = 16.dp, end = 16.dp),
     ) {
         Text(
             text = title,

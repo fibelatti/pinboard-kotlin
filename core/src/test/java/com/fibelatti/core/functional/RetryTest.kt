@@ -35,7 +35,6 @@ class RetryTest {
                 assertThat(result).isEqualTo(Unit)
             }
 
-        @Suppress("ThrowsCount")
         @Test
         fun `GIVEN the block throws IOException WHEN no retry is successful before maxDelay THEN IOException is returned`() =
             runTest {

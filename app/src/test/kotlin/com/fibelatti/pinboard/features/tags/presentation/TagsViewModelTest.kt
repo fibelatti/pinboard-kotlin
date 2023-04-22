@@ -86,7 +86,7 @@ internal class TagsViewModelTest : BaseViewModelTest() {
                 currentSorting = TagSorting.AtoZ,
                 currentQuery = "",
                 isLoading = false,
-            )
+            ),
         )
     }
 
@@ -104,7 +104,7 @@ internal class TagsViewModelTest : BaseViewModelTest() {
                 currentSorting = TagSorting.MoreFirst,
                 currentQuery = "",
                 isLoading = false,
-            )
+            ),
         )
     }
 
@@ -122,7 +122,7 @@ internal class TagsViewModelTest : BaseViewModelTest() {
                 currentSorting = TagSorting.LessFirst,
                 currentQuery = "",
                 isLoading = false,
-            )
+            ),
         )
     }
 
@@ -133,7 +133,7 @@ internal class TagsViewModelTest : BaseViewModelTest() {
         tagsViewModel.searchTags("new-query")
 
         assertThat(tagsViewModel.state.first()).isEqualTo(
-            currentState.copy(currentQuery = "new-query")
+            currentState.copy(currentQuery = "new-query"),
         )
     }
 

@@ -21,7 +21,7 @@ fun FragmentActivity.slideFromTheRight(fragment: Fragment, tag: String, addToBac
             R.anim.slide_right_in,
             R.anim.slide_left_out,
             R.anim.slide_left_in,
-            R.anim.slide_right_out
+            R.anim.slide_right_out,
         )
         add(R.id.fragmentHost, fragment, tag)
 

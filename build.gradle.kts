@@ -1,7 +1,9 @@
 import com.android.build.api.dsl.CommonExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-apply(from = "detekt.gradle")
+plugins {
+    id("com.diffplug.spotless") version "6.18.0" apply false
+}
 
 buildscript {
     extra["compileSdkVersion"] = 33
@@ -23,15 +25,32 @@ buildscript {
     }
 }
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
 subprojects {
     afterEvaluate {
+        apply(plugin = "com.diffplug.spotless")
+        extensions.configure<com.diffplug.gradle.spotless.SpotlessExtension> {
+            kotlin {
+                target("**/*.kt")
+                targetExclude("**/build/**/*.kt")
+
+                ktlint()
+                    .userData(mapOf("android" to "true"))
+            }
+            kotlinGradle {
+                target("**/*.kts")
+                targetExclude("**/build/**/*.kts")
+
+                ktlint()
+            }
+            format("misc") {
+                target("*.gradle", "*.md", ".gitignore")
+
+                trimTrailingWhitespace()
+                indentWithSpaces()
+                endWithNewline()
+            }
+        }
+
         extensions.findByType(CommonExtension::class.java)?.apply {
             compileOptions {
                 sourceCompatibility(JavaVersion.VERSION_17)
@@ -59,6 +78,6 @@ subprojects {
             }
         }
 
-        tasks.findByName("preBuild")?.dependsOn(":detekt")
+        tasks.findByName("preBuild")?.dependsOn("spotlessCheck")
     }
 }
