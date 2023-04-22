@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -185,7 +186,7 @@ private fun TagList(
         modifier = Modifier.fillMaxWidth(),
         selectedIndex = 0,
         buttonHeight = 40.dp,
-        textStyle = ExtendedTheme.typography.caveat,
+        textStyle = MaterialTheme.typography.bodySmall,
     )
 
     val focusManager = LocalFocusManager.current
@@ -272,14 +273,14 @@ private fun TagListItem(
             color = MaterialTheme.colorScheme.secondary,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
-            style = ExtendedTheme.typography.listItem,
+            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
         )
         Text(
             text = pluralStringResource(R.plurals.posts_quantity, item.posts, item.posts),
             color = MaterialTheme.colorScheme.onBackground,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
-            style = ExtendedTheme.typography.detail,
+            style = MaterialTheme.typography.bodySmall,
         )
     }
 }

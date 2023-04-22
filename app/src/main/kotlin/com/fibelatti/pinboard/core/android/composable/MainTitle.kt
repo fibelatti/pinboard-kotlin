@@ -97,7 +97,7 @@ private fun MainTitle(
                         color = MaterialTheme.colorScheme.onSurface,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
-                        style = ExtendedTheme.typography.title,
+                        style = MaterialTheme.typography.titleLarge,
                     )
                 }
             }
@@ -113,7 +113,7 @@ private fun MainTitle(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
-                    style = ExtendedTheme.typography.detail,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
         }
@@ -132,7 +132,7 @@ private fun MainTitle(
             ) {
                 Text(
                     text = label,
-                    style = ExtendedTheme.typography.caveat,
+                    style = MaterialTheme.typography.bodySmall,
                 )
             }
         }

@@ -171,7 +171,7 @@ fun SearchBookmarksScreen(
                         .fillMaxWidth()
                         .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = ExtendedTheme.typography.caveat,
+                    style = MaterialTheme.typography.bodySmall,
                 )
             }
         }
@@ -191,7 +191,7 @@ fun SearchBookmarksScreen(
                         .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
-                    style = ExtendedTheme.typography.sectionTitle,
+                    style = MaterialTheme.typography.titleSmall,
                 )
 
                 SingleLineChipGroup(
@@ -229,7 +229,7 @@ fun SearchBookmarksScreen(
                     )
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = ExtendedTheme.typography.detail,
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
 
@@ -240,7 +240,7 @@ fun SearchBookmarksScreen(
                 .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
             color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.Bold,
-            style = ExtendedTheme.typography.sectionTitle,
+            style = MaterialTheme.typography.titleSmall,
         )
 
         TagList(

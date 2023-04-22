@@ -114,7 +114,7 @@ fun TagManager(
                     }
                     false
                 },
-            textStyle = ExtendedTheme.typography.detail,
+            textStyle = MaterialTheme.typography.bodyMedium,
             label = { Text(text = stringResource(id = R.string.posts_add_tags)) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
             keyboardActions = KeyboardActions { keyboardAction() },
@@ -185,7 +185,7 @@ fun TagManager(
                     end.linkTo(parent.end)
                 }
                 .fillMaxWidth(),
-            style = ExtendedTheme.typography.detail,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary,
         )
 

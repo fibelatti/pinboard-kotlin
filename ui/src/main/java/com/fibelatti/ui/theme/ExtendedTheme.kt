@@ -31,10 +31,10 @@ fun ExtendedTheme(
 
     CompositionLocalProvider(
         LocalExtendedColors provides customColors,
-        LocalExtendedTypography provides extendedTypography
     ) {
         MaterialTheme(
             colorScheme = colorScheme,
+            typography = ExtendedTypography,
             content = content,
         )
     }
@@ -46,9 +46,4 @@ object ExtendedTheme {
         @Composable
         @ReadOnlyComposable
         get() = LocalExtendedColors.current
-
-    val typography: ExtendedTypography
-        @Composable
-        @ReadOnlyComposable
-        get() = LocalExtendedTypography.current
 }

@@ -78,7 +78,7 @@ private fun <T> SelectionDialogContent(
             modifier = Modifier.fillMaxWidth(),
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
-            style = ExtendedTheme.typography.title,
+            style = MaterialTheme.typography.titleLarge,
         )
 
         LazyColumn(

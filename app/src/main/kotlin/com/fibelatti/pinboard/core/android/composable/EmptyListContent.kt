@@ -68,7 +68,7 @@ fun EmptyListContent(
             },
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
-            style = ExtendedTheme.typography.title,
+            style = MaterialTheme.typography.titleLarge,
         )
 
         Text(
@@ -80,7 +80,7 @@ fun EmptyListContent(
             },
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
-            style = ExtendedTheme.typography.body,
+            style = MaterialTheme.typography.bodyLarge,
         )
     }
 }
