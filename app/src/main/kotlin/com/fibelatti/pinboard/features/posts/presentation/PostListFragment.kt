@@ -247,6 +247,10 @@ class PostListFragment @Inject constructor(
     private fun updateContent(content: PostListContent) {
         mainViewModel.updateState { currentState ->
             currentState.copy(
+                title = MainState.TitleComponent.Visible(getCategoryTitle(content.category)),
+                subtitle = MainState.TitleComponent.Visible(
+                    buildPostCountSubTitle(content.totalCount, content.sortType),
+                ),
                 navigation = MainState.NavigationComponent.Gone,
                 bottomAppBar = MainState.BottomAppBarComponent.Visible(
                     id = ACTION_ID,
@@ -263,13 +267,6 @@ class PostListFragment @Inject constructor(
 
         when (content.shouldLoad) {
             ShouldLoadFirstPage, ShouldForceLoad -> {
-                mainViewModel.updateState { currentState ->
-                    currentState.copy(
-                        title = MainState.TitleComponent.Visible(getCategoryTitle(content.category)),
-                        subtitle = MainState.TitleComponent.Gone,
-                    )
-                }
-
                 binding.progressBar.isVisible = true
                 postListViewModel.loadContent(content)
             }
@@ -331,15 +328,6 @@ class PostListFragment @Inject constructor(
     private fun showPosts(content: PostListContent) {
         binding.progressBar.isGone = content.shouldLoad == Loaded
         binding.recyclerViewPosts.onRequestNextPageCompleted()
-
-        mainViewModel.updateState { currentState ->
-            currentState.copy(
-                title = MainState.TitleComponent.Visible(getCategoryTitle(content.category)),
-                subtitle = MainState.TitleComponent.Visible(
-                    buildPostCountSubTitle(content.totalCount, content.sortType),
-                ),
-            )
-        }
 
         if (content.posts == null && content.shouldLoad == Loaded) {
             showEmptyLayout()
