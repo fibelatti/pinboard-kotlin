@@ -50,7 +50,6 @@
         <!-- Default widget styles -->
         <item name="buttonStyle">@style/AppTheme.Button</item>
         <item name="checkboxStyle">@style/AppTheme.Checkbox</item>
-        <item name="materialButtonOutlinedStyle">@style/AppTheme.GroupButtonItem</item>
         <item name="textInputStyle">@style/AppTheme.InputLayout</item>
 
         <item name="materialAlertDialogTheme">@style/AppTheme.MaterialDialog</item>
@@ -110,20 +109,6 @@
 
     <style name="AppTheme.TextButton.Menu.Small">
         <item name="android:textSize">@dimen/text_size_xsmall</item>
-    </style>
-
-    <style name="AppTheme.GroupButtonItem" parent="Widget.Material3.Button.OutlinedButton">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAllCaps">false</item>
-        <item name="android:textSize">@dimen/text_size_xsmall</item>
-        <item name="android:paddingStart">@dimen/padding_small</item>
-        <item name="android:paddingEnd">@dimen/padding_small</item>
-        <item name="shapeAppearanceOverlay">@style/AppTheme.GroupButtonItem.ShapeAppearanceOverlay</item>
-    </style>
-
-    <style name="AppTheme.GroupButtonItem.ShapeAppearanceOverlay" parent="ShapeAppearanceOverlay.Material3.Button">
-        <item name="cornerSize">30%</item>
     </style>
 
     <style name="AppTheme.SelectionButton" parent="Widget.Material3.Button.ElevatedButton">
