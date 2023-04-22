@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Surface
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -210,32 +211,36 @@ private fun NoteListItem(
     note: Note,
     onNoteClicked: (Note) -> Unit,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onNoteClicked(note) }
-            .background(color = MaterialTheme.colorScheme.surface)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+    Surface(
+        elevation = 2.dp,
     ) {
-        Text(
-            text = note.title,
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-        )
-        Text(
-            text = stringResource(id = R.string.notes_saved_at, note.createdAt),
-            modifier = Modifier.padding(top = 4.dp),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.bodyMedium,
-        )
-
-        if (note.updatedAt != note.createdAt) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onNoteClicked(note) }
+                .background(color = MaterialTheme.colorScheme.surface)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+        ) {
             Text(
-                text = stringResource(id = R.string.notes_updated_at, note.updatedAt),
+                text = note.title,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+            )
+            Text(
+                text = stringResource(id = R.string.notes_saved_at, note.createdAt),
                 modifier = Modifier.padding(top = 4.dp),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyMedium,
             )
+
+            if (note.updatedAt != note.createdAt) {
+                Text(
+                    text = stringResource(id = R.string.notes_updated_at, note.updatedAt),
+                    modifier = Modifier.padding(top = 4.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
         }
     }
 }
