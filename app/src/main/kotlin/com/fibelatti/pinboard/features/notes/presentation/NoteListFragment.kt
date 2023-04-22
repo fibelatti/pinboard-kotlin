@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
@@ -13,6 +15,8 @@ import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.core.extension.withItemOffsetDecoration
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.android.composable.AppTheme
+import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.databinding.FragmentNoteListBinding
 import com.fibelatti.pinboard.features.MainState
@@ -162,11 +166,15 @@ class NoteListFragment @Inject constructor(
     private fun showEmptyLayout() {
         binding.buttonGroupNoteSorting.isGone = true
         binding.recyclerViewNotes.isGone = true
-        binding.layoutEmptyList.apply {
-            setIcon(R.drawable.ic_notes)
-            setTitle(R.string.notes_empty_title)
-            setDescription(R.string.notes_empty_description)
-            isVisible = true
+        binding.layoutEmptyList.isVisible = true
+        binding.layoutEmptyList.setContent {
+            AppTheme {
+                EmptyListContent(
+                    icon = painterResource(id = R.drawable.ic_notes),
+                    title = stringResource(id = R.string.notes_empty_title),
+                    description = stringResource(id = R.string.notes_empty_description),
+                )
+            }
         }
     }
 }

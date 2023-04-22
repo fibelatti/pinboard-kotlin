@@ -103,7 +103,7 @@
         app:layout_constraintTop_toBottomOf="@id/barrierSearchActive"
         tools:visibility="visible" />
 
-    <com.fibelatti.pinboard.core.android.customview.EmptyListLayout
+    <androidx.compose.ui.platform.ComposeView
         android:id="@+id/layoutEmptyList"
         android:layout_width="0dp"
         android:layout_height="0dp"

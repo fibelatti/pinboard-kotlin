@@ -13,7 +13,7 @@
         android:visibility="gone"
         tools:visibility="gone" />
 
-    <com.fibelatti.pinboard.core.android.customview.EmptyListLayout
+    <androidx.compose.ui.platform.ComposeView
         android:id="@+id/layoutEmptyList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

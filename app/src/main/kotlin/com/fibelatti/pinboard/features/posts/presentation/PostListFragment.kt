@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
@@ -21,6 +23,8 @@ import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppConfig.PINBOARD_USER_URL
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.android.composable.AppTheme
+import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.extension.copyToClipboard
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.showBanner
@@ -148,24 +152,30 @@ class PostListFragment @Inject constructor(
                     is PostQuickActions.ToggleReadLater -> postDetailViewModel.toggleReadLater(
                         post = option.post,
                     )
+
                     is PostQuickActions.Edit -> appStateViewModel.runAction(
                         action = EditPost(option.post),
                     )
+
                     is PostQuickActions.Delete -> deletePost(
                         post = option.post,
                     )
+
                     is PostQuickActions.CopyUrl -> requireContext().copyToClipboard(
                         label = post.title,
                         text = post.url,
                     )
+
                     is PostQuickActions.Share -> requireActivity().shareText(
                         title = R.string.posts_share_title,
                         text = option.post.url,
                     )
+
                     is PostQuickActions.ExpandDescription -> PostDescriptionDialog.showPostDescriptionDialog(
                         context = requireContext(),
                         post = post,
                     )
+
                     is PostQuickActions.OpenBrowser -> startActivity(
                         Intent(Intent.ACTION_VIEW, Uri.parse(option.post.url)),
                     )
@@ -263,6 +273,7 @@ class PostListFragment @Inject constructor(
                 binding.progressBar.isVisible = true
                 postListViewModel.loadContent(content)
             }
+
             is ShouldLoadNextPage -> postListViewModel.loadContent(content)
             Syncing, Loaded -> showPosts(content)
         }
@@ -280,9 +291,11 @@ class PostListFragment @Inject constructor(
             searchParameters.term.isNotBlank() && searchParameters.tags.isEmpty() -> {
                 requireActivity().shareText(R.string.search_share_title, queryUrl)
             }
+
             searchParameters.term.isBlank() && searchParameters.tags.isNotEmpty() -> {
                 requireActivity().shareText(R.string.search_share_title, tagsUrl)
             }
+
             else -> {
                 SelectionDialog.show(
                     context = requireContext(),
@@ -363,10 +376,15 @@ class PostListFragment @Inject constructor(
         }
 
         binding.recyclerViewPosts.isGone = true
-        binding.layoutEmptyList.apply {
-            isVisible = true
-            setTitle(R.string.posts_empty_title)
-            setDescription(R.string.posts_empty_description)
+        binding.layoutEmptyList.isVisible = true
+        binding.layoutEmptyList.setContent {
+            AppTheme {
+                EmptyListContent(
+                    icon = painterResource(id = R.drawable.ic_notes),
+                    title = stringResource(id = R.string.posts_empty_title),
+                    description = stringResource(id = R.string.posts_empty_description),
+                )
+            }
         }
     }
 }

@@ -48,7 +48,7 @@
 
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
-    <com.fibelatti.pinboard.core.android.customview.EmptyListLayout
+    <androidx.compose.ui.platform.ComposeView
         android:id="@+id/layoutEmptyList"
         android:layout_width="0dp"
         android:layout_height="0dp"
