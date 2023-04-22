@@ -176,7 +176,7 @@ dependencies {
     implementation(libs.compose.material)
     implementation(libs.compose.material3)
     implementation(libs.compose.ui)
-    debugImplementation(libs.compose.ui.tooling.preview)
+    implementation(libs.compose.ui.tooling.preview)
     debugImplementation(libs.compose.ui.tooling)
 
     // Misc
