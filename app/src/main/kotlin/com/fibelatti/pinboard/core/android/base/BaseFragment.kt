@@ -13,7 +13,7 @@ abstract class BaseFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        getViewToApplyInsets(view).doOnApplyWindowInsets { viewToApply, insets, initialPadding, _ ->
+        getViewToApplyInsets(view)?.doOnApplyWindowInsets { viewToApply, insets, initialPadding, _ ->
             viewToApply.updatePadding(
                 bottom = initialPadding.bottom + insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom,
             )

@@ -22,19 +22,12 @@ import androidx.recyclerview.widget.RecyclerView
  *
  * @return the [View] to which insets must be applied
  */
-fun getViewToApplyInsets(rootView: View): View = when (rootView) {
-    is ScrollView,
-    is NestedScrollingParent,
-    -> (rootView as? ViewGroup)?.children?.lastOrNull()
+fun getViewToApplyInsets(rootView: View): View? = when (rootView) {
+    is ScrollView, is NestedScrollingParent -> (rootView as? ViewGroup)?.children?.lastOrNull()
     is RecyclerView -> rootView
-    is ViewGroup -> {
-        rootView.children
-            .lastOrNull { it is ScrollView || it is NestedScrollingParent || it is RecyclerView }
-            ?.let(::getViewToApplyInsets)
-            ?: rootView.children.lastOrNull()?.let(::getViewToApplyInsets)
-    }
-    else -> rootView
-} ?: rootView
+    is ViewGroup -> rootView.children.lastOrNull()?.let(::getViewToApplyInsets)
+    else -> null
+}
 
 /**
  * Helper function to manage callbacks of [View.setOnApplyWindowInsetsListener].
@@ -66,16 +59,18 @@ private fun View.requestApplyInsetsWhenAttached() {
         ViewCompat.requestApplyInsets(this)
     } else {
         // We're not attached to the hierarchy, add a listener to request when we are.
-        addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-            override fun onViewAttachedToWindow(view: View) {
-                view.removeOnAttachStateChangeListener(this)
-                ViewCompat.requestApplyInsets(view)
-            }
+        addOnAttachStateChangeListener(
+            object : View.OnAttachStateChangeListener {
+                override fun onViewAttachedToWindow(view: View) {
+                    view.removeOnAttachStateChangeListener(this)
+                    ViewCompat.requestApplyInsets(view)
+                }
 
-            override fun onViewDetachedFromWindow(v: View) {
-                // Intentionally empty
-            }
-        })
+                override fun onViewDetachedFromWindow(v: View) {
+                    // Intentionally empty
+                }
+            },
+        )
     }
 }
 
