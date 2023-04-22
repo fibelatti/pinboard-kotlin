@@ -11,13 +11,15 @@ dependencyResolutionManagement {
             val agpVersion = "8.0.0"
             val kotlinVersion = "1.8.10"
             val coroutinesVersion = "1.6.4"
+
+            val activityVersion = "1.7.1"
             val composeUiVersion = "1.4.2"
             val hiltVersion = "2.45"
             val lifecycleVersion = "2.6.1"
-            val roomVersion = "2.5.1"
             val moshiVersion = "1.14.0"
             val okHttpVersion = "4.10.0"
             val retrofitVersion = "2.9.0"
+            val roomVersion = "2.5.1"
             val junit5Version = "5.9.2"
 
             // Classpath
@@ -34,7 +36,8 @@ dependencyResolutionManagement {
 
             library("appcompat", "androidx.appcompat:appcompat:1.6.1")
             library("core-ktx", "androidx.core:core-ktx:1.10.0")
-            library("activity-ktx", "androidx.activity:activity-ktx:1.7.1")
+            library("activity-ktx", "androidx.activity:activity-ktx:$activityVersion")
+            library("activity-compose", "androidx.activity:activity-compose:$activityVersion")
             library("fragment-ktx", "androidx.fragment:fragment-ktx:1.5.7")
             library("material", "com.google.android.material:material:1.8.0")
             library("constraint-layout", "androidx.constraintlayout:constraintlayout:2.1.4")
@@ -57,7 +60,6 @@ dependencyResolutionManagement {
             library("compose-ui", "androidx.compose.ui:ui:$composeUiVersion")
             library("compose-ui-tooling", "androidx.compose.ui:ui-tooling:$composeUiVersion")
             library("compose-ui-tooling-preview", "androidx.compose.ui:ui-tooling-preview:$composeUiVersion")
-            library("compose-activity", "androidx.activity:activity-compose:1.7.1")
 
             library("hilt-android", "com.google.dagger:hilt-android:$hiltVersion")
             library("hilt-compiler", "com.google.dagger:hilt-compiler:$hiltVersion")
