@@ -19,43 +19,36 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.extension.setThemedContent
-import com.fibelatti.pinboard.core.extension.setViewTreeOwners
+import com.fibelatti.pinboard.core.android.ComposeBottomSheetDialog
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-import com.google.android.material.bottomsheet.BottomSheetDialog
 
 object RenameTagDialog {
 
+    @OptIn(ExperimentalComposeUiApi::class)
     fun show(
         context: Context,
         tag: Tag,
         onRename: (Tag, String) -> Unit,
     ) {
-        BottomSheetDialog(context).apply {
-            setViewTreeOwners()
+        ComposeBottomSheetDialog(context) {
+            val keyboardController = LocalSoftwareKeyboardController.current
 
-            setContentView(
-                ComposeView(context).apply {
-                    setThemedContent {
-                        RenameTagScreen(
-                            onRename = { newName ->
-                                onRename(tag, newName)
-                                hideKeyboard()
-                                dismiss()
-                            },
-                        )
-                    }
+            RenameTagScreen(
+                onRename = { newName ->
+                    onRename(tag, newName)
+                    keyboardController?.hide()
+                    dismiss()
                 },
             )
         }.show()

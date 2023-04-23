@@ -12,18 +12,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
-import com.fibelatti.pinboard.core.extension.setThemedContent
-import com.fibelatti.pinboard.core.extension.setViewTreeOwners
+import com.fibelatti.pinboard.core.android.ComposeBottomSheetDialog
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.components.TextWithLinks
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-import com.google.android.material.bottomsheet.BottomSheetDialog
 
 object PostDescriptionDialog {
 
@@ -31,19 +28,11 @@ object PostDescriptionDialog {
         context: Context,
         post: Post,
     ) {
-        BottomSheetDialog(context).apply {
-            setViewTreeOwners()
-
-            setContentView(
-                ComposeView(context).apply {
-                    setThemedContent {
-                        BookmarkDescriptionScreen(
-                            title = post.title,
-                            url = post.url,
-                            description = post.description,
-                        )
-                    }
-                },
+        ComposeBottomSheetDialog(context) {
+            BookmarkDescriptionScreen(
+                title = post.title,
+                url = post.url,
+                description = post.description,
             )
         }.show()
     }
