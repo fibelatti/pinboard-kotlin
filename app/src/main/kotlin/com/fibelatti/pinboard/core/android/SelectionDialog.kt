@@ -2,10 +2,8 @@ package com.fibelatti.pinboard.core.android
 
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.FilledTonalButton
@@ -37,22 +35,22 @@ object SelectionDialog {
         BottomSheetDialog(context).apply {
             setViewTreeOwners()
 
-            val content = ComposeView(context).apply {
-                setThemedContent {
-                    SelectionDialogContent(
-                        title = title,
-                        options = options,
-                        optionName = optionName,
-                        optionIcon = optionIcon,
-                        onOptionSelected = { option ->
-                            onOptionSelected(option)
-                            dismiss()
-                        },
-                    )
-                }
-            }
-
-            setContentView(content)
+            setContentView(
+                ComposeView(context).apply {
+                    setThemedContent {
+                        SelectionDialogContent(
+                            title = title,
+                            options = options,
+                            optionName = optionName,
+                            optionIcon = optionIcon,
+                            onOptionSelected = { option ->
+                                onOptionSelected(option)
+                                dismiss()
+                            },
+                        )
+                    }
+                },
+            )
         }.show()
     }
 }
@@ -65,47 +63,42 @@ private fun <T> SelectionDialogContent(
     optionIcon: (T) -> Int? = { null },
     onOptionSelected: (T) -> Unit,
 ) {
-    Column(
+    LazyColumn(
         modifier = Modifier
-            .nestedScroll(rememberNestedScrollInteropConnection())
             .fillMaxWidth()
-            .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+            .nestedScroll(rememberNestedScrollInteropConnection()),
+        contentPadding = PaddingValues(all = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Text(
-            text = title,
-            modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleLarge,
-        )
+        item {
+            Text(
+                text = title,
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge,
+            )
+        }
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            contentPadding = PaddingValues(bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            items(options.size) { index ->
-                val option = options[index]
+        items(options.size) { index ->
+            val option = options[index]
 
-                FilledTonalButton(
-                    onClick = { onOptionSelected(option) },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(
-                        text = optionName(option),
-                        modifier = Modifier.weight(1F),
-                        textAlign = TextAlign.Center,
+            FilledTonalButton(
+                onClick = { onOptionSelected(option) },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    text = optionName(option),
+                    modifier = Modifier.weight(1F),
+                    textAlign = TextAlign.Center,
+                )
+
+                optionIcon(option)?.let {
+                    Icon(
+                        painter = painterResource(id = it),
+                        contentDescription = "",
+                        modifier = Modifier.size(16.dp),
                     )
-
-                    optionIcon(option)?.let {
-                        Icon(
-                            painter = painterResource(id = it),
-                            contentDescription = "",
-                            modifier = Modifier.size(16.dp),
-                        )
-                    }
                 }
             }
         }
