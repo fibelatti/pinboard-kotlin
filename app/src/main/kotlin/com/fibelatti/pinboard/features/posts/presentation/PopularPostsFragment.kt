@@ -8,31 +8,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.core.view.isGone
-import androidx.core.view.isVisible
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.core.extension.shareText
-import com.fibelatti.core.extension.viewBinding
-import com.fibelatti.core.extension.withItemOffsetDecoration
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.extension.copyToClipboard
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.showBanner
-import com.fibelatti.pinboard.databinding.FragmentPopularPostsBinding
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
-import com.fibelatti.pinboard.features.appstate.PopularPostsContent
-import com.fibelatti.pinboard.features.appstate.RefreshPopular
-import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
@@ -40,48 +30,30 @@ import java.util.UUID
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class PopularPostsFragment @Inject constructor(
-    private val popularPostsAdapter: PopularPostsAdapter,
-) : BaseFragment() {
-
-    companion object {
-
-        @JvmStatic
-        val TAG: String = "PopularPostsFragment"
-
-        private val ACTION_ID = UUID.randomUUID().toString()
-    }
+class PopularPostsFragment @Inject constructor() : BaseFragment() {
 
     private val appStateViewModel: AppStateViewModel by activityViewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
     private val popularPostsViewModel: PopularPostsViewModel by viewModels()
 
-    private val binding by viewBinding(FragmentPopularPostsBinding::bind)
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View = FragmentPopularPostsBinding.inflate(inflater, container, false).root
+    ): View = ComposeView(inflater.context)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupLayout()
-        setupViewModels()
-    }
 
-    private fun setupLayout() {
-        binding.swipeToRefresh.setOnRefreshListener {
-            binding.swipeToRefresh.isRefreshing = false
-            appStateViewModel.runAction(RefreshPopular)
+        setThemedContent {
+            PopularBookmarksScreen(
+                appStateViewModel = appStateViewModel,
+                popularPostsViewModel = popularPostsViewModel,
+                onBookmarkLongClicked = ::showQuickActionsDialogs,
+            )
         }
 
-        binding.recyclerViewPosts
-            .withItemOffsetDecoration(R.dimen.padding_small)
-            .adapter = popularPostsAdapter
-
-        popularPostsAdapter.onItemClicked = { appStateViewModel.runAction(ViewPost(it)) }
-        popularPostsAdapter.onItemLongClicked = ::showQuickActionsDialogs
+        setupViewModels()
     }
 
     private fun showQuickActionsDialogs(post: Post) {
@@ -109,7 +81,7 @@ class PopularPostsFragment @Inject constructor(
 
     private fun setupViewModels() {
         appStateViewModel.popularPostsContent
-            .onEach { content ->
+            .onEach {
                 mainViewModel.updateState { currentState ->
                     currentState.copy(
                         title = MainState.TitleComponent.Visible(getString(R.string.popular_title)),
@@ -119,15 +91,6 @@ class PopularPostsFragment @Inject constructor(
                         floatingActionButton = MainState.FabComponent.Gone,
                     )
                 }
-
-                if (content.shouldLoad) {
-                    binding.layoutProgressBar.root.isVisible = true
-                    binding.recyclerViewPosts.isGone = true
-                    binding.layoutEmptyList.isGone = true
-                    popularPostsViewModel.getPosts()
-                } else {
-                    showPosts(content)
-                }
             }
             .launchInAndFlowWith(viewLifecycleOwner)
 
@@ -135,39 +98,20 @@ class PopularPostsFragment @Inject constructor(
             .onEach { navigateBack() }
             .launchInAndFlowWith(viewLifecycleOwner)
 
-        popularPostsViewModel.loading
-            .onEach {
-                binding.layoutProgressBar.root.isVisible = it
-                binding.recyclerViewPosts.isGone = it
-            }
-            .launchInAndFlowWith(viewLifecycleOwner)
         popularPostsViewModel.saved
-            .onEach { binding.root.showBanner(getString(R.string.posts_saved_feedback)) }
+            .onEach { requireView().showBanner(getString(R.string.posts_saved_feedback)) }
             .launchInAndFlowWith(viewLifecycleOwner)
         popularPostsViewModel.error
             .onEach { throwable -> handleError(throwable, popularPostsViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)
     }
 
-    private fun showPosts(content: PopularPostsContent) {
-        binding.layoutProgressBar.root.isGone = true
+    companion object {
 
-        if (content.posts.isEmpty()) {
-            binding.recyclerViewPosts.isGone = true
-            binding.layoutEmptyList.isVisible = true
-            binding.layoutEmptyList.setThemedContent {
-                EmptyListContent(
-                    icon = painterResource(id = R.drawable.ic_notes),
-                    title = stringResource(id = R.string.posts_empty_title),
-                    description = stringResource(id = R.string.posts_empty_description),
-                )
-            }
-            return
-        }
+        @JvmStatic
+        val TAG: String = "PopularPostsFragment"
 
-        binding.layoutEmptyList.isGone = true
-        binding.recyclerViewPosts.isVisible = true
-        popularPostsAdapter.submitList(content.posts)
+        private val ACTION_ID = UUID.randomUUID().toString()
     }
 }
 
