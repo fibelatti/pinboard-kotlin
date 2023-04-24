@@ -19,6 +19,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,57 +61,59 @@ fun SearchBookmarksScreen(
     searchPostViewModel: SearchPostViewModel = hiltViewModel(),
     tagsViewModel: TagsViewModel = hiltViewModel(),
 ) {
-    val appState by appStateViewModel.content.collectAsStateWithLifecycle()
+    Surface(
+        color = ExtendedTheme.colors.backgroundNoOverlay,
+    ) {
+        val appState by appStateViewModel.content.collectAsStateWithLifecycle()
+        val searchContent = appState as? SearchContent ?: return@Surface
 
-    val searchContent = appState as? SearchContent ?: return
+        val queryResultSize by searchPostViewModel.queryResultSize.collectAsStateWithLifecycle()
+        val tagsState by tagsViewModel.state.collectAsStateWithLifecycle()
 
-    val queryResultSize by searchPostViewModel.queryResultSize.collectAsStateWithLifecycle()
-
-    val tagsState by tagsViewModel.state.collectAsStateWithLifecycle()
-
-    LaunchedEffect(searchContent.searchParameters) {
-        if (searchContent.searchParameters.isActive()) {
-            searchPostViewModel.searchParametersChanged(searchContent.searchParameters)
+        LaunchedEffect(searchContent.searchParameters) {
+            if (searchContent.searchParameters.isActive()) {
+                searchPostViewModel.searchParametersChanged(searchContent.searchParameters)
+            }
         }
-    }
 
-    LaunchedEffect(searchContent.shouldLoadTags, searchContent.availableTags) {
-        if (searchContent.shouldLoadTags) {
-            tagsViewModel.getAll(TagsViewModel.Source.SEARCH)
-        } else {
-            tagsViewModel.sortTags(searchContent.availableTags)
+        LaunchedEffect(searchContent.shouldLoadTags, searchContent.availableTags) {
+            if (searchContent.shouldLoadTags) {
+                tagsViewModel.getAll(TagsViewModel.Source.SEARCH)
+            } else {
+                tagsViewModel.sortTags(searchContent.availableTags)
+            }
         }
-    }
 
-    SearchBookmarksScreen(
-        searchTerm = searchContent.searchParameters.term,
-        onSearchTermChanged = { newValue -> appStateViewModel.runAction(SetTerm(newValue)) },
-        onKeyboardSearch = { appStateViewModel.runAction(Search) },
-        selectedTags = searchContent.searchParameters.tags,
-        onSelectedTagRemoved = { tag -> appStateViewModel.runAction(RemoveSearchTag(tag)) },
-        activeSearchResult = if (searchContent.searchParameters.isActive()) {
-            stringResource(id = R.string.search_result_size, queryResultSize)
-        } else {
-            ""
-        },
-        availableTags = tagsState.filteredTags,
-        isLoadingTags = tagsState.isLoading,
-        onTagsSortOptionClicked = { sorting ->
-            tagsViewModel.sortTags(
-                sorting = when (sorting) {
-                    TagList.Sorting.Alphabetically -> TagSorting.AtoZ
-                    TagList.Sorting.MoreFirst -> TagSorting.MoreFirst
-                    TagList.Sorting.LessFirst -> TagSorting.LessFirst
-                    TagList.Sorting.Search -> TagSorting.AtoZ
-                },
-                searchQuery = "",
-            )
-        },
-        tagsSearchTerm = tagsState.currentQuery,
-        onTagsSearchInputChanged = tagsViewModel::searchTags,
-        onAvailableTagClicked = { tag -> appStateViewModel.runAction(AddSearchTag(tag)) },
-        onTagsPullToRefresh = { appStateViewModel.runAction(RefreshSearchTags) },
-    )
+        SearchBookmarksScreen(
+            searchTerm = searchContent.searchParameters.term,
+            onSearchTermChanged = { newValue -> appStateViewModel.runAction(SetTerm(newValue)) },
+            onKeyboardSearch = { appStateViewModel.runAction(Search) },
+            selectedTags = searchContent.searchParameters.tags,
+            onSelectedTagRemoved = { tag -> appStateViewModel.runAction(RemoveSearchTag(tag)) },
+            activeSearchResult = if (searchContent.searchParameters.isActive()) {
+                stringResource(id = R.string.search_result_size, queryResultSize)
+            } else {
+                ""
+            },
+            availableTags = tagsState.filteredTags,
+            isLoadingTags = tagsState.isLoading,
+            onTagsSortOptionClicked = { sorting ->
+                tagsViewModel.sortTags(
+                    sorting = when (sorting) {
+                        TagList.Sorting.Alphabetically -> TagSorting.AtoZ
+                        TagList.Sorting.MoreFirst -> TagSorting.MoreFirst
+                        TagList.Sorting.LessFirst -> TagSorting.LessFirst
+                        TagList.Sorting.Search -> TagSorting.AtoZ
+                    },
+                    searchQuery = "",
+                )
+            },
+            tagsSearchTerm = tagsState.currentQuery,
+            onTagsSearchInputChanged = tagsViewModel::searchTags,
+            onAvailableTagClicked = { tag -> appStateViewModel.runAction(AddSearchTag(tag)) },
+            onTagsPullToRefresh = { appStateViewModel.runAction(RefreshSearchTags) },
+        )
+    }
 }
 
 @Composable
@@ -131,9 +134,7 @@ fun SearchBookmarksScreen(
     onTagsPullToRefresh: () -> Unit = {},
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = ExtendedTheme.colors.backgroundNoOverlay),
+        modifier = Modifier.fillMaxSize(),
     ) {
         var tagSearchFocused by rememberSaveable { mutableStateOf(false) }
         val imeVisible by rememberKeyboardState()

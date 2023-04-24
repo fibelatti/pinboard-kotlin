@@ -3,7 +3,6 @@ package com.fibelatti.pinboard.features.notes.presentation
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,24 +36,28 @@ fun NoteDetailsScreen(
     appStateViewModel: AppStateViewModel = hiltViewModel(),
     noteDetailsViewModel: NoteDetailsViewModel = hiltViewModel(),
 ) {
-    val appState by appStateViewModel.content.collectAsStateWithLifecycle()
-    val noteDetailContent = appState as? NoteDetailContent ?: return
-    val isLoading = noteDetailContent.note.isLeft
-    val note = noteDetailContent.note.rightOrNull()
+    Surface(
+        color = ExtendedTheme.colors.backgroundNoOverlay,
+    ) {
+        val appState by appStateViewModel.content.collectAsStateWithLifecycle()
+        val noteDetailContent = appState as? NoteDetailContent ?: return@Surface
+        val isLoading = noteDetailContent.note.isLeft
+        val note = noteDetailContent.note.rightOrNull()
 
-    LaunchedEffect(isLoading) {
-        if (isLoading) {
-            noteDetailsViewModel.getNoteDetails(noteDetailContent.id)
+        LaunchedEffect(isLoading) {
+            if (isLoading) {
+                noteDetailsViewModel.getNoteDetails(noteDetailContent.id)
+            }
         }
-    }
 
-    NoteDetailsScreen(
-        isLoading = isLoading,
-        title = note?.title ?: "",
-        savedAt = note?.createdAt ?: "",
-        updatedAt = note?.updatedAt ?: "",
-        text = note?.text ?: "",
-    )
+        NoteDetailsScreen(
+            isLoading = isLoading,
+            title = note?.title ?: "",
+            savedAt = note?.createdAt ?: "",
+            updatedAt = note?.updatedAt ?: "",
+            text = note?.text ?: "",
+        )
+    }
 }
 
 @Composable
@@ -65,9 +69,7 @@ private fun NoteDetailsScreen(
     text: String,
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = ExtendedTheme.colors.backgroundNoOverlay),
+        modifier = Modifier.fillMaxSize(),
     ) {
         AnimatedVisibilityProgressIndicator(
             isVisible = isLoading,

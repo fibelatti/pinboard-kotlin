@@ -60,31 +60,34 @@ fun NoteListScreen(
     appStateViewModel: AppStateViewModel = hiltViewModel(),
     noteListViewModel: NoteListViewModel = hiltViewModel(),
 ) {
-    val appState by appStateViewModel.content.collectAsStateWithLifecycle()
+    Surface(
+        color = ExtendedTheme.colors.backgroundNoOverlay,
+    ) {
+        val appState by appStateViewModel.content.collectAsStateWithLifecycle()
+        val noteListContent = appState as? NoteListContent ?: return@Surface
 
-    val noteListContent = appState as? NoteListContent ?: return
-
-    LaunchedEffect(key1 = noteListContent.shouldLoad) {
-        if (noteListContent.shouldLoad) {
-            noteListViewModel.getAllNotes()
-        }
-    }
-
-    NoteListScreen(
-        notes = noteListContent.notes,
-        isLoading = noteListContent.shouldLoad,
-        onSortOptionClicked = { noteListSorting ->
-            val sorting = when (noteListSorting) {
-                NoteList.Sorting.ByDateUpdatedDesc -> NoteSorting.ByDateUpdatedDesc
-                NoteList.Sorting.ByDateUpdatedAsc -> NoteSorting.ByDateUpdatedAsc
-                NoteList.Sorting.AtoZ -> NoteSorting.AtoZ
+        LaunchedEffect(key1 = noteListContent.shouldLoad) {
+            if (noteListContent.shouldLoad) {
+                noteListViewModel.getAllNotes()
             }
+        }
 
-            noteListViewModel.sort(noteListContent.notes, sorting)
-        },
-        onPullToRefresh = { appStateViewModel.runAction(RefreshNotes) },
-        onNoteClicked = { note -> appStateViewModel.runAction(ViewNote(note.id)) },
-    )
+        NoteListScreen(
+            notes = noteListContent.notes,
+            isLoading = noteListContent.shouldLoad,
+            onSortOptionClicked = { noteListSorting ->
+                val sorting = when (noteListSorting) {
+                    NoteList.Sorting.ByDateUpdatedDesc -> NoteSorting.ByDateUpdatedDesc
+                    NoteList.Sorting.ByDateUpdatedAsc -> NoteSorting.ByDateUpdatedAsc
+                    NoteList.Sorting.AtoZ -> NoteSorting.AtoZ
+                }
+
+                noteListViewModel.sort(noteListContent.notes, sorting)
+            },
+            onPullToRefresh = { appStateViewModel.runAction(RefreshNotes) },
+            onNoteClicked = { note -> appStateViewModel.runAction(ViewNote(note.id)) },
+        )
+    }
 }
 
 @Composable
@@ -97,9 +100,7 @@ private fun NoteListScreen(
     onNoteClicked: (Note) -> Unit = {},
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = ExtendedTheme.colors.backgroundNoOverlay),
+        modifier = Modifier.fillMaxSize(),
     ) {
         AnimatedVisibilityProgressIndicator(
             isVisible = isLoading,
