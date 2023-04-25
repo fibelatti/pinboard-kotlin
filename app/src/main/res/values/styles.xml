@@ -49,7 +49,6 @@
 
         <!-- Default widget styles -->
         <item name="buttonStyle">@style/AppTheme.Button</item>
-        <item name="checkboxStyle">@style/AppTheme.Checkbox</item>
         <item name="textInputStyle">@style/AppTheme.InputLayout</item>
 
         <item name="materialAlertDialogTheme">@style/AppTheme.MaterialDialog</item>
@@ -78,11 +77,6 @@
         <!-- The color of the label when it is collapsed and the text field is active -->
         <item name="hintTextColor">@color/selector_input_layout</item>
         <item name="boxStrokeColor">@color/selector_input_layout</item>
-    </style>
-
-    <style name="AppTheme.Checkbox" parent="Widget.Material3.CompoundButton.CheckBox">
-        <item name="android:textColor">@color/color_onSurface</item>
-        <item name="android:textSize">@dimen/text_size_small</item>
     </style>
 
     <style name="AppTheme.Button" parent="Widget.Material3.Button">
