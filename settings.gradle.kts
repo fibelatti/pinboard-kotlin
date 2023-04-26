@@ -34,7 +34,7 @@ dependencyResolutionManagement {
             val okHttpVersion = "4.10.0"
             val retrofitVersion = "2.9.0"
             val roomVersion = "2.5.1"
-            val junit5Version = "5.9.2"
+            val junit5Version = "5.9.3"
 
             // Classpath
             library("android-gradle-plugin", "com.android.tools.build:gradle:$agpVersion")
