@@ -71,7 +71,7 @@ subprojects {
             }
         }
 
-        tasks.withType<KotlinCompile>().all {
+        tasks.withType<KotlinCompile>().configureEach {
             kotlinOptions.apply {
                 jvmTarget = "17"
                 freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
