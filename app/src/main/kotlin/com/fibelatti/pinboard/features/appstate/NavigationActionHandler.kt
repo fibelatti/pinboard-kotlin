@@ -67,10 +67,12 @@ class NavigationActionHandler @Inject constructor(
                     is PreferredDetailsView.InAppBrowser -> {
                         val shouldLoad: ShouldLoad = markAsRead(action.post)
                         PostDetailContent(
-                            action.post,
+                            post = action.post,
                             previousContent = currentContent.copy(shouldLoad = shouldLoad),
+                            isConnected = connectivityInfoProvider.isConnected(),
                         )
                     }
+
                     is PreferredDetailsView.ExternalBrowser -> {
                         val shouldLoad: ShouldLoad = markAsRead(action.post)
                         ExternalBrowserContent(
@@ -78,6 +80,7 @@ class NavigationActionHandler @Inject constructor(
                             previousContent = currentContent.copy(shouldLoad = shouldLoad),
                         )
                     }
+
                     PreferredDetailsView.Edit -> {
                         EditPostContent(
                             post = action.post,
@@ -86,13 +89,19 @@ class NavigationActionHandler @Inject constructor(
                     }
                 }
             }
+
             is PopularPostsContent -> {
                 if (preferredDetailsView is PreferredDetailsView.ExternalBrowser) {
                     ExternalBrowserContent(action.post, previousContent = currentContent)
                 } else {
-                    PopularPostDetailContent(action.post, previousContent = currentContent)
+                    PopularPostDetailContent(
+                        post = action.post,
+                        previousContent = currentContent,
+                        isConnected = connectivityInfoProvider.isConnected(),
+                    )
                 }
             }
+
             else -> currentContent
         }
     }
@@ -145,8 +154,8 @@ class NavigationActionHandler @Inject constructor(
             TagListContent(
                 tags = emptyList(),
                 shouldLoad = connectivityInfoProvider.isConnected(),
-                isConnected = connectivityInfoProvider.isConnected(),
                 previousContent = it,
+                isConnected = connectivityInfoProvider.isConnected(),
             )
         }
     }
@@ -156,8 +165,8 @@ class NavigationActionHandler @Inject constructor(
             NoteListContent(
                 notes = emptyList(),
                 shouldLoad = connectivityInfoProvider.isConnected(),
-                isConnected = connectivityInfoProvider.isConnected(),
                 previousContent = it,
+                isConnected = connectivityInfoProvider.isConnected(),
             )
         }
     }
@@ -167,8 +176,8 @@ class NavigationActionHandler @Inject constructor(
             NoteDetailContent(
                 id = action.id,
                 note = Either.Left(connectivityInfoProvider.isConnected()),
-                isConnected = connectivityInfoProvider.isConnected(),
                 previousContent = it,
+                isConnected = connectivityInfoProvider.isConnected(),
             )
         }
     }
@@ -178,8 +187,8 @@ class NavigationActionHandler @Inject constructor(
             PopularPostsContent(
                 posts = emptyList(),
                 shouldLoad = connectivityInfoProvider.isConnected(),
-                isConnected = connectivityInfoProvider.isConnected(),
                 previousContent = it,
+                isConnected = connectivityInfoProvider.isConnected(),
             )
         }
     }

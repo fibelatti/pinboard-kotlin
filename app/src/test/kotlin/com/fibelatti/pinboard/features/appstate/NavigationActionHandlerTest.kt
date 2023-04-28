@@ -34,9 +34,9 @@ internal class NavigationActionHandlerTest {
 
     private val navigationActionHandler = spyk(
         NavigationActionHandler(
-            mockUserRepository,
-            mockPostsRepository,
-            mockConnectivityInfoProvider,
+            userRepository = mockUserRepository,
+            postsRepository = mockPostsRepository,
+            connectivityInfoProvider = mockConnectivityInfoProvider,
         ),
     )
 
@@ -141,12 +141,14 @@ internal class NavigationActionHandlerTest {
     @Nested
     inner class ViewPostTests {
 
-        private val randomBoolean = randomBoolean()
+        private val markAsReadOnOpen = randomBoolean()
+        private val isConnected = randomBoolean()
         private val mockShouldLoad = mockk<ShouldLoad>()
 
         @BeforeEach
         fun setup() {
             coEvery { navigationActionHandler.markAsRead(any()) } returns mockShouldLoad
+            coEvery { mockConnectivityInfoProvider.isConnected() } returns isConnected
         }
 
         @Test
@@ -166,7 +168,7 @@ internal class NavigationActionHandlerTest {
             runTest {
                 // GIVEN
                 every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.InAppBrowser(
-                    randomBoolean,
+                    markAsReadOnOpen = markAsReadOnOpen,
                 )
 
                 // WHEN
@@ -177,6 +179,7 @@ internal class NavigationActionHandlerTest {
                 assertThat(result).isEqualTo(
                     PostDetailContent(
                         post = createPost(),
+                        isConnected = isConnected,
                         previousContent = previousContent.copy(shouldLoad = mockShouldLoad),
                     ),
                 )
@@ -187,7 +190,7 @@ internal class NavigationActionHandlerTest {
             runTest {
                 // GIVEN
                 every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.ExternalBrowser(
-                    randomBoolean,
+                    markAsReadOnOpen = markAsReadOnOpen,
                 )
 
                 // WHEN
@@ -227,7 +230,7 @@ internal class NavigationActionHandlerTest {
                 // GIVEN
                 val mockPopularPostsContent = mockk<PopularPostsContent>()
                 every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.InAppBrowser(
-                    randomBoolean,
+                    markAsReadOnOpen = markAsReadOnOpen,
                 )
 
                 // WHEN
@@ -237,6 +240,7 @@ internal class NavigationActionHandlerTest {
                 assertThat(result).isEqualTo(
                     PopularPostDetailContent(
                         post = createPost(),
+                        isConnected = isConnected,
                         previousContent = mockPopularPostsContent,
                     ),
                 )
@@ -248,7 +252,7 @@ internal class NavigationActionHandlerTest {
                 // GIVEN
                 val mockPopularPostsContent = mockk<PopularPostsContent>()
                 every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.ExternalBrowser(
-                    randomBoolean,
+                    markAsReadOnOpen = markAsReadOnOpen,
                 )
 
                 // WHEN
@@ -277,6 +281,7 @@ internal class NavigationActionHandlerTest {
                 assertThat(result).isEqualTo(
                     PopularPostDetailContent(
                         post = createPost(),
+                        isConnected = isConnected,
                         previousContent = mockPopularPostsContent,
                     ),
                 )

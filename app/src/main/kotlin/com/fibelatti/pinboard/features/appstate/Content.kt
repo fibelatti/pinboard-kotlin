@@ -31,8 +31,8 @@ data class PostListContent(
     val sortType: SortType,
     val searchParameters: SearchParameters,
     val shouldLoad: ShouldLoad,
-    override val isConnected: Boolean = true,
     val canForceSync: Boolean = true,
+    override val isConnected: Boolean = true,
 ) : ContentWithHistory(), ConnectionAwareContent {
 
     override val previousContent: Content = ExternalContent
@@ -48,7 +48,8 @@ data class PostListContent(
 data class PostDetailContent(
     val post: Post,
     override val previousContent: PostListContent,
-) : ContentWithHistory()
+    override val isConnected: Boolean = true,
+) : ContentWithHistory(), ConnectionAwareContent
 
 data class ExternalBrowserContent(
     val post: Post,
@@ -78,35 +79,36 @@ data class EditPostContent(
 data class TagListContent(
     val tags: List<Tag>,
     val shouldLoad: Boolean,
-    override val isConnected: Boolean = true,
     override val previousContent: PostListContent,
+    override val isConnected: Boolean = true,
 ) : ContentWithHistory(), ConnectionAwareContent
 
 data class NoteListContent(
     val notes: List<Note>,
     val shouldLoad: Boolean,
-    override val isConnected: Boolean = true,
     override val previousContent: PostListContent,
+    override val isConnected: Boolean = true,
 ) : ContentWithHistory(), ConnectionAwareContent
 
 data class NoteDetailContent(
     val id: String,
     val note: Either<Boolean, Note>,
-    override val isConnected: Boolean = true,
     override val previousContent: NoteListContent,
+    override val isConnected: Boolean = true,
 ) : ContentWithHistory(), ConnectionAwareContent
 
 data class PopularPostsContent(
     val posts: List<Post>,
     val shouldLoad: Boolean,
-    override val isConnected: Boolean = true,
     override val previousContent: PostListContent,
+    override val isConnected: Boolean = true,
 ) : ContentWithHistory(), ConnectionAwareContent
 
 data class PopularPostDetailContent(
     val post: Post,
     override val previousContent: PopularPostsContent,
-) : ContentWithHistory()
+    override val isConnected: Boolean = true,
+) : ContentWithHistory(), ConnectionAwareContent
 
 data class UserPreferencesContent(
     override val previousContent: PostListContent,
