@@ -4,6 +4,9 @@ import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -158,7 +161,11 @@ fun BookmarkDetailsScreen(
                     update = { if (webView.url != post.url) webView.loadUrl(post.url) },
                 )
 
-                if (isLoading || initialWebViewLoading) {
+                AnimatedVisibility(
+                    visible = isLoading || initialWebViewLoading,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                ) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
