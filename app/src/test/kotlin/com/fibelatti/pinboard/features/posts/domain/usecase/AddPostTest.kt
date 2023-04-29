@@ -58,6 +58,7 @@ class AddPostTest {
                 tags = params.tags,
                 replace = params.replace,
                 hash = params.hash,
+                time = params.time,
             )
         } returns Failure(ApiException())
 
@@ -84,6 +85,7 @@ class AddPostTest {
                 tags = params.tags,
                 replace = params.replace,
                 hash = params.hash,
+                time = params.time,
             )
         } returns Success(mockPost)
 

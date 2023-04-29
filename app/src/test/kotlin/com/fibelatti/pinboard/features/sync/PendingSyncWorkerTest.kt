@@ -61,6 +61,7 @@ internal class PendingSyncWorkerTest {
                 tags = post.tags,
                 replace = true,
                 hash = post.hash,
+                time = post.time,
             )
         } returns Success(post)
 
@@ -86,6 +87,7 @@ internal class PendingSyncWorkerTest {
                 tags = post.tags,
                 replace = true,
                 hash = post.hash,
+                time = post.time,
             )
         } returns Success(post)
 
@@ -126,6 +128,7 @@ internal class PendingSyncWorkerTest {
                 tags = postAdd.tags,
                 replace = true,
                 hash = postAdd.hash,
+                time = postAdd.time,
             )
         } returns Failure(Exception())
         coEvery { postsRepository.delete(url = postDelete.url) } returns Success(Unit)
@@ -153,6 +156,7 @@ internal class PendingSyncWorkerTest {
                 tags = postAdd.tags,
                 replace = true,
                 hash = postAdd.hash,
+                time = postAdd.time,
             )
         } returns Success(postAdd)
         coEvery { postsRepository.delete(url = postDelete.url) } returns Success(Unit)

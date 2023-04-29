@@ -103,6 +103,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
             tags = post.tags,
             replace = true,
             hash = post.hash,
+            time = post.time,
         )
 
         coEvery { mockAddPost(expectedParams) } returns Success(mockPost)

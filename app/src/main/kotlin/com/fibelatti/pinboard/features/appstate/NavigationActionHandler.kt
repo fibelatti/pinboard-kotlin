@@ -121,6 +121,7 @@ class NavigationActionHandler @Inject constructor(
                             tags = post.tags,
                             replace = true,
                             hash = post.hash,
+                            time = post.time,
                         )
                     }
                 }

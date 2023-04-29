@@ -141,6 +141,7 @@ class EditPostViewModel @Inject constructor(
                 readLater = post.readLater,
                 tags = post.tags,
                 hash = post.hash,
+                time = post.time,
             )
         }
 

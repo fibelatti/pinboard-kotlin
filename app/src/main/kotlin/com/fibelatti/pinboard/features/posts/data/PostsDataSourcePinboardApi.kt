@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.posts.data
 
 import androidx.annotation.VisibleForTesting
+import com.fibelatti.core.extension.ifNullOrBlank
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.getOrDefault
@@ -77,13 +78,15 @@ class PostsDataSourcePinboardApi @Inject constructor(
         tags: List<Tag>?,
         replace: Boolean,
         hash: String?,
+        time: String?,
     ): Result<Post> {
-        val nonEmptyHash = hash?.takeIf { it.isNotEmpty() } ?: UUID.randomUUID().toString()
+        val nonEmptyHash = hash.ifNullOrBlank { UUID.randomUUID().toString() }
+        val nonEmptyTime = time.ifNullOrBlank { dateFormatter.nowAsTzFormat() }
 
         return if (connectivityInfoProvider.isConnected()) {
-            addPostRemote(url, title, description, private, readLater, tags, replace, nonEmptyHash)
+            addPostRemote(url, title, description, private, readLater, tags, replace, nonEmptyHash, nonEmptyTime)
         } else {
-            addPostLocal(url, title, description, private, readLater, tags, nonEmptyHash)
+            addPostLocal(url, title, description, private, readLater, tags, nonEmptyHash, nonEmptyTime)
         }
     }
 
@@ -96,6 +99,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
         tags: List<Tag>?,
         replace: Boolean,
         hash: String,
+        time: String,
     ): Result<Post> {
         val trimmedTitle = title.take(PinboardApiMaxLength.TEXT_TYPE.value)
         val publicLiteral = private?.let { if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES }
@@ -144,7 +148,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
                         title = title,
                         description = description.orEmpty(),
                         hash = hash,
-                        time = dateFormatter.nowAsTzFormat(),
+                        time = time,
                         private = private ?: false,
                         readLater = readLater ?: false,
                         tags = tags,
@@ -168,6 +172,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
         readLater: Boolean?,
         tags: List<Tag>?,
         hash: String,
+        time: String,
     ): Result<Post> = resultFrom {
         val existingPost = postsDao.getPost(url)
 
@@ -176,7 +181,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
             description = title,
             extended = description,
             hash = existingPost?.hash ?: hash,
-            time = existingPost?.time ?: dateFormatter.nowAsTzFormat(),
+            time = existingPost?.time ?: time,
             shared = if (private == true) PinboardApiLiterals.NO else PinboardApiLiterals.YES,
             toread = if (readLater == true) PinboardApiLiterals.YES else PinboardApiLiterals.NO,
             tags = tags.orEmpty().joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name },

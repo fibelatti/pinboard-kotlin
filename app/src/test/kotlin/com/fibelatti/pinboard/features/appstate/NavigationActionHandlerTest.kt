@@ -339,6 +339,7 @@ internal class NavigationActionHandlerTest {
                         tags = readLater.tags,
                         replace = true,
                         hash = readLater.hash,
+                        time = readLater.time,
                     )
                 }
             }

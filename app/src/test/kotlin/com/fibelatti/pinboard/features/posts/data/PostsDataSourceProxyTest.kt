@@ -71,6 +71,7 @@ internal class PostsDataSourceProxyTest {
                     tags = any(),
                     replace = booleanArg,
                     hash = stringArg,
+                    time = stringArg,
                 )
             } returns expectedResult
 
@@ -83,6 +84,7 @@ internal class PostsDataSourceProxyTest {
                 tags = mockk(),
                 replace = booleanArg,
                 hash = stringArg,
+                time = stringArg,
             )
 
             assertThat(result).isEqualTo(expectedResult)
@@ -269,6 +271,7 @@ internal class PostsDataSourceProxyTest {
                     tags = any(),
                     replace = booleanArg,
                     hash = stringArg,
+                    time = stringArg,
                 )
             } returns expectedResult
 
@@ -281,6 +284,7 @@ internal class PostsDataSourceProxyTest {
                 tags = mockk(),
                 replace = booleanArg,
                 hash = stringArg,
+                time = stringArg,
             )
 
             assertThat(result).isEqualTo(expectedResult)
@@ -462,6 +466,7 @@ internal class PostsDataSourceProxyTest {
                     tags = any(),
                     replace = booleanArg,
                     hash = stringArg,
+                    time = stringArg,
                 )
             } returns expectedResult
 
@@ -474,6 +479,7 @@ internal class PostsDataSourceProxyTest {
                 tags = mockk(),
                 replace = booleanArg,
                 hash = stringArg,
+                time = stringArg,
             )
 
             assertThat(result).isEqualTo(expectedResult)

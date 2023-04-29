@@ -27,6 +27,7 @@ class AddPost @Inject constructor(
                     tags = params.tags,
                     replace = params.replace,
                     hash = params.hash,
+                    time = params.time,
                 )
             }
         }
@@ -40,6 +41,7 @@ class AddPost @Inject constructor(
         val tags: List<Tag>? = null,
         val replace: Boolean = true,
         val hash: String? = null,
+        val time: String? = null,
     ) {
 
         constructor(post: Post) : this(
@@ -50,6 +52,7 @@ class AddPost @Inject constructor(
             readLater = post.readLater,
             tags = post.tags,
             hash = post.hash,
+            time = post.time,
         )
     }
 }

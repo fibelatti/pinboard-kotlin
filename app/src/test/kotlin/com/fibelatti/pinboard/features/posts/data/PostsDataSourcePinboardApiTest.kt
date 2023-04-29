@@ -162,6 +162,7 @@ class PostsDataSourcePinboardApiTest {
                 tags = mockTags,
                 replace = true,
                 hash = null,
+                time = null,
             )
 
             // THEN
@@ -195,6 +196,7 @@ class PostsDataSourcePinboardApiTest {
                     tags = mockTags,
                     replace = true,
                     hash = null,
+                    time = null,
                 )
 
                 // THEN
@@ -234,6 +236,7 @@ class PostsDataSourcePinboardApiTest {
                         tags = mockTags,
                         replace = true,
                         hash = null,
+                        time = null,
                     )
 
                     // THEN
@@ -271,6 +274,7 @@ class PostsDataSourcePinboardApiTest {
                         tags = mockTags,
                         replace = true,
                         hash = null,
+                        time = null,
                     )
 
                     // THEN
@@ -307,6 +311,7 @@ class PostsDataSourcePinboardApiTest {
                         tags = mockTags,
                         replace = true,
                         hash = null,
+                        time = null,
                     )
 
                     // THEN
@@ -361,6 +366,7 @@ class PostsDataSourcePinboardApiTest {
                     tags = mockTags,
                     replace = true,
                     hash = null,
+                    time = null,
                 )
 
                 // THEN
@@ -397,6 +403,7 @@ class PostsDataSourcePinboardApiTest {
                 tags = inputTags,
                 replace = false,
                 hash = null,
+                time = null,
             )
 
             // THEN
@@ -435,8 +442,8 @@ class PostsDataSourcePinboardApiTest {
 
             coEvery {
                 mockApi.add(
-                    mockUrlValid,
-                    mockUrlTitle,
+                    url = mockUrlValid,
+                    title = mockUrlTitle,
                     description = null,
                     public = expectedPublic,
                     readLater = expectedReadLater,
@@ -447,14 +454,15 @@ class PostsDataSourcePinboardApiTest {
 
             // WHEN
             dataSource.add(
-                mockUrlValid,
-                mockUrlTitle,
+                url = mockUrlValid,
+                title = mockUrlTitle,
                 description = null,
                 private = testCases.private,
                 readLater = testCases.readLater,
                 tags = mockTags,
                 replace = testCases.replace,
                 hash = null,
+                time = null,
             )
 
             // THEN
@@ -533,6 +541,7 @@ class PostsDataSourcePinboardApiTest {
                     tags = mockTags,
                     replace = replace,
                     hash = null,
+                    time = null,
                 )
 
                 // THEN
@@ -558,6 +567,7 @@ class PostsDataSourcePinboardApiTest {
                     tags = mockTags,
                     replace = replace,
                     hash = null,
+                    time = null,
                 )
 
                 // THEN
@@ -583,6 +593,7 @@ class PostsDataSourcePinboardApiTest {
                     tags = mockTags,
                     replace = replace,
                     hash = null,
+                    time = null,
                 )
 
                 // THEN
@@ -606,6 +617,7 @@ class PostsDataSourcePinboardApiTest {
                     tags = mockTags,
                     replace = replace,
                     hash = null,
+                    time = null,
                 )
 
                 // THEN

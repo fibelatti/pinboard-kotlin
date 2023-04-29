@@ -32,6 +32,7 @@ class PostsDataSourceProxy @Inject constructor(
         tags: List<Tag>?,
         replace: Boolean,
         hash: String?,
+        time: String?,
     ): Result<Post> = repository.add(
         url = url,
         title = title,
@@ -41,6 +42,7 @@ class PostsDataSourceProxy @Inject constructor(
         tags = tags,
         replace = replace,
         hash = hash,
+        time = time,
     )
 
     override suspend fun delete(

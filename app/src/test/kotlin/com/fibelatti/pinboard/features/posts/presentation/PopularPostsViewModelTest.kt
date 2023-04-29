@@ -120,6 +120,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
                 private = randomBoolean,
                 readLater = randomBoolean,
                 hash = post.hash,
+                time = post.time,
             )
             every { mockUserRepository.defaultPrivate } returns randomBoolean
             every { mockUserRepository.defaultReadLater } returns randomBoolean
