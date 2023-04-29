@@ -55,15 +55,17 @@
 
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottomAppBar"
-        style="@style/Widget.Material3.BottomAppBar.Legacy"
+        style="@style/Widget.Material3.BottomAppBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:backgroundTint="?attr/colorSurface"
+        android:alpha="0.9"
         android:visibility="gone"
+        app:fabAlignmentMode="center"
         app:fabAnchorMode="embed"
         app:hideOnScroll="true"
         app:layout_scrollFlags="scroll|enterAlways"
+        app:menuAlignmentMode="auto"
         tools:visibility="visible" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
