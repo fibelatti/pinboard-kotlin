@@ -1,5 +1,8 @@
 package com.fibelatti.ui.components
 
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.URLSpan
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
@@ -10,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
@@ -33,22 +37,58 @@ fun TextWithLinks(
     maxLines: Int = Int.MAX_VALUE,
     style: TextStyle = LocalTextStyle.current,
 ) {
+    TextWithLinks(
+        text = SpannableString(text),
+        modifier = modifier,
+        pattern = pattern,
+        color = color,
+        linkColor = linkColor,
+        linkTextDecoration = linkTextDecoration,
+        textAlign = textAlign,
+        overflow = overflow,
+        maxLines = maxLines,
+        style = style,
+    )
+}
+
+@Composable
+fun TextWithLinks(
+    text: Spanned,
+    modifier: Modifier = Modifier,
+    pattern: Pattern = TextWithLinks.urlPattern,
+    color: Color = Color.Unspecified,
+    linkColor: Color = Color.Blue,
+    linkTextDecoration: TextDecoration? = TextDecoration.Underline,
+    textAlign: TextAlign? = null,
+    overflow: TextOverflow = TextOverflow.Clip,
+    maxLines: Int = Int.MAX_VALUE,
+    style: TextStyle = LocalTextStyle.current,
+) {
     val uriHandler = LocalUriHandler.current
     val layoutResult = remember { mutableStateOf<TextLayoutResult?>(null) }
-    val links = findLinks(text, pattern)
+
     val annotatedString = buildAnnotatedString {
         append(text)
-        links.forEach {
-            addStyle(
-                style = SpanStyle(color = linkColor, textDecoration = linkTextDecoration),
-                start = it.start,
-                end = it.end,
+
+        val explicitLinks = findLinks(text.toString(), pattern)
+        val aTagLinks = text.getSpans(0, text.length, URLSpan::class.java)
+
+        explicitLinks.forEach { linkInfo ->
+            addUrlStringAnnotation(
+                url = linkInfo.url,
+                start = linkInfo.start,
+                end = linkInfo.end,
+                linkColor = linkColor,
+                linkTextDecoration = linkTextDecoration,
             )
-            addStringAnnotation(
-                tag = "URL",
-                annotation = it.url,
-                start = it.start,
-                end = it.end,
+        }
+        aTagLinks.forEach { urlSpan ->
+            addUrlStringAnnotation(
+                url = urlSpan.url,
+                start = text.getSpanStart(urlSpan),
+                end = text.getSpanEnd(urlSpan),
+                linkColor = linkColor,
+                linkTextDecoration = linkTextDecoration,
             )
         }
     }
@@ -76,12 +116,32 @@ fun TextWithLinks(
     )
 }
 
+private fun AnnotatedString.Builder.addUrlStringAnnotation(
+    url: String,
+    start: Int,
+    end: Int,
+    linkColor: Color,
+    linkTextDecoration: TextDecoration?,
+) {
+    addStyle(
+        style = SpanStyle(color = linkColor, textDecoration = linkTextDecoration),
+        start = start,
+        end = end,
+    )
+    addStringAnnotation(
+        tag = "URL",
+        annotation = url,
+        start = start,
+        end = end,
+    )
+}
+
 object TextWithLinks {
 
     internal val urlPattern: Pattern = Pattern.compile(
-        "(?:^|\\W)((ht|f)tp(s?):\\/\\/|www\\.)" +
-            "(([\\w\\-]+\\.){1,}?([\\w\\-.~]+\\/?)*" +
-            "[\\p{Alnum}.,%_=?&#\\-+()\\[\\]\\*$~@!:/{};']*)",
+        "(?:^|\\W)((ht|f)tp(s?)://|www\\.)" +
+            "(([\\w\\-]+\\.)+([\\w\\-.~]+/?)*" +
+            "[\\p{Alnum}.,%_=?&#\\-+()\\[\\]*$~@!:/{};']*)",
         Pattern.CASE_INSENSITIVE or Pattern.MULTILINE or Pattern.DOTALL,
     )
 
