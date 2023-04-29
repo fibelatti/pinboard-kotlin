@@ -122,12 +122,6 @@
     <!-- Typography -->
     <style name="AppTheme.Text" />
 
-    <style name="AppTheme.Text.Title">
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/color_onSurface</item>
-        <item name="android:textSize">@dimen/text_size_large</item>
-    </style>
-
     <style name="AppTheme.Text.SectionTitle">
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/color_onSurface</item>
@@ -137,11 +131,6 @@
     <style name="AppTheme.Text.SectionTitle.Primary">
         <item name="android:textColor">?attr/colorPrimary</item>
         <item name="android:layout_marginBottom">@dimen/margin_small</item>
-    </style>
-
-    <style name="AppTheme.Text.Body">
-        <item name="android:textColor">@color/color_onSurfaceVariant</item>
-        <item name="android:textSize">@dimen/text_size_regular</item>
     </style>
 
     <style name="AppTheme.Text.Detail">
