@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -122,7 +122,7 @@ fun TagManager(
             maxLines = 1,
         )
 
-        ElevatedButton(
+        FilledTonalButton(
             onClick = {
                 if (searchTagInput.isNotBlank()) {
                     onAddTagClicked(searchTagInput)
