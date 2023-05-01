@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.IconButton
 import androidx.compose.material3.FilledTonalButton
@@ -84,22 +84,21 @@ private fun MainTitle(
         Column(
             modifier = Modifier
                 .weight(1F)
-                .height(65.dp),
+                .heightIn(min = 56.dp),
             verticalArrangement = Arrangement.Center,
         ) {
             AnimatedVisibility(
                 visible = title is MainState.TitleComponent.Visible,
             ) {
-                if (title is MainState.TitleComponent.Visible) {
-                    Text(
-                        text = title.label,
-                        modifier = Modifier.padding(start = 16.dp),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1,
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-                }
+                val label = (title as? MainState.TitleComponent.Visible)?.label ?: ""
+                Text(
+                    text = label,
+                    modifier = Modifier.padding(start = 16.dp),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.titleLarge,
+                )
             }
 
             AnimatedVisibility(
