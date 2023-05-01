@@ -27,7 +27,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.AnimatedVisibilityProgressIndicator
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
-import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -39,8 +38,8 @@ fun NoteDetailsScreen(
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val appState by appStateViewModel.content.collectAsStateWithLifecycle()
-        val noteDetailContent = appState as? NoteDetailContent ?: return@Surface
+        val appState by appStateViewModel.noteDetailContent.collectAsStateWithLifecycle(initialValue = null)
+        val noteDetailContent = appState ?: return@Surface
         val isLoading = noteDetailContent.note.isLeft
         val note = noteDetailContent.note.rightOrNull()
 

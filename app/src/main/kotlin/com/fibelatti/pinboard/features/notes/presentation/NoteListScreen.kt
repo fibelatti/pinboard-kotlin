@@ -43,7 +43,6 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.AnimatedVisibilityProgressIndicator
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
-import com.fibelatti.pinboard.features.appstate.NoteListContent
 import com.fibelatti.pinboard.features.appstate.RefreshNotes
 import com.fibelatti.pinboard.features.appstate.ViewNote
 import com.fibelatti.pinboard.features.notes.domain.model.Note
@@ -63,8 +62,8 @@ fun NoteListScreen(
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val appState by appStateViewModel.content.collectAsStateWithLifecycle()
-        val noteListContent = appState as? NoteListContent ?: return@Surface
+        val appState by appStateViewModel.noteListContent.collectAsStateWithLifecycle(initialValue = null)
+        val noteListContent = appState ?: return@Surface
 
         LaunchedEffect(key1 = noteListContent.shouldLoad) {
             if (noteListContent.shouldLoad) {
@@ -172,7 +171,7 @@ private fun NoteListScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             state = listState,
                         ) {
-                            items(notes.size) { index ->
+                            items(count = notes.size, key = { notes[it].id }) { index ->
                                 NoteListItem(
                                     note = notes[index],
                                     onNoteClicked = onNoteClicked,

@@ -43,7 +43,6 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.RefreshSearchTags
 import com.fibelatti.pinboard.features.appstate.RemoveSearchTag
 import com.fibelatti.pinboard.features.appstate.Search
-import com.fibelatti.pinboard.features.appstate.SearchContent
 import com.fibelatti.pinboard.features.appstate.SetTerm
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
@@ -64,8 +63,8 @@ fun SearchBookmarksScreen(
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val appState by appStateViewModel.content.collectAsStateWithLifecycle()
-        val searchContent = appState as? SearchContent ?: return@Surface
+        val appState by appStateViewModel.searchContent.collectAsStateWithLifecycle(initialValue = null)
+        val searchContent = appState ?: return@Surface
 
         val queryResultSize by searchPostViewModel.queryResultSize.collectAsStateWithLifecycle()
         val tagsState by tagsViewModel.state.collectAsStateWithLifecycle()

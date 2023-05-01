@@ -46,7 +46,6 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.AnimatedVisibilityProgressIndicator
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
-import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.RefreshPopular
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -66,8 +65,8 @@ fun PopularBookmarksScreen(
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val appState by appStateViewModel.content.collectAsStateWithLifecycle()
-        val popularPostsContent = appState as? PopularPostsContent ?: return@Surface
+        val appState by appStateViewModel.popularPostsContent.collectAsStateWithLifecycle(initialValue = null)
+        val popularPostsContent = appState ?: return@Surface
 
         val popularPostsLoading by popularPostsViewModel.loading.collectAsStateWithLifecycle(initialValue = false)
 
@@ -146,7 +145,7 @@ private fun PopularBookmarksScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         state = listState,
                     ) {
-                        items(bookmarks.size) { index ->
+                        items(count = bookmarks.size, key = { bookmarks[it].url }) { index ->
                             PopularBookmarkItem(
                                 post = bookmarks[index],
                                 onPostClicked = onBookmarkClicked,
