@@ -27,7 +27,7 @@ dependencyResolutionManagement {
             val coroutinesVersion = "1.6.4"
 
             val activityVersion = "1.7.1"
-            val composeUiVersion = "1.4.2"
+            val composeUiVersion = "1.4.3"
             val hiltVersion = "2.45"
             val lifecycleVersion = "2.6.1"
             val moshiVersion = "1.14.0"
