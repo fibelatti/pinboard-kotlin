@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.diffplug.spotless") version "6.18.0" apply false
+    id("org.gradle.android.cache-fix") version "2.7.1" apply false
 }
 
 buildscript {
@@ -27,6 +28,10 @@ buildscript {
 
 subprojects {
     afterEvaluate {
+        plugins.withType<com.android.build.gradle.api.AndroidBasePlugin> {
+            apply(plugin = "org.gradle.android.cache-fix")
+        }
+
         apply(plugin = "com.diffplug.spotless")
         extensions.configure<com.diffplug.gradle.spotless.SpotlessExtension> {
             kotlin {

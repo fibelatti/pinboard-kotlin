@@ -33,6 +33,18 @@ object AppInfo {
         .also { println("versionName: $it") }
 }
 
+class RoomArgProvider(
+    @get:InputDirectory
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    val schemaDir: File,
+) : CommandLineArgumentProvider {
+
+    override fun asArguments(): Iterable<String> = listOf(
+        "-Aroom.schemaLocation=${schemaDir.path}",
+        "-Aroom.incremental=true",
+    )
+}
+
 android {
     val compileSdkVersion: Int by project
     val targetSdkVersion: Int by project
@@ -61,8 +73,9 @@ android {
 
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments["room.schemaLocation"] = "$projectDir/schemas"
-                arguments["room.incremental"] = "true"
+                compilerArgumentProviders(
+                    RoomArgProvider(File(projectDir, "schemas")),
+                )
             }
         }
     }
