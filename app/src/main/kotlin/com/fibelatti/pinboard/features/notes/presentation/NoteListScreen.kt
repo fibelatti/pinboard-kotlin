@@ -156,7 +156,7 @@ private fun NoteListScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             state = listState,
                         ) {
-                            items(count = notes.size, key = { notes[it].id }) { index ->
+                            items(count = notes.size) { index ->
                                 NoteListItem(
                                     note = notes[index],
                                     onNoteClicked = onNoteClicked,

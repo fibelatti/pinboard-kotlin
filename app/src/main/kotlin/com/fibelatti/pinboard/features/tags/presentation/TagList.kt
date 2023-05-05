@@ -227,7 +227,7 @@ private fun TagList(
                 .asPaddingValues(),
             state = listState,
         ) {
-            items(count = items.size, key = { items[it].name }) { index ->
+            items(count = items.size) { index ->
                 TagListItem(
                     item = items[index],
                     onTagClicked = onTagClicked,
