@@ -171,7 +171,12 @@ class PostsDataSourceNoApi @Inject constructor(
             emptyList()
         }
 
-        PostListResult(totalCount = localDataSize, posts = localData, upToDate = true)
+        PostListResult(
+            posts = localData,
+            totalCount = localDataSize,
+            upToDate = true,
+            canPaginate = localData.size == countLimit,
+        )
     }
 
     private fun List<Tag>?.getAndFormat(index: Int): String =

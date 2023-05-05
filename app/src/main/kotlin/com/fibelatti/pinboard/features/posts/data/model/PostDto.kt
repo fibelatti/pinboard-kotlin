@@ -7,6 +7,7 @@ import com.fibelatti.core.functional.TwoWayMapper
 import com.fibelatti.pinboard.core.AppConfig.API_ENCODING
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
+import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -34,7 +35,9 @@ data class PostDto(
     val pendingSync: PendingSyncDto? = null,
 )
 
-class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
+class PostDtoMapper @Inject constructor(
+    private val dateFormatter: DateFormatter,
+) : TwoWayMapper<PostDto, Post> {
 
     override fun map(param: PostDto): Post = with(param) {
         val preparedUrl = listOf(
@@ -48,6 +51,7 @@ class PostDtoMapper @Inject constructor() : TwoWayMapper<PostDto, Post> {
             description = extended.orEmpty(),
             hash = hash,
             time = time,
+            formattedTime = dateFormatter.tzFormatToDisplayFormat(time) ?: time,
             private = shared == PinboardApiLiterals.NO,
             readLater = toread == PinboardApiLiterals.YES,
             tags = if (tags.isBlank()) {

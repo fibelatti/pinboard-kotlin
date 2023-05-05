@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
+import androidx.compose.material.Surface
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
@@ -41,9 +42,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
-import com.fibelatti.pinboard.features.appstate.ConnectionAwareContent
-import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
-import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -56,28 +54,27 @@ fun BookmarkDetailsScreen(
     onOpenInFileViewerClicked: (Post) -> Unit,
     onOpenInBrowserClicked: (Post) -> Unit,
 ) {
-    val content by appStateViewModel.content.collectAsStateWithLifecycle()
-    val isDetailLoading by postDetailViewModel.loading.collectAsStateWithLifecycle(initialValue = false)
-    val isPopularLoading by popularPostsViewModel.loading.collectAsStateWithLifecycle(initialValue = false)
+    Surface(
+        color = ExtendedTheme.colors.backgroundNoOverlay,
+    ) {
+        val postDetailState by appStateViewModel.postDetailContent.collectAsStateWithLifecycle(null)
+        val popularPostDetailState by appStateViewModel.postDetailContent.collectAsStateWithLifecycle(null)
+        val post = postDetailState?.post ?: popularPostDetailState?.post ?: return@Surface
 
-    val post = when (val currentContent = content) {
-        is PostDetailContent -> currentContent.post
-        is PopularPostDetailContent -> currentContent.post
-        else -> return
-    }
-    val isLoading = isDetailLoading || isPopularLoading
-    val isConnected = when (val currentContent = content) {
-        is ConnectionAwareContent -> currentContent.isConnected
-        else -> false
-    }
+        val isDetailLoading by postDetailViewModel.loading.collectAsStateWithLifecycle(initialValue = false)
+        val isPopularLoading by popularPostsViewModel.loading.collectAsStateWithLifecycle(initialValue = false)
+        val isLoading = isDetailLoading || isPopularLoading
 
-    BookmarkDetailsScreen(
-        post = post,
-        isLoading = isLoading,
-        isConnected = isConnected,
-        onOpenInFileViewerClicked = { onOpenInFileViewerClicked(post) },
-        onOpenInBrowserClicked = { onOpenInBrowserClicked(post) },
-    )
+        val isConnected = postDetailState?.isConnected ?: popularPostDetailState?.isConnected ?: false
+
+        BookmarkDetailsScreen(
+            post = post,
+            isLoading = isLoading,
+            isConnected = isConnected,
+            onOpenInFileViewerClicked = { onOpenInFileViewerClicked(post) },
+            onOpenInBrowserClicked = { onOpenInBrowserClicked(post) },
+        )
+    }
 }
 
 @Composable

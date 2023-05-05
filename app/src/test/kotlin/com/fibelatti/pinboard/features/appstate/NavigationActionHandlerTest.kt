@@ -133,6 +133,40 @@ internal class NavigationActionHandlerTest {
             verify { mockConnectivityInfoProvider.isConnected() }
         }
 
+        @ParameterizedTest
+        @MethodSource("testCases")
+        fun `WHEN previousContent is PostListContent THEN a PostListContent is returned with posts`(
+            category: ViewCategory,
+        ) = runTest {
+            // GIVEN
+            val randomBoolean = randomBoolean()
+            every { mockUserRepository.showDescriptionInLists } returns randomBoolean
+            every { mockConnectivityInfoProvider.isConnected() } returns false
+
+            val postList = mockk<PostList>()
+            val previousContent = mockk<PostListContent> {
+                every { posts } returns postList
+            }
+
+            // WHEN
+            val result = navigationActionHandler.runAction(category, previousContent)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                PostListContent(
+                    category = category,
+                    posts = postList,
+                    showDescription = randomBoolean,
+                    sortType = NewestFirst,
+                    searchParameters = SearchParameters(),
+                    shouldLoad = ShouldLoadFirstPage,
+                    isConnected = false,
+                ),
+            )
+
+            verify { mockConnectivityInfoProvider.isConnected() }
+        }
+
         fun testCases(): List<ViewCategory> = ViewCategory::class.sealedSubclasses.map {
             it.objectInstance as ViewCategory
         }

@@ -22,17 +22,13 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Surface
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -45,8 +41,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.AnimatedVisibilityProgressIndicator
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
+import com.fibelatti.pinboard.core.android.composable.rememberAutoDismissPullRefreshState
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
-import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.RefreshPopular
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -54,8 +50,6 @@ import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Composable
 fun PopularBookmarksScreen(
@@ -66,8 +60,8 @@ fun PopularBookmarksScreen(
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val appState by appStateViewModel.content.collectAsStateWithLifecycle()
-        val popularPostsContent = appState as? PopularPostsContent ?: return@Surface
+        val appState by appStateViewModel.popularPostsContent.collectAsStateWithLifecycle(initialValue = null)
+        val popularPostsContent = appState ?: return@Surface
 
         val popularPostsLoading by popularPostsViewModel.loading.collectAsStateWithLifecycle(initialValue = false)
 
@@ -120,18 +114,7 @@ private fun PopularBookmarksScreen(
             } else {
                 val scope = rememberCoroutineScope()
                 val listState = rememberLazyListState()
-                var refreshing by rememberSaveable { mutableStateOf(false) }
-                val pullRefreshState = rememberPullRefreshState(
-                    refreshing = refreshing,
-                    onRefresh = {
-                        scope.launch {
-                            refreshing = true
-                            onPullToRefresh()
-                            delay(300L)
-                            refreshing = false
-                        }
-                    },
-                )
+                val (pullRefreshState, refreshing) = rememberAutoDismissPullRefreshState(onPullToRefresh)
 
                 Box(
                     modifier = Modifier
@@ -146,7 +129,7 @@ private fun PopularBookmarksScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         state = listState,
                     ) {
-                        items(bookmarks.size) { index ->
+                        items(count = bookmarks.size, key = { bookmarks[it].url }) { index ->
                             PopularBookmarkItem(
                                 post = bookmarks[index],
                                 onPostClicked = onBookmarkClicked,

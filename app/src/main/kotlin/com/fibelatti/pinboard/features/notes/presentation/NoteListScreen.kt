@@ -21,16 +21,12 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Surface
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -42,8 +38,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.AnimatedVisibilityProgressIndicator
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
+import com.fibelatti.pinboard.core.android.composable.rememberAutoDismissPullRefreshState
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
-import com.fibelatti.pinboard.features.appstate.NoteListContent
 import com.fibelatti.pinboard.features.appstate.RefreshNotes
 import com.fibelatti.pinboard.features.appstate.ViewNote
 import com.fibelatti.pinboard.features.notes.domain.model.Note
@@ -52,7 +48,6 @@ import com.fibelatti.ui.components.RowToggleButtonGroup
 import com.fibelatti.ui.components.ToggleButtonGroup
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -63,8 +58,8 @@ fun NoteListScreen(
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val appState by appStateViewModel.content.collectAsStateWithLifecycle()
-        val noteListContent = appState as? NoteListContent ?: return@Surface
+        val appState by appStateViewModel.noteListContent.collectAsStateWithLifecycle(initialValue = null)
+        val noteListContent = appState ?: return@Surface
 
         LaunchedEffect(key1 = noteListContent.shouldLoad) {
             if (noteListContent.shouldLoad) {
@@ -122,18 +117,7 @@ private fun NoteListScreen(
                 } else {
                     val scope = rememberCoroutineScope()
                     val listState = rememberLazyListState()
-                    var refreshing by rememberSaveable { mutableStateOf(false) }
-                    val pullRefreshState = rememberPullRefreshState(
-                        refreshing = refreshing,
-                        onRefresh = {
-                            scope.launch {
-                                refreshing = true
-                                onPullToRefresh()
-                                delay(300L)
-                                refreshing = false
-                            }
-                        },
-                    )
+                    val (pullRefreshState, refreshing) = rememberAutoDismissPullRefreshState(onPullToRefresh)
 
                     RowToggleButtonGroup(
                         items = NoteList.Sorting.values().map { sorting ->
@@ -172,7 +156,7 @@ private fun NoteListScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             state = listState,
                         ) {
-                            items(notes.size) { index ->
+                            items(count = notes.size, key = { notes[it].id }) { index ->
                                 NoteListItem(
                                     note = notes[index],
                                     onNoteClicked = onNoteClicked,

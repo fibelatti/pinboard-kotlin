@@ -22,7 +22,7 @@ class NavigationActionHandler @Inject constructor(
     override suspend fun runAction(action: NavigationAction, currentContent: Content): Content {
         return when (action) {
             is NavigateBack -> navigateBack(currentContent)
-            is ViewCategory -> viewCategory(action)
+            is ViewCategory -> viewCategory(action, currentContent)
             is ViewPost -> viewPost(action, currentContent)
             is ViewSearch -> viewSearch(currentContent)
             is AddPost -> viewAddPost(currentContent)
@@ -46,10 +46,11 @@ class NavigationActionHandler @Inject constructor(
         }
     }
 
-    private fun viewCategory(action: ViewCategory): Content {
+    private fun viewCategory(action: ViewCategory, currentContent: Content): Content {
         return PostListContent(
             category = action,
-            posts = null,
+            // Use the current posts for a smoother transition until the category posts are loaded
+            posts = (currentContent as? PostListContent)?.posts,
             showDescription = userRepository.showDescriptionInLists,
             sortType = NewestFirst,
             searchParameters = SearchParameters(),

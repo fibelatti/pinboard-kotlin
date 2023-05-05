@@ -205,7 +205,6 @@ internal class AppStateDataSourceTest {
                 is SetPosts -> mockk<SetPosts>() to ExpectedHandler.POST
                 GetNextPostPage -> GetNextPostPage to ExpectedHandler.POST
                 is SetNextPostPage -> mockk<SetNextPostPage>() to ExpectedHandler.POST
-                PostsDisplayed -> PostsDisplayed to ExpectedHandler.POST
                 ToggleSorting -> ToggleSorting to ExpectedHandler.POST
                 is EditPost -> mockk<EditPost>() to ExpectedHandler.POST
                 is EditPostFromShare -> mockk<EditPostFromShare>() to ExpectedHandler.POST
