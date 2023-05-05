@@ -13,7 +13,7 @@ class TagActionHandler @Inject constructor(
         return when (action) {
             is RefreshTags -> refresh(currentContent)
             is SetTags -> setTags(action, currentContent)
-            is PostsForTag -> postsForTag(action)
+            is PostsForTag -> postsForTag(action, currentContent)
         }
     }
 
@@ -41,10 +41,11 @@ class TagActionHandler @Inject constructor(
         }
     }
 
-    private fun postsForTag(action: PostsForTag): Content {
+    private fun postsForTag(action: PostsForTag, currentContent: Content): Content {
         return PostListContent(
             category = All,
-            posts = null,
+            // Use the current posts for a smoother transition until the tagged posts are loaded
+            posts = (currentContent as? PostListContent)?.posts,
             showDescription = userRepository.showDescriptionInLists,
             sortType = NewestFirst,
             searchParameters = SearchParameters(tags = listOf(action.tag)),

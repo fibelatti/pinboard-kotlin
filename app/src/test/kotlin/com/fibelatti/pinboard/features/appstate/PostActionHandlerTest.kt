@@ -6,7 +6,6 @@ import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
-import com.fibelatti.pinboard.features.posts.presentation.PostListDiffResultFactory
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
@@ -21,14 +20,13 @@ internal class PostActionHandlerTest {
 
     private val mockUserRepository = mockk<UserRepository>()
     private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider>()
-    private val mockPostListDiffResultFactory = mockk<PostListDiffResultFactory>()
 
     private val mockPost = mockk<Post>()
+    private val canPaginate = randomBoolean()
 
     private val postActionHandler = PostActionHandler(
-        mockUserRepository,
-        mockConnectivityInfoProvider,
-        mockPostListDiffResultFactory,
+        userRepository = mockUserRepository,
+        connectivityInfoProvider = mockConnectivityInfoProvider,
     )
 
     private val initialContent = PostListContent(
@@ -140,6 +138,7 @@ internal class PostActionHandlerTest {
                             totalCount = 0,
                             posts = emptyList(),
                             upToDate = false,
+                            canPaginate = canPaginate,
                         ),
                     ),
                     initialContent,
@@ -159,6 +158,7 @@ internal class PostActionHandlerTest {
                             totalCount = 0,
                             posts = emptyList(),
                             upToDate = true,
+                            canPaginate = canPaginate,
                         ),
                     ),
                     initialContent,
@@ -172,14 +172,6 @@ internal class PostActionHandlerTest {
         fun `WHEN currentContent is PostListContent and actions posts is not null and content is up to date THEN updated content is returned`() =
             runTest {
                 // GIVEN
-                val mockDiffResult = mockk<DiffUtil.DiffResult>()
-                every {
-                    mockPostListDiffResultFactory.create(
-                        emptyList(),
-                        listOf(createPost()),
-                    )
-                } returns mockDiffResult
-
                 val currentContent = PostListContent(
                     category = All,
                     posts = null,
@@ -197,6 +189,7 @@ internal class PostActionHandlerTest {
                             totalCount = 1,
                             posts = listOf(createPost()),
                             upToDate = true,
+                            canPaginate = canPaginate,
                         ),
                     ),
                     currentContent,
@@ -206,7 +199,11 @@ internal class PostActionHandlerTest {
                 assertThat(result).isEqualTo(
                     PostListContent(
                         category = All,
-                        posts = PostList(1, listOf(createPost()), mockDiffResult),
+                        posts = PostList(
+                            list = listOf(createPost()),
+                            totalCount = 1,
+                            canPaginate = canPaginate,
+                        ),
                         showDescription = false,
                         sortType = NewestFirst,
                         searchParameters = SearchParameters(),
@@ -220,14 +217,6 @@ internal class PostActionHandlerTest {
         fun `WHEN currentContent is PostListContent and actions posts is not null and content is not up to date THEN updated content is returned with syncing`() =
             runTest {
                 // GIVEN
-                val mockDiffResult = mockk<DiffUtil.DiffResult>()
-                every {
-                    mockPostListDiffResultFactory.create(
-                        emptyList(),
-                        listOf(createPost()),
-                    )
-                } returns mockDiffResult
-
                 val currentContent = PostListContent(
                     category = All,
                     posts = null,
@@ -245,6 +234,7 @@ internal class PostActionHandlerTest {
                             totalCount = 1,
                             posts = listOf(createPost()),
                             upToDate = false,
+                            canPaginate = canPaginate,
                         ),
                     ),
                     currentContent,
@@ -254,7 +244,11 @@ internal class PostActionHandlerTest {
                 assertThat(result).isEqualTo(
                     PostListContent(
                         category = All,
-                        posts = PostList(1, listOf(createPost()), mockDiffResult),
+                        posts = PostList(
+                            list = listOf(createPost()),
+                            totalCount = 1,
+                            canPaginate = canPaginate,
+                        ),
                         showDescription = false,
                         sortType = NewestFirst,
                         searchParameters = SearchParameters(),
@@ -295,7 +289,11 @@ internal class PostActionHandlerTest {
                 // GIVEN
                 val currentContent = PostListContent(
                     category = All,
-                    posts = PostList(1, listOf(mockk()), mockk()),
+                    posts = PostList(
+                        list = listOf(mockk()),
+                        totalCount = 1,
+                        canPaginate = canPaginate,
+                    ),
                     showDescription = false,
                     sortType = NewestFirst,
                     searchParameters = SearchParameters(),
@@ -347,6 +345,7 @@ internal class PostActionHandlerTest {
                             totalCount = 1,
                             posts = listOf(createPost()),
                             upToDate = randomBoolean(),
+                            canPaginate = canPaginate,
                         ),
                     ),
                     content,
@@ -366,20 +365,17 @@ internal class PostActionHandlerTest {
 
                 val currentContent = PostListContent(
                     category = All,
-                    posts = PostList(1, mockCurrentList, mockk()),
+                    posts = PostList(
+                        list = mockCurrentList,
+                        totalCount = 1,
+                        canPaginate = canPaginate,
+                    ),
                     showDescription = false,
                     sortType = NewestFirst,
                     searchParameters = SearchParameters(),
                     shouldLoad = ShouldLoadFirstPage,
                     isConnected = true,
                 )
-
-                every {
-                    mockPostListDiffResultFactory.create(
-                        mockCurrentList,
-                        mockCurrentList.plus(mockNewList),
-                    )
-                } returns mockDiffResult
 
                 // WHEN
                 val result = postActionHandler.runAction(
@@ -388,6 +384,7 @@ internal class PostActionHandlerTest {
                             totalCount = 2,
                             posts = mockNewList,
                             upToDate = randomBoolean(),
+                            canPaginate = canPaginate,
                         ),
                     ),
                     currentContent,
@@ -397,7 +394,11 @@ internal class PostActionHandlerTest {
                 assertThat(result).isEqualTo(
                     PostListContent(
                         category = All,
-                        posts = PostList(2, mockCurrentList.plus(mockNewList), mockDiffResult),
+                        posts = PostList(
+                            list = mockCurrentList.plus(mockNewList),
+                            totalCount = 2,
+                            canPaginate = canPaginate,
+                        ),
                         showDescription = false,
                         sortType = NewestFirst,
                         searchParameters = SearchParameters(),
@@ -406,54 +407,6 @@ internal class PostActionHandlerTest {
                     ),
                 )
             }
-    }
-
-    @Nested
-    inner class PostsDisplayedTests {
-
-        @Test
-        fun `WHEN currentContent is not PostListContent THEN same content is returned`() = runTest {
-            // GIVEN
-            val content = mockk<PostDetailContent>()
-
-            // WHEN
-            val result = postActionHandler.runAction(PostsDisplayed, content)
-
-            // THEN
-            assertThat(result).isEqualTo(content)
-        }
-
-        @Test
-        fun `WHEN currentContent is PostListContent THEN the updated content is returned`() = runTest {
-            // GIVEN
-            val mockPostList = PostList(1, mockk(), mockk(), alreadyDisplayed = false)
-
-            val currentContent = PostListContent(
-                category = All,
-                posts = mockPostList,
-                showDescription = false,
-                sortType = NewestFirst,
-                searchParameters = SearchParameters(),
-                shouldLoad = Loaded,
-                isConnected = true,
-            )
-
-            // WHEN
-            val result = postActionHandler.runAction(PostsDisplayed, currentContent)
-
-            // THEN
-            assertThat(result).isEqualTo(
-                PostListContent(
-                    category = All,
-                    posts = mockPostList.copy(alreadyDisplayed = true),
-                    showDescription = false,
-                    sortType = NewestFirst,
-                    searchParameters = SearchParameters(),
-                    shouldLoad = Loaded,
-                    isConnected = true,
-                ),
-            )
-        }
     }
 
     @Nested

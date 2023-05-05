@@ -158,6 +158,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
 
                     return@resultFromNetwork post
                 }
+
                 ApiResultCodes.ITEM_ALREADY_EXISTS.code -> getPost(url).getOrThrow()
                 else -> throw ApiException(result.resultCode)
             }
@@ -399,7 +400,12 @@ class PostsDataSourcePinboardApi @Inject constructor(
             emptyList()
         }
 
-        PostListResult(totalCount = localDataSize, posts = localData, upToDate = upToDate)
+        PostListResult(
+            posts = localData,
+            totalCount = localDataSize,
+            upToDate = upToDate,
+            canPaginate = localData.size == pageLimit,
+        )
     }
 
     private fun List<Tag>?.getAndFormat(index: Int): String =

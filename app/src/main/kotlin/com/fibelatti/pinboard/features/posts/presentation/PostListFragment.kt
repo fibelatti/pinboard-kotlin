@@ -8,56 +8,39 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.core.view.isGone
-import androidx.core.view.isVisible
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.shareText
-import com.fibelatti.core.extension.viewBinding
-import com.fibelatti.core.extension.withItemOffsetDecoration
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppConfig.PINBOARD_USER_URL
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.extension.copyToClipboard
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.showBanner
-import com.fibelatti.pinboard.databinding.FragmentPostListBinding
+import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.InAppReviewManager
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AddPost
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
-import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.EditPost
-import com.fibelatti.pinboard.features.appstate.GetNextPostPage
 import com.fibelatti.pinboard.features.appstate.Loaded
 import com.fibelatti.pinboard.features.appstate.NewestFirst
-import com.fibelatti.pinboard.features.appstate.PostListContent
-import com.fibelatti.pinboard.features.appstate.PostsDisplayed
-import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.Private
 import com.fibelatti.pinboard.features.appstate.Public
 import com.fibelatti.pinboard.features.appstate.Recent
 import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.SearchParameters
-import com.fibelatti.pinboard.features.appstate.ShouldForceLoad
-import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
-import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
 import com.fibelatti.pinboard.features.appstate.SortType
-import com.fibelatti.pinboard.features.appstate.Syncing
 import com.fibelatti.pinboard.features.appstate.ToggleSorting
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.appstate.ViewCategory
-import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -70,25 +53,15 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class PostListFragment @Inject constructor(
-    private val postsAdapter: PostListAdapter,
     private val inAppReviewManager: InAppReviewManager,
     private val userRepository: UserRepository,
+    private val dateFormatter: DateFormatter,
 ) : BaseFragment() {
-
-    companion object {
-
-        @JvmStatic
-        val TAG: String = "PostListFragment"
-
-        private val ACTION_ID = UUID.randomUUID().toString()
-    }
 
     private val appStateViewModel: AppStateViewModel by activityViewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
     private val postListViewModel: PostListViewModel by viewModels()
     private val postDetailViewModel: PostDetailViewModel by viewModels()
-
-    private val binding by viewBinding(FragmentPostListBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,41 +76,23 @@ class PostListFragment @Inject constructor(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View = FragmentPostListBinding.inflate(inflater, container, false).root
+    ): View = ComposeView(inflater.context)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupLayout()
+
+        setThemedContent {
+            BookmarkListScreen(
+                appStateViewModel = appStateViewModel,
+                postListViewModel = postListViewModel,
+                postDetailViewModel = postDetailViewModel,
+                dateFormatter = dateFormatter,
+                onPostLongClicked = ::showQuickActionsDialog,
+                onShareClicked = ::shareFilteredResults,
+            )
+        }
+
         setupViewModels()
-    }
-
-    private fun setupLayout() {
-        binding.root.animateChangingTransitions()
-
-        binding.buttonFilterClear.setOnClickListener {
-            appStateViewModel.runAction(ClearSearch)
-        }
-
-        binding.swipeToRefresh.setOnRefreshListener {
-            binding.swipeToRefresh.isRefreshing = false
-            appStateViewModel.runAction(Refresh())
-        }
-
-        binding.recyclerViewPosts
-            .apply {
-                setPageSize(AppConfig.DEFAULT_PAGE_SIZE)
-                setMinDistanceToLastItem(AppConfig.DEFAULT_PAGE_SIZE / 2)
-                onShouldRequestNextPage = {
-                    binding.progressBar.isVisible = true
-                    appStateViewModel.runAction(GetNextPostPage)
-                }
-            }
-            .withItemOffsetDecoration(R.dimen.padding_small)
-            .adapter = postsAdapter
-
-        postsAdapter.onItemClicked = { appStateViewModel.runAction(ViewPost(it)) }
-        postsAdapter.onItemLongClicked = ::showQuickActionsDialog
-        postsAdapter.onTagClicked = { appStateViewModel.runAction(PostsForTag(it)) }
     }
 
     private fun showQuickActionsDialog(post: Post) {
@@ -192,93 +147,6 @@ class PostListFragment @Inject constructor(
         }.show()
     }
 
-    private fun setupViewModels() {
-        postListViewModel.error
-            .onEach { throwable -> handleError(throwable, postListViewModel::errorHandled) }
-            .launchInAndFlowWith(viewLifecycleOwner)
-
-        mainViewModel.menuItemClicks(ACTION_ID)
-            .onEach { (menuItemId, _) ->
-                when (menuItemId) {
-                    R.id.menuItemSync -> appStateViewModel.runAction(Refresh(force = true))
-                    R.id.menuItemSearch -> appStateViewModel.runAction(ViewSearch)
-                    R.id.menuItemSort -> appStateViewModel.runAction(ToggleSorting)
-                }
-            }
-            .launchInAndFlowWith(viewLifecycleOwner)
-        mainViewModel.fabClicks(ACTION_ID)
-            .onEach { appStateViewModel.runAction(AddPost) }
-            .launchInAndFlowWith(viewLifecycleOwner)
-
-        appStateViewModel.postListContent
-            .onEach(::updateContent)
-            .launchInAndFlowWith(viewLifecycleOwner)
-
-        postDetailViewModel.loading
-            .onEach { binding.progressBar.isVisible = it }
-            .launchInAndFlowWith(viewLifecycleOwner)
-        postDetailViewModel.deleted
-            .onEach { binding.root.showBanner(getString(R.string.posts_deleted_feedback)) }
-            .launchInAndFlowWith(viewLifecycleOwner)
-        postDetailViewModel.deleteError
-            .onEach {
-                MaterialAlertDialogBuilder(requireContext()).apply {
-                    setMessage(R.string.posts_deleted_error)
-                    setPositiveButton(R.string.hint_ok) { dialog, _ -> dialog?.dismiss() }
-                }.show()
-            }
-            .launchInAndFlowWith(viewLifecycleOwner)
-        postDetailViewModel.updated
-            .onEach { binding.root.showBanner(getString(R.string.posts_marked_as_read_feedback)) }
-            .launchInAndFlowWith(viewLifecycleOwner)
-        postDetailViewModel.updateError
-            .onEach { binding.root.showBanner(getString(R.string.posts_marked_as_read_error)) }
-            .launchInAndFlowWith(viewLifecycleOwner)
-        postDetailViewModel.error
-            .onEach { throwable -> handleError(throwable, postDetailViewModel::errorHandled) }
-            .launchInAndFlowWith(viewLifecycleOwner)
-    }
-
-    override fun handleError(error: Throwable?, postAction: () -> Unit) {
-        binding.progressBar.isGone = true
-        super.handleError(error, postAction)
-    }
-
-    private fun updateContent(content: PostListContent) {
-        mainViewModel.updateState { currentState ->
-            currentState.copy(
-                title = MainState.TitleComponent.Visible(getCategoryTitle(content.category)),
-                subtitle = MainState.TitleComponent.Visible(
-                    buildPostCountSubTitle(content.totalCount, content.sortType),
-                ),
-                navigation = MainState.NavigationComponent.Gone,
-                bottomAppBar = MainState.BottomAppBarComponent.Visible(
-                    id = ACTION_ID,
-                    menu = if (content.category != All || !content.canForceSync) {
-                        R.menu.menu_main_no_sync
-                    } else {
-                        R.menu.menu_main
-                    },
-                    navigationIcon = R.drawable.ic_menu,
-                ),
-                floatingActionButton = MainState.FabComponent.Visible(ACTION_ID, R.drawable.ic_pin),
-            )
-        }
-
-        when (content.shouldLoad) {
-            ShouldLoadFirstPage, ShouldForceLoad -> {
-                binding.progressBar.isVisible = true
-                postListViewModel.loadContent(content)
-            }
-
-            is ShouldLoadNextPage -> postListViewModel.loadContent(content)
-            Syncing, Loaded -> showPosts(content)
-        }
-
-        binding.groupSearchActive.isVisible = content.searchParameters.isActive()
-        binding.buttonFilterShare.setOnClickListener { shareFilteredResults(content.searchParameters) }
-    }
-
     private fun shareFilteredResults(searchParameters: SearchParameters) {
         val username = userRepository.getUsername()
         val queryUrl = "$PINBOARD_USER_URL$username?query=${searchParameters.term}"
@@ -316,6 +184,73 @@ class PostListFragment @Inject constructor(
         }
     }
 
+    private fun setupViewModels() {
+        appStateViewModel.postListContent
+            .onEach { content ->
+                mainViewModel.updateState { currentState ->
+                    currentState.copy(
+                        title = MainState.TitleComponent.Visible(getCategoryTitle(content.category)),
+                        subtitle = when {
+                            content.posts == null && content.shouldLoad is Loaded -> MainState.TitleComponent.Gone
+                            else -> MainState.TitleComponent.Visible(
+                                buildPostCountSubTitle(content.totalCount, content.sortType),
+                            )
+                        },
+                        navigation = MainState.NavigationComponent.Gone,
+                        bottomAppBar = MainState.BottomAppBarComponent.Visible(
+                            id = ACTION_ID,
+                            menu = if (content.category != All || !content.canForceSync) {
+                                R.menu.menu_main_no_sync
+                            } else {
+                                R.menu.menu_main
+                            },
+                            navigationIcon = R.drawable.ic_menu,
+                        ),
+                        floatingActionButton = MainState.FabComponent.Visible(ACTION_ID, R.drawable.ic_pin),
+                    )
+                }
+            }
+            .launchInAndFlowWith(viewLifecycleOwner)
+
+        mainViewModel.menuItemClicks(ACTION_ID)
+            .onEach { (menuItemId, _) ->
+                when (menuItemId) {
+                    R.id.menuItemSync -> appStateViewModel.runAction(Refresh(force = true))
+                    R.id.menuItemSearch -> appStateViewModel.runAction(ViewSearch)
+                    R.id.menuItemSort -> appStateViewModel.runAction(ToggleSorting)
+                }
+            }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        mainViewModel.fabClicks(ACTION_ID)
+            .onEach { appStateViewModel.runAction(AddPost) }
+            .launchInAndFlowWith(viewLifecycleOwner)
+
+        postListViewModel.error
+            .onEach { throwable -> handleError(throwable, postListViewModel::errorHandled) }
+            .launchInAndFlowWith(viewLifecycleOwner)
+
+        postDetailViewModel.deleted
+            .onEach { requireView().showBanner(getString(R.string.posts_deleted_feedback)) }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        postDetailViewModel.deleteError
+            .onEach {
+                MaterialAlertDialogBuilder(requireContext()).apply {
+                    setMessage(R.string.posts_deleted_error)
+                    setPositiveButton(R.string.hint_ok) { dialog, _ -> dialog?.dismiss() }
+                }.show()
+            }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        postDetailViewModel.updated
+            .onEach { requireView().showBanner(getString(R.string.posts_marked_as_read_feedback)) }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        postDetailViewModel.updateError
+            .onEach { requireView().showBanner(getString(R.string.posts_marked_as_read_error)) }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        postDetailViewModel.error
+            .onEach { throwable -> handleError(throwable, postDetailViewModel::errorHandled) }
+            .launchInAndFlowWith(viewLifecycleOwner)
+    }
+
     private fun getCategoryTitle(category: ViewCategory): String = when (category) {
         All -> getString(R.string.posts_title_all)
         Recent -> getString(R.string.posts_title_recent)
@@ -323,26 +258,6 @@ class PostListFragment @Inject constructor(
         Private -> getString(R.string.posts_title_private)
         Unread -> getString(R.string.posts_title_unread)
         Untagged -> getString(R.string.posts_title_untagged)
-    }
-
-    private fun showPosts(content: PostListContent) {
-        binding.progressBar.isGone = content.shouldLoad == Loaded
-        binding.recyclerViewPosts.onRequestNextPageCompleted()
-
-        if (content.posts == null && content.shouldLoad == Loaded) {
-            showEmptyLayout()
-        } else if (content.posts != null) {
-            postsAdapter.showDescription = content.showDescription
-            if (!content.posts.alreadyDisplayed || postsAdapter.itemCount == 0) {
-                binding.recyclerViewPosts.isVisible = true
-                binding.layoutEmptyList.isGone = true
-
-                postsAdapter.submitList(content.posts.list, content.posts.diffResult)
-                appStateViewModel.runAction(PostsDisplayed)
-            }
-        }
-
-        activity?.reportFullyDrawn()
     }
 
     private fun buildPostCountSubTitle(count: Int, sortType: SortType): String {
@@ -358,20 +273,12 @@ class PostListFragment @Inject constructor(
         )
     }
 
-    private fun showEmptyLayout() {
-        mainViewModel.updateState { currentState ->
-            currentState.copy(subtitle = MainState.TitleComponent.Gone)
-        }
+    companion object {
 
-        binding.recyclerViewPosts.isGone = true
-        binding.layoutEmptyList.isVisible = true
-        binding.layoutEmptyList.setThemedContent {
-            EmptyListContent(
-                icon = painterResource(id = R.drawable.ic_notes),
-                title = stringResource(id = R.string.posts_empty_title),
-                description = stringResource(id = R.string.posts_empty_description),
-            )
-        }
+        @JvmStatic
+        val TAG: String = "PostListFragment"
+
+        private val ACTION_ID = UUID.randomUUID().toString()
     }
 }
 

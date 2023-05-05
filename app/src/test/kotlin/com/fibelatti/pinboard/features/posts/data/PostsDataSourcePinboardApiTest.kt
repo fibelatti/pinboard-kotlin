@@ -61,6 +61,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
+import org.junit.Test
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -1522,6 +1523,7 @@ class PostsDataSourcePinboardApiTest {
                     totalCount = 0,
                     posts = emptyList(),
                     upToDate = upToDate,
+                    canPaginate = false,
                 ),
             )
         }
@@ -1560,9 +1562,10 @@ class PostsDataSourcePinboardApiTest {
             }
             assertThat(result.getOrThrow()).isEqualTo(
                 PostListResult(
-                    mockLocalDataSize,
-                    mockListPost,
-                    upToDate,
+                    totalCount = mockLocalDataSize,
+                    posts = mockListPost,
+                    upToDate = upToDate,
+                    canPaginate = false,
                 ),
             )
         }
@@ -1601,9 +1604,10 @@ class PostsDataSourcePinboardApiTest {
             }
             assertThat(result.getOrThrow()).isEqualTo(
                 PostListResult(
-                    mockLocalDataSize,
-                    mockListPost,
-                    upToDate,
+                    totalCount = mockLocalDataSize,
+                    posts = mockListPost,
+                    upToDate = upToDate,
+                    canPaginate = false,
                 ),
             )
         }
@@ -1642,9 +1646,10 @@ class PostsDataSourcePinboardApiTest {
             }
             assertThat(result.getOrThrow()).isEqualTo(
                 PostListResult(
-                    mockLocalDataSize,
-                    mockListPost,
-                    upToDate,
+                    totalCount = mockLocalDataSize,
+                    posts = mockListPost,
+                    upToDate = upToDate,
+                    canPaginate = false,
                 ),
             )
         }
@@ -1683,9 +1688,10 @@ class PostsDataSourcePinboardApiTest {
             }
             assertThat(result.getOrThrow()).isEqualTo(
                 PostListResult(
-                    mockLocalDataSize,
-                    mockListPost,
-                    upToDate,
+                    totalCount = mockLocalDataSize,
+                    posts = mockListPost,
+                    upToDate = upToDate,
+                    canPaginate = false,
                 ),
             )
         }

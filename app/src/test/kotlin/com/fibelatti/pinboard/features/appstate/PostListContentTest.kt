@@ -21,10 +21,9 @@ internal class PostListContentTest {
     private val nonNullContent = PostListContent(
         category = mockk(),
         posts = PostList(
-            totalCount = 42,
             list = listOf(createPost()),
-            diffResult = mockk(),
-            alreadyDisplayed = true,
+            totalCount = 42,
+            canPaginate = true,
         ),
         showDescription = false,
         sortType = mockk(),

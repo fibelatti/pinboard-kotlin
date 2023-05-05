@@ -2,14 +2,12 @@ package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
-import com.fibelatti.pinboard.features.posts.presentation.PostListDiffResultFactory
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
 
 class PostActionHandler @Inject constructor(
     private val userRepository: UserRepository,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
-    private val postListDiffResultFactory: PostListDiffResultFactory,
 ) : ActionHandler<PostAction>() {
 
     override suspend fun runAction(action: PostAction, currentContent: Content): Content = when (action) {
@@ -17,7 +15,6 @@ class PostActionHandler @Inject constructor(
         is SetPosts -> setPosts(action, currentContent)
         is GetNextPostPage -> getNextPostPage(currentContent)
         is SetNextPostPage -> setNextPostPage(action, currentContent)
-        is PostsDisplayed -> postsDisplayed(currentContent)
         is ToggleSorting -> toggleSorting(currentContent)
         is EditPost -> editPost(action, currentContent)
         is EditPostFromShare -> editPostFromShare(action)
@@ -45,9 +42,9 @@ class PostActionHandler @Inject constructor(
         return runOnlyForCurrentContentOfType<PostListContent>(currentContent) { currentPostList ->
             val posts = action.postListResult.posts.takeIf { it.isNotEmpty() }?.let { newList ->
                 PostList(
-                    totalCount = action.postListResult.totalCount,
                     list = newList,
-                    diffResult = postListDiffResultFactory.create(currentPostList.currentList, newList),
+                    totalCount = action.postListResult.totalCount,
+                    canPaginate = action.postListResult.canPaginate,
                 )
             }
             currentPostList.copy(
@@ -73,21 +70,15 @@ class PostActionHandler @Inject constructor(
                 val currentList = currentPostList.currentList
                 val updatedList = currentList.union(action.postListResult.posts).toList()
                 val posts = PostList(
-                    action.postListResult.totalCount,
-                    updatedList,
-                    postListDiffResultFactory.create(currentList, updatedList),
+                    list = updatedList,
+                    totalCount = action.postListResult.totalCount,
+                    canPaginate = action.postListResult.canPaginate,
                 )
 
                 currentPostList.copy(posts = posts, shouldLoad = Loaded)
             } else {
                 currentContent
             }
-        }
-    }
-
-    private fun postsDisplayed(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
-            it.copy(posts = it.posts?.copy(alreadyDisplayed = true))
         }
     }
 
@@ -137,6 +128,7 @@ class PostActionHandler @Inject constructor(
                     previousContent = currentContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage),
                 )
             }
+
             is EditPostContent -> {
                 when (currentContent.previousContent) {
                     is PostDetailContent -> {
@@ -147,12 +139,15 @@ class PostActionHandler @Inject constructor(
                             previousContent = postDetail.previousContent.copy(shouldLoad = ShouldLoadFirstPage),
                         )
                     }
+
                     is PostListContent -> {
                         currentContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
                     }
+
                     else -> currentContent.previousContent
                 }
             }
+
             is PopularPostDetailContent -> {
                 val updatedCurrentContent = currentContent.copy(
                     previousContent = currentContent.previousContent.copy(
@@ -168,6 +163,7 @@ class PostActionHandler @Inject constructor(
                     updatedCurrentContent
                 }
             }
+
             is PopularPostsContent -> {
                 val updatedCurrentContent = currentContent.copy(
                     previousContent = currentContent.previousContent.copy(
@@ -181,6 +177,7 @@ class PostActionHandler @Inject constructor(
                     updatedCurrentContent
                 }
             }
+
             else -> currentContent
         }
     }
@@ -192,12 +189,15 @@ class PostActionHandler @Inject constructor(
                 currentContent is PostListContent -> {
                     currentContent.copy(shouldLoad = ShouldLoadFirstPage)
                 }
+
                 previousContent is PostListContent -> {
                     previousContent.copy(shouldLoad = ShouldLoadFirstPage)
                 }
+
                 previousContent is PostDetailContent -> {
                     previousContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
                 }
+
                 else -> previousContent
             }
         } else {

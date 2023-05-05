@@ -111,14 +111,6 @@
         <item name="android:indeterminateDrawable">@drawable/progress_circular_indeterminate</item>
     </style>
 
-    <style name="AppTheme.ProgressBarHorizontalStyle" parent="Base.Widget.AppCompat.ProgressBar.Horizontal">
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:indeterminate">true</item>
-        <item name="android:indeterminateTintMode">src_in</item>
-        <item name="android:indeterminateTint">?attr/colorPrimary</item>
-    </style>
-
     <!-- Typography -->
     <style name="AppTheme.Text" />
 
