@@ -24,7 +24,7 @@ dependencyResolutionManagement {
         create("libs") {
             val agpVersion = "8.0.0"
             val kotlinVersion = "1.8.21"
-            val coroutinesVersion = "1.6.4"
+            val coroutinesVersion = "1.7.0"
 
             val activityVersion = "1.7.1"
             val composeUiVersion = "1.4.3"
