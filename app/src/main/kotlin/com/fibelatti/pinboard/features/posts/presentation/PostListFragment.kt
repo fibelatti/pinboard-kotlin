@@ -21,7 +21,6 @@ import com.fibelatti.pinboard.core.extension.copyToClipboard
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.showBanner
-import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.InAppReviewManager
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
@@ -55,7 +54,6 @@ import javax.inject.Inject
 class PostListFragment @Inject constructor(
     private val inAppReviewManager: InAppReviewManager,
     private val userRepository: UserRepository,
-    private val dateFormatter: DateFormatter,
 ) : BaseFragment() {
 
     private val appStateViewModel: AppStateViewModel by activityViewModels()
@@ -86,7 +84,6 @@ class PostListFragment @Inject constructor(
                 appStateViewModel = appStateViewModel,
                 postListViewModel = postListViewModel,
                 postDetailViewModel = postDetailViewModel,
-                dateFormatter = dateFormatter,
                 onPostLongClicked = ::showQuickActionsDialog,
                 onShareClicked = ::shareFilteredResults,
             )

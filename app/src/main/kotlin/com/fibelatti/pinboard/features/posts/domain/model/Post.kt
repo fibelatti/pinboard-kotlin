@@ -8,6 +8,7 @@ data class Post(
     val description: String,
     val hash: String = "",
     val time: String = "",
+    val formattedTime: String = time,
     val private: Boolean,
     val readLater: Boolean,
     val tags: List<Tag>? = null,

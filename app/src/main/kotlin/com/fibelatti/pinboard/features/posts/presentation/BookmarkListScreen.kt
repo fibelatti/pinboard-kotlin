@@ -55,7 +55,6 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_PAGE_SIZE
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.rememberAutoDismissPullRefreshState
-import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.GetNextPostPage
@@ -82,7 +81,6 @@ fun BookmarkListScreen(
     appStateViewModel: AppStateViewModel = hiltViewModel(),
     postListViewModel: PostListViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
-    dateFormatter: DateFormatter?,
     onPostLongClicked: (Post) -> Unit,
     onShareClicked: (SearchParameters) -> Unit,
 ) {
@@ -119,7 +117,6 @@ fun BookmarkListScreen(
             onPostLongClicked = onPostLongClicked,
             onTagClicked = { post -> appStateViewModel.runAction(PostsForTag(post)) },
             showPostDescription = postListContent.showDescription,
-            dateFormatter = dateFormatter,
         )
     }
 }
@@ -138,7 +135,6 @@ fun BookmarkListScreen(
     onPostLongClicked: (Post) -> Unit,
     onTagClicked: (Tag) -> Unit,
     showPostDescription: Boolean,
-    dateFormatter: DateFormatter?,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -206,7 +202,6 @@ fun BookmarkListScreen(
                             onPostLongClicked = onPostLongClicked,
                             showDescription = showPostDescription,
                             onTagClicked = onTagClicked,
-                            dateFormatter = dateFormatter,
                         )
                     }
                 }
@@ -315,7 +310,6 @@ private fun BookmarkItem(
     onPostLongClicked: (Post) -> Unit,
     showDescription: Boolean,
     onTagClicked: (Tag) -> Unit,
-    dateFormatter: DateFormatter?,
 ) {
     Surface(
         modifier = Modifier
@@ -360,15 +354,12 @@ private fun BookmarkItem(
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
             )
 
-            val addedDate = dateFormatter?.tzFormatToDisplayFormat(post.time)
-            if (addedDate != null) {
-                Text(
-                    text = stringResource(id = R.string.posts_saved_on, addedDate),
-                    modifier = Modifier.padding(top = 4.dp),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
+            Text(
+                text = stringResource(id = R.string.posts_saved_on, post.formattedTime),
+                modifier = Modifier.padding(top = 4.dp),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium,
+            )
 
             if (post.private || post.readLater) {
                 Row(
@@ -458,7 +449,6 @@ private fun BookmarkListScreenPreview(
             onPostLongClicked = {},
             showPostDescription = true,
             onTagClicked = {},
-            dateFormatter = null,
         )
     }
 }
@@ -491,7 +481,6 @@ private fun BookmarkItemPreview(
                 onPostLongClicked = {},
                 showDescription = true,
                 onTagClicked = {},
-                dateFormatter = null,
             )
         }
     }
