@@ -28,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -112,7 +111,6 @@ private fun PopularBookmarksScreen(
                     description = stringResource(id = R.string.notes_empty_description),
                 )
             } else {
-                val scope = rememberCoroutineScope()
                 val listState = rememberLazyListState()
                 val (pullRefreshState, refreshing) = rememberAutoDismissPullRefreshState(onPullToRefresh)
 
