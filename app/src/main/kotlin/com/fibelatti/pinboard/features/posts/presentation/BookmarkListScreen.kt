@@ -41,7 +41,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -309,12 +311,16 @@ private fun BookmarkItem(
     showDescription: Boolean,
     onTagClicked: (Tag) -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .combinedClickable(
                 onClick = { onPostClicked(post) },
-                onLongClick = { onPostLongClicked(post) },
+                onLongClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onPostLongClicked(post)
+                },
             ),
         color = MaterialTheme.colorScheme.surface,
         elevation = 2.dp,

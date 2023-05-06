@@ -31,6 +31,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -156,12 +158,16 @@ private fun PopularBookmarkItem(
     onPostClicked: (Post) -> Unit,
     onPostLongClicked: (Post) -> Unit,
 ) {
+    val haptic = LocalHapticFeedback.current
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .combinedClickable(
                 onClick = { onPostClicked(post) },
-                onLongClick = { onPostLongClicked(post) },
+                onLongClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onPostLongClicked(post)
+                },
             ),
         color = MaterialTheme.colorScheme.surface,
         elevation = 2.dp,
