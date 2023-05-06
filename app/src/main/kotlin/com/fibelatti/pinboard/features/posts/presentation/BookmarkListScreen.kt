@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
@@ -192,12 +193,9 @@ fun BookmarkListScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     state = listState,
                 ) {
-                    items(
-                        count = posts.list.size,
-                        key = { posts.list[it].hash },
-                    ) { index ->
+                    items(posts.list) { post ->
                         BookmarkItem(
-                            post = posts.list[index],
+                            post = post,
                             onPostClicked = onPostClicked,
                             onPostLongClicked = onPostLongClicked,
                             showDescription = showPostDescription,

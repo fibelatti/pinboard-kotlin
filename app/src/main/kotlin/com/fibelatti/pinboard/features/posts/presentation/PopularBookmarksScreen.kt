@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Surface
@@ -127,9 +128,9 @@ private fun PopularBookmarksScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         state = listState,
                     ) {
-                        items(count = bookmarks.size, key = { bookmarks[it].url }) { index ->
+                        items(bookmarks) { bookmark ->
                             PopularBookmarkItem(
-                                post = bookmarks[index],
+                                post = bookmark,
                                 onPostClicked = onBookmarkClicked,
                                 onPostLongClicked = onBookmarkLongClicked,
                             )

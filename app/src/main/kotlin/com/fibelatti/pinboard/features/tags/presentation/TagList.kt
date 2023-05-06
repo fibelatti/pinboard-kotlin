@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -227,9 +228,9 @@ private fun TagList(
                 .asPaddingValues(),
             state = listState,
         ) {
-            items(count = items.size) { index ->
+            items(items) { item ->
                 TagListItem(
-                    item = items[index],
+                    item = item,
                     onTagClicked = onTagClicked,
                     onTagLongClicked = onTagLongClicked,
                 )

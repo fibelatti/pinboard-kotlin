@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -153,9 +154,9 @@ fun SingleLineChipGroup(
         contentPadding = contentPadding,
         horizontalArrangement = Arrangement.spacedBy(spacing),
     ) {
-        items(items.size) { index ->
+        items(items) { item ->
             Chip(
-                item = items[index],
+                item = item,
                 onClick = onItemClick,
                 onIconClick = onItemIconClick,
                 shape = itemShape,

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Surface
@@ -156,9 +157,9 @@ private fun NoteListScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             state = listState,
                         ) {
-                            items(count = notes.size) { index ->
+                            items(notes) { note ->
                                 NoteListItem(
-                                    note = notes[index],
+                                    note = note,
                                     onNoteClicked = onNoteClicked,
                                 )
                             }
