@@ -1,10 +1,6 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -41,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.android.composable.AnimatedVisibilityProgressIndicator
+import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.rememberAutoDismissPullRefreshState
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -73,80 +70,66 @@ fun PopularBookmarksScreen(
             }
         }
 
-        PopularBookmarksScreen(
-            bookmarks = popularPostsContent.posts,
-            isLoading = popularPostsContent.shouldLoad || popularPostsLoading,
-            onPullToRefresh = { appStateViewModel.runAction(RefreshPopular) },
-            onBookmarkClicked = { appStateViewModel.runAction(ViewPost(it)) },
-            onBookmarkLongClicked = onBookmarkLongClicked,
-        )
+        CrossfadeLoadingLayout(
+            data = popularPostsContent.posts.takeUnless { popularPostsContent.shouldLoad || popularPostsLoading },
+            modifier = Modifier.fillMaxSize(),
+        ) { posts ->
+            PopularBookmarksContent(
+                posts = posts,
+                onPullToRefresh = { appStateViewModel.runAction(RefreshPopular) },
+                onBookmarkClicked = { appStateViewModel.runAction(ViewPost(it)) },
+                onBookmarkLongClicked = onBookmarkLongClicked,
+            )
+        }
     }
 }
 
 @Composable
 @OptIn(ExperimentalMaterialApi::class)
-private fun PopularBookmarksScreen(
-    bookmarks: List<Post>,
-    isLoading: Boolean,
+fun PopularBookmarksContent(
+    posts: List<Post>,
     onPullToRefresh: () -> Unit = {},
     onBookmarkClicked: (Post) -> Unit = {},
     onBookmarkLongClicked: (Post) -> Unit = {},
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = ExtendedTheme.colors.backgroundNoOverlay),
-    ) {
-        AnimatedVisibilityProgressIndicator(
-            isVisible = isLoading,
-            modifier = Modifier.fillMaxSize(),
+    if (posts.isEmpty()) {
+        EmptyListContent(
+            icon = painterResource(id = R.drawable.ic_notes),
+            title = stringResource(id = R.string.notes_empty_title),
+            description = stringResource(id = R.string.notes_empty_description),
         )
+    } else {
+        val listState = rememberLazyListState()
+        val (pullRefreshState, refreshing) = rememberAutoDismissPullRefreshState(onPullToRefresh)
 
-        AnimatedVisibility(
-            visible = !isLoading,
-            enter = fadeIn(),
-            exit = fadeOut(),
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .pullRefresh(pullRefreshState),
         ) {
-            if (bookmarks.isEmpty()) {
-                EmptyListContent(
-                    icon = painterResource(id = R.drawable.ic_notes),
-                    title = stringResource(id = R.string.notes_empty_title),
-                    description = stringResource(id = R.string.notes_empty_description),
-                )
-            } else {
-                val listState = rememberLazyListState()
-                val (pullRefreshState, refreshing) = rememberAutoDismissPullRefreshState(onPullToRefresh)
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .pullRefresh(pullRefreshState),
-                ) {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = WindowInsets(bottom = 100.dp)
-                            .add(WindowInsets.navigationBars)
-                            .asPaddingValues(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        state = listState,
-                    ) {
-                        items(bookmarks) { bookmark ->
-                            PopularBookmarkItem(
-                                post = bookmark,
-                                onPostClicked = onBookmarkClicked,
-                                onPostLongClicked = onBookmarkLongClicked,
-                            )
-                        }
-                    }
-
-                    PullRefreshIndicator(
-                        refreshing = refreshing,
-                        state = pullRefreshState,
-                        modifier = Modifier.align(Alignment.TopCenter),
-                        scale = true,
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = WindowInsets(bottom = 100.dp)
+                    .add(WindowInsets.navigationBars)
+                    .asPaddingValues(),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                state = listState,
+            ) {
+                items(posts) { bookmark ->
+                    PopularBookmarkItem(
+                        post = bookmark,
+                        onPostClicked = onBookmarkClicked,
+                        onPostLongClicked = onBookmarkLongClicked,
                     )
                 }
             }
+
+            PullRefreshIndicator(
+                refreshing = refreshing,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter),
+                scale = true,
+            )
         }
     }
 }
@@ -169,7 +152,6 @@ private fun PopularBookmarkItem(
                     onPostLongClicked(post)
                 },
             ),
-        color = MaterialTheme.colorScheme.surface,
         elevation = 2.dp,
     ) {
         Column(
@@ -187,8 +169,11 @@ private fun PopularBookmarkItem(
             )
 
             if (post.tags != null) {
+                val items = remember(post.tags) {
+                    post.tags.map { tag -> ChipGroup.Item(text = tag.name) }
+                }
                 MultilineChipGroup(
-                    items = post.tags.map { tag -> ChipGroup.Item(text = tag.name) },
+                    items = items,
                     onItemClick = {},
                 )
             }
@@ -198,13 +183,12 @@ private fun PopularBookmarkItem(
 
 @Composable
 @ThemePreviews
-private fun PopularBookmarksScreenPreview(
+private fun PopularBookmarksContentPreview(
     @PreviewParameter(provider = PostListProvider::class) posts: List<Post>,
 ) {
     ExtendedTheme {
-        PopularBookmarksScreen(
-            bookmarks = posts,
-            isLoading = false,
+        PopularBookmarksContent(
+            posts = posts,
         )
     }
 }

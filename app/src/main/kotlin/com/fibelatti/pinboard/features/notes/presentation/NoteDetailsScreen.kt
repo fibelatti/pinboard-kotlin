@@ -1,9 +1,5 @@
 package com.fibelatti.pinboard.features.notes.presentation
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -25,8 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.android.composable.AnimatedVisibilityProgressIndicator
+import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -41,7 +38,6 @@ fun NoteDetailsScreen(
         val appState by appStateViewModel.noteDetailContent.collectAsStateWithLifecycle(initialValue = null)
         val noteDetailContent = appState ?: return@Surface
         val isLoading = noteDetailContent.note.isLeft
-        val note = noteDetailContent.note.rightOrNull()
 
         LaunchedEffect(isLoading) {
             if (isLoading) {
@@ -49,94 +45,75 @@ fun NoteDetailsScreen(
             }
         }
 
-        NoteDetailsScreen(
-            isLoading = isLoading,
-            title = note?.title ?: "",
-            savedAt = note?.createdAt ?: "",
-            updatedAt = note?.updatedAt ?: "",
-            text = note?.text ?: "",
-        )
-    }
-}
-
-@Composable
-private fun NoteDetailsScreen(
-    isLoading: Boolean,
-    title: String,
-    savedAt: String,
-    updatedAt: String,
-    text: String,
-) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        AnimatedVisibilityProgressIndicator(
-            isVisible = isLoading,
+        CrossfadeLoadingLayout(
+            data = noteDetailContent.note.rightOrNull(),
             modifier = Modifier.fillMaxSize(),
-        )
-
-        AnimatedVisibility(
-            visible = !isLoading,
-            enter = fadeIn(),
-            exit = fadeOut(),
         ) {
-            val scrollState = rememberScrollState()
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollState)
-                    .padding(start = 16.dp, end = 16.dp, bottom = 100.dp),
-            ) {
-                Text(
-                    text = title,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                )
-
-                Text(
-                    text = stringResource(id = R.string.notes_saved_at, savedAt),
-                    modifier = Modifier.padding(top = 4.dp),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-
-                if (updatedAt != savedAt) {
-                    Text(
-                        text = stringResource(id = R.string.notes_updated_at, updatedAt),
-                        modifier = Modifier.padding(top = 4.dp),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-
-                Divider(
-                    modifier = Modifier.padding(vertical = 16.dp),
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-
-                Text(
-                    text = text,
-                    modifier = Modifier.padding(top = 4.dp),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
+            NoteContent(note = it)
         }
     }
 }
 
 @Composable
+private fun NoteContent(
+    note: Note,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(start = 16.dp, end = 16.dp, bottom = 100.dp),
+    ) {
+        Text(
+            text = note.title,
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+        )
+
+        Text(
+            text = stringResource(id = R.string.notes_saved_at, note.createdAt),
+            modifier = Modifier.padding(top = 4.dp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+
+        if (note.updatedAt != note.createdAt) {
+            Text(
+                text = stringResource(id = R.string.notes_updated_at, note.updatedAt),
+                modifier = Modifier.padding(top = 4.dp),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+
+        Divider(
+            modifier = Modifier.padding(vertical = 16.dp),
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+
+        Text(
+            text = note.text,
+            modifier = Modifier.padding(top = 4.dp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+    }
+}
+
+@Composable
 @ThemePreviews
-private fun NoteDetailScreenPreview(
+private fun NoteContentPreview(
     @PreviewParameter(provider = LoremIpsum::class) text: String,
 ) {
     ExtendedTheme {
-        NoteDetailsScreen(
-            isLoading = false,
-            title = "Note title",
-            savedAt = "21/04/2023",
-            updatedAt = "22/04/2023",
-            text = text,
+        NoteContent(
+            note = Note(
+                id = "note-id",
+                title = "Note title",
+                createdAt = "21/04/2023",
+                updatedAt = "22/04/2023",
+                text = text,
+            ),
         )
     }
 }

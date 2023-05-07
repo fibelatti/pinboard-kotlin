@@ -1,9 +1,5 @@
 package com.fibelatti.pinboard.features.notes.presentation
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.android.composable.AnimatedVisibilityProgressIndicator
+import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.rememberAutoDismissPullRefreshState
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -68,111 +64,99 @@ fun NoteListScreen(
             }
         }
 
-        NoteListScreen(
-            notes = noteListContent.notes,
-            isLoading = noteListContent.shouldLoad,
-            onSortOptionClicked = { noteListSorting ->
-                val sorting = when (noteListSorting) {
-                    NoteList.Sorting.ByDateUpdatedDesc -> NoteSorting.ByDateUpdatedDesc
-                    NoteList.Sorting.ByDateUpdatedAsc -> NoteSorting.ByDateUpdatedAsc
-                    NoteList.Sorting.AtoZ -> NoteSorting.AtoZ
-                }
+        CrossfadeLoadingLayout(
+            data = noteListContent.notes.takeUnless { noteListContent.shouldLoad },
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            NoteListContent(
+                notes = it,
+                onSortOptionClicked = { noteListSorting ->
+                    val sorting = when (noteListSorting) {
+                        NoteList.Sorting.ByDateUpdatedDesc -> NoteSorting.ByDateUpdatedDesc
+                        NoteList.Sorting.ByDateUpdatedAsc -> NoteSorting.ByDateUpdatedAsc
+                        NoteList.Sorting.AtoZ -> NoteSorting.AtoZ
+                    }
 
-                noteListViewModel.sort(noteListContent.notes, sorting)
-            },
-            onPullToRefresh = { appStateViewModel.runAction(RefreshNotes) },
-            onNoteClicked = { note -> appStateViewModel.runAction(ViewNote(note.id)) },
-        )
+                    noteListViewModel.sort(noteListContent.notes, sorting)
+                },
+                onPullToRefresh = { appStateViewModel.runAction(RefreshNotes) },
+                onNoteClicked = { note -> appStateViewModel.runAction(ViewNote(note.id)) },
+            )
+        }
     }
 }
 
 @Composable
 @OptIn(ExperimentalMaterialApi::class)
-private fun NoteListScreen(
+private fun NoteListContent(
     notes: List<Note>,
-    isLoading: Boolean,
     onSortOptionClicked: (NoteList.Sorting) -> Unit = {},
     onPullToRefresh: () -> Unit = {},
     onNoteClicked: (Note) -> Unit = {},
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        AnimatedVisibilityProgressIndicator(
-            isVisible = isLoading,
-            modifier = Modifier.fillMaxSize(),
-        )
+    Column(modifier = Modifier.fillMaxSize()) {
+        if (notes.isEmpty()) {
+            EmptyListContent(
+                icon = painterResource(id = R.drawable.ic_notes),
+                title = stringResource(id = R.string.notes_empty_title),
+                description = stringResource(id = R.string.notes_empty_description),
+            )
+        } else {
+            val scope = rememberCoroutineScope()
+            val listState = rememberLazyListState()
+            val (pullRefreshState, refreshing) = rememberAutoDismissPullRefreshState(onPullToRefresh)
 
-        AnimatedVisibility(
-            visible = !isLoading,
-            enter = fadeIn(),
-            exit = fadeOut(),
-        ) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                if (notes.isEmpty()) {
-                    EmptyListContent(
-                        icon = painterResource(id = R.drawable.ic_notes),
-                        title = stringResource(id = R.string.notes_empty_title),
-                        description = stringResource(id = R.string.notes_empty_description),
+            RowToggleButtonGroup(
+                items = NoteList.Sorting.values().map { sorting ->
+                    ToggleButtonGroup.Item(
+                        id = sorting.id,
+                        text = stringResource(id = sorting.label),
                     )
-                } else {
-                    val scope = rememberCoroutineScope()
-                    val listState = rememberLazyListState()
-                    val (pullRefreshState, refreshing) = rememberAutoDismissPullRefreshState(onPullToRefresh)
+                },
+                onButtonClick = {
+                    val sorting = requireNotNull(NoteList.Sorting.findById(it.id))
 
-                    RowToggleButtonGroup(
-                        items = NoteList.Sorting.values().map { sorting ->
-                            ToggleButtonGroup.Item(
-                                id = sorting.id,
-                                text = stringResource(id = sorting.label),
-                            )
-                        },
-                        onButtonClick = {
-                            val sorting = requireNotNull(NoteList.Sorting.findById(it.id))
+                    onSortOptionClicked(sorting)
 
-                            onSortOptionClicked(sorting)
+                    scope.launch {
+                        listState.scrollToItem(index = 0)
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                selectedIndex = 0,
+                buttonHeight = 40.dp,
+                textStyle = MaterialTheme.typography.bodySmall,
+            )
 
-                            scope.launch {
-                                listState.scrollToItem(index = 0)
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        selectedIndex = 0,
-                        buttonHeight = 40.dp,
-                        textStyle = MaterialTheme.typography.bodySmall,
-                    )
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .pullRefresh(pullRefreshState),
-                    ) {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = WindowInsets(top = 16.dp, bottom = 100.dp)
-                                .add(WindowInsets.navigationBars)
-                                .asPaddingValues(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            state = listState,
-                        ) {
-                            items(notes) { note ->
-                                NoteListItem(
-                                    note = note,
-                                    onNoteClicked = onNoteClicked,
-                                )
-                            }
-                        }
-
-                        PullRefreshIndicator(
-                            refreshing = refreshing,
-                            state = pullRefreshState,
-                            modifier = Modifier.align(Alignment.TopCenter),
-                            scale = true,
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .pullRefresh(pullRefreshState),
+            ) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = WindowInsets(top = 16.dp, bottom = 100.dp)
+                        .add(WindowInsets.navigationBars)
+                        .asPaddingValues(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    state = listState,
+                ) {
+                    items(notes) { note ->
+                        NoteListItem(
+                            note = note,
+                            onNoteClicked = onNoteClicked,
                         )
                     }
                 }
+
+                PullRefreshIndicator(
+                    refreshing = refreshing,
+                    state = pullRefreshState,
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    scale = true,
+                )
             }
         }
     }
@@ -190,7 +174,6 @@ private fun NoteListItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { onNoteClicked(note) }
-                .background(color = MaterialTheme.colorScheme.surface)
                 .padding(horizontal = 16.dp, vertical = 8.dp),
         ) {
             Text(
@@ -236,16 +219,15 @@ object NoteList {
 @ThemePreviews
 private fun EmptyNoteListScreenPreview() {
     ExtendedTheme {
-        NoteListScreen(
+        NoteListContent(
             notes = emptyList(),
-            isLoading = false,
         )
     }
 }
 
 @Composable
 @ThemePreviews
-private fun NoteListScreenPreview() {
+private fun NoteListContentPreview() {
     ExtendedTheme {
         val notes = List(10) {
             Note(
@@ -257,9 +239,8 @@ private fun NoteListScreenPreview() {
             )
         }
 
-        NoteListScreen(
+        NoteListContent(
             notes = notes,
-            isLoading = false,
         )
     }
 }
