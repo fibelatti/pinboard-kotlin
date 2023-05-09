@@ -50,7 +50,9 @@ import com.fibelatti.pinboard.features.tags.presentation.TagList
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
+import com.fibelatti.ui.foundation.StableList
 import com.fibelatti.ui.foundation.rememberKeyboardState
+import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -87,14 +89,14 @@ fun SearchBookmarksScreen(
             searchTerm = searchContent.searchParameters.term,
             onSearchTermChanged = { newValue -> appStateViewModel.runAction(SetTerm(newValue)) },
             onKeyboardSearch = { appStateViewModel.runAction(Search) },
-            selectedTags = searchContent.searchParameters.tags,
+            selectedTags = searchContent.searchParameters.tags.toStableList(),
             onSelectedTagRemoved = { tag -> appStateViewModel.runAction(RemoveSearchTag(tag)) },
             activeSearchResult = if (searchContent.searchParameters.isActive()) {
                 stringResource(id = R.string.search_result_size, queryResultSize)
             } else {
                 ""
             },
-            availableTags = tagsState.filteredTags,
+            availableTags = tagsState.filteredTags.toStableList(),
             isLoadingTags = tagsState.isLoading,
             onTagsSortOptionClicked = { sorting ->
                 tagsViewModel.sortTags(
@@ -121,10 +123,10 @@ fun SearchBookmarksScreen(
     searchTerm: String = "",
     onSearchTermChanged: (String) -> Unit = {},
     onKeyboardSearch: () -> Unit = {},
-    selectedTags: List<Tag> = emptyList(),
+    selectedTags: StableList<Tag> = StableList(),
     onSelectedTagRemoved: (Tag) -> Unit = {},
     activeSearchResult: String = "",
-    availableTags: List<Tag> = emptyList(),
+    availableTags: StableList<Tag> = StableList(),
     isLoadingTags: Boolean = false,
     onTagsSortOptionClicked: (TagList.Sorting) -> Unit = {},
     tagsSearchTerm: String = "",
@@ -177,7 +179,7 @@ fun SearchBookmarksScreen(
         }
 
         AnimatedVisibility(
-            visible = selectedTags.isNotEmpty(),
+            visible = selectedTags.value.isNotEmpty(),
             enter = fadeIn() + expandVertically(),
             exit = fadeOut() + shrinkVertically(),
         ) {
@@ -195,18 +197,20 @@ fun SearchBookmarksScreen(
                 )
 
                 SingleLineChipGroup(
-                    items = selectedTags.map {
-                        ChipGroup.Item(
-                            text = it.name,
-                            icon = painterResource(id = R.drawable.ic_close),
-                        )
-                    },
+                    items = selectedTags.value
+                        .map {
+                            ChipGroup.Item(
+                                text = it.name,
+                                icon = painterResource(id = R.drawable.ic_close),
+                            )
+                        }
+                        .toStableList(),
                     onItemClick = {},
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 16.dp),
                     onItemIconClick = { item ->
-                        onSelectedTagRemoved(selectedTags.first { it.name == item.text })
+                        onSelectedTagRemoved(selectedTags.value.first { it.name == item.text })
                     },
                     contentPadding = PaddingValues(horizontal = 16.dp),
                 )
@@ -269,9 +273,9 @@ private fun DefaultSearchBookmarksScreenPreview() {
 private fun ActiveSearchBookmarksScreenPreview() {
     ExtendedTheme {
         SearchBookmarksScreen(
-            selectedTags = listOf(Tag(name = "dev")),
+            selectedTags = listOf(Tag(name = "dev")).toStableList(),
             activeSearchResult = "10 bookmarks match the current query",
-            availableTags = listOf(Tag(name = "compose"), Tag(name = "ui")),
+            availableTags = listOf(Tag(name = "compose"), Tag(name = "ui")).toStableList(),
         )
     }
 }

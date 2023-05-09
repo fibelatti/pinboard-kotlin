@@ -32,6 +32,8 @@ import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
 import com.fibelatti.ui.components.RowToggleButtonGroup
 import com.fibelatti.ui.components.ToggleButtonGroup
+import com.fibelatti.ui.foundation.StableList
+import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.launch
@@ -54,7 +56,7 @@ fun NoteListScreen(
         }
 
         CrossfadeLoadingLayout(
-            data = noteListContent.notes.takeUnless { noteListContent.shouldLoad },
+            data = noteListContent.notes.takeUnless { noteListContent.shouldLoad }?.toStableList(),
             modifier = Modifier.fillMaxSize(),
         ) {
             NoteListContent(
@@ -77,13 +79,13 @@ fun NoteListScreen(
 
 @Composable
 private fun NoteListContent(
-    notes: List<Note>,
+    notes: StableList<Note>,
     onSortOptionClicked: (NoteList.Sorting) -> Unit = {},
     onPullToRefresh: () -> Unit = {},
     onNoteClicked: (Note) -> Unit = {},
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
-        if (notes.isEmpty()) {
+        if (notes.value.isEmpty()) {
             EmptyListContent(
                 icon = painterResource(id = R.drawable.ic_notes),
                 title = stringResource(id = R.string.notes_empty_title),
@@ -94,12 +96,14 @@ private fun NoteListContent(
             val listState = rememberLazyListState()
 
             RowToggleButtonGroup(
-                items = NoteList.Sorting.values().map { sorting ->
-                    ToggleButtonGroup.Item(
-                        id = sorting.id,
-                        text = stringResource(id = sorting.label),
-                    )
-                },
+                items = NoteList.Sorting.values()
+                    .map { sorting ->
+                        ToggleButtonGroup.Item(
+                            id = sorting.id,
+                            text = stringResource(id = sorting.label),
+                        )
+                    }
+                    .toStableList(),
                 onButtonClick = {
                     val sorting = requireNotNull(NoteList.Sorting.findById(it.id))
 
@@ -122,7 +126,7 @@ private fun NoteListContent(
                 listState = listState,
                 paddingTop = 16.dp,
             ) {
-                items(notes) { note ->
+                items(notes.value) { note ->
                     NoteListItem(
                         note = note,
                         onNoteClicked = onNoteClicked,
@@ -191,7 +195,7 @@ object NoteList {
 private fun EmptyNoteListScreenPreview() {
     ExtendedTheme {
         NoteListContent(
-            notes = emptyList(),
+            notes = StableList(),
         )
     }
 }
@@ -208,7 +212,7 @@ private fun NoteListContentPreview() {
                 updatedAt = "${if (it % 2 == 0) it else it + 1}",
                 text = "Note text $it",
             )
-        }
+        }.toStableList()
 
         NoteListContent(
             notes = notes,

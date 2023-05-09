@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.fibelatti.ui.R
+import com.fibelatti.ui.foundation.StableList
+import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -85,7 +87,7 @@ fun Chip(
 
 @Composable
 fun MultilineChipGroup(
-    items: List<ChipGroup.Item>,
+    items: StableList<ChipGroup.Item>,
     onItemClick: (ChipGroup.Item) -> Unit,
     modifier: Modifier = Modifier,
     onItemIconClick: (ChipGroup.Item) -> Unit = onItemClick,
@@ -97,7 +99,7 @@ fun MultilineChipGroup(
 ) {
     Layout(
         content = {
-            items.forEach { item ->
+            items.value.forEach { item ->
                 Chip(
                     item = item,
                     onClick = onItemClick,
@@ -138,7 +140,7 @@ fun MultilineChipGroup(
 
 @Composable
 fun SingleLineChipGroup(
-    items: List<ChipGroup.Item>,
+    items: StableList<ChipGroup.Item>,
     onItemClick: (ChipGroup.Item) -> Unit,
     modifier: Modifier = Modifier,
     onItemIconClick: (ChipGroup.Item) -> Unit = onItemClick,
@@ -154,7 +156,7 @@ fun SingleLineChipGroup(
         contentPadding = contentPadding,
         horizontalArrangement = Arrangement.spacedBy(spacing),
     ) {
-        items(items) { item ->
+        items(items.value) { item ->
             Chip(
                 item = item,
                 onClick = onItemClick,
@@ -223,7 +225,7 @@ private fun MultilineChipGroupPreview() {
         }
 
         MultilineChipGroup(
-            items = items,
+            items = items.toStableList(),
             onItemClick = {},
             modifier = Modifier.padding(8.dp),
             spacing = 8.dp,
@@ -245,7 +247,7 @@ private fun SingleLineChipGroupPreview() {
         }
 
         SingleLineChipGroup(
-            items = items,
+            items = items.toStableList(),
             onItemClick = {},
             modifier = Modifier.padding(8.dp),
             spacing = 8.dp,

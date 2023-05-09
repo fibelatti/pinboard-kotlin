@@ -37,12 +37,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.fibelatti.ui.components.ToggleButtonGroup.SquareCorner
+import com.fibelatti.ui.foundation.StableList
+import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
 fun ColumnToggleButtonGroup(
-    items: List<ToggleButtonGroup.Item>,
+    items: StableList<ToggleButtonGroup.Item>,
     onButtonClick: (ToggleButtonGroup.Item) -> Unit,
     modifier: Modifier = Modifier,
     selectedIndex: Int = -1,
@@ -59,12 +61,12 @@ fun ColumnToggleButtonGroup(
     Column(modifier = modifier) {
         var currentSelectedIndex by rememberSaveable { mutableStateOf(selectedIndex) }
         val mode = when {
-            items.all { it.text != "" && it.icon == EmptyPainter } -> ToggleButtonGroup.Mode.TextOnly
-            items.all { it.text == "" && it.icon != EmptyPainter } -> ToggleButtonGroup.Mode.IconOnly
+            items.value.all { it.text != "" && it.icon == EmptyPainter } -> ToggleButtonGroup.Mode.TextOnly
+            items.value.all { it.text == "" && it.icon != EmptyPainter } -> ToggleButtonGroup.Mode.IconOnly
             else -> ToggleButtonGroup.Mode.TextAndIcon
         }
 
-        items.forEachIndexed { index, toggleButtonGroupItem ->
+        items.value.forEachIndexed { index, toggleButtonGroupItem ->
             val isButtonSelected = currentSelectedIndex == index
 
             ToggleButton(
@@ -76,7 +78,7 @@ fun ColumnToggleButtonGroup(
                     .offset(y = borderSize * -index),
                 buttonShape = when (index) {
                     0 -> shape.copy(bottomStart = SquareCorner, bottomEnd = SquareCorner)
-                    items.size - 1 -> shape.copy(topStart = SquareCorner, topEnd = SquareCorner)
+                    items.value.size - 1 -> shape.copy(topStart = SquareCorner, topEnd = SquareCorner)
                     else -> shape.copy(all = SquareCorner)
                 },
                 border = border,
@@ -98,7 +100,7 @@ fun ColumnToggleButtonGroup(
 
 @Composable
 fun RowToggleButtonGroup(
-    items: List<ToggleButtonGroup.Item>,
+    items: StableList<ToggleButtonGroup.Item>,
     onButtonClick: (ToggleButtonGroup.Item) -> Unit,
     modifier: Modifier = Modifier,
     selectedIndex: Int = -1,
@@ -116,12 +118,12 @@ fun RowToggleButtonGroup(
         var currentSelectedIndex by rememberSaveable { mutableStateOf(selectedIndex) }
         val squareCorner = CornerSize(0.dp)
         val mode = when {
-            items.all { it.text != "" && it.icon == EmptyPainter } -> ToggleButtonGroup.Mode.TextOnly
-            items.all { it.text == "" && it.icon != EmptyPainter } -> ToggleButtonGroup.Mode.IconOnly
+            items.value.all { it.text != "" && it.icon == EmptyPainter } -> ToggleButtonGroup.Mode.TextOnly
+            items.value.all { it.text == "" && it.icon != EmptyPainter } -> ToggleButtonGroup.Mode.IconOnly
             else -> ToggleButtonGroup.Mode.TextOnly
         }
 
-        items.forEachIndexed { index, toggleButtonGroupItem ->
+        items.value.forEachIndexed { index, toggleButtonGroupItem ->
             val isButtonSelected = currentSelectedIndex == index
 
             ToggleButton(
@@ -133,7 +135,7 @@ fun RowToggleButtonGroup(
                     .offset(x = borderSize * -index),
                 buttonShape = when (index) {
                     0 -> shape.copy(bottomEnd = squareCorner, topEnd = squareCorner)
-                    items.size - 1 -> shape.copy(topStart = squareCorner, bottomStart = squareCorner)
+                    items.value.size - 1 -> shape.copy(topStart = squareCorner, bottomStart = squareCorner)
                     else -> shape.copy(all = squareCorner)
                 },
                 border = border,
@@ -370,7 +372,7 @@ private fun RowToggleButtonGroupPreview() {
         }
 
         RowToggleButtonGroup(
-            items = items,
+            items = items.toStableList(),
             onButtonClick = {},
             selectedIndex = 1,
         )

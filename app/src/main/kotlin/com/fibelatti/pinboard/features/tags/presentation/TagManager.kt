@@ -34,6 +34,8 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
+import com.fibelatti.ui.foundation.StableList
+import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -47,10 +49,10 @@ fun TagManager(
         searchTagInput = state.currentQuery,
         onSearchTagInputChanged = tagManagerViewModel::setQuery,
         onAddTagClicked = tagManagerViewModel::addTag,
-        suggestedTags = state.suggestedTags,
+        suggestedTags = state.suggestedTags.toStableList(),
         onSuggestedTagClicked = tagManagerViewModel::addTag,
         currentTagsTitle = stringResource(id = state.displayTitle),
-        currentTags = state.tags,
+        currentTags = state.tags.toStableList(),
         onRemoveCurrentTagClicked = tagManagerViewModel::removeTag,
     )
 }
@@ -61,10 +63,10 @@ fun TagManager(
     searchTagInput: String = "",
     onSearchTagInputChanged: (String) -> Unit = {},
     onAddTagClicked: (String) -> Unit = {},
-    suggestedTags: List<String> = emptyList(),
+    suggestedTags: StableList<String> = StableList(),
     onSuggestedTagClicked: (String) -> Unit = {},
     currentTagsTitle: String = stringResource(id = R.string.tags_empty_title),
-    currentTags: List<Tag> = emptyList(),
+    currentTags: StableList<Tag> = StableList(),
     onRemoveCurrentTagClicked: (Tag) -> Unit = {},
 ) {
     ConstraintLayout(
@@ -141,10 +143,10 @@ fun TagManager(
             )
         }
 
-        if (suggestedTags.isNotEmpty()) {
+        if (suggestedTags.value.isNotEmpty()) {
             SingleLineChipGroup(
-                items = suggestedTags.map { tag -> ChipGroup.Item(text = tag) },
-                onItemClick = { item -> onSuggestedTagClicked(suggestedTags.first { it == item.text }) },
+                items = suggestedTags.value.map { tag -> ChipGroup.Item(text = tag) }.toStableList(),
+                onItemClick = { item -> onSuggestedTagClicked(suggestedTags.value.first { it == item.text }) },
                 modifier = Modifier
                     .constrainAs(clSuggestedTags) {
                         start.linkTo(parent.start)
@@ -179,7 +181,7 @@ fun TagManager(
                 .constrainAs(clCurrentTagsTitle) {
                     start.linkTo(parent.start)
                     top.linkTo(
-                        anchor = if (suggestedTags.isNotEmpty()) clDivider.bottom else clAddTagInput.bottom,
+                        anchor = if (suggestedTags.value.isNotEmpty()) clDivider.bottom else clAddTagInput.bottom,
                         margin = 16.dp,
                     )
                     end.linkTo(parent.end)
@@ -190,19 +192,21 @@ fun TagManager(
         )
 
         MultilineChipGroup(
-            items = currentTags.map { tag ->
-                ChipGroup.Item(
-                    text = tag.name,
-                    icon = painterResource(id = R.drawable.ic_close),
-                )
-            },
+            items = currentTags.value
+                .map { tag ->
+                    ChipGroup.Item(
+                        text = tag.name,
+                        icon = painterResource(id = R.drawable.ic_close),
+                    )
+                }
+                .toStableList(),
             onItemClick = {},
             modifier = Modifier.constrainAs(clCurrentTags) {
                 start.linkTo(parent.start)
                 top.linkTo(clCurrentTagsTitle.bottom, margin = 8.dp)
                 end.linkTo(parent.end)
             },
-            onItemIconClick = { item -> onRemoveCurrentTagClicked(currentTags.first { it.name == item.text }) },
+            onItemIconClick = { item -> onRemoveCurrentTagClicked(currentTags.value.first { it.name == item.text }) },
             itemColors = ChipGroup.colors(
                 unselectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 unselectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -219,9 +223,9 @@ fun TagManager(
 private fun TagManagerPreview() {
     ExtendedTheme {
         TagManager(
-            suggestedTags = listOf("Android", "Dev"),
+            suggestedTags = listOf("Android", "Dev").toStableList(),
             currentTagsTitle = stringResource(id = R.string.tags_added_title),
-            currentTags = listOf(Tag(name = "Kotlin"), Tag(name = "Compose")),
+            currentTags = listOf(Tag(name = "Kotlin"), Tag(name = "Compose")).toStableList(),
         )
     }
 }

@@ -79,7 +79,19 @@ subprojects {
         tasks.withType<KotlinCompile>().configureEach {
             kotlinOptions.apply {
                 jvmTarget = "17"
-                freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+                freeCompilerArgs = buildList {
+                    addAll(freeCompilerArgs)
+
+                    add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
+
+                    if (project.findProperty("composeCompilerReports") == "true") {
+                        val composeCompilerPath = "${project.buildDir.absolutePath}/compose_compiler"
+                        add("-P")
+                        add("plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=$composeCompilerPath")
+                        add("-P")
+                        add("plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=$composeCompilerPath")
+                    }
+                }
             }
         }
 

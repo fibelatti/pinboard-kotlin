@@ -50,6 +50,8 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
 import com.fibelatti.ui.components.RowToggleButtonGroup
 import com.fibelatti.ui.components.ToggleButtonGroup
+import com.fibelatti.ui.foundation.StableList
+import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.launch
@@ -65,7 +67,7 @@ fun TagList(
     val state by tagsViewModel.state.collectAsStateWithLifecycle()
 
     TagList(
-        items = state.filteredTags,
+        items = state.filteredTags.toStableList(),
         isLoading = state.isLoading,
         modifier = modifier,
         onSortOptionClicked = { sorting ->
@@ -89,7 +91,7 @@ fun TagList(
 
 @Composable
 fun TagList(
-    items: List<Tag>,
+    items: StableList<Tag>,
     isLoading: Boolean,
     modifier: Modifier = Modifier,
     onSortOptionClicked: (TagList.Sorting) -> Unit = {},
@@ -116,7 +118,7 @@ fun TagList(
             )
         }
 
-        if (items.isEmpty() && searchInput.isBlank()) {
+        if (items.value.isEmpty() && searchInput.isBlank()) {
             EmptyListContent(
                 icon = painterResource(id = R.drawable.ic_tag),
                 title = stringResource(id = R.string.tags_empty_title),
@@ -140,7 +142,7 @@ fun TagList(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun TagList(
-    items: List<Tag>,
+    items: StableList<Tag>,
     onSortOptionClicked: (TagList.Sorting) -> Unit,
     searchInput: String,
     onSearchInputChanged: (newValue: String) -> Unit,
@@ -155,12 +157,14 @@ private fun TagList(
     var showFilter by rememberSaveable { mutableStateOf(false) }
 
     RowToggleButtonGroup(
-        items = TagList.Sorting.values().map { sorting ->
-            ToggleButtonGroup.Item(
-                id = sorting.id,
-                text = stringResource(id = sorting.label),
-            )
-        },
+        items = TagList.Sorting.values()
+            .map { sorting ->
+                ToggleButtonGroup.Item(
+                    id = sorting.id,
+                    text = stringResource(id = sorting.label),
+                )
+            }
+            .toStableList(),
         onButtonClick = {
             val sorting = requireNotNull(TagList.Sorting.findById(it.id))
             showFilter = sorting == TagList.Sorting.Search
@@ -211,7 +215,7 @@ private fun TagList(
         listState = listState,
         verticalArrangement = Arrangement.Top,
     ) {
-        items(items) { item ->
+        items(items.value) { item ->
             TagListItem(
                 item = item,
                 onTagClicked = onTagClicked,
@@ -282,7 +286,7 @@ object TagList {
 private fun EmptyTagListPreview() {
     ExtendedTheme {
         TagList(
-            items = emptyList(),
+            items = StableList(),
             isLoading = false,
         )
     }
@@ -293,7 +297,7 @@ private fun EmptyTagListPreview() {
 private fun TagListPreview() {
     ExtendedTheme {
         TagList(
-            items = List(size = 5) { Tag(name = "Tag $it", posts = it * it) },
+            items = List(size = 5) { Tag(name = "Tag $it", posts = it * it) }.toStableList(),
             isLoading = false,
         )
     }

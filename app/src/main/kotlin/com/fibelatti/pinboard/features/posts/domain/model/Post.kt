@@ -1,7 +1,9 @@
 package com.fibelatti.pinboard.features.posts.domain.model
 
+import androidx.compose.runtime.Stable
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 
+@Stable
 data class Post(
     val url: String,
     val title: String,

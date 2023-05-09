@@ -35,6 +35,8 @@ import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
+import com.fibelatti.ui.foundation.StableList
+import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -59,7 +61,9 @@ fun PopularBookmarksScreen(
         }
 
         CrossfadeLoadingLayout(
-            data = popularPostsContent.posts.takeUnless { popularPostsContent.shouldLoad || popularPostsLoading },
+            data = popularPostsContent.posts
+                .takeUnless { popularPostsContent.shouldLoad || popularPostsLoading }
+                ?.toStableList(),
             modifier = Modifier.fillMaxSize(),
         ) { posts ->
             PopularBookmarksContent(
@@ -74,12 +78,12 @@ fun PopularBookmarksScreen(
 
 @Composable
 fun PopularBookmarksContent(
-    posts: List<Post>,
+    posts: StableList<Post>,
     onPullToRefresh: () -> Unit = {},
     onBookmarkClicked: (Post) -> Unit = {},
     onBookmarkLongClicked: (Post) -> Unit = {},
 ) {
-    if (posts.isEmpty()) {
+    if (posts.value.isEmpty()) {
         EmptyListContent(
             icon = painterResource(id = R.drawable.ic_notes),
             title = stringResource(id = R.string.notes_empty_title),
@@ -89,7 +93,7 @@ fun PopularBookmarksContent(
         PullRefreshLayout(
             onPullToRefresh = onPullToRefresh,
         ) {
-            items(posts) { bookmark ->
+            items(posts.value) { bookmark ->
                 PopularBookmarkItem(
                     post = bookmark,
                     onPostClicked = onBookmarkClicked,
@@ -136,7 +140,7 @@ private fun PopularBookmarkItem(
 
             if (post.tags != null) {
                 val items = remember(post.tags) {
-                    post.tags.map { tag -> ChipGroup.Item(text = tag.name) }
+                    post.tags.map { tag -> ChipGroup.Item(text = tag.name) }.toStableList()
                 }
                 MultilineChipGroup(
                     items = items,
@@ -154,7 +158,7 @@ private fun PopularBookmarksContentPreview(
 ) {
     ExtendedTheme {
         PopularBookmarksContent(
-            posts = posts,
+            posts = posts.toStableList(),
         )
     }
 }

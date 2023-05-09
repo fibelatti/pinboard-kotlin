@@ -44,6 +44,7 @@ import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
+import com.fibelatti.ui.foundation.toStableList
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
@@ -96,7 +97,7 @@ class PostListFragment @Inject constructor(
         SelectionDialog.show(
             context = requireContext(),
             title = getString(R.string.quick_actions_title),
-            options = PostQuickActions.allOptions(post),
+            options = PostQuickActions.allOptions(post).toStableList(),
             optionName = { option -> getString(option.title) },
             optionIcon = PostQuickActions::icon,
             onOptionSelected = { option ->
@@ -162,7 +163,7 @@ class PostListFragment @Inject constructor(
                 SelectionDialog.show(
                     context = requireContext(),
                     title = getString(R.string.search_share_title),
-                    options = ShareSearchOption.values().toList(),
+                    options = ShareSearchOption.values().toStableList(),
                     optionName = { option ->
                         when (option) {
                             ShareSearchOption.QUERY -> getString(R.string.search_share_query)

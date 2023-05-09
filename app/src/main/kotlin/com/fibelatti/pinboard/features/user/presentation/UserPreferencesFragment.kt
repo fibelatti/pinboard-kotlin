@@ -37,6 +37,7 @@ import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.tags.presentation.TagManager
 import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
+import com.fibelatti.ui.foundation.toStableList
 import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -367,7 +368,7 @@ class UserPreferencesFragment @Inject constructor(
             SelectionDialog.show(
                 context = requireContext(),
                 title = getString(title),
-                options = options(),
+                options = options().toStableList(),
                 optionName = { option -> getString(buttonText(option)) },
                 onOptionSelected = onOptionSelected,
             )

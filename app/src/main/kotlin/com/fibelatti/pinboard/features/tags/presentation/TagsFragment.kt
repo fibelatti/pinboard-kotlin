@@ -24,6 +24,7 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.RefreshTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.theme.ExtendedTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
@@ -86,7 +87,7 @@ class TagsFragment @Inject constructor() : BaseFragment() {
         SelectionDialog.show(
             context = requireContext(),
             title = getString(R.string.quick_actions_title),
-            options = TagQuickActions.allOptions(tag),
+            options = TagQuickActions.allOptions(tag).toStableList(),
             optionName = { getString(it.title) },
             optionIcon = TagQuickActions::icon,
             onOptionSelected = { option ->
