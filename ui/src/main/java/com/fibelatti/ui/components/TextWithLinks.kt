@@ -66,30 +66,31 @@ fun TextWithLinks(
 ) {
     val uriHandler = LocalUriHandler.current
     val layoutResult = remember { mutableStateOf<TextLayoutResult?>(null) }
+    val annotatedString = remember(text) {
+        buildAnnotatedString {
+            append(text)
 
-    val annotatedString = buildAnnotatedString {
-        append(text)
+            val explicitLinks = findLinks(text.toString(), pattern)
+            val aTagLinks = text.getSpans(0, text.length, URLSpan::class.java)
 
-        val explicitLinks = findLinks(text.toString(), pattern)
-        val aTagLinks = text.getSpans(0, text.length, URLSpan::class.java)
-
-        explicitLinks.forEach { linkInfo ->
-            addUrlStringAnnotation(
-                url = linkInfo.url,
-                start = linkInfo.start,
-                end = linkInfo.end,
-                linkColor = linkColor,
-                linkTextDecoration = linkTextDecoration,
-            )
-        }
-        aTagLinks.forEach { urlSpan ->
-            addUrlStringAnnotation(
-                url = urlSpan.url,
-                start = text.getSpanStart(urlSpan),
-                end = text.getSpanEnd(urlSpan),
-                linkColor = linkColor,
-                linkTextDecoration = linkTextDecoration,
-            )
+            explicitLinks.forEach { linkInfo ->
+                addUrlStringAnnotation(
+                    url = linkInfo.url,
+                    start = linkInfo.start,
+                    end = linkInfo.end,
+                    linkColor = linkColor,
+                    linkTextDecoration = linkTextDecoration,
+                )
+            }
+            aTagLinks.forEach { urlSpan ->
+                addUrlStringAnnotation(
+                    url = urlSpan.url,
+                    start = text.getSpanStart(urlSpan),
+                    end = text.getSpanEnd(urlSpan),
+                    linkColor = linkColor,
+                    linkTextDecoration = linkTextDecoration,
+                )
+            }
         }
     }
 
