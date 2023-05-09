@@ -10,24 +10,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.add
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Surface
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -42,9 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -57,7 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_PAGE_SIZE
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
-import com.fibelatti.pinboard.core.android.composable.rememberAutoDismissPullRefreshState
+import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.GetNextPostPage
@@ -125,7 +115,6 @@ fun BookmarkListScreen(
 }
 
 @Composable
-@OptIn(ExperimentalMaterialApi::class)
 fun BookmarkListScreen(
     posts: PostList?,
     isLoading: Boolean,
@@ -165,7 +154,6 @@ fun BookmarkListScreen(
                 description = stringResource(id = R.string.posts_empty_description),
             )
         } else if (posts != null) {
-            val (pullRefreshState, refreshing) = rememberAutoDismissPullRefreshState(onPullToRefresh)
             val listState = rememberLazyListState()
             val shouldRequestNewPage by remember {
                 derivedStateOf {
@@ -180,38 +168,20 @@ fun BookmarkListScreen(
                 if (posts.canPaginate && shouldRequestNewPage) onNextPageRequested()
             }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .pullRefresh(pullRefreshState),
+            PullRefreshLayout(
+                onPullToRefresh = onPullToRefresh,
+                listState = listState,
+                nestedScroll = true,
             ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .nestedScroll(rememberNestedScrollInteropConnection()),
-                    contentPadding = WindowInsets(bottom = 100.dp)
-                        .add(WindowInsets.navigationBars)
-                        .asPaddingValues(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    state = listState,
-                ) {
-                    items(posts.list) { post ->
-                        BookmarkItem(
-                            post = post,
-                            onPostClicked = onPostClicked,
-                            onPostLongClicked = onPostLongClicked,
-                            showDescription = showPostDescription,
-                            onTagClicked = onTagClicked,
-                        )
-                    }
+                items(posts.list) { post ->
+                    BookmarkItem(
+                        post = post,
+                        onPostClicked = onPostClicked,
+                        onPostLongClicked = onPostLongClicked,
+                        showDescription = showPostDescription,
+                        onTagClicked = onTagClicked,
+                    )
                 }
-
-                PullRefreshIndicator(
-                    refreshing = refreshing,
-                    state = pullRefreshState,
-                    modifier = Modifier.align(Alignment.TopCenter),
-                    scale = true,
-                )
             }
 
             LaunchedEffect(searchParameters) {
@@ -322,33 +292,13 @@ private fun BookmarkItem(
                     onPostLongClicked(post)
                 },
             ),
-        color = MaterialTheme.colorScheme.surface,
         elevation = 2.dp,
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         ) {
             if (post.pendingSync != null) {
-                Row(
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_pending_sync),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-
-                    Text(
-                        text = when (post.pendingSync) {
-                            PendingSync.ADD -> stringResource(id = R.string.posts_pending_add)
-                            PendingSync.UPDATE -> stringResource(id = R.string.posts_pending_update)
-                            PendingSync.DELETE -> stringResource(id = R.string.posts_pending_delete)
-                        },
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.bodySmall.copy(fontStyle = FontStyle.Italic),
-                    )
-                }
+                PendingSync(post.pendingSync)
             }
 
             Text(
@@ -366,40 +316,10 @@ private fun BookmarkItem(
             )
 
             if (post.private || post.readLater) {
-                Row(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                ) {
-                    if (post.private) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_private),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-
-                        Text(
-                            text = stringResource(id = R.string.posts_item_private),
-                            modifier = Modifier.padding(end = 8.dp),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-
-                    if (post.readLater) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_read_later),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-
-                        Text(
-                            text = stringResource(id = R.string.posts_item_read_later),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-                }
+                BookmarkFlags(
+                    private = post.private,
+                    readLater = post.readLater,
+                )
             }
 
             Divider(
@@ -421,11 +341,84 @@ private fun BookmarkItem(
             }
 
             if (!post.tags.isNullOrEmpty()) {
+                val tags = remember(post.tags) {
+                    post.tags.map { tag -> ChipGroup.Item(text = tag.name) }
+                }
+
                 MultilineChipGroup(
-                    items = post.tags.map { tag -> ChipGroup.Item(text = tag.name) },
+                    items = tags,
                     onItemClick = { item -> onTagClicked(post.tags.first { tag -> tag.name == item.text }) },
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun PendingSync(
+    pendingSync: PendingSync,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_pending_sync),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+        )
+
+        Text(
+            text = when (pendingSync) {
+                PendingSync.ADD -> stringResource(id = R.string.posts_pending_add)
+                PendingSync.UPDATE -> stringResource(id = R.string.posts_pending_update)
+                PendingSync.DELETE -> stringResource(id = R.string.posts_pending_delete)
+            },
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.bodySmall.copy(fontStyle = FontStyle.Italic),
+        )
+    }
+}
+
+@Composable
+private fun BookmarkFlags(
+    private: Boolean,
+    readLater: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        if (private) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_private),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            Text(
+                text = stringResource(id = R.string.posts_item_private),
+                modifier = Modifier.padding(end = 8.dp),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+
+        if (readLater) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_read_later),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            Text(
+                text = stringResource(id = R.string.posts_item_read_later),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium,
+            )
         }
     }
 }

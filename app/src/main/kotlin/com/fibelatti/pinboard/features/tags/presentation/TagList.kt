@@ -9,23 +9,15 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.add
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -37,7 +29,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -54,7 +45,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
-import com.fibelatti.pinboard.core.android.composable.rememberAutoDismissPullRefreshState
+import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
 import com.fibelatti.ui.components.RowToggleButtonGroup
@@ -110,9 +101,7 @@ fun TagList(
     onPullToRefresh: () -> Unit = {},
 ) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
+        modifier = modifier.fillMaxSize(),
     ) {
         AnimatedVisibility(
             visible = isLoading,
@@ -120,7 +109,9 @@ fun TagList(
             exit = fadeOut() + shrinkVertically(),
         ) {
             LinearProgressIndicator(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 color = MaterialTheme.colorScheme.primary,
             )
         }
@@ -147,10 +138,7 @@ fun TagList(
 }
 
 @Composable
-@OptIn(
-    ExperimentalMaterial3Api::class,
-    ExperimentalMaterialApi::class,
-)
+@OptIn(ExperimentalMaterial3Api::class)
 private fun TagList(
     items: List<Tag>,
     onSortOptionClicked: (TagList.Sorting) -> Unit,
@@ -188,7 +176,9 @@ private fun TagList(
                 listState.scrollToItem(index = 0)
             }
         },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         selectedIndex = 0,
         buttonHeight = 40.dp,
         textStyle = MaterialTheme.typography.bodySmall,
@@ -206,7 +196,7 @@ private fun TagList(
             onValueChange = onSearchInputChanged,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .padding(vertical = 8.dp, horizontal = 16.dp)
                 .onFocusChanged { onSearchInputFocusChanged(it.hasFocus) },
             label = { Text(text = stringResource(id = R.string.tag_filter_hint)) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -216,35 +206,18 @@ private fun TagList(
         )
     }
 
-    val (pullRefreshState, refreshing) = rememberAutoDismissPullRefreshState(onPullToRefresh)
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .pullRefresh(pullRefreshState),
+    PullRefreshLayout(
+        onPullToRefresh = onPullToRefresh,
+        listState = listState,
+        verticalArrangement = Arrangement.Top,
     ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = WindowInsets(bottom = 100.dp)
-                .add(WindowInsets.navigationBars)
-                .asPaddingValues(),
-            state = listState,
-        ) {
-            items(items) { item ->
-                TagListItem(
-                    item = item,
-                    onTagClicked = onTagClicked,
-                    onTagLongClicked = onTagLongClicked,
-                )
-            }
+        items(items) { item ->
+            TagListItem(
+                item = item,
+                onTagClicked = onTagClicked,
+                onTagLongClicked = onTagLongClicked,
+            )
         }
-
-        PullRefreshIndicator(
-            refreshing = refreshing,
-            state = pullRefreshState,
-            modifier = Modifier.align(Alignment.TopCenter),
-            scale = true,
-        )
     }
 }
 
@@ -270,6 +243,7 @@ private fun TagListItem(
     ) {
         Text(
             text = item.name,
+            modifier = Modifier.padding(horizontal = 16.dp),
             color = MaterialTheme.colorScheme.secondary,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
@@ -277,6 +251,7 @@ private fun TagListItem(
         )
         Text(
             text = pluralStringResource(R.plurals.posts_quantity, item.posts, item.posts),
+            modifier = Modifier.padding(horizontal = 16.dp),
             color = MaterialTheme.colorScheme.onBackground,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,

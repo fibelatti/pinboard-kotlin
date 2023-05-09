@@ -1,30 +1,19 @@
 package com.fibelatti.pinboard.features.notes.presentation
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.add
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Surface
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -35,7 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
-import com.fibelatti.pinboard.core.android.composable.rememberAutoDismissPullRefreshState
+import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.RefreshNotes
 import com.fibelatti.pinboard.features.appstate.ViewNote
@@ -87,7 +76,6 @@ fun NoteListScreen(
 }
 
 @Composable
-@OptIn(ExperimentalMaterialApi::class)
 private fun NoteListContent(
     notes: List<Note>,
     onSortOptionClicked: (NoteList.Sorting) -> Unit = {},
@@ -104,7 +92,6 @@ private fun NoteListContent(
         } else {
             val scope = rememberCoroutineScope()
             val listState = rememberLazyListState()
-            val (pullRefreshState, refreshing) = rememberAutoDismissPullRefreshState(onPullToRefresh)
 
             RowToggleButtonGroup(
                 items = NoteList.Sorting.values().map { sorting ->
@@ -130,33 +117,17 @@ private fun NoteListContent(
                 textStyle = MaterialTheme.typography.bodySmall,
             )
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .pullRefresh(pullRefreshState),
+            PullRefreshLayout(
+                onPullToRefresh = onPullToRefresh,
+                listState = listState,
+                paddingTop = 16.dp,
             ) {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = WindowInsets(top = 16.dp, bottom = 100.dp)
-                        .add(WindowInsets.navigationBars)
-                        .asPaddingValues(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    state = listState,
-                ) {
-                    items(notes) { note ->
-                        NoteListItem(
-                            note = note,
-                            onNoteClicked = onNoteClicked,
-                        )
-                    }
+                items(notes) { note ->
+                    NoteListItem(
+                        note = note,
+                        onNoteClicked = onNoteClicked,
+                    )
                 }
-
-                PullRefreshIndicator(
-                    refreshing = refreshing,
-                    state = pullRefreshState,
-                    modifier = Modifier.align(Alignment.TopCenter),
-                    scale = true,
-                )
             }
         }
     }
@@ -168,13 +139,13 @@ private fun NoteListItem(
     onNoteClicked: (Note) -> Unit,
 ) {
     Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onNoteClicked(note) },
         elevation = 2.dp,
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onNoteClicked(note) }
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         ) {
             Text(
                 text = note.title,
