@@ -3,18 +3,19 @@
 package com.fibelatti.pinboard.features.tags.presentation
 
 import android.view.KeyEvent
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.onKeyEvent
@@ -23,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -54,23 +56,26 @@ fun TagManager(
         currentTagsTitle = stringResource(id = state.displayTitle),
         currentTags = state.tags.toStableList(),
         onRemoveCurrentTagClicked = tagManagerViewModel::removeTag,
+        horizontalPadding = 0.dp,
     )
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 fun TagManager(
-    searchTagInput: String = "",
-    onSearchTagInputChanged: (String) -> Unit = {},
-    onAddTagClicked: (String) -> Unit = {},
-    suggestedTags: StableList<String> = StableList(),
-    onSuggestedTagClicked: (String) -> Unit = {},
-    currentTagsTitle: String = stringResource(id = R.string.tags_empty_title),
-    currentTags: StableList<Tag> = StableList(),
-    onRemoveCurrentTagClicked: (Tag) -> Unit = {},
+    searchTagInput: String,
+    onSearchTagInputChanged: (String) -> Unit,
+    onAddTagClicked: (String) -> Unit,
+    suggestedTags: StableList<String>,
+    onSuggestedTagClicked: (String) -> Unit,
+    currentTagsTitle: String,
+    currentTags: StableList<Tag>,
+    onRemoveCurrentTagClicked: (Tag) -> Unit,
+    modifier: Modifier = Modifier,
+    horizontalPadding: Dp = 16.dp,
 ) {
     ConstraintLayout(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(top = 8.dp, bottom = 32.dp),
     ) {
@@ -78,9 +83,7 @@ fun TagManager(
         val keyboardAction = {
             when (val text = searchTagInput.trim()) {
                 "" -> keyboardController?.hide()
-                else -> {
-                    onAddTagClicked(text)
-                }
+                else -> onAddTagClicked(text)
             }
         }
 
@@ -104,7 +107,7 @@ fun TagManager(
             },
             modifier = Modifier
                 .constrainAs(clAddTagInput) {
-                    start.linkTo(parent.start)
+                    start.linkTo(parent.start, margin = horizontalPadding)
                     top.linkTo(parent.top)
                     end.linkTo(clAddTagButton.start)
                     width = Dimension.fillToConstraints
@@ -131,10 +134,9 @@ fun TagManager(
                 }
             },
             modifier = Modifier.constrainAs(clAddTagButton) {
+                bottom.linkTo(clAddTagInput.bottom, margin = 4.dp)
                 start.linkTo(clAddTagInput.end, margin = 8.dp)
-                top.linkTo(clAddTagInput.top)
-                end.linkTo(parent.end)
-                bottom.linkTo(clAddTagInput.bottom)
+                end.linkTo(parent.end, margin = horizontalPadding)
             },
         ) {
             Text(
@@ -145,7 +147,9 @@ fun TagManager(
 
         if (suggestedTags.value.isNotEmpty()) {
             SingleLineChipGroup(
-                items = suggestedTags.value.map { tag -> ChipGroup.Item(text = tag) }.toStableList(),
+                items = remember(suggestedTags.value) {
+                    suggestedTags.value.map { tag -> ChipGroup.Item(text = tag) }.toStableList()
+                },
                 onItemClick = { item -> onSuggestedTagClicked(suggestedTags.value.first { it == item.text }) },
                 modifier = Modifier
                     .constrainAs(clSuggestedTags) {
@@ -162,15 +166,16 @@ fun TagManager(
                     fontSize = 12.sp,
                     fontFamily = FontFamily.SansSerif,
                 ),
+                contentPadding = PaddingValues(horizontal = horizontalPadding),
             )
 
             Divider(
                 modifier = Modifier.constrainAs(clDivider) {
-                    start.linkTo(parent.start, margin = 4.dp)
+                    start.linkTo(parent.start, margin = horizontalPadding)
                     top.linkTo(clSuggestedTags.bottom, margin = 8.dp)
-                    end.linkTo(parent.end, margin = 4.dp)
+                    end.linkTo(parent.end, margin = horizontalPadding)
+                    width = Dimension.fillToConstraints
                 },
-                thickness = 1.dp,
                 color = MaterialTheme.colorScheme.onSurface,
             )
         }
@@ -179,32 +184,32 @@ fun TagManager(
             text = currentTagsTitle,
             modifier = Modifier
                 .constrainAs(clCurrentTagsTitle) {
-                    start.linkTo(parent.start)
+                    start.linkTo(parent.start, margin = horizontalPadding)
                     top.linkTo(
                         anchor = if (suggestedTags.value.isNotEmpty()) clDivider.bottom else clAddTagInput.bottom,
                         margin = 16.dp,
                     )
-                    end.linkTo(parent.end)
-                }
-                .fillMaxWidth(),
+                    end.linkTo(parent.end, margin = horizontalPadding)
+                    width = Dimension.fillToConstraints
+                },
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary,
         )
 
+        val closeIcon = painterResource(id = R.drawable.ic_close)
+
         MultilineChipGroup(
-            items = currentTags.value
-                .map { tag ->
-                    ChipGroup.Item(
-                        text = tag.name,
-                        icon = painterResource(id = R.drawable.ic_close),
-                    )
-                }
-                .toStableList(),
+            items = remember(currentTags.value) {
+                currentTags.value
+                    .map { tag -> ChipGroup.Item(text = tag.name, icon = closeIcon) }
+                    .toStableList()
+            },
             onItemClick = {},
             modifier = Modifier.constrainAs(clCurrentTags) {
-                start.linkTo(parent.start)
+                start.linkTo(parent.start, margin = horizontalPadding)
                 top.linkTo(clCurrentTagsTitle.bottom, margin = 8.dp)
-                end.linkTo(parent.end)
+                end.linkTo(parent.end, margin = horizontalPadding)
+                width = Dimension.fillToConstraints
             },
             onItemIconClick = { item -> onRemoveCurrentTagClicked(currentTags.value.first { it.name == item.text }) },
             itemColors = ChipGroup.colors(
@@ -223,9 +228,14 @@ fun TagManager(
 private fun TagManagerPreview() {
     ExtendedTheme {
         TagManager(
+            searchTagInput = "",
+            onSearchTagInputChanged = {},
+            onAddTagClicked = {},
             suggestedTags = listOf("Android", "Dev").toStableList(),
+            onSuggestedTagClicked = {},
             currentTagsTitle = stringResource(id = R.string.tags_added_title),
             currentTags = listOf(Tag(name = "Kotlin"), Tag(name = "Compose")).toStableList(),
+            onRemoveCurrentTagClicked = {},
         )
     }
 }
