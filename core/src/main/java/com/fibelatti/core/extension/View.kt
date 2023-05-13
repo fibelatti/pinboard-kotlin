@@ -13,13 +13,10 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.getSystemService
 import androidx.core.view.updateLayoutParams
-import androidx.recyclerview.widget.RecyclerView
-import com.fibelatti.core.android.recyclerview.ItemOffsetDecoration
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
@@ -162,17 +159,6 @@ fun TextInputLayout.showError(errorMessage: String) {
  */
 fun TextInputLayout.clearError() {
     error = null
-}
-
-/**
- * Calls [RecyclerView.addItemDecoration] with [ItemOffsetDecoration] as a parameter.
- *
- * @param dimenRes [DimenRes] of the desired offset
- *
- * @return `this`
- */
-fun RecyclerView.withItemOffsetDecoration(@DimenRes dimenRes: Int): RecyclerView = apply {
-    addItemDecoration(ItemOffsetDecoration(context, dimenRes))
 }
 
 fun View.showKeyboard() {

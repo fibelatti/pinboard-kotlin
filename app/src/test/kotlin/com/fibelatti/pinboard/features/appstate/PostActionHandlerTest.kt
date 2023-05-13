@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.appstate
 
-import androidx.recyclerview.widget.DiffUtil
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
@@ -361,7 +360,6 @@ internal class PostActionHandlerTest {
                 // GIVEN
                 val mockCurrentList = listOf(mockk<Post>())
                 val mockNewList = listOf(mockk<Post>())
-                val mockDiffResult = mockk<DiffUtil.DiffResult>()
 
                 val currentContent = PostListContent(
                     category = All,
