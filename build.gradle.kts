@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("com.diffplug.spotless") version "6.18.0" apply false
     id("org.gradle.android.cache-fix") version "2.7.1" apply false
+    id("com.google.devtools.ksp") version "1.8.21-1.0.11" apply false
 }
 
 buildscript {

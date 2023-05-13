@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.parcelize")
     id("org.jetbrains.kotlin.kapt")
+    id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
 }
 
@@ -33,18 +34,6 @@ object AppInfo {
         .also { println("versionName: $it") }
 }
 
-class RoomArgProvider(
-    @get:InputDirectory
-    @get:PathSensitive(PathSensitivity.RELATIVE)
-    val schemaDir: File,
-) : CommandLineArgumentProvider {
-
-    override fun asArguments(): Iterable<String> = listOf(
-        "-Aroom.schemaLocation=${schemaDir.path}",
-        "-Aroom.incremental=true",
-    )
-}
-
 android {
     val compileSdkVersion: Int by project
     val targetSdkVersion: Int by project
@@ -71,12 +60,9 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
 
-        javaCompileOptions {
-            annotationProcessorOptions {
-                compilerArgumentProviders(
-                    RoomArgProvider(File(projectDir, "schemas")),
-                )
-            }
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas")
+            arg("room.incremental", "true")
         }
     }
 
@@ -179,7 +165,7 @@ dependencies {
     implementation(libs.lifecycle.runtime.compose)
 
     implementation(libs.room.runtime)
-    kapt(libs.room.compiler)
+    ksp(libs.room.compiler)
 
     implementation(libs.work.runtime.ktx)
 
@@ -198,7 +184,7 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
 
     implementation(libs.moshi)
-    kapt(libs.moshi.codegen)
+    ksp(libs.moshi.codegen)
 
     implementation(libs.okhttp)
     implementation(libs.retrofit)
