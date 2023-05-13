@@ -74,6 +74,16 @@ subprojects {
                         it.useJUnitPlatform()
                     }
                 }
+
+                managedDevices {
+                    devices {
+                        maybeCreate<com.android.build.api.dsl.ManagedVirtualDevice>("pixel2api30").apply {
+                            device = "Pixel 2"
+                            apiLevel = 30
+                            systemImageSource = "aosp-atd"
+                        }
+                    }
+                }
             }
         }
 

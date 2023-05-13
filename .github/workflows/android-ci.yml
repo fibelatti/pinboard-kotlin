@@ -56,4 +56,4 @@ jobs:
         with:
           api-level: 29
           arch: x86_64
-          script: ./gradlew :app:connectedAndroidTest --stacktrace
+          script: ./gradlew :app:pixel2api30PinboardapiDebugAndroidTest --stacktrace
