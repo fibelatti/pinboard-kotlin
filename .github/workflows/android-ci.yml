@@ -57,4 +57,6 @@ jobs:
           api-level: 30
           arch: x86_64
           disable-animations: true
+          disk-size: 6000M 
+          heap-size: 600M
           script: ./gradlew :app:pixel2api30PinboardapiDebugAndroidTest --stacktrace
