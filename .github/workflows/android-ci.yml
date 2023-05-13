@@ -54,6 +54,7 @@ jobs:
       - name: Run instrumented tests
         uses: reactivecircus/android-emulator-runner@v2.28.0
         with:
-          api-level: 29
+          api-level: 30
           arch: x86_64
+          disable-animations: true
           script: ./gradlew :app:pixel2api30PinboardapiDebugAndroidTest --stacktrace
