@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -140,7 +139,6 @@ fun TagList(
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 private fun TagList(
     items: StableList<Tag>,
     onSortOptionClicked: (TagList.Sorting) -> Unit,
