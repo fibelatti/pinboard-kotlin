@@ -2,9 +2,15 @@ import com.android.build.api.dsl.CommonExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("com.diffplug.spotless") version "6.18.0" apply false
-    id("org.gradle.android.cache-fix") version "2.7.1" apply false
-    id("com.google.devtools.ksp") version "1.8.21-1.0.11" apply false
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.parcelize) apply false
+    alias(libs.plugins.kapt) apply false
+    alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.hilt) apply false
+    alias(libs.plugins.spotless) apply false
+    alias(libs.plugins.cache.fix) apply false
 }
 
 buildscript {
@@ -14,17 +20,6 @@ buildscript {
 
     val jacocoEnabled: String? by project
     extra["jacocoEnabled"] = jacocoEnabled?.toBoolean() ?: false
-
-    repositories {
-        google()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath(libs.android.gradle.plugin)
-        classpath(libs.kotlin.gradle.plugin)
-        classpath(libs.hilt.gradle.plugin)
-    }
 }
 
 subprojects {
@@ -39,8 +34,7 @@ subprojects {
                 target("**/*.kt")
                 targetExclude("**/build/**/*.kt")
 
-                ktlint()
-                    .userData(mapOf("android" to "true"))
+                ktlint().userData(mapOf("android" to "true"))
             }
             kotlinGradle {
                 target("**/*.kts")
