@@ -146,6 +146,7 @@ private fun NoteListItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onNoteClicked(note) },
+        color = MaterialTheme.colorScheme.surface,
         elevation = 2.dp,
     ) {
         Column(

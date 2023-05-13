@@ -293,6 +293,7 @@ private fun BookmarkItem(
                     onPostLongClicked(post)
                 },
             ),
+        color = MaterialTheme.colorScheme.surface,
         elevation = 2.dp,
     ) {
         Column(

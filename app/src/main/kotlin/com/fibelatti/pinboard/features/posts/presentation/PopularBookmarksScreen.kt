@@ -122,6 +122,7 @@ private fun PopularBookmarkItem(
                     onPostLongClicked(post)
                 },
             ),
+        color = MaterialTheme.colorScheme.surface,
         elevation = 2.dp,
     ) {
         Column(
