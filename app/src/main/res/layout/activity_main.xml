@@ -62,7 +62,7 @@
         android:alpha="0.9"
         android:visibility="gone"
         app:fabAlignmentMode="center"
-        app:fabAnchorMode="embed"
+        app:fabAnchorMode="cradle"
         app:hideOnScroll="true"
         app:layout_scrollFlags="scroll|enterAlways"
         app:menuAlignmentMode="auto"
