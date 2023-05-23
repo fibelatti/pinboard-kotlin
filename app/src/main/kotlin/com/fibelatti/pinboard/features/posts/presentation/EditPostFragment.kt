@@ -4,44 +4,30 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import androidx.activity.OnBackPressedCallback
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.isGone
-import androidx.core.view.isVisible
-import androidx.core.view.updatePadding
-import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import com.fibelatti.core.extension.clearError
 import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.hideKeyboard
-import com.fibelatti.core.extension.onActionOrKeyboardSubmit
-import com.fibelatti.core.extension.showError
-import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.showBanner
-import com.fibelatti.pinboard.core.extension.smoothScrollY
-import com.fibelatti.pinboard.databinding.FragmentEditPostBinding
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.NavigateBack
-import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.fibelatti.pinboard.features.tags.presentation.TagManager
 import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.take
 import java.util.UUID
 import javax.inject.Inject
 
@@ -50,21 +36,11 @@ class EditPostFragment @Inject constructor(
     @MainVariant private val mainVariant: Boolean,
 ) : BaseFragment() {
 
-    companion object {
-
-        @JvmStatic
-        val TAG: String = "EditPostFragment"
-
-        private val ACTION_ID = UUID.randomUUID().toString()
-    }
-
     private val appStateViewModel: AppStateViewModel by activityViewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
     private val editPostViewModel: EditPostViewModel by viewModels()
     private val postDetailViewModel: PostDetailViewModel by viewModels()
     private val tagManagerViewModel: TagManagerViewModel by viewModels()
-
-    private val binding by viewBinding(FragmentEditPostBinding::bind)
 
     /**
      * This hackery is needed because [androidx.activity.OnBackPressedDispatcher] is misbehaving
@@ -86,7 +62,7 @@ class EditPostFragment @Inject constructor(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View = FragmentEditPostBinding.inflate(inflater, container, false).root
+    ): View = ComposeView(layoutInflater.context)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -94,13 +70,19 @@ class EditPostFragment @Inject constructor(
         // This should be using viewLifecycleOwner instead...
         activity?.onBackPressedDispatcher?.addCallback(requireActivity(), onBackPressedCallback)
 
-        setupLayout()
-        setupViewModels()
-    }
+        setThemedContent {
+            EditBookmarkScreen(
+                appStateViewModel = appStateViewModel,
+                editPostViewModel = editPostViewModel,
+                postDetailViewModel = postDetailViewModel,
+                tagManagerViewModel = tagManagerViewModel,
+                mainVariant = mainVariant,
+            )
+        }
 
-    override fun onResume() {
-        super.onResume()
-        restoreSelection()
+        handleKeyboardVisibility()
+
+        setupViewModels()
     }
 
     override fun onDestroyView() {
@@ -134,18 +116,8 @@ class EditPostFragment @Inject constructor(
         }
     }
 
-    private fun setupLayout() {
-        handleKeyboardVisibility()
-
-        binding.editTextUrl.onActionOrKeyboardSubmit(EditorInfo.IME_ACTION_NEXT) {
-            binding.editTextTitle.requestFocus()
-        }
-
-        binding.togglePrivate.isVisible = mainVariant
-    }
-
     private fun handleKeyboardVisibility() {
-        binding.root.doOnApplyWindowInsets { view, insets, initialPadding, _ ->
+        requireView().doOnApplyWindowInsets { _, insets, _, _ ->
             if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
                 mainViewModel.updateState { currentState ->
                     currentState.copy(
@@ -155,30 +127,7 @@ class EditPostFragment @Inject constructor(
                         ),
                     )
                 }
-
-                val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
-
-                view.updatePadding(bottom = initialPadding.bottom + imeInsets.bottom)
-
-                // In case what's below the focused view is also important
-                val scrollOffset = resources.getDimensionPixelSize(R.dimen.scroll_offset)
-                // We want to scroll enough for the focused view to be fully visible
-                val focusedViewBottom = try {
-                    requireActivity().currentFocus?.let { focusedView ->
-                        val pos = IntArray(2)
-                        focusedView.getLocationOnScreen(pos).run { pos[1] + focusedView.measuredHeight + scrollOffset }
-                    } ?: 0
-                } catch (ignored: IllegalStateException) {
-                    // The activity is gone
-                    return@doOnApplyWindowInsets
-                }
-
-                if (focusedViewBottom >= view.measuredHeight - imeInsets.bottom) {
-                    view.smoothScrollY(focusedViewBottom)
-                }
             } else {
-                view.updatePadding(bottom = initialPadding.bottom)
-
                 mainViewModel.updateState { currentState ->
                     currentState.copy(actionButton = MainState.ActionButtonComponent.Gone)
                 }
@@ -186,49 +135,10 @@ class EditPostFragment @Inject constructor(
         }
     }
 
-    private fun saveLink() {
-        mainViewModel.updateState { currentState ->
-            currentState.copy(
-                actionButton = MainState.ActionButtonComponent.Gone,
-                floatingActionButton = MainState.FabComponent.Gone,
-            )
-        }
-        binding.root.hideKeyboard()
-        editPostViewModel.saveLink()
-    }
-
     private fun setupViewModels() {
-        setupAppStateViewModel()
         setupMainViewModel()
         setupEditPostViewModel()
         setupPostDetailViewModel()
-
-        tagManagerViewModel.state
-            .onEach {
-                editPostViewModel.searchForTag(it.currentQuery, it.tags)
-                editPostViewModel.updatePost { post -> post.copy(tags = it.tags) }
-            }
-            .launchInAndFlowWith(viewLifecycleOwner)
-    }
-
-    private fun setupAppStateViewModel() {
-        appStateViewModel.addPostContent
-            .onEach {
-                val emptyPost = Post(
-                    url = "",
-                    title = "",
-                    description = "",
-                    private = it.defaultPrivate,
-                    readLater = it.defaultReadLater,
-                    tags = it.defaultTags,
-                )
-
-                editPostViewModel.initializePost(emptyPost)
-            }
-            .launchInAndFlowWith(viewLifecycleOwner)
-        appStateViewModel.editPostContent
-            .onEach { editPostViewModel.initializePost(it.post) }
-            .launchInAndFlowWith(viewLifecycleOwner)
     }
 
     private fun setupMainViewModel() {
@@ -253,23 +163,17 @@ class EditPostFragment @Inject constructor(
     }
 
     private fun setupEditPostViewModel() {
-        editPostViewModel.loading
-            .onEach {
-                binding.layoutContent.isGone = it
-                binding.progressBar.isVisible = it
-            }
-            .launchInAndFlowWith(viewLifecycleOwner)
         editPostViewModel.suggestedTags
             .onEach(tagManagerViewModel::setSuggestedTags)
             .launchInAndFlowWith(viewLifecycleOwner)
         editPostViewModel.saved
-            .onEach { binding.root.showBanner(getString(R.string.posts_saved_feedback)) }
+            .onEach { requireView().showBanner(getString(R.string.posts_saved_feedback)) }
             .launchInAndFlowWith(viewLifecycleOwner)
         editPostViewModel.invalidUrlError
-            .onEach(::handleInvalidUrlError)
+            .onEach { errorMessage -> if (errorMessage.isNotEmpty()) showFab() }
             .launchInAndFlowWith(viewLifecycleOwner)
         editPostViewModel.invalidUrlTitleError
-            .onEach(::handleInvalidTitleError)
+            .onEach { errorMessage -> if (errorMessage.isNotEmpty()) showFab() }
             .launchInAndFlowWith(viewLifecycleOwner)
         editPostViewModel.error
             .onEach { throwable ->
@@ -279,111 +183,44 @@ class EditPostFragment @Inject constructor(
             .launchInAndFlowWith(viewLifecycleOwner)
 
         editPostViewModel.postState
-            .take(1) // The UI updates itself, so take only 1 for the initial setup
-            .onEach(::showPostDetails)
+            .onEach { post ->
+                mainViewModel.updateState { currentState ->
+                    currentState.copy(
+                        title = MainState.TitleComponent.Visible(getString(R.string.posts_add_title)),
+                        subtitle = MainState.TitleComponent.Gone,
+                        navigation = MainState.NavigationComponent.Visible(id = ACTION_ID, icon = R.drawable.ic_close),
+                        bottomAppBar = MainState.BottomAppBarComponent.Visible(
+                            id = ACTION_ID,
+                            menu = R.menu.menu_details,
+                            navigationIcon = null,
+                            data = post,
+                        ),
+                        floatingActionButton = MainState.FabComponent.Visible(ACTION_ID, R.drawable.ic_done),
+                    )
+                }
+            }
             .launchInAndFlowWith(viewLifecycleOwner)
-
-        editPostViewModel.searchForTag(tag = "", currentTags = emptyList())
     }
 
     private fun setupPostDetailViewModel() {
-        postDetailViewModel.loading
-            .onEach {
-                binding.layoutContent.isGone = it
-                binding.progressBar.isVisible = it
-            }
-            .launchInAndFlowWith(viewLifecycleOwner)
         postDetailViewModel.deleted
-            .onEach { binding.root.showBanner(getString(R.string.posts_deleted_feedback)) }
+            .onEach { requireView().showBanner(getString(R.string.posts_deleted_feedback)) }
             .launchInAndFlowWith(viewLifecycleOwner)
         postDetailViewModel.error
             .onEach { throwable -> handleError(throwable, postDetailViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)
     }
 
-    private fun showPostDetails(post: Post) {
+    private fun saveLink() {
+        requireView().hideKeyboard()
+
         mainViewModel.updateState { currentState ->
             currentState.copy(
-                title = MainState.TitleComponent.Visible(getString(R.string.posts_add_title)),
-                subtitle = MainState.TitleComponent.Gone,
-                navigation = MainState.NavigationComponent.Visible(id = ACTION_ID, icon = R.drawable.ic_close),
-                bottomAppBar = MainState.BottomAppBarComponent.Visible(
-                    id = ACTION_ID,
-                    menu = R.menu.menu_details,
-                    navigationIcon = null,
-                    data = post,
-                ),
-                floatingActionButton = MainState.FabComponent.Visible(ACTION_ID, R.drawable.ic_done),
+                actionButton = MainState.ActionButtonComponent.Gone,
+                floatingActionButton = MainState.FabComponent.Gone,
             )
         }
-
-        with(post) {
-            with(binding) {
-                textViewPendingSync.isVisible = pendingSync != null
-                when (pendingSync) {
-                    PendingSync.ADD -> textViewPendingSync.setText(R.string.posts_pending_add_expanded)
-                    PendingSync.UPDATE -> textViewPendingSync.setText(R.string.posts_pending_update_expanded)
-                    PendingSync.DELETE -> textViewPendingSync.setText(R.string.posts_pending_delete_expanded)
-                    null -> Unit
-                }
-
-                editTextUrl.setText(url)
-                editTextTitle.setText(title)
-                editTextDescription.setText(description)
-                restoreSelection()
-
-                togglePrivate.isActive = private
-                toggleReadLater.isActive = readLater
-
-                tags?.let(tagManagerViewModel::setTags)
-            }
-        }
-
-        setPostChangedListeners()
-
-        editPostViewModel.searchForTag(tag = "", currentTags = post.tags.orEmpty())
-    }
-
-    private fun restoreSelection() = with(binding) {
-        if (editTextUrl.hasFocus()) {
-            editTextUrl.setSelection(editTextUrl.length())
-        }
-        if (editTextTitle.hasFocus()) {
-            editTextTitle.setSelection(editTextTitle.length())
-        }
-        if (editTextDescription.hasFocus()) {
-            editTextDescription.setSelection(editTextDescription.length())
-        }
-    }
-
-    private fun setPostChangedListeners() {
-        binding.editTextUrl.doAfterTextChanged { editable ->
-            editPostViewModel.updatePost { post -> post.copy(url = editable.toString()) }
-        }
-        binding.editTextTitle.doAfterTextChanged { editable ->
-            editPostViewModel.updatePost { post -> post.copy(title = editable.toString()) }
-        }
-        binding.editTextDescription.doAfterTextChanged { editable ->
-            editPostViewModel.updatePost { post -> post.copy(description = editable.toString()) }
-        }
-        binding.togglePrivate.setOnChangedListener { newValue ->
-            editPostViewModel.updatePost { post -> post.copy(private = newValue) }
-        }
-        binding.toggleReadLater.setOnChangedListener { newValue ->
-            editPostViewModel.updatePost { post -> post.copy(readLater = newValue) }
-        }
-        binding.composeViewTagManager.setThemedContent {
-            TagManager(tagManagerViewModel = tagManagerViewModel)
-        }
-    }
-
-    private fun handleMenuClick(item: MenuItem?, post: Post): Boolean {
-        when (item?.itemId) {
-            R.id.menuItemDelete -> deletePost(post)
-            R.id.menuItemOpenInBrowser -> openUrlInExternalBrowser(post)
-        }
-
-        return true
+        editPostViewModel.saveLink()
     }
 
     private fun deletePost(post: Post) {
@@ -395,30 +232,25 @@ class EditPostFragment @Inject constructor(
     }
 
     private fun openUrlInExternalBrowser(post: Post) {
-        startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(post.url) })
-    }
-
-    private fun handleInvalidUrlError(message: String) {
-        message.takeIf(String::isNotEmpty)
-            ?.let {
-                binding.textInputLayoutUrl.showError(it)
-                showFab()
-            }
-            ?: binding.textInputLayoutUrl.clearError()
-    }
-
-    private fun handleInvalidTitleError(message: String) {
-        message.takeIf(String::isNotEmpty)
-            ?.let {
-                binding.textInputLayoutTitle.showError(it)
-                showFab()
-            }
-            ?: binding.textInputLayoutTitle.clearError()
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.url)))
     }
 
     private fun showFab() {
         mainViewModel.updateState { currentState ->
-            currentState.copy(floatingActionButton = MainState.FabComponent.Visible(ACTION_ID, R.drawable.ic_done))
+            currentState.copy(
+                floatingActionButton = MainState.FabComponent.Visible(
+                    id = ACTION_ID,
+                    icon = R.drawable.ic_done,
+                ),
+            )
         }
+    }
+
+    companion object {
+
+        @JvmStatic
+        val TAG: String = "EditPostFragment"
+
+        private val ACTION_ID = UUID.randomUUID().toString()
     }
 }

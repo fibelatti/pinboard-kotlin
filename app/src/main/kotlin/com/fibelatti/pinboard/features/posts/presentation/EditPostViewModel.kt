@@ -16,7 +16,9 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +26,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.withIndex
@@ -55,12 +59,13 @@ class EditPostViewModel @Inject constructor(
     private var searchJob: Job? = null
 
     // Source of all changes to the screen state, takes null to enable it being initialized with initializePost
-    private val interactions: MutableSharedFlow<(Post?) -> Post> = MutableSharedFlow()
-    private val _postState: StateFlow<IndexedValue<Post>?> = interactions
+    private val interactions: Channel<(Post?) -> Post> = Channel()
+    private val _postState: StateFlow<IndexedValue<Post>?> = interactions.receiveAsFlow()
         .scan(initial = null) { post: Post?, interaction -> interaction(post) }
         .filterNotNull() // interactions never return null but the scan return type is inferred by the initial value
         .distinctUntilChanged() // ignore interactions that result in no changes
         .withIndex() // add an index to easily figure out if the value has changed
+        .flowOn(Dispatchers.Main.immediate) // to avoid sync issues with compose TextField state
         .stateIn(
             scope = scope,
             started = sharingStarted,
@@ -69,17 +74,13 @@ class EditPostViewModel @Inject constructor(
     val postState: Flow<Post> get() = _postState.filterNotNull().map { it.value }
 
     fun initializePost(post: Post) {
-        launch {
-            if (_postState.value == null) {
-                interactions.emit { post }
-            }
-        }
+        if (_postState.value != null) return
+        interactions.trySend { post }
     }
 
     fun updatePost(body: (Post) -> Post) {
-        launch {
-            interactions.emit { current -> body(requireNotNull(current)) }
-        }
+        _postState.value ?: return
+        interactions.trySend { current -> body(requireNotNull(current)) }
     }
 
     fun searchForTag(tag: String, currentTags: List<Tag>) {
@@ -112,6 +113,7 @@ class EditPostViewModel @Inject constructor(
                                 R.string.validation_error_invalid_url,
                             )
                         }
+
                         else -> handleError(error)
                     }
                 }
@@ -130,9 +132,11 @@ class EditPostViewModel @Inject constructor(
             post.url.isBlank() -> {
                 _invalidUrlError.value = resourceProvider.getString(R.string.validation_error_empty_url)
             }
+
             post.title.isBlank() -> {
                 _invalidUrlTitleError.value = resourceProvider.getString(R.string.validation_error_empty_title)
             }
+
             else -> return AddPost.Params(
                 url = post.url,
                 title = post.title,

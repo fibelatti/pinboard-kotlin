@@ -45,14 +45,16 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         every { getString(R.string.validation_error_empty_title) } returns "R.string.validation_error_empty_title"
     }
 
-    private val editPostViewModel = EditPostViewModel(
-        appStateRepository = mockAppStateRepository,
-        postsRepository = mockPostsRepository,
-        addPost = mockAddPost,
-        resourceProvider = mockResourceProvider,
-        scope = TestScope(UnconfinedTestDispatcher()),
-        sharingStarted = SharingStarted.Eagerly,
-    )
+    private val editPostViewModel by lazy {
+        EditPostViewModel(
+            appStateRepository = mockAppStateRepository,
+            postsRepository = mockPostsRepository,
+            addPost = mockAddPost,
+            resourceProvider = mockResourceProvider,
+            scope = TestScope(UnconfinedTestDispatcher()),
+            sharingStarted = SharingStarted.Eagerly,
+        )
+    }
 
     @Test
     fun `GIVEN state was not initialized WHEN initializePost is called THEN the state becomes initialized`() =

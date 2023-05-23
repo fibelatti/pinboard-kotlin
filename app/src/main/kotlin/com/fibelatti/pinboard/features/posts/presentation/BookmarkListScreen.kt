@@ -300,7 +300,13 @@ private fun BookmarkItem(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         ) {
             if (post.pendingSync != null) {
-                PendingSync(post.pendingSync)
+                PendingSyncIndicator(
+                    text = when (post.pendingSync) {
+                        PendingSync.ADD -> stringResource(id = R.string.posts_pending_add)
+                        PendingSync.UPDATE -> stringResource(id = R.string.posts_pending_update)
+                        PendingSync.DELETE -> stringResource(id = R.string.posts_pending_delete)
+                    },
+                )
             }
 
             Text(
@@ -357,26 +363,25 @@ private fun BookmarkItem(
 }
 
 @Composable
-private fun PendingSync(
-    pendingSync: PendingSync,
+fun PendingSyncIndicator(
+    text: String,
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier.padding(vertical = 4.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_pending_sync),
             contentDescription = null,
+            modifier = Modifier.padding(end = 4.dp),
             tint = MaterialTheme.colorScheme.primary,
         )
 
         Text(
-            text = when (pendingSync) {
-                PendingSync.ADD -> stringResource(id = R.string.posts_pending_add)
-                PendingSync.UPDATE -> stringResource(id = R.string.posts_pending_update)
-                PendingSync.DELETE -> stringResource(id = R.string.posts_pending_delete)
-            },
+            text = text,
             color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.bodySmall.copy(fontStyle = FontStyle.Italic),
         )

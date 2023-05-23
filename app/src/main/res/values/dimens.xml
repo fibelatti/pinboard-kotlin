@@ -17,15 +17,5 @@
     <dimen name="margin_large">24dp</dimen>
     <dimen name="margin_xlarge">32dp</dimen>
 
-    <dimen name="clickable_area">40dp</dimen>
-
-    <dimen name="divider_size">1dp</dimen>
-
     <dimen name="radius_regular">8dp</dimen>
-
-    <dimen name="progress_bar_size">50dp</dimen>
-
-    <dimen name="fab_offset_bottom">100dp</dimen>
-
-    <dimen name="scroll_offset">50dp</dimen>
 </resources>

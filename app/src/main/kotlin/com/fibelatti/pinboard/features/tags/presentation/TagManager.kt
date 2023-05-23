@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -72,6 +73,7 @@ fun TagManager(
     currentTags: StableList<Tag>,
     onRemoveCurrentTagClicked: (Tag) -> Unit,
     modifier: Modifier = Modifier,
+    onSearchTagInputFocusChanged: (hasFocus: Boolean) -> Unit = {},
     horizontalPadding: Dp = 16.dp,
 ) {
     ConstraintLayout(
@@ -118,7 +120,8 @@ fun TagManager(
                         return@onKeyEvent true
                     }
                     false
-                },
+                }
+                .onFocusChanged { onSearchTagInputFocusChanged(it.hasFocus) },
             textStyle = MaterialTheme.typography.bodyMedium,
             label = { Text(text = stringResource(id = R.string.posts_add_tags)) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
