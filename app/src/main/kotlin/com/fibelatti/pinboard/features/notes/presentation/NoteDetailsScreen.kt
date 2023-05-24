@@ -39,7 +39,7 @@ fun NoteDetailsScreen(
         val noteDetailContent = appState ?: return@Surface
         val isLoading = noteDetailContent.note.isLeft
 
-        LaunchedEffect(isLoading) {
+        LaunchedEffect(isLoading, noteDetailContent) {
             if (isLoading) {
                 noteDetailsViewModel.getNoteDetails(noteDetailContent.id)
             }

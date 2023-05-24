@@ -54,7 +54,7 @@ fun PopularBookmarksScreen(
 
         val popularPostsLoading by popularPostsViewModel.loading.collectAsStateWithLifecycle(initialValue = false)
 
-        LaunchedEffect(key1 = popularPostsContent.shouldLoad) {
+        LaunchedEffect(popularPostsContent.shouldLoad) {
             if (popularPostsContent.shouldLoad) {
                 popularPostsViewModel.getPosts()
             }

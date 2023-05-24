@@ -284,7 +284,7 @@ private fun BookmarkContent(
                 .onGloballyPositioned { tagInputTop = it.boundsInParent().top },
         )
 
-        LaunchedEffect(imeVisible, tagInputHasFocus) {
+        LaunchedEffect(imeVisible, tagInputHasFocus, tagInputTop) {
             delay(300L)
             if (imeVisible && tagInputHasFocus && scrollState.canScrollForward) {
                 scrollState.animateScrollTo(

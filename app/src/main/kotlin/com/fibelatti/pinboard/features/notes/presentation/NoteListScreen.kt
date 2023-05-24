@@ -49,7 +49,7 @@ fun NoteListScreen(
         val appState by appStateViewModel.noteListContent.collectAsStateWithLifecycle(initialValue = null)
         val noteListContent = appState ?: return@Surface
 
-        LaunchedEffect(key1 = noteListContent.shouldLoad) {
+        LaunchedEffect(noteListContent.shouldLoad) {
             if (noteListContent.shouldLoad) {
                 noteListViewModel.getAllNotes()
             }

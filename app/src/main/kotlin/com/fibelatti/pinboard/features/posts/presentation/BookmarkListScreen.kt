@@ -31,6 +31,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -95,7 +96,7 @@ fun BookmarkListScreen(
             postListContent.shouldLoad is ShouldForceLoad ||
             postListContent.shouldLoad is ShouldLoadNextPage
 
-        LaunchedEffect(postListContent, shouldLoadContent) {
+        LaunchedEffect(shouldLoadContent, postListContent) {
             if (shouldLoadContent) postListViewModel.loadContent(postListContent)
         }
 
@@ -164,9 +165,10 @@ fun BookmarkListScreen(
                     }
                 }
             }
+            val currentOnNextPageRequested by rememberUpdatedState(onNextPageRequested)
 
             LaunchedEffect(posts.canPaginate, shouldRequestNewPage) {
-                if (posts.canPaginate && shouldRequestNewPage) onNextPageRequested()
+                if (posts.canPaginate && shouldRequestNewPage) currentOnNextPageRequested()
             }
 
             PullRefreshLayout(
