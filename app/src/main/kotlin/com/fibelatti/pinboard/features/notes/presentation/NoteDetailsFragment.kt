@@ -1,10 +1,7 @@
 package com.fibelatti.pinboard.features.notes.presentation
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.fibelatti.core.extension.navigateBack
@@ -25,12 +22,6 @@ class NoteDetailsFragment @Inject constructor() : BaseFragment() {
     private val appStateViewModel: AppStateViewModel by activityViewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
     private val noteDetailsViewModel: NoteDetailsViewModel by viewModels()
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View = ComposeView(inflater.context)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

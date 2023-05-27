@@ -1,10 +1,7 @@
 package com.fibelatti.pinboard.features.user.presentation
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
@@ -20,12 +17,6 @@ import javax.inject.Inject
 class AuthFragment @Inject constructor() : BaseFragment() {
 
     private val authViewModel: AuthViewModel by viewModels()
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View = ComposeView(inflater.context)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
