@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
+import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isGone
@@ -132,8 +133,7 @@ class MainActivity : BaseActivity() {
 
         binding.fabMain.doOnApplyWindowInsets { view, insets, _, _ ->
             view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                bottomMargin = resources.getDimensionPixelSize(R.dimen.margin_small) +
-                    insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+                bottomMargin = 8.dp.value.toInt() + insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
             }
 
             // Remove once we're done to prevent the Fab from appearing over the keyboard

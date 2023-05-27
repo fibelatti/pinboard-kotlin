@@ -14,7 +14,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -25,13 +24,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.ui.components.ChipGroup
@@ -41,25 +37,6 @@ import com.fibelatti.ui.foundation.StableList
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-
-@Composable
-fun TagManager(
-    tagManagerViewModel: TagManagerViewModel = hiltViewModel(),
-) {
-    val state by tagManagerViewModel.state.collectAsStateWithLifecycle()
-
-    TagManager(
-        searchTagInput = state.currentQuery,
-        onSearchTagInputChanged = tagManagerViewModel::setQuery,
-        onAddTagClicked = tagManagerViewModel::addTag,
-        suggestedTags = state.suggestedTags.toStableList(),
-        onSuggestedTagClicked = tagManagerViewModel::addTag,
-        currentTagsTitle = stringResource(id = state.displayTitle),
-        currentTags = state.tags.toStableList(),
-        onRemoveCurrentTagClicked = tagManagerViewModel::removeTag,
-        horizontalPadding = 0.dp,
-    )
-}
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
@@ -74,7 +51,6 @@ fun TagManager(
     onRemoveCurrentTagClicked: (Tag) -> Unit,
     modifier: Modifier = Modifier,
     onSearchTagInputFocusChanged: (hasFocus: Boolean) -> Unit = {},
-    horizontalPadding: Dp = 16.dp,
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -96,6 +72,8 @@ fun TagManager(
             clCurrentTagsTitle,
             clCurrentTags,
         ) = createRefs()
+
+        val horizontalPadding = 16.dp
 
         OutlinedTextField(
             value = searchTagInput,
@@ -240,13 +218,5 @@ private fun TagManagerPreview() {
             currentTags = listOf(Tag(name = "Kotlin"), Tag(name = "Compose")).toStableList(),
             onRemoveCurrentTagClicked = {},
         )
-    }
-}
-
-@Composable
-@ThemePreviews
-private fun EmptyTagManagerPreview() {
-    ExtendedTheme {
-        TagManager()
     }
 }

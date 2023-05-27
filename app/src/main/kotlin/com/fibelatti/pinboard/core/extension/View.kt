@@ -8,6 +8,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
+import androidx.compose.ui.unit.dp
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
@@ -26,13 +27,15 @@ fun BottomAppBar.show() {
 }
 
 fun FloatingActionButton.blink(onHidden: () -> Unit = {}) {
-    hide(object : FloatingActionButton.OnVisibilityChangedListener() {
-        override fun onHidden(fab: FloatingActionButton?) {
-            super.onHidden(fab)
-            onHidden()
-            show()
-        }
-    })
+    hide(
+        object : FloatingActionButton.OnVisibilityChangedListener() {
+            override fun onHidden(fab: FloatingActionButton?) {
+                super.onHidden(fab)
+                onHidden()
+                show()
+            }
+        },
+    )
 }
 
 fun View.smoothScrollY(scrollBy: Int) {
@@ -45,7 +48,7 @@ fun View.smoothScrollY(scrollBy: Int) {
 fun View.showBanner(message: String) {
     val contentView = getContentView()
     val insetMargin = ViewCompat.getRootWindowInsets(this)?.getInsets(WindowInsetsCompat.Type.statusBars())
-        ?.top?.plus(resources.getDimensionPixelSize(R.dimen.margin_small))
+        ?.top?.plus(8.dp.value.toInt()) ?: 32.dp.value.toInt()
     val banner = LayoutFeedbackBannerBinding.inflate(
         LayoutInflater.from(context),
         contentView,
@@ -53,7 +56,7 @@ fun View.showBanner(message: String) {
     ).apply {
         root.updateLayoutParams<FrameLayout.LayoutParams> {
             gravity = Gravity.CENTER_HORIZONTAL
-            updateMargins(top = insetMargin ?: resources.getDimensionPixelSize(R.dimen.margin_xlarge))
+            updateMargins(top = insetMargin)
         }
         root.alpha = 0F
 

@@ -6,11 +6,11 @@ import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface UserRepository {
 
-    val currentPreferences: Flow<UserPreferences>
+    val currentPreferences: StateFlow<UserPreferences>
 
     var appReviewMode: Boolean
 

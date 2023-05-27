@@ -24,18 +24,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingHorizontal="@dimen/padding_regular"
+            android:paddingHorizontal="16dp"
             android:visibility="gone"
             tools:visibility="visible">
 
             <TextView
-                style="@style/AppTheme.Text.Detail"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:text="@string/offline_alert"
-                android:textIsSelectable="false" />
+                android:textColor="@color/color_onSurfaceVariant"
+                android:textIsSelectable="false"
+                android:textSize="14sp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonRetryConnection"

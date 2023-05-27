@@ -23,9 +23,8 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.verify
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
@@ -47,10 +46,10 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
     fun `currentPreferences should emit the repository values`() = runTest {
         // GIVEN
         val preferences = mockk<UserPreferences>()
-        every { mockUserRepository.currentPreferences } returns flowOf(preferences)
+        every { mockUserRepository.currentPreferences } returns MutableStateFlow(preferences)
 
         // THEN
-        assertThat(userPreferencesViewModel.currentPreferences.toList()).isEqualTo(listOf(preferences))
+        assertThat(userPreferencesViewModel.currentPreferences.first()).isEqualTo(preferences)
     }
 
     @Test
@@ -60,10 +59,10 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         val preferences = mockk<UserPreferences> {
             every { this@mockk.appearance } returns appearance
         }
-        every { mockUserRepository.currentPreferences } returns flowOf(preferences)
+        every { mockUserRepository.currentPreferences } returns MutableStateFlow(preferences)
 
         // THEN
-        assertThat(userPreferencesViewModel.appearanceChanged.toList()).isEqualTo(listOf(appearance))
+        assertThat(userPreferencesViewModel.appearanceChanged.first()).isEqualTo(appearance)
     }
 
     @Test

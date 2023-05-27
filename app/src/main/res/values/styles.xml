@@ -75,41 +75,4 @@
         <item name="android:paddingRight">0dp</item>
         <item name="android:textAllCaps">false</item>
     </style>
-
-    <style name="AppTheme.SelectionButton" parent="Widget.Material3.Button.ElevatedButton">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="icon">@drawable/ic_edit</item>
-        <item name="iconGravity">end</item>
-    </style>
-
-    <!-- Typography -->
-    <style name="AppTheme.Text" />
-
-    <style name="AppTheme.Text.SectionTitle">
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/color_onSurface</item>
-        <item name="android:textSize">@dimen/text_size_regular</item>
-    </style>
-
-    <style name="AppTheme.Text.SectionTitle.Primary">
-        <item name="android:textColor">?attr/colorPrimary</item>
-        <item name="android:layout_marginBottom">@dimen/margin_small</item>
-    </style>
-
-    <style name="AppTheme.Text.Detail">
-        <item name="android:textColor">@color/color_onSurfaceVariant</item>
-        <item name="android:textSize">@dimen/text_size_small</item>
-    </style>
-
-    <style name="AppTheme.Text.Caveat">
-        <item name="android:textColor">@color/color_onSurfaceVariant</item>
-        <item name="android:textSize">@dimen/text_size_xsmall</item>
-    </style>
-
-    <style name="AppTheme.Text.ListItem">
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/color_onSurface</item>
-        <item name="android:textSize">@dimen/text_size_regular</item>
-    </style>
 </resources>

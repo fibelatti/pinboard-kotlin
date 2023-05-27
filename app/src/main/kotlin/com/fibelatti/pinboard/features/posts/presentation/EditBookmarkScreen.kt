@@ -61,7 +61,6 @@ import com.fibelatti.ui.foundation.rememberKeyboardState
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-import kotlinx.coroutines.delay
 
 @Composable
 fun EditBookmarkScreen(
@@ -285,11 +284,10 @@ private fun BookmarkContent(
         )
 
         LaunchedEffect(imeVisible, tagInputHasFocus, tagInputTop) {
-            delay(300L)
             if (imeVisible && tagInputHasFocus && scrollState.canScrollForward) {
                 scrollState.animateScrollTo(
                     value = tagInputTop.toInt(),
-                    animationSpec = tween(durationMillis = 200, easing = LinearEasing),
+                    animationSpec = tween(durationMillis = 200, delayMillis = 300, easing = LinearEasing),
                 )
             }
         }

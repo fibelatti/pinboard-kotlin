@@ -10,8 +10,8 @@ import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,7 +23,7 @@ class UserDataSource @Inject constructor(
 ) : UserRepository {
 
     private val _currentPreferences = MutableStateFlow(getPreferences())
-    override val currentPreferences: Flow<UserPreferences> = _currentPreferences.asStateFlow()
+    override val currentPreferences: StateFlow<UserPreferences> = _currentPreferences.asStateFlow()
 
     override var appReviewMode: Boolean = false
 

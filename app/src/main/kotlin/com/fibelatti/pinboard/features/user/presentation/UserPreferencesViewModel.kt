@@ -16,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -28,7 +29,7 @@ class UserPreferencesViewModel @Inject constructor(
     private val periodicSyncManager: PeriodicSyncManager,
 ) : BaseViewModel() {
 
-    val currentPreferences: Flow<UserPreferences> get() = userRepository.currentPreferences
+    val currentPreferences: StateFlow<UserPreferences> get() = userRepository.currentPreferences
 
     val appearanceChanged: Flow<Appearance> get() = currentPreferences.map { it.appearance }
 
