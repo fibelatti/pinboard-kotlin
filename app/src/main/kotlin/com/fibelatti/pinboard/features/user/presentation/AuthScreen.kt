@@ -22,11 +22,11 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.Surface
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -89,8 +89,8 @@ private fun AuthScreen(
 
         Surface(
             shape = RoundedCornerShape(8.dp),
-            elevation = 2.dp,
             color = MaterialTheme.colorScheme.surfaceVariant,
+            shadowElevation = 2.dp,
         ) {
             Column(
                 modifier = Modifier.padding(all = 16.dp),
