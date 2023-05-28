@@ -2,12 +2,22 @@ package com.fibelatti.pinboard.core.extension
 
 import android.animation.ObjectAnimator
 import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -15,7 +25,8 @@ import androidx.core.view.updateLayoutParams
 import androidx.core.view.updateMargins
 import com.fibelatti.core.extension.getContentView
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.databinding.LayoutFeedbackBannerBinding
+import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.theme.ExtendedTheme
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -47,21 +58,21 @@ fun View.smoothScrollY(scrollBy: Int) {
 
 fun View.showBanner(message: String) {
     val contentView = getContentView()
-    val insetMargin = ViewCompat.getRootWindowInsets(this)?.getInsets(WindowInsetsCompat.Type.statusBars())
-        ?.top?.plus(8.dp.value.toInt()) ?: 32.dp.value.toInt()
-    val banner = LayoutFeedbackBannerBinding.inflate(
-        LayoutInflater.from(context),
-        contentView,
-        false,
-    ).apply {
-        root.updateLayoutParams<FrameLayout.LayoutParams> {
+    val insetMargin = ViewCompat.getRootWindowInsets(this)
+        ?.getInsets(WindowInsetsCompat.Type.statusBars())
+        ?.top?.plus(8.dp.value.toInt())
+        ?: 32.dp.value.toInt()
+
+    val banner = ComposeView(context).apply {
+        setThemedContent {
+            Banner(message = message)
+        }
+        updateLayoutParams<FrameLayout.LayoutParams> {
             gravity = Gravity.CENTER_HORIZONTAL
             updateMargins(top = insetMargin)
         }
-        root.alpha = 0F
-
-        textViewFeedback.text = message
-    }.root
+        alpha = 0F
+    }
 
     contentView.addView(banner)
 
@@ -79,4 +90,36 @@ fun View.showBanner(message: String) {
                 .start()
         }
         .start()
+}
+
+@Composable
+private fun Banner(
+    message: String,
+) {
+    Surface(
+        modifier = Modifier.padding(all = 24.dp),
+        shape = RoundedCornerShape(8.dp),
+        color = MaterialTheme.colorScheme.inverseSurface,
+        shadowElevation = 8.dp,
+    ) {
+        Text(
+            text = message,
+            modifier = Modifier.padding(all = 16.dp),
+            color = MaterialTheme.colorScheme.inverseOnSurface,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+    }
+}
+
+@Composable
+@ThemePreviews
+private fun BannerPreview() {
+    ExtendedTheme {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopCenter,
+        ) {
+            Banner(message = "Sample message")
+        }
+    }
 }
