@@ -30,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -59,6 +60,7 @@ import com.fibelatti.ui.foundation.rememberKeyboardState
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
+import kotlinx.coroutines.launch
 
 @Composable
 fun UserPreferencesScreen(
@@ -76,14 +78,6 @@ fun UserPreferencesScreen(
         tagManagerViewModel.setTags(userPreferences.defaultTags)
     }
 
-    LaunchedEffect(userPreferences.appearance) {
-        when (userPreferences.appearance) {
-            is Appearance.DarkTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            is Appearance.LightTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-        }
-    }
-
     LaunchedEffect(suggestedTags) {
         tagManagerViewModel.setSuggestedTags(suggestedTags)
     }
@@ -94,6 +88,7 @@ fun UserPreferencesScreen(
     }
 
     val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -107,7 +102,19 @@ fun UserPreferencesScreen(
         AppPreferencesContent(
             userPreferences = userPreferences,
             onAutoUpdateChange = userPreferencesViewModel::saveAutoUpdate,
-            onAppearanceChange = userPreferencesViewModel::saveAppearance,
+            onAppearanceChange = { newAppearance ->
+                userPreferencesViewModel.saveAppearance(newAppearance)
+
+                scope.launch {
+                    val mode = when (newAppearance) {
+                        is Appearance.DarkTheme -> AppCompatDelegate.MODE_NIGHT_YES
+                        is Appearance.LightTheme -> AppCompatDelegate.MODE_NIGHT_NO
+                        else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                    }
+
+                    AppCompatDelegate.setDefaultNightMode(mode)
+                }
+            },
             onDynamicColorChange = { newValue: Boolean ->
                 userPreferencesViewModel.saveApplyDynamicColors(newValue)
                 onDynamicColorChange()
