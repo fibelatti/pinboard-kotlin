@@ -3,15 +3,12 @@ package com.fibelatti.pinboard.core.android.base
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.webkit.WebView
 import android.widget.Toast
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.FragmentActivity
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.di.modules.ActivityEntryPoint
 import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -32,7 +29,6 @@ abstract class BaseActivity : AppCompatActivity() {
         supportFragmentManager.fragmentFactory = entryPoint.getFragmentFactory()
 
         super.onCreate(savedInstanceState)
-        setupTheme()
     }
 
     open fun handleError(error: Throwable?, postAction: () -> Unit = {}) {
@@ -47,27 +43,6 @@ abstract class BaseActivity : AppCompatActivity() {
             postAction()
         } else {
             sendErrorReport(error, postAction = postAction)
-        }
-    }
-
-    private fun setupTheme() {
-        workaroundWebViewNightModeIssue()
-        when (userRepository.appearance) {
-            Appearance.DarkTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            Appearance.LightTheme -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-        }
-    }
-
-    /**
-     * It turns out there is a strange bug where only the first time a WebView is created, it resets
-     * the UI mode. Instantiating a dummy one before calling [AppCompatDelegate.setDefaultNightMode]
-     * should be enough so WebViews can be used in the app without any issues.
-     */
-    private fun workaroundWebViewNightModeIssue() {
-        try {
-            WebView(this)
-        } catch (ignored: Exception) {
         }
     }
 }
