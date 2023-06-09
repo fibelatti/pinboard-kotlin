@@ -22,6 +22,7 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
+import com.fibelatti.ui.foundation.toStableList
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
@@ -140,11 +141,12 @@ class EditPostFragment @Inject constructor(
             .onEach { saveLink() }
             .launchInAndFlowWith(viewLifecycleOwner)
         mainViewModel.menuItemClicks(ACTION_ID)
-            .onEach { (menuItemId, post) ->
+            .onEach { (menuItem, post) ->
                 if (post !is Post) return@onEach
-                when (menuItemId) {
-                    R.id.menuItemDelete -> deletePost(post)
-                    R.id.menuItemOpenInBrowser -> openUrlInExternalBrowser(post)
+                when (menuItem) {
+                    is MainState.MenuItemComponent.DeleteBookmark -> deletePost(post)
+                    is MainState.MenuItemComponent.OpenInBrowser -> openUrlInExternalBrowser(post)
+                    else -> Unit
                 }
             }
             .launchInAndFlowWith(viewLifecycleOwner)
@@ -182,7 +184,10 @@ class EditPostFragment @Inject constructor(
                         navigation = MainState.NavigationComponent.Visible(id = ACTION_ID, icon = R.drawable.ic_close),
                         bottomAppBar = MainState.BottomAppBarComponent.Visible(
                             id = ACTION_ID,
-                            menu = R.menu.menu_details,
+                            menuItems = listOf(
+                                MainState.MenuItemComponent.DeleteBookmark,
+                                MainState.MenuItemComponent.OpenInBrowser,
+                            ).toStableList(),
                             navigationIcon = null,
                             data = post,
                         ),

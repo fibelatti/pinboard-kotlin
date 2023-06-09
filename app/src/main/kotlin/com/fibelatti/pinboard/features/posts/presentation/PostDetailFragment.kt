@@ -22,6 +22,7 @@ import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.ui.foundation.toStableList
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
@@ -42,6 +43,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
         setThemedContent {
             BookmarkDetailsScreen(
                 appStateViewModel = appStateViewModel,
+                mainViewModel = mainViewModel,
                 postDetailViewModel = postDetailViewModel,
                 popularPostsViewModel = popularPostsViewModel,
                 onOpenInFileViewerClicked = ::openUrlInFileViewer,
@@ -95,9 +97,16 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
     private fun setupAppStateViewModel() {
         appStateViewModel.content
             .onEach { content ->
-                val (post, menu) = when (content) {
-                    is PostDetailContent -> content.post to R.menu.menu_link
-                    is PopularPostDetailContent -> content.post to R.menu.menu_popular
+                val (post, menuItems) = when (content) {
+                    is PostDetailContent -> content.post to listOf(
+                        MainState.MenuItemComponent.DeleteBookmark,
+                        MainState.MenuItemComponent.EditBookmark,
+                        MainState.MenuItemComponent.OpenInBrowser,
+                    )
+                    is PopularPostDetailContent -> content.post to listOf(
+                        MainState.MenuItemComponent.SaveBookmark,
+                        MainState.MenuItemComponent.OpenInBrowser,
+                    )
                     else -> return@onEach
                 }
 
@@ -117,7 +126,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
                         },
                         bottomAppBar = MainState.BottomAppBarComponent.Visible(
                             id = ACTION_ID,
-                            menu = menu,
+                            menuItems = menuItems.toStableList(),
                             navigationIcon = null,
                             data = post,
                         ),
@@ -140,13 +149,14 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
             .onEach { data: Any? -> (data as? Post)?.let(postDetailViewModel::toggleReadLater) }
             .launchInAndFlowWith(viewLifecycleOwner)
         mainViewModel.menuItemClicks(ACTION_ID)
-            .onEach { (menuItemId, post) ->
+            .onEach { (menuItem, post) ->
                 if (post !is Post) return@onEach
-                when (menuItemId) {
-                    R.id.menuItemDelete -> deletePost(post)
-                    R.id.menuItemEditLink -> appStateViewModel.runAction(EditPost(post))
-                    R.id.menuItemSave -> popularPostsViewModel.saveLink(post)
-                    R.id.menuItemOpenInBrowser -> openUrlInExternalBrowser(post)
+                when (menuItem) {
+                    is MainState.MenuItemComponent.DeleteBookmark -> deletePost(post)
+                    is MainState.MenuItemComponent.EditBookmark -> appStateViewModel.runAction(EditPost(post))
+                    is MainState.MenuItemComponent.SaveBookmark -> popularPostsViewModel.saveLink(post)
+                    is MainState.MenuItemComponent.OpenInBrowser -> openUrlInExternalBrowser(post)
+                    else -> Unit
                 }
             }
             .launchInAndFlowWith(viewLifecycleOwner)

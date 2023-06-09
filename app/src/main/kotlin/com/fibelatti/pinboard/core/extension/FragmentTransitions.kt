@@ -23,7 +23,7 @@ fun FragmentActivity.slideFromTheRight(fragment: Fragment, tag: String, addToBac
             R.anim.slide_left_in,
             R.anim.slide_right_out,
         )
-        add(R.id.fragmentHost, fragment, tag)
+        add(R.id.fragment_host, fragment, tag)
 
         if (addToBackStack) {
             addToBackStack(tag)
@@ -34,7 +34,7 @@ fun FragmentActivity.slideFromTheRight(fragment: Fragment, tag: String, addToBac
 fun FragmentActivity.slideUp(fragment: Fragment, tag: String, addToBackStack: Boolean = true) {
     supportFragmentManager.commit {
         setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
-        add(R.id.fragmentHost, fragment, tag)
+        add(R.id.fragment_host, fragment, tag)
 
         if (addToBackStack) {
             addToBackStack(tag)

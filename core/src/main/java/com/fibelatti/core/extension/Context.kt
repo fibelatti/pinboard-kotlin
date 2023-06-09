@@ -1,10 +1,10 @@
 package com.fibelatti.core.extension
 
-import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
+import androidx.appcompat.app.AppCompatActivity
 
 /**
  * Return the corresponding [color][ColorInt] for the given [attribute id][attrId].
@@ -20,10 +20,10 @@ fun Context.getAttributeColor(
     return color
 }
 
-fun Context?.findActivity(): Activity? {
+fun Context?.findActivity(): AppCompatActivity? {
     var currentContext = this
     while (currentContext != null) {
-        if (currentContext is Activity) return currentContext
+        if (currentContext is AppCompatActivity) return currentContext
         if (currentContext !is ContextWrapper) break
         currentContext = currentContext.baseContext
     }

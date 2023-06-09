@@ -17,8 +17,6 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -28,7 +26,6 @@ fun PullRefreshLayout(
     onPullToRefresh: () -> Unit,
     modifier: Modifier = Modifier,
     listState: LazyListState = rememberLazyListState(),
-    nestedScroll: Boolean = false,
     paddingTop: Dp = 0.dp,
     paddingBottom: Dp = 100.dp,
     verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(8.dp),
@@ -42,9 +39,7 @@ fun PullRefreshLayout(
             .pullRefresh(pullRefreshState),
     ) {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .then(if (nestedScroll) Modifier.nestedScroll(rememberNestedScrollInteropConnection()) else Modifier),
+            modifier = Modifier.fillMaxSize(),
             state = listState,
             contentPadding = WindowInsets(top = paddingTop, bottom = paddingBottom)
                 .add(WindowInsets.navigationBars)

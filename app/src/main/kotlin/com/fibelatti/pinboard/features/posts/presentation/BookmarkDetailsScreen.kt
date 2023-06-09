@@ -22,25 +22,27 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.widget.NestedScrollView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.extension.ScrollDirection
+import com.fibelatti.pinboard.core.extension.rememberScrollDirection
+import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.preview.ThemePreviews
@@ -49,6 +51,7 @@ import com.fibelatti.ui.theme.ExtendedTheme
 @Composable
 fun BookmarkDetailsScreen(
     appStateViewModel: AppStateViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
     onOpenInFileViewerClicked: (Post) -> Unit,
@@ -73,6 +76,7 @@ fun BookmarkDetailsScreen(
             isConnected = isConnected,
             onOpenInFileViewerClicked = { onOpenInFileViewerClicked(post) },
             onOpenInBrowserClicked = { onOpenInBrowserClicked(post) },
+            onScrollDirectionChanged = mainViewModel::setCurrentScrollDirection,
         )
     }
 }
@@ -80,10 +84,11 @@ fun BookmarkDetailsScreen(
 @Composable
 fun BookmarkDetailsScreen(
     post: Post,
-    isLoading: Boolean = false,
-    isConnected: Boolean = true,
+    isLoading: Boolean,
+    isConnected: Boolean,
     onOpenInFileViewerClicked: () -> Unit,
     onOpenInBrowserClicked: () -> Unit,
+    onScrollDirectionChanged: (ScrollDirection) -> Unit,
 ) {
     var hasError by remember { mutableStateOf(false) }
 
@@ -142,6 +147,13 @@ fun BookmarkDetailsScreen(
                     }
                 }
 
+                val nestedScrollDirection by webView.rememberScrollDirection()
+                val currentOnScrollDirectionChanged by rememberUpdatedState(onScrollDirectionChanged)
+
+                LaunchedEffect(nestedScrollDirection) {
+                    currentOnScrollDirectionChanged(nestedScrollDirection)
+                }
+
                 DisposableEffect(webView) {
                     onDispose {
                         webView.stopLoading()
@@ -150,11 +162,10 @@ fun BookmarkDetailsScreen(
                 }
 
                 AndroidView(
-                    factory = { context -> NestedScrollView(context).apply { addView(webView) } },
+                    factory = { webView },
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(color = ExtendedTheme.colors.backgroundNoOverlay)
-                        .nestedScroll(rememberNestedScrollInteropConnection()),
+                        .background(color = ExtendedTheme.colors.backgroundNoOverlay),
                     update = { if (webView.url != post.url) webView.loadUrl(post.url) },
                 )
 

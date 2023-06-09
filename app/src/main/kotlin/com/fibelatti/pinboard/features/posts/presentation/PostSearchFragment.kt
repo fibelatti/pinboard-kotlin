@@ -16,6 +16,7 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.Search
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
+import com.fibelatti.ui.foundation.toStableList
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
 import java.util.UUID
@@ -45,7 +46,7 @@ class PostSearchFragment @Inject constructor() : BaseFragment() {
                 navigation = MainState.NavigationComponent.Visible(ACTION_ID),
                 bottomAppBar = MainState.BottomAppBarComponent.Visible(
                     id = ACTION_ID,
-                    menu = R.menu.menu_search,
+                    menuItems = listOf(MainState.MenuItemComponent.ClearSearch).toStableList(),
                     navigationIcon = null,
                 ),
                 floatingActionButton = MainState.FabComponent.Visible(ACTION_ID, R.drawable.ic_search),
@@ -66,9 +67,9 @@ class PostSearchFragment @Inject constructor() : BaseFragment() {
             .launchInAndFlowWith(viewLifecycleOwner)
 
         mainViewModel.menuItemClicks(ACTION_ID)
-            .onEach { (menuItemId, _) ->
-                when (menuItemId) {
-                    R.id.menuItemClearSearch -> appStateViewModel.runAction(ClearSearch)
+            .onEach { (menuItem, _) ->
+                if (menuItem is MainState.MenuItemComponent.ClearSearch) {
+                    appStateViewModel.runAction(ClearSearch)
                 }
             }
             .launchInAndFlowWith(viewLifecycleOwner)

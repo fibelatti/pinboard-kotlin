@@ -233,6 +233,7 @@ private fun BookmarkContent(
         modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(scrollState)
+            .navigationBarsPadding()
             .imePadding(),
     ) {
         if (post.pendingSync != null) {

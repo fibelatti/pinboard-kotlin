@@ -74,6 +74,7 @@ class PostListFragment @Inject constructor(
         setThemedContent {
             BookmarkListScreen(
                 appStateViewModel = appStateViewModel,
+                mainViewModel = mainViewModel,
                 postListViewModel = postListViewModel,
                 postDetailViewModel = postDetailViewModel,
                 onPostLongClicked = ::showQuickActionsDialog,
@@ -188,11 +189,14 @@ class PostListFragment @Inject constructor(
                         navigation = MainState.NavigationComponent.Gone,
                         bottomAppBar = MainState.BottomAppBarComponent.Visible(
                             id = ACTION_ID,
-                            menu = if (content.category != All || !content.canForceSync) {
-                                R.menu.menu_main_no_sync
-                            } else {
-                                R.menu.menu_main
-                            },
+                            menuItems = buildList {
+                                add(MainState.MenuItemComponent.SearchBookmarks)
+                                add(MainState.MenuItemComponent.SortBookmarks)
+
+                                if (content.category == All && content.canForceSync) {
+                                    add(MainState.MenuItemComponent.SyncBookmarks)
+                                }
+                            }.toStableList(),
                             navigationIcon = R.drawable.ic_menu,
                         ),
                         floatingActionButton = MainState.FabComponent.Visible(ACTION_ID, R.drawable.ic_pin),
@@ -202,12 +206,15 @@ class PostListFragment @Inject constructor(
             .launchInAndFlowWith(viewLifecycleOwner)
 
         mainViewModel.menuItemClicks(ACTION_ID)
-            .onEach { (menuItemId, _) ->
-                when (menuItemId) {
-                    R.id.menuItemSync -> appStateViewModel.runAction(Refresh(force = true))
-                    R.id.menuItemSearch -> appStateViewModel.runAction(ViewSearch)
-                    R.id.menuItemSort -> appStateViewModel.runAction(ToggleSorting)
+            .onEach { (menuItem, _) ->
+                val action = when (menuItem) {
+                    is MainState.MenuItemComponent.SearchBookmarks -> ViewSearch
+                    is MainState.MenuItemComponent.SortBookmarks -> ToggleSorting
+                    is MainState.MenuItemComponent.SyncBookmarks -> Refresh(force = true)
+                    else -> return@onEach
                 }
+
+                appStateViewModel.runAction(action)
             }
             .launchInAndFlowWith(viewLifecycleOwner)
         mainViewModel.fabClicks(ACTION_ID)

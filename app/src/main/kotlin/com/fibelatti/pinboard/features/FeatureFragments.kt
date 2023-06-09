@@ -33,7 +33,7 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
                     for (fragment in fragments) {
                         remove(fragment)
                     }
-                    add(R.id.fragmentHost, activity.createFragment<AuthFragment>(), AuthFragment.TAG)
+                    add(R.id.fragment_host, activity.createFragment<AuthFragment>(), AuthFragment.TAG)
                 }
             }
         }
@@ -43,7 +43,7 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
         if (activity.supportFragmentManager.findFragmentByTag(PostListFragment.TAG) == null) {
             activity.supportFragmentManager.commit {
                 setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-                replace(R.id.fragmentHost, activity.createFragment<PostListFragment>(), PostListFragment.TAG)
+                replace(R.id.fragment_host, activity.createFragment<PostListFragment>(), PostListFragment.TAG)
             }
         } else {
             activity.popTo(PostListFragment.TAG)

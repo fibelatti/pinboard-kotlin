@@ -1,81 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:behavior_hideable="true">
+    android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/layoutContent"
+        android:id="@+id/layout_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
         <androidx.compose.ui.platform.ComposeView
-            android:id="@+id/compose_view_title"
+            android:id="@+id/compose_view_top_bar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <LinearLayout
-            android:id="@+id/layoutOfflineAlert"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:text="@string/offline_alert"
-                android:textColor="@color/color_onSurfaceVariant"
-                android:textIsSelectable="false"
-                android:textSize="14sp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonRetryConnection"
-                style="@style/AppTheme.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/offline_retry"
-                android:textIsSelectable="false" />
-        </LinearLayout>
+            android:layout_height="wrap_content" />
 
         <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/fragmentHost"
+            android:id="@+id/fragment_host"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1" />
     </LinearLayout>
 
-    <com.google.android.material.bottomappbar.BottomAppBar
-        android:id="@+id/bottomAppBar"
-        style="@style/Widget.Material3.BottomAppBar"
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/compose_view_bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:alpha="0.9"
-        android:visibility="gone"
-        app:fabAlignmentMode="center"
-        app:fabAnchorMode="cradle"
-        app:hideOnScroll="true"
-        app:layout_scrollFlags="scroll|enterAlways"
-        app:menuAlignmentMode="auto"
-        tools:visibility="visible" />
+        android:layout_gravity="bottom" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabMain"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_anchor="@id/bottomAppBar"
-        app:srcCompat="@drawable/ic_pin"
-        tools:visibility="visible" />
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</FrameLayout>

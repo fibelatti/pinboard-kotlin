@@ -60,15 +60,19 @@ internal class MainViewModelTest : BaseViewModelTest() {
     fun `menuItemClicks emits only values with matching ids`() = runUnconfinedTest {
         val data: Any = mockk()
 
+        val menuItemComponent1 = mockk<MainState.MenuItemComponent>()
+        val menuItemComponent2 = mockk<MainState.MenuItemComponent>()
+        val menuItemComponent3 = mockk<MainState.MenuItemComponent>()
+
         val values = viewModel.menuItemClicks("id").collectIn(this)
 
-        viewModel.menuItemClicked(id = "id", menuItemId = 1, data = data)
-        viewModel.menuItemClicked(id = "another-id", menuItemId = 2, data = data)
-        viewModel.menuItemClicked(id = "id", menuItemId = 3, data = null)
+        viewModel.menuItemClicked(id = "id", menuItem = menuItemComponent1, data = data)
+        viewModel.menuItemClicked(id = "another-id", menuItem = menuItemComponent2, data = data)
+        viewModel.menuItemClicked(id = "id", menuItem = menuItemComponent3, data = null)
 
         assertThat(values).containsExactly(
-            1 to data,
-            3 to null,
+            menuItemComponent1 to data,
+            menuItemComponent3 to null,
         )
     }
 

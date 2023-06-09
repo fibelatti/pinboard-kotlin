@@ -17,56 +17,38 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.MainState
-import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
-fun MainTitle(
-    mainViewModel: MainViewModel = hiltViewModel(),
-) {
-    val state by mainViewModel.state.collectAsStateWithLifecycle()
-
-    MainTitle(
-        title = state.title,
-        subtitle = state.subtitle,
-        navigation = state.navigation,
-        onNavigationClicked = { mainViewModel.navigationClicked(state.navigation.id) },
-        actionButton = state.actionButton,
-        onActionButtonClicked = { data -> mainViewModel.actionButtonClicked(state.actionButton.id, data) },
-    )
-}
-
-@Composable
 @OptIn(ExperimentalAnimationApi::class)
-private fun MainTitle(
-    title: MainState.TitleComponent = MainState.TitleComponent.Gone,
-    subtitle: MainState.TitleComponent = MainState.TitleComponent.Gone,
-    navigation: MainState.NavigationComponent = MainState.NavigationComponent.Gone,
-    onNavigationClicked: () -> Unit = {},
-    actionButton: MainState.ActionButtonComponent = MainState.ActionButtonComponent.Gone,
-    onActionButtonClicked: (data: Any?) -> Unit = {},
+fun MainTitle(
+    title: MainState.TitleComponent,
+    subtitle: MainState.TitleComponent,
+    navigation: MainState.NavigationComponent,
+    onNavigationClicked: () -> Unit,
+    actionButton: MainState.ActionButtonComponent,
+    onActionButtonClicked: (data: Any?) -> Unit,
 ) {
     Row(
         modifier = Modifier
             .background(color = ExtendedTheme.colors.backgroundNoOverlay)
             .fillMaxWidth()
+            .statusBarsPadding()
             .padding(bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -147,7 +129,9 @@ private fun MainTitlePreview() {
                 title = MainState.TitleComponent.Visible("Title"),
                 subtitle = MainState.TitleComponent.Gone,
                 navigation = MainState.NavigationComponent.Visible(id = "id"),
+                onNavigationClicked = {},
                 actionButton = MainState.ActionButtonComponent.Visible(id = "id", label = "Action"),
+                onActionButtonClicked = {},
             )
         }
     }
@@ -162,7 +146,9 @@ private fun MainTitleWithSubtitlePreview() {
                 title = MainState.TitleComponent.Visible("Title"),
                 subtitle = MainState.TitleComponent.Visible("Subtitle"),
                 navigation = MainState.NavigationComponent.Visible(id = "id"),
+                onNavigationClicked = {},
                 actionButton = MainState.ActionButtonComponent.Visible(id = "id", label = "Action"),
+                onActionButtonClicked = {},
             )
         }
     }

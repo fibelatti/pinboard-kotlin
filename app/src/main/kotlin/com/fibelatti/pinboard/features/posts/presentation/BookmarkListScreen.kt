@@ -49,6 +49,9 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_PAGE_SIZE
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
+import com.fibelatti.pinboard.core.extension.ScrollDirection
+import com.fibelatti.pinboard.core.extension.rememberScrollDirection
+import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.GetNextPostPage
@@ -74,6 +77,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun BookmarkListScreen(
     appStateViewModel: AppStateViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     postListViewModel: PostListViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     onPostLongClicked: (Post) -> Unit,
@@ -103,6 +107,7 @@ fun BookmarkListScreen(
         BookmarkListScreen(
             posts = postListContent.posts,
             isLoading = (postListLoading || postDetailLoading) && !hasError,
+            onScrollDirectionChanged = mainViewModel::setCurrentScrollDirection,
             onNextPageRequested = { appStateViewModel.runAction(GetNextPostPage) },
             searchParameters = postListContent.searchParameters,
             onClearClicked = { appStateViewModel.runAction(ClearSearch) },
@@ -120,6 +125,7 @@ fun BookmarkListScreen(
 fun BookmarkListScreen(
     posts: PostList?,
     isLoading: Boolean,
+    onScrollDirectionChanged: (ScrollDirection) -> Unit,
     onNextPageRequested: () -> Unit,
     searchParameters: SearchParameters,
     onClearClicked: () -> Unit,
@@ -165,16 +171,23 @@ fun BookmarkListScreen(
                     }
                 }
             }
+
             val currentOnNextPageRequested by rememberUpdatedState(onNextPageRequested)
 
             LaunchedEffect(posts.canPaginate, shouldRequestNewPage) {
                 if (posts.canPaginate && shouldRequestNewPage) currentOnNextPageRequested()
             }
 
+            val scrollDirection by listState.rememberScrollDirection()
+            val currentOnScrollDirectionChanged by rememberUpdatedState(onScrollDirectionChanged)
+
+            LaunchedEffect(scrollDirection) {
+                currentOnScrollDirectionChanged(scrollDirection)
+            }
+
             PullRefreshLayout(
                 onPullToRefresh = onPullToRefresh,
                 listState = listState,
-                nestedScroll = true,
             ) {
                 items(posts.list) { post ->
                     BookmarkItem(
@@ -446,6 +459,7 @@ private fun BookmarkListScreenPreview(
                 canPaginate = false,
             ),
             isLoading = true,
+            onScrollDirectionChanged = {},
             onNextPageRequested = {},
             searchParameters = SearchParameters(term = "bookmark"),
             onClearClicked = {},
