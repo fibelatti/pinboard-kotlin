@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -85,14 +86,14 @@ fun EditBookmarkScreen(
             )
 
             editPostViewModel.initializePost(emptyPost)
-            tagManagerViewModel.setTags(it.defaultTags)
+            tagManagerViewModel.initializeTags(it.defaultTags)
         }
     }
 
     LaunchedEffect(editPostContent) {
         editPostContent?.let {
             editPostViewModel.initializePost(it.post)
-            tagManagerViewModel.setTags(it.post.tags.orEmpty())
+            tagManagerViewModel.initializeTags(it.post.tags.orEmpty())
         }
     }
 

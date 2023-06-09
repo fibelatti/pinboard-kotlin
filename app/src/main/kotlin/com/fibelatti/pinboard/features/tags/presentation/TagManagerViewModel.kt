@@ -18,8 +18,10 @@ class TagManagerViewModel @Inject constructor() : BaseViewModel() {
     private val _state: MutableStateFlow<State> = MutableStateFlow(State())
     val state: StateFlow<State> = _state.asStateFlow()
 
-    fun setTags(tags: List<Tag>) {
-        _state.update { current -> current.copy(tags = tags) }
+    fun initializeTags(tags: List<Tag>) {
+        if (_state.value == State()) {
+            _state.update { current -> current.copy(tags = tags) }
+        }
     }
 
     fun addTag(value: String, index: Int = 0) {

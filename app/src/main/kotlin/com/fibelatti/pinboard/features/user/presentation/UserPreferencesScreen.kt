@@ -75,7 +75,7 @@ fun UserPreferencesScreen(
     val tagState by tagManagerViewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        tagManagerViewModel.setTags(userPreferences.defaultTags)
+        tagManagerViewModel.initializeTags(userPreferences.defaultTags)
     }
 
     LaunchedEffect(suggestedTags) {

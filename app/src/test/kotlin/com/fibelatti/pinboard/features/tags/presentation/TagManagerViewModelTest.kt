@@ -17,7 +17,7 @@ internal class TagManagerViewModelTest : BaseViewModelTest() {
         val states = viewModel.state.collectIn(this)
         val tags = listOf(mockk<Tag>())
 
-        viewModel.setTags(tags)
+        viewModel.initializeTags(tags)
 
         assertThat(states).containsExactly(
             TagManagerViewModel.State(),
@@ -53,7 +53,7 @@ internal class TagManagerViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `addTag emits the expected state - existing tag`() = runUnconfinedTest {
-        viewModel.setTags(listOf(Tag("new-tag")))
+        viewModel.initializeTags(listOf(Tag("new-tag")))
 
         val states = viewModel.state.collectIn(this)
 
@@ -69,7 +69,7 @@ internal class TagManagerViewModelTest : BaseViewModelTest() {
         val tag = mockk<Tag>()
         val tags = listOf(tag)
 
-        viewModel.setTags(tags)
+        viewModel.initializeTags(tags)
 
         val states = viewModel.state.collectIn(this)
 
