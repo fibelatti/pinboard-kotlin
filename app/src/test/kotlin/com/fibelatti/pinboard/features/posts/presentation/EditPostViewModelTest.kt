@@ -103,7 +103,9 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
             editPostViewModel.searchForTag(mockTagString1, mockk())
 
             // THEN
-            assertThat(editPostViewModel.suggestedTags.isEmpty()).isTrue()
+            assertThat(editPostViewModel.screenState.first()).isEqualTo(
+                EditPostViewModel.ScreenState(suggestedTags = emptyList()),
+            )
         }
 
     @Test
@@ -119,13 +121,13 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
             editPostViewModel.searchForTag(tag = mockTagString1, currentTags = emptyList())
 
             // THEN
-            assertThat(editPostViewModel.suggestedTags.first()).isEqualTo(result)
+            assertThat(editPostViewModel.screenState.first()).isEqualTo(
+                EditPostViewModel.ScreenState(suggestedTags = result),
+            )
         }
 
     @Test
     fun `GIVEN url is blank WHEN saveLink is called THEN invalidUrlError will receive a value`() = runUnconfinedTest {
-        val saved = editPostViewModel.saved.collectIn(this)
-
         // GIVEN
         editPostViewModel.initializePost(
             Post(
@@ -142,16 +144,18 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         editPostViewModel.saveLink()
 
         // THEN
-        assertThat(editPostViewModel.invalidUrlError.first()).isEqualTo("R.string.validation_error_empty_url")
-        assertThat(saved).isEmpty()
+        assertThat(editPostViewModel.screenState.first()).isEqualTo(
+            EditPostViewModel.ScreenState(
+                invalidUrlError = "R.string.validation_error_empty_url",
+                saved = false,
+            ),
+        )
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 
     @Test
     fun `GIVEN title is blank WHEN saveLink is called THEN invalidUrlTitleError will received a value`() =
         runUnconfinedTest {
-            val saved = editPostViewModel.saved.collectIn(this)
-
             // GIVEN
             editPostViewModel.initializePost(
                 Post(
@@ -168,8 +172,12 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
             editPostViewModel.saveLink()
 
             // THEN
-            assertThat(editPostViewModel.invalidUrlTitleError.first()).isEqualTo("R.string.validation_error_empty_title")
-            assertThat(saved).isEmpty()
+            assertThat(editPostViewModel.screenState.first()).isEqualTo(
+                EditPostViewModel.ScreenState(
+                    invalidTitleError = "R.string.validation_error_empty_title",
+                    saved = false,
+                ),
+            )
             coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
         }
 
@@ -203,16 +211,18 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                 ),
             )
 
-            val saved = editPostViewModel.saved.collectIn(this)
-
             // WHEN
             editPostViewModel.saveLink()
 
             // THEN
-            assertThat(editPostViewModel.loading.first()).isEqualTo(false)
-            assertThat(editPostViewModel.invalidUrlError.first()).isEqualTo("R.string.validation_error_invalid_url")
-            assertThat(editPostViewModel.invalidUrlTitleError.first()).isEqualTo("")
-            assertThat(saved).isEmpty()
+            assertThat(editPostViewModel.screenState.first()).isEqualTo(
+                EditPostViewModel.ScreenState(
+                    isLoading = false,
+                    invalidUrlError = "R.string.validation_error_invalid_url",
+                    invalidTitleError = "",
+                    saved = false,
+                ),
+            )
             coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
         }
 
@@ -246,18 +256,19 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
             ),
         )
 
-        val saved = editPostViewModel.saved.collectIn(this)
-
         // WHEN
         editPostViewModel.saveLink()
 
         // THEN
-        assertThat(editPostViewModel.loading.first()).isEqualTo(false)
-        assertThat(editPostViewModel.invalidUrlError.first()).isEqualTo("")
-        assertThat(editPostViewModel.invalidUrlTitleError.first()).isEqualTo("")
-        assertThat(editPostViewModel.error.first()).isEqualTo(error)
-        assertThat(saved).isEmpty()
-
+        assertThat(editPostViewModel.screenState.first()).isEqualTo(
+            EditPostViewModel.ScreenState(
+                isLoading = false,
+                invalidUrlError = "",
+                invalidTitleError = "",
+                saved = false,
+            ),
+        )
+        assertThat(editPostViewModel.error.isEmpty()).isFalse()
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 
@@ -292,18 +303,19 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                 ),
             )
 
-            val saved = editPostViewModel.saved.collectIn(this)
-
             // WHEN
             editPostViewModel.saveLink()
 
             // THEN
-            assertThat(editPostViewModel.loading.first()).isEqualTo(true)
-            assertThat(editPostViewModel.invalidUrlError.first()).isEqualTo("")
-            assertThat(editPostViewModel.invalidUrlTitleError.first()).isEqualTo("")
+            assertThat(editPostViewModel.screenState.first()).isEqualTo(
+                EditPostViewModel.ScreenState(
+                    isLoading = true,
+                    invalidUrlError = "",
+                    invalidTitleError = "",
+                    saved = true,
+                ),
+            )
             assertThat(editPostViewModel.error.isEmpty()).isTrue()
-            assertThat(saved).isEqualTo(listOf(Unit))
-
             coVerify { mockAppStateRepository.runAction(PostSaved(post)) }
         }
 

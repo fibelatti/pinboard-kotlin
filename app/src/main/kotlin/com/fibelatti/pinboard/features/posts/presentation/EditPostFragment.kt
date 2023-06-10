@@ -156,17 +156,29 @@ class EditPostFragment @Inject constructor(
     }
 
     private fun setupEditPostViewModel() {
-        editPostViewModel.suggestedTags
-            .onEach(tagManagerViewModel::setSuggestedTags)
-            .launchInAndFlowWith(viewLifecycleOwner)
-        editPostViewModel.saved
-            .onEach { requireView().showBanner(getString(R.string.posts_saved_feedback)) }
-            .launchInAndFlowWith(viewLifecycleOwner)
-        editPostViewModel.invalidUrlError
-            .onEach { errorMessage -> if (errorMessage.isNotEmpty()) showFab() }
-            .launchInAndFlowWith(viewLifecycleOwner)
-        editPostViewModel.invalidUrlTitleError
-            .onEach { errorMessage -> if (errorMessage.isNotEmpty()) showFab() }
+        editPostViewModel.screenState
+            .onEach { state ->
+                tagManagerViewModel.setSuggestedTags(state.suggestedTags)
+
+                when {
+                    state.isLoading -> {
+                        mainViewModel.updateState { currentState ->
+                            currentState.copy(
+                                actionButton = MainState.ActionButtonComponent.Gone,
+                                floatingActionButton = MainState.FabComponent.Gone,
+                            )
+                        }
+                    }
+
+                    state.invalidUrlError.isNotEmpty() || state.invalidTitleError.isNotEmpty() -> {
+                        showFab()
+                    }
+
+                    state.saved -> {
+                        requireView().showBanner(getString(R.string.posts_saved_feedback))
+                    }
+                }
+            }
             .launchInAndFlowWith(viewLifecycleOwner)
         editPostViewModel.error
             .onEach { throwable ->
@@ -209,13 +221,6 @@ class EditPostFragment @Inject constructor(
 
     private fun saveLink() {
         requireView().hideKeyboard()
-
-        mainViewModel.updateState { currentState ->
-            currentState.copy(
-                actionButton = MainState.ActionButtonComponent.Gone,
-                floatingActionButton = MainState.FabComponent.Gone,
-            )
-        }
         editPostViewModel.saveLink()
     }
 

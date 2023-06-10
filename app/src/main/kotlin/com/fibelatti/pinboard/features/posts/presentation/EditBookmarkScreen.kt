@@ -100,11 +100,9 @@ fun EditBookmarkScreen(
     val postState by editPostViewModel.postState.collectAsStateWithLifecycle(initialValue = null)
     val currentState = postState ?: return
 
-    val isEditLoading by editPostViewModel.loading.collectAsStateWithLifecycle(initialValue = false)
-    val isDetailLoading by postDetailViewModel.loading.collectAsStateWithLifecycle(initialValue = false)
+    val editPostScreenState by editPostViewModel.screenState.collectAsStateWithLifecycle()
 
-    val urlError by editPostViewModel.invalidUrlError.collectAsStateWithLifecycle()
-    val titleError by editPostViewModel.invalidUrlTitleError.collectAsStateWithLifecycle()
+    val isDetailLoading by postDetailViewModel.loading.collectAsStateWithLifecycle(initialValue = false)
 
     val tagManagerState by tagManagerViewModel.state.collectAsStateWithLifecycle()
 
@@ -115,15 +113,15 @@ fun EditBookmarkScreen(
 
     EditBookmarkScreen(
         post = currentState,
-        isLoading = isEditLoading || isDetailLoading,
+        isLoading = editPostScreenState.isLoading || isDetailLoading,
         onUrlChanged = { newValue ->
             editPostViewModel.updatePost { post -> post.copy(url = newValue) }
         },
-        urlError = urlError,
+        urlError = editPostScreenState.invalidUrlError,
         onTitleChanged = { newValue ->
             editPostViewModel.updatePost { post -> post.copy(title = newValue) }
         },
-        titleError = titleError,
+        titleError = editPostScreenState.invalidTitleError,
         onDescriptionChanged = { newValue ->
             editPostViewModel.updatePost { post -> post.copy(description = newValue) }
         },

@@ -20,10 +20,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -44,17 +45,6 @@ class EditPostViewModel @Inject constructor(
     @Scope(AppDispatchers.DEFAULT) scope: CoroutineScope,
     sharingStarted: SharingStarted,
 ) : BaseViewModel() {
-
-    val loading: Flow<Boolean> get() = _loading.filterNotNull()
-    private val _loading = MutableStateFlow<Boolean?>(null)
-    val suggestedTags: Flow<List<String>> get() = _suggestedTags.filterNotNull()
-    private val _suggestedTags = MutableStateFlow<List<String>?>(null)
-    val invalidUrlError: StateFlow<String> get() = _invalidUrlError
-    private val _invalidUrlError = MutableStateFlow("")
-    val invalidUrlTitleError: StateFlow<String> get() = _invalidUrlTitleError
-    private val _invalidUrlTitleError = MutableStateFlow("")
-    val saved: Flow<Unit> get() = _saved
-    private val _saved = MutableSharedFlow<Unit>()
 
     private var searchJob: Job? = null
 
@@ -73,6 +63,9 @@ class EditPostViewModel @Inject constructor(
         )
     val postState: Flow<Post> get() = _postState.filterNotNull().map { it.value }
 
+    private val _screenState = MutableStateFlow(ScreenState())
+    val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
+
     fun initializePost(post: Post) {
         if (_postState.value != null) return
         interactions.trySend { post }
@@ -90,7 +83,11 @@ class EditPostViewModel @Inject constructor(
             postsRepository.searchExistingPostTag(
                 tag = tag,
                 currentTags = currentTags,
-            ).onSuccess { _suggestedTags.value = it }
+            ).onSuccess { suggestedTags ->
+                _screenState.update { currentState ->
+                    currentState.copy(suggestedTags = suggestedTags)
+                }
+            }
         }
     }
 
@@ -98,20 +95,28 @@ class EditPostViewModel @Inject constructor(
         launch {
             val params = validateData() ?: return@launch
 
-            _loading.value = true
+            _screenState.update { currentState ->
+                currentState.copy(isLoading = true)
+            }
 
             addPost(params)
                 .onSuccess {
-                    _saved.emit(Unit)
+                    _screenState.update { currentState ->
+                        currentState.copy(saved = true)
+                    }
                     appStateRepository.runAction(PostSaved(it))
                 }
                 .onFailure { error ->
-                    _loading.value = false
+                    _screenState.update { currentState ->
+                        currentState.copy(isLoading = false)
+                    }
                     when (error) {
                         is InvalidUrlException -> {
-                            _invalidUrlError.value = resourceProvider.getString(
-                                R.string.validation_error_invalid_url,
-                            )
+                            _screenState.update { currentState ->
+                                currentState.copy(
+                                    invalidUrlError = resourceProvider.getString(R.string.validation_error_invalid_url),
+                                )
+                            }
                         }
 
                         else -> handleError(error)
@@ -123,18 +128,30 @@ class EditPostViewModel @Inject constructor(
     fun hasPendingChanges(): Boolean = _postState.value.let { it?.index != null && it.index != 0 }
 
     private fun validateData(): AddPost.Params? {
-        _invalidUrlError.value = ""
-        _invalidUrlTitleError.value = ""
+        _screenState.update { currentState ->
+            currentState.copy(
+                invalidUrlError = "",
+                invalidTitleError = "",
+            )
+        }
 
         val post = _postState.value?.value ?: return null
 
         when {
             post.url.isBlank() -> {
-                _invalidUrlError.value = resourceProvider.getString(R.string.validation_error_empty_url)
+                _screenState.update { currentState ->
+                    currentState.copy(
+                        invalidUrlError = resourceProvider.getString(R.string.validation_error_empty_url),
+                    )
+                }
             }
 
             post.title.isBlank() -> {
-                _invalidUrlTitleError.value = resourceProvider.getString(R.string.validation_error_empty_title)
+                _screenState.update { currentState ->
+                    currentState.copy(
+                        invalidTitleError = resourceProvider.getString(R.string.validation_error_empty_title),
+                    )
+                }
             }
 
             else -> return AddPost.Params(
@@ -151,4 +168,12 @@ class EditPostViewModel @Inject constructor(
 
         return null
     }
+
+    data class ScreenState(
+        val isLoading: Boolean = false,
+        val suggestedTags: List<String> = emptyList(),
+        val invalidUrlError: String = "",
+        val invalidTitleError: String = "",
+        val saved: Boolean = false,
+    )
 }
