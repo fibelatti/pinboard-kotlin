@@ -30,8 +30,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -163,6 +165,10 @@ fun BookmarkListScreen(
             )
         } else if (posts != null) {
             val listState = rememberLazyListState()
+
+            val scrollDirection by listState.rememberScrollDirection()
+            val currentOnScrollDirectionChanged by rememberUpdatedState(onScrollDirectionChanged)
+
             val shouldRequestNewPage by remember {
                 derivedStateOf {
                     listState.layoutInfo.run {
@@ -171,18 +177,24 @@ fun BookmarkListScreen(
                     }
                 }
             }
-
             val currentOnNextPageRequested by rememberUpdatedState(onNextPageRequested)
+
+            var shouldScrollToTop by remember(posts) { mutableStateOf(posts.shouldScrollToTop) }
 
             LaunchedEffect(posts.canPaginate, shouldRequestNewPage) {
                 if (posts.canPaginate && shouldRequestNewPage) currentOnNextPageRequested()
             }
 
-            val scrollDirection by listState.rememberScrollDirection()
-            val currentOnScrollDirectionChanged by rememberUpdatedState(onScrollDirectionChanged)
-
             LaunchedEffect(scrollDirection) {
                 currentOnScrollDirectionChanged(scrollDirection)
+            }
+
+            LaunchedEffect(shouldScrollToTop) {
+                if (shouldScrollToTop) {
+                    delay(200L)
+                    listState.scrollToItem(index = 0)
+                    shouldScrollToTop = false
+                }
             }
 
             PullRefreshLayout(
@@ -198,11 +210,6 @@ fun BookmarkListScreen(
                         onTagClicked = onTagClicked,
                     )
                 }
-            }
-
-            LaunchedEffect(searchParameters) {
-                delay(200L)
-                listState.scrollToItem(index = 0)
             }
         }
     }
@@ -457,6 +464,7 @@ private fun BookmarkListScreenPreview(
                 list = posts,
                 totalCount = posts.size,
                 canPaginate = false,
+                shouldScrollToTop = false,
             ),
             isLoading = true,
             onScrollDirectionChanged = {},

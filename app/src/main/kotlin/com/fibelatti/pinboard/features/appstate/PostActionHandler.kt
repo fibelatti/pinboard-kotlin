@@ -45,6 +45,7 @@ class PostActionHandler @Inject constructor(
                     list = newList,
                     totalCount = action.postListResult.totalCount,
                     canPaginate = action.postListResult.canPaginate,
+                    shouldScrollToTop = true,
                 )
             }
             currentPostList.copy(
@@ -73,6 +74,7 @@ class PostActionHandler @Inject constructor(
                     list = updatedList,
                     totalCount = action.postListResult.totalCount,
                     canPaginate = action.postListResult.canPaginate,
+                    shouldScrollToTop = false,
                 )
 
                 currentPostList.copy(posts = posts, shouldLoad = Loaded)
