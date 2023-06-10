@@ -51,7 +51,9 @@ class AuthViewModelTest : BaseViewModelTest() {
 
             // THEN
             assertThat(viewModel.error.isEmpty()).isTrue()
-            assertThat(viewModel.apiTokenError.isEmpty()).isTrue()
+            assertThat(viewModel.screenState.first()).isEqualTo(
+                AuthViewModel.ScreenState(isLoading = true),
+            )
         }
 
         @Test
@@ -73,7 +75,9 @@ class AuthViewModelTest : BaseViewModelTest() {
 
                 // THEN
                 assertThat(viewModel.error.isEmpty()).isTrue()
-                assertThat(viewModel.apiTokenError.first()).isEqualTo("R.string.auth_token_error")
+                assertThat(viewModel.screenState.first()).isEqualTo(
+                    AuthViewModel.ScreenState(apiTokenError = "R.string.auth_token_error"),
+                )
             }
 
         @Test
@@ -95,7 +99,9 @@ class AuthViewModelTest : BaseViewModelTest() {
 
                 // THEN
                 assertThat(viewModel.error.isEmpty()).isTrue()
-                assertThat(viewModel.apiTokenError.first()).isEqualTo("R.string.auth_token_error")
+                assertThat(viewModel.screenState.first()).isEqualTo(
+                    AuthViewModel.ScreenState(apiTokenError = "R.string.auth_token_error"),
+                )
             }
 
         @Test
@@ -109,7 +115,7 @@ class AuthViewModelTest : BaseViewModelTest() {
 
             // THEN
             assertThat(viewModel.error.first()).isEqualTo(error)
-            assertThat(viewModel.apiTokenError.isEmpty()).isTrue()
+            assertThat(viewModel.screenState.first()).isEqualTo(AuthViewModel.ScreenState())
         }
     }
 

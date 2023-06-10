@@ -11,6 +11,8 @@ import com.fibelatti.pinboard.features.user.domain.Login
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.net.HttpURLConnection
@@ -23,20 +25,23 @@ class AuthViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
 ) : BaseViewModel() {
 
-    val apiTokenError: StateFlow<String?> get() = _apiTokenError
-    private val _apiTokenError = MutableStateFlow<String?>(null)
-
-    val loading: StateFlow<Boolean> get() = _loading
-    private val _loading = MutableStateFlow(false)
+    private val _screenState = MutableStateFlow(ScreenState())
+    val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
 
     fun login(apiToken: String) {
         launch {
-            _apiTokenError.value = null
-            _loading.value = true
+            _screenState.update { currentState ->
+                currentState.copy(
+                    isLoading = true,
+                    apiTokenError = null,
+                )
+            }
 
             loginUseCase(apiToken)
                 .onFailure { error ->
-                    _loading.value = false
+                    _screenState.update { currentState ->
+                        currentState.copy(isLoading = false)
+                    }
 
                     val loginFailedCodes = listOf(
                         HttpURLConnection.HTTP_UNAUTHORIZED,
@@ -45,11 +50,21 @@ class AuthViewModel @Inject constructor(
 
                     when {
                         error is HttpException && error.code() in loginFailedCodes -> {
-                            _apiTokenError.value = resourceProvider.getString(R.string.auth_token_error)
+                            _screenState.update { currentState ->
+                                currentState.copy(
+                                    apiTokenError = resourceProvider.getString(R.string.auth_token_error),
+                                )
+                            }
                         }
+
                         error.isServerException() -> {
-                            _apiTokenError.value = resourceProvider.getString(R.string.server_timeout_error)
+                            _screenState.update { currentState ->
+                                currentState.copy(
+                                    apiTokenError = resourceProvider.getString(R.string.server_timeout_error),
+                                )
+                            }
                         }
+
                         else -> handleError(error)
                     }
                 }
@@ -61,4 +76,9 @@ class AuthViewModel @Inject constructor(
             appStateRepository.runAction(UserLoggedOut)
         }
     }
+
+    data class ScreenState(
+        val isLoading: Boolean = false,
+        val apiTokenError: String? = null,
+    )
 }

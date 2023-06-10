@@ -53,13 +53,12 @@ import com.fibelatti.ui.theme.ExtendedTheme
 fun AuthScreen(
     authViewModel: AuthViewModel = hiltViewModel(),
 ) {
-    val loading by authViewModel.loading.collectAsStateWithLifecycle()
-    val error by authViewModel.apiTokenError.collectAsStateWithLifecycle()
+    val screenState by authViewModel.screenState.collectAsStateWithLifecycle()
 
     AuthScreen(
         onAuthRequested = authViewModel::login,
-        isLoading = loading,
-        error = error,
+        isLoading = screenState.isLoading,
+        error = screenState.apiTokenError,
     )
 }
 
