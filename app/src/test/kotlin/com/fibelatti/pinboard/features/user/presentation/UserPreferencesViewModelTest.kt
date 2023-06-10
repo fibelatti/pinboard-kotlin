@@ -53,19 +53,6 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `appearanceChanged should emit the current preferences appearance`() = runTest {
-        // GIVEN
-        val appearance = mockk<Appearance>()
-        val preferences = mockk<UserPreferences> {
-            every { this@mockk.appearance } returns appearance
-        }
-        every { mockUserRepository.currentPreferences } returns MutableStateFlow(preferences)
-
-        // THEN
-        assertThat(userPreferencesViewModel.appearanceChanged.first()).isEqualTo(appearance)
-    }
-
-    @Test
     fun `WHEN savePeriodicSync is called THEN repository is updated AND periodicSyncManager enqueues`() {
         // GIVEN
         val mockPeriodicSync = mockk<PeriodicSync>()

@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,8 +29,6 @@ class UserPreferencesViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     val currentPreferences: StateFlow<UserPreferences> get() = userRepository.currentPreferences
-
-    val appearanceChanged: Flow<Appearance> get() = currentPreferences.map { it.appearance }
 
     val suggestedTags: Flow<List<String>> get() = _suggestedTags.filterNotNull()
     private val _suggestedTags = MutableStateFlow<List<String>?>(null)
