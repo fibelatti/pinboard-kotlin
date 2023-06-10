@@ -9,6 +9,8 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.fibelatti.core.extension.shareText
+import com.fibelatti.core.functional.Failure
+import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppConfig.PINBOARD_USER_URL
@@ -225,23 +227,34 @@ class PostListFragment @Inject constructor(
             .onEach { throwable -> handleError(throwable, postListViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)
 
-        postDetailViewModel.deleted
-            .onEach { requireView().showBanner(getString(R.string.posts_deleted_feedback)) }
-            .launchInAndFlowWith(viewLifecycleOwner)
-        postDetailViewModel.deleteError
-            .onEach {
-                MaterialAlertDialogBuilder(requireContext()).apply {
-                    setMessage(R.string.posts_deleted_error)
-                    setPositiveButton(R.string.hint_ok) { dialog, _ -> dialog?.dismiss() }
-                }.show()
+        postDetailViewModel.screenState
+            .onEach { state ->
+                when {
+                    state.deleted is Success<Boolean> && state.deleted.value -> {
+                        requireView().showBanner(getString(R.string.posts_deleted_feedback))
+                    }
+
+                    state.deleted is Failure -> {
+                        MaterialAlertDialogBuilder(requireContext()).apply {
+                            setMessage(R.string.posts_deleted_error)
+                            setPositiveButton(R.string.hint_ok) { dialog, _ -> dialog?.dismiss() }
+                        }.show()
+                    }
+
+                    state.updated is Success<Boolean> && state.updated.value -> {
+                        requireView().showBanner(getString(R.string.posts_marked_as_read_feedback))
+                        mainViewModel.updateState { currentState ->
+                            currentState.copy(actionButton = MainState.ActionButtonComponent.Gone)
+                        }
+                    }
+
+                    state.updated is Failure -> {
+                        requireView().showBanner(getString(R.string.posts_marked_as_read_error))
+                    }
+                }
             }
             .launchInAndFlowWith(viewLifecycleOwner)
-        postDetailViewModel.updated
-            .onEach { requireView().showBanner(getString(R.string.posts_marked_as_read_feedback)) }
-            .launchInAndFlowWith(viewLifecycleOwner)
-        postDetailViewModel.updateError
-            .onEach { requireView().showBanner(getString(R.string.posts_marked_as_read_error)) }
-            .launchInAndFlowWith(viewLifecycleOwner)
+
         postDetailViewModel.error
             .onEach { throwable -> handleError(throwable, postDetailViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)

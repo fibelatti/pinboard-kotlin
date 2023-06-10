@@ -90,7 +90,7 @@ fun BookmarkListScreen(
         val postListContent = appState ?: return@Surface
 
         val postListLoading = postListContent.shouldLoad != Loaded
-        val postDetailLoading by postDetailViewModel.loading.collectAsStateWithLifecycle(initialValue = false)
+        val postDetailScreenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
 
         val postListError by postListViewModel.error.collectAsStateWithLifecycle()
         val postDetailError by postDetailViewModel.error.collectAsStateWithLifecycle()
@@ -106,7 +106,7 @@ fun BookmarkListScreen(
 
         BookmarkListScreen(
             posts = postListContent.posts,
-            isLoading = (postListLoading || postDetailLoading) && !hasError,
+            isLoading = (postListLoading || postDetailScreenState.isLoading) && !hasError,
             onScrollDirectionChanged = mainViewModel::setCurrentScrollDirection,
             onNextPageRequested = { appStateViewModel.runAction(GetNextPostPage) },
             searchParameters = postListContent.searchParameters,

@@ -101,8 +101,7 @@ fun EditBookmarkScreen(
     val currentState = postState ?: return
 
     val editPostScreenState by editPostViewModel.screenState.collectAsStateWithLifecycle()
-
-    val isDetailLoading by postDetailViewModel.loading.collectAsStateWithLifecycle(initialValue = false)
+    val postDetailScreenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
 
     val tagManagerState by tagManagerViewModel.state.collectAsStateWithLifecycle()
 
@@ -113,7 +112,7 @@ fun EditBookmarkScreen(
 
     EditBookmarkScreen(
         post = currentState,
-        isLoading = editPostScreenState.isLoading || isDetailLoading,
+        isLoading = editPostScreenState.isLoading || postDetailScreenState.isLoading,
         onUrlChanged = { newValue ->
             editPostViewModel.updatePost { post -> post.copy(url = newValue) }
         },

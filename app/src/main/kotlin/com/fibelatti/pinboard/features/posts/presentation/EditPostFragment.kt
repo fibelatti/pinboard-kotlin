@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.fibelatti.core.extension.doOnApplyWindowInsets
 import com.fibelatti.core.extension.hideKeyboard
+import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.di.MainVariant
@@ -211,8 +212,12 @@ class EditPostFragment @Inject constructor(
     }
 
     private fun setupPostDetailViewModel() {
-        postDetailViewModel.deleted
-            .onEach { requireView().showBanner(getString(R.string.posts_deleted_feedback)) }
+        postDetailViewModel.screenState
+            .onEach { state ->
+                if (state.deleted is Success<Boolean> && state.deleted.value) {
+                    requireView().showBanner(getString(R.string.posts_deleted_feedback))
+                }
+            }
             .launchInAndFlowWith(viewLifecycleOwner)
         postDetailViewModel.error
             .onEach { throwable -> handleError(throwable, postDetailViewModel::errorHandled) }

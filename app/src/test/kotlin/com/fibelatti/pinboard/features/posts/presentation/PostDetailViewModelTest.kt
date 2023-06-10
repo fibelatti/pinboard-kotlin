@@ -4,13 +4,11 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.createPost
-import com.fibelatti.pinboard.collectIn
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostDeleted
 import com.fibelatti.pinboard.features.appstate.PostSaved
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.DeletePost
-import com.fibelatti.pinboard.isEmpty
 import com.fibelatti.pinboard.randomBoolean
 import com.fibelatti.pinboard.runUnconfinedTest
 import com.google.common.truth.Truth.assertThat
@@ -40,15 +38,17 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
         val error = Exception()
         coEvery { mockDeletePost(mockPost.url) } returns Failure(error)
 
-        val deleted = postDetailViewModel.deleted.collectIn(this)
-
         // WHEN
         postDetailViewModel.deletePost(mockPost)
 
         // THEN
-        assertThat(postDetailViewModel.loading.first()).isEqualTo(false)
-        assertThat(postDetailViewModel.deleteError.first()).isEqualTo(error)
-        assertThat(deleted).isEmpty()
+        assertThat(postDetailViewModel.screenState.first()).isEqualTo(
+            PostDetailViewModel.ScreenState(
+                isLoading = false,
+                deleted = Failure(error),
+                updated = Success(false),
+            ),
+        )
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 
@@ -57,16 +57,17 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
         // GIVEN
         coEvery { mockDeletePost(mockPost.url) } returns Success(Unit)
 
-        val deleted = postDetailViewModel.deleted.collectIn(this)
-
         // WHEN
         postDetailViewModel.deletePost(mockPost)
 
         // THEN
-        assertThat(postDetailViewModel.loading.first()).isEqualTo(true)
-        assertThat(postDetailViewModel.error.isEmpty()).isTrue()
-        assertThat(deleted.first()).isEqualTo(Unit)
-
+        assertThat(postDetailViewModel.screenState.first()).isEqualTo(
+            PostDetailViewModel.ScreenState(
+                isLoading = true,
+                deleted = Success(true),
+                updated = Success(false),
+            ),
+        )
         coVerify { mockAppStateRepository.runAction(PostDeleted) }
     }
 
@@ -76,16 +77,17 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
         val error = Exception()
         coEvery { mockAddPost(any()) } returns Failure(error)
 
-        val updated = postDetailViewModel.updated.collectIn(this)
-
         // WHEN
         postDetailViewModel.toggleReadLater(mockPost)
 
         // THEN
-        assertThat(postDetailViewModel.loading.first()).isEqualTo(false)
-        assertThat(postDetailViewModel.updateError.first()).isEqualTo(error)
-        assertThat(updated).isEmpty()
-
+        assertThat(postDetailViewModel.screenState.first()).isEqualTo(
+            PostDetailViewModel.ScreenState(
+                isLoading = false,
+                deleted = Success(false),
+                updated = Failure(error),
+            ),
+        )
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
     }
 
@@ -108,16 +110,17 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
 
         coEvery { mockAddPost(expectedParams) } returns Success(mockPost)
 
-        val updated = postDetailViewModel.updated.collectIn(this)
-
         // WHEN
         postDetailViewModel.toggleReadLater(post)
 
         // THEN
-        assertThat(postDetailViewModel.loading.first()).isEqualTo(false)
-        assertThat(postDetailViewModel.updateError.isEmpty()).isTrue()
-        assertThat(updated.first()).isEqualTo(Unit)
-
+        assertThat(postDetailViewModel.screenState.first()).isEqualTo(
+            PostDetailViewModel.ScreenState(
+                isLoading = false,
+                deleted = Success(false),
+                updated = Success(true),
+            ),
+        )
         coVerify {
             mockAddPost(expectedParams)
             mockAppStateRepository.runAction(PostSaved(mockPost))
