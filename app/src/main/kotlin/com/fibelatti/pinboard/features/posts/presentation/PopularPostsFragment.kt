@@ -16,7 +16,6 @@ import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.copyToClipboard
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
-import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -63,6 +62,7 @@ class PopularPostsFragment @Inject constructor() : BaseFragment() {
                         R.string.posts_share_title,
                         option.post.url,
                     )
+
                     is PopularPostQuickActions.OpenBrowser -> startActivity(
                         Intent(Intent.ACTION_VIEW, Uri.parse(option.post.url)),
                     )
@@ -90,9 +90,6 @@ class PopularPostsFragment @Inject constructor() : BaseFragment() {
             .onEach { navigateBack() }
             .launchInAndFlowWith(viewLifecycleOwner)
 
-        popularPostsViewModel.saved
-            .onEach { requireView().showBanner(getString(R.string.posts_saved_feedback)) }
-            .launchInAndFlowWith(viewLifecycleOwner)
         popularPostsViewModel.error
             .onEach { throwable -> handleError(throwable, popularPostsViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)

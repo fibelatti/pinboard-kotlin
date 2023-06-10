@@ -4,7 +4,6 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.createPost
-import com.fibelatti.pinboard.collectIn
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostSaved
 import com.fibelatti.pinboard.features.appstate.SetPopularPosts
@@ -34,10 +33,10 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
     private val mockAddPost = mockk<AddPost>()
 
     private val popularPostsViewModel = PopularPostsViewModel(
-        mockAppStateRepository,
-        mockUserRepository,
-        mockGetPopularPosts,
-        mockAddPost,
+        appStateRepository = mockAppStateRepository,
+        userRepository = mockUserRepository,
+        getPopularPosts = mockGetPopularPosts,
+        addPost = mockAddPost,
     )
 
     @Test
@@ -80,7 +79,12 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
 
             // THEN
             coVerify { mockAppStateRepository.runAction(PostSaved(post.copy(tags = emptyList()))) }
-            assertThat(popularPostsViewModel.loading.isEmpty()).isTrue()
+            assertThat(popularPostsViewModel.screenState.first()).isEqualTo(
+                PopularPostsViewModel.ScreenState(
+                    isLoading = false,
+                    saved = false,
+                ),
+            )
             coVerify(exactly = 0) { mockAddPost.invoke(any()) }
         }
 
@@ -91,15 +95,18 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
         val error = Exception()
         coEvery { mockAddPost(any()) } returns Failure(error)
         every { mockUserRepository.editAfterSharing } returns mockk()
-        val saved = popularPostsViewModel.saved.collectIn(this)
 
         // WHEN
         popularPostsViewModel.saveLink(post)
 
         // THEN
-        assertThat(popularPostsViewModel.loading.first()).isEqualTo(false)
+        assertThat(popularPostsViewModel.screenState.first()).isEqualTo(
+            PopularPostsViewModel.ScreenState(
+                isLoading = false,
+                saved = false,
+            ),
+        )
         assertThat(popularPostsViewModel.error.first()).isEqualTo(error)
-        assertThat(saved).isEmpty()
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any<PostSaved>()) }
     }
 
@@ -127,14 +134,16 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
             every { mockUserRepository.defaultTags } returns mockTags
             coEvery { mockAddPost(params) } returns Success(post)
 
-            val saved = popularPostsViewModel.saved.collectIn(this)
-
             // WHEN
             popularPostsViewModel.saveLink(post)
 
             // THEN
-            assertThat(popularPostsViewModel.loading.first()).isEqualTo(false)
-            assertThat(saved.first()).isEqualTo(Unit)
+            assertThat(popularPostsViewModel.screenState.first()).isEqualTo(
+                PopularPostsViewModel.ScreenState(
+                    isLoading = false,
+                    saved = true,
+                ),
+            )
             assertThat(popularPostsViewModel.error.isEmpty()).isTrue()
             coVerify { mockAppStateRepository.runAction(PostSaved(post)) }
         }

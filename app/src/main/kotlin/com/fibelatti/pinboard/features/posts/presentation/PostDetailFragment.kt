@@ -103,10 +103,12 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
                         MainState.MenuItemComponent.EditBookmark,
                         MainState.MenuItemComponent.OpenInBrowser,
                     )
+
                     is PopularPostDetailContent -> content.post to listOf(
                         MainState.MenuItemComponent.SaveBookmark,
                         MainState.MenuItemComponent.OpenInBrowser,
                     )
+
                     else -> return@onEach
                 }
 
@@ -196,8 +198,13 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun setupPopularPostsViewModel() {
-        popularPostsViewModel.saved
-            .onEach { requireView().showBanner(getString(R.string.posts_saved_feedback)) }
+        popularPostsViewModel.screenState
+            .onEach { state ->
+                if (state.saved) {
+                    requireView().showBanner(getString(R.string.posts_saved_feedback))
+                    popularPostsViewModel.userNotified()
+                }
+            }
             .launchInAndFlowWith(viewLifecycleOwner)
         popularPostsViewModel.error
             .onEach { throwable -> handleError(throwable, popularPostsViewModel::errorHandled) }

@@ -12,10 +12,10 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPopularPosts
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,11 +27,8 @@ class PopularPostsViewModel @Inject constructor(
     private val addPost: AddPost,
 ) : BaseViewModel() {
 
-    val loading: Flow<Boolean> get() = _loading.filterNotNull()
-    private val _loading = MutableStateFlow<Boolean?>(null)
-
-    val saved: Flow<Unit> get() = _saved
-    private val _saved = MutableSharedFlow<Unit>()
+    private val _screenState = MutableStateFlow(ScreenState())
+    val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
 
     fun getPosts() {
         launch {
@@ -57,16 +54,44 @@ class PopularPostsViewModel @Inject constructor(
     }
 
     private suspend fun addBookmark(post: Post) {
-        _loading.value = true
+        _screenState.update { currentState ->
+            currentState.copy(isLoading = true)
+        }
+
         addPost(AddPost.Params(post))
             .onSuccess {
-                _loading.value = false
-                _saved.emit(Unit)
+                _screenState.update { currentState ->
+                    currentState.copy(
+                        isLoading = false,
+                        saved = true,
+                    )
+                }
+
                 appStateRepository.runAction(PostSaved(it))
             }
             .onFailure { error ->
-                _loading.value = false
+                _screenState.update { currentState ->
+                    currentState.copy(
+                        isLoading = false,
+                        saved = false,
+                    )
+                }
+
                 handleError(error)
             }
     }
+
+    fun userNotified() {
+        _screenState.update { currentState ->
+            currentState.copy(
+                isLoading = false,
+                saved = false,
+            )
+        }
+    }
+
+    data class ScreenState(
+        val isLoading: Boolean = false,
+        val saved: Boolean = false,
+    )
 }

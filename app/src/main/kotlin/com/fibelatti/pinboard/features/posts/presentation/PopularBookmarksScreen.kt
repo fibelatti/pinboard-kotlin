@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -29,6 +30,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
+import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.RefreshPopular
 import com.fibelatti.pinboard.features.appstate.ViewPost
@@ -52,7 +54,10 @@ fun PopularBookmarksScreen(
         val appState by appStateViewModel.popularPostsContent.collectAsStateWithLifecycle(initialValue = null)
         val popularPostsContent = appState ?: return@Surface
 
-        val popularPostsLoading by popularPostsViewModel.loading.collectAsStateWithLifecycle(initialValue = false)
+        val popularPostsScreenState by popularPostsViewModel.screenState.collectAsStateWithLifecycle()
+
+        val localView = LocalView.current
+        val savedFeedback = stringResource(id = R.string.posts_saved_feedback)
 
         LaunchedEffect(popularPostsContent.shouldLoad) {
             if (popularPostsContent.shouldLoad) {
@@ -60,9 +65,16 @@ fun PopularBookmarksScreen(
             }
         }
 
+        LaunchedEffect(popularPostsScreenState.saved) {
+            if (popularPostsScreenState.saved) {
+                localView.showBanner(savedFeedback)
+                popularPostsViewModel.userNotified()
+            }
+        }
+
         CrossfadeLoadingLayout(
             data = popularPostsContent.posts
-                .takeUnless { popularPostsContent.shouldLoad || popularPostsLoading }
+                .takeUnless { popularPostsContent.shouldLoad || popularPostsScreenState.isLoading }
                 ?.toStableList(),
             modifier = Modifier.fillMaxSize(),
         ) { posts ->
