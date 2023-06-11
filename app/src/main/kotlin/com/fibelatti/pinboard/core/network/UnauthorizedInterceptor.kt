@@ -12,11 +12,6 @@ import javax.inject.Singleton
 @Singleton
 class UnauthorizedInterceptor @Inject constructor() : Interceptor {
 
-    private val loginFailedCodes = listOf(
-        HttpURLConnection.HTTP_UNAUTHORIZED,
-        HttpURLConnection.HTTP_INTERNAL_ERROR,
-    )
-
     private val _unauthorized = MutableSharedFlow<Unit>(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
@@ -26,7 +21,7 @@ class UnauthorizedInterceptor @Inject constructor() : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val response = catchingSocketTimeoutException(chain, chain::request)
 
-        if (response.code in loginFailedCodes) {
+        if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
             _unauthorized.tryEmit(Unit)
         }
 

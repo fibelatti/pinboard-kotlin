@@ -1,11 +1,13 @@
 package com.fibelatti.pinboard.features.posts.data
 
 import androidx.annotation.VisibleForTesting
+import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.getOrThrow
 import com.fibelatti.core.functional.mapCatching
+import com.fibelatti.core.functional.mapFailure
 import com.fibelatti.pinboard.core.AppConfig.API_BASE_URL_LENGTH
 import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
 import com.fibelatti.pinboard.core.AppConfig.MALFORMED_OBJECT_THRESHOLD
@@ -62,11 +64,23 @@ class PostsDataSourcePinboardApi @Inject constructor(
 
     private var pagedRequestsJob: Job? = null
 
+    private fun <T> Result<T>.mapApiRequestFailure(
+        endpoint: String,
+    ): Result<T> = mapFailure { throwable ->
+        val mappedValue = if (throwable is HttpException) {
+            RuntimeException("Network call to `$endpoint` failed. HTTP Code ${throwable.code()}.", throwable)
+        } else {
+            throwable
+        }
+
+        Failure(mappedValue)
+    }
+
     override suspend fun update(): Result<String> = resultFromNetwork {
         withTimeout(SERVER_DOWN_TIMEOUT_SHORT) {
             postsApi.update().updateTime
         }
-    }
+    }.mapApiRequestFailure(endpoint = "posts/update")
 
     override suspend fun add(
         url: String,
@@ -262,6 +276,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
         pagedRequestsJob?.cancel()
 
         val apiData = resultFromNetwork { postsApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
+            .mapApiRequestFailure(endpoint = "posts/all")
             .mapCatching { posts ->
                 postsDao.deleteAllSyncedPosts()
                 savePosts(posts.let(postRemoteDtoMapper::mapList))

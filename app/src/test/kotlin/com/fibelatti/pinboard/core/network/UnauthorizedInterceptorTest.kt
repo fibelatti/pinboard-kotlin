@@ -44,19 +44,6 @@ internal class UnauthorizedInterceptorTest {
     }
 
     @Test
-    fun `WHEN proceed code is HTTP_INTERNAL_ERROR THEN unauthorized emits`() = runTest(UnconfinedTestDispatcher()) {
-        // GIVEN
-        every { mockResponse.code } returns HttpURLConnection.HTTP_INTERNAL_ERROR
-        val result = async { unauthorizedInterceptor.unauthorized.firstOrNull() }
-
-        // WHEN
-        unauthorizedInterceptor.intercept(mockChain)
-
-        // THEN
-        assertThat(result.await()).isNotNull()
-    }
-
-    @Test
     fun `WHEN proceed code is not HTTP_UNAUTHORIZED THEN unauthorized does not emit`() =
         runTest(UnconfinedTestDispatcher()) {
             // GIVEN

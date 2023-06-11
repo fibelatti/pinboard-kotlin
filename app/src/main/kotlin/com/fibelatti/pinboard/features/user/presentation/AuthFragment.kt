@@ -100,7 +100,11 @@ class AuthFragment @Inject constructor() : BaseFragment() {
         if (error.isServerException()) {
             binding.layoutAuthForm.textInputLayoutAuthToken.showError(getString(R.string.server_timeout_error))
         } else {
-            activity?.sendErrorReport(error, altMessage = getString(R.string.auth_error))
+            activity?.sendErrorReport(
+                throwable = error,
+                title = getString(R.string.auth_error_title),
+                altMessage = getString(R.string.auth_error)
+            )
         }
     }
 }
