@@ -39,6 +39,7 @@ class AuthFragment @Inject constructor() : BaseFragment() {
 
         activity?.sendErrorReport(
             throwable = error,
+            title = getString(R.string.auth_error_title),
             altMessage = getString(R.string.auth_error),
             postAction = postAction,
         )

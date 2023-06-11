@@ -49,11 +49,17 @@ abstract class BaseActivity : AppCompatActivity() {
 
 fun FragmentActivity.sendErrorReport(
     throwable: Throwable,
+    title: String = "",
     altMessage: String = "",
     postAction: () -> Unit = {},
 ) {
     MaterialAlertDialogBuilder(this).apply {
         val message = altMessage.ifEmpty { getString(R.string.error_report_rationale) }
+
+        if (title.isNotBlank()) {
+            setTitle(title)
+        }
+
         setMessage(message)
         setPositiveButton(R.string.error_report) { dialog, _ ->
             val sw = StringWriter()

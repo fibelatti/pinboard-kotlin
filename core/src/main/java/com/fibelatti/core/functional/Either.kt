@@ -192,6 +192,18 @@ inline fun <T, R> Result<T>.mapCatching(fn: (T) -> R): Result<R> = when (this) {
 }
 
 /**
+ * Calls a mapper function with the value of `this` as its parameter if `this` is an instance of [Failure].
+ *
+ * @param onFailure mapper function to be invoked with `this` value
+ *
+ * @return the result of [onFailure] if `this` is an instance of [Failure], `this` otherwise
+ */
+inline fun <T> Result<T>.mapFailure(onFailure: (Throwable) -> Result<T>): Result<T> = when (this) {
+    is Success -> this
+    is Failure -> onFailure(this.value)
+}
+
+/**
  * Wraps [block] in a try catch.
  *
  * @return a [Success] with the result of [block] as its value if successful, [Failure] with the exception as its value
