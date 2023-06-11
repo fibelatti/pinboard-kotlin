@@ -15,8 +15,8 @@ class PopularActionHandler @Inject constructor(
     }
 
     private fun refresh(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PopularPostsContent>(currentContent) {
-            it.copy(
+        return currentContent.reduce<PopularPostsContent> { popularPostsContent ->
+            popularPostsContent.copy(
                 shouldLoad = connectivityInfoProvider.isConnected(),
                 isConnected = connectivityInfoProvider.isConnected(),
             )
@@ -24,8 +24,8 @@ class PopularActionHandler @Inject constructor(
     }
 
     private fun setPosts(action: SetPopularPosts, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PopularPostsContent>(currentContent) {
-            it.copy(
+        return currentContent.reduce<PopularPostsContent> { popularPostsContent ->
+            popularPostsContent.copy(
                 posts = action.posts,
                 shouldLoad = false,
             )

@@ -17,8 +17,8 @@ class NoteActionHandler @Inject constructor(
     }
 
     private fun refresh(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<NoteListContent>(currentContent) {
-            it.copy(
+        return currentContent.reduce<NoteListContent> { noteListContent ->
+            noteListContent.copy(
                 shouldLoad = connectivityInfoProvider.isConnected(),
                 isConnected = connectivityInfoProvider.isConnected(),
             )
@@ -26,8 +26,8 @@ class NoteActionHandler @Inject constructor(
     }
 
     private fun setNotes(action: SetNotes, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<NoteListContent>(currentContent) {
-            it.copy(
+        return currentContent.reduce<NoteListContent> { noteListContent ->
+            noteListContent.copy(
                 notes = action.notes,
                 shouldLoad = false,
             )
@@ -35,8 +35,8 @@ class NoteActionHandler @Inject constructor(
     }
 
     private fun setNote(action: SetNote, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<NoteDetailContent>(currentContent) {
-            it.copy(note = Either.Right(action.note))
+        return currentContent.reduce<NoteDetailContent> { noteListContent ->
+            noteListContent.copy(note = Either.Right(action.note))
         }
     }
 }

@@ -18,19 +18,19 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
     }
 
     private fun refresh(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<SearchContent>(currentContent) {
-            it.copy(shouldLoadTags = true)
+        return currentContent.reduce<SearchContent> { searchContent ->
+            searchContent.copy(shouldLoadTags = true)
         }
     }
 
     private fun setSearchTerm(action: SetTerm, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<SearchContent>(currentContent) { searchContent ->
+        return currentContent.reduce<SearchContent> { searchContent ->
             searchContent.copy(searchParameters = searchContent.searchParameters.copy(term = action.term))
         }
     }
 
     private fun setSearchTags(action: SetSearchTags, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<SearchContent>(currentContent) { searchContent ->
+        return currentContent.reduce<SearchContent> { searchContent ->
             searchContent.copy(
                 availableTags = action.tags.filterNot { it in searchContent.searchParameters.tags },
                 allTags = action.tags,
@@ -59,44 +59,40 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
     }
 
     private fun removeSearchTag(action: RemoveSearchTag, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<SearchContent>(currentContent) { searchView ->
-            val newSearchParameters = searchView.searchParameters.copy(
-                tags = searchView.searchParameters.tags.minus(action.tag),
+        return currentContent.reduce<SearchContent> { searchContent ->
+            val newSearchParameters = searchContent.searchParameters.copy(
+                tags = searchContent.searchParameters.tags.minus(action.tag),
             )
 
-            searchView.copy(
+            searchContent.copy(
                 searchParameters = newSearchParameters,
-                availableTags = searchView.allTags.filterNot { it in newSearchParameters.tags },
+                availableTags = searchContent.allTags.filterNot { it in newSearchParameters.tags },
             )
         }
     }
 
     private fun search(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<SearchContent>(currentContent) {
-            it.previousContent.copy(
+        return currentContent.reduce<SearchContent> { searchContent ->
+            searchContent.previousContent.copy(
                 category = All,
                 sortType = NewestFirst,
-                searchParameters = it.searchParameters.copy(term = it.searchParameters.term),
+                searchParameters = searchContent.searchParameters.copy(term = searchContent.searchParameters.term),
                 shouldLoad = ShouldLoadFirstPage,
             )
         }
     }
 
     private fun clearSearch(currentContent: Content): Content {
-        return when (currentContent) {
-            is PostListContent -> {
-                currentContent.copy(
-                    searchParameters = SearchParameters(),
-                    shouldLoad = ShouldLoadFirstPage,
-                )
-            }
-            is SearchContent -> {
-                currentContent.previousContent.copy(
-                    searchParameters = SearchParameters(),
-                    shouldLoad = ShouldLoadFirstPage,
-                )
-            }
-            else -> currentContent
+        return currentContent.reduce<PostListContent> { postListContent ->
+            postListContent.copy(
+                searchParameters = SearchParameters(),
+                shouldLoad = ShouldLoadFirstPage,
+            )
+        }.reduce<SearchContent> { searchContent ->
+            searchContent.previousContent.copy(
+                searchParameters = SearchParameters(),
+                shouldLoad = ShouldLoadFirstPage,
+            )
         }
     }
 }

@@ -18,8 +18,8 @@ class TagActionHandler @Inject constructor(
     }
 
     private fun refresh(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<TagListContent>(currentContent) {
-            it.copy(
+        return currentContent.reduce<TagListContent> { tagListContent ->
+            tagListContent.copy(
                 shouldLoad = connectivityInfoProvider.isConnected(),
                 isConnected = connectivityInfoProvider.isConnected(),
             )
@@ -27,7 +27,7 @@ class TagActionHandler @Inject constructor(
     }
 
     private fun setTags(action: SetTags, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<TagListContent>(currentContent) { tagListContent ->
+        return currentContent.reduce<TagListContent> { tagListContent ->
             tagListContent.copy(
                 tags = action.tags,
                 shouldLoad = false,

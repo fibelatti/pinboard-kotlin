@@ -1,5 +1,9 @@
 package com.fibelatti.pinboard.features.appstate
 
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
+
 /**
  * A base class for ActionHandlers that can take [Action]s of type [A] and return [Content].
  */
@@ -16,23 +20,21 @@ abstract class ActionHandler<A : Action> {
     abstract suspend fun runAction(action: A, currentContent: Content): Content
 
     /**
-     * Service method to check if [currentContent] is of type [T] before running [body] with it as a parameter. If type
-     * is not matched than the same [currentContent] is returned unchanged.
+     * Service method to check if [this] is of type [T] before running [body] with it as a parameter.
+     * If the type doesn't match then the receiver is returned unchanged.
      *
-     * @param T the [Content] type to check
-     * @param currentContent the [Content] to be checked
+     * @receiver the [Content] to be checked
+     * @param T the expected [Content] type
      * @param body the function to invoke if the type matches
-     *
-     * @return the result of [body] if [currentContent] is of type [T], [currentContent] otherwise
+     * @return the result of [body] if [this] is of type [T], [this] unchanged otherwise.
      */
-    inline fun <reified T : Content> runOnlyForCurrentContentOfType(
-        currentContent: Content,
+    @OptIn(ExperimentalContracts::class)
+    inline fun <reified T : Content> Content.reduce(
         body: (T) -> Content,
     ): Content {
-        return if (currentContent is T) {
-            body(currentContent)
-        } else {
-            currentContent
+        contract {
+            callsInPlace(body, InvocationKind.EXACTLY_ONCE)
         }
+        return if (this is T) body(this) else this
     }
 }

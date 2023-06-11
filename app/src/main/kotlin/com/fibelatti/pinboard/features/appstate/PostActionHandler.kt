@@ -23,8 +23,8 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun refresh(currentContent: Content, force: Boolean): Content {
-        return if (currentContent is PostListContent) {
-            currentContent.copy(
+        return currentContent.reduce<PostListContent> { postListContent ->
+            postListContent.copy(
                 shouldLoad = when {
                     !connectivityInfoProvider.isConnected() -> Loaded
                     force -> ShouldForceLoad
@@ -33,13 +33,11 @@ class PostActionHandler @Inject constructor(
                 isConnected = connectivityInfoProvider.isConnected(),
                 canForceSync = !force,
             )
-        } else {
-            currentContent
         }
     }
 
     private fun setPosts(action: SetPosts, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) { currentPostList ->
+        return currentContent.reduce<PostListContent> { postListContent ->
             val posts = action.postListResult.posts.takeIf { it.isNotEmpty() }?.let { newList ->
                 PostList(
                     list = newList,
@@ -48,7 +46,7 @@ class PostActionHandler @Inject constructor(
                     shouldScrollToTop = true,
                 )
             }
-            currentPostList.copy(
+            postListContent.copy(
                 posts = posts,
                 shouldLoad = if (action.postListResult.upToDate) Loaded else Syncing,
             )
@@ -56,9 +54,9 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun getNextPostPage(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
-            if (it.posts != null) {
-                it.copy(shouldLoad = ShouldLoadNextPage(offset = it.currentCount))
+        return currentContent.reduce<PostListContent> { postListContent ->
+            if (postListContent.posts != null) {
+                postListContent.copy(shouldLoad = ShouldLoadNextPage(offset = postListContent.currentCount))
             } else {
                 currentContent
             }
@@ -66,10 +64,9 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun setNextPostPage(action: SetNextPostPage, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) { currentPostList ->
-            if (currentPostList.posts != null) {
-                val currentList = currentPostList.currentList
-                val updatedList = currentList.union(action.postListResult.posts).toList()
+        return currentContent.reduce<PostListContent> { postListContent ->
+            if (postListContent.posts != null) {
+                val updatedList = postListContent.currentList.union(action.postListResult.posts).toList()
                 val posts = PostList(
                     list = updatedList,
                     totalCount = action.postListResult.totalCount,
@@ -77,7 +74,7 @@ class PostActionHandler @Inject constructor(
                     shouldScrollToTop = false,
                 )
 
-                currentPostList.copy(posts = posts, shouldLoad = Loaded)
+                postListContent.copy(posts = posts, shouldLoad = Loaded)
             } else {
                 currentContent
             }
@@ -85,20 +82,18 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun toggleSorting(currentContent: Content): Content {
-        return if (currentContent is PostListContent) {
+        return currentContent.reduce<PostListContent> { postListContent ->
             if (connectivityInfoProvider.isConnected()) {
-                currentContent.copy(
-                    sortType = when (currentContent.sortType) {
+                postListContent.copy(
+                    sortType = when (postListContent.sortType) {
                         is NewestFirst -> OldestFirst
                         is OldestFirst -> NewestFirst
                     },
                     shouldLoad = ShouldLoadFirstPage,
                 )
             } else {
-                currentContent.copy(isConnected = false)
+                postListContent.copy(isConnected = false)
             }
-        } else {
-            currentContent
         }
     }
 
@@ -121,72 +116,64 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun postSaved(action: PostSaved, currentContent: Content): Content {
-        return when (currentContent) {
-            is PostListContent -> currentContent.copy(shouldLoad = ShouldLoadFirstPage)
-            is AddPostContent -> currentContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
-            is PostDetailContent -> {
-                currentContent.copy(
-                    post = action.post,
-                    previousContent = currentContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage),
-                )
-            }
+        return currentContent.reduce<PostListContent> { postListContent ->
+            postListContent.copy(shouldLoad = ShouldLoadFirstPage)
+        }.reduce<AddPostContent> { addPostContent ->
+            addPostContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
+        }.reduce<PostDetailContent> { postDetailContent ->
+            postDetailContent.copy(
+                post = action.post,
+                previousContent = postDetailContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage),
+            )
+        }.reduce<EditPostContent> { editPostContent ->
+            when (editPostContent.previousContent) {
+                is PostDetailContent -> {
+                    val postDetail = editPostContent.previousContent
 
-            is EditPostContent -> {
-                when (currentContent.previousContent) {
-                    is PostDetailContent -> {
-                        val postDetail = currentContent.previousContent
-
-                        postDetail.copy(
-                            post = action.post,
-                            previousContent = postDetail.previousContent.copy(shouldLoad = ShouldLoadFirstPage),
-                        )
-                    }
-
-                    is PostListContent -> {
-                        currentContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
-                    }
-
-                    else -> currentContent.previousContent
+                    postDetail.copy(
+                        post = action.post,
+                        previousContent = postDetail.previousContent.copy(shouldLoad = ShouldLoadFirstPage),
+                    )
                 }
-            }
 
-            is PopularPostDetailContent -> {
-                val updatedCurrentContent = currentContent.copy(
-                    previousContent = currentContent.previousContent.copy(
-                        previousContent = currentContent.previousContent.previousContent.copy(
-                            shouldLoad = ShouldLoadFirstPage,
-                        ),
-                    ),
-                )
-
-                if (userRepository.editAfterSharing is EditAfterSharing.AfterSaving) {
-                    EditPostContent(post = action.post, previousContent = updatedCurrentContent)
-                } else {
-                    updatedCurrentContent
+                is PostListContent -> {
+                    editPostContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
                 }
-            }
 
-            is PopularPostsContent -> {
-                val updatedCurrentContent = currentContent.copy(
-                    previousContent = currentContent.previousContent.copy(
+                else -> editPostContent.previousContent
+            }
+        }.reduce<PopularPostDetailContent> { popularPostDetailContent ->
+            val updatedCurrentContent = popularPostDetailContent.copy(
+                previousContent = popularPostDetailContent.previousContent.copy(
+                    previousContent = popularPostDetailContent.previousContent.previousContent.copy(
                         shouldLoad = ShouldLoadFirstPage,
                     ),
-                )
+                ),
+            )
 
-                if (userRepository.editAfterSharing !is EditAfterSharing.SkipEdit) {
-                    EditPostContent(post = action.post, previousContent = updatedCurrentContent)
-                } else {
-                    updatedCurrentContent
-                }
+            if (userRepository.editAfterSharing is EditAfterSharing.AfterSaving) {
+                EditPostContent(post = action.post, previousContent = updatedCurrentContent)
+            } else {
+                updatedCurrentContent
             }
+        }.reduce<PopularPostsContent> { popularPostsContent ->
+            val updatedCurrentContent = popularPostsContent.copy(
+                previousContent = popularPostsContent.previousContent.copy(
+                    shouldLoad = ShouldLoadFirstPage,
+                ),
+            )
 
-            else -> currentContent
+            if (userRepository.editAfterSharing !is EditAfterSharing.SkipEdit) {
+                EditPostContent(post = action.post, previousContent = updatedCurrentContent)
+            } else {
+                updatedCurrentContent
+            }
         }
     }
 
     private fun postDeleted(currentContent: Content): Content {
-        return if (currentContent is ContentWithHistory) {
-            val previousContent = currentContent.previousContent
+        return currentContent.reduce<ContentWithHistory> { contentWithHistory ->
+            val previousContent = contentWithHistory.previousContent
             when {
                 currentContent is PostListContent -> {
                     currentContent.copy(shouldLoad = ShouldLoadFirstPage)
@@ -202,8 +189,6 @@ class PostActionHandler @Inject constructor(
 
                 else -> previousContent
             }
-        } else {
-            currentContent
         }
     }
 }

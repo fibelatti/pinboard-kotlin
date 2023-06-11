@@ -35,13 +35,13 @@ class NavigationActionHandler @Inject constructor(
     }
 
     private fun navigateBack(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<ContentWithHistory>(currentContent) {
+        return currentContent.reduce<ContentWithHistory> { contentWithHistory ->
             if (currentContent is UserPreferencesContent) {
                 currentContent.previousContent.copy(
                     showDescription = userRepository.showDescriptionInLists,
                 )
             } else {
-                it.previousContent
+                contentWithHistory.previousContent
             }
         }
     }
@@ -62,48 +62,42 @@ class NavigationActionHandler @Inject constructor(
     private suspend fun viewPost(action: ViewPost, currentContent: Content): Content {
         val preferredDetailsView = userRepository.preferredDetailsView
 
-        return when (currentContent) {
-            is PostListContent -> {
-                when (preferredDetailsView) {
-                    is PreferredDetailsView.InAppBrowser -> {
-                        val shouldLoad: ShouldLoad = markAsRead(action.post)
-                        PostDetailContent(
-                            post = action.post,
-                            previousContent = currentContent.copy(shouldLoad = shouldLoad),
-                            isConnected = connectivityInfoProvider.isConnected(),
-                        )
-                    }
-
-                    is PreferredDetailsView.ExternalBrowser -> {
-                        val shouldLoad: ShouldLoad = markAsRead(action.post)
-                        ExternalBrowserContent(
-                            action.post,
-                            previousContent = currentContent.copy(shouldLoad = shouldLoad),
-                        )
-                    }
-
-                    PreferredDetailsView.Edit -> {
-                        EditPostContent(
-                            post = action.post,
-                            previousContent = currentContent,
-                        )
-                    }
-                }
-            }
-
-            is PopularPostsContent -> {
-                if (preferredDetailsView is PreferredDetailsView.ExternalBrowser) {
-                    ExternalBrowserContent(action.post, previousContent = currentContent)
-                } else {
-                    PopularPostDetailContent(
+        return currentContent.reduce<PostListContent> { postListContent ->
+            when (preferredDetailsView) {
+                is PreferredDetailsView.InAppBrowser -> {
+                    val shouldLoad: ShouldLoad = markAsRead(action.post)
+                    PostDetailContent(
                         post = action.post,
-                        previousContent = currentContent,
+                        previousContent = postListContent.copy(shouldLoad = shouldLoad),
                         isConnected = connectivityInfoProvider.isConnected(),
                     )
                 }
-            }
 
-            else -> currentContent
+                is PreferredDetailsView.ExternalBrowser -> {
+                    val shouldLoad: ShouldLoad = markAsRead(action.post)
+                    ExternalBrowserContent(
+                        action.post,
+                        previousContent = postListContent.copy(shouldLoad = shouldLoad),
+                    )
+                }
+
+                PreferredDetailsView.Edit -> {
+                    EditPostContent(
+                        post = action.post,
+                        previousContent = currentContent,
+                    )
+                }
+            }
+        }.reduce<PopularPostsContent> { popularPostsContent ->
+            if (preferredDetailsView is PreferredDetailsView.ExternalBrowser) {
+                ExternalBrowserContent(action.post, previousContent = currentContent)
+            } else {
+                PopularPostDetailContent(
+                    post = action.post,
+                    previousContent = popularPostsContent,
+                    isConnected = connectivityInfoProvider.isConnected(),
+                )
+            }
         }
     }
 
@@ -135,71 +129,73 @@ class NavigationActionHandler @Inject constructor(
     }
 
     private fun viewSearch(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
-            SearchContent(it.searchParameters, shouldLoadTags = true, previousContent = it)
+        return currentContent.reduce<PostListContent> { postListContent ->
+            SearchContent(
+                searchParameters = postListContent.searchParameters,
+                shouldLoadTags = true,
+                previousContent = postListContent,
+            )
         }
     }
 
     private fun viewAddPost(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
+        return currentContent.reduce<PostListContent> { postListContent ->
             AddPostContent(
                 defaultPrivate = userRepository.defaultPrivate ?: false,
                 defaultReadLater = userRepository.defaultReadLater ?: false,
                 defaultTags = userRepository.defaultTags,
-                previousContent = it,
+                previousContent = postListContent,
             )
         }
     }
 
     private fun viewTags(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
+        return currentContent.reduce<PostListContent> { postListContent ->
             TagListContent(
                 tags = emptyList(),
                 shouldLoad = connectivityInfoProvider.isConnected(),
-                previousContent = it,
+                previousContent = postListContent,
                 isConnected = connectivityInfoProvider.isConnected(),
             )
         }
     }
 
     private fun viewNotes(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
+        return currentContent.reduce<PostListContent> { postListContent ->
             NoteListContent(
                 notes = emptyList(),
                 shouldLoad = connectivityInfoProvider.isConnected(),
-                previousContent = it,
+                previousContent = postListContent,
                 isConnected = connectivityInfoProvider.isConnected(),
             )
         }
     }
 
     private fun viewNote(action: ViewNote, currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<NoteListContent>(currentContent) {
+        return currentContent.reduce<NoteListContent> { noteListContent ->
             NoteDetailContent(
                 id = action.id,
                 note = Either.Left(connectivityInfoProvider.isConnected()),
-                previousContent = it,
+                previousContent = noteListContent,
                 isConnected = connectivityInfoProvider.isConnected(),
             )
         }
     }
 
     private fun viewPopular(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
+        return currentContent.reduce<PostListContent> { postListContent ->
             PopularPostsContent(
                 posts = emptyList(),
                 shouldLoad = connectivityInfoProvider.isConnected(),
-                previousContent = it,
+                previousContent = postListContent,
                 isConnected = connectivityInfoProvider.isConnected(),
             )
         }
     }
 
     private fun viewPreferences(currentContent: Content): Content {
-        return runOnlyForCurrentContentOfType<PostListContent>(currentContent) {
-            UserPreferencesContent(
-                previousContent = it,
-            )
+        return currentContent.reduce<PostListContent> { postListContent ->
+            UserPreferencesContent(previousContent = postListContent)
         }
     }
 }
