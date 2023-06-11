@@ -16,7 +16,6 @@ import com.fibelatti.core.extension.setupForAccessibility
 import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.android.OneShotDelegate
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.extension.isServerException
@@ -71,8 +70,6 @@ class MainActivity : BaseActivity() {
     }
 
     private val binding by viewBinding(ActivityMainBinding::inflate)
-
-    private val oneShotDelegate = OneShotDelegate()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -178,13 +175,7 @@ class MainActivity : BaseActivity() {
             is PostDetailContent -> featureFragments.showPostDetail()
             is ExternalBrowserContent -> {
                 featureFragments.showPostInExternalBrowser(content.post)
-
-                oneShotDelegate.doOnLifecycleEvent(
-                    lifecycleOwner = this,
-                    lifecycleEvent = Lifecycle.Event.ON_RESUME,
-                ) {
-                    appStateViewModel.runAction(NavigateBack)
-                }
+                appStateViewModel.runAction(NavigateBack)
             }
 
             is SearchContent -> featureFragments.showSearch()
