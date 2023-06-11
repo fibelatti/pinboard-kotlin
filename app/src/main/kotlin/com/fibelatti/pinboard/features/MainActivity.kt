@@ -86,9 +86,6 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
 
     private val binding by viewBinding(ActivityMainBinding::inflate)
 
-    // An action that will run once when the Activity is resumed and will be set to null afterwards
-    private var onResumeDelegate: (() -> Unit)? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -101,12 +98,6 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
         setupAccessibility()
         setupViewModels()
         setupAutoUpdate()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        onResumeDelegate?.invoke()
-        onResumeDelegate = null
     }
 
     override fun onDestroy() {
@@ -226,12 +217,14 @@ class MainActivity : BaseActivity(), TitleLayoutHost, BottomBarHost {
                 }
                 featureFragments.showLogin()
             }
+
             is PostListContent -> featureFragments.showPostList()
             is PostDetailContent -> featureFragments.showPostDetail()
             is ExternalBrowserContent -> {
                 featureFragments.showPostInExternalBrowser(content.post)
-                onResumeDelegate = { appStateViewModel.runAction(NavigateBack) }
+                appStateViewModel.runAction(NavigateBack)
             }
+
             is SearchContent -> featureFragments.showSearch()
             is AddPostContent -> featureFragments.showAddPost()
             is EditPostContent -> featureFragments.showEditPost()
