@@ -10,14 +10,18 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -69,28 +73,9 @@ fun UserPreferencesScreen(
     mainVariant: Boolean,
     onDynamicColorChange: () -> Unit,
 ) {
-    val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
-    val suggestedTags by userPreferencesViewModel.suggestedTags.collectAsStateWithLifecycle(emptyList())
-
-    val tagState by tagManagerViewModel.state.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) {
-        tagManagerViewModel.initializeTags(userPreferences.defaultTags)
-    }
-
-    LaunchedEffect(suggestedTags) {
-        tagManagerViewModel.setSuggestedTags(suggestedTags)
-    }
-
-    LaunchedEffect(tagState) {
-        userPreferencesViewModel.saveDefaultTags(tagState.tags)
-        userPreferencesViewModel.searchForTag(tagState.currentQuery, tagState.tags)
-    }
-
     val scrollState = rememberScrollState()
-    val scope = rememberCoroutineScope()
 
-    Column(
+    BoxWithConstraints(
         modifier = Modifier
             .background(color = ExtendedTheme.colors.backgroundNoOverlay)
             .fillMaxSize()
@@ -99,83 +84,87 @@ fun UserPreferencesScreen(
             .navigationBarsPadding()
             .imePadding(),
     ) {
-        AppPreferencesContent(
-            userPreferences = userPreferences,
-            onAutoUpdateChange = userPreferencesViewModel::saveAutoUpdate,
-            onAppearanceChange = { newAppearance ->
-                userPreferencesViewModel.saveAppearance(newAppearance)
+        if (maxWidth < 600.dp) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                AppPreferencesContent(
+                    userPreferencesViewModel = userPreferencesViewModel,
+                    mainVariant = mainVariant,
+                    onDynamicColorChange = onDynamicColorChange,
+                )
 
-                scope.launch {
-                    val mode = when (newAppearance) {
-                        is Appearance.DarkTheme -> AppCompatDelegate.MODE_NIGHT_YES
-                        is Appearance.LightTheme -> AppCompatDelegate.MODE_NIGHT_NO
-                        else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                    }
+                BookmarkingPreferencesContent(
+                    userPreferencesViewModel = userPreferencesViewModel,
+                    tagManagerViewModel = tagManagerViewModel,
+                    mainVariant = mainVariant,
+                    scrollState = scrollState,
+                    modifier = Modifier.padding(top = 32.dp),
+                )
+            }
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                val childWidth = this@BoxWithConstraints.maxWidth / 2
 
-                    AppCompatDelegate.setDefaultNightMode(mode)
-                }
-            },
-            onDynamicColorChange = { newValue: Boolean ->
-                userPreferencesViewModel.saveApplyDynamicColors(newValue)
-                onDynamicColorChange()
-            },
-            onDateFormatChange = userPreferencesViewModel::savePreferredDateFormat,
-            onPeriodicSyncChange = userPreferencesViewModel::savePeriodicSync,
-            onPreferredViewChange = userPreferencesViewModel::savePreferredDetailsView,
-            onMarkAsReadOnOpenChange = userPreferencesViewModel::saveMarkAsReadOnOpen,
-            onShowDescriptionInListsChange = userPreferencesViewModel::saveShowDescriptionInLists,
-            mainVariant = mainVariant,
-        )
+                AppPreferencesContent(
+                    userPreferencesViewModel = userPreferencesViewModel,
+                    mainVariant = mainVariant,
+                    onDynamicColorChange = onDynamicColorChange,
+                    modifier = Modifier.requiredWidth(childWidth),
+                )
 
-        BookmarkingPreferencesContent(
-            userPreferences = userPreferences,
-            onEditAfterSharingChange = userPreferencesViewModel::saveEditAfterSharing,
-            onAutoFillDescriptionChange = userPreferencesViewModel::saveAutoFillDescription,
-            onPrivateByDefaultChange = userPreferencesViewModel::saveDefaultPrivate,
-            onReadLaterByDefaultChange = userPreferencesViewModel::saveDefaultReadLater,
-            mainVariant = mainVariant,
-        )
-
-        Text(
-            text = stringResource(id = R.string.user_preferences_default_tags),
-            modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),
-            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-
-        Text(
-            text = stringResource(id = R.string.user_preferences_default_tags_description),
-            modifier = Modifier.padding(start = 16.dp, top = 4.dp, end = 16.dp),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-
-        val imeVisible by rememberKeyboardState()
-        var tagInputHasFocus by remember { mutableStateOf(false) }
-        var tagInputTop by remember { mutableStateOf(0f) }
-
-        TagManager(
-            searchTagInput = tagState.currentQuery,
-            onSearchTagInputChanged = tagManagerViewModel::setQuery,
-            onAddTagClicked = tagManagerViewModel::addTag,
-            suggestedTags = tagState.suggestedTags.toStableList(),
-            onSuggestedTagClicked = tagManagerViewModel::addTag,
-            currentTagsTitle = stringResource(id = tagState.displayTitle),
-            currentTags = tagState.tags.toStableList(),
-            onRemoveCurrentTagClicked = tagManagerViewModel::removeTag,
-            onSearchTagInputFocusChanged = { hasFocus -> tagInputHasFocus = hasFocus },
-            modifier = Modifier.onGloballyPositioned { tagInputTop = it.boundsInParent().top },
-        )
-
-        LaunchedEffect(imeVisible, tagInputHasFocus, tagInputTop) {
-            if (imeVisible && tagInputHasFocus && scrollState.canScrollForward) {
-                scrollState.animateScrollTo(
-                    value = tagInputTop.toInt(),
-                    animationSpec = tween(durationMillis = 200, delayMillis = 300, easing = LinearEasing),
+                BookmarkingPreferencesContent(
+                    userPreferencesViewModel = userPreferencesViewModel,
+                    tagManagerViewModel = tagManagerViewModel,
+                    mainVariant = mainVariant,
+                    scrollState = scrollState,
+                    modifier = Modifier.requiredWidth(childWidth),
                 )
             }
         }
     }
+}
+
+@Composable
+private fun AppPreferencesContent(
+    userPreferencesViewModel: UserPreferencesViewModel,
+    mainVariant: Boolean,
+    onDynamicColorChange: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+
+    AppPreferencesContent(
+        userPreferences = userPreferences,
+        onAutoUpdateChange = userPreferencesViewModel::saveAutoUpdate,
+        onAppearanceChange = { newAppearance ->
+            userPreferencesViewModel.saveAppearance(newAppearance)
+
+            scope.launch {
+                val mode = when (newAppearance) {
+                    is Appearance.DarkTheme -> AppCompatDelegate.MODE_NIGHT_YES
+                    is Appearance.LightTheme -> AppCompatDelegate.MODE_NIGHT_NO
+                    else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                }
+
+                AppCompatDelegate.setDefaultNightMode(mode)
+            }
+        },
+        onDynamicColorChange = { newValue: Boolean ->
+            userPreferencesViewModel.saveApplyDynamicColors(newValue)
+            onDynamicColorChange()
+        },
+        onDateFormatChange = userPreferencesViewModel::savePreferredDateFormat,
+        onPeriodicSyncChange = userPreferencesViewModel::savePeriodicSync,
+        onPreferredViewChange = userPreferencesViewModel::savePreferredDetailsView,
+        onMarkAsReadOnOpenChange = userPreferencesViewModel::saveMarkAsReadOnOpen,
+        onShowDescriptionInListsChange = userPreferencesViewModel::saveShowDescriptionInLists,
+        mainVariant = mainVariant,
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -190,9 +179,10 @@ private fun AppPreferencesContent(
     onMarkAsReadOnOpenChange: (Boolean) -> Unit,
     onShowDescriptionInListsChange: (Boolean) -> Unit,
     mainVariant: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
     ) {
@@ -399,21 +389,100 @@ private fun AppPreferencesContent(
 
 @Composable
 private fun BookmarkingPreferencesContent(
+    userPreferencesViewModel: UserPreferencesViewModel,
+    tagManagerViewModel: TagManagerViewModel,
+    mainVariant: Boolean,
+    scrollState: ScrollState,
+    modifier: Modifier = Modifier,
+) {
+    val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
+    val suggestedTags by userPreferencesViewModel.suggestedTags.collectAsStateWithLifecycle(emptyList())
+    val tagState by tagManagerViewModel.state.collectAsStateWithLifecycle()
+
+    val imeVisible by rememberKeyboardState()
+    var tagInputHasFocus by remember { mutableStateOf(false) }
+    var tagInputTop by remember { mutableStateOf(0f) }
+
+    LaunchedEffect(Unit) {
+        tagManagerViewModel.initializeTags(userPreferences.defaultTags)
+    }
+
+    LaunchedEffect(suggestedTags) {
+        tagManagerViewModel.setSuggestedTags(suggestedTags)
+    }
+
+    LaunchedEffect(tagState) {
+        userPreferencesViewModel.saveDefaultTags(tagState.tags)
+        userPreferencesViewModel.searchForTag(tagState.currentQuery, tagState.tags)
+    }
+
+    LaunchedEffect(imeVisible, tagInputHasFocus, tagInputTop) {
+        if (imeVisible && tagInputHasFocus && scrollState.canScrollForward) {
+            scrollState.animateScrollTo(
+                value = tagInputTop.toInt(),
+                animationSpec = tween(durationMillis = 200, delayMillis = 300, easing = LinearEasing),
+            )
+        }
+    }
+
+    Column(
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        BookmarkingPreferencesContent(
+            userPreferences = userPreferences,
+            onEditAfterSharingChange = userPreferencesViewModel::saveEditAfterSharing,
+            onAutoFillDescriptionChange = userPreferencesViewModel::saveAutoFillDescription,
+            onPrivateByDefaultChange = userPreferencesViewModel::saveDefaultPrivate,
+            onReadLaterByDefaultChange = userPreferencesViewModel::saveDefaultReadLater,
+            mainVariant = mainVariant,
+        )
+
+        Text(
+            text = stringResource(id = R.string.user_preferences_default_tags),
+            modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+
+        Text(
+            text = stringResource(id = R.string.user_preferences_default_tags_description),
+            modifier = Modifier.padding(start = 16.dp, top = 4.dp, end = 16.dp),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        TagManager(
+            searchTagInput = tagState.currentQuery,
+            onSearchTagInputChanged = tagManagerViewModel::setQuery,
+            onAddTagClicked = tagManagerViewModel::addTag,
+            suggestedTags = tagState.suggestedTags.toStableList(),
+            onSuggestedTagClicked = tagManagerViewModel::addTag,
+            currentTagsTitle = stringResource(id = tagState.displayTitle),
+            currentTags = tagState.tags.toStableList(),
+            onRemoveCurrentTagClicked = tagManagerViewModel::removeTag,
+            onSearchTagInputFocusChanged = { hasFocus -> tagInputHasFocus = hasFocus },
+            modifier = Modifier.onGloballyPositioned { tagInputTop = it.boundsInParent().top },
+        )
+    }
+}
+
+@Composable
+private fun BookmarkingPreferencesContent(
     userPreferences: UserPreferences,
     onEditAfterSharingChange: (EditAfterSharing) -> Unit,
     onAutoFillDescriptionChange: (Boolean) -> Unit,
     onPrivateByDefaultChange: (Boolean) -> Unit,
     onReadLaterByDefaultChange: (Boolean) -> Unit,
     mainVariant: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
     ) {
         Text(
             text = stringResource(id = R.string.user_preferences_section_bookmarking),
-            modifier = Modifier.padding(top = 32.dp),
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.primary,
         )
@@ -521,6 +590,7 @@ private fun <T> PreferenceSelectionButton(
     }
 }
 
+// region Previews
 @Composable
 @ThemePreviews
 private fun AppPreferencesContentPreview(
@@ -558,3 +628,4 @@ private fun BookmarkingPreferencesContentPreview(
         )
     }
 }
+// endregion Previews
