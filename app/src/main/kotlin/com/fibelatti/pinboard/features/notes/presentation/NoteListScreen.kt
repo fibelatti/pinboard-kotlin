@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -47,7 +48,7 @@ fun NoteListScreen(
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
         val appState by appStateViewModel.noteListContent.collectAsStateWithLifecycle(initialValue = null)
-        val noteListContent = appState ?: return@Surface
+        val noteListContent by rememberUpdatedState(newValue = appState ?: return@Surface)
 
         LaunchedEffect(noteListContent.shouldLoad) {
             if (noteListContent.shouldLoad) {

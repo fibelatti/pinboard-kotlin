@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -52,7 +53,7 @@ fun PopularBookmarksScreen(
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
         val appState by appStateViewModel.popularPostsContent.collectAsStateWithLifecycle(initialValue = null)
-        val popularPostsContent = appState ?: return@Surface
+        val popularPostsContent by rememberUpdatedState(newValue = appState ?: return@Surface)
 
         val popularPostsScreenState by popularPostsViewModel.screenState.collectAsStateWithLifecycle()
 

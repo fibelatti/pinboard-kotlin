@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -36,7 +37,7 @@ fun NoteDetailsScreen(
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
         val appState by appStateViewModel.noteDetailContent.collectAsStateWithLifecycle(initialValue = null)
-        val noteDetailContent = appState ?: return@Surface
+        val noteDetailContent by rememberUpdatedState(newValue = appState ?: return@Surface)
         val isLoading = noteDetailContent.note.isLeft
 
         LaunchedEffect(isLoading, noteDetailContent) {

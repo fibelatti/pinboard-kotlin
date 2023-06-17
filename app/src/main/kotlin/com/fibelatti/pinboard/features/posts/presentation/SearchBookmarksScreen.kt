@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -65,7 +66,7 @@ fun SearchBookmarksScreen(
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
         val appState by appStateViewModel.searchContent.collectAsStateWithLifecycle(initialValue = null)
-        val searchContent = appState ?: return@Surface
+        val searchContent by rememberUpdatedState(newValue = appState ?: return@Surface)
 
         val queryResultSize by searchPostViewModel.queryResultSize.collectAsStateWithLifecycle()
         val tagsState by tagsViewModel.state.collectAsStateWithLifecycle()

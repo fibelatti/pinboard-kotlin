@@ -89,7 +89,7 @@ fun BookmarkListScreen(
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
         val appState by appStateViewModel.postListContent.collectAsStateWithLifecycle(initialValue = null)
-        val postListContent = appState ?: return@Surface
+        val postListContent by rememberUpdatedState(newValue = appState ?: return@Surface)
 
         val postListLoading = postListContent.shouldLoad != Loaded
         val postDetailScreenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()

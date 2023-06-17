@@ -62,7 +62,9 @@ fun BookmarkDetailsScreen(
     ) {
         val postDetailState by appStateViewModel.postDetailContent.collectAsStateWithLifecycle(null)
         val popularPostDetailState by appStateViewModel.popularPostDetailContent.collectAsStateWithLifecycle(null)
-        val post = postDetailState?.post ?: popularPostDetailState?.post ?: return@Surface
+        val post by rememberUpdatedState(
+            newValue = postDetailState?.post ?: popularPostDetailState?.post ?: return@Surface,
+        )
 
         val postDetailsScreenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
         val popularPostsScreenState by popularPostsViewModel.screenState.collectAsStateWithLifecycle()
