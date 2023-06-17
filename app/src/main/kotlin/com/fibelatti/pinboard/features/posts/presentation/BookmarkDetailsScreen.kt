@@ -61,7 +61,7 @@ fun BookmarkDetailsScreen(
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
         val postDetailState by appStateViewModel.postDetailContent.collectAsStateWithLifecycle(null)
-        val popularPostDetailState by appStateViewModel.postDetailContent.collectAsStateWithLifecycle(null)
+        val popularPostDetailState by appStateViewModel.popularPostDetailContent.collectAsStateWithLifecycle(null)
         val post = postDetailState?.post ?: popularPostDetailState?.post ?: return@Surface
 
         val postDetailsScreenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
