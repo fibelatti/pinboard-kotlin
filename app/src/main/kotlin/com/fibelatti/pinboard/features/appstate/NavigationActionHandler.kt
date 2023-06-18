@@ -98,6 +98,10 @@ class NavigationActionHandler @Inject constructor(
                     isConnected = connectivityInfoProvider.isConnected(),
                 )
             }
+        }.reduce<PostDetailContent> { postDetailContent ->
+            postDetailContent.copy(post = action.post)
+        }.reduce<PopularPostDetailContent> { popularPostDetailContent ->
+            popularPostDetailContent.copy(post = action.post)
         }
     }
 
@@ -129,17 +133,21 @@ class NavigationActionHandler @Inject constructor(
     }
 
     private fun viewSearch(currentContent: Content): Content {
-        return currentContent.reduce<PostListContent> { postListContent ->
+        val body = { postListContent: PostListContent ->
             SearchContent(
                 searchParameters = postListContent.searchParameters,
                 shouldLoadTags = true,
                 previousContent = postListContent,
             )
         }
+
+        return currentContent
+            .reduce(body)
+            .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
     }
 
     private fun viewAddPost(currentContent: Content): Content {
-        return currentContent.reduce<PostListContent> { postListContent ->
+        val body = { postListContent: PostListContent ->
             AddPostContent(
                 defaultPrivate = userRepository.defaultPrivate ?: false,
                 defaultReadLater = userRepository.defaultReadLater ?: false,
@@ -147,10 +155,14 @@ class NavigationActionHandler @Inject constructor(
                 previousContent = postListContent,
             )
         }
+
+        return currentContent
+            .reduce(body)
+            .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
     }
 
     private fun viewTags(currentContent: Content): Content {
-        return currentContent.reduce<PostListContent> { postListContent ->
+        val body = { postListContent: PostListContent ->
             TagListContent(
                 tags = emptyList(),
                 shouldLoad = connectivityInfoProvider.isConnected(),
@@ -158,10 +170,14 @@ class NavigationActionHandler @Inject constructor(
                 isConnected = connectivityInfoProvider.isConnected(),
             )
         }
+
+        return currentContent
+            .reduce(body)
+            .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
     }
 
     private fun viewNotes(currentContent: Content): Content {
-        return currentContent.reduce<PostListContent> { postListContent ->
+        val body = { postListContent: PostListContent ->
             NoteListContent(
                 notes = emptyList(),
                 shouldLoad = connectivityInfoProvider.isConnected(),
@@ -169,21 +185,33 @@ class NavigationActionHandler @Inject constructor(
                 isConnected = connectivityInfoProvider.isConnected(),
             )
         }
+
+        return currentContent
+            .reduce(body)
+            .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
     }
 
     private fun viewNote(action: ViewNote, currentContent: Content): Content {
-        return currentContent.reduce<NoteListContent> { noteListContent ->
-            NoteDetailContent(
-                id = action.id,
-                note = Either.Left(connectivityInfoProvider.isConnected()),
-                previousContent = noteListContent,
-                isConnected = connectivityInfoProvider.isConnected(),
-            )
-        }
+        return currentContent
+            .reduce<NoteListContent> { noteListContent ->
+                NoteDetailContent(
+                    id = action.id,
+                    note = Either.Left(connectivityInfoProvider.isConnected()),
+                    previousContent = noteListContent,
+                    isConnected = connectivityInfoProvider.isConnected(),
+                )
+            }
+            .reduce<NoteDetailContent> { noteDetailContent ->
+                noteDetailContent.copy(
+                    id = action.id,
+                    note = Either.Left(connectivityInfoProvider.isConnected()),
+                    isConnected = connectivityInfoProvider.isConnected(),
+                )
+            }
     }
 
     private fun viewPopular(currentContent: Content): Content {
-        return currentContent.reduce<PostListContent> { postListContent ->
+        val body = { postListContent: PostListContent ->
             PopularPostsContent(
                 posts = emptyList(),
                 shouldLoad = connectivityInfoProvider.isConnected(),
@@ -191,11 +219,19 @@ class NavigationActionHandler @Inject constructor(
                 isConnected = connectivityInfoProvider.isConnected(),
             )
         }
+
+        return currentContent
+            .reduce(body)
+            .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
     }
 
     private fun viewPreferences(currentContent: Content): Content {
-        return currentContent.reduce<PostListContent> { postListContent ->
+        val body = { postListContent: PostListContent ->
             UserPreferencesContent(previousContent = postListContent)
         }
+
+        return currentContent
+            .reduce(body)
+            .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
     }
 }

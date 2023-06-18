@@ -11,6 +11,7 @@ import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.ui.foundation.stableListOf
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
 import java.util.UUID
@@ -34,13 +35,22 @@ class NoteDetailsFragment @Inject constructor() : BaseFragment() {
         }
 
         mainViewModel.updateState { currentState ->
-            currentState.copy(
-                title = MainState.TitleComponent.Gone,
-                subtitle = MainState.TitleComponent.Gone,
-                navigation = MainState.NavigationComponent.Visible(ACTION_ID),
-                bottomAppBar = MainState.BottomAppBarComponent.Gone,
-                floatingActionButton = MainState.FabComponent.Gone,
-            )
+            if (currentState.multiPanelEnabled) {
+                currentState.copy(
+                    sidePanelAppBar = MainState.SidePanelAppBarComponent.Visible(
+                        id = ACTION_ID,
+                        menuItems = stableListOf(MainState.MenuItemComponent.CloseSidePanel),
+                    ),
+                )
+            } else {
+                currentState.copy(
+                    title = MainState.TitleComponent.Gone,
+                    subtitle = MainState.TitleComponent.Gone,
+                    navigation = MainState.NavigationComponent.Visible(ACTION_ID),
+                    bottomAppBar = MainState.BottomAppBarComponent.Gone,
+                    floatingActionButton = MainState.FabComponent.Gone,
+                )
+            }
         }
 
         setupViewModels()
@@ -49,6 +59,13 @@ class NoteDetailsFragment @Inject constructor() : BaseFragment() {
     private fun setupViewModels() {
         mainViewModel.navigationClicks(ACTION_ID)
             .onEach { navigateBack() }
+            .launchInAndFlowWith(viewLifecycleOwner)
+        mainViewModel.menuItemClicks(ACTION_ID)
+            .onEach { (menuItem, _) ->
+                if (menuItem is MainState.MenuItemComponent.CloseSidePanel) {
+                    navigateBack()
+                }
+            }
             .launchInAndFlowWith(viewLifecycleOwner)
 
         noteDetailsViewModel.error

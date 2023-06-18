@@ -10,6 +10,8 @@ import androidx.compose.runtime.Stable
 @Stable
 data class StableList<T>(val value: List<T> = emptyList())
 
+fun <T> stableListOf(vararg items: T): StableList<T> = StableList(items.toList())
+
 fun <T> List<T>.toStableList(): StableList<T> = StableList(value = toList())
 
 fun <T> Array<T>.toStableList(): StableList<T> = toList().toStableList()

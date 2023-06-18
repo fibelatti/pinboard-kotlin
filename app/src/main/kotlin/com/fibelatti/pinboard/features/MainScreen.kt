@@ -7,14 +7,19 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.with
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -23,11 +28,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -47,7 +57,8 @@ import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.RefreshPopular
 import com.fibelatti.pinboard.features.navigation.NavigationMenuFragment
-import com.fibelatti.ui.foundation.toStableList
+import com.fibelatti.ui.foundation.StableList
+import com.fibelatti.ui.foundation.stableListOf
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -57,16 +68,14 @@ fun MainTopAppBar(
     appStateViewModel: AppStateViewModel = hiltViewModel(),
 ) {
     val state by mainViewModel.state.collectAsStateWithLifecycle()
-
     val content by appStateViewModel.content.collectAsStateWithLifecycle()
-    val currentContent = content
 
     MainTopAppBar(
         state = state,
         onNavigationClick = { mainViewModel.navigationClicked(state.navigation.id) },
         onActionButtonClick = { data -> mainViewModel.actionButtonClicked(state.actionButton.id, data) },
-        isOffline = currentContent is ConnectionAwareContent && !currentContent.isConnected,
-        showRetryButton = currentContent is PostListContent || currentContent is PopularPostsContent,
+        isOffline = content.let { it is ConnectionAwareContent && !it.isConnected },
+        showRetryButton = content is PostListContent || content is PopularPostsContent,
         onOfflineRetryClick = retryClick@{
             val action = when (content) {
                 is PostListContent -> Refresh()
@@ -76,7 +85,7 @@ fun MainTopAppBar(
 
             appStateViewModel.runAction(action)
         },
-        hideAllControls = currentContent is LoginContent,
+        hideAllControls = content is LoginContent,
     )
 }
 
@@ -85,37 +94,68 @@ fun MainBottomAppBar(
     mainViewModel: MainViewModel = hiltViewModel(),
     appStateViewModel: AppStateViewModel = hiltViewModel(),
 ) {
-    val state by mainViewModel.state.collectAsStateWithLifecycle()
-    val currentScrollDirection by mainViewModel.currentScrollDirection.collectAsStateWithLifecycle()
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.BottomEnd,
+    ) {
+        val state by mainViewModel.state.collectAsStateWithLifecycle()
+        val currentScrollDirection by mainViewModel.currentScrollDirection.collectAsStateWithLifecycle()
 
-    val content by appStateViewModel.content.collectAsStateWithLifecycle()
-    val currentContent = content
+        val content by appStateViewModel.content.collectAsStateWithLifecycle()
+        val hideAllControls by remember { derivedStateOf { content is LoginContent } }
 
-    val localContext = LocalContext.current
+        var bottomAppBarHeight by remember { mutableStateOf(0) }
 
-    MainBottomAppBar(
-        state = state,
-        onBottomNavClick = {
-            localContext.findActivity()?.run {
-                createFragment<NavigationMenuFragment>().show(supportFragmentManager, NavigationMenuFragment.TAG)
-            }
-        },
-        onMenuItemClick = { menuItem, data ->
-            mainViewModel.menuItemClicked(
-                id = state.bottomAppBar.id,
-                menuItem = menuItem,
-                data = data,
+        AnimatedVisibility(
+            visible = !hideAllControls &&
+                state.multiPanelEnabled &&
+                state.multiPanelContent &&
+                state.sidePanelAppBar is MainState.SidePanelAppBarComponent.Visible,
+            modifier = if (state.bottomAppBar is MainState.BottomAppBarComponent.Visible) {
+                Modifier.padding(bottom = with(LocalDensity.current) { bottomAppBarHeight.toDp() })
+            } else {
+                Modifier.systemBarsPadding()
+            },
+            enter = slideInHorizontally(initialOffsetX = { it }),
+            exit = slideOutHorizontally(targetOffsetX = { it }),
+        ) {
+            SidePanelBottomAppBar(
+                state = state,
+                onMenuItemClick = { menuItem, data ->
+                    mainViewModel.menuItemClicked(id = state.sidePanelAppBar.id, menuItem = menuItem, data = data)
+                },
             )
-        },
-        onFabClick = { data ->
-            mainViewModel.fabClicked(
-                id = state.floatingActionButton.id,
-                data = data,
+        }
+
+        AnimatedVisibility(
+            visible = !hideAllControls && currentScrollDirection != ScrollDirection.DOWN,
+            modifier = Modifier
+                .fillMaxWidth()
+                .onGloballyPositioned { bottomAppBarHeight = it.size.height },
+            enter = slideInVertically(initialOffsetY = { it }),
+            exit = slideOutVertically(targetOffsetY = { it }),
+        ) {
+            val localContext = LocalContext.current
+
+            MainBottomAppBar(
+                state = state,
+                onBottomNavClick = {
+                    localContext.findActivity()?.run {
+                        createFragment<NavigationMenuFragment>().show(
+                            supportFragmentManager,
+                            NavigationMenuFragment.TAG,
+                        )
+                    }
+                },
+                onMenuItemClick = { menuItem, data ->
+                    mainViewModel.menuItemClicked(id = state.bottomAppBar.id, menuItem = menuItem, data = data)
+                },
+                onFabClick = { data ->
+                    mainViewModel.fabClicked(id = state.floatingActionButton.id, data = data)
+                },
             )
-        },
-        hideAllControls = currentContent is LoginContent,
-        currentScrollDirection = currentScrollDirection,
-    )
+        }
+    }
 }
 
 @Composable
@@ -184,37 +224,34 @@ private fun MainBottomAppBar(
     onBottomNavClick: () -> Unit,
     onMenuItemClick: (MainState.MenuItemComponent, data: Any?) -> Unit,
     onFabClick: (data: Any?) -> Unit,
-    hideAllControls: Boolean,
-    currentScrollDirection: ScrollDirection,
 ) {
-    AnimatedVisibility(
-        visible = !hideAllControls && currentScrollDirection != ScrollDirection.DOWN,
-        modifier = Modifier.fillMaxWidth(),
-        enter = slideInVertically(initialOffsetY = { it }),
-        exit = slideOutVertically(targetOffsetY = { it }),
-    ) {
-        if (state.bottomAppBar is MainState.BottomAppBarComponent.Visible) {
-            BottomAppBar(
-                actions = { MainBottomAppBarMenu(state.bottomAppBar, onBottomNavClick, onMenuItemClick) },
-                modifier = Modifier.fillMaxWidth(),
-                floatingActionButton = {
-                    if (state.floatingActionButton is MainState.FabComponent.Visible) {
-                        FloatingActionButton(onClick = { onFabClick(state.floatingActionButton.data) }) {
-                            AnimatedContent(
-                                targetState = state.floatingActionButton.icon,
-                                transitionSpec = { fadeIn() + scaleIn() with fadeOut() + scaleOut() },
-                                label = "Fab_Icon",
-                            ) { icon ->
-                                Icon(
-                                    painter = painterResource(icon),
-                                    contentDescription = null,
-                                )
-                            }
+    if (state.bottomAppBar is MainState.BottomAppBarComponent.Visible) {
+        BottomAppBar(
+            actions = {
+                MainBottomAppBarMenu(
+                    bottomAppBar = state.bottomAppBar,
+                    onBottomNavClick = onBottomNavClick,
+                    onMenuItemClick = onMenuItemClick,
+                )
+            },
+            modifier = Modifier.fillMaxWidth(),
+            floatingActionButton = {
+                if (state.floatingActionButton is MainState.FabComponent.Visible) {
+                    FloatingActionButton(onClick = { onFabClick(state.floatingActionButton.data) }) {
+                        AnimatedContent(
+                            targetState = state.floatingActionButton.icon,
+                            transitionSpec = { fadeIn() + scaleIn() with fadeOut() + scaleOut() },
+                            label = "Fab_Icon",
+                        ) { icon ->
+                            Icon(
+                                painter = painterResource(icon),
+                                contentDescription = null,
+                            )
                         }
                     }
-                },
-            )
-        }
+                }
+            },
+        )
     }
 }
 
@@ -230,10 +267,23 @@ private fun MainBottomAppBarMenu(
         }
     }
 
-    for (menuItem in bottomAppBar.menuItems.value) {
+    MenuItemsContent(
+        menuItems = bottomAppBar.menuItems,
+        data = bottomAppBar.data,
+        onMenuItemClick = onMenuItemClick,
+    )
+}
+
+@Composable
+private fun MenuItemsContent(
+    menuItems: StableList<MainState.MenuItemComponent>,
+    data: Any?,
+    onMenuItemClick: (MainState.MenuItemComponent, data: Any?) -> Unit,
+) {
+    for (menuItem in menuItems.value) {
         if (menuItem.icon == null) {
             TextButton(
-                onClick = { onMenuItemClick(menuItem, bottomAppBar.data) },
+                onClick = { onMenuItemClick(menuItem, data) },
             ) {
                 Text(
                     text = stringResource(id = menuItem.name),
@@ -242,7 +292,7 @@ private fun MainBottomAppBarMenu(
             }
         } else {
             IconButton(
-                onClick = { onMenuItemClick(menuItem, bottomAppBar.data) },
+                onClick = { onMenuItemClick(menuItem, data) },
             ) {
                 Icon(
                     painter = painterResource(id = menuItem.icon),
@@ -253,7 +303,31 @@ private fun MainBottomAppBarMenu(
     }
 }
 
-//region Previews
+@Composable
+private fun SidePanelBottomAppBar(
+    state: MainState,
+    onMenuItemClick: (MainState.MenuItemComponent, data: Any?) -> Unit,
+) {
+    if (state.sidePanelAppBar is MainState.SidePanelAppBarComponent.Visible) {
+        Row(
+            modifier = Modifier
+                .padding(all = 16.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
+                    shape = RoundedCornerShape(16.dp),
+                )
+                .padding(all = 8.dp),
+        ) {
+            MenuItemsContent(
+                menuItems = state.sidePanelAppBar.menuItems,
+                data = state.sidePanelAppBar.data,
+                onMenuItemClick = onMenuItemClick,
+            )
+        }
+    }
+}
+
+// region Previews
 @Composable
 @ThemePreviews
 private fun MainTopAppBarPreview() {
@@ -267,7 +341,7 @@ private fun MainTopAppBarPreview() {
                     actionButton = MainState.ActionButtonComponent.Visible(id = "", label = "Action"),
                     bottomAppBar = MainState.BottomAppBarComponent.Visible(
                         id = "",
-                        menuItems = listOf(MainState.MenuItemComponent.SearchBookmarks).toStableList(),
+                        menuItems = stableListOf(MainState.MenuItemComponent.SearchBookmarks),
                         navigationIcon = R.drawable.ic_menu,
                     ),
                     floatingActionButton = MainState.FabComponent.Visible(id = "", icon = R.drawable.ic_pin),
@@ -299,7 +373,7 @@ private fun MainBottomAppBarPreview() {
                         actionButton = MainState.ActionButtonComponent.Visible(id = "", label = "Action"),
                         bottomAppBar = MainState.BottomAppBarComponent.Visible(
                             id = "",
-                            menuItems = listOf(MainState.MenuItemComponent.SearchBookmarks).toStableList(),
+                            menuItems = stableListOf(MainState.MenuItemComponent.SearchBookmarks),
                             navigationIcon = R.drawable.ic_menu,
                         ),
                         floatingActionButton = MainState.FabComponent.Visible(id = "", icon = R.drawable.ic_pin),
@@ -308,10 +382,8 @@ private fun MainBottomAppBarPreview() {
                 onBottomNavClick = {},
                 onMenuItemClick = { _, _ -> },
                 onFabClick = {},
-                hideAllControls = false,
-                currentScrollDirection = ScrollDirection.IDLE,
             )
         }
     }
 }
-//endregion Previews
+// endregion Previews

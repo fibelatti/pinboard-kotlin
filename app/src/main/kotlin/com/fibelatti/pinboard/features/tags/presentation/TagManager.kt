@@ -34,6 +34,7 @@ import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
 import com.fibelatti.ui.foundation.StableList
+import com.fibelatti.ui.foundation.stableListOf
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -212,10 +213,10 @@ private fun TagManagerPreview() {
             searchTagInput = "",
             onSearchTagInputChanged = {},
             onAddTagClicked = {},
-            suggestedTags = listOf("Android", "Dev").toStableList(),
+            suggestedTags = stableListOf("Android", "Dev"),
             onSuggestedTagClicked = {},
             currentTagsTitle = stringResource(id = R.string.tags_added_title),
-            currentTags = listOf(Tag(name = "Kotlin"), Tag(name = "Compose")).toStableList(),
+            currentTags = stableListOf(Tag(name = "Kotlin"), Tag(name = "Compose")),
             onRemoveCurrentTagClicked = {},
         )
     }

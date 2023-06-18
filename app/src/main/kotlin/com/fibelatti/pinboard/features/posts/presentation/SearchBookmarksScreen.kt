@@ -52,6 +52,7 @@ import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
 import com.fibelatti.ui.foundation.StableList
 import com.fibelatti.ui.foundation.rememberKeyboardState
+import com.fibelatti.ui.foundation.stableListOf
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -273,9 +274,9 @@ private fun DefaultSearchBookmarksScreenPreview() {
 private fun ActiveSearchBookmarksScreenPreview() {
     ExtendedTheme {
         SearchBookmarksScreen(
-            selectedTags = listOf(Tag(name = "dev")).toStableList(),
+            selectedTags = stableListOf(Tag(name = "dev")),
             activeSearchResult = "10 bookmarks match the current query",
-            availableTags = listOf(Tag(name = "compose"), Tag(name = "ui")).toStableList(),
+            availableTags = stableListOf(Tag(name = "compose"), Tag(name = "ui")),
         )
     }
 }

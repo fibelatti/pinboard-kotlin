@@ -16,7 +16,7 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.Search
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
-import com.fibelatti.ui.foundation.toStableList
+import com.fibelatti.ui.foundation.stableListOf
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
 import java.util.UUID
@@ -46,7 +46,7 @@ class PostSearchFragment @Inject constructor() : BaseFragment() {
                 navigation = MainState.NavigationComponent.Visible(ACTION_ID),
                 bottomAppBar = MainState.BottomAppBarComponent.Visible(
                     id = ACTION_ID,
-                    menuItems = listOf(MainState.MenuItemComponent.ClearSearch).toStableList(),
+                    menuItems = stableListOf(MainState.MenuItemComponent.ClearSearch),
                     navigationIcon = null,
                 ),
                 floatingActionButton = MainState.FabComponent.Visible(ACTION_ID, R.drawable.ic_search),

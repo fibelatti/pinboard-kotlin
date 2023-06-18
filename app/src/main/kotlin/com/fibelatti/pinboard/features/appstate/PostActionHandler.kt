@@ -23,7 +23,7 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun refresh(currentContent: Content, force: Boolean): Content {
-        return currentContent.reduce<PostListContent> { postListContent ->
+        val body = { postListContent: PostListContent ->
             postListContent.copy(
                 shouldLoad = when {
                     !connectivityInfoProvider.isConnected() -> Loaded
@@ -34,6 +34,10 @@ class PostActionHandler @Inject constructor(
                 canForceSync = !force,
             )
         }
+
+        return currentContent
+            .reduce(body)
+            .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
     }
 
     private fun setPosts(action: SetPosts, currentContent: Content): Content {
@@ -82,7 +86,7 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun toggleSorting(currentContent: Content): Content {
-        return currentContent.reduce<PostListContent> { postListContent ->
+        val body = { postListContent: PostListContent ->
             if (connectivityInfoProvider.isConnected()) {
                 postListContent.copy(
                     sortType = when (postListContent.sortType) {
@@ -95,6 +99,10 @@ class PostActionHandler @Inject constructor(
                 postListContent.copy(isConnected = false)
             }
         }
+
+        return currentContent
+            .reduce(body)
+            .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
     }
 
     private fun editPost(action: EditPost, currentContent: Content): Content {

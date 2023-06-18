@@ -24,6 +24,7 @@ import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.ui.foundation.stableListOf
 import com.fibelatti.ui.foundation.toStableList
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -115,31 +116,48 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
                 }
 
                 mainViewModel.updateState { currentState ->
-                    currentState.copy(
-                        title = MainState.TitleComponent.Gone,
-                        subtitle = MainState.TitleComponent.Gone,
-                        navigation = MainState.NavigationComponent.Visible(ACTION_ID),
-                        actionButton = if (post.readLater && !post.isFile()) {
-                            MainState.ActionButtonComponent.Visible(
+                    val actionButtonState = if (post.readLater && !post.isFile()) {
+                        MainState.ActionButtonComponent.Visible(
+                            id = ACTION_ID,
+                            label = getString(R.string.hint_mark_as_read),
+                            data = post,
+                        )
+                    } else {
+                        MainState.ActionButtonComponent.Gone
+                    }
+
+                    if (currentState.multiPanelEnabled) {
+                        currentState.copy(
+                            actionButton = actionButtonState,
+                            sidePanelAppBar = MainState.SidePanelAppBarComponent.Visible(
                                 id = ACTION_ID,
-                                label = getString(R.string.hint_mark_as_read),
+                                menuItems = stableListOf(
+                                    MainState.MenuItemComponent.ShareBookmark,
+                                    *menuItems.toTypedArray(),
+                                    MainState.MenuItemComponent.CloseSidePanel,
+                                ),
                                 data = post,
-                            )
-                        } else {
-                            MainState.ActionButtonComponent.Gone
-                        },
-                        bottomAppBar = MainState.BottomAppBarComponent.Visible(
-                            id = ACTION_ID,
-                            menuItems = menuItems.toStableList(),
-                            navigationIcon = null,
-                            data = post,
-                        ),
-                        floatingActionButton = MainState.FabComponent.Visible(
-                            id = ACTION_ID,
-                            icon = R.drawable.ic_share,
-                            data = post,
-                        ),
-                    )
+                            ),
+                        )
+                    } else {
+                        currentState.copy(
+                            title = MainState.TitleComponent.Gone,
+                            subtitle = MainState.TitleComponent.Gone,
+                            navigation = MainState.NavigationComponent.Visible(ACTION_ID),
+                            actionButton = actionButtonState,
+                            bottomAppBar = MainState.BottomAppBarComponent.Visible(
+                                id = ACTION_ID,
+                                menuItems = menuItems.toStableList(),
+                                navigationIcon = null,
+                                data = post,
+                            ),
+                            floatingActionButton = MainState.FabComponent.Visible(
+                                id = ACTION_ID,
+                                icon = R.drawable.ic_share,
+                                data = post,
+                            ),
+                        )
+                    }
                 }
             }
             .launchInAndFlowWith(viewLifecycleOwner)
@@ -156,19 +174,23 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
             .onEach { (menuItem, post) ->
                 if (post !is Post) return@onEach
                 when (menuItem) {
+                    is MainState.MenuItemComponent.ShareBookmark -> shareBookmarkUrl(post)
                     is MainState.MenuItemComponent.DeleteBookmark -> deletePost(post)
                     is MainState.MenuItemComponent.EditBookmark -> appStateViewModel.runAction(EditPost(post))
                     is MainState.MenuItemComponent.SaveBookmark -> popularPostsViewModel.saveLink(post)
                     is MainState.MenuItemComponent.OpenInBrowser -> openUrlInExternalBrowser(post)
+                    is MainState.MenuItemComponent.CloseSidePanel -> navigateBack()
                     else -> Unit
                 }
             }
             .launchInAndFlowWith(viewLifecycleOwner)
         mainViewModel.fabClicks(ACTION_ID)
-            .onEach { data: Any? ->
-                (data as? Post)?.let { requireActivity().shareText(R.string.posts_share_title, it.url) }
-            }
+            .onEach { data: Any? -> (data as? Post)?.let(::shareBookmarkUrl) }
             .launchInAndFlowWith(viewLifecycleOwner)
+    }
+
+    private fun shareBookmarkUrl(post: Post) {
+        requireActivity().shareText(R.string.posts_share_title, post.url)
     }
 
     private fun setupPostDetailViewModel() {

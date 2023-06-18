@@ -15,7 +15,12 @@ fun FragmentActivity.popTo(tag: String) {
     }
 }
 
-fun FragmentActivity.slideFromTheRight(fragment: Fragment, tag: String, addToBackStack: Boolean = true) {
+fun FragmentActivity.slideFromTheRight(
+    fragment: Fragment,
+    tag: String,
+    addToBackStack: Boolean = true,
+    containerId: Int = R.id.fragment_host,
+) {
     supportFragmentManager.commit {
         setCustomAnimations(
             R.anim.slide_right_in,
@@ -23,7 +28,7 @@ fun FragmentActivity.slideFromTheRight(fragment: Fragment, tag: String, addToBac
             R.anim.slide_left_in,
             R.anim.slide_right_out,
         )
-        add(R.id.fragment_host, fragment, tag)
+        add(containerId, fragment, tag)
 
         if (addToBackStack) {
             addToBackStack(tag)
@@ -31,10 +36,15 @@ fun FragmentActivity.slideFromTheRight(fragment: Fragment, tag: String, addToBac
     }
 }
 
-fun FragmentActivity.slideUp(fragment: Fragment, tag: String, addToBackStack: Boolean = true) {
+fun FragmentActivity.slideUp(
+    fragment: Fragment,
+    tag: String,
+    addToBackStack: Boolean = true,
+    containerId: Int = R.id.fragment_host,
+) {
     supportFragmentManager.commit {
         setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
-        add(R.id.fragment_host, fragment, tag)
+        add(containerId, fragment, tag)
 
         if (addToBackStack) {
             addToBackStack(tag)

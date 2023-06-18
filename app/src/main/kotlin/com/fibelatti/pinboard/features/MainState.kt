@@ -13,6 +13,9 @@ data class MainState(
     val actionButton: ActionButtonComponent = ActionButtonComponent.Gone,
     val bottomAppBar: BottomAppBarComponent = BottomAppBarComponent.Gone,
     val floatingActionButton: FabComponent = FabComponent.Gone,
+    val multiPanelEnabled: Boolean = false,
+    val multiPanelContent: Boolean = false,
+    val sidePanelAppBar: SidePanelAppBarComponent = SidePanelAppBarComponent.Gone,
 ) {
 
     sealed class TitleComponent {
@@ -79,6 +82,11 @@ data class MainState(
             icon = null,
         )
 
+        object CloseSidePanel : MenuItemComponent(
+            name = R.string.menu_side_panel_dismiss,
+            icon = R.drawable.ic_close,
+        )
+
         object DeleteBookmark : MenuItemComponent(
             name = R.string.menu_link_delete,
             icon = R.drawable.ic_delete,
@@ -102,6 +110,11 @@ data class MainState(
         object SearchBookmarks : MenuItemComponent(
             name = R.string.menu_main_search,
             icon = R.drawable.ic_search,
+        )
+
+        object ShareBookmark : MenuItemComponent(
+            name = R.string.menu_link_share,
+            icon = R.drawable.ic_share,
         )
 
         object SortBookmarks : MenuItemComponent(
@@ -129,5 +142,21 @@ data class MainState(
             @DrawableRes val icon: Int,
             val data: Any? = null,
         ) : FabComponent()
+    }
+
+    sealed class SidePanelAppBarComponent {
+
+        abstract val id: String
+
+        object Gone : SidePanelAppBarComponent() {
+
+            override val id: String = UUID.randomUUID().toString()
+        }
+
+        data class Visible(
+            override val id: String,
+            val menuItems: StableList<MenuItemComponent>,
+            val data: Any? = null,
+        ) : SidePanelAppBarComponent()
     }
 }

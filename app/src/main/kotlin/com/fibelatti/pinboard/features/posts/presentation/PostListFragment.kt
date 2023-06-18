@@ -29,6 +29,8 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.Loaded
 import com.fibelatti.pinboard.features.appstate.NewestFirst
+import com.fibelatti.pinboard.features.appstate.PostDetailContent
+import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.Private
 import com.fibelatti.pinboard.features.appstate.Public
 import com.fibelatti.pinboard.features.appstate.Recent
@@ -46,6 +48,8 @@ import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
 import com.fibelatti.ui.foundation.toStableList
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onEach
 import java.util.UUID
 import javax.inject.Inject
@@ -177,7 +181,15 @@ class PostListFragment @Inject constructor(
     }
 
     private fun setupViewModels() {
-        appStateViewModel.postListContent
+        appStateViewModel.content
+            .combine(mainViewModel.state) { content, mainState ->
+                when (content) {
+                    is PostListContent -> content
+                    is PostDetailContent -> content.previousContent.takeIf { mainState.multiPanelEnabled }
+                    else -> null
+                }
+            }
+            .filterNotNull()
             .onEach { content ->
                 mainViewModel.updateState { currentState ->
                     currentState.copy(

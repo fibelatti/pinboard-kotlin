@@ -23,7 +23,7 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
-import com.fibelatti.ui.foundation.toStableList
+import com.fibelatti.ui.foundation.stableListOf
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
@@ -197,10 +197,10 @@ class EditPostFragment @Inject constructor(
                         navigation = MainState.NavigationComponent.Visible(id = ACTION_ID, icon = R.drawable.ic_close),
                         bottomAppBar = MainState.BottomAppBarComponent.Visible(
                             id = ACTION_ID,
-                            menuItems = listOf(
+                            menuItems = stableListOf(
                                 MainState.MenuItemComponent.DeleteBookmark,
                                 MainState.MenuItemComponent.OpenInBrowser,
-                            ).toStableList(),
+                            ),
                             navigationIcon = null,
                             data = post,
                         ),

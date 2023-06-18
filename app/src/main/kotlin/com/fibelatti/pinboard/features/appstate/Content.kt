@@ -17,6 +17,12 @@ interface ConnectionAwareContent {
     val isConnected: Boolean
 }
 
+/**
+ * Marker interface to identify a [Content] that can be opened on a side panel
+ * on foldable phones and tablets.
+ */
+interface SidePanelContent
+
 data class LoginContent(
     val isUnauthorized: Boolean = false,
 ) : ContentWithHistory() {
@@ -49,7 +55,7 @@ data class PostDetailContent(
     val post: Post,
     override val previousContent: PostListContent,
     override val isConnected: Boolean = true,
-) : ContentWithHistory(), ConnectionAwareContent
+) : ContentWithHistory(), ConnectionAwareContent, SidePanelContent
 
 data class ExternalBrowserContent(
     val post: Post,
@@ -95,7 +101,7 @@ data class NoteDetailContent(
     val note: Either<Boolean, Note>,
     override val previousContent: NoteListContent,
     override val isConnected: Boolean = true,
-) : ContentWithHistory(), ConnectionAwareContent
+) : ContentWithHistory(), ConnectionAwareContent, SidePanelContent
 
 data class PopularPostsContent(
     val posts: List<Post>,
@@ -108,7 +114,7 @@ data class PopularPostDetailContent(
     val post: Post,
     override val previousContent: PopularPostsContent,
     override val isConnected: Boolean = true,
-) : ContentWithHistory(), ConnectionAwareContent
+) : ContentWithHistory(), ConnectionAwareContent, SidePanelContent
 
 data class UserPreferencesContent(
     override val previousContent: PostListContent,

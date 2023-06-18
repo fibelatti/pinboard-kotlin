@@ -1,11 +1,17 @@
 package com.fibelatti.pinboard.features
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.animation.doOnEnd
 import androidx.core.view.WindowCompat
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -16,8 +22,10 @@ import com.fibelatti.core.extension.setupForAccessibility
 import com.fibelatti.core.extension.viewBinding
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.WindowSizeClass
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
+import com.fibelatti.pinboard.core.android.widthWindowSizeClassReactiveView
 import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
@@ -39,6 +47,7 @@ import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.SearchContent
+import com.fibelatti.pinboard.features.appstate.SidePanelContent
 import com.fibelatti.pinboard.features.appstate.TagListContent
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
 import com.google.android.material.snackbar.Snackbar
@@ -95,6 +104,15 @@ class MainActivity : BaseActivity() {
 
     private fun setupView() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        binding.root.addView(
+            widthWindowSizeClassReactiveView { windowSizeClass ->
+                featureFragments.multiPanelEnabled = windowSizeClass != WindowSizeClass.COMPACT
+                mainViewModel.updateState { currentState ->
+                    currentState.copy(multiPanelEnabled = windowSizeClass != WindowSizeClass.COMPACT)
+                }
+            },
+        )
 
         binding.composeViewTopBar.setThemedContent {
             MainTopAppBar(
@@ -159,6 +177,7 @@ class MainActivity : BaseActivity() {
             return
         }
 
+        setupSidePanel(show = content is SidePanelContent)
         showContentScreen(content)
     }
 
@@ -172,7 +191,7 @@ class MainActivity : BaseActivity() {
             }
 
             is PostListContent -> featureFragments.showPostList()
-            is PostDetailContent -> featureFragments.showPostDetail()
+            is PostDetailContent -> featureFragments.showPostDetail(content.post.hash)
             is ExternalBrowserContent -> {
                 featureFragments.showPostInExternalBrowser(content.post)
                 appStateViewModel.runAction(NavigateBack)
@@ -185,13 +204,51 @@ class MainActivity : BaseActivity() {
             is NoteListContent -> featureFragments.showNotes()
             is NoteDetailContent -> featureFragments.showNoteDetails()
             is PopularPostsContent -> featureFragments.showPopular()
-            is PopularPostDetailContent -> featureFragments.showPostDetail()
+            is PopularPostDetailContent -> featureFragments.showPostDetail(content.post.hash)
             is UserPreferencesContent -> featureFragments.showPreferences()
             is ExternalContent -> {
                 appStateViewModel.reset()
                 finish()
             }
         }
+    }
+
+    private fun setupSidePanel(show: Boolean) {
+        mainViewModel.updateState { currentState ->
+            currentState.copy(multiPanelContent = show)
+        }
+
+        val showSidePanel = featureFragments.multiPanelEnabled && show
+
+        when {
+            showSidePanel && binding.fragmentHostSidePanel.isGone -> {
+                binding.fragmentHostSidePanel.isVisible = true
+                animatedSidePanelWidth(endWidth = binding.root.width / 2)
+            }
+
+            !showSidePanel && binding.fragmentHostSidePanel.isVisible -> {
+                animatedSidePanelWidth(endWidth = 0) {
+                    binding.fragmentHostSidePanel.isVisible = false
+                }
+            }
+        }
+    }
+
+    private inline fun animatedSidePanelWidth(
+        endWidth: Int,
+        crossinline doOnEnd: () -> Unit = {},
+    ) {
+        ValueAnimator.ofInt(binding.fragmentHostSidePanel.measuredWidth, endWidth)
+            .apply {
+                addUpdateListener { valueAnimator ->
+                    val value = valueAnimator.animatedValue as Int
+                    binding.fragmentHostSidePanel.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                        width = value
+                    }
+                }
+                doOnEnd { doOnEnd() }
+            }
+            .start()
     }
 
     override fun handleError(error: Throwable?, postAction: () -> Unit) {
