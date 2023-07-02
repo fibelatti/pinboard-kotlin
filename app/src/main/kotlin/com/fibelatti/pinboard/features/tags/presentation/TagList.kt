@@ -21,9 +21,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -51,7 +51,6 @@ import com.fibelatti.ui.foundation.StableList
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-import kotlinx.coroutines.launch
 
 @Composable
 fun TagList(
@@ -147,10 +146,13 @@ private fun TagList(
     onTagLongClicked: (Tag) -> Unit,
     onPullToRefresh: () -> Unit = {},
 ) {
-    val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
-
+    var selectedSortingIndex by rememberSaveable { mutableStateOf(0) }
     var showFilter by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(selectedSortingIndex) {
+        listState.scrollToItem(index = 0)
+    }
 
     RowToggleButtonGroup(
         items = TagList.Sorting.values()
@@ -162,7 +164,8 @@ private fun TagList(
             }
             .toStableList(),
         onButtonClick = {
-            val sorting = requireNotNull(TagList.Sorting.findById(it.id))
+            val (index, sorting) = requireNotNull(TagList.Sorting.findByIdWithIndex(it.id))
+            selectedSortingIndex = index
             showFilter = sorting == TagList.Sorting.Search
 
             onSortOptionClicked(sorting)
@@ -171,15 +174,11 @@ private fun TagList(
                 onSearchInputChanged("")
                 onSearchInputFocusChanged(false)
             }
-
-            scope.launch {
-                listState.scrollToItem(index = 0)
-            }
         },
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        selectedIndex = 0,
+        selectedIndex = selectedSortingIndex,
         buttonHeight = 40.dp,
         textStyle = MaterialTheme.typography.bodySmall,
     )
@@ -272,7 +271,9 @@ object TagList {
 
         companion object {
 
-            fun findById(id: String): Sorting? = values().find { it.id == id }
+            fun findByIdWithIndex(id: String): IndexedValue<Sorting>? = values()
+                .withIndex()
+                .find { it.value.id == id }
         }
     }
 }

@@ -14,31 +14,43 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun <T : Any?> CrossfadeLoadingLayout(
+inline fun <T : Any?> CrossfadeLoadingLayout(
     data: T?,
     modifier: Modifier = Modifier,
     progressIndicatorSize: Dp = 40.dp,
     progressIndicatorColor: Color = MaterialTheme.colorScheme.primary,
-    content: @Composable (T) -> Unit,
+    crossinline content: @Composable (T) -> Unit,
 ) {
     Crossfade(
         targetState = data,
         modifier = modifier,
+        label = "CrossfadeLoadingLayout",
     ) {
         if (it == null) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .size(progressIndicatorSize)
-                        .align(Alignment.Center),
-                    color = progressIndicatorColor,
-                )
-            }
+            LoadingContent(
+                progressIndicatorSize = progressIndicatorSize,
+                progressIndicatorColor = progressIndicatorColor,
+            )
         } else {
             content(it)
         }
+    }
+}
+
+@Composable
+fun LoadingContent(
+    progressIndicatorSize: Dp = 40.dp,
+    progressIndicatorColor: Color = MaterialTheme.colorScheme.primary,
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier
+                .size(progressIndicatorSize)
+                .align(Alignment.Center),
+            color = progressIndicatorColor,
+        )
     }
 }

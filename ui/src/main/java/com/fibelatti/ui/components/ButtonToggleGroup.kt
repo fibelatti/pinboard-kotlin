@@ -21,10 +21,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -57,7 +53,6 @@ fun ColumnToggleButtonGroup(
     iconPosition: ToggleButtonGroup.IconPosition = ToggleButtonGroup.IconPosition.Start,
 ) {
     Column(modifier = modifier) {
-        var currentSelectedIndex by rememberSaveable { mutableStateOf(selectedIndex) }
         val mode = when {
             items.value.all { it.text != "" && it.icon == EmptyPainter } -> ToggleButtonGroup.Mode.TextOnly
             items.value.all { it.text == "" && it.icon != EmptyPainter } -> ToggleButtonGroup.Mode.IconOnly
@@ -65,7 +60,7 @@ fun ColumnToggleButtonGroup(
         }
 
         items.value.forEachIndexed { index, toggleButtonGroupItem ->
-            val isButtonSelected = currentSelectedIndex == index
+            val isButtonSelected = selectedIndex == index
 
             ToggleButton(
                 item = toggleButtonGroupItem,
@@ -87,10 +82,7 @@ fun ColumnToggleButtonGroup(
                 textStyle = textStyle,
                 iconColor = if (isButtonSelected) colors.selectedIconColor else colors.unselectedIconColor,
                 iconPosition = iconPosition,
-                onClick = {
-                    currentSelectedIndex = index
-                    onButtonClick(toggleButtonGroupItem)
-                },
+                onClick = { onButtonClick(toggleButtonGroupItem) },
             )
         }
     }
@@ -113,7 +105,6 @@ fun RowToggleButtonGroup(
     iconPosition: ToggleButtonGroup.IconPosition = ToggleButtonGroup.IconPosition.Start,
 ) {
     Row(modifier = modifier) {
-        var currentSelectedIndex by rememberSaveable { mutableStateOf(selectedIndex) }
         val squareCorner = CornerSize(0.dp)
         val mode = when {
             items.value.all { it.text != "" && it.icon == EmptyPainter } -> ToggleButtonGroup.Mode.TextOnly
@@ -122,7 +113,7 @@ fun RowToggleButtonGroup(
         }
 
         items.value.forEachIndexed { index, toggleButtonGroupItem ->
-            val isButtonSelected = currentSelectedIndex == index
+            val isButtonSelected = selectedIndex == index
 
             ToggleButton(
                 item = toggleButtonGroupItem,
@@ -144,10 +135,7 @@ fun RowToggleButtonGroup(
                 textStyle = textStyle,
                 iconColor = if (isButtonSelected) colors.selectedIconColor else colors.unselectedIconColor,
                 iconPosition = iconPosition,
-                onClick = {
-                    currentSelectedIndex = index
-                    onButtonClick.invoke(toggleButtonGroupItem)
-                },
+                onClick = { onButtonClick.invoke(toggleButtonGroupItem) },
             )
         }
     }

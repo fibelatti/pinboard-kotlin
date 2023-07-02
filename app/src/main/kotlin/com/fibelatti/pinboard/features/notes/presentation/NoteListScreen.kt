@@ -13,8 +13,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -23,8 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
+import com.fibelatti.pinboard.core.android.composable.LoadingContent
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.RefreshNotes
@@ -37,7 +39,6 @@ import com.fibelatti.ui.foundation.StableList
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-import kotlinx.coroutines.launch
 
 @Composable
 fun NoteListScreen(
@@ -56,12 +57,11 @@ fun NoteListScreen(
             }
         }
 
-        CrossfadeLoadingLayout(
-            data = noteListContent.notes.takeUnless { noteListContent.shouldLoad }?.toStableList(),
-            modifier = Modifier.fillMaxSize(),
-        ) {
+        if (noteListContent.shouldLoad) {
+            LoadingContent()
+        } else {
             NoteListContent(
-                notes = it,
+                notes = noteListContent.notes.toStableList(),
                 onSortOptionClicked = { noteListSorting ->
                     val sorting = when (noteListSorting) {
                         NoteList.Sorting.ByDateUpdatedDesc -> NoteSorting.ByDateUpdatedDesc
@@ -86,6 +86,13 @@ private fun NoteListContent(
     onNoteClicked: (Note) -> Unit = {},
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
+        val listState = rememberLazyListState()
+        var selectedSortingIndex by rememberSaveable { mutableStateOf(0) }
+
+        LaunchedEffect(selectedSortingIndex) {
+            listState.scrollToItem(index = 0)
+        }
+
         if (notes.value.isEmpty()) {
             EmptyListContent(
                 icon = painterResource(id = R.drawable.ic_notes),
@@ -93,9 +100,6 @@ private fun NoteListContent(
                 description = stringResource(id = R.string.notes_empty_description),
             )
         } else {
-            val scope = rememberCoroutineScope()
-            val listState = rememberLazyListState()
-
             RowToggleButtonGroup(
                 items = NoteList.Sorting.values()
                     .map { sorting ->
@@ -106,18 +110,14 @@ private fun NoteListContent(
                     }
                     .toStableList(),
                 onButtonClick = {
-                    val sorting = requireNotNull(NoteList.Sorting.findById(it.id))
-
+                    val (index, sorting) = requireNotNull(NoteList.Sorting.findByIdWithIndex(it.id))
+                    selectedSortingIndex = index
                     onSortOptionClicked(sorting)
-
-                    scope.launch {
-                        listState.scrollToItem(index = 0)
-                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                selectedIndex = 0,
+                selectedIndex = selectedSortingIndex,
                 buttonHeight = 40.dp,
                 textStyle = MaterialTheme.typography.bodySmall,
             )
@@ -187,7 +187,9 @@ object NoteList {
 
         companion object {
 
-            fun findById(id: String): Sorting? = Sorting.values().find { it.id == id }
+            fun findByIdWithIndex(id: String): IndexedValue<Sorting>? = Sorting.values()
+                .withIndex()
+                .find { it.value.id == id }
         }
     }
 }
