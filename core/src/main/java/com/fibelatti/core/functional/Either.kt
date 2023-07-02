@@ -1,5 +1,3 @@
-@file:Suppress("TooGenericExceptionCaught")
-
 package com.fibelatti.core.functional
 
 import com.fibelatti.core.functional.Either.Left

@@ -1,5 +1,3 @@
-@file:Suppress("LongParameterList", "MagicNumber")
-
 package com.fibelatti.ui.components
 
 import androidx.compose.foundation.BorderStroke

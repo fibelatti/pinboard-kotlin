@@ -1,5 +1,3 @@
-@file:Suppress("MagicNumber")
-
 package com.fibelatti.ui.theme
 
 import androidx.compose.material3.darkColorScheme

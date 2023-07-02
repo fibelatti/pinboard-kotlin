@@ -1,5 +1,3 @@
-@file:Suppress("LongMethod")
-
 package com.fibelatti.pinboard.features.tags.presentation
 
 import android.view.KeyEvent

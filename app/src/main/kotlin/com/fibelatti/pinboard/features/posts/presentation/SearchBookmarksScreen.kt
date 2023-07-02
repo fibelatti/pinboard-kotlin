@@ -1,5 +1,3 @@
-@file:Suppress("LongMethod", "LongParameterList")
-
 package com.fibelatti.pinboard.features.posts.presentation
 
 import androidx.compose.animation.AnimatedVisibility

@@ -1,5 +1,3 @@
-@file:Suppress("LongMethod")
-
 package com.fibelatti.pinboard.core.android.composable
 
 import androidx.compose.animation.AnimatedVisibility

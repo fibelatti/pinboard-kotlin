@@ -1,5 +1,3 @@
-@file:Suppress("ComplexCondition")
-
 package com.fibelatti.core.extension
 
 /**

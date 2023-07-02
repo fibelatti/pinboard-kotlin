@@ -1,5 +1,3 @@
-@file:Suppress("LongMethod", "MagicNumber")
-
 package com.fibelatti.pinboard.features.tags.presentation
 
 import androidx.compose.animation.AnimatedVisibility

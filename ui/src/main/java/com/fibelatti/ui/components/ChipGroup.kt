@@ -1,5 +1,3 @@
-@file:Suppress("MagicNumber", "ForEachOnRange")
-
 package com.fibelatti.ui.components
 
 import androidx.compose.foundation.clickable
