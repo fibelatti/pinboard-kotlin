@@ -164,11 +164,14 @@ fun BookmarkDetailsScreen(
                 }
 
                 AndroidView(
-                    factory = { webView },
+                    factory = {
+                        webView.apply {
+                            if (url != post.url) loadUrl(post.url)
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxSize()
                         .background(color = ExtendedTheme.colors.backgroundNoOverlay),
-                    update = { if (webView.url != post.url) webView.loadUrl(post.url) },
                 )
 
                 AnimatedVisibility(
