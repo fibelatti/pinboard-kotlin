@@ -1,9 +1,8 @@
 package com.fibelatti.pinboard.features.posts.data
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Upsert
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.features.posts.data.model.POST_FTS_TABLE_NAME
 import com.fibelatti.pinboard.features.posts.data.model.POST_TABLE_NAME
@@ -21,7 +20,7 @@ interface PostsDao {
     @Query("delete from $POST_TABLE_NAME where href = :url")
     suspend fun deletePost(url: String)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun savePosts(posts: List<PostDto>)
 
     @Query("select count(*) from (select hash from $POST_TABLE_NAME $WHERE_SUB_QUERY limit :limit)")
