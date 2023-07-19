@@ -1,4 +1,6 @@
 import com.android.build.api.dsl.CommonExtension
+import com.diffplug.gradle.spotless.SpotlessExtension
+import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -22,33 +24,43 @@ buildscript {
     extra["jacocoEnabled"] = jacocoEnabled?.toBoolean() ?: false
 }
 
+allprojects {
+    apply(plugin = "com.diffplug.spotless")
+
+    val configureSpotless: SpotlessExtension.() -> Unit = {
+        kotlin {
+            target("**/*.kt")
+            targetExclude("**/build/**/*.kt")
+
+            ktlint().userData(mapOf("android" to "true"))
+        }
+        kotlinGradle {
+            target("**/*.kts")
+            targetExclude("**/build/**/*.kts")
+
+            ktlint()
+        }
+        format("misc") {
+            target("*.gradle", "*.md", ".gitignore")
+
+            trimTrailingWhitespace()
+            indentWithSpaces()
+            endWithNewline()
+        }
+    }
+
+    if (project === rootProject) {
+        extensions.getByType<SpotlessExtension>().predeclareDeps()
+        extensions.configure<SpotlessExtensionPredeclare>(configureSpotless)
+    } else {
+        extensions.configure(configureSpotless)
+    }
+}
+
 subprojects {
     afterEvaluate {
         plugins.withType<com.android.build.gradle.api.AndroidBasePlugin> {
             apply(plugin = "org.gradle.android.cache-fix")
-        }
-
-        apply(plugin = "com.diffplug.spotless")
-        extensions.configure<com.diffplug.gradle.spotless.SpotlessExtension> {
-            kotlin {
-                target("**/*.kt")
-                targetExclude("**/build/**/*.kt")
-
-                ktlint().userData(mapOf("android" to "true"))
-            }
-            kotlinGradle {
-                target("**/*.kts")
-                targetExclude("**/build/**/*.kts")
-
-                ktlint()
-            }
-            format("misc") {
-                target("*.gradle", "*.md", ".gitignore")
-
-                trimTrailingWhitespace()
-                indentWithSpaces()
-                endWithNewline()
-            }
         }
 
         extensions.findByType(CommonExtension::class.java)?.apply {
