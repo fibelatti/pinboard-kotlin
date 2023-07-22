@@ -13,14 +13,7 @@ internal class MainViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `state emits updates sent via updateState`() = runUnconfinedTest {
-        val newState = MainState(
-            title = mockk(),
-            subtitle = mockk(),
-            navigation = mockk(),
-            actionButton = mockk(),
-            bottomAppBar = mockk(),
-            floatingActionButton = mockk(),
-        )
+        val newState = mockk<MainState>()
 
         val states = viewModel.state.collectIn(this)
 
