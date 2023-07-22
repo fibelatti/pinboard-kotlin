@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -121,6 +122,7 @@ fun MainBottomAppBar(
         ) {
             SidePanelBottomAppBar(
                 state = state,
+                scrollDirection = currentScrollDirection,
                 onMenuItemClick = { menuItem, data ->
                     mainViewModel.menuItemClicked(id = state.sidePanelAppBar.id, menuItem = menuItem, data = data)
                 },
@@ -306,9 +308,14 @@ private fun MenuItemsContent(
 @Composable
 private fun SidePanelBottomAppBar(
     state: MainState,
+    scrollDirection: ScrollDirection,
     onMenuItemClick: (MainState.MenuItemComponent, data: Any?) -> Unit,
 ) {
     if (state.sidePanelAppBar is MainState.SidePanelAppBarComponent.Visible) {
+        var collapsed by remember(scrollDirection) {
+            mutableStateOf(scrollDirection == ScrollDirection.DOWN)
+        }
+
         Row(
             modifier = Modifier
                 .padding(all = 16.dp)
@@ -316,13 +323,25 @@ private fun SidePanelBottomAppBar(
                     color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
                     shape = RoundedCornerShape(16.dp),
                 )
-                .padding(all = 8.dp),
+                .padding(all = 8.dp)
+                .animateContentSize(),
         ) {
-            MenuItemsContent(
-                menuItems = state.sidePanelAppBar.menuItems,
-                data = state.sidePanelAppBar.data,
-                onMenuItemClick = onMenuItemClick,
-            )
+            if (collapsed) {
+                IconButton(
+                    onClick = { collapsed = false },
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_chevron_left),
+                        contentDescription = stringResource(id = R.string.cd_expand_menu),
+                    )
+                }
+            } else {
+                MenuItemsContent(
+                    menuItems = state.sidePanelAppBar.menuItems,
+                    data = state.sidePanelAppBar.data,
+                    onMenuItemClick = onMenuItemClick,
+                )
+            }
         }
     }
 }

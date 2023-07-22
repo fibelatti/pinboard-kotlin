@@ -254,4 +254,5 @@
     <string name="cd_empty_list_placeholder">Empty list placeholder image</string>
     <string name="cd_warning">Warning</string>
     <string name="cd_share_receiver_image">Adding bookmark to pinboard</string>
+    <string name="cd_expand_menu">Expand menu</string>
 </resources>
