@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.features.posts.domain
 
 sealed class PostVisibility {
-    object Public : PostVisibility()
-    object Private : PostVisibility()
-    object None : PostVisibility()
+    data object Public : PostVisibility()
+    data object Private : PostVisibility()
+    data object None : PostVisibility()
 }

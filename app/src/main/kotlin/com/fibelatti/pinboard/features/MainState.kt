@@ -20,7 +20,7 @@ data class MainState(
 
     sealed class TitleComponent {
 
-        object Gone : TitleComponent()
+        data object Gone : TitleComponent()
         data class Visible(val label: String) : TitleComponent()
     }
 
@@ -28,7 +28,7 @@ data class MainState(
 
         abstract val id: String
 
-        object Gone : NavigationComponent() {
+        data object Gone : NavigationComponent() {
 
             override val id: String = UUID.randomUUID().toString()
         }
@@ -43,7 +43,7 @@ data class MainState(
 
         abstract val id: String
 
-        object Gone : ActionButtonComponent() {
+        data object Gone : ActionButtonComponent() {
 
             override val id: String = UUID.randomUUID().toString()
         }
@@ -59,7 +59,7 @@ data class MainState(
 
         abstract val id: String
 
-        object Gone : BottomAppBarComponent() {
+        data object Gone : BottomAppBarComponent() {
 
             override val id: String = UUID.randomUUID().toString()
         }
@@ -77,52 +77,52 @@ data class MainState(
         @DrawableRes val icon: Int?,
     ) {
 
-        object ClearSearch : MenuItemComponent(
+        data object ClearSearch : MenuItemComponent(
             name = R.string.menu_search_clear,
             icon = null,
         )
 
-        object CloseSidePanel : MenuItemComponent(
+        data object CloseSidePanel : MenuItemComponent(
             name = R.string.menu_side_panel_dismiss,
             icon = R.drawable.ic_close,
         )
 
-        object DeleteBookmark : MenuItemComponent(
+        data object DeleteBookmark : MenuItemComponent(
             name = R.string.menu_link_delete,
             icon = R.drawable.ic_delete,
         )
 
-        object EditBookmark : MenuItemComponent(
+        data object EditBookmark : MenuItemComponent(
             name = R.string.menu_link_edit,
             icon = R.drawable.ic_edit,
         )
 
-        object OpenInBrowser : MenuItemComponent(
+        data object OpenInBrowser : MenuItemComponent(
             name = R.string.menu_link_open_in_browser,
             icon = R.drawable.ic_open_in_browser,
         )
 
-        object SaveBookmark : MenuItemComponent(
+        data object SaveBookmark : MenuItemComponent(
             name = R.string.menu_link_save,
             icon = R.drawable.ic_save,
         )
 
-        object SearchBookmarks : MenuItemComponent(
+        data object SearchBookmarks : MenuItemComponent(
             name = R.string.menu_main_search,
             icon = R.drawable.ic_search,
         )
 
-        object ShareBookmark : MenuItemComponent(
+        data object ShareBookmark : MenuItemComponent(
             name = R.string.menu_link_share,
             icon = R.drawable.ic_share,
         )
 
-        object SortBookmarks : MenuItemComponent(
+        data object SortBookmarks : MenuItemComponent(
             name = R.string.menu_main_sorting,
             icon = R.drawable.ic_sort,
         )
 
-        object SyncBookmarks : MenuItemComponent(
+        data object SyncBookmarks : MenuItemComponent(
             name = R.string.menu_main_sync,
             icon = R.drawable.ic_sync,
         )
@@ -132,7 +132,7 @@ data class MainState(
 
         abstract val id: String
 
-        object Gone : FabComponent() {
+        data object Gone : FabComponent() {
 
             override val id: String = UUID.randomUUID().toString()
         }
@@ -148,7 +148,7 @@ data class MainState(
 
         abstract val id: String
 
-        object Gone : SidePanelAppBarComponent() {
+        data object Gone : SidePanelAppBarComponent() {
 
             override val id: String = UUID.randomUUID().toString()
         }

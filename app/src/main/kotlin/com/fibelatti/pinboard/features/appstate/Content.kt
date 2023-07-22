@@ -124,4 +124,4 @@ data class UserPreferencesContent(
  * Used when sharing URLs to the app. It usually indicates that the app should be finished so that
  * the user can return to the origin of the deeplink.
  */
-object ExternalContent : Content()
+data object ExternalContent : Content()

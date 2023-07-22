@@ -2,7 +2,7 @@ package com.fibelatti.pinboard.features.notes.domain.model
 
 sealed class NoteSorting {
 
-    object ByDateUpdatedDesc : NoteSorting() // API default
-    object ByDateUpdatedAsc : NoteSorting()
-    object AtoZ : NoteSorting()
+    data object ByDateUpdatedDesc : NoteSorting() // API default
+    data object ByDateUpdatedAsc : NoteSorting()
+    data object AtoZ : NoteSorting()
 }

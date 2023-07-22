@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.core.android
 
 sealed class Appearance(val value: String) {
-    object DarkTheme : Appearance("DARK")
-    object LightTheme : Appearance("LIGHT")
-    object SystemDefault : Appearance("SYSTEM_DEFAULT")
+    data object DarkTheme : Appearance("DARK")
+    data object LightTheme : Appearance("LIGHT")
+    data object SystemDefault : Appearance("SYSTEM_DEFAULT")
 }

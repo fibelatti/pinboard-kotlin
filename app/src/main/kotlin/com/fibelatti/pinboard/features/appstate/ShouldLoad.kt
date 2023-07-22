@@ -5,22 +5,22 @@ sealed class ShouldLoad
 /**
  * Local content is available, but still syncing with the backend.
  */
-object Syncing : ShouldLoad()
+data object Syncing : ShouldLoad()
 
 /**
  * Content is available and up-to-date.
  */
-object Loaded : ShouldLoad()
+data object Loaded : ShouldLoad()
 
 /**
  * Content changed and has to be reloaded from the start.
  */
-object ShouldLoadFirstPage : ShouldLoad()
+data object ShouldLoadFirstPage : ShouldLoad()
 
 /**
  * Forces a refresh with data from the server.
  */
-object ShouldForceLoad : ShouldLoad()
+data object ShouldForceLoad : ShouldLoad()
 
 /**
  * The user is reaching the end of the content and the next page should be loaded.
