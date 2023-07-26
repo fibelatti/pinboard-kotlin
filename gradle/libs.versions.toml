@@ -1,6 +1,6 @@
 [versions]
 activity = "1.7.2"
-agp = "8.0.2"
+agp = "8.1.0"
 composeCompiler = "1.5.0"
 composeUi = "1.4.3"
 coroutines = "1.7.3"
