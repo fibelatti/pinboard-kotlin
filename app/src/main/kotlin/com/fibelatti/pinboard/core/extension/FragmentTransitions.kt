@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.core.extension
 
+import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.commit
@@ -16,10 +17,10 @@ fun FragmentActivity.popTo(tag: String) {
 }
 
 fun FragmentActivity.slideFromTheRight(
+    @IdRes containerId: Int,
     fragment: Fragment,
     tag: String,
     addToBackStack: Boolean = true,
-    containerId: Int = R.id.fragment_host,
 ) {
     supportFragmentManager.commit {
         setCustomAnimations(
@@ -37,10 +38,10 @@ fun FragmentActivity.slideFromTheRight(
 }
 
 fun FragmentActivity.slideUp(
+    @IdRes containerId: Int,
     fragment: Fragment,
     tag: String,
     addToBackStack: Boolean = true,
-    containerId: Int = R.id.fragment_host,
 ) {
     supportFragmentManager.commit {
         setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)

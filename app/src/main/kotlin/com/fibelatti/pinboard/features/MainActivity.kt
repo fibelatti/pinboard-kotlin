@@ -1,22 +1,22 @@
 package com.fibelatti.pinboard.features
 
-import android.animation.ValueAnimator
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.transition.ChangeBounds
+import android.transition.TransitionManager
+import android.view.View
+import android.view.animation.LinearInterpolator
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.animation.doOnEnd
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.WindowCompat
-import androidx.core.view.isGone
-import androidx.core.view.isVisible
-import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.fibelatti.core.android.BaseIntentBuilder
 import com.fibelatti.core.android.intentExtras
+import com.fibelatti.core.extension.animateChangingTransitions
 import com.fibelatti.core.extension.doOnInitializeAccessibilityNodeInfo
 import com.fibelatti.core.extension.setupForAccessibility
 import com.fibelatti.core.extension.viewBinding
@@ -80,6 +80,50 @@ class MainActivity : BaseActivity() {
 
     private val binding by viewBinding(ActivityMainBinding::inflate)
 
+    // region ConstraintSets
+    private val constraintSetSidePanelHidden by lazy {
+        ConstraintSet().apply {
+            clone(binding.layoutContent)
+
+            connect(R.id.fragment_host, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+            connect(R.id.fragment_host, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+            constrainPercentWidth(R.id.fragment_host, 1f)
+
+            connect(R.id.fragment_host_side_panel, ConstraintSet.START, R.id.fragment_host, ConstraintSet.END)
+            connect(R.id.fragment_host_side_panel, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+            setVisibility(R.id.fragment_host_side_panel, View.GONE)
+        }
+    }
+
+    private val constraintSetSidePanelOverlap by lazy {
+        ConstraintSet().apply {
+            clone(binding.layoutContent)
+
+            connect(R.id.fragment_host, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+            connect(R.id.fragment_host, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+            constrainPercentWidth(R.id.fragment_host, 1f)
+
+            connect(R.id.fragment_host_side_panel, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+            connect(R.id.fragment_host_side_panel, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+            setVisibility(R.id.fragment_host_side_panel, View.VISIBLE)
+        }
+    }
+
+    private val constraintSetSidePanelDivided by lazy {
+        ConstraintSet().apply {
+            clone(binding.layoutContent)
+
+            connect(R.id.fragment_host, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+            connect(R.id.fragment_host, ConstraintSet.END, R.id.fragment_host_side_panel, ConstraintSet.START)
+            constrainPercentWidth(R.id.fragment_host, 0.4f)
+
+            connect(R.id.fragment_host_side_panel, ConstraintSet.START, R.id.fragment_host, ConstraintSet.END)
+            connect(R.id.fragment_host_side_panel, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+            setVisibility(R.id.fragment_host_side_panel, View.VISIBLE)
+        }
+    }
+    // endregion ConstraintSets
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -107,12 +151,13 @@ class MainActivity : BaseActivity() {
 
         binding.root.addView(
             widthWindowSizeClassReactiveView { windowSizeClass ->
-                featureFragments.multiPanelEnabled = windowSizeClass != WindowSizeClass.COMPACT
                 mainViewModel.updateState { currentState ->
                     currentState.copy(multiPanelEnabled = windowSizeClass != WindowSizeClass.COMPACT)
                 }
             },
         )
+
+        binding.layoutContent.animateChangingTransitions()
 
         binding.composeViewTopBar.setThemedContent {
             MainTopAppBar(
@@ -168,6 +213,8 @@ class MainActivity : BaseActivity() {
     private fun handleContent(content: Content) {
         onBackPressedCallback.isEnabled = (content as? ContentWithHistory)?.previousContent !is ExternalContent
 
+        setupSidePanel(show = content is SidePanelContent)
+
         if (isRecreating) {
             isRecreating = false
             return
@@ -177,7 +224,6 @@ class MainActivity : BaseActivity() {
             return
         }
 
-        setupSidePanel(show = content is SidePanelContent)
         showContentScreen(content)
     }
 
@@ -218,37 +264,18 @@ class MainActivity : BaseActivity() {
             currentState.copy(multiPanelContent = show)
         }
 
-        val showSidePanel = featureFragments.multiPanelEnabled && show
-
-        when {
-            showSidePanel && binding.fragmentHostSidePanel.isGone -> {
-                binding.fragmentHostSidePanel.isVisible = true
-                animatedSidePanelWidth(endWidth = binding.root.width / 2)
-            }
-
-            !showSidePanel && binding.fragmentHostSidePanel.isVisible -> {
-                animatedSidePanelWidth(endWidth = 0) {
-                    binding.fragmentHostSidePanel.isVisible = false
-                }
-            }
+        val constraintSet = when {
+            show && mainViewModel.state.value.multiPanelEnabled -> constraintSetSidePanelDivided
+            show -> constraintSetSidePanelOverlap
+            else -> constraintSetSidePanelHidden
         }
-    }
 
-    private inline fun animatedSidePanelWidth(
-        endWidth: Int,
-        crossinline doOnEnd: () -> Unit = {},
-    ) {
-        ValueAnimator.ofInt(binding.fragmentHostSidePanel.measuredWidth, endWidth)
-            .apply {
-                addUpdateListener { valueAnimator ->
-                    val value = valueAnimator.animatedValue as Int
-                    binding.fragmentHostSidePanel.updateLayoutParams<ConstraintLayout.LayoutParams> {
-                        width = value
-                    }
-                }
-                doOnEnd { doOnEnd() }
-            }
-            .start()
+        val transition = ChangeBounds()
+            .setInterpolator(LinearInterpolator())
+            .setDuration(300)
+
+        TransitionManager.beginDelayedTransition(binding.layoutContent, transition)
+        constraintSet.applyTo(binding.layoutContent)
     }
 
     override fun handleError(error: Throwable?, postAction: () -> Unit) {

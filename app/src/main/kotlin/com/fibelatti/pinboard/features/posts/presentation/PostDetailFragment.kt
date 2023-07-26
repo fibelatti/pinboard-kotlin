@@ -40,6 +40,8 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
     private val postDetailViewModel: PostDetailViewModel by viewModels()
     private val popularPostsViewModel: PopularPostsViewModel by viewModels()
 
+    private val actionId = UUID.randomUUID().toString()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -60,7 +62,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
     override fun onDestroyView() {
         mainViewModel.updateState { currentState ->
             currentState.copy(
-                actionButton = if (currentState.actionButton.id == ACTION_ID) {
+                actionButton = if (currentState.actionButton.id == actionId) {
                     MainState.ActionButtonComponent.Gone
                 } else {
                     currentState.actionButton
@@ -118,7 +120,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
                 mainViewModel.updateState { currentState ->
                     val actionButtonState = if (post.readLater && !post.isFile()) {
                         MainState.ActionButtonComponent.Visible(
-                            id = ACTION_ID,
+                            id = actionId,
                             label = getString(R.string.hint_mark_as_read),
                             data = post,
                         )
@@ -130,7 +132,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
                         currentState.copy(
                             actionButton = actionButtonState,
                             sidePanelAppBar = MainState.SidePanelAppBarComponent.Visible(
-                                id = ACTION_ID,
+                                id = actionId,
                                 menuItems = stableListOf(
                                     MainState.MenuItemComponent.ShareBookmark,
                                     *menuItems.toTypedArray(),
@@ -143,16 +145,16 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
                         currentState.copy(
                             title = MainState.TitleComponent.Gone,
                             subtitle = MainState.TitleComponent.Gone,
-                            navigation = MainState.NavigationComponent.Visible(ACTION_ID),
+                            navigation = MainState.NavigationComponent.Visible(actionId),
                             actionButton = actionButtonState,
                             bottomAppBar = MainState.BottomAppBarComponent.Visible(
-                                id = ACTION_ID,
+                                id = actionId,
                                 menuItems = menuItems.toStableList(),
                                 navigationIcon = null,
                                 data = post,
                             ),
                             floatingActionButton = MainState.FabComponent.Visible(
-                                id = ACTION_ID,
+                                id = actionId,
                                 icon = R.drawable.ic_share,
                                 data = post,
                             ),
@@ -164,13 +166,13 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun setupMainViewModel() {
-        mainViewModel.navigationClicks(ACTION_ID)
+        mainViewModel.navigationClicks(actionId)
             .onEach { navigateBack() }
             .launchInAndFlowWith(viewLifecycleOwner)
-        mainViewModel.actionButtonClicks(ACTION_ID)
+        mainViewModel.actionButtonClicks(actionId)
             .onEach { data: Any? -> (data as? Post)?.let(postDetailViewModel::toggleReadLater) }
             .launchInAndFlowWith(viewLifecycleOwner)
-        mainViewModel.menuItemClicks(ACTION_ID)
+        mainViewModel.menuItemClicks(actionId)
             .onEach { (menuItem, post) ->
                 if (post !is Post) return@onEach
                 when (menuItem) {
@@ -184,7 +186,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
                 }
             }
             .launchInAndFlowWith(viewLifecycleOwner)
-        mainViewModel.fabClicks(ACTION_ID)
+        mainViewModel.fabClicks(actionId)
             .onEach { data: Any? -> (data as? Post)?.let(::shareBookmarkUrl) }
             .launchInAndFlowWith(viewLifecycleOwner)
     }
@@ -253,7 +255,5 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
 
         @JvmStatic
         val TAG: String = "PostDetailFragment"
-
-        private val ACTION_ID = UUID.randomUUID().toString()
     }
 }

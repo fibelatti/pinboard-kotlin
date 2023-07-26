@@ -88,37 +88,41 @@ fun BookmarkListScreen(
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val appState by appStateViewModel.postListContent.collectAsStateWithLifecycle(initialValue = null)
-        val postListContent by rememberUpdatedState(newValue = appState ?: return@Surface)
+        val postListContent by appStateViewModel.postListContent.collectAsStateWithLifecycle(initialValue = null)
+        val postDetailContent by appStateViewModel.postDetailContent.collectAsStateWithLifecycle(initialValue = null)
 
-        val postListLoading = postListContent.shouldLoad != Loaded
+        val currentState by rememberUpdatedState(
+            newValue = postListContent ?: postDetailContent?.previousContent ?: return@Surface,
+        )
+
+        val postListLoading = currentState.shouldLoad != Loaded
         val postDetailScreenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
 
         val postListError by postListViewModel.error.collectAsStateWithLifecycle()
         val postDetailError by postDetailViewModel.error.collectAsStateWithLifecycle()
         val hasError = postListError != null || postDetailError != null
 
-        val shouldLoadContent = postListContent.shouldLoad is ShouldLoadFirstPage ||
-            postListContent.shouldLoad is ShouldForceLoad ||
-            postListContent.shouldLoad is ShouldLoadNextPage
+        val shouldLoadContent = currentState.shouldLoad is ShouldLoadFirstPage ||
+            currentState.shouldLoad is ShouldForceLoad ||
+            currentState.shouldLoad is ShouldLoadNextPage
 
-        LaunchedEffect(shouldLoadContent, postListContent) {
-            if (shouldLoadContent) postListViewModel.loadContent(postListContent)
+        LaunchedEffect(shouldLoadContent, currentState) {
+            if (shouldLoadContent) postListViewModel.loadContent(currentState)
         }
 
         BookmarkListScreen(
-            posts = postListContent.posts,
+            posts = currentState.posts,
             isLoading = (postListLoading || postDetailScreenState.isLoading) && !hasError,
             onScrollDirectionChanged = mainViewModel::setCurrentScrollDirection,
             onNextPageRequested = { appStateViewModel.runAction(GetNextPostPage) },
-            searchParameters = postListContent.searchParameters,
+            searchParameters = currentState.searchParameters,
             onClearClicked = { appStateViewModel.runAction(ClearSearch) },
             onShareClicked = onShareClicked,
             onPullToRefresh = { appStateViewModel.runAction(Refresh()) },
             onPostClicked = { post -> appStateViewModel.runAction(ViewPost(post)) },
             onPostLongClicked = onPostLongClicked,
             onTagClicked = { post -> appStateViewModel.runAction(PostsForTag(post)) },
-            showPostDescription = postListContent.showDescription,
+            showPostDescription = currentState.showDescription,
         )
     }
 }

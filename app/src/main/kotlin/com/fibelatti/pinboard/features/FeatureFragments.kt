@@ -25,14 +25,6 @@ import javax.inject.Inject
 
 class FeatureFragments @Inject constructor(private val activity: FragmentActivity) {
 
-    var multiPanelEnabled: Boolean = false
-
-    private fun getDetailContainerId(): Int = if (multiPanelEnabled) {
-        R.id.fragment_host_side_panel
-    } else {
-        R.id.fragment_host
-    }
-
     fun showLogin() {
         with(activity.supportFragmentManager) {
             if (findFragmentByTag(AuthFragment.TAG) == null) {
@@ -63,9 +55,9 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
 
         if (activity.supportFragmentManager.findFragmentByTag(tag) == null) {
             activity.slideFromTheRight(
+                containerId = R.id.fragment_host_side_panel,
                 fragment = activity.createFragment<PostDetailFragment>(),
                 tag = tag,
-                containerId = getDetailContainerId(),
             )
         } else {
             activity.popTo(tag)
@@ -83,25 +75,41 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
 
     fun showSearch() {
         if (activity.supportFragmentManager.findFragmentByTag(PostSearchFragment.TAG) == null) {
-            activity.slideUp(activity.createFragment<PostSearchFragment>(), PostSearchFragment.TAG)
+            activity.slideUp(
+                containerId = R.id.fragment_host,
+                fragment = activity.createFragment<PostSearchFragment>(),
+                tag = PostSearchFragment.TAG,
+            )
         }
     }
 
     fun showAddPost() {
         if (activity.supportFragmentManager.findFragmentByTag(EditPostFragment.TAG) == null) {
-            activity.slideUp(activity.createFragment<EditPostFragment>(), EditPostFragment.TAG)
+            activity.slideUp(
+                containerId = R.id.fragment_host,
+                fragment = activity.createFragment<EditPostFragment>(),
+                tag = EditPostFragment.TAG,
+            )
         }
     }
 
     fun showTags() {
         if (activity.supportFragmentManager.findFragmentByTag(TagsFragment.TAG) == null) {
-            activity.slideUp(activity.createFragment<TagsFragment>(), TagsFragment.TAG)
+            activity.slideUp(
+                containerId = R.id.fragment_host,
+                fragment = activity.createFragment<TagsFragment>(),
+                tag = TagsFragment.TAG,
+            )
         }
     }
 
     fun showNotes() {
         if (activity.supportFragmentManager.findFragmentByTag(NoteListFragment.TAG) == null) {
-            activity.slideUp(activity.createFragment<NoteListFragment>(), NoteListFragment.TAG)
+            activity.slideUp(
+                containerId = R.id.fragment_host,
+                fragment = activity.createFragment<NoteListFragment>(),
+                tag = NoteListFragment.TAG,
+            )
         } else {
             activity.popTo(NoteListFragment.TAG)
         }
@@ -110,16 +118,20 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
     fun showNoteDetails() {
         if (activity.supportFragmentManager.findFragmentByTag(NoteDetailsFragment.TAG) == null) {
             activity.slideFromTheRight(
+                containerId = R.id.fragment_host_side_panel,
                 fragment = activity.createFragment<NoteDetailsFragment>(),
                 tag = NoteDetailsFragment.TAG,
-                containerId = getDetailContainerId(),
             )
         }
     }
 
     fun showPopular() {
         if (activity.supportFragmentManager.findFragmentByTag(PopularPostsFragment.TAG) == null) {
-            activity.slideUp(activity.createFragment<PopularPostsFragment>(), PopularPostsFragment.TAG)
+            activity.slideUp(
+                containerId = R.id.fragment_host,
+                fragment = activity.createFragment<PopularPostsFragment>(),
+                tag = PopularPostsFragment.TAG,
+            )
         } else {
             activity.popTo(PopularPostsFragment.TAG)
         }
@@ -127,13 +139,18 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
 
     fun showPreferences() {
         if (activity.supportFragmentManager.findFragmentByTag(UserPreferencesFragment.TAG) == null) {
-            activity.slideUp(activity.createFragment<UserPreferencesFragment>(), UserPreferencesFragment.TAG)
+            activity.slideUp(
+                containerId = R.id.fragment_host,
+                fragment = activity.createFragment<UserPreferencesFragment>(),
+                tag = UserPreferencesFragment.TAG,
+            )
         }
     }
 
     fun showEditPost() {
         if (activity.supportFragmentManager.findFragmentByTag(EditPostFragment.TAG) == null) {
             activity.slideUp(
+                containerId = R.id.fragment_host,
                 fragment = activity.createFragment<EditPostFragment>(),
                 tag = EditPostFragment.TAG,
                 addToBackStack = !activity.intent.fromBuilder,
