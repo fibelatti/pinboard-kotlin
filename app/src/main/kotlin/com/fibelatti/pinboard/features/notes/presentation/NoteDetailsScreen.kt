@@ -12,8 +12,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -23,15 +25,24 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
+import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
+import com.fibelatti.pinboard.features.MainState
+import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.notes.domain.model.Note
+import com.fibelatti.ui.foundation.stableListOf
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
+import kotlinx.coroutines.flow.onEach
+import java.util.UUID
 
 @Composable
 fun NoteDetailsScreen(
     appStateViewModel: AppStateViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     noteDetailsViewModel: NoteDetailsViewModel = hiltViewModel(),
+    onBackPressed: () -> Unit,
+    onError: (Throwable?, () -> Unit) -> Unit,
 ) {
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
@@ -40,10 +51,56 @@ fun NoteDetailsScreen(
         val noteDetailContent by rememberUpdatedState(newValue = appState ?: return@Surface)
         val isLoading = noteDetailContent.note.isLeft
 
+        val actionId = remember { UUID.randomUUID().toString() }
+        val localLifecycleOwner = LocalLifecycleOwner.current
+
+        LaunchedEffect(noteDetailContent) {
+            mainViewModel.updateState { currentState ->
+                if (currentState.multiPanelEnabled) {
+                    currentState.copy(
+                        sidePanelAppBar = MainState.SidePanelAppBarComponent.Visible(
+                            id = actionId,
+                            menuItems = stableListOf(MainState.MenuItemComponent.CloseSidePanel),
+                        ),
+                    )
+                } else {
+                    currentState.copy(
+                        title = MainState.TitleComponent.Gone,
+                        subtitle = MainState.TitleComponent.Gone,
+                        navigation = MainState.NavigationComponent.Visible(actionId),
+                        bottomAppBar = MainState.BottomAppBarComponent.Gone,
+                        floatingActionButton = MainState.FabComponent.Gone,
+                    )
+                }
+            }
+        }
+
         LaunchedEffect(isLoading, noteDetailContent) {
             if (isLoading) {
                 noteDetailsViewModel.getNoteDetails(noteDetailContent.id)
             }
+        }
+
+        LaunchedEffect(Unit) {
+            mainViewModel.navigationClicks(actionId)
+                .onEach { onBackPressed() }
+                .launchInAndFlowWith(localLifecycleOwner)
+        }
+
+        LaunchedEffect(Unit) {
+            mainViewModel.menuItemClicks(actionId)
+                .onEach { (menuItem, _) ->
+                    if (menuItem is MainState.MenuItemComponent.CloseSidePanel) {
+                        onBackPressed()
+                    }
+                }
+                .launchInAndFlowWith(localLifecycleOwner)
+        }
+
+        LaunchedEffect(Unit) {
+            noteDetailsViewModel.error
+                .onEach { throwable -> onError(throwable, noteDetailsViewModel::errorHandled) }
+                .launchInAndFlowWith(localLifecycleOwner)
         }
 
         CrossfadeLoadingLayout(
