@@ -14,10 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -28,7 +31,12 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LoadingContent
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
+import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
+import com.fibelatti.pinboard.features.MainState
+import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.features.appstate.NoteDetailContent
+import com.fibelatti.pinboard.features.appstate.NoteListContent
 import com.fibelatti.pinboard.features.appstate.RefreshNotes
 import com.fibelatti.pinboard.features.appstate.ViewNote
 import com.fibelatti.pinboard.features.notes.domain.model.Note
@@ -39,22 +47,71 @@ import com.fibelatti.ui.foundation.StableList
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
+import kotlinx.coroutines.flow.onEach
+import java.util.UUID
 
 @Composable
 fun NoteListScreen(
     appStateViewModel: AppStateViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     noteListViewModel: NoteListViewModel = hiltViewModel(),
+    onBackPressed: () -> Unit,
+    onError: (Throwable?, () -> Unit) -> Unit,
 ) {
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val appState by appStateViewModel.noteListContent.collectAsStateWithLifecycle(initialValue = null)
-        val noteListContent by rememberUpdatedState(newValue = appState ?: return@Surface)
+        val content by appStateViewModel.content.collectAsStateWithLifecycle()
+        val noteListContent by rememberUpdatedState(
+            newValue = when (val value = content) {
+                is NoteListContent -> value
+                is NoteDetailContent -> value.previousContent
+                else -> return@Surface
+            },
+        )
+
+        val actionId = remember { UUID.randomUUID().toString() }
+        val localContext = LocalContext.current
+        val localLifecycleOwner = LocalLifecycleOwner.current
+
+        LaunchedEffect(content) {
+            mainViewModel.updateState { mainViewModelState ->
+                mainViewModelState.copy(
+                    title = MainState.TitleComponent.Visible(localContext.getString(R.string.notes_title)),
+                    subtitle = when {
+                        noteListContent.shouldLoad -> MainState.TitleComponent.Gone
+                        noteListContent.notes.isEmpty() -> MainState.TitleComponent.Gone
+                        else -> MainState.TitleComponent.Visible(
+                            localContext.resources.getQuantityString(
+                                R.plurals.notes_quantity,
+                                noteListContent.notes.size,
+                                noteListContent.notes.size,
+                            ),
+                        )
+                    },
+                    navigation = MainState.NavigationComponent.Visible(actionId),
+                    bottomAppBar = MainState.BottomAppBarComponent.Gone,
+                    floatingActionButton = MainState.FabComponent.Gone,
+                )
+            }
+        }
 
         LaunchedEffect(noteListContent.shouldLoad) {
             if (noteListContent.shouldLoad) {
                 noteListViewModel.getAllNotes()
             }
+        }
+
+        LaunchedEffect(Unit) {
+            mainViewModel.navigationClicks(actionId)
+                .onEach { onBackPressed() }
+                .launchInAndFlowWith(localLifecycleOwner)
+        }
+
+        LaunchedEffect(Unit) {
+            noteListViewModel.error
+                .onEach { throwable -> onError(throwable, noteListViewModel::errorHandled) }
+                .launchInAndFlowWith(localLifecycleOwner)
         }
 
         if (noteListContent.shouldLoad) {

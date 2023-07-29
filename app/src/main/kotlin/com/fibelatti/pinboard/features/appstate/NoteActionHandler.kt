@@ -17,26 +17,42 @@ class NoteActionHandler @Inject constructor(
     }
 
     private fun refresh(currentContent: Content): Content {
-        return currentContent.reduce<NoteListContent> { noteListContent ->
+        val body = { noteListContent: NoteListContent ->
             noteListContent.copy(
                 shouldLoad = connectivityInfoProvider.isConnected(),
                 isConnected = connectivityInfoProvider.isConnected(),
             )
         }
+
+        return currentContent
+            .reduce(body)
+            .reduce<NoteDetailContent> { noteDetailContent ->
+                noteDetailContent.copy(
+                    previousContent = body(noteDetailContent.previousContent),
+                )
+            }
     }
 
     private fun setNotes(action: SetNotes, currentContent: Content): Content {
-        return currentContent.reduce<NoteListContent> { noteListContent ->
+        val body = { noteListContent: NoteListContent ->
             noteListContent.copy(
                 notes = action.notes,
                 shouldLoad = false,
             )
         }
+
+        return currentContent
+            .reduce(body)
+            .reduce<NoteDetailContent> { noteDetailContent ->
+                noteDetailContent.copy(
+                    previousContent = body(noteDetailContent.previousContent),
+                )
+            }
     }
 
     private fun setNote(action: SetNote, currentContent: Content): Content {
-        return currentContent.reduce<NoteDetailContent> { noteListContent ->
-            noteListContent.copy(note = Either.Right(action.note))
+        return currentContent.reduce<NoteDetailContent> { noteDetailContent ->
+            noteDetailContent.copy(note = Either.Right(action.note))
         }
     }
 }

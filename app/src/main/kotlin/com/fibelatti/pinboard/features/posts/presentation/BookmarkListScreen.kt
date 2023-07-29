@@ -92,7 +92,7 @@ fun BookmarkListScreen(
         val postDetailContent by appStateViewModel.postDetailContent.collectAsStateWithLifecycle(initialValue = null)
 
         val currentState by rememberUpdatedState(
-            newValue = postListContent ?: postDetailContent?.previousContent ?: return@Surface,
+            newValue = postDetailContent?.previousContent ?: postListContent ?: return@Surface,
         )
 
         val postListLoading = currentState.shouldLoad != Loaded
