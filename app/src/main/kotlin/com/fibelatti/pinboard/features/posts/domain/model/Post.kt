@@ -11,8 +11,8 @@ data class Post(
     val id: String = "",
     val time: String = "",
     val formattedTime: String = time,
-    val private: Boolean,
-    val readLater: Boolean,
+    val private: Boolean? = null,
+    val readLater: Boolean? = null,
     val tags: List<Tag>? = null,
     val pendingSync: PendingSync? = null,
 )

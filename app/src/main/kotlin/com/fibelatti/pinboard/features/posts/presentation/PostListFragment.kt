@@ -316,7 +316,7 @@ private sealed class PostQuickActions(
     data class ToggleReadLater(
         override val post: Post,
     ) : PostQuickActions(
-        title = if (post.readLater) {
+        title = if (post.readLater == true) {
             R.string.quick_actions_remove_read_later
         } else {
             R.string.quick_actions_add_read_later

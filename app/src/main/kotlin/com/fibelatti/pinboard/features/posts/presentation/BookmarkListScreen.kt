@@ -354,7 +354,7 @@ private fun BookmarkItem(
                 style = MaterialTheme.typography.bodyMedium,
             )
 
-            if (post.private || post.readLater) {
+            if (post.private == true || post.readLater == true) {
                 BookmarkFlags(
                     private = post.private,
                     readLater = post.readLater,
@@ -421,8 +421,8 @@ fun PendingSyncIndicator(
 
 @Composable
 private fun BookmarkFlags(
-    private: Boolean,
-    readLater: Boolean,
+    private: Boolean?,
+    readLater: Boolean?,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -430,7 +430,7 @@ private fun BookmarkFlags(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        if (private) {
+        if (private == true) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_private),
                 contentDescription = null,
@@ -445,7 +445,7 @@ private fun BookmarkFlags(
             )
         }
 
-        if (readLater) {
+        if (readLater == true) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_read_later),
                 contentDescription = null,

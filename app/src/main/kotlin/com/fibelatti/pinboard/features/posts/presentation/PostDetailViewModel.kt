@@ -68,7 +68,7 @@ class PostDetailViewModel @Inject constructor(
                     title = post.title,
                     description = post.description,
                     private = post.private,
-                    readLater = !post.readLater,
+                    readLater = !(post.readLater ?: false),
                     tags = post.tags,
                     replace = true,
                     id = post.id,

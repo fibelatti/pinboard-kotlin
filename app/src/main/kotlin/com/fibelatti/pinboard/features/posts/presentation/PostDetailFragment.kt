@@ -118,7 +118,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
                 }
 
                 mainViewModel.updateState { currentState ->
-                    val actionButtonState = if (post.readLater && !post.isFile()) {
+                    val actionButtonState = if (post.readLater == true && !post.isFile()) {
                         MainState.ActionButtonComponent.Visible(
                             id = actionId,
                             label = getString(R.string.hint_mark_as_read),

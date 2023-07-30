@@ -407,9 +407,9 @@ private enum class FocusedField {
 @Composable
 private fun BookmarkFlags(
     mainVariant: Boolean,
-    private: Boolean,
+    private: Boolean?,
     onPrivateChanged: (Boolean) -> Unit,
-    readLater: Boolean,
+    readLater: Boolean?,
     onReadLaterChanged: (Boolean) -> Unit,
 ) {
     Row(
@@ -422,7 +422,7 @@ private fun BookmarkFlags(
             SettingToggle(
                 title = stringResource(id = R.string.posts_add_private),
                 description = null,
-                checked = private,
+                checked = private == true,
                 onCheckedChange = onPrivateChanged,
                 modifier = Modifier.weight(0.5f),
             )
@@ -431,7 +431,7 @@ private fun BookmarkFlags(
         SettingToggle(
             title = stringResource(id = R.string.posts_add_read_later),
             description = null,
-            checked = readLater,
+            checked = readLater == true,
             onCheckedChange = onReadLaterChanged,
             modifier = Modifier.weight(0.5f),
         )

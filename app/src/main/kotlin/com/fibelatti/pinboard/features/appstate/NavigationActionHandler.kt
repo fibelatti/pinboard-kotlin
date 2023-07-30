@@ -107,7 +107,7 @@ class NavigationActionHandler @Inject constructor(
 
     @VisibleForTesting
     suspend fun markAsRead(post: Post): ShouldLoad {
-        return if (post.readLater && userRepository.markAsReadOnOpen) {
+        return if (post.readLater == true && userRepository.markAsReadOnOpen) {
             withContext(NonCancellable) {
                 launch {
                     catching {

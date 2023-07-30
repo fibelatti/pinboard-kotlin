@@ -88,8 +88,8 @@ class PostDtoMapper @Inject constructor(
             extended = description,
             hash = id,
             time = time,
-            shared = if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES,
-            toread = if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO,
+            shared = if (private == true) PinboardApiLiterals.NO else PinboardApiLiterals.YES,
+            toread = if (readLater == true) PinboardApiLiterals.YES else PinboardApiLiterals.NO,
             tags = tags?.joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name }.orEmpty(),
             pendingSync = when (pendingSync) {
                 PendingSync.ADD -> PendingSyncDto.ADD
