@@ -125,6 +125,12 @@ class EditPostViewModel @Inject constructor(
         }
     }
 
+    fun userNotified() {
+        _screenState.update { currentState ->
+            currentState.copy(saved = false)
+        }
+    }
+
     fun hasPendingChanges(): Boolean = _postState.value.let { it?.index != null && it.index != 0 }
 
     private fun validateData(): AddPost.Params? {

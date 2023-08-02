@@ -177,6 +177,7 @@ class EditPostFragment @Inject constructor(
 
                     state.saved -> {
                         requireView().showBanner(getString(R.string.posts_saved_feedback))
+                        editPostViewModel.userNotified()
                     }
                 }
             }
@@ -216,6 +217,7 @@ class EditPostFragment @Inject constructor(
             .onEach { state ->
                 if (state.deleted is Success<Boolean> && state.deleted.value) {
                     requireView().showBanner(getString(R.string.posts_deleted_feedback))
+                    postDetailViewModel.userNotified()
                 }
             }
             .launchInAndFlowWith(viewLifecycleOwner)

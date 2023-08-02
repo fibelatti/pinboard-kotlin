@@ -39,7 +39,10 @@ class PostDetailViewModel @Inject constructor(
             deletePost(post.url)
                 .onSuccess {
                     _screenState.update { currentState ->
-                        currentState.copy(deleted = Success(value = true))
+                        currentState.copy(
+                            isLoading = false,
+                            deleted = Success(value = true),
+                        )
                     }
                     appStateRepository.runAction(PostDeleted)
                 }
@@ -87,6 +90,15 @@ class PostDetailViewModel @Inject constructor(
                     )
                 }
             }
+        }
+    }
+
+    fun userNotified() {
+        _screenState.update { currentState ->
+            currentState.copy(
+                deleted = Success(value = false),
+                updated = Success(value = false),
+            )
         }
     }
 

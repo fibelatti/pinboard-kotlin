@@ -63,7 +63,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
         // THEN
         assertThat(postDetailViewModel.screenState.first()).isEqualTo(
             PostDetailViewModel.ScreenState(
-                isLoading = true,
+                isLoading = false,
                 deleted = Success(true),
                 updated = Success(false),
             ),

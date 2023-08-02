@@ -79,7 +79,6 @@
     <string name="posts_empty_title">No pins in this board</string>
     <string name="posts_empty_description">There are no bookmarks saved in the selected category</string>
 
-
     <string name="posts_deleted_feedback">Bookmark removed successfully</string>
     <string name="posts_deleted_error">An error happened and the bookmark could not be removed. If the problem persists please delete it using the web version of Pinboard.</string>
 

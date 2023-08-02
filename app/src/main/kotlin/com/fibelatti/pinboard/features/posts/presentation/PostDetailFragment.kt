@@ -201,6 +201,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
                 when {
                     state.deleted is Success<Boolean> && state.deleted.value -> {
                         requireView().showBanner(getString(R.string.posts_deleted_feedback))
+                        postDetailViewModel.userNotified()
                     }
 
                     state.deleted is Failure -> {
@@ -212,6 +213,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
 
                     state.updated is Success<Boolean> && state.updated.value -> {
                         requireView().showBanner(getString(R.string.posts_marked_as_read_feedback))
+                        postDetailViewModel.userNotified()
                         mainViewModel.updateState { currentState ->
                             currentState.copy(actionButton = MainState.ActionButtonComponent.Gone)
                         }
@@ -219,6 +221,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
 
                     state.updated is Failure -> {
                         requireView().showBanner(getString(R.string.posts_marked_as_read_error))
+                        postDetailViewModel.userNotified()
                     }
                 }
             }
