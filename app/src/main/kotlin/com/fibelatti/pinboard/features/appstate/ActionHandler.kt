@@ -33,7 +33,7 @@ abstract class ActionHandler<A : Action> {
         body: (T) -> Content,
     ): Content {
         contract {
-            callsInPlace(body, InvocationKind.EXACTLY_ONCE)
+            callsInPlace(body, InvocationKind.AT_MOST_ONCE)
         }
         return if (this is T) body(this) else this
     }
