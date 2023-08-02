@@ -14,12 +14,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-inline fun <T : Any?> CrossfadeLoadingLayout(
+fun <T : Any?> CrossfadeLoadingLayout(
     data: T?,
     modifier: Modifier = Modifier,
     progressIndicatorSize: Dp = 40.dp,
     progressIndicatorColor: Color = MaterialTheme.colorScheme.primary,
-    crossinline content: @Composable (T) -> Unit,
+    content: @Composable (T) -> Unit,
 ) {
     Crossfade(
         targetState = data,
