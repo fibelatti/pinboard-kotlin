@@ -90,4 +90,4 @@ kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version = "1.9.0-1.0.13" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 spotless = { id = "com.diffplug.spotless", version = "6.20.0" }
-cache-fix = { id = "org.gradle.android.cache-fix", version = "2.7.2" }
+cache-fix = { id = "org.gradle.android.cache-fix", version = "2.7.3" }
