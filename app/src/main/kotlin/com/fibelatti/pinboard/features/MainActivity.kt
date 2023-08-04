@@ -237,7 +237,7 @@ class MainActivity : BaseActivity() {
             }
 
             is PostListContent -> featureFragments.showPostList()
-            is PostDetailContent -> featureFragments.showPostDetail(content.post.hash)
+            is PostDetailContent -> featureFragments.showPostDetail(content.post.id)
             is ExternalBrowserContent -> {
                 featureFragments.showPostInExternalBrowser(content.post)
                 appStateViewModel.runAction(NavigateBack)
@@ -250,7 +250,7 @@ class MainActivity : BaseActivity() {
             is NoteListContent -> featureFragments.showNotes()
             is NoteDetailContent -> featureFragments.showNoteDetails()
             is PopularPostsContent -> featureFragments.showPopular()
-            is PopularPostDetailContent -> featureFragments.showPostDetail(content.post.hash)
+            is PopularPostDetailContent -> featureFragments.showPostDetail(content.post.id)
             is UserPreferencesContent -> featureFragments.showPreferences()
             is ExternalContent -> {
                 appStateViewModel.reset()

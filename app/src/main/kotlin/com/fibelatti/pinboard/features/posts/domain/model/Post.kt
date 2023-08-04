@@ -8,7 +8,7 @@ data class Post(
     val url: String,
     val title: String,
     val description: String,
-    val hash: String = "",
+    val id: String = "",
     val time: String = "",
     val formattedTime: String = time,
     val private: Boolean,

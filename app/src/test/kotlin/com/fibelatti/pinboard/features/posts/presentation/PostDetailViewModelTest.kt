@@ -104,7 +104,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
             readLater = !randomBoolean,
             tags = post.tags,
             replace = true,
-            hash = post.hash,
+            id = post.id,
             time = post.time,
         )
 

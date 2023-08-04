@@ -18,7 +18,7 @@ interface PostsRepository {
         readLater: Boolean?,
         tags: List<Tag>?,
         replace: Boolean,
-        hash: String?,
+        id: String?,
         time: String?,
     ): Result<Post>
 

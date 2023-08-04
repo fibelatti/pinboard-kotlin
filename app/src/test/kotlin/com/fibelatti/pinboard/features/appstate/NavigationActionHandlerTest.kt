@@ -325,8 +325,8 @@ internal class NavigationActionHandlerTest {
         fun `WHEN currentContent is PostDetailContent THEN PostDetailContent is returned AND the post is updated`() =
             runTest {
                 // GIVEN
-                val currentPost = createPost(hash = "current")
-                val otherPost = createPost(hash = "other")
+                val currentPost = createPost(id = "current")
+                val otherPost = createPost(id = "other")
 
                 val content = PostDetailContent(
                     post = currentPost,
@@ -351,8 +351,8 @@ internal class NavigationActionHandlerTest {
         fun `WHEN currentContent is PopularPostDetailContent THEN PopularPostDetailContent is returned AND the post is updated`() =
             runTest {
                 // GIVEN
-                val currentPost = createPost(hash = "current")
-                val otherPost = createPost(hash = "other")
+                val currentPost = createPost(id = "current")
+                val otherPost = createPost(id = "other")
                 val previousContent = mockk<PopularPostsContent>()
 
                 val content = PopularPostDetailContent(
@@ -425,7 +425,7 @@ internal class NavigationActionHandlerTest {
                         readLater = false,
                         tags = readLater.tags,
                         replace = true,
-                        hash = readLater.hash,
+                        id = readLater.id,
                         time = readLater.time,
                     )
                 }

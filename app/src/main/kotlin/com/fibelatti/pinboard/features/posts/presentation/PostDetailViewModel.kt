@@ -71,7 +71,7 @@ class PostDetailViewModel @Inject constructor(
                     readLater = !post.readLater,
                     tags = post.tags,
                     replace = true,
-                    hash = post.hash,
+                    id = post.id,
                     time = post.time,
                 ),
             ).onSuccess {

@@ -194,7 +194,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                         private = true,
                         readLater = true,
                         tags = mockTags,
-                        hash = "",
+                        id = "",
                         time = "",
                     ),
                 )
@@ -239,7 +239,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                     private = true,
                     readLater = true,
                     tags = mockTags,
-                    hash = "",
+                    id = "",
                     time = "",
                 ),
             )
@@ -286,7 +286,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                         private = true,
                         readLater = true,
                         tags = mockTags,
-                        hash = "",
+                        id = "",
                         time = "",
                     ),
                 )

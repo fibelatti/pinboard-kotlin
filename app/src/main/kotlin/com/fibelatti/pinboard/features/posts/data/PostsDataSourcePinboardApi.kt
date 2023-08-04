@@ -91,10 +91,10 @@ class PostsDataSourcePinboardApi @Inject constructor(
         readLater: Boolean?,
         tags: List<Tag>?,
         replace: Boolean,
-        hash: String?,
+        id: String?,
         time: String?,
     ): Result<Post> {
-        val nonEmptyHash = hash.ifNullOrBlank { UUID.randomUUID().toString() }
+        val nonEmptyHash = id.ifNullOrBlank { UUID.randomUUID().toString() }
         val nonEmptyTime = time.ifNullOrBlank { dateFormatter.nowAsTzFormat() }
 
         return if (connectivityInfoProvider.isConnected()) {
@@ -161,7 +161,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
                         url = url,
                         title = title,
                         description = description.orEmpty(),
-                        hash = hash,
+                        id = hash,
                         time = time,
                         private = private ?: false,
                         readLater = readLater ?: false,

@@ -60,7 +60,7 @@ internal class PendingSyncWorkerTest {
                 readLater = post.readLater,
                 tags = post.tags,
                 replace = true,
-                hash = post.hash,
+                id = post.id,
                 time = post.time,
             )
         } returns Success(post)
@@ -86,7 +86,7 @@ internal class PendingSyncWorkerTest {
                 readLater = post.readLater,
                 tags = post.tags,
                 replace = true,
-                hash = post.hash,
+                id = post.id,
                 time = post.time,
             )
         } returns Success(post)
@@ -127,7 +127,7 @@ internal class PendingSyncWorkerTest {
                 readLater = postAdd.readLater,
                 tags = postAdd.tags,
                 replace = true,
-                hash = postAdd.hash,
+                id = postAdd.id,
                 time = postAdd.time,
             )
         } returns Failure(Exception())
@@ -155,7 +155,7 @@ internal class PendingSyncWorkerTest {
                 readLater = postAdd.readLater,
                 tags = postAdd.tags,
                 replace = true,
-                hash = postAdd.hash,
+                id = postAdd.id,
                 time = postAdd.time,
             )
         } returns Success(postAdd)

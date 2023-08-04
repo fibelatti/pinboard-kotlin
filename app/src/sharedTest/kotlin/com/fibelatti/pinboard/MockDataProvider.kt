@@ -103,7 +103,7 @@ object MockDataProvider {
     )
 
     fun createPost(
-        hash: String = mockHash,
+        id: String = mockHash,
         time: String = mockTime,
         url: String = mockUrlValid,
         title: String = mockUrlTitle,
@@ -116,7 +116,7 @@ object MockDataProvider {
         url = url,
         title = title,
         description = description,
-        hash = hash,
+        id = id,
         time = time,
         private = private,
         readLater = readLater,
