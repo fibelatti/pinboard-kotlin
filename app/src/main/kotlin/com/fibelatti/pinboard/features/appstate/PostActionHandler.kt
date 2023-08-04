@@ -37,38 +37,54 @@ class PostActionHandler @Inject constructor(
 
         return currentContent
             .reduce(body)
-            .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
+            .reduce<PostDetailContent> { postDetailContent ->
+                postDetailContent.copy(previousContent = body(postDetailContent.previousContent))
+            }
     }
 
     private fun setPosts(action: SetPosts, currentContent: Content): Content {
-        return currentContent.reduce<PostListContent> { postListContent ->
-            val posts = action.postListResult.posts.takeIf { it.isNotEmpty() }?.let { newList ->
-                PostList(
-                    list = newList,
-                    totalCount = action.postListResult.totalCount,
-                    canPaginate = action.postListResult.canPaginate,
-                    shouldScrollToTop = true,
-                )
-            }
+        val body = { postListContent: PostListContent ->
             postListContent.copy(
-                posts = posts,
+                posts = action.postListResult.posts.takeIf { it.isNotEmpty() }?.let { newList ->
+                    PostList(
+                        list = newList,
+                        totalCount = action.postListResult.totalCount,
+                        canPaginate = action.postListResult.canPaginate,
+                        shouldScrollToTop = true,
+                    )
+                },
                 shouldLoad = if (action.postListResult.upToDate) Loaded else Syncing,
             )
         }
+
+        return currentContent
+            .reduce(body)
+            .reduce<PostDetailContent> { postDetailContent ->
+                postDetailContent.copy(
+                    previousContent = body(postDetailContent.previousContent),
+                )
+            }
     }
 
     private fun getNextPostPage(currentContent: Content): Content {
-        return currentContent.reduce<PostListContent> { postListContent ->
+        val body = { postListContent: PostListContent ->
             if (postListContent.posts != null) {
                 postListContent.copy(shouldLoad = ShouldLoadNextPage(offset = postListContent.currentCount))
             } else {
-                currentContent
+                postListContent
             }
         }
+
+        return currentContent.reduce(body)
+            .reduce<PostDetailContent> { postDetailContent ->
+                postDetailContent.copy(
+                    previousContent = body(postDetailContent.previousContent),
+                )
+            }
     }
 
     private fun setNextPostPage(action: SetNextPostPage, currentContent: Content): Content {
-        return currentContent.reduce<PostListContent> { postListContent ->
+        val body = { postListContent: PostListContent ->
             if (postListContent.posts != null) {
                 val updatedList = postListContent.currentList.union(action.postListResult.posts).toList()
                 val posts = PostList(
@@ -80,9 +96,17 @@ class PostActionHandler @Inject constructor(
 
                 postListContent.copy(posts = posts, shouldLoad = Loaded)
             } else {
-                currentContent
+                postListContent
             }
         }
+
+        return currentContent
+            .reduce(body)
+            .reduce<PostDetailContent> { postDetailContent ->
+                postDetailContent.copy(
+                    previousContent = body(postDetailContent.previousContent),
+                )
+            }
     }
 
     private fun toggleSorting(currentContent: Content): Content {
@@ -102,7 +126,11 @@ class PostActionHandler @Inject constructor(
 
         return currentContent
             .reduce(body)
-            .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
+            .reduce<PostDetailContent> { postDetailContent ->
+                postDetailContent.copy(
+                    previousContent = body(postDetailContent.previousContent),
+                )
+            }
     }
 
     private fun editPost(action: EditPost, currentContent: Content): Content {

@@ -83,16 +83,21 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
     }
 
     private fun clearSearch(currentContent: Content): Content {
-        return currentContent.reduce<PostListContent> { postListContent ->
+        val body = { postListContent: PostListContent ->
             postListContent.copy(
                 searchParameters = SearchParameters(),
                 shouldLoad = ShouldLoadFirstPage,
             )
-        }.reduce<SearchContent> { searchContent ->
-            searchContent.previousContent.copy(
-                searchParameters = SearchParameters(),
-                shouldLoad = ShouldLoadFirstPage,
-            )
         }
+
+        return currentContent
+            .reduce(body)
+            .reduce<PostDetailContent> { postDetailContent ->
+                postDetailContent.copy(
+                    previousContent = body(postDetailContent.previousContent),
+                )
+            }.reduce<SearchContent> { searchContent ->
+                body(searchContent.previousContent)
+            }
     }
 }

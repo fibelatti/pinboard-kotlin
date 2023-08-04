@@ -58,7 +58,9 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.GetNextPostPage
 import com.fibelatti.pinboard.features.appstate.Loaded
+import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostList
+import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.SearchParameters
@@ -88,11 +90,14 @@ fun BookmarkListScreen(
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val postListContent by appStateViewModel.postListContent.collectAsStateWithLifecycle(initialValue = null)
-        val postDetailContent by appStateViewModel.postDetailContent.collectAsStateWithLifecycle(initialValue = null)
+        val content by appStateViewModel.content.collectAsStateWithLifecycle()
 
         val currentState by rememberUpdatedState(
-            newValue = postDetailContent?.previousContent ?: postListContent ?: return@Surface,
+            newValue = when (val current = content) {
+                is PostListContent -> current
+                is PostDetailContent -> current.previousContent
+                else -> return@Surface
+            },
         )
 
         val postListLoading = currentState.shouldLoad != Loaded

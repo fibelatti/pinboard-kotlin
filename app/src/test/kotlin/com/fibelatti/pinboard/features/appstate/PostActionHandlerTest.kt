@@ -117,18 +117,21 @@ internal class PostActionHandlerTest {
                 // GIVEN
                 every { mockConnectivityInfoProvider.isConnected() } returns false
 
-                val content = mockk<PostDetailContent> {
-                    every { previousContent } returns initialContent
-                }
+                val content = PostDetailContent(
+                    post = mockk(),
+                    previousContent = initialContent,
+                )
 
                 // WHEN
                 val result = postActionHandler.runAction(Refresh(), content)
 
                 // THEN
                 assertThat(result).isEqualTo(
-                    initialContent.copy(
-                        shouldLoad = Loaded,
-                        isConnected = false,
+                    content.copy(
+                        previousContent = initialContent.copy(
+                            shouldLoad = Loaded,
+                            isConnected = false,
+                        ),
                     ),
                 )
                 verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
@@ -140,18 +143,21 @@ internal class PostActionHandlerTest {
                 // GIVEN
                 every { mockConnectivityInfoProvider.isConnected() } returns true
 
-                val content = mockk<PostDetailContent> {
-                    every { previousContent } returns initialContent
-                }
+                val content = PostDetailContent(
+                    post = mockk(),
+                    previousContent = initialContent,
+                )
 
                 // WHEN
                 val result = postActionHandler.runAction(Refresh(), content)
 
                 // THEN
                 assertThat(result).isEqualTo(
-                    initialContent.copy(
-                        shouldLoad = ShouldLoadFirstPage,
-                        isConnected = true,
+                    content.copy(
+                        previousContent = initialContent.copy(
+                            shouldLoad = ShouldLoadFirstPage,
+                            isConnected = true,
+                        ),
                     ),
                 )
                 verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
@@ -163,19 +169,22 @@ internal class PostActionHandlerTest {
                 // GIVEN
                 every { mockConnectivityInfoProvider.isConnected() } returns true
 
-                val content = mockk<PostDetailContent> {
-                    every { previousContent } returns initialContent
-                }
+                val content = PostDetailContent(
+                    post = mockk(),
+                    previousContent = initialContent,
+                )
 
                 // WHEN
                 val result = postActionHandler.runAction(Refresh(force = true), content)
 
                 // THEN
                 assertThat(result).isEqualTo(
-                    initialContent.copy(
-                        shouldLoad = ShouldForceLoad,
-                        isConnected = true,
-                        canForceSync = false,
+                    content.copy(
+                        previousContent = initialContent.copy(
+                            shouldLoad = ShouldForceLoad,
+                            isConnected = true,
+                            canForceSync = false,
+                        ),
                     ),
                 )
                 verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
@@ -188,7 +197,7 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is not PostListContent THEN same content is returned`() = runTest {
             // GIVEN
-            val content = mockk<PostDetailContent>()
+            val content = mockk<ExternalContent>()
 
             // WHEN
             val result = postActionHandler.runAction(SetPosts(mockk()), content)
@@ -336,7 +345,7 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is not PostListContent THEN same content is returned`() = runTest {
             // GIVEN
-            val content = mockk<PostDetailContent>()
+            val content = mockk<ExternalContent>()
 
             // WHEN
             val result = postActionHandler.runAction(GetNextPostPage, content)
@@ -387,7 +396,7 @@ internal class PostActionHandlerTest {
         @Test
         fun `WHEN currentContent is not PostListContent THEN same content is returned`() = runTest {
             // GIVEN
-            val content = mockk<PostDetailContent>()
+            val content = mockk<ExternalContent>()
 
             // WHEN
             val result = postActionHandler.runAction(SetNextPostPage(mockk()), content)
@@ -558,15 +567,20 @@ internal class PostActionHandlerTest {
                 // GIVEN
                 every { mockConnectivityInfoProvider.isConnected() } returns false
 
-                val content = mockk<PostDetailContent> {
-                    every { previousContent } returns initialContent
-                }
+                val content = PostDetailContent(
+                    post = mockk(),
+                    previousContent = initialContent,
+                )
 
                 // WHEN
                 val result = postActionHandler.runAction(ToggleSorting, content)
 
                 // THEN
-                assertThat(result).isEqualTo(initialContent.copy(isConnected = false))
+                assertThat(result).isEqualTo(
+                    content.copy(
+                        previousContent = initialContent.copy(isConnected = false),
+                    ),
+                )
             }
 
         @Test
@@ -575,9 +589,10 @@ internal class PostActionHandlerTest {
                 // GIVEN
                 every { mockConnectivityInfoProvider.isConnected() } returns true
 
-                val content = mockk<PostDetailContent> {
-                    every { previousContent } returns initialContent.copy(sortType = NewestFirst)
-                }
+                val content = PostDetailContent(
+                    post = mockk(),
+                    previousContent = initialContent.copy(sortType = NewestFirst),
+                )
 
                 // WHEN
                 val result = postActionHandler.runAction(
@@ -587,9 +602,11 @@ internal class PostActionHandlerTest {
 
                 // THEN
                 assertThat(result).isEqualTo(
-                    initialContent.copy(
-                        sortType = OldestFirst,
-                        shouldLoad = ShouldLoadFirstPage,
+                    content.copy(
+                        previousContent = initialContent.copy(
+                            sortType = OldestFirst,
+                            shouldLoad = ShouldLoadFirstPage,
+                        ),
                     ),
                 )
             }
@@ -600,9 +617,10 @@ internal class PostActionHandlerTest {
                 // GIVEN
                 every { mockConnectivityInfoProvider.isConnected() } returns true
 
-                val content = mockk<PostDetailContent> {
-                    every { previousContent } returns initialContent.copy(sortType = OldestFirst)
-                }
+                val content = PostDetailContent(
+                    post = mockk(),
+                    previousContent = initialContent.copy(sortType = OldestFirst),
+                )
 
                 // WHEN
                 val result = postActionHandler.runAction(
@@ -612,9 +630,11 @@ internal class PostActionHandlerTest {
 
                 // THEN
                 assertThat(result).isEqualTo(
-                    initialContent.copy(
-                        sortType = NewestFirst,
-                        shouldLoad = ShouldLoadFirstPage,
+                    content.copy(
+                        previousContent = initialContent.copy(
+                            sortType = NewestFirst,
+                            shouldLoad = ShouldLoadFirstPage,
+                        ),
                     ),
                 )
             }

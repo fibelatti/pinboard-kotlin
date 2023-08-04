@@ -15,20 +15,36 @@ class PopularActionHandler @Inject constructor(
     }
 
     private fun refresh(currentContent: Content): Content {
-        return currentContent.reduce<PopularPostsContent> { popularPostsContent ->
+        val body = { popularPostsContent: PopularPostsContent ->
             popularPostsContent.copy(
                 shouldLoad = connectivityInfoProvider.isConnected(),
                 isConnected = connectivityInfoProvider.isConnected(),
             )
         }
+
+        return currentContent
+            .reduce(body)
+            .reduce<PopularPostDetailContent> { popularPostDetailContent ->
+                popularPostDetailContent.copy(
+                    previousContent = body(popularPostDetailContent.previousContent),
+                )
+            }
     }
 
     private fun setPosts(action: SetPopularPosts, currentContent: Content): Content {
-        return currentContent.reduce<PopularPostsContent> { popularPostsContent ->
+        val body = { popularPostsContent: PopularPostsContent ->
             popularPostsContent.copy(
                 posts = action.posts,
                 shouldLoad = false,
             )
         }
+
+        return currentContent
+            .reduce(body)
+            .reduce<PopularPostDetailContent> { popularPostDetailContent ->
+                popularPostDetailContent.copy(
+                    previousContent = body(popularPostDetailContent.previousContent),
+                )
+            }
     }
 }

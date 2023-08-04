@@ -362,7 +362,7 @@ internal class SearchActionHandlerTest {
         @Test
         fun `WHEN currentContent is not PostListContent THEN same content is returned`() = runTest {
             // GIVEN
-            val content = mockk<PostDetailContent>()
+            val content = mockk<ExternalContent>()
 
             // WHEN
             val result = searchActionHandler.runAction(ClearSearch, content)
@@ -395,6 +395,39 @@ internal class SearchActionHandlerTest {
                     sortType = NewestFirst,
                     searchParameters = SearchParameters(),
                     shouldLoad = ShouldLoadFirstPage,
+                ),
+            )
+        }
+
+        @Test
+        fun `WHEN currentContent is PostDetailContent THEN an updated PostDetailContent is returned`() = runTest {
+            // GIVEN
+            val initialContent = PostDetailContent(
+                post = mockk(),
+                previousContent = PostListContent(
+                    category = All,
+                    posts = null,
+                    showDescription = false,
+                    sortType = NewestFirst,
+                    searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
+                    shouldLoad = Loaded,
+                ),
+            )
+
+            // WHEN
+            val result = searchActionHandler.runAction(ClearSearch, initialContent)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                initialContent.copy(
+                    previousContent = PostListContent(
+                        category = All,
+                        posts = null,
+                        showDescription = false,
+                        sortType = NewestFirst,
+                        searchParameters = SearchParameters(),
+                        shouldLoad = ShouldLoadFirstPage,
+                    ),
                 ),
             )
         }

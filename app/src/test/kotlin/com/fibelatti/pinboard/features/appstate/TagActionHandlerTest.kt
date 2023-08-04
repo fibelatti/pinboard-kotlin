@@ -163,34 +163,33 @@ internal class TagActionHandlerTest {
             }
 
         @Test
-        fun `WHEN previousContent is PostListContent THEN PostListContent is returned and posts is not null`() =
-            runTest {
-                // GIVEN
-                every { mockConnectivityInfoProvider.isConnected() } returns true
+        fun `WHEN current is PostListContent THEN PostListContent is returned and posts is not null`() = runTest {
+            // GIVEN
+            every { mockConnectivityInfoProvider.isConnected() } returns true
 
-                val randomBoolean = randomBoolean()
-                every { mockUserRepository.showDescriptionInLists } returns randomBoolean
+            val randomBoolean = randomBoolean()
+            every { mockUserRepository.showDescriptionInLists } returns randomBoolean
 
-                val postList = mockk<PostList>()
-                val previousContent = mockk<PostListContent> {
-                    every { posts } returns postList
-                }
-
-                // WHEN
-                val result = tagActionHandler.runAction(PostsForTag(createTag()), previousContent)
-
-                // THEN
-                assertThat(result).isEqualTo(
-                    PostListContent(
-                        category = All,
-                        posts = postList,
-                        showDescription = randomBoolean,
-                        sortType = NewestFirst,
-                        searchParameters = SearchParameters(tags = listOf(createTag())),
-                        shouldLoad = ShouldLoadFirstPage,
-                        isConnected = true,
-                    ),
-                )
+            val postList = mockk<PostList>()
+            val current = mockk<PostListContent> {
+                every { posts } returns postList
             }
+
+            // WHEN
+            val result = tagActionHandler.runAction(PostsForTag(createTag()), current)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                PostListContent(
+                    category = All,
+                    posts = postList,
+                    showDescription = randomBoolean,
+                    sortType = NewestFirst,
+                    searchParameters = SearchParameters(tags = listOf(createTag())),
+                    shouldLoad = ShouldLoadFirstPage,
+                    isConnected = true,
+                ),
+            )
+        }
     }
 }
