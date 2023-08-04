@@ -14,16 +14,12 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.copyToClipboard
-import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
-import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.foundation.toStableList
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.onEach
-import java.util.UUID
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -39,12 +35,13 @@ class PopularPostsFragment @Inject constructor() : BaseFragment() {
         setThemedContent {
             PopularBookmarksScreen(
                 appStateViewModel = appStateViewModel,
+                mainViewModel = mainViewModel,
                 popularPostsViewModel = popularPostsViewModel,
+                onBackPressed = { navigateBack() },
+                onError = ::handleError,
                 onBookmarkLongClicked = ::showQuickActionsDialogs,
             )
         }
-
-        setupViewModels()
     }
 
     private fun showQuickActionsDialogs(post: Post) {
@@ -71,36 +68,10 @@ class PopularPostsFragment @Inject constructor() : BaseFragment() {
         )
     }
 
-    private fun setupViewModels() {
-        appStateViewModel.popularPostsContent
-            .onEach {
-                mainViewModel.updateState { currentState ->
-                    currentState.copy(
-                        title = MainState.TitleComponent.Visible(getString(R.string.popular_title)),
-                        subtitle = MainState.TitleComponent.Gone,
-                        navigation = MainState.NavigationComponent.Visible(ACTION_ID),
-                        bottomAppBar = MainState.BottomAppBarComponent.Gone,
-                        floatingActionButton = MainState.FabComponent.Gone,
-                    )
-                }
-            }
-            .launchInAndFlowWith(viewLifecycleOwner)
-
-        mainViewModel.navigationClicks(ACTION_ID)
-            .onEach { navigateBack() }
-            .launchInAndFlowWith(viewLifecycleOwner)
-
-        popularPostsViewModel.error
-            .onEach { throwable -> handleError(throwable, popularPostsViewModel::errorHandled) }
-            .launchInAndFlowWith(viewLifecycleOwner)
-    }
-
     companion object {
 
         @JvmStatic
         val TAG: String = "PopularPostsFragment"
-
-        private val ACTION_ID = UUID.randomUUID().toString()
     }
 }
 

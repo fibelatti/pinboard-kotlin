@@ -18,7 +18,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -31,8 +33,13 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
+import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.showBanner
+import com.fibelatti.pinboard.features.MainState
+import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
+import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.RefreshPopular
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -42,23 +49,51 @@ import com.fibelatti.ui.foundation.StableList
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
+import kotlinx.coroutines.flow.onEach
+import java.util.UUID
 
 @Composable
 fun PopularBookmarksScreen(
     appStateViewModel: AppStateViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
+    onBackPressed: () -> Unit,
+    onError: (Throwable?, () -> Unit) -> Unit,
     onBookmarkLongClicked: (Post) -> Unit = {},
 ) {
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val appState by appStateViewModel.popularPostsContent.collectAsStateWithLifecycle(initialValue = null)
-        val popularPostsContent by rememberUpdatedState(newValue = appState ?: return@Surface)
+        val content by appStateViewModel.content.collectAsStateWithLifecycle()
+        val popularPostsContent by rememberUpdatedState(
+            newValue = when (val current = content) {
+                is PopularPostsContent -> current
+                is PopularPostDetailContent -> current.previousContent
+                else -> return@Surface
+            },
+        )
 
         val popularPostsScreenState by popularPostsViewModel.screenState.collectAsStateWithLifecycle()
 
+        val actionId = remember { UUID.randomUUID().toString() }
+
+        val localContext = LocalContext.current
         val localView = LocalView.current
+        val localLifecycleOwner = LocalLifecycleOwner.current
+
         val savedFeedback = stringResource(id = R.string.posts_saved_feedback)
+
+        LaunchedEffect(content) {
+            mainViewModel.updateState { currentState ->
+                currentState.copy(
+                    title = MainState.TitleComponent.Visible(localContext.getString(R.string.popular_title)),
+                    subtitle = MainState.TitleComponent.Gone,
+                    navigation = MainState.NavigationComponent.Visible(actionId),
+                    bottomAppBar = MainState.BottomAppBarComponent.Gone,
+                    floatingActionButton = MainState.FabComponent.Gone,
+                )
+            }
+        }
 
         LaunchedEffect(popularPostsContent.shouldLoad) {
             if (popularPostsContent.shouldLoad) {
@@ -71,6 +106,18 @@ fun PopularBookmarksScreen(
                 localView.showBanner(savedFeedback)
                 popularPostsViewModel.userNotified()
             }
+        }
+
+        LaunchedEffect(Unit) {
+            mainViewModel.navigationClicks(actionId)
+                .onEach { onBackPressed() }
+                .launchInAndFlowWith(localLifecycleOwner)
+        }
+
+        LaunchedEffect(Unit) {
+            popularPostsViewModel.error
+                .onEach { throwable -> onError(throwable, popularPostsViewModel::errorHandled) }
+                .launchInAndFlowWith(localLifecycleOwner)
         }
 
         CrossfadeLoadingLayout(

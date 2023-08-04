@@ -11,6 +11,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
+import java.util.UUID
 import javax.inject.Inject
 
 class GetPopularPosts @Inject constructor(
@@ -36,6 +37,7 @@ class GetPopularPosts @Inject constructor(
                 url = url,
                 title = title,
                 description = "",
+                id = UUID.randomUUID().toString(),
                 private = false,
                 readLater = false,
                 tags = tags,
