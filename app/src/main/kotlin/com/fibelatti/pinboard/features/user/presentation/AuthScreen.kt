@@ -11,12 +11,11 @@ import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -74,19 +73,20 @@ private fun AuthScreen(
             .fillMaxSize()
             .background(color = ExtendedTheme.colors.backgroundNoOverlay)
             .padding(horizontal = 32.dp),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_pin),
             contentDescription = null,
-            modifier = Modifier.size(80.dp),
+            modifier = Modifier
+                .padding(top = 40.dp, bottom = 20.dp)
+                .size(80.dp),
             tint = MaterialTheme.colorScheme.primary,
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
-
         Surface(
+            modifier = Modifier.sizeIn(maxWidth = 600.dp),
             shape = RoundedCornerShape(8.dp),
             color = MaterialTheme.colorScheme.surfaceVariant,
             shadowElevation = 2.dp,
