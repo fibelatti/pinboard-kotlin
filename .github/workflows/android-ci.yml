@@ -57,4 +57,4 @@ jobs:
           api-level: 30
           arch: x86_64
           disable-animations: true
-          script: ./gradlew :app:connectedAndroidTest --stacktrace
+          script: ./gradlew :app:connectedPinboardapiDebugAndroidTest --stacktrace

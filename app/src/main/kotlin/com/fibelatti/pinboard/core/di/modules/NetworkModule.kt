@@ -4,8 +4,6 @@ import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.di.UrlParser
 import com.fibelatti.pinboard.core.network.ApiInterceptor
-import com.fibelatti.pinboard.core.network.ApiRateLimitRunner
-import com.fibelatti.pinboard.core.network.RateLimitRunner
 import com.fibelatti.pinboard.core.network.SkipBadElementsListAdapter
 import com.fibelatti.pinboard.core.network.UnauthorizedInterceptor
 import com.squareup.moshi.Moshi
@@ -81,8 +79,4 @@ object NetworkModule {
     @Provides
     fun httpLoggingInterceptor(): HttpLoggingInterceptor = HttpLoggingInterceptor()
         .apply { level = HttpLoggingInterceptor.Level.BODY }
-
-    @Provides
-    @Singleton
-    fun rateLimitRunner(): RateLimitRunner = ApiRateLimitRunner(AppConfig.API_THROTTLE_TIME)
 }

@@ -57,7 +57,9 @@ android {
 
         resourceConfigurations.add("en")
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.fibelatti.pinboard.HiltTestRunner"
+        testInstrumentationRunnerArguments["clearPackageData"] = "true"
+
         vectorDrawables.useSupportLibrary = true
 
         ksp {
@@ -132,6 +134,10 @@ android {
 
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
+    }
+
+    testOptions {
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
 
     packaging {
@@ -211,10 +217,17 @@ dependencies {
     testImplementation(libs.coroutines.test)
     testImplementation(libs.arch.core.testing)
 
-    androidTestImplementation(libs.truth)
     androidTestImplementation(libs.runner)
+    androidTestUtil(libs.orchestrator)
+
+    androidTestImplementation(libs.truth)
     androidTestImplementation(libs.coroutines.test)
     androidTestImplementation(libs.room.testing)
+    androidTestImplementation(libs.compose.ui.test.junit4)
+    debugImplementation(libs.compose.ui.test.manifest)
+    androidTestImplementation(libs.hilt.android.testing)
+    kaptAndroidTest(libs.hilt.android.compiler)
+    androidTestImplementation(libs.mockwebserver)
 }
 
 kapt {
