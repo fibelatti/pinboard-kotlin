@@ -10,17 +10,7 @@ interface PostsRepository {
 
     suspend fun update(): Result<String>
 
-    suspend fun add(
-        url: String,
-        title: String,
-        description: String?,
-        private: Boolean?,
-        readLater: Boolean?,
-        tags: List<Tag>?,
-        replace: Boolean,
-        id: String?,
-        time: String?,
-    ): Result<Post>
+    suspend fun add(post: Post): Result<Post>
 
     suspend fun delete(url: String): Result<Unit>
 

@@ -31,30 +31,20 @@ class PostsDataSourceNoApi @Inject constructor(
 
     override suspend fun update(): Result<String> = Success(dateFormatter.nowAsTzFormat())
 
-    override suspend fun add(
-        url: String,
-        title: String,
-        description: String?,
-        private: Boolean?,
-        readLater: Boolean?,
-        tags: List<Tag>?,
-        replace: Boolean,
-        id: String?,
-        time: String?,
-    ): Result<Post> {
+    override suspend fun add(post: Post): Result<Post> {
         val existingPost = resultFrom {
-            postsDao.getPost(url)
+            postsDao.getPost(post.url)
         }.getOrNull()
 
         val newPost = PostDto(
-            href = existingPost?.href ?: url,
-            description = title,
-            extended = description.orEmpty(),
-            hash = existingPost?.hash ?: id ?: UUID.randomUUID().toString(),
-            time = existingPost?.time ?: time ?: dateFormatter.nowAsTzFormat(),
-            shared = if (private == true) AppConfig.PinboardApiLiterals.NO else AppConfig.PinboardApiLiterals.YES,
-            toread = if (readLater == true) AppConfig.PinboardApiLiterals.YES else AppConfig.PinboardApiLiterals.NO,
-            tags = tags?.joinToString(AppConfig.PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name }
+            href = existingPost?.href ?: post.url,
+            description = post.title,
+            extended = post.description,
+            hash = existingPost?.hash ?: post.id.ifEmpty { UUID.randomUUID().toString() },
+            time = existingPost?.time ?: post.time.ifEmpty { dateFormatter.nowAsTzFormat() },
+            shared = if (post.private == true) AppConfig.PinboardApiLiterals.NO else AppConfig.PinboardApiLiterals.YES,
+            toread = if (post.readLater == true) AppConfig.PinboardApiLiterals.YES else AppConfig.PinboardApiLiterals.NO,
+            tags = post.tags?.joinToString(AppConfig.PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name }
                 .orEmpty(),
         )
 

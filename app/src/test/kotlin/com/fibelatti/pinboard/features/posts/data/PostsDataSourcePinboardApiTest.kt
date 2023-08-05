@@ -154,15 +154,16 @@ class PostsDataSourcePinboardApiTest {
 
             // WHEN
             val result = dataSource.add(
-                url = mockUrlValid,
-                title = mockUrlTitle,
-                description = null,
-                private = null,
-                readLater = null,
-                tags = mockTags,
-                replace = true,
-                id = null,
-                time = null,
+                Post(
+                    url = mockUrlValid,
+                    title = mockUrlTitle,
+                    description = "",
+                    private = null,
+                    readLater = null,
+                    tags = mockTags,
+                    id = "",
+                    time = "",
+                ),
             )
 
             // THEN
@@ -188,15 +189,16 @@ class PostsDataSourcePinboardApiTest {
 
                 // WHEN
                 val result = dataSource.add(
-                    url = mockUrlValid,
-                    title = mockUrlTitle,
-                    description = null,
-                    private = null,
-                    readLater = null,
-                    tags = mockTags,
-                    replace = true,
-                    id = null,
-                    time = null,
+                    Post(
+                        url = mockUrlValid,
+                        title = mockUrlTitle,
+                        description = "",
+                        private = null,
+                        readLater = null,
+                        tags = mockTags,
+                        id = "",
+                        time = "",
+                    ),
                 )
 
                 // THEN
@@ -228,15 +230,16 @@ class PostsDataSourcePinboardApiTest {
 
                     // WHEN
                     val result = dataSource.add(
-                        url = mockUrlValid,
-                        title = mockUrlTitle,
-                        description = null,
-                        private = null,
-                        readLater = null,
-                        tags = mockTags,
-                        replace = true,
-                        id = null,
-                        time = null,
+                        Post(
+                            url = mockUrlValid,
+                            title = mockUrlTitle,
+                            description = "",
+                            private = null,
+                            readLater = null,
+                            tags = mockTags,
+                            id = "",
+                            time = "",
+                        ),
                     )
 
                     // THEN
@@ -266,15 +269,16 @@ class PostsDataSourcePinboardApiTest {
 
                     // WHEN
                     val result = dataSource.add(
-                        url = mockUrlValid,
-                        title = mockUrlTitle,
-                        description = null,
-                        private = null,
-                        readLater = null,
-                        tags = mockTags,
-                        replace = true,
-                        id = null,
-                        time = null,
+                        Post(
+                            url = mockUrlValid,
+                            title = mockUrlTitle,
+                            description = "",
+                            private = null,
+                            readLater = null,
+                            tags = mockTags,
+                            id = "",
+                            time = "",
+                        ),
                     )
 
                     // THEN
@@ -303,15 +307,16 @@ class PostsDataSourcePinboardApiTest {
 
                     // WHEN
                     val result = dataSource.add(
-                        url = mockUrlValid,
-                        title = mockUrlTitle,
-                        description = null,
-                        private = null,
-                        readLater = null,
-                        tags = mockTags,
-                        replace = true,
-                        id = null,
-                        time = null,
+                        Post(
+                            url = mockUrlValid,
+                            title = mockUrlTitle,
+                            description = "",
+                            private = null,
+                            readLater = null,
+                            tags = mockTags,
+                            id = "",
+                            time = "",
+                        ),
                     )
 
                     // THEN
@@ -325,17 +330,27 @@ class PostsDataSourcePinboardApiTest {
         fun `GIVEN that the api returns 200 and the result code is DONE WHEN add is called THEN Success is returned`() =
             runTest {
                 // GIVEN
-                val expectedPost = Post(
+                val input = Post(
                     url = mockUrlValid,
                     title = mockUrlTitle,
                     description = "",
-                    id = mockHash,
-                    time = mockTime,
-                    private = false,
-                    readLater = false,
+                    id = "",
+                    time = "",
+                    private = null,
+                    readLater = null,
                     tags = mockTags,
                 )
 
+                val expectedPost = input.copy(
+                    id = mockHash,
+                    time = mockTime,
+                )
+
+                mockkStatic(UUID::class)
+                every { UUID.randomUUID() } returns mockk {
+                    every { this@mockk.toString() } returns mockHash
+                }
+                every { mockDateFormatter.nowAsTzFormat() } returns mockTime
                 coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
                 coEvery {
                     mockApi.add(
@@ -348,26 +363,11 @@ class PostsDataSourcePinboardApiTest {
                         replace = AppConfig.PinboardApiLiterals.YES,
                     )
                 } returns createGenericResponse(ApiResultCodes.DONE)
-                mockkStatic(UUID::class)
-                every { UUID.randomUUID() } returns mockk {
-                    every { this@mockk.toString() } returns mockHash
-                }
-                every { mockDateFormatter.nowAsTzFormat() } returns mockTime
                 every { mockPostDtoMapper.mapReverse(expectedPost) } returns mockPostDto
                 coEvery { dataSource.savePosts(listOf(mockPostDto)) } returns Unit
 
                 // WHEN
-                val result = dataSource.add(
-                    url = mockUrlValid,
-                    title = mockUrlTitle,
-                    description = null,
-                    private = null,
-                    readLater = null,
-                    tags = mockTags,
-                    replace = true,
-                    id = null,
-                    time = null,
-                )
+                val result = dataSource.add(input)
 
                 // THEN
                 coVerify { mockDao.deletePendingSyncPost(mockUrlValid) }
@@ -389,21 +389,22 @@ class PostsDataSourcePinboardApiTest {
                     public = null,
                     readLater = null,
                     tags = expectedTags,
-                    replace = AppConfig.PinboardApiLiterals.NO,
+                    replace = AppConfig.PinboardApiLiterals.YES,
                 )
             } returns createGenericResponse(ApiResultCodes.DONE)
 
             // WHEN
             dataSource.add(
-                url = mockUrlValid,
-                title = mockUrlTitle,
-                description = null,
-                private = null,
-                readLater = null,
-                tags = inputTags,
-                replace = false,
-                id = null,
-                time = null,
+                Post(
+                    url = mockUrlValid,
+                    title = mockUrlTitle,
+                    description = "",
+                    private = null,
+                    readLater = null,
+                    tags = inputTags,
+                    id = "",
+                    time = "",
+                ),
             )
 
             // THEN
@@ -415,7 +416,7 @@ class PostsDataSourcePinboardApiTest {
                     public = null,
                     readLater = null,
                     tags = expectedTags,
-                    replace = AppConfig.PinboardApiLiterals.NO,
+                    replace = AppConfig.PinboardApiLiterals.YES,
                 )
             }
         }
@@ -434,11 +435,7 @@ class PostsDataSourcePinboardApiTest {
                 false -> AppConfig.PinboardApiLiterals.NO
                 else -> null
             }
-            val expectedReplace = if (testCases.replace) {
-                AppConfig.PinboardApiLiterals.YES
-            } else {
-                AppConfig.PinboardApiLiterals.NO
-            }
+            val expectedReplace = AppConfig.PinboardApiLiterals.YES
 
             coEvery {
                 mockApi.add(
@@ -454,15 +451,16 @@ class PostsDataSourcePinboardApiTest {
 
             // WHEN
             dataSource.add(
-                url = mockUrlValid,
-                title = mockUrlTitle,
-                description = null,
-                private = testCases.private,
-                readLater = testCases.readLater,
-                tags = mockTags,
-                replace = testCases.replace,
-                id = null,
-                time = null,
+                Post(
+                    url = mockUrlValid,
+                    title = mockUrlTitle,
+                    description = "",
+                    private = testCases.private,
+                    readLater = testCases.readLater,
+                    tags = mockTags,
+                    id = "",
+                    time = "",
+                ),
             )
 
             // THEN
@@ -484,9 +482,7 @@ class PostsDataSourcePinboardApiTest {
 
             values.forEach { private ->
                 values.forEach { readLater ->
-                    listOf(true, false).forEach { replace ->
-                        add(Params(private, readLater, replace))
-                    }
+                    add(Params(private, readLater))
                 }
             }
         }
@@ -494,10 +490,9 @@ class PostsDataSourcePinboardApiTest {
         inner class Params(
             val private: Boolean?,
             val readLater: Boolean?,
-            val replace: Boolean,
         ) {
 
-            override fun toString(): String = "Params(private=$private, readLater=$readLater, replace=$replace)"
+            override fun toString(): String = "Params(private=$private, readLater=$readLater)"
         }
 
         @Nested
@@ -505,7 +500,6 @@ class PostsDataSourcePinboardApiTest {
 
             private val private = randomBoolean()
             private val readLater = randomBoolean()
-            private val replace = randomBoolean()
 
             private val baseExpectedPost = createPostDto(
                 href = mockUrlValid,
@@ -533,15 +527,16 @@ class PostsDataSourcePinboardApiTest {
 
                 // WHEN
                 val result = dataSource.add(
-                    url = mockUrlValid,
-                    title = mockUrlTitle,
-                    description = mockUrlDescription,
-                    private = private,
-                    readLater = readLater,
-                    tags = mockTags,
-                    replace = replace,
-                    id = null,
-                    time = null,
+                    Post(
+                        url = mockUrlValid,
+                        title = mockUrlTitle,
+                        description = mockUrlDescription,
+                        private = private,
+                        readLater = readLater,
+                        tags = mockTags,
+                        id = "",
+                        time = "",
+                    ),
                 )
 
                 // THEN
@@ -559,15 +554,16 @@ class PostsDataSourcePinboardApiTest {
 
                 // WHEN
                 val result = dataSource.add(
-                    url = mockUrlValid,
-                    title = mockUrlTitle,
-                    description = mockUrlDescription,
-                    private = private,
-                    readLater = readLater,
-                    tags = mockTags,
-                    replace = replace,
-                    id = null,
-                    time = null,
+                    Post(
+                        url = mockUrlValid,
+                        title = mockUrlTitle,
+                        description = mockUrlDescription,
+                        private = private,
+                        readLater = readLater,
+                        tags = mockTags,
+                        id = "",
+                        time = "",
+                    ),
                 )
 
                 // THEN
@@ -585,15 +581,16 @@ class PostsDataSourcePinboardApiTest {
 
                 // WHEN
                 val result = dataSource.add(
-                    url = mockUrlValid,
-                    title = mockUrlTitle,
-                    description = mockUrlDescription,
-                    private = private,
-                    readLater = readLater,
-                    tags = mockTags,
-                    replace = replace,
-                    id = null,
-                    time = null,
+                    Post(
+                        url = mockUrlValid,
+                        title = mockUrlTitle,
+                        description = mockUrlDescription,
+                        private = private,
+                        readLater = readLater,
+                        tags = mockTags,
+                        id = "",
+                        time = "",
+                    ),
                 )
 
                 // THEN
@@ -609,15 +606,16 @@ class PostsDataSourcePinboardApiTest {
 
                 // WHEN
                 val result = dataSource.add(
-                    url = mockUrlValid,
-                    title = mockUrlTitle,
-                    description = mockUrlDescription,
-                    private = private,
-                    readLater = readLater,
-                    tags = mockTags,
-                    replace = replace,
-                    id = null,
-                    time = null,
+                    Post(
+                        url = mockUrlValid,
+                        title = mockUrlTitle,
+                        description = mockUrlDescription,
+                        private = private,
+                        readLater = readLater,
+                        tags = mockTags,
+                        id = "",
+                        time = "",
+                    ),
                 )
 
                 // THEN

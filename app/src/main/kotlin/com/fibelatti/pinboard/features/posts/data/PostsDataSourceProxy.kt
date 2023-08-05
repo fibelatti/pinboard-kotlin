@@ -23,26 +23,8 @@ class PostsDataSourceProxy @Inject constructor(
 
     override suspend fun update(): Result<String> = repository.update()
 
-    override suspend fun add(
-        url: String,
-        title: String,
-        description: String?,
-        private: Boolean?,
-        readLater: Boolean?,
-        tags: List<Tag>?,
-        replace: Boolean,
-        id: String?,
-        time: String?,
-    ): Result<Post> = repository.add(
-        url = url,
-        title = title,
-        description = description,
-        private = private,
-        readLater = readLater,
-        tags = tags,
-        replace = replace,
-        id = id,
-        time = time,
+    override suspend fun add(post: Post): Result<Post> = repository.add(
+        post = post,
     )
 
     override suspend fun delete(

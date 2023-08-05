@@ -5,7 +5,6 @@ import com.fibelatti.core.functional.UseCaseWithParams
 import com.fibelatti.core.functional.map
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -13,46 +12,11 @@ import javax.inject.Inject
 class AddPost @Inject constructor(
     private val postsRepository: PostsRepository,
     private val validateUrl: ValidateUrl,
-) : UseCaseWithParams<Post, AddPost.Params>() {
+) : UseCaseWithParams<Post, Post>() {
 
-    override suspend fun run(params: Params): Result<Post> =
-        validateUrl(params.url).map {
-            withContext(NonCancellable) {
-                postsRepository.add(
-                    url = params.url,
-                    title = params.title,
-                    description = params.description,
-                    private = params.private,
-                    readLater = params.readLater,
-                    tags = params.tags,
-                    replace = params.replace,
-                    id = params.id,
-                    time = params.time,
-                )
-            }
+    override suspend fun run(params: Post): Result<Post> = validateUrl(params.url).map {
+        withContext(NonCancellable) {
+            postsRepository.add(post = params)
         }
-
-    data class Params(
-        val url: String,
-        val title: String,
-        val description: String? = null,
-        val private: Boolean? = null,
-        val readLater: Boolean? = null,
-        val tags: List<Tag>? = null,
-        val replace: Boolean = true,
-        val id: String? = null,
-        val time: String? = null,
-    ) {
-
-        constructor(post: Post) : this(
-            url = post.url,
-            title = post.title,
-            description = post.description,
-            private = post.private,
-            readLater = post.readLater,
-            tags = post.tags,
-            id = post.id,
-            time = post.time,
-        )
     }
 }

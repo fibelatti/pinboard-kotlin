@@ -187,7 +187,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
             // GIVEN
             coEvery {
                 mockAddPost(
-                    AddPost.Params(
+                    Post(
                         url = mockUrlInvalid,
                         title = mockUrlTitle,
                         description = mockUrlDescription,
@@ -232,7 +232,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         val error = Exception()
         coEvery {
             mockAddPost(
-                AddPost.Params(
+                Post(
                     url = mockUrlValid,
                     title = mockUrlTitle,
                     description = mockUrlDescription,
@@ -279,7 +279,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
             val post = createPost()
             coEvery {
                 mockAddPost(
-                    AddPost.Params(
+                    Post(
                         url = mockUrlValid,
                         title = mockUrlTitle,
                         description = mockUrlDescription,

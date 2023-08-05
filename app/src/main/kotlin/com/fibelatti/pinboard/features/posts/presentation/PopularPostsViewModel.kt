@@ -58,7 +58,7 @@ class PopularPostsViewModel @Inject constructor(
             currentState.copy(isLoading = true)
         }
 
-        addPost(AddPost.Params(post))
+        addPost(post)
             .onSuccess {
                 _screenState.update { currentState ->
                     currentState.copy(

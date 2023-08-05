@@ -209,13 +209,13 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         every { mockUserRepository.editAfterSharing } returns mockk()
         coEvery {
             mockAddPost(
-                AddPost.Params(
+                Post(
                     url = mockUrlValid,
                     title = mockUrlValid,
+                    description = "",
                     private = defaultPrivate,
                     readLater = defaultReadLater,
                     tags = defaultTags,
-                    replace = true,
                 ),
             )
         } returns Failure(error)
@@ -246,13 +246,13 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
 
         coEvery {
             mockAddPost(
-                AddPost.Params(
+                Post(
                     url = mockUrlValid,
                     title = mockUrlValid,
+                    description = "",
                     private = defaultPrivate,
                     readLater = defaultReadLater,
                     tags = defaultTags,
-                    replace = true,
                 ),
             )
         } returns Success(createPost())
@@ -288,13 +288,13 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         val post = createPost()
         coEvery {
             mockAddPost(
-                AddPost.Params(
+                Post(
                     url = mockUrlValid,
                     title = mockUrlValid,
+                    description = "",
                     private = defaultPrivate,
                     readLater = defaultReadLater,
                     tags = defaultTags,
-                    replace = true,
                 ),
             )
         } returns Success(post)

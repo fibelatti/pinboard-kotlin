@@ -111,17 +111,7 @@ class NavigationActionHandler @Inject constructor(
             withContext(NonCancellable) {
                 launch {
                     catching {
-                        postsRepository.add(
-                            url = post.url,
-                            title = post.title,
-                            description = post.description,
-                            private = post.private,
-                            readLater = false,
-                            tags = post.tags,
-                            replace = true,
-                            id = post.id,
-                            time = post.time,
-                        )
+                        postsRepository.add(post.copy(readLater = false))
                     }
                 }
             }

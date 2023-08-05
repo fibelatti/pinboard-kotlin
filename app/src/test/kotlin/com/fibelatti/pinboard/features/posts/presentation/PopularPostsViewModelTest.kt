@@ -119,7 +119,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
             )
             val randomBoolean = randomBoolean()
             val mockTags = mockk<List<Tag>>()
-            val params = AddPost.Params(
+            val params = Post(
                 url = post.url,
                 title = post.title,
                 description = post.description,

@@ -59,33 +59,12 @@ internal class PostsDataSourceProxyTest {
 
         @Test
         fun `add calls the expected data source`() = runTest {
+            val input = mockk<Post>()
             val expectedResult = mockk<Result<Post>>()
 
-            coEvery {
-                postsDataSourcePinboardApi.add(
-                    url = stringArg,
-                    title = stringArg,
-                    description = stringArg,
-                    private = booleanArg,
-                    readLater = booleanArg,
-                    tags = any(),
-                    replace = booleanArg,
-                    id = stringArg,
-                    time = stringArg,
-                )
-            } returns expectedResult
+            coEvery { postsDataSourcePinboardApi.add(input) } returns expectedResult
 
-            val result = proxy.add(
-                url = stringArg,
-                title = stringArg,
-                description = stringArg,
-                private = booleanArg,
-                readLater = booleanArg,
-                tags = mockk(),
-                replace = booleanArg,
-                id = stringArg,
-                time = stringArg,
-            )
+            val result = proxy.add(input)
 
             assertThat(result).isEqualTo(expectedResult)
             coVerify { postsDataSourceNoApi wasNot Called }
@@ -259,33 +238,12 @@ internal class PostsDataSourceProxyTest {
 
         @Test
         fun `add calls the expected data source`() = runTest {
+            val input = mockk<Post>()
             val expectedResult = mockk<Result<Post>>()
 
-            coEvery {
-                postsDataSourceNoApi.add(
-                    url = stringArg,
-                    title = stringArg,
-                    description = stringArg,
-                    private = booleanArg,
-                    readLater = booleanArg,
-                    tags = any(),
-                    replace = booleanArg,
-                    id = stringArg,
-                    time = stringArg,
-                )
-            } returns expectedResult
+            coEvery { postsDataSourceNoApi.add(input) } returns expectedResult
 
-            val result = proxy.add(
-                url = stringArg,
-                title = stringArg,
-                description = stringArg,
-                private = booleanArg,
-                readLater = booleanArg,
-                tags = mockk(),
-                replace = booleanArg,
-                id = stringArg,
-                time = stringArg,
-            )
+            val result = proxy.add(input)
 
             assertThat(result).isEqualTo(expectedResult)
             coVerify { postsDataSourcePinboardApi wasNot Called }
@@ -454,33 +412,12 @@ internal class PostsDataSourceProxyTest {
 
         @Test
         fun `add calls the expected data source`() = runTest {
+            val input = mockk<Post>()
             val expectedResult = mockk<Result<Post>>()
 
-            coEvery {
-                postsDataSourceNoApi.add(
-                    url = stringArg,
-                    title = stringArg,
-                    description = stringArg,
-                    private = booleanArg,
-                    readLater = booleanArg,
-                    tags = any(),
-                    replace = booleanArg,
-                    id = stringArg,
-                    time = stringArg,
-                )
-            } returns expectedResult
+            coEvery { postsDataSourceNoApi.add(input) } returns expectedResult
 
-            val result = proxy.add(
-                url = stringArg,
-                title = stringArg,
-                description = stringArg,
-                private = booleanArg,
-                readLater = booleanArg,
-                tags = mockk(),
-                replace = booleanArg,
-                id = stringArg,
-                time = stringArg,
-            )
+            val result = proxy.add(input)
 
             assertThat(result).isEqualTo(expectedResult)
             coVerify { postsDataSourcePinboardApi wasNot Called }

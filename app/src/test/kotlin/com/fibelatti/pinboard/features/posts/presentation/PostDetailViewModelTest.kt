@@ -96,16 +96,8 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
         // GIVEN
         val randomBoolean = randomBoolean()
         val post = createPost(readLater = randomBoolean)
-        val expectedParams = AddPost.Params(
-            url = post.url,
-            title = post.title,
-            description = post.description,
-            private = post.private,
+        val expectedParams = post.copy(
             readLater = !randomBoolean,
-            tags = post.tags,
-            replace = true,
-            id = post.id,
-            time = post.time,
         )
 
         coEvery { mockAddPost(expectedParams) } returns Success(mockPost)

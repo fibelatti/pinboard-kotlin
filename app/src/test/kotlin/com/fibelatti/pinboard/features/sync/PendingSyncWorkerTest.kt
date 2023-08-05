@@ -51,19 +51,7 @@ internal class PendingSyncWorkerTest {
         // GIVEN
         val post = createPost(pendingSync = PendingSync.ADD)
         coEvery { postsRepository.getPendingSyncPosts() } returns Success(listOf(post))
-        coEvery {
-            postsRepository.add(
-                url = post.url,
-                title = post.title,
-                description = post.description,
-                private = post.private,
-                readLater = post.readLater,
-                tags = post.tags,
-                replace = true,
-                id = post.id,
-                time = post.time,
-            )
-        } returns Success(post)
+        coEvery { postsRepository.add(post) } returns Success(post)
 
         // WHEN
         val result = worker.doWork()
@@ -77,19 +65,7 @@ internal class PendingSyncWorkerTest {
         // GIVEN
         val post = createPost(pendingSync = PendingSync.UPDATE)
         coEvery { postsRepository.getPendingSyncPosts() } returns Success(listOf(post))
-        coEvery {
-            postsRepository.add(
-                url = post.url,
-                title = post.title,
-                description = post.description,
-                private = post.private,
-                readLater = post.readLater,
-                tags = post.tags,
-                replace = true,
-                id = post.id,
-                time = post.time,
-            )
-        } returns Success(post)
+        coEvery { postsRepository.add(post) } returns Success(post)
 
         // WHEN
         val result = worker.doWork()
@@ -118,19 +94,7 @@ internal class PendingSyncWorkerTest {
         val postAdd = createPost(pendingSync = PendingSync.ADD)
         val postDelete = createPost(pendingSync = PendingSync.DELETE)
         coEvery { postsRepository.getPendingSyncPosts() } returns Success(listOf(postAdd, postDelete))
-        coEvery {
-            postsRepository.add(
-                url = postAdd.url,
-                title = postAdd.title,
-                description = postAdd.description,
-                private = postAdd.private,
-                readLater = postAdd.readLater,
-                tags = postAdd.tags,
-                replace = true,
-                id = postAdd.id,
-                time = postAdd.time,
-            )
-        } returns Failure(Exception())
+        coEvery { postsRepository.add(postAdd) } returns Failure(Exception())
         coEvery { postsRepository.delete(url = postDelete.url) } returns Success(Unit)
 
         // WHEN
@@ -146,19 +110,7 @@ internal class PendingSyncWorkerTest {
         val postAdd = createPost(pendingSync = PendingSync.ADD)
         val postDelete = createPost(pendingSync = PendingSync.DELETE)
         coEvery { postsRepository.getPendingSyncPosts() } returns Success(listOf(postAdd, postDelete))
-        coEvery {
-            postsRepository.add(
-                url = postAdd.url,
-                title = postAdd.title,
-                description = postAdd.description,
-                private = postAdd.private,
-                readLater = postAdd.readLater,
-                tags = postAdd.tags,
-                replace = true,
-                id = postAdd.id,
-                time = postAdd.time,
-            )
-        } returns Success(postAdd)
+        coEvery { postsRepository.add(postAdd) } returns Success(postAdd)
         coEvery { postsRepository.delete(url = postDelete.url) } returns Success(Unit)
 
         // WHEN

@@ -98,10 +98,10 @@ class ShareReceiverViewModel @Inject constructor(
         val (finalUrl: String, title: String, description: String?) = urlPreview
 
         addPost(
-            AddPost.Params(
+            params = Post(
                 url = finalUrl,
                 title = title,
-                description = description,
+                description = description.orEmpty(),
                 private = userRepository.defaultPrivate,
                 readLater = userRepository.defaultReadLater,
                 tags = userRepository.defaultTags,

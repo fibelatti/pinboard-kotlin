@@ -63,16 +63,8 @@ class PostDetailViewModel @Inject constructor(
                 currentState.copy(isLoading = true)
             }
             addPost(
-                AddPost.Params(
-                    url = post.url,
-                    title = post.title,
-                    description = post.description,
-                    private = post.private,
+                params = post.copy(
                     readLater = !(post.readLater ?: false),
-                    tags = post.tags,
-                    replace = true,
-                    id = post.id,
-                    time = post.time,
                 ),
             ).onSuccess {
                 _screenState.update { currentState ->

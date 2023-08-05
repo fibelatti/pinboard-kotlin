@@ -416,19 +416,7 @@ internal class NavigationActionHandlerTest {
                 navigationActionHandler.markAsRead(readLater)
 
                 // THEN
-                coVerify {
-                    mockPostsRepository.add(
-                        url = readLater.url,
-                        title = readLater.title,
-                        description = readLater.description,
-                        private = readLater.private,
-                        readLater = false,
-                        tags = readLater.tags,
-                        replace = true,
-                        id = readLater.id,
-                        time = readLater.time,
-                    )
-                }
+                coVerify { mockPostsRepository.add(readLater.copy(readLater = false)) }
             }
 
         @Test

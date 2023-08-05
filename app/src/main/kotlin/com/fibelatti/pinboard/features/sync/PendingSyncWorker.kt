@@ -31,19 +31,7 @@ class PendingSyncWorker(
             pendingSyncPosts.map { post ->
                 async {
                     when (post.pendingSync) {
-                        PendingSync.ADD, PendingSync.UPDATE -> {
-                            postsRepository.add(
-                                url = post.url,
-                                title = post.title,
-                                description = post.description,
-                                private = post.private,
-                                readLater = post.readLater,
-                                tags = post.tags,
-                                replace = true,
-                                id = post.id,
-                                time = post.time,
-                            )
-                        }
+                        PendingSync.ADD, PendingSync.UPDATE -> postsRepository.add(post = post)
                         PendingSync.DELETE -> postsRepository.delete(post.url)
                         null -> Success(Unit)
                     }

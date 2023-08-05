@@ -83,56 +83,38 @@ class PostsDataSourcePinboardApi @Inject constructor(
         }
     }.mapApiRequestFailure(endpoint = "posts/update")
 
-    override suspend fun add(
-        url: String,
-        title: String,
-        description: String?,
-        private: Boolean?,
-        readLater: Boolean?,
-        tags: List<Tag>?,
-        replace: Boolean,
-        id: String?,
-        time: String?,
-    ): Result<Post> {
-        val nonEmptyHash = id.ifNullOrBlank { UUID.randomUUID().toString() }
-        val nonEmptyTime = time.ifNullOrBlank { dateFormatter.nowAsTzFormat() }
+    override suspend fun add(post: Post): Result<Post> {
+        val resolvedPost = post.copy(
+            id = post.id.ifNullOrBlank { UUID.randomUUID().toString() },
+            time = post.time.ifNullOrBlank { dateFormatter.nowAsTzFormat() },
+        )
 
         return if (connectivityInfoProvider.isConnected()) {
-            addPostRemote(url, title, description, private, readLater, tags, replace, nonEmptyHash, nonEmptyTime)
+            addPostRemote(resolvedPost)
         } else {
-            addPostLocal(url, title, description, private, readLater, tags, nonEmptyHash, nonEmptyTime)
+            addPostLocal(resolvedPost)
         }
     }
 
-    private suspend fun addPostRemote(
-        url: String,
-        title: String,
-        description: String?,
-        private: Boolean?,
-        readLater: Boolean?,
-        tags: List<Tag>?,
-        replace: Boolean,
-        hash: String,
-        time: String,
-    ): Result<Post> {
-        val trimmedTitle = title.take(PinboardApiMaxLength.TEXT_TYPE.value)
-        val publicLiteral = private?.let { if (private) PinboardApiLiterals.NO else PinboardApiLiterals.YES }
-        val readLaterLiteral = readLater?.let { if (readLater) PinboardApiLiterals.YES else PinboardApiLiterals.NO }
-        val trimmedTags = tags.orEmpty().joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST) {
+    private suspend fun addPostRemote(post: Post): Result<Post> {
+        val trimmedTitle = post.title.take(PinboardApiMaxLength.TEXT_TYPE.value)
+        val publicLiteral = post.private?.let { if (it) PinboardApiLiterals.NO else PinboardApiLiterals.YES }
+        val readLaterLiteral = post.readLater?.let { if (it) PinboardApiLiterals.YES else PinboardApiLiterals.NO }
+        val trimmedTags = post.tags.orEmpty().joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST) {
             it.name.replace(oldValue = "+", newValue = "%2b")
         }.take(PinboardApiMaxLength.TEXT_TYPE.value)
-        val replaceLiteral = if (replace) PinboardApiLiterals.YES else PinboardApiLiterals.NO
+        val replaceLiteral = PinboardApiLiterals.YES
 
         // The API abuses GET, this aims to avoid getting 414 errors
-        val currentLength = API_BASE_URL_LENGTH - url.length -
+        val currentLength = API_BASE_URL_LENGTH - post.url.length -
             trimmedTitle.length - (publicLiteral?.length ?: 0) - (readLaterLiteral?.length ?: 0) -
             trimmedTags.length - replaceLiteral.length
 
         val add: suspend (Int) -> GenericResponseDto = { descriptionLength: Int ->
             postsApi.add(
-                url = url,
+                url = post.url,
                 title = trimmedTitle,
-                description = description?.take(descriptionLength),
+                description = post.description.ifEmpty { null }?.take(descriptionLength),
                 public = publicLiteral,
                 readLater = readLaterLiteral,
                 tags = trimmedTags,
@@ -155,51 +137,31 @@ class PostsDataSourcePinboardApi @Inject constructor(
 
             when (result.resultCode) {
                 ApiResultCodes.DONE.code -> {
-                    postsDao.deletePendingSyncPost(url)
-
-                    val post = Post(
-                        url = url,
-                        title = title,
-                        description = description.orEmpty(),
-                        id = hash,
-                        time = time,
-                        private = private ?: false,
-                        readLater = readLater ?: false,
-                        tags = tags,
-                    )
+                    postsDao.deletePendingSyncPost(post.url)
 
                     savePosts(listOf(postDtoMapper.mapReverse(post)))
 
                     return@resultFromNetwork post
                 }
 
-                ApiResultCodes.ITEM_ALREADY_EXISTS.code -> getPost(url).getOrThrow()
+                ApiResultCodes.ITEM_ALREADY_EXISTS.code -> getPost(post.url).getOrThrow()
                 else -> throw ApiException(result.resultCode)
             }
         }
     }
 
-    private suspend fun addPostLocal(
-        url: String,
-        title: String,
-        description: String?,
-        private: Boolean?,
-        readLater: Boolean?,
-        tags: List<Tag>?,
-        hash: String,
-        time: String,
-    ): Result<Post> = resultFrom {
-        val existingPost = postsDao.getPost(url)
+    private suspend fun addPostLocal(post: Post): Result<Post> = resultFrom {
+        val existingPost = postsDao.getPost(post.url)
 
         val newPost = PostDto(
-            href = existingPost?.href ?: url,
-            description = title,
-            extended = description,
-            hash = existingPost?.hash ?: hash,
-            time = existingPost?.time ?: time,
-            shared = if (private == true) PinboardApiLiterals.NO else PinboardApiLiterals.YES,
-            toread = if (readLater == true) PinboardApiLiterals.YES else PinboardApiLiterals.NO,
-            tags = tags.orEmpty().joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name },
+            href = existingPost?.href ?: post.url,
+            description = post.title,
+            extended = post.description,
+            hash = existingPost?.hash ?: post.id,
+            time = existingPost?.time ?: post.time,
+            shared = if (post.private == true) PinboardApiLiterals.NO else PinboardApiLiterals.YES,
+            toread = if (post.readLater == true) PinboardApiLiterals.YES else PinboardApiLiterals.NO,
+            tags = post.tags.orEmpty().joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name },
             pendingSync = existingPost?.let { it.pendingSync ?: PendingSyncDto.UPDATE } ?: PendingSyncDto.ADD,
         )
 

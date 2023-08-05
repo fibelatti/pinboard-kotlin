@@ -133,7 +133,7 @@ class EditPostViewModel @Inject constructor(
 
     fun hasPendingChanges(): Boolean = _postState.value.let { it?.index != null && it.index != 0 }
 
-    private fun validateData(): AddPost.Params? {
+    private fun validateData(): Post? {
         _screenState.update { currentState ->
             currentState.copy(
                 invalidUrlError = "",
@@ -160,16 +160,7 @@ class EditPostViewModel @Inject constructor(
                 }
             }
 
-            else -> return AddPost.Params(
-                url = post.url,
-                title = post.title,
-                description = post.description,
-                private = post.private,
-                readLater = post.readLater,
-                tags = post.tags,
-                id = post.id,
-                time = post.time,
-            )
+            else -> return post
         }
 
         return null
