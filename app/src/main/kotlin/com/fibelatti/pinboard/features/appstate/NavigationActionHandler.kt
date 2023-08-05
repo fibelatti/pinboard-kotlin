@@ -63,17 +63,21 @@ class NavigationActionHandler @Inject constructor(
         val preferredDetailsView = userRepository.preferredDetailsView
 
         return currentContent.reduce<PostListContent> { postListContent ->
-            when (preferredDetailsView) {
-                is PreferredDetailsView.InAppBrowser -> {
-                    val shouldLoad: ShouldLoad = markAsRead(action.post)
-                    PostDetailContent(
-                        post = action.post,
-                        previousContent = postListContent.copy(shouldLoad = shouldLoad),
-                        isConnected = connectivityInfoProvider.isConnected(),
-                    )
+            val default = suspend {
+                val shouldLoad: ShouldLoad = markAsRead(action.post)
+                PostDetailContent(
+                    post = action.post,
+                    previousContent = postListContent.copy(shouldLoad = shouldLoad),
+                    isConnected = connectivityInfoProvider.isConnected(),
+                )
+            }
+
+            when {
+                userRepository.alwaysUseSidePanel || preferredDetailsView is PreferredDetailsView.InAppBrowser -> {
+                    default()
                 }
 
-                is PreferredDetailsView.ExternalBrowser -> {
+                preferredDetailsView is PreferredDetailsView.ExternalBrowser -> {
                     val shouldLoad: ShouldLoad = markAsRead(action.post)
                     ExternalBrowserContent(
                         action.post,
@@ -81,15 +85,17 @@ class NavigationActionHandler @Inject constructor(
                     )
                 }
 
-                PreferredDetailsView.Edit -> {
+                preferredDetailsView is PreferredDetailsView.Edit -> {
                     EditPostContent(
                         post = action.post,
                         previousContent = currentContent,
                     )
                 }
+
+                else -> default()
             }
         }.reduce<PopularPostsContent> { popularPostsContent ->
-            if (preferredDetailsView is PreferredDetailsView.ExternalBrowser) {
+            if (preferredDetailsView is PreferredDetailsView.ExternalBrowser && !userRepository.alwaysUseSidePanel) {
                 ExternalBrowserContent(action.post, previousContent = currentContent)
             } else {
                 PopularPostDetailContent(

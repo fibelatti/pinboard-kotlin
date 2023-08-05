@@ -160,6 +160,7 @@ private fun AppPreferencesContent(
         onDateFormatChange = userPreferencesViewModel::savePreferredDateFormat,
         onPeriodicSyncChange = userPreferencesViewModel::savePeriodicSync,
         onPreferredViewChange = userPreferencesViewModel::savePreferredDetailsView,
+        onAlwaysUseSidePanelChange = userPreferencesViewModel::saveAlwaysUseSidePanel,
         onMarkAsReadOnOpenChange = userPreferencesViewModel::saveMarkAsReadOnOpen,
         onShowDescriptionInListsChange = userPreferencesViewModel::saveShowDescriptionInLists,
         mainVariant = mainVariant,
@@ -176,6 +177,7 @@ private fun AppPreferencesContent(
     onDateFormatChange: (PreferredDateFormat) -> Unit,
     onPeriodicSyncChange: (PeriodicSync) -> Unit,
     onPreferredViewChange: (PreferredDetailsView) -> Unit,
+    onAlwaysUseSidePanelChange: (Boolean) -> Unit,
     onMarkAsReadOnOpenChange: (Boolean) -> Unit,
     onShowDescriptionInListsChange: (Boolean) -> Unit,
     mainVariant: Boolean,
@@ -376,6 +378,14 @@ private fun AppPreferencesContent(
                 modifier = Modifier.padding(top = 16.dp),
             )
         }
+
+        SettingToggle(
+            title = stringResource(id = R.string.user_preferences_always_use_side_panel),
+            description = stringResource(id = R.string.user_preferences_always_use_side_panel_description),
+            checked = userPreferences.alwaysUseSidePanel,
+            onCheckedChange = onAlwaysUseSidePanelChange,
+            modifier = Modifier.padding(top = 16.dp),
+        )
 
         SettingToggle(
             title = stringResource(id = R.string.user_preferences_description_visible_in_lists),
@@ -605,6 +615,7 @@ private fun AppPreferencesContentPreview(
             onDateFormatChange = {},
             onPeriodicSyncChange = {},
             onPreferredViewChange = {},
+            onAlwaysUseSidePanelChange = {},
             onMarkAsReadOnOpenChange = {},
             onShowDescriptionInListsChange = {},
             mainVariant = true,

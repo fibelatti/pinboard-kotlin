@@ -101,6 +101,13 @@ class UserDataSource @Inject constructor(
             updateCurrentPreferences()
         }
 
+    override var alwaysUseSidePanel: Boolean
+        get() = userSharedPreferences.alwaysUseSidePanel
+        set(value) {
+            userSharedPreferences.alwaysUseSidePanel = value
+            updateCurrentPreferences()
+        }
+
     override var markAsReadOnOpen: Boolean
         get() = userSharedPreferences.markAsReadOnOpen
         set(value) {
@@ -166,6 +173,7 @@ class UserDataSource @Inject constructor(
         applyDynamicColors = applyDynamicColors,
         preferredDateFormat = preferredDateFormat,
         preferredDetailsView = preferredDetailsView,
+        alwaysUseSidePanel = alwaysUseSidePanel,
         autoFillDescription = autoFillDescription,
         showDescriptionInLists = showDescriptionInLists,
         defaultPrivate = defaultPrivate ?: false,

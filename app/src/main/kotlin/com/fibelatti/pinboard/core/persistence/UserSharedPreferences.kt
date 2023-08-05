@@ -35,6 +35,9 @@ const val KEY_PREFERRED_DATE_FORMAT = "PREFERRED_DATE_FORMAT"
 const val KEY_PREFERRED_DETAILS_VIEW = "PREFERRED_DETAILS_VIEW"
 
 @VisibleForTesting
+const val KEY_ALWAYS_USE_SIDE_PANEL = "ALWAYS_USE_SIDE_PANEL"
+
+@VisibleForTesting
 const val KEY_MARK_AS_READ_ON_OPEN = "MARK_AS_READ_ON_OPEN"
 
 @VisibleForTesting
@@ -95,6 +98,10 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
     var preferredDetailsView: String
         get() = sharedPreferences.get(KEY_PREFERRED_DETAILS_VIEW, "")
         set(value) = sharedPreferences.put(KEY_PREFERRED_DETAILS_VIEW, value)
+
+    var alwaysUseSidePanel: Boolean
+        get() = sharedPreferences.get(KEY_ALWAYS_USE_SIDE_PANEL, false)
+        set(value) = sharedPreferences.put(KEY_ALWAYS_USE_SIDE_PANEL, value)
 
     var markAsReadOnOpen: Boolean
         get() = sharedPreferences.get(KEY_MARK_AS_READ_ON_OPEN, false)

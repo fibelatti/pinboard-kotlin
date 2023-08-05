@@ -214,6 +214,36 @@ internal class UserSharedPreferencesTest {
     }
 
     @Test
+    fun `WHEN alwaysUseSidePanel is called THEN KEY_ALWAYS_USE_SIDE_PANEL is set`() {
+        val randomBoolean = randomBoolean()
+
+        // WHEN
+        userSharedPreferences.alwaysUseSidePanel = randomBoolean
+
+        // THEN
+        verify { mockEditor.putBoolean(KEY_ALWAYS_USE_SIDE_PANEL, randomBoolean) }
+    }
+
+    @Test
+    fun `GIVEN KEY_ALWAYS_USE_SIDE_PANEL has value WHEN alwaysUseSidePanel is called THEN value is returned`() {
+        // GIVEN
+        val value = randomBoolean()
+        every { mockSharedPreferences.get(KEY_ALWAYS_USE_SIDE_PANEL, false) } returns value
+
+        // THEN
+        assertThat(userSharedPreferences.alwaysUseSidePanel).isEqualTo(value)
+    }
+
+    @Test
+    fun `GIVEN KEY_ALWAYS_USE_SIDE_PANEL has no value WHEN alwaysUseSidePanel is called THEN false is returned`() {
+        // GIVEN
+        every { mockSharedPreferences.get(KEY_ALWAYS_USE_SIDE_PANEL, false) } returns false
+
+        // THEN
+        assertThat(userSharedPreferences.alwaysUseSidePanel).isFalse()
+    }
+
+    @Test
     fun `WHEN setMarkAsReadOnOpen is called THEN KEY_MARK_AS_READ_ON_OPEN is set`() {
         val randomBoolean = randomBoolean()
 

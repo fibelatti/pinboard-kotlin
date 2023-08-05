@@ -28,6 +28,8 @@ interface UserRepository {
 
     var preferredDetailsView: PreferredDetailsView
 
+    var alwaysUseSidePanel: Boolean
+
     var markAsReadOnOpen: Boolean
 
     var autoFillDescription: Boolean

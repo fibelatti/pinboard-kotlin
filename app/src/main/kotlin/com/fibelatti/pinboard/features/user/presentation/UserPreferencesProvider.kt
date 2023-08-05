@@ -20,6 +20,7 @@ class UserPreferencesProvider : PreviewParameterProvider<UserPreferences> {
                 applyDynamicColors = true,
                 preferredDateFormat = PreferredDateFormat.YearMonthDayWithTime,
                 preferredDetailsView = PreferredDetailsView.Edit,
+                alwaysUseSidePanel = true,
                 autoFillDescription = true,
                 showDescriptionInLists = true,
                 defaultPrivate = false,

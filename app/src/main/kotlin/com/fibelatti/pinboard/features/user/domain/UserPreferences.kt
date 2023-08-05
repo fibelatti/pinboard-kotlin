@@ -14,6 +14,7 @@ data class UserPreferences(
     val applyDynamicColors: Boolean,
     val preferredDateFormat: PreferredDateFormat,
     val preferredDetailsView: PreferredDetailsView,
+    val alwaysUseSidePanel: Boolean,
     val autoFillDescription: Boolean,
     val showDescriptionInLists: Boolean,
     val defaultPrivate: Boolean,
