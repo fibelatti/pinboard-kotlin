@@ -3,6 +3,7 @@ package com.fibelatti.pinboard
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.network.ApiResultCodes
+import com.fibelatti.pinboard.features.linkding.data.BookmarkLocal
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.GetPostDto
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
@@ -136,5 +137,33 @@ object MockDataProvider {
     fun createTag(
         name: String = mockTagString1,
     ): Tag = Tag(name)
+    // endregion
+
+    // region Linking
+    fun createBookmarkLocal(
+        id: String = mockHash,
+        url: String = mockUrlValid,
+        title: String = mockUrlTitle,
+        description: String = mockUrlDescription,
+        notes: String? = null,
+        isArchived: Boolean? = null,
+        unread: Boolean? = false,
+        shared: Boolean? = true,
+        tagNames: String? = mockTagsResponse,
+        dateModified: String = mockTime,
+        pendingSync: PendingSyncDto? = null,
+    ): BookmarkLocal = BookmarkLocal(
+        id = id,
+        url = url,
+        title = title,
+        description = description,
+        notes = notes,
+        isArchived = isArchived,
+        unread = unread,
+        shared = shared,
+        tagNames = tagNames,
+        dateModified = dateModified,
+        pendingSync = pendingSync,
+    )
     // endregion
 }
