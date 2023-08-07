@@ -24,6 +24,7 @@ object MockDataProvider {
     const val mockUrlInvalid = "www.url.com"
     const val mockUrlTitle = "Some url title"
     const val mockUrlDescription = "What the url is all about"
+    const val mockUrlNotes = "Some notes about this bookmark"
     const val mockHash = "7b7cc6c90a84124026569c84f2236ecb"
     const val mockShared = "yes"
     const val mockToRead = "no"

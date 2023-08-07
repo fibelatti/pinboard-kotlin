@@ -14,5 +14,7 @@ data class Post(
     val private: Boolean? = null,
     val readLater: Boolean? = null,
     val tags: List<Tag>? = null,
+    val notes: String? = null,
+    val isArchived: Boolean? = false,
     val pendingSync: PendingSync? = null,
 )
