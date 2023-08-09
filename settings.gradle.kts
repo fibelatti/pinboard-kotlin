@@ -7,16 +7,25 @@ include(":ui")
 
 pluginManagement {
     repositories {
-        mavenCentral()
-        google()
         gradlePluginPortal()
+        mavenCentral {
+            content {
+                excludeGroupByRegex("com\\.android.*")
+            }
+        }
+        google()
     }
 }
 
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        mavenCentral()
+        mavenCentral {
+            content {
+                excludeGroupByRegex("androidx.*")
+                excludeGroupByRegex("com\\.android.*")
+            }
+        }
         google()
     }
 }
