@@ -2,7 +2,7 @@
 activity = "1.7.2"
 agp = "8.1.0"
 composeCompiler = "1.5.1"
-composeUi = "1.4.3"
+composeBom = "2023.06.01"
 coroutines = "1.7.3"
 hilt = "2.47"
 kotlin = "1.9.0"
@@ -42,12 +42,13 @@ viewbinding = { module = "androidx.databinding:viewbinding", version.ref = "agp"
 window = { module = "androidx.window:window", version = "1.1.0" }
 
 compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "composeCompiler" }
-compose-runtime = { module = "androidx.compose.runtime:runtime", version = "1.4.3" }
-compose-material = { module = "androidx.compose.material:material", version = "1.4.3" }
-compose-material3 = { module = "androidx.compose.material3:material3", version = "1.1.1" }
-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "composeUi" }
-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "composeUi" }
-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "composeUi" }
+compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
+compose-runtime = { module = "androidx.compose.runtime:runtime" }
+compose-material = { module = "androidx.compose.material:material" }
+compose-material3 = { module = "androidx.compose.material3:material3" }
+compose-ui = { module = "androidx.compose.ui:ui" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
@@ -83,8 +84,8 @@ coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", ve
 arch-core-testing = { module = "androidx.arch.core:core-testing", version = "2.2.0" }
 room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
 
-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version = "1.4.3" }
-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version = "1.4.3" }
+compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
+compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version = "4.11.0" }
