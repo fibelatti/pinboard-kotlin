@@ -16,7 +16,9 @@ import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.fibelatti.pinboard.core.android.ComposeBottomSheetDialog
+import com.fibelatti.pinboard.core.android.composable.TextWithBlockquote
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.components.TextWithLinks
 import com.fibelatti.ui.preview.ThemePreviews
@@ -71,12 +73,11 @@ private fun BookmarkDescriptionScreen(
             color = MaterialTheme.colorScheme.onSurface,
         )
 
-        TextWithLinks(
+        TextWithBlockquote(
             text = description,
             modifier = Modifier.padding(top = 16.dp),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            linkColor = MaterialTheme.colorScheme.primary,
-            style = MaterialTheme.typography.bodyLarge,
+            textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            textSize = 16.sp,
         )
     }
 }
