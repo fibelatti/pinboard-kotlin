@@ -12,7 +12,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -242,7 +242,7 @@ private fun MainBottomAppBar(
                     FloatingActionButton(onClick = { onFabClick(state.floatingActionButton.data) }) {
                         AnimatedContent(
                             targetState = state.floatingActionButton.icon,
-                            transitionSpec = { fadeIn() + scaleIn() with fadeOut() + scaleOut() },
+                            transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut() },
                             label = "Fab_Icon",
                         ) { icon ->
                             Icon(

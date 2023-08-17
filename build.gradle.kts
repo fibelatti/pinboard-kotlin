@@ -113,5 +113,15 @@ subprojects {
         }
 
         tasks.findByName("preBuild")?.dependsOn("spotlessCheck")
+
+        configurations.configureEach {
+            resolutionStrategy {
+                // Compose BoM 2023.08.00 depends on 1.4.0 which requires SDK 34 / AGP 8.2.0
+                force(
+                    "androidx.emoji2:emoji2:1.2.0",
+                    "androidx.emoji2:emoji2-views-helper:1.2.0",
+                )
+            }
+        }
     }
 }

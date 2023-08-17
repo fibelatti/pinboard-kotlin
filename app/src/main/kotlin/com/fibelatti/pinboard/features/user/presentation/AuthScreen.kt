@@ -7,7 +7,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -131,7 +131,7 @@ private fun AuthScreen(
                     modifier = Modifier
                         .padding(top = 16.dp)
                         .align(Alignment.CenterHorizontally),
-                    transitionSpec = { fadeIn() + scaleIn() with fadeOut() + scaleOut() },
+                    transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut() },
                     label = "button-progress",
                 ) { loading ->
                     if (loading) {
@@ -167,7 +167,7 @@ private fun AuthTokenHelp(
     AnimatedContent(
         targetState = helpVisible,
         modifier = modifier,
-        transitionSpec = { fadeIn() + expandVertically() with fadeOut() + scaleOut() },
+        transitionSpec = { fadeIn() + expandVertically() togetherWith fadeOut() + scaleOut() },
         label = "help-icon",
     ) { visible ->
         if (visible) {
