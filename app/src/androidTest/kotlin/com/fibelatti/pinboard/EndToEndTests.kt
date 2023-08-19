@@ -78,10 +78,10 @@ class EndToEndTests {
             onNodeWithText(context.getString(R.string.auth_button)).performClick()
 
             // Assert
-            waitUntilAtLeastOneExists(hasText(context.getString(R.string.posts_title_all)))
+            waitUntilAtLeastOneExists(matcher = hasText(context.getString(R.string.posts_title_all)), timeoutMillis = 2_000L)
             onNodeWithText(context.getString(R.string.posts_title_all)).assertIsDisplayed()
 
-            waitUntilAtLeastOneExists(hasText("Google"))
+            waitUntilAtLeastOneExists(matcher = hasText("Google"), timeoutMillis = 2_000L)
             onNodeWithText("Google").assertIsDisplayed()
             onNodeWithText("Private").assertIsDisplayed()
             onNodeWithText("Read later").assertIsDisplayed()
