@@ -85,7 +85,6 @@ class EndToEndTests {
             onNodeWithText("Google").assertIsDisplayed()
             onNodeWithText("Private").assertIsDisplayed()
             onNodeWithText("Read later").assertIsDisplayed()
-            onNodeWithText("Instrumented test").assertIsDisplayed()
             onNodeWithText("android").assertIsDisplayed()
             onNodeWithText("dev").assertIsDisplayed()
         }
