@@ -130,6 +130,7 @@ fun BookmarkListScreen(
             onScrollDirectionChanged = mainViewModel::setCurrentScrollDirection,
             onNextPageRequested = { appStateViewModel.runAction(GetNextPostPage) },
             searchParameters = currentState.searchParameters,
+            onActiveSearchClicked = { appStateViewModel.runAction(ViewSearch) },
             onClearClicked = { appStateViewModel.runAction(ClearSearch) },
             onShareClicked = onShareClicked,
             onPullToRefresh = { appStateViewModel.runAction(Refresh()) },
@@ -149,6 +150,7 @@ fun BookmarkListScreen(
     onScrollDirectionChanged: (ScrollDirection) -> Unit,
     onNextPageRequested: () -> Unit,
     searchParameters: SearchParameters,
+    onActiveSearchClicked: () -> Unit,
     onClearClicked: () -> Unit,
     onShareClicked: (SearchParameters) -> Unit,
     onPullToRefresh: () -> Unit = {},
@@ -163,6 +165,7 @@ fun BookmarkListScreen(
     ) {
         AnimatedVisibility(visible = searchParameters.isActive()) {
             ActiveSearch(
+                onViewClicked = onActiveSearchClicked,
                 onClearClicked = onClearClicked,
                 onShareClicked = { onShareClicked(searchParameters) },
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
@@ -239,6 +242,7 @@ fun BookmarkListScreen(
 
 @Composable
 private fun ActiveSearch(
+    onViewClicked: () -> Unit,
     onClearClicked: () -> Unit,
     onShareClicked: () -> Unit,
     modifier: Modifier = Modifier,
@@ -250,19 +254,16 @@ private fun ActiveSearch(
         val minHeight = 36.dp
         val corner = RoundedCornerShape(size = 8.dp)
 
-        Box(
+        FilledTonalButton(
+            onClick = onViewClicked,
             modifier = Modifier
                 .heightIn(min = minHeight)
-                .background(
-                    color = MaterialTheme.colorScheme.secondaryContainer,
-                    shape = corner,
-                ),
-            contentAlignment = Alignment.Center,
+                .wrapContentWidth(),
+            shape = corner,
+            contentPadding = PaddingValues(horizontal = 16.dp),
         ) {
             Text(
                 text = stringResource(id = R.string.search_active),
-                modifier = Modifier.padding(horizontal = 16.dp),
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
                 style = MaterialTheme.typography.bodyMedium,
             )
         }
@@ -499,6 +500,7 @@ private fun BookmarkListScreenPreview(
             onScrollDirectionChanged = {},
             onNextPageRequested = {},
             searchParameters = SearchParameters(term = "bookmark"),
+            onActiveSearchClicked = {},
             onClearClicked = {},
             onShareClicked = {},
             onPullToRefresh = {},
@@ -517,6 +519,7 @@ private fun ActiveSearchPreview() {
     ExtendedTheme {
         Box {
             ActiveSearch(
+                onViewClicked = {},
                 onClearClicked = {},
                 onShareClicked = {},
             )

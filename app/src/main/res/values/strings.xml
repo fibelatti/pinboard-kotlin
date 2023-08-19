@@ -128,7 +128,7 @@
     <string name="search_term_caveat">The bookmark URL, title or description must contain all keywords in the same order as searched.</string>
     <string name="search_selected_tags">Selected tags (max. 3)</string>
     <string name="search_tags">Saved tags</string>
-    <string name="search_active">Results are filtered</string>
+    <string name="search_active">Filter applied</string>
     <string name="search_result_size">%d bookmarks match the current search</string>
     <string name="search_clear">Clear</string>
     <string name="search_share">Share</string>
