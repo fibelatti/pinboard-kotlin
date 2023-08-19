@@ -20,7 +20,6 @@ import com.fibelatti.pinboard.core.extension.copyToClipboard
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.showBanner
-import com.fibelatti.pinboard.features.InAppReviewManager
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AddPost
@@ -44,7 +43,6 @@ import com.fibelatti.pinboard.features.appstate.ViewCategory
 import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
 import com.fibelatti.ui.foundation.toStableList
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,7 +54,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class PostListFragment @Inject constructor(
-    private val inAppReviewManager: InAppReviewManager,
     private val userRepository: UserRepository,
 ) : BaseFragment() {
 
@@ -64,15 +61,6 @@ class PostListFragment @Inject constructor(
     private val mainViewModel: MainViewModel by activityViewModels()
     private val postListViewModel: PostListViewModel by viewModels()
     private val postDetailViewModel: PostDetailViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        activity?.supportFragmentManager?.setFragmentResultListener(
-            UserPreferencesFragment.TAG,
-            this,
-        ) { _, _ -> activity?.let(inAppReviewManager::checkForPlayStoreReview) }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

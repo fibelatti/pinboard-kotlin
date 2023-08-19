@@ -202,9 +202,6 @@ dependencies {
 
     implementation(libs.jsoup)
 
-    implementation(libs.play.core)
-    implementation(libs.play.core.ktx)
-
     debugImplementation(libs.leakcanary)
 
     // Test

@@ -3,7 +3,6 @@ package com.fibelatti.pinboard.features.user.presentation
 import android.os.Bundle
 import android.view.View
 import androidx.core.app.ActivityCompat
-import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.extension.hideKeyboard
@@ -61,11 +60,6 @@ class UserPreferencesFragment @Inject constructor(
     override fun onDestroyView() {
         requireView().hideKeyboard()
         super.onDestroyView()
-    }
-
-    override fun onDestroy() {
-        activity?.supportFragmentManager?.setFragmentResult(TAG, bundleOf())
-        super.onDestroy()
     }
 
     companion object {

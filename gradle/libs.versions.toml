@@ -64,8 +64,6 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofit" }
 
 jsoup = { module = "org.jsoup:jsoup", version = "1.16.1" }
-play-core = { module = "com.google.android.play:core", version = "1.10.3" }
-play-core-ktx = { module = "com.google.android.play:core-ktx", version = "1.8.1" }
 leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version = "2.12" }
 
 junit = { module = "junit:junit", version = "4.13.2" }
