@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -266,7 +267,7 @@ private fun BookmarkContent(
 
         val imeVisible by rememberKeyboardState()
         var tagInputHasFocus by remember { mutableStateOf(false) }
-        var tagInputTop by remember { mutableStateOf(0f) }
+        var tagInputTop by remember { mutableFloatStateOf(0f) }
 
         TagManager(
             searchTagInput = searchTagInput,
