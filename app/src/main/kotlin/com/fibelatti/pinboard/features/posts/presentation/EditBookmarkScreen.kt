@@ -108,7 +108,7 @@ fun EditBookmarkScreen(
 
     LaunchedEffect(tagManagerState) {
         editPostViewModel.searchForTag(tagManagerState.currentQuery, tagManagerState.tags)
-        editPostViewModel.updatePost { post -> post.copy(tags = tagManagerState.tags) }
+        editPostViewModel.updatePost { post -> post.copy(tags = tagManagerState.tags.ifEmpty { null }) }
     }
 
     EditBookmarkScreen(
