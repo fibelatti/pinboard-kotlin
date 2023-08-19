@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.core.android.composable
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -33,7 +32,6 @@ import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
-@OptIn(ExperimentalAnimationApi::class)
 fun MainTitle(
     title: MainState.TitleComponent,
     subtitle: MainState.TitleComponent,

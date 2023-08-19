@@ -2,7 +2,6 @@ package com.fibelatti.pinboard.features
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -220,7 +219,6 @@ private fun OfflineAlert(
 }
 
 @Composable
-@OptIn(ExperimentalAnimationApi::class)
 private fun MainBottomAppBar(
     state: MainState,
     onBottomNavClick: () -> Unit,

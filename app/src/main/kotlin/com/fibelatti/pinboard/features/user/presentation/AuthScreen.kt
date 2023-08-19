@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.features.user.presentation
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -62,7 +61,6 @@ fun AuthScreen(
 }
 
 @Composable
-@OptIn(ExperimentalAnimationApi::class)
 private fun AuthScreen(
     onAuthRequested: (token: String) -> Unit,
     isLoading: Boolean,
@@ -158,7 +156,6 @@ private fun AuthScreen(
 }
 
 @Composable
-@OptIn(ExperimentalAnimationApi::class)
 private fun AuthTokenHelp(
     modifier: Modifier = Modifier,
 ) {
