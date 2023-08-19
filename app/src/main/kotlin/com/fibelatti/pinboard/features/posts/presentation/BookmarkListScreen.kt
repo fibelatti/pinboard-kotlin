@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -68,7 +69,9 @@ import com.fibelatti.pinboard.features.appstate.SearchParameters
 import com.fibelatti.pinboard.features.appstate.ShouldForceLoad
 import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
 import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
+import com.fibelatti.pinboard.features.appstate.SidePanelContent
 import com.fibelatti.pinboard.features.appstate.ViewPost
+import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -112,6 +115,11 @@ fun BookmarkListScreen(
             currentState.shouldLoad is ShouldForceLoad ||
             currentState.shouldLoad is ShouldLoadNextPage
 
+        val multiPanelEnabled by mainViewModel.state.collectAsStateWithLifecycle()
+        val sidePanelVisible by remember {
+            derivedStateOf { content is SidePanelContent && multiPanelEnabled.multiPanelEnabled }
+        }
+
         LaunchedEffect(shouldLoadContent, currentState) {
             if (shouldLoadContent) postListViewModel.loadContent(currentState)
         }
@@ -129,6 +137,7 @@ fun BookmarkListScreen(
             onPostLongClicked = onPostLongClicked,
             onTagClicked = { post -> appStateViewModel.runAction(PostsForTag(post)) },
             showPostDescription = currentState.showDescription,
+            drawItemsEdgeToEdge = !sidePanelVisible,
         )
     }
 }
@@ -147,6 +156,7 @@ fun BookmarkListScreen(
     onPostLongClicked: (Post) -> Unit,
     onTagClicked: (Tag) -> Unit,
     showPostDescription: Boolean,
+    drawItemsEdgeToEdge: Boolean,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -210,6 +220,7 @@ fun BookmarkListScreen(
             PullRefreshLayout(
                 onPullToRefresh = onPullToRefresh,
                 listState = listState,
+                paddingTop = 4.dp,
             ) {
                 items(posts.list) { post ->
                     BookmarkItem(
@@ -218,6 +229,7 @@ fun BookmarkListScreen(
                         onPostLongClicked = onPostLongClicked,
                         showDescription = showPostDescription,
                         onTagClicked = onTagClicked,
+                        drawEdgeToEdge = drawItemsEdgeToEdge,
                     )
                 }
             }
@@ -313,11 +325,18 @@ private fun BookmarkItem(
     onPostLongClicked: (Post) -> Unit,
     showDescription: Boolean,
     onTagClicked: (Tag) -> Unit,
+    drawEdgeToEdge: Boolean,
 ) {
     val haptic = LocalHapticFeedback.current
+    val edgeToEdgeDp by animateDpAsState(
+        targetValue = if (drawEdgeToEdge) 0.dp else 8.dp,
+        label = "edgeToEdgeAnimation",
+    )
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(end = edgeToEdgeDp)
             .combinedClickable(
                 onClick = { onPostClicked(post) },
                 onLongClick = {
@@ -325,6 +344,7 @@ private fun BookmarkItem(
                     onPostLongClicked(post)
                 },
             ),
+        shape = RoundedCornerShape(topEnd = edgeToEdgeDp, bottomEnd = edgeToEdgeDp),
         color = MaterialTheme.colorScheme.surface,
         shadowElevation = 2.dp,
     ) {
@@ -486,6 +506,7 @@ private fun BookmarkListScreenPreview(
             onPostLongClicked = {},
             showPostDescription = true,
             onTagClicked = {},
+            drawItemsEdgeToEdge = true,
         )
     }
 }
@@ -518,6 +539,7 @@ private fun BookmarkItemPreview(
                 onPostLongClicked = {},
                 showDescription = true,
                 onTagClicked = {},
+                drawEdgeToEdge = true,
             )
         }
     }

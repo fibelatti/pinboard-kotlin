@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.notes.presentation
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,13 +8,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -38,6 +41,7 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.pinboard.features.appstate.NoteListContent
 import com.fibelatti.pinboard.features.appstate.RefreshNotes
+import com.fibelatti.pinboard.features.appstate.SidePanelContent
 import com.fibelatti.pinboard.features.appstate.ViewNote
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
@@ -69,6 +73,11 @@ fun NoteListScreen(
                 else -> return@Surface
             },
         )
+
+        val multiPanelEnabled by mainViewModel.state.collectAsStateWithLifecycle()
+        val sidePanelVisible by remember {
+            derivedStateOf { content is SidePanelContent && multiPanelEnabled.multiPanelEnabled }
+        }
 
         val actionId = remember { UUID.randomUUID().toString() }
         val localContext = LocalContext.current
@@ -130,6 +139,7 @@ fun NoteListScreen(
                 },
                 onPullToRefresh = { appStateViewModel.runAction(RefreshNotes) },
                 onNoteClicked = { note -> appStateViewModel.runAction(ViewNote(note.id)) },
+                drawItemsEdgeToEdge = !sidePanelVisible,
             )
         }
     }
@@ -141,10 +151,11 @@ private fun NoteListContent(
     onSortOptionClicked: (NoteList.Sorting) -> Unit = {},
     onPullToRefresh: () -> Unit = {},
     onNoteClicked: (Note) -> Unit = {},
+    drawItemsEdgeToEdge: Boolean = true,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         val listState = rememberLazyListState()
-        var selectedSortingIndex by rememberSaveable { mutableStateOf(0) }
+        var selectedSortingIndex by rememberSaveable { mutableIntStateOf(0) }
 
         LaunchedEffect(selectedSortingIndex) {
             listState.scrollToItem(index = 0)
@@ -188,6 +199,7 @@ private fun NoteListContent(
                     NoteListItem(
                         note = note,
                         onNoteClicked = onNoteClicked,
+                        drawEdgeToEdge = drawItemsEdgeToEdge,
                     )
                 }
             }
@@ -199,11 +211,19 @@ private fun NoteListContent(
 private fun NoteListItem(
     note: Note,
     onNoteClicked: (Note) -> Unit,
+    drawEdgeToEdge: Boolean,
 ) {
+    val edgeToEdgeDp by animateDpAsState(
+        targetValue = if (drawEdgeToEdge) 0.dp else 8.dp,
+        label = "edgeToEdgeAnimation",
+    )
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(end = edgeToEdgeDp)
             .clickable { onNoteClicked(note) },
+        shape = RoundedCornerShape(topEnd = edgeToEdgeDp, bottomEnd = edgeToEdgeDp),
         color = MaterialTheme.colorScheme.surface,
         shadowElevation = 2.dp,
     ) {
