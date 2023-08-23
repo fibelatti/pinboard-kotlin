@@ -259,6 +259,6 @@ class EditPostFragment @Inject constructor(
         @JvmStatic
         val TAG: String = "EditPostFragment"
 
-        private val ACTION_ID = UUID.randomUUID().toString()
+        val ACTION_ID = UUID.randomUUID().toString()
     }
 }

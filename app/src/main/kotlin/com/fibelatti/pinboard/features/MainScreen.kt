@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -238,7 +239,10 @@ private fun MainBottomAppBar(
             modifier = Modifier.fillMaxWidth(),
             floatingActionButton = {
                 if (state.floatingActionButton is MainState.FabComponent.Visible) {
-                    FloatingActionButton(onClick = { onFabClick(state.floatingActionButton.data) }) {
+                    FloatingActionButton(
+                        onClick = { onFabClick(state.floatingActionButton.data) },
+                        modifier = Modifier.testTag("fab-${state.floatingActionButton.id}"),
+                    ) {
                         AnimatedContent(
                             targetState = state.floatingActionButton.icon,
                             transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut() },

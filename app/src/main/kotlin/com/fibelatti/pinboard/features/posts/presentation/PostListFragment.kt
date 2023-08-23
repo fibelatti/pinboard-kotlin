@@ -290,7 +290,7 @@ class PostListFragment @Inject constructor(
         @JvmStatic
         val TAG: String = "PostListFragment"
 
-        private val ACTION_ID = UUID.randomUUID().toString()
+        val ACTION_ID = UUID.randomUUID().toString()
     }
 }
 

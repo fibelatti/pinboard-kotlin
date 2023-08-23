@@ -27,6 +27,23 @@ object MockServer {
         )
     }
 
+    fun addBookmarkResponses(updateTimestamp: String) {
+        setResponses(
+            "/posts/update" to {
+                MockResponse().setResponseCode(200)
+                    .setBody(TestData.updateResponse(timestamp = updateTimestamp))
+            },
+            "/posts/all" to {
+                MockResponse().setResponseCode(200)
+                    .setBody(TestData.emptyBookmarksResponse())
+            },
+            "posts/add" to {
+                MockResponse().setResponseCode(200)
+                    .setBody(TestData.addBookmarkResponse())
+            },
+        )
+    }
+
     private fun setResponses(vararg responses: Pair<String, (RecordedRequest) -> MockResponse>) {
         instance.dispatcher = object : Dispatcher() {
             private val handlers = responses.toList()
@@ -67,5 +84,11 @@ object MockServer {
         """.trimIndent()
 
         fun emptyBookmarksResponse(): String = "[]"
+
+        fun addBookmarkResponse(): String = """
+            {
+                "result_code": "done"
+            }
+        """
     }
 }
