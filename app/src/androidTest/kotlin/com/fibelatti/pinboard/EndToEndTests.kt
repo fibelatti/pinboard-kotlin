@@ -76,7 +76,10 @@ class EndToEndTests {
     @Test
     fun userCanLoginAndFetchBookmarks() {
         // Arrange
-        MockServer.loginResponses(updateTimestamp = dateFormatter.nowAsTzFormat())
+        MockServer.setResponses(
+            MockServer.updateResponse(updateTimestamp = dateFormatter.nowAsTzFormat()),
+            MockServer.allBookmarksResponse(isEmpty = false),
+        )
 
         with(composeRule) {
             // Act
@@ -105,7 +108,11 @@ class EndToEndTests {
     @Test
     fun userCanLoginAndAddBookmarks() {
         // Arrange
-        MockServer.addBookmarkResponses(updateTimestamp = dateFormatter.nowAsTzFormat())
+        MockServer.setResponses(
+            MockServer.updateResponse(updateTimestamp = dateFormatter.nowAsTzFormat()),
+            MockServer.allBookmarksResponse(isEmpty = true),
+            MockServer.addBookmarkResponse(),
+        )
 
         with(composeRule) {
             // Login

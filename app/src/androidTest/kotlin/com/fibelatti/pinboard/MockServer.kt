@@ -9,42 +9,7 @@ object MockServer {
 
     val instance = MockWebServer()
 
-    fun loginResponses(updateTimestamp: String) {
-        setResponses(
-            "/posts/update" to {
-                MockResponse().setResponseCode(200)
-                    .setBody(TestData.updateResponse(timestamp = updateTimestamp))
-            },
-            "/posts/all" to { request ->
-                MockResponse().setResponseCode(200).apply {
-                    if (request.requestUrl.toString().contains("start=0")) {
-                        setBody(TestData.allBookmarksResponse())
-                    } else {
-                        setBody(TestData.emptyBookmarksResponse())
-                    }
-                }
-            },
-        )
-    }
-
-    fun addBookmarkResponses(updateTimestamp: String) {
-        setResponses(
-            "/posts/update" to {
-                MockResponse().setResponseCode(200)
-                    .setBody(TestData.updateResponse(timestamp = updateTimestamp))
-            },
-            "/posts/all" to {
-                MockResponse().setResponseCode(200)
-                    .setBody(TestData.emptyBookmarksResponse())
-            },
-            "posts/add" to {
-                MockResponse().setResponseCode(200)
-                    .setBody(TestData.addBookmarkResponse())
-            },
-        )
-    }
-
-    private fun setResponses(vararg responses: Pair<String, (RecordedRequest) -> MockResponse>) {
+    fun setResponses(vararg responses: Pair<String, (RecordedRequest) -> MockResponse>) {
         instance.dispatcher = object : Dispatcher() {
             private val handlers = responses.toList()
 
@@ -54,6 +19,36 @@ object MockServer {
 
                 return handler?.invoke(request) ?: MockResponse().setResponseCode(404)
             }
+        }
+    }
+
+    fun updateResponse(
+        updateTimestamp: String,
+    ): Pair<String, (RecordedRequest) -> MockResponse> {
+        return "/posts/update" to {
+            MockResponse().setResponseCode(200)
+                .setBody(TestData.updateResponse(timestamp = updateTimestamp))
+        }
+    }
+
+    fun allBookmarksResponse(
+        isEmpty: Boolean,
+    ): Pair<String, (RecordedRequest) -> MockResponse> {
+        return "/posts/all" to { request ->
+            MockResponse().setResponseCode(200).apply {
+                when {
+                    isEmpty -> setBody(TestData.emptyBookmarksResponse())
+                    request.requestUrl.toString().contains("start=0") -> setBody(TestData.allBookmarksResponse())
+                    else -> setBody(TestData.emptyBookmarksResponse())
+                }
+            }
+        }
+    }
+
+    fun addBookmarkResponse(): Pair<String, (RecordedRequest) -> MockResponse> {
+        return "posts/add" to {
+            MockResponse().setResponseCode(200)
+                .setBody(TestData.genericResponseDone())
         }
     }
 
@@ -85,10 +80,10 @@ object MockServer {
 
         fun emptyBookmarksResponse(): String = "[]"
 
-        fun addBookmarkResponse(): String = """
+        fun genericResponseDone(): String = """
             {
                 "result_code": "done"
             }
-        """
+        """.trimIndent()
     }
 }
