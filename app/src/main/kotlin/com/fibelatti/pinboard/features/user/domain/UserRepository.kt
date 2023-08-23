@@ -16,8 +16,6 @@ interface UserRepository {
 
     var lastUpdate: String
 
-    var autoUpdate: Boolean
-
     var periodicSync: PeriodicSync
 
     var appearance: Appearance

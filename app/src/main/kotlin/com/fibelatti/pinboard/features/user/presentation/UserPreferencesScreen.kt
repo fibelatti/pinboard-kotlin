@@ -140,7 +140,6 @@ private fun AppPreferencesContent(
 
     AppPreferencesContent(
         userPreferences = userPreferences,
-        onAutoUpdateChange = userPreferencesViewModel::saveAutoUpdate,
         onAppearanceChange = { newAppearance ->
             userPreferencesViewModel.saveAppearance(newAppearance)
 
@@ -172,7 +171,6 @@ private fun AppPreferencesContent(
 @Composable
 private fun AppPreferencesContent(
     userPreferences: UserPreferences,
-    onAutoUpdateChange: (Boolean) -> Unit,
     onAppearanceChange: (Appearance) -> Unit,
     onDynamicColorChange: (Boolean) -> Unit,
     onDateFormatChange: (PreferredDateFormat) -> Unit,
@@ -191,21 +189,13 @@ private fun AppPreferencesContent(
     ) {
         Text(
             text = stringResource(id = R.string.user_preferences_section_app),
-            modifier = Modifier.padding(bottom = 8.dp),
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.primary,
         )
 
-        SettingToggle(
-            title = stringResource(id = R.string.user_preferences_auto_update),
-            description = stringResource(id = R.string.user_preferences_auto_update_description),
-            checked = userPreferences.autoUpdate,
-            onCheckedChange = onAutoUpdateChange,
-        )
-
         Text(
             text = stringResource(id = R.string.user_preferences_appearance),
-            modifier = Modifier.padding(top = 16.dp),
+            modifier = Modifier.padding(top = 8.dp),
             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
             color = MaterialTheme.colorScheme.onSurface,
         )
@@ -610,7 +600,6 @@ private fun AppPreferencesContentPreview(
     ExtendedTheme {
         AppPreferencesContent(
             userPreferences = userPreferences,
-            onAutoUpdateChange = {},
             onAppearanceChange = {},
             onDynamicColorChange = {},
             onDateFormatChange = {},

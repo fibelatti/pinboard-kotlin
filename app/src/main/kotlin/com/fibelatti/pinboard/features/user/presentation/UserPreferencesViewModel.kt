@@ -35,10 +35,6 @@ class UserPreferencesViewModel @Inject constructor(
 
     private var searchJob: Job? = null
 
-    fun saveAutoUpdate(value: Boolean) {
-        userRepository.autoUpdate = value
-    }
-
     fun savePeriodicSync(periodicSync: PeriodicSync) {
         userRepository.periodicSync = periodicSync
         periodicSyncManager.enqueueWork(shouldReplace = true)

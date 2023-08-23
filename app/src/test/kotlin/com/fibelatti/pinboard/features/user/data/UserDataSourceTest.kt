@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test
 internal class UserDataSourceTest {
 
     private val mockUserSharedPreferences = mockk<UserSharedPreferences>(relaxed = true) {
-        every { autoUpdate } returns true
         every { periodicSync } returns 0L
         every { appearance } returns ""
         every { applyDynamicColors } returns false
@@ -42,7 +41,6 @@ internal class UserDataSourceTest {
     }
 
     private val defaultPreferences = UserPreferences(
-        autoUpdate = true,
         periodicSync = PeriodicSync.Off,
         appearance = Appearance.SystemDefault,
         applyDynamicColors = false,
