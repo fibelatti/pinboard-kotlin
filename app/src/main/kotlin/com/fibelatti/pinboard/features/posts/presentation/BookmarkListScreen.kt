@@ -397,6 +397,7 @@ private fun BookmarkItem(
                     textColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     textSize = 14.sp,
                     maxLines = 5,
+                    clickableLinks = false,
                 )
             }
 

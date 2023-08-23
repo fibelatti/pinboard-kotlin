@@ -27,6 +27,7 @@ fun TextWithBlockquote(
     maxLines: Int = Int.MAX_VALUE,
     blockquoteBackgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant,
     blockquoteStripeColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    clickableLinks: Boolean = true,
 ) {
     val argTextColor = textColor.toArgb()
     val rgbBlockquoteBackgroundColor = blockquoteBackgroundColor.toArgb()
@@ -54,7 +55,8 @@ fun TextWithBlockquote(
                 this.maxLines = maxLines
                 this.ellipsize = TextUtils.TruncateAt.END
                 this.setTextColor(argTextColor)
-                setupLinks()
+
+                if (clickableLinks) setupLinks()
             }
         },
         modifier = modifier,
