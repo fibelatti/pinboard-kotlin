@@ -67,7 +67,7 @@ class PopularPostsViewModel @Inject constructor(
                     )
                 }
 
-                appStateRepository.runAction(PostSaved(it))
+                appStateRepository.runDelayedAction(PostSaved(it))
             }
             .onFailure { error ->
                 _screenState.update { currentState ->

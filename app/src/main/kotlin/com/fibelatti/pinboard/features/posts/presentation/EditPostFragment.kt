@@ -162,6 +162,15 @@ class EditPostFragment @Inject constructor(
                 tagManagerViewModel.setSuggestedTags(state.suggestedTags)
 
                 when {
+                    state.saved -> {
+                        requireView().showBanner(getString(R.string.posts_saved_feedback))
+                        editPostViewModel.userNotified()
+                    }
+
+                    state.invalidUrlError.isNotEmpty() || state.invalidTitleError.isNotEmpty() -> {
+                        showFab()
+                    }
+
                     state.isLoading -> {
                         mainViewModel.updateState { currentState ->
                             currentState.copy(
@@ -169,15 +178,6 @@ class EditPostFragment @Inject constructor(
                                 floatingActionButton = MainState.FabComponent.Gone,
                             )
                         }
-                    }
-
-                    state.invalidUrlError.isNotEmpty() || state.invalidTitleError.isNotEmpty() -> {
-                        showFab()
-                    }
-
-                    state.saved -> {
-                        requireView().showBanner(getString(R.string.posts_saved_feedback))
-                        editPostViewModel.userNotified()
                     }
                 }
             }

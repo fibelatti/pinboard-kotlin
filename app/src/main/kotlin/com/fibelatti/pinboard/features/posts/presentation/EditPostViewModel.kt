@@ -104,7 +104,7 @@ class EditPostViewModel @Inject constructor(
                     _screenState.update { currentState ->
                         currentState.copy(saved = true)
                     }
-                    appStateRepository.runAction(PostSaved(it))
+                    appStateRepository.runDelayedAction(PostSaved(it))
                 }
                 .onFailure { error ->
                     _screenState.update { currentState ->

@@ -145,6 +145,6 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
                 ),
             )
             assertThat(popularPostsViewModel.error.isEmpty()).isTrue()
-            coVerify { mockAppStateRepository.runAction(PostSaved(post)) }
+            coVerify { mockAppStateRepository.runDelayedAction(PostSaved(post)) }
         }
 }

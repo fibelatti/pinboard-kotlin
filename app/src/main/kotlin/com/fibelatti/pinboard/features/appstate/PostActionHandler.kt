@@ -151,20 +151,26 @@ class PostActionHandler @Inject constructor(
         )
     }
 
-    private fun postSaved(action: PostSaved, currentContent: Content): Content {
-        return currentContent.reduce<PostListContent> { postListContent ->
-            postListContent.copy(shouldLoad = ShouldLoadFirstPage)
-        }.reduce<AddPostContent> { addPostContent ->
-            addPostContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
-        }.reduce<PostDetailContent> { postDetailContent ->
-            postDetailContent.copy(
+    private fun postSaved(action: PostSaved, currentContent: Content): Content = when (currentContent) {
+        is PostListContent -> {
+            currentContent.copy(shouldLoad = ShouldLoadFirstPage)
+        }
+
+        is AddPostContent -> {
+            currentContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
+        }
+
+        is PostDetailContent -> {
+            currentContent.copy(
                 post = action.post,
-                previousContent = postDetailContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage),
+                previousContent = currentContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage),
             )
-        }.reduce<EditPostContent> { editPostContent ->
-            when (editPostContent.previousContent) {
+        }
+
+        is EditPostContent -> {
+            when (currentContent.previousContent) {
                 is PostDetailContent -> {
-                    val postDetail = editPostContent.previousContent
+                    val postDetail = currentContent.previousContent
 
                     postDetail.copy(
                         post = action.post,
@@ -173,15 +179,17 @@ class PostActionHandler @Inject constructor(
                 }
 
                 is PostListContent -> {
-                    editPostContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
+                    currentContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage)
                 }
 
-                else -> editPostContent.previousContent
+                else -> currentContent.previousContent
             }
-        }.reduce<PopularPostDetailContent> { popularPostDetailContent ->
-            val updatedCurrentContent = popularPostDetailContent.copy(
-                previousContent = popularPostDetailContent.previousContent.copy(
-                    previousContent = popularPostDetailContent.previousContent.previousContent.copy(
+        }
+
+        is PopularPostDetailContent -> {
+            val updatedCurrentContent = currentContent.copy(
+                previousContent = currentContent.previousContent.copy(
+                    previousContent = currentContent.previousContent.previousContent.copy(
                         shouldLoad = ShouldLoadFirstPage,
                     ),
                 ),
@@ -192,9 +200,11 @@ class PostActionHandler @Inject constructor(
             } else {
                 updatedCurrentContent
             }
-        }.reduce<PopularPostsContent> { popularPostsContent ->
-            val updatedCurrentContent = popularPostsContent.copy(
-                previousContent = popularPostsContent.previousContent.copy(
+        }
+
+        is PopularPostsContent -> {
+            val updatedCurrentContent = currentContent.copy(
+                previousContent = currentContent.previousContent.copy(
                     shouldLoad = ShouldLoadFirstPage,
                 ),
             )
@@ -205,6 +215,8 @@ class PostActionHandler @Inject constructor(
                 updatedCurrentContent
             }
         }
+
+        else -> currentContent
     }
 
     private fun postDeleted(currentContent: Content): Content {

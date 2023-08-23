@@ -44,7 +44,7 @@ class PostDetailViewModel @Inject constructor(
                             deleted = Success(value = true),
                         )
                     }
-                    appStateRepository.runAction(PostDeleted)
+                    appStateRepository.runDelayedAction(PostDeleted)
                 }
                 .onFailure {
                     _screenState.update { currentState ->
@@ -73,7 +73,7 @@ class PostDetailViewModel @Inject constructor(
                         updated = Success(value = true),
                     )
                 }
-                appStateRepository.runAction(PostSaved(it))
+                appStateRepository.runDelayedAction(PostSaved(it))
             }.onFailure {
                 _screenState.update { currentState ->
                     currentState.copy(

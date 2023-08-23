@@ -68,7 +68,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
                 updated = Success(false),
             ),
         )
-        coVerify { mockAppStateRepository.runAction(PostDeleted) }
+        coVerify { mockAppStateRepository.runDelayedAction(PostDeleted) }
     }
 
     @Test
@@ -115,7 +115,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
         )
         coVerify {
             mockAddPost(expectedParams)
-            mockAppStateRepository.runAction(PostSaved(mockPost))
+            mockAppStateRepository.runDelayedAction(PostSaved(mockPost))
         }
     }
 }

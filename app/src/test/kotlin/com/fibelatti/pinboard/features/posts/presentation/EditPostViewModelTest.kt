@@ -316,7 +316,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                 ),
             )
             assertThat(editPostViewModel.error.isEmpty()).isTrue()
-            coVerify { mockAppStateRepository.runAction(PostSaved(post)) }
+            coVerify { mockAppStateRepository.runDelayedAction(PostSaved(post)) }
         }
 
     @Test
