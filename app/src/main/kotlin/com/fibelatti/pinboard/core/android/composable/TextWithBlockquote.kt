@@ -48,8 +48,10 @@ fun TextWithBlockquote(
     }
 
     AndroidView(
-        factory = { context ->
-            MaterialTextView(context).apply {
+        factory = ::MaterialTextView,
+        modifier = modifier,
+        update = { materialTextView ->
+            materialTextView.apply {
                 this.text = formattedText
                 this.textSize = textSize.value
                 this.maxLines = maxLines
@@ -59,6 +61,5 @@ fun TextWithBlockquote(
                 if (clickableLinks) setupLinks()
             }
         },
-        modifier = modifier,
     )
 }
