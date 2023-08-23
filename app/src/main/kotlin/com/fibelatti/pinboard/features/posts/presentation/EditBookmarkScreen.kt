@@ -84,7 +84,7 @@ fun EditBookmarkScreen(
                 description = "",
                 private = it.defaultPrivate,
                 readLater = it.defaultReadLater,
-                tags = it.defaultTags,
+                tags = it.defaultTags.ifEmpty { null },
             )
 
             editPostViewModel.initializePost(emptyPost)
