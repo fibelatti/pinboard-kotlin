@@ -64,7 +64,10 @@ class EndToEndTests {
             onNodeWithText(context.getString(R.string.auth_button)).performClick()
 
             // Assert
-            waitUntilAtLeastOneExists(hasText(context.getString(R.string.posts_title_all)))
+            waitUntilAtLeastOneExists(
+                matcher = hasText(context.getString(R.string.posts_title_all)),
+                timeoutMillis = 2_000L,
+            )
             onNodeWithText(context.getString(R.string.posts_title_all)).assertIsDisplayed()
             onNodeWithText(context.getString(R.string.posts_empty_title)).assertIsDisplayed()
         }
@@ -87,7 +90,10 @@ class EndToEndTests {
             )
             onNodeWithText(context.getString(R.string.posts_title_all)).assertIsDisplayed()
 
-            waitUntilAtLeastOneExists(matcher = hasText("Google"), timeoutMillis = 2_000L)
+            waitUntilAtLeastOneExists(
+                matcher = hasText("Google"),
+                timeoutMillis = 2_000L,
+            )
             onNodeWithText("Google").assertIsDisplayed()
             onNodeWithText("Private").assertIsDisplayed()
             onNodeWithText("Read later").assertIsDisplayed()
@@ -105,11 +111,17 @@ class EndToEndTests {
             // Login
             onNodeWithText(context.getString(R.string.auth_token_hint)).performTextInput(MockServer.TestData.TOKEN)
             onNodeWithText(context.getString(R.string.auth_button)).performClick()
-            waitUntilAtLeastOneExists(hasText(context.getString(R.string.posts_title_all)))
+            waitUntilAtLeastOneExists(
+                matcher = hasText(context.getString(R.string.posts_title_all)),
+                timeoutMillis = 2_000L,
+            )
 
             // Navigate to add bookmark screen
             onNodeWithTag(testTag = "fab-${PostListFragment.ACTION_ID}").performClick()
-            waitUntilAtLeastOneExists(hasText(context.getString(R.string.posts_add_title)))
+            waitUntilAtLeastOneExists(
+                hasText(context.getString(R.string.posts_add_title)),
+                timeoutMillis = 2_000L,
+            )
 
             // Enter bookmark details
             onNodeWithText(context.getString(R.string.posts_add_url))
@@ -142,7 +154,10 @@ class EndToEndTests {
             )
             onNodeWithText(context.getString(R.string.posts_title_all)).assertIsDisplayed()
 
-            waitUntilAtLeastOneExists(matcher = hasText("Google"), timeoutMillis = 2_000L)
+            waitUntilAtLeastOneExists(
+                matcher = hasText("Google"),
+                timeoutMillis = 2_000L,
+            )
             onNodeWithText("Google").assertIsDisplayed()
             onNodeWithText("Private").assertIsDisplayed()
             onNodeWithText("Read later").assertIsDisplayed()
