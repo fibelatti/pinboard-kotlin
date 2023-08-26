@@ -4,13 +4,10 @@ import android.os.Build
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -32,15 +29,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.boundsInParent
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -61,7 +52,6 @@ import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.tags.presentation.TagManager
 import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
-import com.fibelatti.ui.foundation.rememberKeyboardState
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -74,13 +64,11 @@ fun UserPreferencesScreen(
     mainVariant: Boolean,
     onDynamicColorChange: () -> Unit,
 ) {
-    val scrollState = rememberScrollState()
-
     BoxWithConstraints(
         modifier = Modifier
             .background(color = ExtendedTheme.colors.backgroundNoOverlay)
             .fillMaxSize()
-            .verticalScroll(scrollState)
+            .verticalScroll(rememberScrollState())
             .padding(top = 8.dp, bottom = 32.dp)
             .navigationBarsPadding()
             .imePadding(),
@@ -99,7 +87,6 @@ fun UserPreferencesScreen(
                     userPreferencesViewModel = userPreferencesViewModel,
                     tagManagerViewModel = tagManagerViewModel,
                     mainVariant = mainVariant,
-                    scrollState = scrollState,
                     modifier = Modifier.padding(top = 32.dp),
                 )
             }
@@ -120,7 +107,6 @@ fun UserPreferencesScreen(
                     userPreferencesViewModel = userPreferencesViewModel,
                     tagManagerViewModel = tagManagerViewModel,
                     mainVariant = mainVariant,
-                    scrollState = scrollState,
                     modifier = Modifier.requiredWidth(childWidth),
                 )
             }
@@ -393,16 +379,11 @@ private fun BookmarkingPreferencesContent(
     userPreferencesViewModel: UserPreferencesViewModel,
     tagManagerViewModel: TagManagerViewModel,
     mainVariant: Boolean,
-    scrollState: ScrollState,
     modifier: Modifier = Modifier,
 ) {
     val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
     val suggestedTags by userPreferencesViewModel.suggestedTags.collectAsStateWithLifecycle(emptyList())
     val tagState by tagManagerViewModel.state.collectAsStateWithLifecycle()
-
-    val imeVisible by rememberKeyboardState()
-    var tagInputHasFocus by remember { mutableStateOf(false) }
-    var tagInputTop by remember { mutableFloatStateOf(0f) }
 
     LaunchedEffect(Unit) {
         tagManagerViewModel.initializeTags(userPreferences.defaultTags)
@@ -415,15 +396,6 @@ private fun BookmarkingPreferencesContent(
     LaunchedEffect(tagState) {
         userPreferencesViewModel.saveDefaultTags(tagState.tags)
         userPreferencesViewModel.searchForTag(tagState.currentQuery, tagState.tags)
-    }
-
-    LaunchedEffect(imeVisible, tagInputHasFocus, tagInputTop) {
-        if (imeVisible && tagInputHasFocus && scrollState.canScrollForward) {
-            scrollState.animateScrollTo(
-                value = tagInputTop.toInt(),
-                animationSpec = tween(durationMillis = 200, delayMillis = 300, easing = LinearEasing),
-            )
-        }
     }
 
     Column(
@@ -461,8 +433,6 @@ private fun BookmarkingPreferencesContent(
             currentTagsTitle = stringResource(id = tagState.displayTitle),
             currentTags = tagState.tags.toStableList(),
             onRemoveCurrentTagClicked = tagManagerViewModel::removeTag,
-            onSearchTagInputFocusChanged = { hasFocus -> tagInputHasFocus = hasFocus },
-            modifier = Modifier.onGloballyPositioned { tagInputTop = it.boundsInParent().top },
         )
     }
 }

@@ -1,7 +1,5 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -37,8 +34,6 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.layout.boundsInParent
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.integerResource
@@ -60,7 +55,6 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagManager
 import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
 import com.fibelatti.ui.foundation.StableList
-import com.fibelatti.ui.foundation.rememberKeyboardState
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -265,10 +259,6 @@ private fun BookmarkContent(
             onReadLaterChanged = onReadLaterChanged,
         )
 
-        val imeVisible by rememberKeyboardState()
-        var tagInputHasFocus by remember { mutableStateOf(false) }
-        var tagInputTop by remember { mutableFloatStateOf(0f) }
-
         TagManager(
             searchTagInput = searchTagInput,
             onSearchTagInputChanged = onSearchTagInputChanged,
@@ -278,20 +268,8 @@ private fun BookmarkContent(
             currentTagsTitle = currentTagsTitle,
             currentTags = currentTags,
             onRemoveCurrentTagClicked = onRemoveCurrentTagClicked,
-            onSearchTagInputFocusChanged = { hasFocus -> tagInputHasFocus = hasFocus },
-            modifier = Modifier
-                .padding(bottom = 100.dp)
-                .onGloballyPositioned { tagInputTop = it.boundsInParent().top },
+            modifier = Modifier.padding(bottom = 100.dp),
         )
-
-        LaunchedEffect(imeVisible, tagInputHasFocus, tagInputTop) {
-            if (imeVisible && tagInputHasFocus && scrollState.canScrollForward) {
-                scrollState.animateScrollTo(
-                    value = tagInputTop.toInt(),
-                    animationSpec = tween(durationMillis = 200, delayMillis = 300, easing = LinearEasing),
-                )
-            }
-        }
     }
 }
 

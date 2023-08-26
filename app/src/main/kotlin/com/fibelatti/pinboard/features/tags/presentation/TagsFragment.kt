@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.foundation.background
-import androidx.compose.ui.Modifier
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.fibelatti.core.extension.hideKeyboard
@@ -22,7 +20,6 @@ import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.RefreshTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.ui.foundation.toStableList
-import com.fibelatti.ui.theme.ExtendedTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
 import java.util.UUID
@@ -47,8 +44,7 @@ class TagsFragment @Inject constructor() : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setThemedContent {
-            TagList(
-                modifier = Modifier.background(color = ExtendedTheme.colors.backgroundNoOverlay),
+            TagListScreen(
                 tagsViewModel = tagsViewModel,
                 onTagClicked = { appStateViewModel.runAction(PostsForTag(it)) },
                 onTagLongClicked = ::showTagQuickActions,

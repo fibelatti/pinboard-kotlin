@@ -5,13 +5,10 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
@@ -21,10 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -36,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.features.MainState
+import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AddSearchTag
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.RefreshSearchTags
@@ -49,7 +45,6 @@ import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
 import com.fibelatti.ui.foundation.StableList
-import com.fibelatti.ui.foundation.rememberKeyboardState
 import com.fibelatti.ui.foundation.stableListOf
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
@@ -58,6 +53,7 @@ import com.fibelatti.ui.theme.ExtendedTheme
 @Composable
 fun SearchBookmarksScreen(
     appStateViewModel: AppStateViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     searchPostViewModel: SearchPostViewModel = hiltViewModel(),
     tagsViewModel: TagsViewModel = hiltViewModel(),
 ) {
@@ -68,11 +64,21 @@ fun SearchBookmarksScreen(
         val searchContent by rememberUpdatedState(newValue = appState ?: return@Surface)
 
         val queryResultSize by searchPostViewModel.queryResultSize.collectAsStateWithLifecycle()
+        val activeSearchLabel = stringResource(id = R.string.search_result_size, queryResultSize)
+
         val tagsState by tagsViewModel.state.collectAsStateWithLifecycle()
 
-        LaunchedEffect(searchContent.searchParameters) {
+        LaunchedEffect(searchContent.searchParameters, queryResultSize) {
             if (searchContent.searchParameters.isActive()) {
                 searchPostViewModel.searchParametersChanged(searchContent.searchParameters)
+
+                mainViewModel.updateState { mainState ->
+                    mainState.copy(subtitle = MainState.TitleComponent.Visible(label = activeSearchLabel))
+                }
+            } else {
+                mainViewModel.updateState { mainState ->
+                    mainState.copy(subtitle = MainState.TitleComponent.Gone)
+                }
             }
         }
 
@@ -90,11 +96,6 @@ fun SearchBookmarksScreen(
             onKeyboardSearch = { appStateViewModel.runAction(Search) },
             selectedTags = searchContent.searchParameters.tags.toStableList(),
             onSelectedTagRemoved = { tag -> appStateViewModel.runAction(RemoveSearchTag(tag)) },
-            activeSearchResult = if (searchContent.searchParameters.isActive()) {
-                stringResource(id = R.string.search_result_size, queryResultSize)
-            } else {
-                ""
-            },
             availableTags = tagsState.filteredTags.toStableList(),
             isLoadingTags = tagsState.isLoading,
             onTagsSortOptionClicked = { sorting ->
@@ -124,7 +125,6 @@ fun SearchBookmarksScreen(
     onKeyboardSearch: () -> Unit = {},
     selectedTags: StableList<Tag> = StableList(),
     onSelectedTagRemoved: (Tag) -> Unit = {},
-    activeSearchResult: String = "",
     availableTags: StableList<Tag> = StableList(),
     isLoadingTags: Boolean = false,
     onTagsSortOptionClicked: (TagList.Sorting) -> Unit = {},
@@ -133,130 +133,83 @@ fun SearchBookmarksScreen(
     onAvailableTagClicked: (Tag) -> Unit = {},
     onTagsPullToRefresh: () -> Unit = {},
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        var tagSearchFocused by rememberSaveable { mutableStateOf(false) }
-        val imeVisible by rememberKeyboardState()
+    TagList(
+        header = {
+            val keyboardController = LocalSoftwareKeyboardController.current
 
-        AnimatedVisibility(
-            visible = !(tagSearchFocused && imeVisible),
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically(),
-        ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                val keyboardController = LocalSoftwareKeyboardController.current
-
-                OutlinedTextField(
-                    value = searchTerm,
-                    onValueChange = onSearchTermChanged,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
-                    label = { Text(text = stringResource(id = R.string.search_term)) },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                    keyboardActions = KeyboardActions {
-                        // TODO: hide is not working
-                        keyboardController?.hide()
-                        onKeyboardSearch()
-                    },
-                    singleLine = true,
-                    maxLines = 1,
-                )
-
-                Text(
-                    text = stringResource(id = R.string.search_term_caveat),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
-        }
-
-        AnimatedVisibility(
-            visible = selectedTags.value.isNotEmpty(),
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically(),
-        ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(
-                    text = stringResource(id = R.string.search_selected_tags),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleSmall,
-                )
-
-                SingleLineChipGroup(
-                    items = selectedTags.value
-                        .map {
-                            ChipGroup.Item(
-                                text = it.name,
-                                icon = painterResource(id = R.drawable.ic_close),
-                            )
-                        }
-                        .toStableList(),
-                    onItemClick = {},
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    onItemIconClick = { item ->
-                        onSelectedTagRemoved(selectedTags.value.first { it.name == item.text })
-                    },
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                )
-            }
-        }
-
-        AnimatedVisibility(
-            visible = activeSearchResult.isNotEmpty(),
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically(),
-        ) {
-            Text(
-                text = activeSearchResult,
+            OutlinedTextField(
+                value = searchTerm,
+                onValueChange = onSearchTermChanged,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        shape = RoundedCornerShape(size = 8.dp),
-                    )
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodyMedium,
+                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                label = { Text(text = stringResource(id = R.string.search_term)) },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions {
+                    keyboardController?.hide()
+                    onKeyboardSearch()
+                },
+                singleLine = true,
+                maxLines = 1,
             )
-        }
 
-        Text(
-            text = stringResource(id = R.string.search_tags),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
-            color = MaterialTheme.colorScheme.onSurface,
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.titleSmall,
-        )
+            AnimatedVisibility(
+                visible = selectedTags.value.isNotEmpty(),
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically(),
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.search_selected_tags),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleSmall,
+                    )
 
-        TagList(
-            items = availableTags,
-            isLoading = isLoadingTags,
-            onSortOptionClicked = onTagsSortOptionClicked,
-            searchInput = tagsSearchTerm,
-            onSearchInputChanged = onTagsSearchInputChanged,
-            onSearchInputFocusChanged = { hasFocus -> tagSearchFocused = hasFocus },
-            onTagClicked = onAvailableTagClicked,
-            onPullToRefresh = onTagsPullToRefresh,
-        )
-    }
+                    SingleLineChipGroup(
+                        items = selectedTags.value
+                            .map {
+                                ChipGroup.Item(
+                                    text = it.name,
+                                    icon = painterResource(id = R.drawable.ic_close),
+                                )
+                            }
+                            .toStableList(),
+                        onItemClick = {},
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        onItemIconClick = { item ->
+                            onSelectedTagRemoved(selectedTags.value.first { it.name == item.text })
+                        },
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                    )
+                }
+            }
+
+            Text(
+                text = stringResource(id = R.string.search_tags),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleSmall,
+            )
+        },
+        items = availableTags,
+        isLoading = isLoadingTags,
+        onSortOptionClicked = onTagsSortOptionClicked,
+        searchInput = tagsSearchTerm,
+        onSearchInputChanged = onTagsSearchInputChanged,
+        onTagClicked = onAvailableTagClicked,
+        onPullToRefresh = onTagsPullToRefresh,
+    )
 }
 
 @Composable
@@ -273,7 +226,6 @@ private fun ActiveSearchBookmarksScreenPreview() {
     ExtendedTheme {
         SearchBookmarksScreen(
             selectedTags = stableListOf(Tag(name = "dev")),
-            activeSearchResult = "10 bookmarks match the current query",
             availableTags = stableListOf(Tag(name = "compose"), Tag(name = "ui")),
         )
     }

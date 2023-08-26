@@ -124,8 +124,7 @@
 
     <!-- Search -->
     <string name="search_title">Filter bookmarks</string>
-    <string name="search_term">Search phrase</string>
-    <string name="search_term_caveat">The bookmark URL, title or description must contain all keywords in the same order as searched.</string>
+    <string name="search_term">Search the URL, title or description</string>
     <string name="search_selected_tags">Selected tags (max. 3)</string>
     <string name="search_tags">Saved tags</string>
     <string name="search_active">Filter applied</string>
@@ -254,4 +253,5 @@
     <string name="cd_warning">Warning</string>
     <string name="cd_share_receiver_image">Adding bookmark to pinboard</string>
     <string name="cd_expand_menu">Expand menu</string>
+    <string name="cd_scroll_to_top">Scroll to top</string>
 </resources>
