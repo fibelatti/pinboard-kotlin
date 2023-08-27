@@ -192,7 +192,9 @@ fun SearchBookmarksScreen(
                                 )
                             }
                             .toStableList(),
-                        onItemClick = {},
+                        onItemClick = { item ->
+                            onSelectedTagRemoved(selectedTags.value.first { it.name == item.text })
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 8.dp),
