@@ -164,7 +164,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.constraint.layout)
     implementation(libs.constraint.layout.compose)
-    implementation(libs.swipe.refresh.layout)
     implementation(libs.window)
 
     implementation(libs.lifecycle.java8)
