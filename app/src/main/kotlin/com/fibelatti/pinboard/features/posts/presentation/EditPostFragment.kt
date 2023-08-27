@@ -194,7 +194,13 @@ class EditPostFragment @Inject constructor(
                 mainViewModel.updateState { currentState ->
                     currentState.copy(
                         title = MainState.TitleComponent.Visible(getString(R.string.posts_add_title)),
-                        subtitle = MainState.TitleComponent.Gone,
+                        subtitle = if (post.id.isNotEmpty()) {
+                            MainState.TitleComponent.Visible(
+                                label = getString(R.string.posts_last_modified_on, post.formattedTime),
+                            )
+                        } else {
+                            MainState.TitleComponent.Gone
+                        },
                         navigation = MainState.NavigationComponent.Visible(id = ACTION_ID, icon = R.drawable.ic_close),
                         bottomAppBar = MainState.BottomAppBarComponent.Visible(
                             id = ACTION_ID,
