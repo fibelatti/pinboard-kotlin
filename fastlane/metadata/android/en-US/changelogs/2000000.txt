@@ -1,0 +1,6 @@
+- This update brings enhanced support for tablets and foldable phones. The UI internals have been completely rewritten to be more responsive
+- Try out the new side-by-side navigation when viewing bookmark details, available for tablets, foldables and landscape mode
+
+If you have any feedback or suggestions feel free to open an issue.
+
+Thanks for using Pinkt!

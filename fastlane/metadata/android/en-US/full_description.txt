@@ -1,0 +1,46 @@
+<b>Pinkt</b> is an Android app for the Pinboard bookmarking service. Pinboard is a fast, no-nonsense bookmarking site for people who value privacy and speed.
+
+It's <b>easy</b> and <b>simple</b> to manage your bookmarks with Pinkt. Just as the original service there are <b>no ads and no third-party tracking</b>, and the code is completely open source.
+
+Save links from your favourite websites and apps quickly by sharing them to <b>Pinkt</b>.
+
+<b>FEATURES</b>
+
+- Manage all your bookmarks: add, edit, delete, share
+- View your saved bookmarks without leaving the app
+- View your saved notes without leaving the app
+- Save to Pinboard with the quick share item
+- Auto-fill bookmarks: Pinkt can optionally auto-fill the title and description of saved URLs
+- Search by term: find bookmarks that contain the term in its URL, Title or Description
+- Filter by tags
+- Six pre-defined filters: All, Recent, Public, Private, Unread and Untagged
+- Popular bookmarks: see what's trending and save them to your collection
+- Sync bookmarks and tags
+- Cached data for faster usage
+- Dark and Light themes
+- Portrait and Landscape support
+- Optimised for tablets and chromebooks
+
+<b>PERMISSIONS</b>
+
+Pinkt only uses the internet permission, required to reach the Pinboard REST API.
+
+---------------
+
+Thank you for choosing Pinkt as your preferred Pinboard Android client.
+
+Pinkt is an open-source project, find the code and submit feedback at https://github.com/fibelatti/pinboard-kotlin
+
+---------------
+
+<b>PROJECT STATUS</b>
+
+As of October of 2019 Pinkt can offer everything that the Pinboard API officially supports. It will continue to be maintained and updated to support the latest Android technologies since this is a personal sandbox, but it is limited in regards to what it can offer without official support from the Pinboard API, which hasn't been actively maintained from what it seems.
+
+Some examples of what I'm currently unable to offer are Bulk Edit and better pagination support for people with a massive amount of bookmarks saved without compromising the filtering capabilities that Pinkt currently offers.
+
+Even though updates will be less frequent, please don't hesitate to reach out if you have an idea or a feature request as I'm always keen to improve the experience for my users.
+
+---------------
+
+Screenshots were generated with https://screenshots.pro
