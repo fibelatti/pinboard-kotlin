@@ -8,6 +8,7 @@ Pinkt
 Pinkt is an unofficial [Pinboard](http://pinboard.in/) Android client. Pinboard is a fast, no-nonsense bookmarking site for people who value privacy and speed.
 
 <a href='https://play.google.com/store/apps/details?id=com.fibelatti.pinboard'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width='150' /></a>
+<a href='https://apt.izzysoft.de/fdroid/index/apk/com.fibelatti.pinboard'><img alt='Get it on IzzyOnDroid' src='https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png' width='150' /></a>
 
 About the project
 --------
