@@ -47,30 +47,30 @@ abstract class CoreModule {
         fun sharingStarted(): SharingStarted = SharingStarted.Eagerly
 
         @Provides
-        fun Retrofit.postsApi(): PostsApi = create()
+        fun postsApi(retrofit: Retrofit): PostsApi = retrofit.create()
 
         @Provides
-        fun AppDatabase.postsDao(): PostsDao = postDao()
+        fun postsDao(database: AppDatabase): PostsDao = database.postDao()
 
         @Provides
-        fun Retrofit.tagsApi(): TagsApi = create()
+        fun tagsApi(retrofit: Retrofit): TagsApi = retrofit.create()
 
         @Provides
-        fun Retrofit.notesApi(): NotesApi = create()
+        fun notesApi(retrofit: Retrofit): NotesApi = retrofit.create()
     }
 
     @Binds
-    abstract fun AppStateDataSource.appStateRepository(): AppStateRepository
+    abstract fun appStateRepository(impl: AppStateDataSource): AppStateRepository
 
     @Binds
-    abstract fun UserDataSource.userRepository(): UserRepository
+    abstract fun userRepository(impl: UserDataSource): UserRepository
 
     @Binds
-    abstract fun PostsDataSourceProxy.postsRepository(): PostsRepository
+    abstract fun postsRepository(impl: PostsDataSourceProxy): PostsRepository
 
     @Binds
-    abstract fun TagsDataSource.tagsRepository(): TagsRepository
+    abstract fun tagsRepository(impl: TagsDataSource): TagsRepository
 
     @Binds
-    abstract fun NotesDataSource.notesRepository(): NotesRepository
+    abstract fun notesRepository(impl: NotesDataSource): NotesRepository
 }

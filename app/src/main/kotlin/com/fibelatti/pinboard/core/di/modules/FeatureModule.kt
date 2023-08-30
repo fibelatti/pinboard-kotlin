@@ -26,67 +26,67 @@ abstract class FeatureModule {
     @Binds
     @IntoMap
     @FragmentKey(AuthFragment::class)
-    abstract fun AuthFragment.authFragment(): Fragment
+    abstract fun authFragment(fragment: AuthFragment): Fragment
 
     // region Posts
     @Binds
     @IntoMap
     @FragmentKey(PostListFragment::class)
-    abstract fun PostListFragment.postListFragment(): Fragment
+    abstract fun postListFragment(fragment: PostListFragment): Fragment
 
     @Binds
     @IntoMap
     @FragmentKey(PostDetailFragment::class)
-    abstract fun PostDetailFragment.postDetailFragment(): Fragment
+    abstract fun postDetailFragment(fragment: PostDetailFragment): Fragment
 
     @Binds
     @IntoMap
     @FragmentKey(EditPostFragment::class)
-    abstract fun EditPostFragment.editPostFragment(): Fragment
+    abstract fun editPostFragment(fragment: EditPostFragment): Fragment
 
     @Binds
     @IntoMap
     @FragmentKey(PostSearchFragment::class)
-    abstract fun PostSearchFragment.postSearchFragment(): Fragment
+    abstract fun postSearchFragment(fragment: PostSearchFragment): Fragment
     // endregion
 
     // region Tags
     @Binds
     @IntoMap
     @FragmentKey(TagsFragment::class)
-    abstract fun TagsFragment.tagsFragment(): Fragment
+    abstract fun tagsFragment(fragment: TagsFragment): Fragment
     // endregion
 
     // region Notes
     @Binds
     @IntoMap
     @FragmentKey(NoteListFragment::class)
-    abstract fun NoteListFragment.noteListFragment(): Fragment
+    abstract fun noteListFragment(fragment: NoteListFragment): Fragment
 
     @Binds
     @IntoMap
     @FragmentKey(NoteDetailsFragment::class)
-    abstract fun NoteDetailsFragment.fragment(): Fragment
+    abstract fun noteDetailsFragment(fragment: NoteDetailsFragment): Fragment
     // endregion
 
     // region Popular
     @Binds
     @IntoMap
     @FragmentKey(PopularPostsFragment::class)
-    abstract fun PopularPostsFragment.popularPostFragment(): Fragment
+    abstract fun popularPostFragment(fragment: PopularPostsFragment): Fragment
     // endregion
 
     // region Preferences
     @Binds
     @IntoMap
     @FragmentKey(UserPreferencesFragment::class)
-    abstract fun UserPreferencesFragment.userPreferencesFragment(): Fragment
+    abstract fun userPreferencesFragment(fragment: UserPreferencesFragment): Fragment
     // endregion
 
     // region Menu
     @Binds
     @IntoMap
     @FragmentKey(NavigationMenuFragment::class)
-    abstract fun NavigationMenuFragment.navigationMenuFragment(): Fragment
+    abstract fun navigationMenuFragment(fragment: NavigationMenuFragment): Fragment
     // endregion
 }

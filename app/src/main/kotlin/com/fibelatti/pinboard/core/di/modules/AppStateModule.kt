@@ -27,30 +27,30 @@ abstract class AppStateModule {
     @Binds
     @IntoMap
     @ActionHandlerKey(NavigationAction::class)
-    abstract fun NavigationActionHandler.navigationActionHandler(): ActionHandler<*>
+    abstract fun navigationActionHandler(impl: NavigationActionHandler): ActionHandler<*>
 
     @Binds
     @IntoMap
     @ActionHandlerKey(PostAction::class)
-    abstract fun PostActionHandler.postActionHandler(): ActionHandler<*>
+    abstract fun postActionHandler(impl: PostActionHandler): ActionHandler<*>
 
     @Binds
     @IntoMap
     @ActionHandlerKey(SearchAction::class)
-    abstract fun SearchActionHandler.searchActionHandler(): ActionHandler<*>
+    abstract fun searchActionHandler(impl: SearchActionHandler): ActionHandler<*>
 
     @Binds
     @IntoMap
     @ActionHandlerKey(TagAction::class)
-    abstract fun TagActionHandler.tagActionHandler(): ActionHandler<*>
+    abstract fun tagActionHandler(impl: TagActionHandler): ActionHandler<*>
 
     @Binds
     @IntoMap
     @ActionHandlerKey(NoteAction::class)
-    abstract fun NoteActionHandler.noteActionHandler(): ActionHandler<*>
+    abstract fun noteActionHandler(impl: NoteActionHandler): ActionHandler<*>
 
     @Binds
     @IntoMap
     @ActionHandlerKey(PopularAction::class)
-    abstract fun PopularActionHandler.popularActionHandler(): ActionHandler<*>
+    abstract fun popularActionHandler(impl: PopularActionHandler): ActionHandler<*>
 }
