@@ -1,11 +1,11 @@
 [versions]
 activity = "1.7.2"
 agp = "8.1.0"
-composeCompiler = "1.5.1"
+composeCompiler = "1.5.3"
 composeBom = "2023.08.00"
 coroutines = "1.7.3"
 hilt = "2.47"
-kotlin = "1.9.0"
+kotlin = "1.9.10"
 lifecycle = "2.6.1"
 moshi = "1.15.0"
 okhttp = "4.11.0"
@@ -94,7 +94,7 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
-ksp = { id = "com.google.devtools.ksp", version = "1.9.0-1.0.13" }
+ksp = { id = "com.google.devtools.ksp", version = "1.9.10-1.0.13" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 spotless = { id = "com.diffplug.spotless", version = "6.20.0" }
 cache-fix = { id = "org.gradle.android.cache-fix", version = "2.7.3" }
