@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard
 
+import android.content.SharedPreferences
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
@@ -9,7 +10,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import com.fibelatti.core.extension.clear
-import com.fibelatti.pinboard.core.persistence.getUserPreferences
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.MainActivity
 import com.fibelatti.pinboard.features.posts.presentation.EditPostFragment
@@ -35,6 +35,9 @@ class EndToEndTests {
     @Inject
     lateinit var dateFormatter: DateFormatter
 
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
+
     private val context get() = composeRule.activity
 
     @Before
@@ -45,7 +48,7 @@ class EndToEndTests {
     @After
     fun tearDown() {
         MockServer.instance.shutdown()
-        context.getUserPreferences().clear()
+        sharedPreferences.clear()
     }
 
     @Test

@@ -7,10 +7,10 @@ import android.net.ConnectivityManager
 import androidx.core.content.getSystemService
 import com.fibelatti.core.android.AppResourceProvider
 import com.fibelatti.core.android.ResourceProvider
+import com.fibelatti.core.extension.getSharedPreferences
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.core.di.AppReviewMode
 import com.fibelatti.pinboard.core.di.MainVariant
-import com.fibelatti.pinboard.core.persistence.getUserPreferences
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.Module
 import dagger.Provides
@@ -42,7 +42,7 @@ object AndroidModule {
     @Provides
     fun sharedPreferences(
         application: Application,
-    ): SharedPreferences = application.getUserPreferences()
+    ): SharedPreferences = application.getSharedPreferences("user_preferences")
 
     @Provides
     fun connectivityManager(

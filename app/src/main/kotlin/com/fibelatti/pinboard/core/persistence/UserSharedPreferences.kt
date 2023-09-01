@@ -1,10 +1,8 @@
 package com.fibelatti.pinboard.core.persistence
 
-import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.extension.get
-import com.fibelatti.core.extension.getSharedPreferences
 import com.fibelatti.core.extension.put
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -56,8 +54,6 @@ const val KEY_NEW_EDIT_AFTER_SHARING = "NEW_EDIT_AFTER_SHARING"
 const val KEY_DEFAULT_TAGS = "DEFAULT_TAGS"
 // endregion
 
-fun Context.getUserPreferences() = getSharedPreferences("user_preferences")
-
 @Singleton
 class UserSharedPreferences @Inject constructor(private val sharedPreferences: SharedPreferences) {
 
@@ -108,7 +104,7 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
         get() = sharedPreferences.get(KEY_SHOW_DESCRIPTION_IN_LISTS, true)
         set(value) = sharedPreferences.put(KEY_SHOW_DESCRIPTION_IN_LISTS, value)
 
-    /***
+    /**
      * Returns the user preferred setting only if true, otherwise return null to respect the preferences
      * set on Pinboard.
      *
@@ -118,7 +114,7 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
         get() = sharedPreferences.get(KEY_DEFAULT_PRIVATE, false).takeIf { it }
         set(value) = sharedPreferences.put(KEY_DEFAULT_PRIVATE, value)
 
-    /***
+    /**
      * Returns the user preferred setting only if true, otherwise return null to respect the preferences
      * set on Pinboard.
      *
