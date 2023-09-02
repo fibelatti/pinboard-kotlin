@@ -16,6 +16,7 @@ import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppConfig.PINBOARD_USER_URL
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.copyToClipboard
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
@@ -128,7 +129,7 @@ class PostListFragment @Inject constructor(
             setMessage(R.string.alert_confirm_deletion)
             setPositiveButton(R.string.hint_yes) { _, _ -> postDetailViewModel.deletePost(post) }
             setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
-        }.show()
+        }.applySecureFlag().show()
     }
 
     private fun shareFilteredResults(searchParameters: SearchParameters) {
@@ -239,7 +240,7 @@ class PostListFragment @Inject constructor(
                         MaterialAlertDialogBuilder(requireContext()).apply {
                             setMessage(R.string.posts_deleted_error)
                             setPositiveButton(R.string.hint_ok) { dialog, _ -> dialog?.dismiss() }
-                        }.show()
+                        }.applySecureFlag().show()
                     }
 
                     state.updated is Success<Boolean> && state.updated.value -> {

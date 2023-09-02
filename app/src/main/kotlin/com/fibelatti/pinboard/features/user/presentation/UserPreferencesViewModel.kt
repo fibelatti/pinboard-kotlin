@@ -48,6 +48,10 @@ class UserPreferencesViewModel @Inject constructor(
         userRepository.applyDynamicColors = value
     }
 
+    fun saveDisableScreenshots(value: Boolean) {
+        userRepository.disableScreenshots = value
+    }
+
     fun savePreferredDateFormat(preferredDateFormat: PreferredDateFormat) {
         userRepository.preferredDateFormat = preferredDateFormat
     }

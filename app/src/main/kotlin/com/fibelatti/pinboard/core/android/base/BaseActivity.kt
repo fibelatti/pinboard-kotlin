@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentActivity
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.di.modules.ActivityEntryPoint
+import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -85,5 +86,5 @@ fun FragmentActivity.sendErrorReport(
         setOnDismissListener {
             postAction()
         }
-    }.show()
+    }.applySecureFlag().show()
 }

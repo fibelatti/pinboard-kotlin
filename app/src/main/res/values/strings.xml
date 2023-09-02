@@ -197,6 +197,8 @@
     <string name="user_preferences_appearance_system_default">Follow system</string>
     <string name="user_preferences_dynamic_colors">Use dynamic colors</string>
     <string name="user_preferences_dynamic_colors_caveat">Change the colors of the app based on your wallpaper</string>
+    <string name="user_preferences_disable_screenshots">Disable screenshots and recording</string>
+    <string name="user_preferences_disable_screenshots_caveat">Prevent app contents from being displayed on screenshots and screen recordings</string>
     <string name="user_preferences_date_format">Preferred date format</string>
     <string name="user_preferences_date_format_day_first">dd/mm/yy, hh:mm</string>
     <string name="user_preferences_date_format_month_first">mm/dd/yy, hh:mm</string>

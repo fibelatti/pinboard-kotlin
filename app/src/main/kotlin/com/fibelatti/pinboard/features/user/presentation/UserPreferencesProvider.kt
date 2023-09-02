@@ -17,6 +17,7 @@ class UserPreferencesProvider : PreviewParameterProvider<UserPreferences> {
                 periodicSync = PeriodicSync.Every24Hours,
                 appearance = Appearance.SystemDefault,
                 applyDynamicColors = true,
+                disableScreenshots = true,
                 preferredDateFormat = PreferredDateFormat.YearMonthDayWithTime,
                 preferredDetailsView = PreferredDetailsView.Edit,
                 alwaysUseSidePanel = true,

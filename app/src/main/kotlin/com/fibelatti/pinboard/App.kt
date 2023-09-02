@@ -1,9 +1,13 @@
 package com.fibelatti.pinboard
 
+import android.app.Activity
 import android.app.Application
+import android.os.Bundle
+import android.view.WindowManager
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.work.Configuration
+import com.fibelatti.core.android.SimpleActivityLifecycleCallbacks
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.features.InjectingWorkerFactory
 import com.fibelatti.pinboard.features.sync.PendingSyncManager
@@ -39,6 +43,19 @@ class App : Application(), Configuration.Provider {
             .setPrecondition { _, _ -> userRepository.applyDynamicColors }
             .build()
         DynamicColors.applyToActivitiesIfAvailable(this, dynamicColorsOptions)
+
+        registerActivityLifecycleCallbacks(
+            object : SimpleActivityLifecycleCallbacks() {
+                override fun onActivityCreated(p0: Activity, p1: Bundle?) {
+                    if (userRepository.disableScreenshots) {
+                        p0.window.setFlags(
+                            WindowManager.LayoutParams.FLAG_SECURE,
+                            WindowManager.LayoutParams.FLAG_SECURE,
+                        )
+                    }
+                }
+            },
+        )
 
         periodicSyncManager.enqueueWork()
         pendingSyncManager.enqueueWorkOnNetworkAvailable()

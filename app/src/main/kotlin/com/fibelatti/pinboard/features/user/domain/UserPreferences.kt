@@ -11,6 +11,7 @@ data class UserPreferences(
     val periodicSync: PeriodicSync,
     val appearance: Appearance,
     val applyDynamicColors: Boolean,
+    val disableScreenshots: Boolean,
     val preferredDateFormat: PreferredDateFormat,
     val preferredDetailsView: PreferredDetailsView,
     val alwaysUseSidePanel: Boolean,

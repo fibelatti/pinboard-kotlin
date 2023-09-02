@@ -34,12 +34,8 @@ class UserPreferencesFragment @Inject constructor(
         setThemedContent {
             UserPreferencesScreen(
                 mainVariant = mainVariant,
-                onDynamicColorChange = {
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        delay(300L) // Wait until the switch is done animating
-                        ActivityCompat.recreate(requireActivity())
-                    }
-                },
+                onDynamicColorChange = ::restartActivity,
+                onDisableScreenshotsChange = ::restartActivity,
             )
         }
 
@@ -55,6 +51,13 @@ class UserPreferencesFragment @Inject constructor(
         mainViewModel.navigationClicks(ACTION_ID)
             .onEach { navigateBack() }
             .launchInAndFlowWith(viewLifecycleOwner)
+    }
+
+    private fun restartActivity() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            delay(300L) // Wait until the switch is done animating
+            ActivityCompat.recreate(requireActivity())
+        }
     }
 
     override fun onDestroyView() {

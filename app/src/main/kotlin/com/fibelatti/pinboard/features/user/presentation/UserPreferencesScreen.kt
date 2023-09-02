@@ -63,6 +63,7 @@ fun UserPreferencesScreen(
     tagManagerViewModel: TagManagerViewModel = hiltViewModel(),
     mainVariant: Boolean,
     onDynamicColorChange: () -> Unit,
+    onDisableScreenshotsChange: () -> Unit,
 ) {
     BoxWithConstraints(
         modifier = Modifier
@@ -81,6 +82,7 @@ fun UserPreferencesScreen(
                     userPreferencesViewModel = userPreferencesViewModel,
                     mainVariant = mainVariant,
                     onDynamicColorChange = onDynamicColorChange,
+                    onDisableScreenshotsChange = onDisableScreenshotsChange,
                 )
 
                 BookmarkingPreferencesContent(
@@ -100,6 +102,7 @@ fun UserPreferencesScreen(
                     userPreferencesViewModel = userPreferencesViewModel,
                     mainVariant = mainVariant,
                     onDynamicColorChange = onDynamicColorChange,
+                    onDisableScreenshotsChange = onDisableScreenshotsChange,
                     modifier = Modifier.requiredWidth(childWidth),
                 )
 
@@ -119,6 +122,7 @@ private fun AppPreferencesContent(
     userPreferencesViewModel: UserPreferencesViewModel,
     mainVariant: Boolean,
     onDynamicColorChange: () -> Unit,
+    onDisableScreenshotsChange: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
@@ -143,6 +147,10 @@ private fun AppPreferencesContent(
             userPreferencesViewModel.saveApplyDynamicColors(newValue)
             onDynamicColorChange()
         },
+        onDisableScreenshotsChange = { newValue: Boolean ->
+            userPreferencesViewModel.saveDisableScreenshots(newValue)
+            onDisableScreenshotsChange()
+        },
         onDateFormatChange = userPreferencesViewModel::savePreferredDateFormat,
         onPeriodicSyncChange = userPreferencesViewModel::savePeriodicSync,
         onPreferredViewChange = userPreferencesViewModel::savePreferredDetailsView,
@@ -159,6 +167,7 @@ private fun AppPreferencesContent(
     userPreferences: UserPreferences,
     onAppearanceChange: (Appearance) -> Unit,
     onDynamicColorChange: (Boolean) -> Unit,
+    onDisableScreenshotsChange: (Boolean) -> Unit,
     onDateFormatChange: (PreferredDateFormat) -> Unit,
     onPeriodicSyncChange: (PeriodicSync) -> Unit,
     onPreferredViewChange: (PreferredDetailsView) -> Unit,
@@ -215,6 +224,14 @@ private fun AppPreferencesContent(
                 modifier = Modifier.padding(top = 16.dp),
             )
         }
+
+        SettingToggle(
+            title = stringResource(id = R.string.user_preferences_disable_screenshots),
+            description = stringResource(id = R.string.user_preferences_disable_screenshots_caveat),
+            checked = userPreferences.disableScreenshots,
+            onCheckedChange = onDisableScreenshotsChange,
+            modifier = Modifier.padding(top = 16.dp),
+        )
 
         Text(
             text = stringResource(id = R.string.user_preferences_date_format),
@@ -572,6 +589,7 @@ private fun AppPreferencesContentPreview(
             userPreferences = userPreferences,
             onAppearanceChange = {},
             onDynamicColorChange = {},
+            onDisableScreenshotsChange = {},
             onDateFormatChange = {},
             onPeriodicSyncChange = {},
             onPreferredViewChange = {},

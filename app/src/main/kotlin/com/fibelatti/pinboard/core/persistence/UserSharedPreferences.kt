@@ -24,6 +24,9 @@ const val KEY_APPEARANCE = "APPEARANCE"
 const val KEY_APPLY_DYNAMIC_COLORS = "APPLY_DYNAMIC_COLORS"
 
 @VisibleForTesting
+const val KEY_DISABLE_SCREENSHOTS = "DISABLE_SCREENSHOTS"
+
+@VisibleForTesting
 const val KEY_PREFERRED_DATE_FORMAT = "PREFERRED_DATE_FORMAT"
 
 @VisibleForTesting
@@ -79,6 +82,10 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
     var applyDynamicColors: Boolean
         get() = sharedPreferences.get(KEY_APPLY_DYNAMIC_COLORS, false)
         set(value) = sharedPreferences.put(KEY_APPLY_DYNAMIC_COLORS, value)
+
+    var disableScreenshots: Boolean
+        get() = sharedPreferences.get(KEY_DISABLE_SCREENSHOTS, false)
+        set(value) = sharedPreferences.put(KEY_DISABLE_SCREENSHOTS, value)
 
     var preferredDateFormat: String
         get() = sharedPreferences.get(KEY_PREFERRED_DATE_FORMAT, "")

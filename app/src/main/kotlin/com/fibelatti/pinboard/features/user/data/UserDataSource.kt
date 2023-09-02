@@ -65,6 +65,13 @@ class UserDataSource @Inject constructor(
             updateCurrentPreferences()
         }
 
+    override var disableScreenshots: Boolean
+        get() = userSharedPreferences.disableScreenshots
+        set(value) {
+            userSharedPreferences.disableScreenshots = value
+            updateCurrentPreferences()
+        }
+
     override var preferredDateFormat: PreferredDateFormat
         get() = when (userSharedPreferences.preferredDateFormat) {
             PreferredDateFormat.DayMonthYearWithTime.value -> PreferredDateFormat.DayMonthYearWithTime
@@ -163,6 +170,7 @@ class UserDataSource @Inject constructor(
         periodicSync = periodicSync,
         appearance = appearance,
         applyDynamicColors = applyDynamicColors,
+        disableScreenshots = disableScreenshots,
         preferredDateFormat = preferredDateFormat,
         preferredDetailsView = preferredDetailsView,
         alwaysUseSidePanel = alwaysUseSidePanel,

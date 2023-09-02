@@ -22,6 +22,8 @@ interface UserRepository {
 
     var applyDynamicColors: Boolean
 
+    var disableScreenshots: Boolean
+
     var preferredDateFormat: PreferredDateFormat
 
     var preferredDetailsView: PreferredDetailsView

@@ -14,6 +14,7 @@ import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.di.MainVariant
+import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.showBanner
@@ -103,7 +104,7 @@ class EditPostFragment @Inject constructor(
                 setMessage(R.string.alert_confirm_unsaved_changes)
                 setPositiveButton(R.string.hint_yes) { _, _ -> appStateViewModel.runAction(NavigateBack) }
                 setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
-            }.show()
+            }.applySecureFlag().show()
         } else {
             appStateViewModel.runAction(NavigateBack)
         }
@@ -244,7 +245,7 @@ class EditPostFragment @Inject constructor(
             setMessage(R.string.alert_confirm_deletion)
             setPositiveButton(R.string.hint_yes) { _, _ -> postDetailViewModel.deletePost(post) }
             setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
-        }.show()
+        }.applySecureFlag().show()
     }
 
     private fun openUrlInExternalBrowser(post: Post) {

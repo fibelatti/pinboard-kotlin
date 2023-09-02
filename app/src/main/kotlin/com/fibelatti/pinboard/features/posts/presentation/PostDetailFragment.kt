@@ -14,6 +14,7 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
+import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.showBanner
@@ -208,7 +209,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
                         MaterialAlertDialogBuilder(requireContext()).apply {
                             setMessage(R.string.posts_deleted_error)
                             setPositiveButton(R.string.hint_ok) { dialog, _ -> dialog?.dismiss() }
-                        }.show()
+                        }.applySecureFlag().show()
                     }
 
                     state.updated is Success<Boolean> && state.updated.value -> {
@@ -251,7 +252,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
             setMessage(R.string.alert_confirm_deletion)
             setPositiveButton(R.string.hint_yes) { _, _ -> postDetailViewModel.deletePost(post) }
             setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
-        }.show()
+        }.applySecureFlag().show()
     }
 
     companion object {

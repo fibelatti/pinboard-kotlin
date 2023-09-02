@@ -44,6 +44,7 @@ internal class UserDataSourceTest {
         periodicSync = PeriodicSync.Off,
         appearance = Appearance.SystemDefault,
         applyDynamicColors = false,
+        disableScreenshots = false,
         preferredDateFormat = PreferredDateFormat.DayMonthYearWithTime,
         preferredDetailsView = PreferredDetailsView.InAppBrowser(markAsReadOnOpen = false),
         alwaysUseSidePanel = false,
