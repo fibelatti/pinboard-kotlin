@@ -33,7 +33,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
@@ -293,7 +292,6 @@ private fun BookmarkBasicDetails(
         val focusManager = LocalFocusManager.current
         val (frUrl, frTitle, frDescription) = FocusRequester.createRefs()
         var focusedField by rememberSaveable { mutableStateOf(FocusedField.NONE) }
-        val imeController = LocalSoftwareKeyboardController.current
 
         LaunchedEffect(Unit) {
             when (focusedField) {
@@ -370,11 +368,6 @@ private fun BookmarkBasicDetails(
                 .focusRequester(frDescription)
                 .onFocusChanged { if (it.hasFocus) focusedField = FocusedField.DESCRIPTION },
             label = { Text(text = stringResource(id = R.string.posts_add_url_description)) },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions {
-                focusManager.clearFocus()
-                imeController?.hide()
-            },
         )
     }
 }
