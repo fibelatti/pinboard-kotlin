@@ -1,0 +1,6 @@
+- Prevent screenshots: explore this new menu option to disable screenshots and screen recordings while using the app
+- Fix the navigation bar overlaying the app UI on Android 11 and below
+
+Feedback and suggestions are always welcome, visit the project page to contribute!
+
+Thanks for using Pinkt!
