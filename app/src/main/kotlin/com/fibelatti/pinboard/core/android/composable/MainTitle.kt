@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.MainState
+import com.fibelatti.ui.foundation.topSystemBarsPaddingCompat
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -44,7 +44,7 @@ fun MainTitle(
         modifier = Modifier
             .background(color = ExtendedTheme.colors.backgroundNoOverlay)
             .fillMaxWidth()
-            .statusBarsPadding()
+            .topSystemBarsPaddingCompat()
             .padding(bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

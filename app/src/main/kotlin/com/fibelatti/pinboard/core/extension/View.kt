@@ -11,7 +11,6 @@ import android.widget.FrameLayout
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -23,6 +22,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import com.fibelatti.core.extension.getContentView
 import com.fibelatti.pinboard.R
+import com.fibelatti.ui.foundation.topSystemBarsPaddingCompat
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import com.google.android.material.bottomappbar.BottomAppBar
@@ -95,7 +95,7 @@ private fun Banner(
     Surface(
         modifier = Modifier
             .padding(all = 24.dp)
-            .statusBarsPadding(),
+            .topSystemBarsPaddingCompat(),
         shape = RoundedCornerShape(8.dp),
         color = MaterialTheme.colorScheme.inverseSurface,
         shadowElevation = 8.dp,

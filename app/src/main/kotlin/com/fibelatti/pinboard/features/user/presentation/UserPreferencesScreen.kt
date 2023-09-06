@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
@@ -52,6 +50,8 @@ import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.tags.presentation.TagManager
 import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
+import com.fibelatti.ui.foundation.imePaddingCompat
+import com.fibelatti.ui.foundation.navigationBarsPaddingCompat
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -71,8 +71,8 @@ fun UserPreferencesScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(top = 8.dp, bottom = 32.dp)
-            .navigationBarsPadding()
-            .imePadding(),
+            .navigationBarsPaddingCompat()
+            .imePaddingCompat(),
     ) {
         if (maxWidth < 600.dp) {
             Column(

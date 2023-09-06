@@ -10,7 +10,11 @@ import android.view.animation.LinearInterpolator
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
+import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import com.fibelatti.core.android.BaseIntentBuilder
 import com.fibelatti.core.android.intentExtras
@@ -107,7 +111,7 @@ class MainActivity : BaseActivity() {
 
             connect(R.id.fragment_host, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
             connect(R.id.fragment_host, ConstraintSet.END, R.id.fragment_host_side_panel, ConstraintSet.START)
-            constrainPercentWidth(R.id.fragment_host, 0.4f)
+            constrainPercentWidth(R.id.fragment_host, 0.45f)
 
             connect(R.id.fragment_host_side_panel, ConstraintSet.START, R.id.fragment_host, ConstraintSet.END)
             connect(R.id.fragment_host_side_panel, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
@@ -162,6 +166,12 @@ class MainActivity : BaseActivity() {
                 mainViewModel = mainViewModel,
                 appStateViewModel = appStateViewModel,
             )
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.fragmentHostSidePanel) { v, insets ->
+            val navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            v.updatePadding(right = navigationBars.right)
+            insets
         }
     }
 
@@ -239,7 +249,11 @@ class MainActivity : BaseActivity() {
         val constraintSet = when {
             show && mainViewModel.state.value.multiPanelEnabled -> constraintSetSidePanelDivided
             show -> constraintSetSidePanelOverlap
-            else -> constraintSetSidePanelHidden
+            else -> constraintSetSidePanelHidden.also {
+                supportFragmentManager.findFragmentById(R.id.fragment_host_side_panel)?.let { fragment ->
+                    supportFragmentManager.commit { remove(fragment) }
+                }
+            }
         }
 
         val transition = ChangeBounds()

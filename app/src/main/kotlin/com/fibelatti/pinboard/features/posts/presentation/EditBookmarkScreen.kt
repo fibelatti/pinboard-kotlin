@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -55,6 +53,8 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagManager
 import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
 import com.fibelatti.ui.foundation.StableList
+import com.fibelatti.ui.foundation.imePaddingCompat
+import com.fibelatti.ui.foundation.navigationBarsPaddingCompat
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -226,8 +226,8 @@ private fun BookmarkContent(
         modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(scrollState)
-            .navigationBarsPadding()
-            .imePadding(),
+            .navigationBarsPaddingCompat()
+            .imePaddingCompat(),
     ) {
         if (post.pendingSync != null) {
             PendingSyncIndicator(

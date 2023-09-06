@@ -8,6 +8,7 @@ import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.setViewTreeOwners
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -31,6 +32,7 @@ class ComposeBottomSheetDialog(
 
         behavior.peekHeight = 1200.dp.value.toInt()
         behavior.skipCollapsed = true
+        behavior.state = BottomSheetBehavior.STATE_EXPANDED
 
         setViewTreeOwners()
 

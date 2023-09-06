@@ -16,11 +16,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -46,7 +45,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.fibelatti.core.extension.createFragment
 import com.fibelatti.core.extension.findActivity
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.MainTitle
@@ -58,8 +56,10 @@ import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.RefreshPopular
-import com.fibelatti.pinboard.features.navigation.NavigationMenuFragment
+import com.fibelatti.pinboard.features.navigation.NavigationMenu
 import com.fibelatti.ui.foundation.StableList
+import com.fibelatti.ui.foundation.navigationBarsPaddingCompat
+import com.fibelatti.ui.foundation.pxToDp
 import com.fibelatti.ui.foundation.stableListOf
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -113,11 +113,15 @@ fun MainBottomAppBar(
                 state.multiPanelEnabled &&
                 state.multiPanelContent &&
                 state.sidePanelAppBar is MainState.SidePanelAppBarComponent.Visible,
-            modifier = if (state.bottomAppBar is MainState.BottomAppBarComponent.Visible) {
-                Modifier.padding(bottom = with(LocalDensity.current) { bottomAppBarHeight.toDp() })
-            } else {
-                Modifier.systemBarsPadding()
-            },
+            modifier = Modifier
+                .padding(
+                    bottom = if (state.bottomAppBar is MainState.BottomAppBarComponent.Visible) {
+                        bottomAppBarHeight.pxToDp()
+                    } else {
+                        0.dp
+                    },
+                )
+                .navigationBarsPaddingCompat(),
             enter = slideInHorizontally(initialOffsetX = { it }),
             exit = slideOutHorizontally(targetOffsetX = { it }),
         ) {
@@ -143,12 +147,7 @@ fun MainBottomAppBar(
             MainBottomAppBar(
                 state = state,
                 onBottomNavClick = {
-                    localContext.findActivity()?.run {
-                        createFragment<NavigationMenuFragment>().show(
-                            supportFragmentManager,
-                            NavigationMenuFragment.TAG,
-                        )
-                    }
+                    localContext.findActivity()?.let(NavigationMenu::show)
                 },
                 onMenuItemClick = { menuItem, data ->
                     mainViewModel.menuItemClicked(id = state.bottomAppBar.id, menuItem = menuItem, data = data)
@@ -228,40 +227,46 @@ private fun MainBottomAppBar(
     onFabClick: (data: Any?) -> Unit,
 ) {
     if (state.bottomAppBar is MainState.BottomAppBarComponent.Visible) {
-        BottomAppBar(
-            actions = {
-                MainBottomAppBarMenu(
-                    bottomAppBar = state.bottomAppBar,
-                    onBottomNavClick = onBottomNavClick,
-                    onMenuItemClick = onMenuItemClick,
-                )
-            },
-            modifier = Modifier.fillMaxWidth(),
-            floatingActionButton = {
-                if (state.floatingActionButton is MainState.FabComponent.Visible) {
-                    FloatingActionButton(
-                        onClick = { onFabClick(state.floatingActionButton.data) },
-                        modifier = Modifier.testTag("fab-${state.floatingActionButton.id}"),
-                    ) {
-                        AnimatedContent(
-                            targetState = state.floatingActionButton.icon,
-                            transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut() },
-                            label = "Fab_Icon",
-                        ) { icon ->
-                            Icon(
-                                painter = painterResource(icon),
-                                contentDescription = null,
-                            )
-                        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = MaterialTheme.colorScheme.primaryContainer)
+                .padding(all = 12.dp)
+                .navigationBarsPaddingCompat(),
+        ) {
+            MainBottomAppBarMenu(
+                bottomAppBar = state.bottomAppBar,
+                onBottomNavClick = onBottomNavClick,
+                onMenuItemClick = onMenuItemClick,
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            if (state.floatingActionButton is MainState.FabComponent.Visible) {
+                FloatingActionButton(
+                    onClick = { onFabClick(state.floatingActionButton.data) },
+                    modifier = Modifier.testTag("fab-${state.floatingActionButton.id}"),
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                ) {
+                    AnimatedContent(
+                        targetState = state.floatingActionButton.icon,
+                        transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut() },
+                        label = "Fab_Icon",
+                    ) { icon ->
+                        Icon(
+                            painter = painterResource(icon),
+                            contentDescription = null,
+                        )
                     }
                 }
-            },
-        )
+            }
+        }
     }
 }
 
 @Composable
-private fun MainBottomAppBarMenu(
+private fun RowScope.MainBottomAppBarMenu(
     bottomAppBar: MainState.BottomAppBarComponent.Visible,
     onBottomNavClick: () -> Unit,
     onMenuItemClick: (MainState.MenuItemComponent, data: Any?) -> Unit,
@@ -280,7 +285,8 @@ private fun MainBottomAppBarMenu(
 }
 
 @Composable
-private fun MenuItemsContent(
+@Suppress("UnusedReceiverParameter")
+private fun RowScope.MenuItemsContent(
     menuItems: StableList<MainState.MenuItemComponent>,
     data: Any?,
     onMenuItemClick: (MainState.MenuItemComponent, data: Any?) -> Unit,

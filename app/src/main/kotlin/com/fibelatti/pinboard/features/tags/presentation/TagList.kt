@@ -14,10 +14,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
@@ -63,6 +63,10 @@ import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
 import com.fibelatti.ui.components.RowToggleButtonGroup
 import com.fibelatti.ui.components.ToggleButtonGroup
 import com.fibelatti.ui.foundation.StableList
+import com.fibelatti.ui.foundation.asHorizontalPaddingDp
+import com.fibelatti.ui.foundation.imeCompat
+import com.fibelatti.ui.foundation.navigationBarsCompat
+import com.fibelatti.ui.foundation.navigationBarsPaddingCompat
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -119,6 +123,9 @@ fun TagList(
     Column(
         modifier = modifier.fillMaxSize(),
     ) {
+        val (leftPadding, rightPadding) = WindowInsets.navigationBarsCompat
+            .asHorizontalPaddingDp(addStart = 16.dp, addEnd = 16.dp)
+
         AnimatedVisibility(
             visible = isLoading,
             enter = fadeIn() + expandVertically(),
@@ -127,7 +134,7 @@ fun TagList(
             LinearProgressIndicator(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(start = leftPadding, end = rightPadding),
                 color = MaterialTheme.colorScheme.primary,
             )
         }
@@ -137,12 +144,14 @@ fun TagList(
         ) {
             val listState = rememberLazyListState()
             val showScrollToTop by remember { derivedStateOf { listState.firstVisibleItemIndex > 5 } }
-            val paddingBottom = WindowInsets.ime.asPaddingValues().calculateBottomPadding().coerceAtLeast(100.dp)
+            val paddingBottom = WindowInsets.imeCompat.asPaddingValues().calculateBottomPadding().coerceAtLeast(100.dp)
 
             PullRefreshLayout(
                 onPullToRefresh = onPullToRefresh,
                 listState = listState,
-                paddingBottom = paddingBottom,
+                contentPadding = WindowInsets(bottom = paddingBottom)
+                    .add(WindowInsets.navigationBarsCompat)
+                    .asPaddingValues(),
                 verticalArrangement = Arrangement.Top,
             ) {
                 item {
@@ -155,6 +164,7 @@ fun TagList(
                             icon = painterResource(id = R.drawable.ic_tag),
                             title = stringResource(id = R.string.tags_empty_title),
                             description = stringResource(id = R.string.tags_empty_description),
+                            scrollable = false,
                         )
                     }
                 } else {
@@ -181,7 +191,8 @@ fun TagList(
                 visible = showScrollToTop,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(bottom = paddingBottom),
+                    .padding(bottom = paddingBottom)
+                    .navigationBarsPaddingCompat(),
                 enter = fadeIn() + scaleIn(),
                 exit = fadeOut() + scaleOut(),
             ) {

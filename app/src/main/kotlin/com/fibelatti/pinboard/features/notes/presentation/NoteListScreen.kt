@@ -3,6 +3,8 @@ package com.fibelatti.pinboard.features.notes.presentation
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -48,6 +50,8 @@ import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
 import com.fibelatti.ui.components.RowToggleButtonGroup
 import com.fibelatti.ui.components.ToggleButtonGroup
 import com.fibelatti.ui.foundation.StableList
+import com.fibelatti.ui.foundation.asHorizontalPaddingDp
+import com.fibelatti.ui.foundation.navigationBarsCompat
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -168,6 +172,9 @@ private fun NoteListContent(
                 description = stringResource(id = R.string.notes_empty_description),
             )
         } else {
+            val (leftPadding, rightPadding) = WindowInsets.navigationBarsCompat
+                .asHorizontalPaddingDp(addStart = 16.dp, addEnd = 16.dp)
+
             RowToggleButtonGroup(
                 items = NoteList.Sorting.values()
                     .map { sorting ->
@@ -184,16 +191,23 @@ private fun NoteListContent(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(start = leftPadding, end = rightPadding),
                 selectedIndex = selectedSortingIndex,
                 buttonHeight = 40.dp,
                 textStyle = MaterialTheme.typography.bodySmall,
             )
 
+            val (listLeftPadding, listRightPadding) = WindowInsets.navigationBarsCompat.asHorizontalPaddingDp()
+
             PullRefreshLayout(
                 onPullToRefresh = onPullToRefresh,
                 listState = listState,
-                paddingTop = 16.dp,
+                contentPadding = PaddingValues(
+                    start = listLeftPadding,
+                    top = 16.dp,
+                    end = if (drawItemsEdgeToEdge) listRightPadding else 0.dp,
+                    bottom = 100.dp,
+                ),
             ) {
                 items(notes.value) { note ->
                     NoteListItem(

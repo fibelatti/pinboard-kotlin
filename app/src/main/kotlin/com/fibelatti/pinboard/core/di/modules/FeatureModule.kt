@@ -2,7 +2,6 @@ package com.fibelatti.pinboard.core.di.modules
 
 import androidx.fragment.app.Fragment
 import com.fibelatti.pinboard.core.di.mapkeys.FragmentKey
-import com.fibelatti.pinboard.features.navigation.NavigationMenuFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteListFragment
 import com.fibelatti.pinboard.features.posts.presentation.EditPostFragment
@@ -81,12 +80,5 @@ abstract class FeatureModule {
     @IntoMap
     @FragmentKey(UserPreferencesFragment::class)
     abstract fun userPreferencesFragment(fragment: UserPreferencesFragment): Fragment
-    // endregion
-
-    // region Menu
-    @Binds
-    @IntoMap
-    @FragmentKey(NavigationMenuFragment::class)
-    abstract fun navigationMenuFragment(fragment: NavigationMenuFragment): Fragment
     // endregion
 }

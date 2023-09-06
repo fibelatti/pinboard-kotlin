@@ -5,7 +5,6 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -133,8 +132,7 @@ private fun NavigationMenuScreen(
             .fillMaxWidth()
             .nestedScroll(rememberNestedScrollInteropConnection())
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 32.dp)
-            .navigationBarsPadding(),
+            .padding(start = 16.dp, top = 32.dp, end = 16.dp, bottom = 100.dp),
     ) {
         MenuItem(textRes = R.string.menu_navigation_all, onClick = onAllClicked)
 
