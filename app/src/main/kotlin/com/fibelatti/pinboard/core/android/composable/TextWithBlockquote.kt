@@ -36,7 +36,7 @@ fun TextWithBlockquote(
     val gap = with(LocalDensity.current) { 8.dp.toPx() }
 
     val formattedText = remember(text) {
-        HtmlCompat.fromHtml(text, HtmlCompat.FROM_HTML_MODE_LEGACY).toSpannable().apply {
+        HtmlCompat.fromHtml(text, HtmlCompat.FROM_HTML_MODE_COMPACT).toSpannable().apply {
             CustomQuoteSpan.replaceQuoteSpans(
                 spannable = this,
                 backgroundColor = rgbBlockquoteBackgroundColor,
