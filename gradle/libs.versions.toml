@@ -2,7 +2,7 @@
 activity = "1.7.2"
 agp = "8.1.1"
 composeCompiler = "1.5.3"
-composeBom = "2023.08.00"
+composeBom = "2023.09.00"
 coroutines = "1.7.3"
 hilt = "2.48"
 kotlin = "1.9.10"
