@@ -446,12 +446,13 @@ fun PendingSyncIndicator(
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_pending_sync),
+            painter = painterResource(id = R.drawable.ic_sync),
             contentDescription = null,
-            modifier = Modifier.padding(end = 4.dp),
+            modifier = Modifier.size(20.dp),
             tint = MaterialTheme.colorScheme.primary,
         )
 
@@ -471,8 +472,8 @@ private fun BookmarkFlags(
 ) {
     Row(
         modifier = modifier.padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         if (private == true) {
             Icon(
@@ -485,7 +486,7 @@ private fun BookmarkFlags(
                 text = stringResource(id = R.string.posts_item_private),
                 modifier = Modifier.padding(end = 8.dp),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
             )
         }
 
@@ -499,7 +500,7 @@ private fun BookmarkFlags(
             Text(
                 text = stringResource(id = R.string.posts_item_read_later),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
             )
         }
     }

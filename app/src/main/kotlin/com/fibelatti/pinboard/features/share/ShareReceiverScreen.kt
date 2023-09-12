@@ -1,6 +1,12 @@
 package com.fibelatti.pinboard.features.share
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -74,14 +80,20 @@ fun ShareReceiverScreen(
 @Composable
 fun ShareReceiverScreen(icon: Painter) {
     Box(modifier = Modifier.fillMaxSize()) {
-        Icon(
-            painter = icon,
-            contentDescription = stringResource(id = R.string.cd_share_receiver_image),
+        AnimatedContent(
+            targetState = icon,
             modifier = Modifier
                 .size(50.dp)
                 .align(Alignment.Center),
-            tint = MaterialTheme.colorScheme.primary,
-        )
+            transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut() },
+            label = "ShareReceiver_Icon",
+        ) {
+            Icon(
+                painter = it,
+                contentDescription = stringResource(id = R.string.cd_share_receiver_image),
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        }
         CircularProgressIndicator(
             modifier = Modifier
                 .size(120.dp)
