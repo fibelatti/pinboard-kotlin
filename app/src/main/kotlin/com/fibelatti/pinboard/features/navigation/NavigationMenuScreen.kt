@@ -132,7 +132,7 @@ private fun NavigationMenuScreen(
             .fillMaxWidth()
             .nestedScroll(rememberNestedScrollInteropConnection())
             .verticalScroll(rememberScrollState())
-            .padding(start = 16.dp, top = 32.dp, end = 16.dp, bottom = 100.dp),
+            .padding(top = 32.dp, bottom = 64.dp),
     ) {
         MenuItem(textRes = R.string.menu_navigation_all, onClick = onAllClicked)
 
@@ -157,7 +157,7 @@ private fun NavigationMenuScreen(
         MenuItem(textRes = R.string.menu_navigation_popular, onClick = onPopularClicked)
 
         Divider(
-            modifier = Modifier.padding(vertical = 16.dp),
+            modifier = Modifier.padding(all = 16.dp),
             color = MaterialTheme.colorScheme.onSurface,
         )
 
@@ -176,7 +176,7 @@ private fun NavigationMenuScreen(
         }
 
         Divider(
-            modifier = Modifier.padding(vertical = 16.dp),
+            modifier = Modifier.padding(all = 16.dp),
             color = MaterialTheme.colorScheme.onSurface,
         )
 
@@ -194,7 +194,7 @@ private fun NavigationMenuScreen(
 
         Text(
             text = stringResource(id = R.string.about_developer),
-            modifier = Modifier.padding(top = 8.dp),
+            modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontFamily = FontFamily(Font(R.font.jetbrainsmono)),
             style = MaterialTheme.typography.bodySmall,
@@ -203,11 +203,11 @@ private fun NavigationMenuScreen(
         runCatching {
             val context = LocalContext.current
 
-            @Suppress("DEPRECATION")
             val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
 
             Text(
                 text = stringResource(R.string.about_version, pInfo.versionName),
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontFamily = FontFamily(Font(R.font.jetbrainsmono)),
                 style = MaterialTheme.typography.bodySmall,
@@ -227,7 +227,7 @@ private fun MenuItem(
     TextButton(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(all = 0.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
     ) {
         if (iconRes != null) {
             Icon(
