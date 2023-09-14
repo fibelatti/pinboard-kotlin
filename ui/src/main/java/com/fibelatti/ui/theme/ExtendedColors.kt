@@ -16,7 +16,7 @@ data class ExtendedColors(
 )
 
 internal val ExtendedLightColorScheme = ExtendedColors(
-    backgroundNoOverlay = Color(0xFFFFFBFE),
+    backgroundNoOverlay = Color(0xFFFFFFFF),
     statusBar = Color(0xFFC2C2C2),
     navigationBar = Color(0xFF9E9E9E),
     icon = Color(0xFF424242),
@@ -34,76 +34,76 @@ internal val LocalExtendedColors = staticCompositionLocalOf { ExtendedLightColor
 
 // region Material Colors
 internal val LightColorScheme = lightColorScheme(
-    primary = Color(0xFF0151E1),
+    primary = Color(0xFF0051E1),
     onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFFDAE1FF),
-    onPrimaryContainer = Color(0xFF001550),
+    primaryContainer = Color(0xFFDCE1FF),
+    onPrimaryContainer = Color(0xFF00164D),
 
-    secondary = Color(0xFF114AEF),
+    secondary = Color(0xFF2157C8),
     onSecondary = Color(0xFFFFFFFF),
-    secondaryContainer = Color(0xFFDCE1FF),
-    onSecondaryContainer = Color(0xFF001158),
+    secondaryContainer = Color(0xFFDBE1FF),
+    onSecondaryContainer = Color(0xFF00184A),
 
-    tertiary = Color(0xFF006781),
+    tertiary = Color(0xFF255EA6),
     onTertiary = Color(0xFFFFFFFF),
-    tertiaryContainer = Color(0xFFB5EAFF),
-    onTertiaryContainer = Color(0xFF001F29),
+    tertiaryContainer = Color(0xFFD5E3FF),
+    onTertiaryContainer = Color(0xFF001B3C),
 
-    error = Color(0xFFB3261E),
-    errorContainer = Color(0xFFF9DEDC),
+    error = Color(0xFFBA1A1A),
+    errorContainer = Color(0xFFFFDAD6),
     onError = Color(0xFFFFFFFF),
-    onErrorContainer = Color(0xFF410E0B),
+    onErrorContainer = Color(0xFF410002),
 
-    background = Color(0xFFFFFBFE),
-    onBackground = Color(0xFF1C1B1F),
+    background = Color(0xFFFEFBFF),
+    onBackground = Color(0xFF1B1B1F),
 
-    surface = Color(0xFFFFFBFE),
-    onSurface = Color(0xFF1C1B1F),
-    surfaceVariant = Color(0xFFE7E0EC),
-    onSurfaceVariant = Color(0xFF49454F),
+    surface = Color(0xFFFEFBFF),
+    onSurface = Color(0xFF1B1B1F),
+    surfaceVariant = Color(0xFFE2E1EC),
+    onSurfaceVariant = Color(0xFF45464F),
 
-    outline = Color(0xFF79747E),
-    outlineVariant = Color(0xFF79747E),
+    outline = Color(0xFF767680),
+    outlineVariant = Color(0xFFC6C6D0),
 
-    inverseSurface = Color(0xFF313033),
-    inverseOnSurface = Color(0xFFF4EFF4),
-    inversePrimary = Color(0xFFB4C5FF),
+    inverseSurface = Color(0xFF303034),
+    inverseOnSurface = Color(0xFFF2F0F4),
+    inversePrimary = Color(0xFFB5C4FF),
 )
 
 internal val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFFB4C5FF),
-    onPrimary = Color(0xFF00277E),
-    primaryContainer = Color(0xFF003BB1),
-    onPrimaryContainer = Color(0xFFDAE1FF),
+    primary = Color(0xFFB5C4FF),
+    onPrimary = Color(0xFF00297B),
+    primaryContainer = Color(0xFF003CAC),
+    onPrimaryContainer = Color(0xFFDCE1FF),
 
-    secondary = Color(0xFFB7C4FF),
-    onSecondary = Color(0xFF00228C),
-    secondaryContainer = Color(0xFF0033C2),
-    onSecondaryContainer = Color(0xFFDCE1FF),
+    secondary = Color(0xFFB3C5FF),
+    onSecondary = Color(0xFF002A76),
+    secondaryContainer = Color(0xFF003FA5),
+    onSecondaryContainer = Color(0xFFDBE1FF),
 
-    tertiary = Color(0xFF4AD6FF),
-    onTertiary = Color(0xFF003544),
-    tertiaryContainer = Color(0xFF004D61),
-    onTertiaryContainer = Color(0xFFB5EAFF),
+    tertiary = Color(0xFFA8C8FF),
+    onTertiary = Color(0xFF003061),
+    tertiaryContainer = Color(0xFF004689),
+    onTertiaryContainer = Color(0xFFD5E3FF),
 
-    error = Color(0xFFF2B8B5),
-    errorContainer = Color(0xFF8C1D18),
-    onError = Color(0xFF601410),
-    onErrorContainer = Color(0xFFF9DEDC),
+    error = Color(0xFFFFB4AB),
+    errorContainer = Color(0xFF93000A),
+    onError = Color(0xFF690005),
+    onErrorContainer = Color(0xFFFFDAD6),
 
-    background = Color(0xFF000000),
-    onBackground = Color(0xFFE6E1E5),
+    background = Color(0xFF1B1B1F),
+    onBackground = Color(0xFFE4E2E6),
 
-    surface = Color(0xFF1C1B1F),
-    onSurface = Color(0xFFE6E1E5),
-    surfaceVariant = Color(0xFF49454F),
-    onSurfaceVariant = Color(0xFFCAC4D0),
+    surface = Color(0xFF1B1B1F),
+    onSurface = Color(0xFFE4E2E6),
+    surfaceVariant = Color(0xFF45464F),
+    onSurfaceVariant = Color(0xFFC6C6D0),
 
-    outline = Color(0xFF938F99),
-    outlineVariant = Color(0xFF938F99),
+    outline = Color(0xFF8F909A),
+    outlineVariant = Color(0xFF45464F),
 
-    inverseSurface = Color(0xFFE6E1E5),
-    inverseOnSurface = Color(0xFF1C1B1F),
-    inversePrimary = Color(0xFF0151E1),
+    inverseSurface = Color(0xFFE4E2E6),
+    inverseOnSurface = Color(0xFF1B1B1F),
+    inversePrimary = Color(0xFF0051E1),
 )
 // endregion Material Colors

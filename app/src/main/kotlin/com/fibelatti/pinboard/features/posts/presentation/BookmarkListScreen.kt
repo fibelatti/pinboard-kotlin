@@ -368,8 +368,7 @@ private fun BookmarkItem(
                 },
             ),
         shape = RoundedCornerShape(topEnd = edgeToEdgeDp, bottomEnd = edgeToEdgeDp),
-        color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 2.dp,
+        tonalElevation = 2.dp,
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -431,6 +430,7 @@ private fun BookmarkItem(
                 MultilineChipGroup(
                     items = tags,
                     onItemClick = { item -> onTagClicked(post.tags.first { tag -> tag.name == item.text }) },
+                    itemTonalElevation = 16.dp,
                 )
             }
         }

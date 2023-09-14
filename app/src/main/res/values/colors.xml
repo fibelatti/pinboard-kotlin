@@ -5,38 +5,7 @@
     <color name="color_status_bar">#C2C2C2</color>
     <color name="color_navigation_bar">#9E9E9E</color>
 
-    <color name="color_primary">#0151E1</color>
-    <color name="color_onPrimary">#FFFFFF</color>
-    <color name="color_primaryContainer">#DAE1FF</color>
-    <color name="color_onPrimaryContainer">#001550</color>
-
-    <color name="color_secondary">#114AEF</color>
-    <color name="color_onSecondary">#FFFFFF</color>
-    <color name="color_secondaryContainer">#DCE1FF</color>
-    <color name="color_onSecondaryContainer">#001158</color>
-
-    <color name="color_tertiary">#006781</color>
-    <color name="color_onTertiary">#FFFFFF</color>
-    <color name="color_tertiaryContainer">#B5EAFF</color>
-    <color name="color_onTertiaryContainer">#001F29</color>
-
-    <color name="color_error">#B3261E</color>
-    <color name="color_errorContainer">#F9DEDC</color>
-    <color name="color_onError">#FFFFFF</color>
-    <color name="color_onErrorContainer">#410E0B</color>
-
-    <color name="color_background">#FFFBFE</color>
-    <color name="color_onBackground">#1C1B1F</color>
-    <color name="color_surface">#FFFBFE</color>
-    <color name="color_onSurface">#1C1B1F</color>
-
-    <color name="color_surfaceVariant">#E7E0EC</color>
-    <color name="color_onSurfaceVariant">#49454F</color>
-    <color name="color_outline">#79747E</color>
-
-    <color name="color_inverseSurface">#313033</color>
-    <color name="color_inverseOnSurface">#F4EFF4</color>
-    <color name="color_primaryInverse">#B4C5FF</color>
+    <color name="color_background">#FFFFFF</color>
 
     <color name="color_icon">#424242</color>
 </resources>

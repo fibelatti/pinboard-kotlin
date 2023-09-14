@@ -25,6 +25,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -227,37 +228,41 @@ private fun MainBottomAppBar(
     onFabClick: (data: Any?) -> Unit,
 ) {
     if (state.bottomAppBar is MainState.BottomAppBarComponent.Visible) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = MaterialTheme.colorScheme.primaryContainer)
-                .padding(all = 12.dp)
-                .navigationBarsPaddingCompat(),
+        Surface(
+            tonalElevation = 8.dp,
+            color = MaterialTheme.colorScheme.surfaceVariant,
         ) {
-            MainBottomAppBarMenu(
-                bottomAppBar = state.bottomAppBar,
-                onBottomNavClick = onBottomNavClick,
-                onMenuItemClick = onMenuItemClick,
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = 16.dp)
+                    .navigationBarsPaddingCompat(),
+            ) {
+                MainBottomAppBarMenu(
+                    bottomAppBar = state.bottomAppBar,
+                    onBottomNavClick = onBottomNavClick,
+                    onMenuItemClick = onMenuItemClick,
+                )
 
-            Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.weight(1f))
 
-            if (state.floatingActionButton is MainState.FabComponent.Visible) {
-                FloatingActionButton(
-                    onClick = { onFabClick(state.floatingActionButton.data) },
-                    modifier = Modifier.testTag("fab-${state.floatingActionButton.id}"),
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                ) {
-                    AnimatedContent(
-                        targetState = state.floatingActionButton.icon,
-                        transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut() },
-                        label = "Fab_Icon",
-                    ) { icon ->
-                        Icon(
-                            painter = painterResource(icon),
-                            contentDescription = null,
-                        )
+                if (state.floatingActionButton is MainState.FabComponent.Visible) {
+                    FloatingActionButton(
+                        onClick = { onFabClick(state.floatingActionButton.data) },
+                        modifier = Modifier.testTag("fab-${state.floatingActionButton.id}"),
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                    ) {
+                        AnimatedContent(
+                            targetState = state.floatingActionButton.icon,
+                            transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut() },
+                            label = "Fab_Icon",
+                        ) { icon ->
+                            Icon(
+                                painter = painterResource(icon),
+                                contentDescription = null,
+                            )
+                        }
                     }
                 }
             }
@@ -273,7 +278,11 @@ private fun RowScope.MainBottomAppBarMenu(
 ) {
     if (bottomAppBar.navigationIcon != null) {
         IconButton(onClick = onBottomNavClick) {
-            Icon(painter = painterResource(id = bottomAppBar.navigationIcon), contentDescription = null)
+            Icon(
+                painter = painterResource(id = bottomAppBar.navigationIcon),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 
@@ -298,6 +307,7 @@ private fun RowScope.MenuItemsContent(
             ) {
                 Text(
                     text = stringResource(id = menuItem.name),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                 )
             }
@@ -308,6 +318,7 @@ private fun RowScope.MenuItemsContent(
                 Icon(
                     painter = painterResource(id = menuItem.icon),
                     contentDescription = stringResource(id = menuItem.name),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
