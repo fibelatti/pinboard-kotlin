@@ -44,6 +44,21 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".features.share.QuickShareReceiverActivity"
+            android:exported="true"
+            android:label="@string/share_to_pinkt_no_edit"
+            android:noHistory="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"

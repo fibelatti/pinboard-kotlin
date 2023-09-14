@@ -488,7 +488,6 @@ private fun BookmarkingPreferencesContent(
                 when (option) {
                     is EditAfterSharing.BeforeSaving -> R.string.user_preferences_edit_after_sharing_before_saving
                     is EditAfterSharing.AfterSaving -> R.string.user_preferences_edit_after_sharing_after_saving
-                    is EditAfterSharing.SkipEdit -> R.string.user_preferences_edit_after_sharing_skip
                 }
             },
             title = R.string.user_preferences_edit_after_sharing_title,
@@ -496,7 +495,6 @@ private fun BookmarkingPreferencesContent(
                 listOf(
                     EditAfterSharing.BeforeSaving,
                     EditAfterSharing.AfterSaving,
-                    EditAfterSharing.SkipEdit,
                 )
             },
             onOptionSelected = onEditAfterSharingChange,

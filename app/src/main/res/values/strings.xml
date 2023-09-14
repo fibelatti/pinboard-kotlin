@@ -226,8 +226,7 @@
     <string name="user_preferences_edit_after_sharing_title">Open editor when sharing</string>
     <string name="user_preferences_edit_after_sharing_before_saving">Before saving</string>
     <string name="user_preferences_edit_after_sharing_after_saving">After saving</string>
-    <string name="user_preferences_edit_after_sharing_skip">Skip editing</string>
-    <string name="user_preferences_edit_after_sharing_description">Controls when the edit screen should be displayed when saving a bookmark to Pinboard. Applies when sharing a URL to Pinkt or saving from the list of popular bookmarks</string>
+    <string name="user_preferences_edit_after_sharing_description">Controls when the bookmark editor should be displayed after choosing the \"Save to pinboard\" share action. To skip the editor, choose \"Quick share to pinboard\" when sharing instead</string>
 
     <!-- In-app Update -->
     <string name="in_app_update_ready">An app update is ready to install</string>
@@ -241,6 +240,7 @@
 
     <!-- Share -->
     <string name="share_to_pinkt">Save to pinboard</string>
+    <string name="share_to_pinkt_no_edit">Quick share to pinboard</string>
     <string name="share_title">Sharing Pinkt</string>
     <string name="share_text">Check out Pinkt for Pinboard. Download for free at %s</string>
 

@@ -4,5 +4,4 @@ sealed class EditAfterSharing(val value: String) {
 
     data object BeforeSaving : EditAfterSharing("BEFORE_SAVING")
     data object AfterSaving : EditAfterSharing("AFTER_SAVING")
-    data object SkipEdit : EditAfterSharing("SKIP_EDIT")
 }

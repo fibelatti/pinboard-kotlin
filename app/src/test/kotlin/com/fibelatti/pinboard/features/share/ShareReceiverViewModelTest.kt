@@ -101,22 +101,20 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `GIVEN getEditAfterSharing is SkipEdit WHEN an existing post is found THEN save should receive a value`() =
-        runTest {
-            // GIVEN
-            coEvery { mockPostsRepository.getPost(mockUrlValid) } returns Success(post)
-            every { mockUserRepository.editAfterSharing } returns EditAfterSharing.SkipEdit
+    fun `GIVEN skipEdit is true WHEN an existing post is found THEN save should receive a value`() = runTest {
+        // GIVEN
+        coEvery { mockPostsRepository.getPost(mockUrlValid) } returns Success(post)
 
-            // WHEN
-            shareReceiverViewModel.saveUrl(url = mockUrlValid, title = mockUrlTitle)
+        // WHEN
+        shareReceiverViewModel.saveUrl(url = mockUrlValid, title = mockUrlTitle, skipEdit = true)
 
-            // THEN
-            assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(
-                ScreenState.Loaded(
-                    ShareReceiverViewModel.SharingResult.Saved(message = R.string.posts_existing_feedback),
-                ),
-            )
-        }
+        // THEN
+        assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(
+            ScreenState.Loaded(
+                ShareReceiverViewModel.SharingResult.Saved(message = R.string.posts_existing_feedback),
+            ),
+        )
+    }
 
     @Test
     fun `GIVEN getEditAfterSharing is BeforeSaving WHEN an existing post is found THEN save should receive a value`() =
@@ -233,7 +231,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `GIVEN getEditAfterSharing is SkipEdit WHEN saveUrl succeeds THEN saved should receive a value`() = runTest {
+    fun `GIVEN skipEdit is true WHEN saveUrl succeeds THEN saved should receive a value`() = runTest {
         // GIVEN
         val defaultPrivate = randomBoolean()
         val defaultReadLater = randomBoolean()
@@ -242,7 +240,6 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         every { mockUserRepository.defaultPrivate } returns defaultPrivate
         every { mockUserRepository.defaultReadLater } returns defaultReadLater
         every { mockUserRepository.defaultTags } returns defaultTags
-        every { mockUserRepository.editAfterSharing } returns EditAfterSharing.SkipEdit
 
         coEvery {
             mockAddPost(
@@ -258,7 +255,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         } returns Success(createPost())
 
         // WHEN
-        shareReceiverViewModel.saveUrl(url = mockUrlValid, title = mockUrlTitle)
+        shareReceiverViewModel.saveUrl(url = mockUrlValid, title = mockUrlTitle, skipEdit = true)
 
         // THEN
         verify {

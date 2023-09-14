@@ -209,11 +209,7 @@ class PostActionHandler @Inject constructor(
                 ),
             )
 
-            if (userRepository.editAfterSharing !is EditAfterSharing.SkipEdit) {
-                EditPostContent(post = action.post, previousContent = updatedCurrentContent)
-            } else {
-                updatedCurrentContent
-            }
+            EditPostContent(post = action.post, previousContent = updatedCurrentContent)
         }
 
         else -> currentContent

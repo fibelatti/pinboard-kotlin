@@ -42,7 +42,7 @@ class ShareReceiverViewModel @Inject constructor(
     val screenState: StateFlow<ScreenState<SharingResult>> get() = _screenState.asStateFlow()
     private val _screenState = MutableStateFlow<ScreenState<SharingResult>>(ScreenState.Loading.FromEmpty)
 
-    fun saveUrl(url: String, title: String?) {
+    fun saveUrl(url: String, title: String?, skipEdit: Boolean = false) {
         launch {
             extractUrl(url).mapCatching { (extractedUrl, highlightedText) ->
                 val urlPreview = async {
@@ -59,23 +59,22 @@ class ShareReceiverViewModel @Inject constructor(
                 urlPreview.await().getOrThrow() to existingPost.await().getOrNull()
             }.onSuccess { (urlPreview, existingPost) ->
                 when {
-                    existingPost != null -> handleExistingPost(existingPost)
-                    userRepository.editAfterSharing is EditAfterSharing.BeforeSaving -> {
-                        editBookmark(urlPreview = urlPreview)
+                    existingPost != null && skipEdit -> {
+                        _screenState.emitLoaded(SharingResult.Saved(message = R.string.posts_existing_feedback))
                     }
 
-                    else -> addBookmark(urlPreview = urlPreview)
+                    existingPost != null -> {
+                        _screenState.emitLoaded(SharingResult.Edit(message = R.string.posts_existing_feedback))
+                        appStateRepository.runAction(EditPostFromShare(existingPost))
+                    }
+
+                    skipEdit || userRepository.editAfterSharing is EditAfterSharing.AfterSaving -> {
+                        addBookmark(urlPreview = urlPreview, skipEdit = skipEdit)
+                    }
+
+                    else -> editBookmark(urlPreview = urlPreview)
                 }
             }.onFailure(_screenState::emitError)
-        }
-    }
-
-    private suspend fun handleExistingPost(post: Post) {
-        if (userRepository.editAfterSharing is EditAfterSharing.SkipEdit) {
-            _screenState.emitLoaded(SharingResult.Saved(message = R.string.posts_existing_feedback))
-        } else {
-            _screenState.emitLoaded(SharingResult.Edit(message = R.string.posts_existing_feedback))
-            appStateRepository.runAction(EditPostFromShare(post))
         }
     }
 
@@ -94,7 +93,7 @@ class ShareReceiverViewModel @Inject constructor(
         appStateRepository.runAction(EditPostFromShare(newPost))
     }
 
-    private suspend fun addBookmark(urlPreview: UrlPreview) {
+    private suspend fun addBookmark(urlPreview: UrlPreview, skipEdit: Boolean) {
         val (finalUrl: String, title: String, description: String?) = urlPreview
 
         addPost(
@@ -107,11 +106,11 @@ class ShareReceiverViewModel @Inject constructor(
                 tags = userRepository.defaultTags,
             ),
         ).onSuccess {
-            if (userRepository.editAfterSharing is EditAfterSharing.AfterSaving) {
+            if (skipEdit) {
+                _screenState.emitLoaded(SharingResult.Saved())
+            } else {
                 _screenState.emitLoaded(SharingResult.Edit(message = R.string.posts_saved_feedback))
                 appStateRepository.runAction(EditPostFromShare(it))
-            } else {
-                _screenState.emitLoaded(SharingResult.Saved())
             }
         }.onFailure(_screenState::emitError)
     }

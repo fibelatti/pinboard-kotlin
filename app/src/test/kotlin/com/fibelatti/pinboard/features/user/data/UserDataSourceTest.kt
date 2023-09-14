@@ -550,15 +550,6 @@ internal class UserDataSourceTest {
             }
 
             @Test
-            fun `GIVEN set EditAfterSharing is SkipEdit value WHEN getEditAfterSharing is called THEN SkipEdit is returned`() {
-                // GIVEN
-                every { mockUserSharedPreferences.editAfterSharing } returns EditAfterSharing.SkipEdit.value
-
-                // THEN
-                assertThat(userDataSource.editAfterSharing).isEqualTo(EditAfterSharing.SkipEdit)
-            }
-
-            @Test
             fun `GIVEN not EditAfterSharing is set WHEN getEditAfterSharing is called THEN AfterSaving is returned`() {
                 // GIVEN
                 every { mockUserSharedPreferences.editAfterSharing } returns "anything really"

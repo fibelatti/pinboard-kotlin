@@ -147,7 +147,6 @@ class UserDataSource @Inject constructor(
         get() = when (userSharedPreferences.editAfterSharing) {
             EditAfterSharing.BeforeSaving.value -> EditAfterSharing.BeforeSaving
             EditAfterSharing.AfterSaving.value -> EditAfterSharing.AfterSaving
-            EditAfterSharing.SkipEdit.value -> EditAfterSharing.SkipEdit
             else -> EditAfterSharing.AfterSaving
         }
         set(value) {

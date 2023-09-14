@@ -10,7 +10,9 @@ import com.fibelatti.pinboard.features.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ShareReceiverActivity : BaseActivity() {
+open class ShareReceiverActivity : BaseActivity() {
+
+    open val skipEdit: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +40,7 @@ class ShareReceiverActivity : BaseActivity() {
         shareReceiverViewModel.saveUrl(
             url = url,
             title = intentReader.subject,
+            skipEdit = skipEdit,
         )
     }
 }
