@@ -10,6 +10,7 @@ import com.fibelatti.pinboard.core.extension.popTo
 import com.fibelatti.pinboard.core.extension.slideFromTheRight
 import com.fibelatti.pinboard.core.extension.slideUp
 import com.fibelatti.pinboard.features.MainActivity.Companion.fromBuilder
+import com.fibelatti.pinboard.features.filters.presentation.SavedFiltersFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteListFragment
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -94,6 +95,16 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
                 containerId = R.id.fragment_host,
                 fragment = activity.createFragment<TagsFragment>(),
                 tag = TagsFragment.TAG,
+            )
+        }
+    }
+
+    fun showSavedFilters() {
+        if (activity.supportFragmentManager.findFragmentByTag(SavedFiltersFragment.TAG) == null) {
+            activity.slideUp(
+                containerId = R.id.fragment_host,
+                fragment = activity.createFragment<SavedFiltersFragment>(),
+                tag = SavedFiltersFragment.TAG,
             )
         }
     }

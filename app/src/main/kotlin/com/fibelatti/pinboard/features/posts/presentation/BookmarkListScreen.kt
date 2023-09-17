@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -54,6 +55,7 @@ import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.android.composable.TextWithBlockquote
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.rememberScrollDirection
+import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ClearSearch
@@ -70,6 +72,7 @@ import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
 import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
+import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -115,6 +118,9 @@ fun BookmarkListScreen(
             currentState.shouldLoad is ShouldForceLoad ||
             currentState.shouldLoad is ShouldLoadNextPage
 
+        val localView = LocalView.current
+        val savedFeedback = stringResource(id = R.string.saved_filters_saved_feedback)
+
         LaunchedEffect(shouldLoadContent, currentState) {
             if (shouldLoadContent) postListViewModel.loadContent(currentState)
         }
@@ -127,6 +133,15 @@ fun BookmarkListScreen(
             searchParameters = currentState.searchParameters,
             onActiveSearchClicked = { appStateViewModel.runAction(ViewSearch) },
             onClearClicked = { appStateViewModel.runAction(ClearSearch) },
+            onSaveClicked = {
+                postListViewModel.saveFilter(
+                    SavedFilter(
+                        searchTerm = currentState.searchParameters.term,
+                        tags = currentState.searchParameters.tags,
+                    ),
+                )
+                localView.showBanner(savedFeedback)
+            },
             onShareClicked = onShareClicked,
             onPullToRefresh = { appStateViewModel.runAction(Refresh()) },
             onPostClicked = { post -> appStateViewModel.runAction(ViewPost(post)) },
@@ -146,6 +161,7 @@ fun BookmarkListScreen(
     searchParameters: SearchParameters,
     onActiveSearchClicked: () -> Unit,
     onClearClicked: () -> Unit,
+    onSaveClicked: () -> Unit,
     onShareClicked: (SearchParameters) -> Unit,
     onPullToRefresh: () -> Unit = {},
     onPostClicked: (Post) -> Unit,
@@ -163,6 +179,7 @@ fun BookmarkListScreen(
             ActiveSearch(
                 onViewClicked = onActiveSearchClicked,
                 onClearClicked = onClearClicked,
+                onSaveClicked = onSaveClicked,
                 onShareClicked = { onShareClicked(searchParameters) },
                 modifier = Modifier
                     .padding(
@@ -255,6 +272,7 @@ fun BookmarkListScreen(
 private fun ActiveSearch(
     onViewClicked: () -> Unit,
     onClearClicked: () -> Unit,
+    onSaveClicked: () -> Unit,
     onShareClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -287,19 +305,29 @@ private fun ActiveSearch(
                 .heightIn(min = minHeight)
                 .wrapContentWidth(),
             shape = corner,
-            contentPadding = PaddingValues(horizontal = 16.dp),
+            contentPadding = PaddingValues(horizontal = 8.dp),
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_close),
+                painter = painterResource(id = R.drawable.ic_clear_filter),
                 contentDescription = null,
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(20.dp),
             )
+        }
 
-            Spacer(modifier = Modifier.size(4.dp))
+        Spacer(modifier = Modifier.size(8.dp))
 
-            Text(
-                text = stringResource(id = R.string.search_clear),
-                style = MaterialTheme.typography.bodyMedium,
+        FilledTonalButton(
+            onClick = onSaveClicked,
+            modifier = Modifier
+                .heightIn(min = minHeight)
+                .wrapContentWidth(),
+            shape = corner,
+            contentPadding = PaddingValues(horizontal = 8.dp),
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_save),
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
             )
         }
 
@@ -311,19 +339,12 @@ private fun ActiveSearch(
                 .heightIn(min = minHeight)
                 .wrapContentWidth(),
             shape = corner,
-            contentPadding = PaddingValues(horizontal = 16.dp),
+            contentPadding = PaddingValues(horizontal = 8.dp),
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_share),
                 contentDescription = null,
-                modifier = Modifier.size(16.dp),
-            )
-
-            Spacer(modifier = Modifier.size(4.dp))
-
-            Text(
-                text = stringResource(id = R.string.search_share),
-                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.size(20.dp),
             )
         }
     }
@@ -506,6 +527,7 @@ private fun BookmarkListScreenPreview(
             searchParameters = SearchParameters(term = "bookmark"),
             onActiveSearchClicked = {},
             onClearClicked = {},
+            onSaveClicked = {},
             onShareClicked = {},
             onPullToRefresh = {},
             onPostClicked = {},
@@ -524,6 +546,7 @@ private fun ActiveSearchPreview() {
             ActiveSearch(
                 onViewClicked = {},
                 onClearClicked = {},
+                onSaveClicked = {},
                 onShareClicked = {},
             )
         }

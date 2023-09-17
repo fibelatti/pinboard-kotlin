@@ -14,6 +14,7 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
             is RemoveSearchTag -> removeSearchTag(action, currentContent)
             is Search -> search(currentContent)
             is ClearSearch -> clearSearch(currentContent)
+            is ViewSavedFilter -> viewSavedFilter(action, currentContent)
         }
     }
 
@@ -99,5 +100,19 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
             }.reduce<SearchContent> { searchContent ->
                 body(searchContent.previousContent)
             }
+    }
+
+    private fun viewSavedFilter(action: ViewSavedFilter, currentContent: Content): Content {
+        return currentContent.reduce<SavedFiltersContent> { savedFiltersContent ->
+            savedFiltersContent.previousContent.copy(
+                category = All,
+                sortType = NewestFirst,
+                searchParameters = SearchParameters(
+                    term = action.savedFilter.searchTerm,
+                    tags = action.savedFilter.tags,
+                ),
+                shouldLoad = ShouldLoadFirstPage,
+            )
+        }
     }
 }

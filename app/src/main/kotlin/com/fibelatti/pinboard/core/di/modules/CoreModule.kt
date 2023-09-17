@@ -5,6 +5,9 @@ import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.core.persistence.database.AppDatabase
 import com.fibelatti.pinboard.features.appstate.AppStateDataSource
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.filters.data.SavedFiltersDao
+import com.fibelatti.pinboard.features.filters.data.SavedFiltersDataSource
+import com.fibelatti.pinboard.features.filters.domain.SavedFiltersRepository
 import com.fibelatti.pinboard.features.notes.data.NotesApi
 import com.fibelatti.pinboard.features.notes.data.NotesDataSource
 import com.fibelatti.pinboard.features.notes.domain.NotesRepository
@@ -57,6 +60,9 @@ abstract class CoreModule {
 
         @Provides
         fun notesApi(retrofit: Retrofit): NotesApi = retrofit.create()
+
+        @Provides
+        fun savedFiltersDao(database: AppDatabase): SavedFiltersDao = database.savedFiltersDao()
     }
 
     @Binds
@@ -73,4 +79,7 @@ abstract class CoreModule {
 
     @Binds
     abstract fun notesRepository(impl: NotesDataSource): NotesRepository
+
+    @Binds
+    abstract fun savedFiltersRepository(impl: SavedFiltersDataSource): SavedFiltersRepository
 }

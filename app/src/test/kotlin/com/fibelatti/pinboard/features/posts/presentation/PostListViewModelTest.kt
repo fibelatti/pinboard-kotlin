@@ -22,6 +22,8 @@ import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.appstate.ViewCategory
+import com.fibelatti.pinboard.features.filters.domain.SavedFiltersRepository
+import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetAllPosts
@@ -30,6 +32,7 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
 import com.fibelatti.pinboard.isEmpty
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
+import io.mockk.coJustRun
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -49,6 +52,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
     private val mockGetAllPosts = mockk<GetAllPosts>()
     private val mockGetRecentPosts = mockk<GetRecentPosts>()
     private val mockAppStateRepository = mockk<AppStateRepository>(relaxed = true)
+    private val savedFiltersRepository = mockk<SavedFiltersRepository>()
 
     private val mockSortType = mockk<SortType>()
     private val mockSearchTerm = "term"
@@ -59,9 +63,10 @@ internal class PostListViewModelTest : BaseViewModelTest() {
 
     private val postListViewModel = spyk(
         PostListViewModel(
-            mockGetAllPosts,
-            mockGetRecentPosts,
-            mockAppStateRepository,
+            getAllPosts = mockGetAllPosts,
+            getRecentPosts = mockGetRecentPosts,
+            appStateRepository = mockAppStateRepository,
+            savedFiltersRepository = savedFiltersRepository,
         ),
     )
 
@@ -397,41 +402,55 @@ internal class PostListViewModelTest : BaseViewModelTest() {
     inner class LaunchGetAllTests {
 
         @Test
-        fun `GIVEN getAllPosts will fail WHEN launchGetAll is called THEN repository won't run any actions`() = runTest {
-            every { mockGetAllPosts(GetPostParams()) } returns flowOf(Failure(mockException))
+        fun `GIVEN getAllPosts will fail WHEN launchGetAll is called THEN repository won't run any actions`() =
+            runTest {
+                every { mockGetAllPosts(GetPostParams()) } returns flowOf(Failure(mockException))
 
-            postListViewModel.launchGetAll(GetPostParams())
+                postListViewModel.launchGetAll(GetPostParams())
 
-            coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
-            assertThat(postListViewModel.error.first()).isEqualTo(mockException)
-        }
-
-        @Test
-        fun `GIVEN getAllPosts will succeed and offset is 0 WHEN launchGetAll is called THEN repository will run SetPosts`() = runTest {
-            // GIVEN
-            val params = GetPostParams(offset = 0)
-            every { mockGetAllPosts(params) } returns flowOf(Success(mockResponse))
-
-            // WHEN
-            postListViewModel.launchGetAll(params)
-
-            // THEN
-            coVerify { mockAppStateRepository.runAction(SetPosts(mockResponse)) }
-            assertThat(postListViewModel.error.isEmpty()).isTrue()
-        }
+                coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
+                assertThat(postListViewModel.error.first()).isEqualTo(mockException)
+            }
 
         @Test
-        fun `GIVEN getAllPosts will succeed and offset is not 0 WHEN launchGetAll is called THEN repository will run SetNextPostPage`() = runTest {
-            // GIVEN
-            val params = GetPostParams(offset = 1)
-            every { mockGetAllPosts(params) } returns flowOf(Success(mockResponse))
+        fun `GIVEN getAllPosts will succeed and offset is 0 WHEN launchGetAll is called THEN repository will run SetPosts`() =
+            runTest {
+                // GIVEN
+                val params = GetPostParams(offset = 0)
+                every { mockGetAllPosts(params) } returns flowOf(Success(mockResponse))
 
-            // WHEN
-            postListViewModel.launchGetAll(params)
+                // WHEN
+                postListViewModel.launchGetAll(params)
 
-            // THEN
-            coVerify { mockAppStateRepository.runAction(SetNextPostPage(mockResponse)) }
-            assertThat(postListViewModel.error.isEmpty()).isTrue()
-        }
+                // THEN
+                coVerify { mockAppStateRepository.runAction(SetPosts(mockResponse)) }
+                assertThat(postListViewModel.error.isEmpty()).isTrue()
+            }
+
+        @Test
+        fun `GIVEN getAllPosts will succeed and offset is not 0 WHEN launchGetAll is called THEN repository will run SetNextPostPage`() =
+            runTest {
+                // GIVEN
+                val params = GetPostParams(offset = 1)
+                every { mockGetAllPosts(params) } returns flowOf(Success(mockResponse))
+
+                // WHEN
+                postListViewModel.launchGetAll(params)
+
+                // THEN
+                coVerify { mockAppStateRepository.runAction(SetNextPostPage(mockResponse)) }
+                assertThat(postListViewModel.error.isEmpty()).isTrue()
+            }
+    }
+
+    @Test
+    fun `when saveFilter is called then it calls the repository`() = runTest {
+        val savedFilter = mockk<SavedFilter>()
+
+        coJustRun { savedFiltersRepository.saveFilter(savedFilter) }
+
+        postListViewModel.saveFilter(savedFilter)
+
+        coVerify { savedFiltersRepository.saveFilter(savedFilter) }
     }
 }

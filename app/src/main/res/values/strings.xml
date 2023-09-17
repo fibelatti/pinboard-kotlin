@@ -27,6 +27,7 @@
     <string name="menu_navigation_unread">Read Later</string>
     <string name="menu_navigation_untagged">Untagged</string>
     <string name="menu_navigation_tags">Tags</string>
+    <string name="menu_navigation_saved_filters">Saved Filters</string>
     <string name="menu_navigation_notes">Notes</string>
     <string name="menu_navigation_popular">Popular</string>
 
@@ -40,6 +41,7 @@
     <string name="menu_link_open_in_browser">Open in browser</string>
 
     <string name="menu_search_clear">Clear filter</string>
+    <string name="menu_search_save">Save filter</string>
 
     <string name="menu_side_panel_dismiss">Dismiss</string>
 
@@ -147,6 +149,15 @@
     <string name="tags_sorting_filter">Search</string>
     <string name="tag_filter_hint">Tag name</string>
 
+    <!-- Saved Filters -->
+    <string name="saved_filters_title">Saved Filters</string>
+    <string name="saved_filters_empty_title">No saved filters</string>
+    <string name="saved_filters_empty_description">The filters you save when searching bookmarks will appear here</string>
+    <string name="saved_filters_saved_feedback">Filter saved</string>
+    <string name="saved_filters_deleted_feedback">Filter deleted</string>
+    <string name="saved_filters_item_keywords">Keywords</string>
+    <string name="saved_filters_item_tags">Tags</string>
+
     <!-- Notes -->
     <string name="notes_title">Notes</string>
     <plurals name="notes_quantity">
@@ -171,6 +182,7 @@
     <string name="quick_actions_remove_read_later">Remove from Read Later</string>
     <string name="quick_actions_edit">Edit bookmark</string>
     <string name="quick_actions_delete">Delete bookmark</string>
+    <string name="quick_actions_delete_filter">Delete filter</string>
     <string name="quick_actions_save">Save to mine</string>
     <string name="quick_actions_copy_url">Copy URL</string>
     <string name="quick_actions_share">Share bookmark</string>

@@ -27,6 +27,7 @@ class NavigationActionHandler @Inject constructor(
             is ViewSearch -> viewSearch(currentContent)
             is AddPost -> viewAddPost(currentContent)
             is ViewTags -> viewTags(currentContent)
+            is ViewSavedFilters -> viewSavedFilters(currentContent)
             is ViewNotes -> viewNotes(currentContent)
             is ViewNote -> viewNote(action, currentContent)
             is ViewPopular -> viewPopular(currentContent)
@@ -164,6 +165,18 @@ class NavigationActionHandler @Inject constructor(
                 shouldLoad = connectivityInfoProvider.isConnected(),
                 previousContent = postListContent,
                 isConnected = connectivityInfoProvider.isConnected(),
+            )
+        }
+
+        return currentContent
+            .reduce(body)
+            .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
+    }
+
+    private fun viewSavedFilters(currentContent: Content): Content {
+        val body = { postListContent: PostListContent ->
+            SavedFiltersContent(
+                previousContent = postListContent,
             )
         }
 

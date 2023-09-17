@@ -48,6 +48,7 @@ import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostListContent
+import com.fibelatti.pinboard.features.appstate.SavedFiltersContent
 import com.fibelatti.pinboard.features.appstate.SearchContent
 import com.fibelatti.pinboard.features.appstate.SidePanelContent
 import com.fibelatti.pinboard.features.appstate.TagListContent
@@ -229,6 +230,7 @@ class MainActivity : BaseActivity() {
             is AddPostContent -> featureFragments.showAddPost()
             is EditPostContent -> featureFragments.showEditPost()
             is TagListContent -> featureFragments.showTags()
+            is SavedFiltersContent -> featureFragments.showSavedFilters()
             is NoteListContent -> featureFragments.showNotes()
             is NoteDetailContent -> featureFragments.showNoteDetails()
             is PopularPostsContent -> featureFragments.showPopular()

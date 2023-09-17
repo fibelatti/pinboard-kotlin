@@ -5,6 +5,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockTag2
 import com.fibelatti.pinboard.MockDataProvider.mockTag3
 import com.fibelatti.pinboard.MockDataProvider.mockTag4
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
+import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.google.common.truth.Truth.assertThat
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -461,6 +462,56 @@ internal class SearchActionHandlerTest {
                     showDescription = false,
                     sortType = NewestFirst,
                     searchParameters = SearchParameters(),
+                    shouldLoad = ShouldLoadFirstPage,
+                ),
+            )
+        }
+    }
+
+    @Nested
+    inner class ViewSavedFilterTests {
+
+        @Test
+        fun `WHEN currentContent is not SavedFiltersContent THEN same content is returned`() = runTest {
+            // GIVEN
+            val content = mockk<PostDetailContent>()
+
+            // WHEN
+            val result = searchActionHandler.runAction(mockk<ViewSavedFilter>(), content)
+
+            // THEN
+            assertThat(result).isEqualTo(content)
+        }
+
+        @Test
+        fun `WHEN currentContent is SavedFiltersContent THEN an updated PostListContent is returned`() = runTest {
+            // GIVEN
+            val previousContent = PostListContent(
+                category = All,
+                posts = null,
+                showDescription = false,
+                sortType = NewestFirst,
+                searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
+                shouldLoad = ShouldLoadFirstPage,
+            )
+            val initialContent = SavedFiltersContent(
+                previousContent = previousContent,
+            )
+
+            // WHEN
+            val result = searchActionHandler.runAction(
+                ViewSavedFilter(savedFilter = SavedFilter(searchTerm = mockUrlValid, tags = listOf(mockTag1))),
+                initialContent,
+            )
+
+            // THEN
+            assertThat(result).isEqualTo(
+                PostListContent(
+                    category = All,
+                    posts = null,
+                    showDescription = false,
+                    sortType = NewestFirst,
+                    searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
                     shouldLoad = ShouldLoadFirstPage,
                 ),
             )

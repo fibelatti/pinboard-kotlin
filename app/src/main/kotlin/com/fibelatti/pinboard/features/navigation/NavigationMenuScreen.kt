@@ -36,6 +36,7 @@ import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.appstate.ViewNotes
 import com.fibelatti.pinboard.features.appstate.ViewPopular
 import com.fibelatti.pinboard.features.appstate.ViewPreferences
+import com.fibelatti.pinboard.features.appstate.ViewSavedFilters
 import com.fibelatti.pinboard.features.appstate.ViewTags
 import com.fibelatti.pinboard.features.user.presentation.AuthViewModel
 import com.fibelatti.ui.preview.ThemePreviews
@@ -76,6 +77,10 @@ fun NavigationMenuScreen(
         },
         onUntaggedClicked = {
             appStateViewModel.runAction(Untagged)
+            onOptionSelected()
+        },
+        onSavedFiltersClicked = {
+            appStateViewModel.runAction(ViewSavedFilters)
             onOptionSelected()
         },
         onTagsClicked = {
@@ -119,6 +124,7 @@ private fun NavigationMenuScreen(
     onPrivateClicked: () -> Unit,
     onReadLaterClicked: () -> Unit,
     onUntaggedClicked: () -> Unit,
+    onSavedFiltersClicked: () -> Unit,
     onTagsClicked: () -> Unit,
     onNotesClicked: () -> Unit,
     onPopularClicked: () -> Unit,
@@ -147,6 +153,8 @@ private fun NavigationMenuScreen(
         MenuItem(textRes = R.string.menu_navigation_unread, onClick = onReadLaterClicked)
 
         MenuItem(textRes = R.string.menu_navigation_untagged, onClick = onUntaggedClicked)
+
+        MenuItem(textRes = R.string.menu_navigation_saved_filters, onClick = onSavedFiltersClicked)
 
         MenuItem(textRes = R.string.menu_navigation_tags, onClick = onTagsClicked)
 
@@ -258,6 +266,7 @@ private fun NavigationMenuScreenPreview() {
             onPrivateClicked = {},
             onReadLaterClicked = {},
             onUntaggedClicked = {},
+            onSavedFiltersClicked = {},
             onTagsClicked = {},
             onNotesClicked = {},
             onPopularClicked = {},

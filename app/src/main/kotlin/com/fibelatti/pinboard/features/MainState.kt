@@ -79,7 +79,12 @@ data class MainState(
 
         data object ClearSearch : MenuItemComponent(
             name = R.string.menu_search_clear,
-            icon = null,
+            icon = R.drawable.ic_clear_filter,
+        )
+
+        data object SaveSearch : MenuItemComponent(
+            name = R.string.menu_search_save,
+            icon = R.drawable.ic_save,
         )
 
         data object CloseSidePanel : MenuItemComponent(

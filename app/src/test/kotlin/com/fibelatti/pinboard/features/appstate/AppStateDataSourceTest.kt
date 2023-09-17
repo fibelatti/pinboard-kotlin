@@ -195,6 +195,7 @@ internal class AppStateDataSourceTest {
                 ViewSearch -> ViewSearch to ExpectedHandler.NAVIGATION
                 AddPost -> AddPost to ExpectedHandler.NAVIGATION
                 ViewTags -> ViewTags to ExpectedHandler.NAVIGATION
+                ViewSavedFilters -> ViewSavedFilters to ExpectedHandler.NAVIGATION
                 ViewNotes -> ViewNotes to ExpectedHandler.NAVIGATION
                 is ViewNote -> mockk<ViewNote>() to ExpectedHandler.NAVIGATION
                 ViewPopular -> ViewPopular to ExpectedHandler.NAVIGATION
@@ -219,6 +220,7 @@ internal class AppStateDataSourceTest {
                 is RemoveSearchTag -> mockk<RemoveSearchTag>() to ExpectedHandler.SEARCH
                 is Search -> mockk<Search>() to ExpectedHandler.SEARCH
                 ClearSearch -> ClearSearch to ExpectedHandler.SEARCH
+                is ViewSavedFilter -> mockk<ViewSavedFilter>() to ExpectedHandler.SEARCH
 
                 // Tag
                 RefreshTags -> RefreshTags to ExpectedHandler.TAG

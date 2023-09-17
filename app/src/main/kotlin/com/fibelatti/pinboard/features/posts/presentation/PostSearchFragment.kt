@@ -10,13 +10,14 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
+import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.Search
+import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
-import com.fibelatti.ui.foundation.stableListOf
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
 import java.util.UUID
@@ -27,6 +28,7 @@ class PostSearchFragment @Inject constructor() : BaseFragment() {
 
     private val appStateViewModel: AppStateViewModel by activityViewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
+    private val searchPostViewModel: SearchPostViewModel by viewModels()
     private val tagsViewModel: TagsViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -36,7 +38,9 @@ class PostSearchFragment @Inject constructor() : BaseFragment() {
             SearchBookmarksScreen(
                 appStateViewModel = appStateViewModel,
                 mainViewModel = mainViewModel,
+                searchPostViewModel = searchPostViewModel,
                 tagsViewModel = tagsViewModel,
+                actionId = ACTION_ID,
             )
         }
 
@@ -45,11 +49,6 @@ class PostSearchFragment @Inject constructor() : BaseFragment() {
                 title = MainState.TitleComponent.Visible(getString(R.string.search_title)),
                 subtitle = MainState.TitleComponent.Gone,
                 navigation = MainState.NavigationComponent.Visible(ACTION_ID),
-                bottomAppBar = MainState.BottomAppBarComponent.Visible(
-                    id = ACTION_ID,
-                    menuItems = stableListOf(MainState.MenuItemComponent.ClearSearch),
-                    navigationIcon = null,
-                ),
                 floatingActionButton = MainState.FabComponent.Visible(ACTION_ID, R.drawable.ic_search),
             )
         }
@@ -68,9 +67,18 @@ class PostSearchFragment @Inject constructor() : BaseFragment() {
             .launchInAndFlowWith(viewLifecycleOwner)
 
         mainViewModel.menuItemClicks(ACTION_ID)
-            .onEach { (menuItem, _) ->
-                if (menuItem is MainState.MenuItemComponent.ClearSearch) {
-                    appStateViewModel.runAction(ClearSearch)
+            .onEach { (menuItem, data) ->
+                when (menuItem) {
+                    is MainState.MenuItemComponent.ClearSearch -> {
+                        appStateViewModel.runAction(ClearSearch)
+                    }
+
+                    is MainState.MenuItemComponent.SaveSearch -> {
+                        (data as? SavedFilter)?.let(searchPostViewModel::saveFilter)
+                        requireView().showBanner(getString(R.string.saved_filters_saved_feedback))
+                    }
+
+                    else -> Unit
                 }
             }
             .launchInAndFlowWith(viewLifecycleOwner)

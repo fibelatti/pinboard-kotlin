@@ -19,6 +19,8 @@ import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
+import com.fibelatti.pinboard.features.filters.domain.SavedFiltersRepository
+import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetAllPosts
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPostParams
@@ -28,6 +30,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,6 +38,7 @@ class PostListViewModel @Inject constructor(
     private val getAllPosts: GetAllPosts,
     private val getRecentPosts: GetRecentPosts,
     private val appStateRepository: AppStateRepository,
+    private val savedFiltersRepository: SavedFiltersRepository,
 ) : BaseViewModel() {
 
     fun loadContent(content: PostListContent) {
@@ -165,5 +169,11 @@ class PostListViewModel @Inject constructor(
                 }.onFailure(::handleError)
             }
             .launchIn(viewModelScope)
+    }
+
+    fun saveFilter(savedFilter: SavedFilter) {
+        launch {
+            savedFiltersRepository.saveFilter(savedFilter)
+        }
     }
 }

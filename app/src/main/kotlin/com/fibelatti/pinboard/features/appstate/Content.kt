@@ -89,6 +89,10 @@ data class TagListContent(
     override val isConnected: Boolean = true,
 ) : ContentWithHistory(), ConnectionAwareContent
 
+data class SavedFiltersContent(
+    override val previousContent: PostListContent,
+) : ContentWithHistory()
+
 data class NoteListContent(
     val notes: List<Note>,
     val shouldLoad: Boolean,

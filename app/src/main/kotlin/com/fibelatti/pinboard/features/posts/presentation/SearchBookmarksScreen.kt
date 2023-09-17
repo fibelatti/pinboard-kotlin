@@ -43,6 +43,7 @@ import com.fibelatti.pinboard.features.appstate.RefreshSearchTags
 import com.fibelatti.pinboard.features.appstate.RemoveSearchTag
 import com.fibelatti.pinboard.features.appstate.Search
 import com.fibelatti.pinboard.features.appstate.SetTerm
+import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
 import com.fibelatti.pinboard.features.tags.presentation.TagList
@@ -61,6 +62,7 @@ fun SearchBookmarksScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
     searchPostViewModel: SearchPostViewModel = hiltViewModel(),
     tagsViewModel: TagsViewModel = hiltViewModel(),
+    actionId: String,
 ) {
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
@@ -78,11 +80,33 @@ fun SearchBookmarksScreen(
                 searchPostViewModel.searchParametersChanged(searchContent.searchParameters)
 
                 mainViewModel.updateState { mainState ->
-                    mainState.copy(subtitle = MainState.TitleComponent.Visible(label = activeSearchLabel))
+                    mainState.copy(
+                        subtitle = MainState.TitleComponent.Visible(label = activeSearchLabel),
+                        bottomAppBar = MainState.BottomAppBarComponent.Visible(
+                            id = actionId,
+                            menuItems = stableListOf(
+                                MainState.MenuItemComponent.ClearSearch,
+                                MainState.MenuItemComponent.SaveSearch,
+                            ),
+                            navigationIcon = null,
+                            data = SavedFilter(
+                                searchTerm = searchContent.searchParameters.term,
+                                tags = searchContent.searchParameters.tags,
+                            ),
+                        ),
+                    )
                 }
             } else {
                 mainViewModel.updateState { mainState ->
-                    mainState.copy(subtitle = MainState.TitleComponent.Gone)
+                    mainState.copy(
+                        subtitle = MainState.TitleComponent.Gone,
+                        bottomAppBar = MainState.BottomAppBarComponent.Visible(
+                            id = actionId,
+                            menuItems = stableListOf(),
+                            navigationIcon = null,
+                            data = null,
+                        ),
+                    )
                 }
             }
         }

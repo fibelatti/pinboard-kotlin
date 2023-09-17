@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.core.di.modules
 
 import androidx.fragment.app.Fragment
 import com.fibelatti.pinboard.core.di.mapkeys.FragmentKey
+import com.fibelatti.pinboard.features.filters.presentation.SavedFiltersFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteListFragment
 import com.fibelatti.pinboard.features.posts.presentation.EditPostFragment
@@ -55,6 +56,11 @@ abstract class FeatureModule {
     @FragmentKey(TagsFragment::class)
     abstract fun tagsFragment(fragment: TagsFragment): Fragment
     // endregion
+
+    @Binds
+    @IntoMap
+    @FragmentKey(SavedFiltersFragment::class)
+    abstract fun savedFiltersFragment(fragment: SavedFiltersFragment): Fragment
 
     // region Notes
     @Binds

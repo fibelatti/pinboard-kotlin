@@ -740,6 +740,53 @@ internal class NavigationActionHandlerTest {
     }
 
     @Nested
+    inner class ViewSavedFiltersTests {
+
+        @Test
+        fun `WHEN currentContent is not PostListContent THEN same content is returned`() = runTest {
+            // GIVEN
+            val content = mockk<ExternalContent>()
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewSavedFilters, content)
+
+            // THEN
+            assertThat(result).isEqualTo(content)
+        }
+
+        @Test
+        fun `WHEN currentContent is PostListContent THEN TagListContent is returned`() = runTest {
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewSavedFilters, postListContent)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                SavedFiltersContent(
+                    previousContent = postListContent,
+                ),
+            )
+        }
+
+        @Test
+        fun `WHEN currentContent is PostDetailContent THEN TagListContent is returned`() = runTest {
+            // GIVEN
+            val content = mockk<PostDetailContent> {
+                every { previousContent } returns postListContent
+            }
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewSavedFilters, content)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                SavedFiltersContent(
+                    previousContent = postListContent,
+                ),
+            )
+        }
+    }
+
+    @Nested
     inner class ViewNotesTests {
 
         @Test

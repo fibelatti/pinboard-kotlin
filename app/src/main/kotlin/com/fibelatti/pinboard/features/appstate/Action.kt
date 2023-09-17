@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.appstate
 
+import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
@@ -25,10 +26,12 @@ data class ViewPost(val post: Post) : NavigationAction()
 data object ViewSearch : NavigationAction()
 data object AddPost : NavigationAction()
 data object ViewTags : NavigationAction()
+data object ViewSavedFilters : NavigationAction()
 data object ViewNotes : NavigationAction()
 data class ViewNote(val id: String) : NavigationAction()
 data object ViewPopular : NavigationAction()
 data object ViewPreferences : NavigationAction()
+// endregion NavigationAction
 
 // region ViewCategory
 data object All : ViewCategory()
@@ -37,8 +40,7 @@ data object Public : ViewCategory()
 data object Private : ViewCategory()
 data object Unread : ViewCategory()
 data object Untagged : ViewCategory()
-// endregion
-// endregion
+// endregion ViewCategory
 
 // region PostAction
 sealed class PostAction : Action()
@@ -52,7 +54,7 @@ data class EditPost(val post: Post) : PostAction()
 data class EditPostFromShare(val post: Post) : PostAction()
 data class PostSaved(val post: Post) : PostAction()
 data object PostDeleted : PostAction()
-// endregion
+// endregion PostAction
 
 // region SearchAction
 sealed class SearchAction : Action()
@@ -64,7 +66,8 @@ data class AddSearchTag(val tag: Tag) : SearchAction()
 data class RemoveSearchTag(val tag: Tag) : SearchAction()
 data object Search : SearchAction()
 data object ClearSearch : SearchAction()
-// endregion
+data class ViewSavedFilter(val savedFilter: SavedFilter) : SearchAction()
+// endregion SearchAction
 
 // region TagAction
 sealed class TagAction : Action()
@@ -72,7 +75,7 @@ sealed class TagAction : Action()
 data object RefreshTags : TagAction()
 data class SetTags(val tags: List<Tag>, val shouldReloadPosts: Boolean = false) : TagAction()
 data class PostsForTag(val tag: Tag) : TagAction()
-// endregion
+// endregion TagAction
 
 // region NoteAction
 sealed class NoteAction : Action()
@@ -80,12 +83,12 @@ sealed class NoteAction : Action()
 data object RefreshNotes : NoteAction()
 data class SetNotes(val notes: List<Note>) : NoteAction()
 data class SetNote(val note: Note) : NoteAction()
-// endregion
+// endregion NoteAction
 
 // region PopularAction
 sealed class PopularAction : Action()
 
 data object RefreshPopular : PopularAction()
 data class SetPopularPosts(val posts: List<Post>) : PopularAction()
-// endregion
+// endregion PopularAction
 // endregion
