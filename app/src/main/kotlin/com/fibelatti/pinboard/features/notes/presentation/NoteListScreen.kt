@@ -166,7 +166,7 @@ private fun NoteListContent(
                 .asHorizontalPaddingDp(addStart = 16.dp, addEnd = 16.dp)
 
             RowToggleButtonGroup(
-                items = NoteList.Sorting.values()
+                items = NoteList.Sorting.entries
                     .map { sorting ->
                         ToggleButtonGroup.Item(
                             id = sorting.id,
@@ -260,7 +260,7 @@ object NoteList {
 
         companion object {
 
-            fun findByIdWithIndex(id: String): IndexedValue<Sorting>? = Sorting.values()
+            fun findByIdWithIndex(id: String): IndexedValue<Sorting>? = entries
                 .withIndex()
                 .find { it.value.id == id }
         }

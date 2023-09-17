@@ -150,7 +150,7 @@ class PostListFragment @Inject constructor(
                 SelectionDialog.show(
                     context = requireContext(),
                     title = getString(R.string.search_share_title),
-                    options = ShareSearchOption.values().toStableList(),
+                    options = ShareSearchOption.entries.toStableList(),
                     optionName = { option ->
                         when (option) {
                             ShareSearchOption.QUERY -> getString(R.string.search_share_query)

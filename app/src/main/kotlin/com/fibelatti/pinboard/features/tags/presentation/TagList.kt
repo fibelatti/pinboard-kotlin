@@ -227,7 +227,7 @@ private fun TagListSortingControls(
         val focusManager = LocalFocusManager.current
 
         RowToggleButtonGroup(
-            items = TagList.Sorting.values()
+            items = TagList.Sorting.entries
                 .map { sorting ->
                     ToggleButtonGroup.Item(
                         id = sorting.id,
