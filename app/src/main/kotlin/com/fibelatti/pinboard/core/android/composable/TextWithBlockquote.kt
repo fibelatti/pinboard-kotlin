@@ -35,6 +35,14 @@ fun TextWithBlockquote(
     val stripeWidth = with(LocalDensity.current) { 2.dp.toPx() }
     val gap = with(LocalDensity.current) { 8.dp.toPx() }
 
+    val trimTrailingWhitespace = { source: CharSequence ->
+        var i = source.length
+        do {
+            --i
+        } while (i >= 0 && Character.isWhitespace(source[i]))
+        source.subSequence(0, i + 1)
+    }
+
     val formattedText = remember(text) {
         HtmlCompat.fromHtml(text, HtmlCompat.FROM_HTML_MODE_COMPACT).toSpannable().apply {
             CustomQuoteSpan.replaceQuoteSpans(
@@ -44,7 +52,7 @@ fun TextWithBlockquote(
                 stripeWidth = stripeWidth,
                 gap = gap,
             )
-        }
+        }.let(trimTrailingWhitespace)
     }
 
     AndroidView(
