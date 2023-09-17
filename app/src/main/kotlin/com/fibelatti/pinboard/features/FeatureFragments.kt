@@ -53,14 +53,9 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
     fun showPostDetail(postId: String) {
         val tag = "${PostDetailFragment.TAG}_$postId"
 
-        if (activity.supportFragmentManager.findFragmentByTag(tag) == null) {
-            activity.slideFromTheRight(
-                containerId = R.id.fragment_host_side_panel,
-                fragment = activity.createFragment<PostDetailFragment>(),
-                tag = tag,
-            )
-        } else {
-            activity.popTo(tag)
+        activity.supportFragmentManager.commit {
+            replace(R.id.fragment_host_side_panel, activity.createFragment<PostDetailFragment>(), tag)
+            addToBackStack(tag)
         }
     }
 

@@ -80,6 +80,7 @@ fun NoteListScreen(
         val localLifecycleOwner = LocalLifecycleOwner.current
 
         LaunchedEffect(content) {
+            if (content !is NoteListContent) return@LaunchedEffect
             mainViewModel.updateState { mainViewModelState ->
                 mainViewModelState.copy(
                     title = MainState.TitleComponent.Visible(localContext.getString(R.string.notes_title)),

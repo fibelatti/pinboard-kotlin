@@ -88,6 +88,7 @@ fun PopularBookmarksScreen(
         val savedFeedback = stringResource(id = R.string.posts_saved_feedback)
 
         LaunchedEffect(content) {
+            if (content !is PopularPostsContent) return@LaunchedEffect
             mainViewModel.updateState { currentState ->
                 currentState.copy(
                     title = MainState.TitleComponent.Visible(localContext.getString(R.string.popular_title)),
