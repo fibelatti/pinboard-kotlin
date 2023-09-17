@@ -191,6 +191,7 @@ fun TagManager(
                 end.linkTo(parent.end, margin = horizontalPadding)
                 width = Dimension.fillToConstraints
             },
+            itemTonalElevation = 16.dp,
             onItemIconClick = { item -> onRemoveCurrentTagClicked(currentTags.value.first { it.name == item.text }) },
             itemColors = ChipGroup.colors(
                 unselectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,

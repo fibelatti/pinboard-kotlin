@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -21,7 +20,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -70,7 +68,6 @@ import com.fibelatti.pinboard.features.appstate.SearchParameters
 import com.fibelatti.pinboard.features.appstate.ShouldForceLoad
 import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
 import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
-import com.fibelatti.pinboard.features.appstate.SidePanelContent
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
@@ -118,11 +115,6 @@ fun BookmarkListScreen(
             currentState.shouldLoad is ShouldForceLoad ||
             currentState.shouldLoad is ShouldLoadNextPage
 
-        val multiPanelEnabled by mainViewModel.state.collectAsStateWithLifecycle()
-        val sidePanelVisible by remember {
-            derivedStateOf { content is SidePanelContent && multiPanelEnabled.multiPanelEnabled }
-        }
-
         LaunchedEffect(shouldLoadContent, currentState) {
             if (shouldLoadContent) postListViewModel.loadContent(currentState)
         }
@@ -141,7 +133,6 @@ fun BookmarkListScreen(
             onPostLongClicked = onPostLongClicked,
             onTagClicked = { post -> appStateViewModel.runAction(PostsForTag(post)) },
             showPostDescription = currentState.showDescription,
-            drawItemsEdgeToEdge = !sidePanelVisible,
         )
     }
 }
@@ -161,7 +152,6 @@ fun BookmarkListScreen(
     onPostLongClicked: (Post) -> Unit,
     onTagClicked: (Tag) -> Unit,
     showPostDescription: Boolean,
-    drawItemsEdgeToEdge: Boolean,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -177,7 +167,7 @@ fun BookmarkListScreen(
                 modifier = Modifier
                     .padding(
                         start = leftPadding,
-                        end = if (drawItemsEdgeToEdge) rightPadding else 16.dp,
+                        end = rightPadding,
                         bottom = 8.dp,
                     ),
             )
@@ -189,7 +179,7 @@ fun BookmarkListScreen(
                     .fillMaxWidth()
                     .padding(
                         start = leftPadding,
-                        end = if (drawItemsEdgeToEdge) rightPadding else 16.dp,
+                        end = rightPadding,
                         bottom = 8.dp,
                     ),
             )
@@ -243,7 +233,7 @@ fun BookmarkListScreen(
                 contentPadding = PaddingValues(
                     start = listLeftPadding,
                     top = 4.dp,
-                    end = if (drawItemsEdgeToEdge) listRightPadding else 0.dp,
+                    end = listRightPadding,
                     bottom = 100.dp,
                 ),
             ) {
@@ -254,7 +244,6 @@ fun BookmarkListScreen(
                         onPostLongClicked = onPostLongClicked,
                         showDescription = showPostDescription,
                         onTagClicked = onTagClicked,
-                        drawEdgeToEdge = drawItemsEdgeToEdge,
                     )
                 }
             }
@@ -348,18 +337,13 @@ private fun BookmarkItem(
     onPostLongClicked: (Post) -> Unit,
     showDescription: Boolean,
     onTagClicked: (Tag) -> Unit,
-    drawEdgeToEdge: Boolean,
 ) {
     val haptic = LocalHapticFeedback.current
-    val edgeToEdgeDp by animateDpAsState(
-        targetValue = if (drawEdgeToEdge) 0.dp else 8.dp,
-        label = "edgeToEdgeAnimation",
-    )
 
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(end = edgeToEdgeDp)
+            .padding(horizontal = 8.dp)
             .combinedClickable(
                 onClick = { onPostClicked(post) },
                 onLongClick = {
@@ -367,11 +351,11 @@ private fun BookmarkItem(
                     onPostLongClicked(post)
                 },
             ),
-        shape = RoundedCornerShape(topEnd = edgeToEdgeDp, bottomEnd = edgeToEdgeDp),
-        tonalElevation = 2.dp,
+        shape = RoundedCornerShape(6.dp),
+        tonalElevation = 1.dp,
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            modifier = Modifier.padding(all = 8.dp),
         ) {
             if (post.pendingSync != null) {
                 PendingSyncIndicator(
@@ -392,9 +376,9 @@ private fun BookmarkItem(
 
             Text(
                 text = stringResource(id = R.string.posts_saved_on, post.formattedTime),
-                modifier = Modifier.padding(top = 4.dp),
+                modifier = Modifier.padding(vertical = 4.dp),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
             )
 
             if (post.private == true || post.readLater == true) {
@@ -404,17 +388,12 @@ private fun BookmarkItem(
                 )
             }
 
-            Divider(
-                modifier = Modifier.padding(vertical = 8.dp),
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-
             if (showDescription && post.description.isNotBlank()) {
                 TextWithBlockquote(
                     text = post.description,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 8.dp),
+                        .padding(vertical = 8.dp),
                     textColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     textSize = 14.sp,
                     maxLines = 5,
@@ -430,6 +409,7 @@ private fun BookmarkItem(
                 MultilineChipGroup(
                     items = tags,
                     onItemClick = { item -> onTagClicked(post.tags.first { tag -> tag.name == item.text }) },
+                    modifier = Modifier.padding(top = 8.dp),
                     itemTonalElevation = 16.dp,
                 )
             }
@@ -532,7 +512,6 @@ private fun BookmarkListScreenPreview(
             onPostLongClicked = {},
             showPostDescription = true,
             onTagClicked = {},
-            drawItemsEdgeToEdge = true,
         )
     }
 }
@@ -566,7 +545,6 @@ private fun BookmarkItemPreview(
                 onPostLongClicked = {},
                 showDescription = true,
                 onTagClicked = {},
-                drawEdgeToEdge = true,
             )
         }
     }
