@@ -16,6 +16,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,7 +25,9 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
@@ -34,11 +37,15 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
+import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AddSearchTag
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.RefreshSearchTags
 import com.fibelatti.pinboard.features.appstate.RemoveSearchTag
 import com.fibelatti.pinboard.features.appstate.Search
@@ -55,6 +62,8 @@ import com.fibelatti.ui.foundation.stableListOf
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
+import kotlinx.coroutines.flow.onEach
+import java.util.UUID
 
 @Composable
 fun SearchBookmarksScreen(
@@ -62,7 +71,8 @@ fun SearchBookmarksScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
     searchPostViewModel: SearchPostViewModel = hiltViewModel(),
     tagsViewModel: TagsViewModel = hiltViewModel(),
-    actionId: String,
+    onBackPressed: () -> Unit,
+    onError: (Throwable?, () -> Unit) -> Unit,
 ) {
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
@@ -70,44 +80,46 @@ fun SearchBookmarksScreen(
         val appState by appStateViewModel.searchContent.collectAsStateWithLifecycle(initialValue = null)
         val searchContent by rememberUpdatedState(newValue = appState ?: return@Surface)
 
+        val tagsState by tagsViewModel.state.collectAsStateWithLifecycle()
+
+        val title = stringResource(id = R.string.search_title)
+        val actionId = remember { UUID.randomUUID().toString() }
         val queryResultSize by searchPostViewModel.queryResultSize.collectAsStateWithLifecycle()
         val activeSearchLabel = stringResource(id = R.string.search_result_size, queryResultSize)
 
-        val tagsState by tagsViewModel.state.collectAsStateWithLifecycle()
+        LaunchedEffect(searchContent, queryResultSize) {
+            val isActive = searchContent.searchParameters.isActive()
 
-        LaunchedEffect(searchContent.searchParameters, queryResultSize) {
-            if (searchContent.searchParameters.isActive()) {
+            if (isActive) {
                 searchPostViewModel.searchParametersChanged(searchContent.searchParameters)
+            }
 
-                mainViewModel.updateState { mainState ->
-                    mainState.copy(
-                        subtitle = MainState.TitleComponent.Visible(label = activeSearchLabel),
-                        bottomAppBar = MainState.BottomAppBarComponent.Visible(
-                            id = actionId,
-                            menuItems = stableListOf(
+            mainViewModel.updateState { mainState ->
+                mainState.copy(
+                    title = MainState.TitleComponent.Visible(title),
+                    subtitle = if (isActive) {
+                        MainState.TitleComponent.Visible(label = activeSearchLabel)
+                    } else {
+                        MainState.TitleComponent.Gone
+                    },
+                    navigation = MainState.NavigationComponent.Visible(actionId),
+                    bottomAppBar = MainState.BottomAppBarComponent.Visible(
+                        id = actionId,
+                        menuItems = if (isActive) {
+                            stableListOf(
                                 MainState.MenuItemComponent.ClearSearch,
                                 MainState.MenuItemComponent.SaveSearch,
-                            ),
-                            navigationIcon = null,
-                            data = SavedFilter(
-                                searchTerm = searchContent.searchParameters.term,
-                                tags = searchContent.searchParameters.tags,
-                            ),
+                            )
+                        } else {
+                            stableListOf()
+                        },
+                        data = SavedFilter(
+                            searchTerm = searchContent.searchParameters.term,
+                            tags = searchContent.searchParameters.tags,
                         ),
-                    )
-                }
-            } else {
-                mainViewModel.updateState { mainState ->
-                    mainState.copy(
-                        subtitle = MainState.TitleComponent.Gone,
-                        bottomAppBar = MainState.BottomAppBarComponent.Visible(
-                            id = actionId,
-                            menuItems = stableListOf(),
-                            navigationIcon = null,
-                            data = null,
-                        ),
-                    )
-                }
+                    ),
+                    floatingActionButton = MainState.FabComponent.Visible(actionId, R.drawable.ic_search),
+                )
             }
         }
 
@@ -116,6 +128,47 @@ fun SearchBookmarksScreen(
                 tagsViewModel.getAll(TagsViewModel.Source.SEARCH)
             } else {
                 tagsViewModel.sortTags(searchContent.availableTags)
+            }
+        }
+
+        val localView = LocalView.current
+        val localLifecycleOwner = LocalLifecycleOwner.current
+        val savedFeedback = stringResource(id = R.string.saved_filters_saved_feedback)
+
+        LaunchedEffect(Unit) {
+            mainViewModel.navigationClicks(actionId)
+                .onEach { onBackPressed() }
+                .launchInAndFlowWith(localLifecycleOwner)
+
+            mainViewModel.menuItemClicks(actionId)
+                .onEach { (menuItem, data) ->
+                    when (menuItem) {
+                        is MainState.MenuItemComponent.ClearSearch -> {
+                            appStateViewModel.runAction(ClearSearch)
+                        }
+
+                        is MainState.MenuItemComponent.SaveSearch -> {
+                            (data as? SavedFilter)?.let(searchPostViewModel::saveFilter)
+                            localView.showBanner(savedFeedback)
+                        }
+
+                        else -> Unit
+                    }
+                }
+                .launchInAndFlowWith(localLifecycleOwner)
+
+            mainViewModel.fabClicks(actionId)
+                .onEach { appStateViewModel.runAction(Search) }
+                .launchInAndFlowWith(localLifecycleOwner)
+
+            tagsViewModel.error
+                .onEach { throwable -> onError(throwable, tagsViewModel::errorHandled) }
+                .launchInAndFlowWith(localLifecycleOwner)
+        }
+
+        DisposableEffect(Unit) {
+            onDispose {
+                localView.hideKeyboard()
             }
         }
 
