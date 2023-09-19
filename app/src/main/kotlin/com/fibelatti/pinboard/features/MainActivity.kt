@@ -10,11 +10,7 @@ import android.view.animation.LinearInterpolator
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
-import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import com.fibelatti.core.android.BaseIntentBuilder
 import com.fibelatti.core.android.intentExtras
@@ -127,6 +123,8 @@ class MainActivity : BaseActivity() {
 
         isRecreating = savedInstanceState != null
 
+        if (!isRecreating) featureFragments.setup()
+
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         setupView()
@@ -167,12 +165,6 @@ class MainActivity : BaseActivity() {
                 mainViewModel = mainViewModel,
                 appStateViewModel = appStateViewModel,
             )
-        }
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.fragmentHostSidePanel) { v, insets ->
-            val navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-            v.updatePadding(right = navigationBars.right)
-            insets
         }
     }
 
@@ -251,11 +243,7 @@ class MainActivity : BaseActivity() {
         val constraintSet = when {
             show && mainViewModel.state.value.multiPanelEnabled -> constraintSetSidePanelDivided
             show -> constraintSetSidePanelOverlap
-            else -> constraintSetSidePanelHidden.also {
-                supportFragmentManager.findFragmentById(R.id.fragment_host_side_panel)?.let { fragment ->
-                    supportFragmentManager.commit { remove(fragment) }
-                }
-            }
+            else -> constraintSetSidePanelHidden
         }
 
         val transition = ChangeBounds()

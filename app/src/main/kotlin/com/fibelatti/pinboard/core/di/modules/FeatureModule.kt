@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.core.di.modules
 
 import androidx.fragment.app.Fragment
 import com.fibelatti.pinboard.core.di.mapkeys.FragmentKey
+import com.fibelatti.pinboard.features.ContainerFragment
 import com.fibelatti.pinboard.features.filters.presentation.SavedFiltersFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteListFragment
@@ -22,6 +23,11 @@ import dagger.multibindings.IntoMap
 @Module
 @InstallIn(ActivityComponent::class)
 abstract class FeatureModule {
+
+    @Binds
+    @IntoMap
+    @FragmentKey(ContainerFragment::class)
+    abstract fun containerFragment(fragment: ContainerFragment): Fragment
 
     @Binds
     @IntoMap

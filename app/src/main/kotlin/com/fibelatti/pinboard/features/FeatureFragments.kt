@@ -2,12 +2,21 @@ package com.fibelatti.pinboard.features
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.commit
+import androidx.fragment.app.commitNow
+import com.fibelatti.core.android.fragmentArgs
 import com.fibelatti.core.extension.createFragment
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.extension.popTo
-import com.fibelatti.pinboard.core.extension.slideFromTheRight
 import com.fibelatti.pinboard.core.extension.slideUp
 import com.fibelatti.pinboard.features.MainActivity.Companion.fromBuilder
 import com.fibelatti.pinboard.features.filters.presentation.SavedFiltersFragment
@@ -22,41 +31,79 @@ import com.fibelatti.pinboard.features.posts.presentation.PostSearchFragment
 import com.fibelatti.pinboard.features.tags.presentation.TagsFragment
 import com.fibelatti.pinboard.features.user.presentation.AuthFragment
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 class FeatureFragments @Inject constructor(private val activity: FragmentActivity) {
 
+    private val mainPanelFragment: Fragment
+        get() = requireNotNull(activity.supportFragmentManager.findFragmentById(R.id.fragment_host))
+    private val sidePanelFragment: Fragment
+        get() = requireNotNull(activity.supportFragmentManager.findFragmentById(R.id.fragment_host_side_panel))
+
+    private fun Fragment.requireViewId(): Int = requireView().id
+
+    fun setup() {
+        activity.supportFragmentManager.commitNow {
+            replace(
+                R.id.fragment_host,
+                activity.createFragment<ContainerFragment>().apply {
+                    applyNavBarInsets = false
+                },
+            )
+            replace(
+                R.id.fragment_host_side_panel,
+                activity.createFragment<ContainerFragment>().apply {
+                    applyNavBarInsets = true
+                },
+            )
+        }
+    }
+
     fun showLogin() {
-        with(activity.supportFragmentManager) {
+        with(mainPanelFragment.childFragmentManager) {
             if (findFragmentByTag(AuthFragment.TAG) == null) {
                 commit {
                     setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                     for (fragment in fragments) {
                         remove(fragment)
                     }
-                    add(R.id.fragment_host, activity.createFragment<AuthFragment>(), AuthFragment.TAG)
+                    add(mainPanelFragment.requireViewId(), activity.createFragment<AuthFragment>(), AuthFragment.TAG)
                 }
             }
         }
     }
 
     fun showPostList() {
-        if (activity.supportFragmentManager.findFragmentByTag(PostListFragment.TAG) == null) {
-            activity.supportFragmentManager.commit {
+        if (mainPanelFragment.childFragmentManager.findFragmentByTag(PostListFragment.TAG) == null) {
+            mainPanelFragment.childFragmentManager.commit {
                 setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-                replace(R.id.fragment_host, activity.createFragment<PostListFragment>(), PostListFragment.TAG)
+                replace(
+                    mainPanelFragment.requireViewId(),
+                    activity.createFragment<PostListFragment>(),
+                    PostListFragment.TAG,
+                )
             }
         } else {
-            activity.popTo(PostListFragment.TAG)
+            mainPanelFragment.childFragmentManager.popTo(PostListFragment.TAG)
         }
     }
 
     fun showPostDetail(postId: String) {
         val tag = "${PostDetailFragment.TAG}_$postId"
+        if (sidePanelFragment.childFragmentManager.findFragmentByTag(tag) == null) {
+            sidePanelFragment.childFragmentManager.commit {
+                replace(sidePanelFragment.requireViewId(), activity.createFragment<PostDetailFragment>(), tag)
+                addToBackStack(tag)
+            }
+        } else {
+            sidePanelFragment.childFragmentManager.popTo(tag)
 
-        activity.supportFragmentManager.commit {
-            replace(R.id.fragment_host_side_panel, activity.createFragment<PostDetailFragment>(), tag)
-            addToBackStack(tag)
+            if (mainPanelFragment.childFragmentManager.findFragmentByTag(PopularPostsFragment.TAG) != null) {
+                mainPanelFragment.childFragmentManager.popTo(PopularPostsFragment.TAG)
+            } else {
+                mainPanelFragment.childFragmentManager.popTo(PostListFragment.TAG)
+            }
         }
     }
 
@@ -70,9 +117,9 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
     }
 
     fun showSearch() {
-        if (activity.supportFragmentManager.findFragmentByTag(PostSearchFragment.TAG) == null) {
-            activity.slideUp(
-                containerId = R.id.fragment_host,
+        if (mainPanelFragment.childFragmentManager.findFragmentByTag(PostSearchFragment.TAG) == null) {
+            mainPanelFragment.childFragmentManager.slideUp(
+                containerId = mainPanelFragment.requireViewId(),
                 fragment = activity.createFragment<PostSearchFragment>(),
                 tag = PostSearchFragment.TAG,
             )
@@ -80,9 +127,9 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
     }
 
     fun showAddPost() {
-        if (activity.supportFragmentManager.findFragmentByTag(EditPostFragment.TAG) == null) {
-            activity.slideUp(
-                containerId = R.id.fragment_host,
+        if (mainPanelFragment.childFragmentManager.findFragmentByTag(EditPostFragment.TAG) == null) {
+            mainPanelFragment.childFragmentManager.slideUp(
+                containerId = mainPanelFragment.requireViewId(),
                 fragment = activity.createFragment<EditPostFragment>(),
                 tag = EditPostFragment.TAG,
             )
@@ -90,9 +137,9 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
     }
 
     fun showTags() {
-        if (activity.supportFragmentManager.findFragmentByTag(TagsFragment.TAG) == null) {
-            activity.slideUp(
-                containerId = R.id.fragment_host,
+        if (mainPanelFragment.childFragmentManager.findFragmentByTag(TagsFragment.TAG) == null) {
+            mainPanelFragment.childFragmentManager.slideUp(
+                containerId = mainPanelFragment.requireViewId(),
                 fragment = activity.createFragment<TagsFragment>(),
                 tag = TagsFragment.TAG,
             )
@@ -100,9 +147,9 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
     }
 
     fun showSavedFilters() {
-        if (activity.supportFragmentManager.findFragmentByTag(SavedFiltersFragment.TAG) == null) {
-            activity.slideUp(
-                containerId = R.id.fragment_host,
+        if (mainPanelFragment.childFragmentManager.findFragmentByTag(SavedFiltersFragment.TAG) == null) {
+            mainPanelFragment.childFragmentManager.slideUp(
+                containerId = mainPanelFragment.requireViewId(),
                 fragment = activity.createFragment<SavedFiltersFragment>(),
                 tag = SavedFiltersFragment.TAG,
             )
@@ -110,43 +157,44 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
     }
 
     fun showNotes() {
-        if (activity.supportFragmentManager.findFragmentByTag(NoteListFragment.TAG) == null) {
-            activity.slideUp(
-                containerId = R.id.fragment_host,
+        if (mainPanelFragment.childFragmentManager.findFragmentByTag(NoteListFragment.TAG) == null) {
+            mainPanelFragment.childFragmentManager.slideUp(
+                containerId = mainPanelFragment.requireViewId(),
                 fragment = activity.createFragment<NoteListFragment>(),
                 tag = NoteListFragment.TAG,
             )
         } else {
-            activity.popTo(NoteListFragment.TAG)
+            mainPanelFragment.childFragmentManager.popTo(NoteListFragment.TAG)
         }
     }
 
     fun showNoteDetails() {
-        if (activity.supportFragmentManager.findFragmentByTag(NoteDetailsFragment.TAG) == null) {
-            activity.slideFromTheRight(
-                containerId = R.id.fragment_host_side_panel,
-                fragment = activity.createFragment<NoteDetailsFragment>(),
-                tag = NoteDetailsFragment.TAG,
+        sidePanelFragment.childFragmentManager.commit {
+            replace(
+                sidePanelFragment.requireViewId(),
+                activity.createFragment<NoteDetailsFragment>(),
+                NoteDetailsFragment.TAG,
             )
+            addToBackStack(NoteDetailsFragment.TAG)
         }
     }
 
     fun showPopular() {
-        if (activity.supportFragmentManager.findFragmentByTag(PopularPostsFragment.TAG) == null) {
-            activity.slideUp(
-                containerId = R.id.fragment_host,
+        if (mainPanelFragment.childFragmentManager.findFragmentByTag(PopularPostsFragment.TAG) == null) {
+            mainPanelFragment.childFragmentManager.slideUp(
+                containerId = mainPanelFragment.requireViewId(),
                 fragment = activity.createFragment<PopularPostsFragment>(),
                 tag = PopularPostsFragment.TAG,
             )
         } else {
-            activity.popTo(PopularPostsFragment.TAG)
+            mainPanelFragment.childFragmentManager.popTo(PopularPostsFragment.TAG)
         }
     }
 
     fun showPreferences() {
-        if (activity.supportFragmentManager.findFragmentByTag(UserPreferencesFragment.TAG) == null) {
-            activity.slideUp(
-                containerId = R.id.fragment_host,
+        if (mainPanelFragment.childFragmentManager.findFragmentByTag(UserPreferencesFragment.TAG) == null) {
+            mainPanelFragment.childFragmentManager.slideUp(
+                containerId = mainPanelFragment.requireViewId(),
                 fragment = activity.createFragment<UserPreferencesFragment>(),
                 tag = UserPreferencesFragment.TAG,
             )
@@ -154,13 +202,37 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
     }
 
     fun showEditPost() {
-        if (activity.supportFragmentManager.findFragmentByTag(EditPostFragment.TAG) == null) {
-            activity.slideUp(
-                containerId = R.id.fragment_host,
+        if (mainPanelFragment.childFragmentManager.findFragmentByTag(EditPostFragment.TAG) == null) {
+            mainPanelFragment.childFragmentManager.slideUp(
+                containerId = mainPanelFragment.requireViewId(),
                 fragment = activity.createFragment<EditPostFragment>(),
                 tag = EditPostFragment.TAG,
                 addToBackStack = !activity.intent.fromBuilder,
             )
+        }
+    }
+}
+
+@AndroidEntryPoint
+class ContainerFragment @Inject constructor() : Fragment() {
+
+    var applyNavBarInsets: Boolean? by fragmentArgs()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View = inflater.inflate(R.layout.fragment_container, container, false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        if (applyNavBarInsets == true) {
+            ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+                val navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+                v.updatePadding(right = navigationBars.right)
+                insets
+            }
         }
     }
 }

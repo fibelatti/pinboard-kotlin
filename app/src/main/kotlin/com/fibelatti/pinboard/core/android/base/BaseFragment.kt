@@ -5,11 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
-import com.fibelatti.core.extension.doOnApplyWindowInsets
-import com.fibelatti.core.extension.getViewToApplyInsets
 
 abstract class BaseFragment : Fragment() {
 
@@ -18,16 +14,6 @@ abstract class BaseFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View = ComposeView(inflater.context)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        getViewToApplyInsets(view)?.doOnApplyWindowInsets { viewToApply, insets, initialPadding, _ ->
-            viewToApply.updatePadding(
-                bottom = initialPadding.bottom + insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom,
-            )
-        }
-    }
 
     open fun handleError(error: Throwable?, postAction: () -> Unit = {}) {
         (activity as BaseActivity).handleError(error, postAction)

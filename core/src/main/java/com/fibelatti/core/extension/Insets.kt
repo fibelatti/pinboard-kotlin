@@ -1,3 +1,5 @@
+@file:Suppress("Unused")
+
 package com.fibelatti.core.extension
 
 import android.view.View
