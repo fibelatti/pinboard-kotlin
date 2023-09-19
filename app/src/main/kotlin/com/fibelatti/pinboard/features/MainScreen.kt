@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -16,7 +17,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -238,9 +238,24 @@ private fun MainBottomAppBar(
                     .padding(all = 16.dp)
                     .navigationBarsPaddingCompat(),
             ) {
-                MainBottomAppBarMenu(
-                    bottomAppBar = state.bottomAppBar,
-                    onBottomNavClick = onBottomNavClick,
+                AnimatedContent(
+                    targetState = state.bottomAppBar.navigationIcon,
+                    label = "MainBottomAppBar_NavIcon",
+                ) { icon ->
+                    if (icon != null) {
+                        IconButton(onClick = onBottomNavClick) {
+                            Icon(
+                                painter = painterResource(id = icon),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                }
+
+                MenuItemsContent(
+                    menuItems = state.bottomAppBar.menuItems,
+                    data = state.bottomAppBar.data,
                     onMenuItemClick = onMenuItemClick,
                 )
 
@@ -271,55 +286,41 @@ private fun MainBottomAppBar(
 }
 
 @Composable
-private fun RowScope.MainBottomAppBarMenu(
-    bottomAppBar: MainState.BottomAppBarComponent.Visible,
-    onBottomNavClick: () -> Unit,
-    onMenuItemClick: (MainState.MenuItemComponent, data: Any?) -> Unit,
-) {
-    if (bottomAppBar.navigationIcon != null) {
-        IconButton(onClick = onBottomNavClick) {
-            Icon(
-                painter = painterResource(id = bottomAppBar.navigationIcon),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
-
-    MenuItemsContent(
-        menuItems = bottomAppBar.menuItems,
-        data = bottomAppBar.data,
-        onMenuItemClick = onMenuItemClick,
-    )
-}
-
-@Composable
-@Suppress("UnusedReceiverParameter")
-private fun RowScope.MenuItemsContent(
+@OptIn(ExperimentalAnimationApi::class)
+private fun MenuItemsContent(
     menuItems: StableList<MainState.MenuItemComponent>,
     data: Any?,
     onMenuItemClick: (MainState.MenuItemComponent, data: Any?) -> Unit,
 ) {
-    for (menuItem in menuItems.value) {
-        if (menuItem.icon == null) {
-            TextButton(
-                onClick = { onMenuItemClick(menuItem, data) },
-            ) {
-                Text(
-                    text = stringResource(id = menuItem.name),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                )
-            }
-        } else {
-            IconButton(
-                onClick = { onMenuItemClick(menuItem, data) },
-            ) {
-                Icon(
-                    painter = painterResource(id = menuItem.icon),
-                    contentDescription = stringResource(id = menuItem.name),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+    AnimatedContent(
+        targetState = menuItems.value,
+        label = "MenuItemsContent",
+    ) { items ->
+        Row {
+            for (menuItem in items) {
+                if (menuItem.icon == null) {
+                    TextButton(
+                        onClick = { onMenuItemClick(menuItem, data) },
+                        modifier = Modifier.animateEnterExit(enter = fadeIn(), exit = fadeOut()),
+                    ) {
+                        Text(
+                            text = stringResource(id = menuItem.name),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                        )
+                    }
+                } else {
+                    IconButton(
+                        onClick = { onMenuItemClick(menuItem, data) },
+                        modifier = Modifier.animateEnterExit(enter = fadeIn(), exit = fadeOut()),
+                    ) {
+                        Icon(
+                            painter = painterResource(id = menuItem.icon),
+                            contentDescription = stringResource(id = menuItem.name),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
             }
         }
     }
@@ -336,7 +337,7 @@ private fun SidePanelBottomAppBar(
             mutableStateOf(scrollDirection == ScrollDirection.DOWN)
         }
 
-        Row(
+        Box(
             modifier = Modifier
                 .padding(all = 16.dp)
                 .background(
@@ -353,6 +354,7 @@ private fun SidePanelBottomAppBar(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_chevron_left),
                         contentDescription = stringResource(id = R.string.cd_expand_menu),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             } else {
