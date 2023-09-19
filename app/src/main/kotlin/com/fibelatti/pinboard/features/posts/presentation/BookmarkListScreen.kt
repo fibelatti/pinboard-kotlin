@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -279,17 +278,17 @@ private fun ActiveSearch(
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         val minHeight = 36.dp
-        val corner = RoundedCornerShape(size = 8.dp)
+        val shape = RoundedCornerShape(size = 8.dp)
+        val padding = PaddingValues(horizontal = 8.dp)
 
         FilledTonalButton(
             onClick = onViewClicked,
-            modifier = Modifier
-                .heightIn(min = minHeight)
-                .wrapContentWidth(),
-            shape = corner,
-            contentPadding = PaddingValues(horizontal = 16.dp),
+            modifier = Modifier.heightIn(min = minHeight),
+            shape = shape,
+            contentPadding = padding,
         ) {
             Text(
                 text = stringResource(id = R.string.search_active),
@@ -301,11 +300,9 @@ private fun ActiveSearch(
 
         FilledTonalButton(
             onClick = onClearClicked,
-            modifier = Modifier
-                .heightIn(min = minHeight)
-                .wrapContentWidth(),
-            shape = corner,
-            contentPadding = PaddingValues(horizontal = 8.dp),
+            modifier = Modifier.heightIn(min = minHeight),
+            shape = shape,
+            contentPadding = padding,
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_clear_filter),
@@ -314,15 +311,11 @@ private fun ActiveSearch(
             )
         }
 
-        Spacer(modifier = Modifier.size(8.dp))
-
         FilledTonalButton(
             onClick = onSaveClicked,
-            modifier = Modifier
-                .heightIn(min = minHeight)
-                .wrapContentWidth(),
-            shape = corner,
-            contentPadding = PaddingValues(horizontal = 8.dp),
+            modifier = Modifier.heightIn(min = minHeight),
+            shape = shape,
+            contentPadding = padding,
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_save),
@@ -331,15 +324,11 @@ private fun ActiveSearch(
             )
         }
 
-        Spacer(modifier = Modifier.size(8.dp))
-
         FilledTonalButton(
             onClick = onShareClicked,
-            modifier = Modifier
-                .heightIn(min = minHeight)
-                .wrapContentWidth(),
-            shape = corner,
-            contentPadding = PaddingValues(horizontal = 8.dp),
+            modifier = Modifier.heightIn(min = minHeight),
+            shape = shape,
+            contentPadding = padding,
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_share),
