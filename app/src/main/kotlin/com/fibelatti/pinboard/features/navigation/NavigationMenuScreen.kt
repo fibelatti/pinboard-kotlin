@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
@@ -16,7 +17,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -140,29 +141,69 @@ private fun NavigationMenuScreen(
             .verticalScroll(rememberScrollState())
             .padding(top = 32.dp, bottom = 64.dp),
     ) {
-        MenuItem(textRes = R.string.menu_navigation_all, onClick = onAllClicked)
+        MenuItem(
+            textRes = R.string.menu_navigation_all,
+            onClick = onAllClicked,
+            iconRes = R.drawable.ic_bookmarks,
+        )
 
-        MenuItem(textRes = R.string.menu_navigation_recent, onClick = onRecentClicked)
+        MenuItem(
+            textRes = R.string.menu_navigation_recent,
+            onClick = onRecentClicked,
+            iconRes = R.drawable.ic_bookmarks,
+        )
 
         if (mainVariant) {
-            MenuItem(textRes = R.string.menu_navigation_public, onClick = onPublicClicked)
+            MenuItem(
+                textRes = R.string.menu_navigation_public,
+                onClick = onPublicClicked,
+                iconRes = R.drawable.ic_bookmarks,
+            )
 
-            MenuItem(textRes = R.string.menu_navigation_private, onClick = onPrivateClicked)
+            MenuItem(
+                textRes = R.string.menu_navigation_private,
+                onClick = onPrivateClicked,
+                iconRes = R.drawable.ic_bookmarks,
+            )
         }
 
-        MenuItem(textRes = R.string.menu_navigation_unread, onClick = onReadLaterClicked)
+        MenuItem(
+            textRes = R.string.menu_navigation_unread,
+            onClick = onReadLaterClicked,
+            iconRes = R.drawable.ic_bookmarks,
+        )
 
-        MenuItem(textRes = R.string.menu_navigation_untagged, onClick = onUntaggedClicked)
+        MenuItem(
+            textRes = R.string.menu_navigation_untagged,
+            onClick = onUntaggedClicked,
+            iconRes = R.drawable.ic_bookmarks,
+        )
 
-        MenuItem(textRes = R.string.menu_navigation_saved_filters, onClick = onSavedFiltersClicked)
+        MenuItem(
+            textRes = R.string.menu_navigation_saved_filters,
+            onClick = onSavedFiltersClicked,
+            iconRes = R.drawable.ic_filter,
+        )
 
-        MenuItem(textRes = R.string.menu_navigation_tags, onClick = onTagsClicked)
+        MenuItem(
+            textRes = R.string.menu_navigation_tags,
+            onClick = onTagsClicked,
+            iconRes = R.drawable.ic_tag,
+        )
 
         if (mainVariant && !appReviewMode) {
-            MenuItem(textRes = R.string.menu_navigation_notes, onClick = onNotesClicked)
+            MenuItem(
+                textRes = R.string.menu_navigation_notes,
+                onClick = onNotesClicked,
+                iconRes = R.drawable.ic_notes,
+            )
         }
 
-        MenuItem(textRes = R.string.menu_navigation_popular, onClick = onPopularClicked)
+        MenuItem(
+            textRes = R.string.menu_navigation_popular,
+            onClick = onPopularClicked,
+            iconRes = R.drawable.ic_bookmarks,
+        )
 
         Divider(
             modifier = Modifier.padding(all = 16.dp),
@@ -208,19 +249,13 @@ private fun NavigationMenuScreen(
             style = MaterialTheme.typography.bodySmall,
         )
 
-        runCatching {
-            val context = LocalContext.current
-
-            val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-
-            Text(
-                text = stringResource(R.string.about_version, pInfo.versionName),
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontFamily = FontFamily(Font(R.font.jetbrainsmono)),
-                style = MaterialTheme.typography.bodySmall,
-            )
-        }
+        Text(
+            text = stringResource(R.string.about_version, BuildConfig.VERSION_NAME),
+            modifier = Modifier.padding(horizontal = 16.dp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontFamily = FontFamily(Font(R.font.jetbrainsmono)),
+            style = MaterialTheme.typography.bodySmall,
+        )
     }
 }
 
@@ -229,7 +264,7 @@ private fun MenuItem(
     @StringRes textRes: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
+    textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
     @DrawableRes iconRes: Int? = null,
 ) {
     TextButton(
@@ -241,7 +276,9 @@ private fun MenuItem(
             Icon(
                 painter = painterResource(id = iconRes),
                 contentDescription = stringResource(id = textRes),
-                modifier = Modifier.padding(end = 16.dp),
+                modifier = Modifier
+                    .size(32.dp)
+                    .padding(end = 16.dp),
                 tint = MaterialTheme.colorScheme.onSurface,
             )
         }
