@@ -54,7 +54,7 @@ android {
         targetSdk = targetSdkVersion
         minSdk = minSdkVersion
 
-        base.archivesName = "$applicationId-v$versionName-($versionCode)"
+        base.archivesName = "$applicationId-v$versionName-$versionCode"
 
         resourceConfigurations.add("en")
 
