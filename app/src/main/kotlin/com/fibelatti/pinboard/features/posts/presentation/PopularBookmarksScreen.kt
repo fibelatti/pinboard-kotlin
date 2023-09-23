@@ -92,8 +92,6 @@ fun PopularBookmarksScreen(
         val localView = LocalView.current
         val localLifecycleOwner = LocalLifecycleOwner.current
 
-        val savedFeedback = stringResource(id = R.string.posts_saved_feedback)
-
         LaunchedEffect(content) {
             if (!(content is PopularPostsContent || sidePanelVisible)) return@LaunchedEffect
             mainViewModel.updateState { currentState ->
@@ -113,9 +111,9 @@ fun PopularBookmarksScreen(
             }
         }
 
-        LaunchedEffect(popularPostsScreenState.saved) {
-            if (popularPostsScreenState.saved) {
-                localView.showBanner(savedFeedback)
+        LaunchedEffect(popularPostsScreenState.savedMessage) {
+            popularPostsScreenState.savedMessage?.let { messageRes ->
+                localView.showBanner(localContext.getString(messageRes))
                 popularPostsViewModel.userNotified()
             }
         }

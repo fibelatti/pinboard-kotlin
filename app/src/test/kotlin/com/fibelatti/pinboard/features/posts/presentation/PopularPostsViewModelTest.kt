@@ -4,10 +4,12 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.createPost
+import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostSaved
 import com.fibelatti.pinboard.features.appstate.SetPopularPosts
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
+import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPopularPosts
@@ -29,12 +31,16 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
 
     private val mockAppStateRepository = mockk<AppStateRepository>(relaxed = true)
     private val mockUserRepository = mockk<UserRepository>(relaxed = true)
+    private val mockPostsRepository = mockk<PostsRepository> {
+        coEvery { getPost(url = any()) } returns Failure(mockk())
+    }
     private val mockGetPopularPosts = mockk<GetPopularPosts>()
     private val mockAddPost = mockk<AddPost>()
 
     private val popularPostsViewModel = PopularPostsViewModel(
         appStateRepository = mockAppStateRepository,
         userRepository = mockUserRepository,
+        postsRepository = mockPostsRepository,
         getPopularPosts = mockGetPopularPosts,
         addPost = mockAddPost,
     )
@@ -68,6 +74,30 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
     }
 
     @Test
+    fun `WHEN saveLink is called AND existing post is not null THEN PostSaved action is run AND AddPost is not called`() =
+        runTest {
+            // GIVEN
+            val post = createPost()
+            coEvery { mockPostsRepository.getPost(url = post.url) } returns Success(post)
+
+            // WHEN
+            popularPostsViewModel.saveLink(post)
+
+            // THEN
+            coVerify { mockAppStateRepository.runDelayedAction(PostSaved(post)) }
+            assertThat(popularPostsViewModel.screenState.first()).isEqualTo(
+                PopularPostsViewModel.ScreenState(
+                    isLoading = false,
+                    savedMessage = R.string.posts_existing_feedback,
+                ),
+            )
+            coVerify(exactly = 0) {
+                mockUserRepository.editAfterSharing
+                mockAddPost.invoke(any())
+            }
+        }
+
+    @Test
     fun `WHEN saveLink is called AND getEditAfterSharing is BeforeSaving THEN PostSaved action is run AND AddPost is not called`() =
         runTest {
             // GIVEN
@@ -78,11 +108,11 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
             popularPostsViewModel.saveLink(post)
 
             // THEN
-            coVerify { mockAppStateRepository.runAction(PostSaved(post.copy(tags = emptyList()))) }
+            coVerify { mockAppStateRepository.runDelayedAction(PostSaved(post.copy(tags = emptyList()))) }
             assertThat(popularPostsViewModel.screenState.first()).isEqualTo(
                 PopularPostsViewModel.ScreenState(
                     isLoading = false,
-                    saved = false,
+                    savedMessage = null,
                 ),
             )
             coVerify(exactly = 0) { mockAddPost.invoke(any()) }
@@ -103,7 +133,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
         assertThat(popularPostsViewModel.screenState.first()).isEqualTo(
             PopularPostsViewModel.ScreenState(
                 isLoading = false,
-                saved = false,
+                savedMessage = null,
             ),
         )
         assertThat(popularPostsViewModel.error.first()).isEqualTo(error)
@@ -141,7 +171,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
             assertThat(popularPostsViewModel.screenState.first()).isEqualTo(
                 PopularPostsViewModel.ScreenState(
                     isLoading = false,
-                    saved = true,
+                    savedMessage = R.string.posts_saved_feedback,
                 ),
             )
             assertThat(popularPostsViewModel.error.isEmpty()).isTrue()

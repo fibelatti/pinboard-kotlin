@@ -236,8 +236,8 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
     private fun setupPopularPostsViewModel() {
         popularPostsViewModel.screenState
             .onEach { state ->
-                if (state.saved) {
-                    requireView().showBanner(getString(R.string.posts_saved_feedback))
+                state.savedMessage?.let { messageRes ->
+                    requireView().showBanner(getString(messageRes))
                     popularPostsViewModel.userNotified()
                 }
             }

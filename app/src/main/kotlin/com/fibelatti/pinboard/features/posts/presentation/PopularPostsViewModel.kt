@@ -1,12 +1,16 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
+import androidx.annotation.StringRes
+import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onSuccess
+import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostSaved
 import com.fibelatti.pinboard.features.appstate.SetPopularPosts
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
+import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPopularPosts
@@ -23,6 +27,7 @@ import javax.inject.Inject
 class PopularPostsViewModel @Inject constructor(
     private val appStateRepository: AppStateRepository,
     private val userRepository: UserRepository,
+    private val postsRepository: PostsRepository,
     private val getPopularPosts: GetPopularPosts,
     private val addPost: AddPost,
 ) : BaseViewModel() {
@@ -40,30 +45,45 @@ class PopularPostsViewModel @Inject constructor(
 
     fun saveLink(post: Post) {
         launch {
+            _screenState.update { currentState -> currentState.copy(isLoading = true) }
+
+            val existingPost = postsRepository.getPost(url = post.url).getOrNull()
             val newPost = post.copy(
                 private = userRepository.defaultPrivate ?: false,
                 readLater = userRepository.defaultReadLater ?: false,
                 tags = userRepository.defaultTags,
             )
-            if (userRepository.editAfterSharing is EditAfterSharing.BeforeSaving) {
-                appStateRepository.runAction(PostSaved(newPost))
-            } else {
-                addBookmark(post = newPost)
+
+            when {
+                existingPost != null -> {
+                    _screenState.update { currentState ->
+                        currentState.copy(
+                            isLoading = false,
+                            savedMessage = R.string.posts_existing_feedback,
+                        )
+                    }
+
+                    appStateRepository.runDelayedAction(PostSaved(existingPost))
+                }
+
+                userRepository.editAfterSharing is EditAfterSharing.BeforeSaving -> {
+                    _screenState.update { currentState -> currentState.copy(isLoading = false) }
+
+                    appStateRepository.runDelayedAction(PostSaved(newPost))
+                }
+
+                else -> addBookmark(post = newPost)
             }
         }
     }
 
     private suspend fun addBookmark(post: Post) {
-        _screenState.update { currentState ->
-            currentState.copy(isLoading = true)
-        }
-
         addPost(post)
             .onSuccess {
                 _screenState.update { currentState ->
                     currentState.copy(
                         isLoading = false,
-                        saved = true,
+                        savedMessage = R.string.posts_saved_feedback,
                     )
                 }
 
@@ -73,7 +93,7 @@ class PopularPostsViewModel @Inject constructor(
                 _screenState.update { currentState ->
                     currentState.copy(
                         isLoading = false,
-                        saved = false,
+                        savedMessage = null,
                     )
                 }
 
@@ -85,13 +105,13 @@ class PopularPostsViewModel @Inject constructor(
         _screenState.update { currentState ->
             currentState.copy(
                 isLoading = false,
-                saved = false,
+                savedMessage = null,
             )
         }
     }
 
     data class ScreenState(
         val isLoading: Boolean = false,
-        val saved: Boolean = false,
+        @StringRes val savedMessage: Int? = null,
     )
 }
