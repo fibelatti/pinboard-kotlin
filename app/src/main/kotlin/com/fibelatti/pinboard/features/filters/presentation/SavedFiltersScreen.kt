@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -42,6 +41,7 @@ import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
 import com.fibelatti.ui.foundation.StableList
+import com.fibelatti.ui.foundation.navigationBarsCompat
 import com.fibelatti.ui.foundation.stableListOf
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
@@ -85,9 +85,7 @@ fun SavedFiltersScreen(
             mainViewModel.navigationClicks(actionId)
                 .onEach { onBackPressed() }
                 .launchInAndFlowWith(localLifecycleOwner)
-        }
 
-        LaunchedEffect(Unit) {
             savedFiltersViewModel.error
                 .onEach { throwable -> onError(throwable, savedFiltersViewModel::errorHandled) }
                 .launchInAndFlowWith(localLifecycleOwner)
@@ -119,7 +117,7 @@ private fun SavedFiltersScreen(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = WindowInsets(top = 16.dp, bottom = 100.dp)
-                .add(WindowInsets.navigationBars)
+                .add(WindowInsets.navigationBarsCompat)
                 .asPaddingValues(),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
