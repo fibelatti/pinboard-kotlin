@@ -69,6 +69,7 @@ import com.fibelatti.pinboard.features.appstate.SearchParameters
 import com.fibelatti.pinboard.features.appstate.ShouldForceLoad
 import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
 import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
+import com.fibelatti.pinboard.features.appstate.SidePanelContent
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
@@ -117,6 +118,11 @@ fun BookmarkListScreen(
             currentState.shouldLoad is ShouldForceLoad ||
             currentState.shouldLoad is ShouldLoadNextPage
 
+        val multiPanelEnabled by mainViewModel.state.collectAsStateWithLifecycle()
+        val sidePanelVisible by remember {
+            derivedStateOf { content is SidePanelContent && multiPanelEnabled.multiPanelEnabled }
+        }
+
         val localView = LocalView.current
         val savedFeedback = stringResource(id = R.string.saved_filters_saved_feedback)
 
@@ -147,6 +153,7 @@ fun BookmarkListScreen(
             onPostLongClicked = onPostLongClicked,
             onTagClicked = { post -> appStateViewModel.runAction(PostsForTag(post)) },
             showPostDescription = currentState.showDescription,
+            sidePanelVisible = sidePanelVisible,
         )
     }
 }
@@ -167,6 +174,7 @@ fun BookmarkListScreen(
     onPostLongClicked: (Post) -> Unit,
     onTagClicked: (Tag) -> Unit,
     showPostDescription: Boolean,
+    sidePanelVisible: Boolean,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -180,12 +188,11 @@ fun BookmarkListScreen(
                 onClearClicked = onClearClicked,
                 onSaveClicked = onSaveClicked,
                 onShareClicked = { onShareClicked(searchParameters) },
-                modifier = Modifier
-                    .padding(
-                        start = leftPadding,
-                        end = rightPadding,
-                        bottom = 8.dp,
-                    ),
+                modifier = Modifier.padding(
+                    start = leftPadding,
+                    end = if (sidePanelVisible) 16.dp else rightPadding,
+                    bottom = 8.dp,
+                ),
             )
         }
 
@@ -195,7 +202,7 @@ fun BookmarkListScreen(
                     .fillMaxWidth()
                     .padding(
                         start = leftPadding,
-                        end = rightPadding,
+                        end = if (sidePanelVisible) 16.dp else rightPadding,
                         bottom = 8.dp,
                     ),
             )
@@ -249,7 +256,7 @@ fun BookmarkListScreen(
                 contentPadding = PaddingValues(
                     start = listLeftPadding,
                     top = 4.dp,
-                    end = listRightPadding,
+                    end = if (sidePanelVisible) 0.dp else listRightPadding,
                     bottom = 100.dp,
                 ),
             ) {
@@ -523,6 +530,7 @@ private fun BookmarkListScreenPreview(
             onPostLongClicked = {},
             showPostDescription = true,
             onTagClicked = {},
+            sidePanelVisible = false,
         )
     }
 }

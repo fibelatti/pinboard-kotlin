@@ -15,6 +15,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -43,6 +44,7 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.RefreshPopular
+import com.fibelatti.pinboard.features.appstate.SidePanelContent
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.components.ChipGroup
@@ -79,6 +81,11 @@ fun PopularBookmarksScreen(
 
         val popularPostsScreenState by popularPostsViewModel.screenState.collectAsStateWithLifecycle()
 
+        val multiPanelEnabled by mainViewModel.state.collectAsStateWithLifecycle()
+        val sidePanelVisible by remember {
+            derivedStateOf { content is SidePanelContent && multiPanelEnabled.multiPanelEnabled }
+        }
+
         val actionId = remember { UUID.randomUUID().toString() }
 
         val localContext = LocalContext.current
@@ -88,7 +95,7 @@ fun PopularBookmarksScreen(
         val savedFeedback = stringResource(id = R.string.posts_saved_feedback)
 
         LaunchedEffect(content) {
-            if (content !is PopularPostsContent) return@LaunchedEffect
+            if (!(content is PopularPostsContent || sidePanelVisible)) return@LaunchedEffect
             mainViewModel.updateState { currentState ->
                 currentState.copy(
                     title = MainState.TitleComponent.Visible(localContext.getString(R.string.popular_title)),
@@ -117,9 +124,7 @@ fun PopularBookmarksScreen(
             mainViewModel.navigationClicks(actionId)
                 .onEach { onBackPressed() }
                 .launchInAndFlowWith(localLifecycleOwner)
-        }
 
-        LaunchedEffect(Unit) {
             popularPostsViewModel.error
                 .onEach { throwable -> onError(throwable, popularPostsViewModel::errorHandled) }
                 .launchInAndFlowWith(localLifecycleOwner)
@@ -136,6 +141,7 @@ fun PopularBookmarksScreen(
                 onPullToRefresh = { appStateViewModel.runAction(RefreshPopular) },
                 onBookmarkClicked = { appStateViewModel.runAction(ViewPost(it)) },
                 onBookmarkLongClicked = onBookmarkLongClicked,
+                sidePanelVisible = sidePanelVisible,
             )
         }
     }
@@ -147,12 +153,13 @@ fun PopularBookmarksContent(
     onPullToRefresh: () -> Unit = {},
     onBookmarkClicked: (Post) -> Unit = {},
     onBookmarkLongClicked: (Post) -> Unit = {},
+    sidePanelVisible: Boolean = false,
 ) {
     if (posts.value.isEmpty()) {
         EmptyListContent(
-            icon = painterResource(id = R.drawable.ic_notes),
-            title = stringResource(id = R.string.notes_empty_title),
-            description = stringResource(id = R.string.notes_empty_description),
+            icon = painterResource(id = R.drawable.ic_pin),
+            title = stringResource(id = R.string.posts_empty_title),
+            description = stringResource(id = R.string.posts_empty_description),
         )
     } else {
         val (listLeftPadding, listRightPadding) = WindowInsets.navigationBarsCompat.asHorizontalPaddingDp()
@@ -162,7 +169,7 @@ fun PopularBookmarksContent(
             contentPadding = PaddingValues(
                 start = listLeftPadding,
                 top = 4.dp,
-                end = listRightPadding,
+                end = if (sidePanelVisible) 0.dp else listRightPadding,
                 bottom = 100.dp,
             ),
         ) {

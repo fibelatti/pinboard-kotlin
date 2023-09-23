@@ -15,6 +15,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +42,7 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.pinboard.features.appstate.NoteListContent
 import com.fibelatti.pinboard.features.appstate.RefreshNotes
+import com.fibelatti.pinboard.features.appstate.SidePanelContent
 import com.fibelatti.pinboard.features.appstate.ViewNote
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
@@ -75,12 +77,16 @@ fun NoteListScreen(
             },
         )
 
+        val multiPanelEnabled by mainViewModel.state.collectAsStateWithLifecycle()
+        val sidePanelVisible by remember {
+            derivedStateOf { content is SidePanelContent && multiPanelEnabled.multiPanelEnabled }
+        }
+
         val actionId = remember { UUID.randomUUID().toString() }
         val localContext = LocalContext.current
         val localLifecycleOwner = LocalLifecycleOwner.current
 
         LaunchedEffect(content) {
-            if (content !is NoteListContent) return@LaunchedEffect
             mainViewModel.updateState { mainViewModelState ->
                 mainViewModelState.copy(
                     title = MainState.TitleComponent.Visible(localContext.getString(R.string.notes_title)),
@@ -112,9 +118,7 @@ fun NoteListScreen(
             mainViewModel.navigationClicks(actionId)
                 .onEach { onBackPressed() }
                 .launchInAndFlowWith(localLifecycleOwner)
-        }
 
-        LaunchedEffect(Unit) {
             noteListViewModel.error
                 .onEach { throwable -> onError(throwable, noteListViewModel::errorHandled) }
                 .launchInAndFlowWith(localLifecycleOwner)
@@ -136,6 +140,7 @@ fun NoteListScreen(
                 },
                 onPullToRefresh = { appStateViewModel.runAction(RefreshNotes) },
                 onNoteClicked = { note -> appStateViewModel.runAction(ViewNote(note.id)) },
+                sidePanelVisible = sidePanelVisible,
             )
         }
     }
@@ -147,6 +152,7 @@ private fun NoteListContent(
     onSortOptionClicked: (NoteList.Sorting) -> Unit = {},
     onPullToRefresh: () -> Unit = {},
     onNoteClicked: (Note) -> Unit = {},
+    sidePanelVisible: Boolean = false,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         val listState = rememberLazyListState()
@@ -182,7 +188,10 @@ private fun NoteListContent(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = leftPadding, end = rightPadding),
+                    .padding(
+                        start = leftPadding,
+                        end = if (sidePanelVisible) 16.dp else rightPadding,
+                    ),
                 selectedIndex = selectedSortingIndex,
                 buttonHeight = 40.dp,
                 textStyle = MaterialTheme.typography.bodySmall,
@@ -196,7 +205,7 @@ private fun NoteListContent(
                 contentPadding = PaddingValues(
                     start = listLeftPadding,
                     top = 16.dp,
-                    end = listRightPadding,
+                    end = if (sidePanelVisible) 0.dp else listRightPadding,
                     bottom = 100.dp,
                 ),
             ) {
