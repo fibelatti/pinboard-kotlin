@@ -195,7 +195,7 @@ class EditPostFragment @Inject constructor(
                 mainViewModel.updateState { currentState ->
                     currentState.copy(
                         title = MainState.TitleComponent.Visible(getString(R.string.posts_add_title)),
-                        subtitle = if (post.id.isNotEmpty()) {
+                        subtitle = if (post.id.isNotEmpty() && post.formattedTime.isNotEmpty()) {
                             MainState.TitleComponent.Visible(
                                 label = getString(R.string.posts_last_modified_on, post.formattedTime),
                             )
