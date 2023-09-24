@@ -27,6 +27,7 @@ object AndroidModule {
 
     @Provides
     @MainVariant
+    @Suppress("KotlinConstantConditions")
     fun mainVariant(): Boolean = BuildConfig.FLAVOR == "pinboardapi"
 
     @Provides
