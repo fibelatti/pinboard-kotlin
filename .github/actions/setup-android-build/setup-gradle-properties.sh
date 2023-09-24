@@ -24,7 +24,7 @@ write_common_properties() {
     write_property "kotlin.incremental=false"
 
     # Android properties common to all build environments
-    write_property "android.enableBuildConfigAsBytecode=true"
+    write_property "android.enableBuildConfigAsBytecode=false"
     write_property "android.enableJetifier=false"
     write_property "android.useAndroidX=true"
 }
