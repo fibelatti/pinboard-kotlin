@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import androidx.fragment.app.commitNow
 import com.fibelatti.core.android.fragmentArgs
@@ -87,6 +88,8 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
         } else {
             mainPanelFragment.childFragmentManager.popTo(PostListFragment.TAG)
         }
+
+        sidePanelFragment.childFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 
     fun showPostDetail(postId: String) {
@@ -166,6 +169,8 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
         } else {
             mainPanelFragment.childFragmentManager.popTo(NoteListFragment.TAG)
         }
+
+        sidePanelFragment.childFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 
     fun showNoteDetails() {
@@ -189,6 +194,8 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
         } else {
             mainPanelFragment.childFragmentManager.popTo(PopularPostsFragment.TAG)
         }
+
+        sidePanelFragment.childFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 
     fun showPreferences() {
