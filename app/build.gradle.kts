@@ -21,12 +21,13 @@ object AppInfo {
 
     private const val versionMajor = 2
     private const val versionMinor = 2
-    private const val versionPatch = 0
+    private const val versionPatch = 1
     private const val versionBuild = 0
 
     val versionCode: Int = (versionMajor * 1_000_000 + versionMinor * 10_000 + versionPatch * 100 + versionBuild)
         .also { println("versionCode: $it") }
 
+    @Suppress("KotlinConstantConditions")
     val versionName: String = StringBuilder("$versionMajor.$versionMinor")
         .apply { if (versionPatch != 0) append(".$versionPatch") }
         .toString()

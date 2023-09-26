@@ -1,0 +1,9 @@
+- *New* Saved filters: save your most used filters to quickly access them at any time
+- *New* Quick save: a new share option to skip the bookmark editor when you're in a hurry
+
+- Small adjustments to the UI: reviewed iconography and colors
+- Fix navigation bugs when using the side panel
+
+Feedback and suggestions are always welcome, visit the project page to contribute!
+
+Thanks for using Pinkt!
