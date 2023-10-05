@@ -8,9 +8,9 @@ import android.transition.TransitionManager
 import android.view.View
 import android.view.animation.LinearInterpolator
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import com.fibelatti.core.android.BaseIntentBuilder
 import com.fibelatti.core.android.intentExtras
@@ -118,6 +118,7 @@ class MainActivity : BaseActivity() {
     // endregion ConstraintSets
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
@@ -141,8 +142,6 @@ class MainActivity : BaseActivity() {
     }
 
     private fun setupView() {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
         binding.root.addView(
             widthWindowSizeClassReactiveView { windowSizeClass ->
                 mainViewModel.updateState { currentState ->

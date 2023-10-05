@@ -2,11 +2,12 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:statusBarColor">@color/color_status_bar</item>
         <item name="android:navigationBarColor">@color/color_navigation_bar</item>
         <item name="android:windowBackground">@color/color_background</item>
 
         <item name="android:windowAnimationStyle">@style/AppTheme.AppActivityAnimation</item>
+
+        <item name="enableEdgeToEdge">true</item>
 
         <item name="fontFamily">@font/opensansregular</item>
 
