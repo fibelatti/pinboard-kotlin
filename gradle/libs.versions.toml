@@ -24,7 +24,7 @@ appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1" }
 core-ktx = { module = "androidx.core:core-ktx", version = "1.12.0" }
 activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity" }
 fragment-ktx = { module = "androidx.fragment:fragment-ktx", version = "1.6.1" }
-material = { module = "com.google.android.material:material", version = "1.9.0" }
+material = { module = "com.google.android.material:material", version = "1.10.0" }
 constraint-layout = { module = "androidx.constraintlayout:constraintlayout", version = "2.1.4" }
 constraint-layout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version = "1.0.1" }
 lifecycle-java8 = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "lifecycle" }
