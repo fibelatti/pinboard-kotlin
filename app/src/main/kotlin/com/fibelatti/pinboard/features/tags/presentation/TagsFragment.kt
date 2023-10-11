@@ -11,18 +11,12 @@ import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
-import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
-import com.fibelatti.pinboard.features.appstate.PostsForTag
-import com.fibelatti.pinboard.features.appstate.RefreshTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.ui.foundation.toStableList
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.onEach
-import java.util.UUID
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -32,8 +26,6 @@ class TagsFragment @Inject constructor() : BaseFragment() {
 
         @JvmStatic
         val TAG: String = "TagsFragment"
-
-        private val ACTION_ID = UUID.randomUUID().toString()
     }
 
     private val appStateViewModel: AppStateViewModel by activityViewModels()
@@ -45,24 +37,14 @@ class TagsFragment @Inject constructor() : BaseFragment() {
 
         setThemedContent {
             TagListScreen(
+                appStateViewModel = appStateViewModel,
+                mainViewModel = mainViewModel,
                 tagsViewModel = tagsViewModel,
-                onTagClicked = { appStateViewModel.runAction(PostsForTag(it)) },
+                onBackPressed = { navigateBack() },
+                onError = ::handleError,
                 onTagLongClicked = ::showTagQuickActions,
-                onPullToRefresh = { appStateViewModel.runAction(RefreshTags) },
             )
         }
-
-        mainViewModel.updateState { currentState ->
-            currentState.copy(
-                title = MainState.TitleComponent.Visible(getString(R.string.tags_title)),
-                subtitle = MainState.TitleComponent.Gone,
-                navigation = MainState.NavigationComponent.Visible(ACTION_ID),
-                bottomAppBar = MainState.BottomAppBarComponent.Gone,
-                floatingActionButton = MainState.FabComponent.Gone,
-            )
-        }
-
-        setupViewModels()
     }
 
     override fun onDestroyView() {
@@ -89,26 +71,6 @@ class TagsFragment @Inject constructor() : BaseFragment() {
                 }
             },
         )
-    }
-
-    private fun setupViewModels() {
-        appStateViewModel.tagListContent
-            .onEach { content ->
-                if (content.shouldLoad) {
-                    tagsViewModel.getAll(TagsViewModel.Source.MENU)
-                } else {
-                    tagsViewModel.sortTags(content.tags)
-                }
-            }
-            .launchInAndFlowWith(viewLifecycleOwner)
-
-        mainViewModel.navigationClicks(ACTION_ID)
-            .onEach { navigateBack() }
-            .launchInAndFlowWith(viewLifecycleOwner)
-
-        tagsViewModel.error
-            .onEach { throwable -> handleError(throwable, tagsViewModel::errorHandled) }
-            .launchInAndFlowWith(viewLifecycleOwner)
     }
 }
 

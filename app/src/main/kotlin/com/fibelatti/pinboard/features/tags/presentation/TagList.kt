@@ -32,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -46,6 +47,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -56,8 +58,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
+import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
+import com.fibelatti.pinboard.features.MainState
+import com.fibelatti.pinboard.features.MainViewModel
+import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.features.appstate.PostsForTag
+import com.fibelatti.pinboard.features.appstate.RefreshTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
 import com.fibelatti.ui.components.RowToggleButtonGroup
@@ -70,16 +79,55 @@ import com.fibelatti.ui.foundation.navigationBarsPaddingCompat
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 @Composable
 fun TagListScreen(
+    appStateViewModel: AppStateViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     tagsViewModel: TagsViewModel = hiltViewModel(),
-    onTagClicked: (Tag) -> Unit,
+    onBackPressed: () -> Unit,
+    onError: (Throwable?, () -> Unit) -> Unit,
     onTagLongClicked: (Tag) -> Unit,
-    onPullToRefresh: () -> Unit,
 ) {
+    val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
     val state by tagsViewModel.state.collectAsStateWithLifecycle()
+
+    val screenTitle = stringResource(id = R.string.tags_title)
+    val actionId = remember { UUID.randomUUID().toString() }
+    val localLifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(Unit) {
+        appStateViewModel.tagListContent
+            .onEach { content ->
+                if (content.shouldLoad) {
+                    tagsViewModel.getAll(TagsViewModel.Source.MENU)
+                } else {
+                    tagsViewModel.sortTags(content.tags)
+                }
+            }
+            .launchInAndFlowWith(localLifecycleOwner)
+
+        mainViewModel.updateState { currentState ->
+            currentState.copy(
+                title = MainState.TitleComponent.Visible(screenTitle),
+                subtitle = MainState.TitleComponent.Gone,
+                navigation = MainState.NavigationComponent.Visible(actionId),
+                bottomAppBar = MainState.BottomAppBarComponent.Gone,
+                floatingActionButton = MainState.FabComponent.Gone,
+            )
+        }
+
+        mainViewModel.navigationClicks(actionId)
+            .onEach { onBackPressed() }
+            .launchInAndFlowWith(localLifecycleOwner)
+
+        tagsViewModel.error
+            .onEach { throwable -> onError(throwable, tagsViewModel::errorHandled) }
+            .launchInAndFlowWith(localLifecycleOwner)
+    }
 
     TagList(
         header = {},
@@ -99,9 +147,9 @@ fun TagListScreen(
         },
         searchInput = state.currentQuery,
         onSearchInputChanged = tagsViewModel::searchTags,
-        onTagClicked = onTagClicked,
-        onTagLongClicked = onTagLongClicked,
-        onPullToRefresh = onPullToRefresh,
+        onTagClicked = { appStateViewModel.runAction(PostsForTag(it)) },
+        onTagLongClicked = { if (AppMode.PINBOARD == appMode) onTagLongClicked(it) },
+        onPullToRefresh = { appStateViewModel.runAction(RefreshTags) },
     )
 }
 
@@ -348,7 +396,7 @@ object TagList {
 
         companion object {
 
-            fun findByIdWithIndex(id: String): IndexedValue<Sorting>? = values()
+            fun findByIdWithIndex(id: String): IndexedValue<Sorting>? = entries
                 .withIndex()
                 .find { it.value.id == id }
         }
