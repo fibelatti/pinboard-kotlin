@@ -13,7 +13,6 @@ import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
@@ -32,9 +31,7 @@ import java.util.UUID
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class EditPostFragment @Inject constructor(
-    @MainVariant private val mainVariant: Boolean,
-) : BaseFragment() {
+class EditPostFragment @Inject constructor() : BaseFragment() {
 
     private val appStateViewModel: AppStateViewModel by activityViewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
@@ -70,7 +67,6 @@ class EditPostFragment @Inject constructor(
                 editPostViewModel = editPostViewModel,
                 postDetailViewModel = postDetailViewModel,
                 tagManagerViewModel = tagManagerViewModel,
-                mainVariant = mainVariant,
             )
         }
 

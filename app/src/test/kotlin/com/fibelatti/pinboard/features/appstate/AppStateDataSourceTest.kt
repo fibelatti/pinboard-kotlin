@@ -2,6 +2,8 @@ package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.pinboard.allSealedSubclasses
 import com.fibelatti.pinboard.collectIn
+import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.runUnconfinedTest
@@ -12,6 +14,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkClass
 import io.mockk.verify
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
@@ -47,11 +50,17 @@ internal class AppStateDataSourceTest {
 
     private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider>()
 
+    private val appModeFlow: MutableStateFlow<AppMode> = MutableStateFlow(AppMode.PINBOARD)
+    private val mockkAppModeProvider = mockk<AppModeProvider> {
+        every { appMode } returns appModeFlow
+    }
+
     private val appStateDataSource by lazy {
         AppStateDataSource(
             userRepository = mockUserRepository,
             actionHandlers = handlers,
             connectivityInfoProvider = mockConnectivityInfoProvider,
+            appModeProvider = mockkAppModeProvider,
             scope = TestScope(UnconfinedTestDispatcher()),
             sharingStarted = SharingStarted.WhileSubscribed(),
         )
@@ -132,42 +141,51 @@ internal class AppStateDataSourceTest {
                         is UserLoggedIn -> {
                             assertThat(result.last()).isEqualTo(expectedInitialValue)
                         }
+
                         is UserLoggedOut -> {
                             assertThat(result.last()).isEqualTo(expectedLoginInitialValue)
                             verify { mockUserRepository.clearAuthToken() }
                         }
+
                         is UserUnauthorized -> {
                             assertThat(result.last()).isEqualTo(LoginContent(isUnauthorized = true))
                             verify { mockUserRepository.clearAuthToken() }
                         }
+
                         else -> fail { "Action should be assigned to a handler" }
                     }
                 }
+
                 ExpectedHandler.NAVIGATION -> {
                     assertThat(result.last()).isEqualTo(expectedPostActionValue)
                     require(action is NavigationAction)
                     coVerify { mockNavigationActionHandler.runAction(action, expectedInitialValue) }
                 }
+
                 ExpectedHandler.POST -> {
                     assertThat(result.last()).isEqualTo(expectedPostActionValue)
                     require(action is PostAction)
                     coVerify { mockPostActionHandler.runAction(action, expectedInitialValue) }
                 }
+
                 ExpectedHandler.SEARCH -> {
                     assertThat(result.last()).isEqualTo(expectedPostActionValue)
                     require(action is SearchAction)
                     coVerify { mockSearchActionHandler.runAction(action, expectedInitialValue) }
                 }
+
                 ExpectedHandler.TAG -> {
                     assertThat(result.last()).isEqualTo(expectedPostActionValue)
                     require(action is TagAction)
                     coVerify { mockTagActionHandler.runAction(action, expectedInitialValue) }
                 }
+
                 ExpectedHandler.NOTE -> {
                     assertThat(result.last()).isEqualTo(expectedPostActionValue)
                     require(action is NoteAction)
                     coVerify { mockNoteActionHandler.runAction(action, expectedInitialValue) }
                 }
+
                 ExpectedHandler.POPULAR -> {
                     assertThat(result.last()).isEqualTo(expectedPostActionValue)
                     require(action is PopularAction)
@@ -357,6 +375,17 @@ internal class AppStateDataSourceTest {
     fun `GIVEN hasAuthToken is true WHEN getInitialContent is called THEN expected initial content is returned`() =
         runTest {
             every { mockUserRepository.hasAuthToken() } returns true
+            every { mockConnectivityInfoProvider.isConnected() } returns false
+
+            assertThat(appStateDataSource.content.first()).isEqualTo(expectedInitialValue)
+        }
+
+    @Test
+    fun `GIVEN appMode is NO_API WHEN getInitialContent is called THEN expected initial content is returned`() =
+        runTest {
+            appModeFlow.value = AppMode.NO_API
+
+            every { mockUserRepository.hasAuthToken() } returns false
             every { mockConnectivityInfoProvider.isConnected() } returns false
 
             assertThat(appStateDataSource.content.first()).isEqualTo(expectedInitialValue)

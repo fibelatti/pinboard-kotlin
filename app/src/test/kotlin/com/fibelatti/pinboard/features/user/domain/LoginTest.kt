@@ -14,7 +14,6 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
@@ -25,9 +24,9 @@ class LoginTest {
     private val mockPostsRepository = mockk<PostsRepository>()
 
     private val login = Login(
-        mockUserRepository,
-        mockAppStateRepository,
-        mockPostsRepository,
+        userRepository = mockUserRepository,
+        appStateRepository = mockAppStateRepository,
+        postsRepository = mockPostsRepository,
     )
 
     @Test
@@ -58,21 +57,5 @@ class LoginTest {
         coVerify { mockUserRepository.setAuthToken(mockApiToken) }
         coVerify { mockPostsRepository.clearCache() }
         coVerify { mockAppStateRepository.runAction(UserLoggedIn) }
-    }
-
-    @Test
-    fun `GIVEN app_review_mode is used WHEN Login is called THEN UserLoggedIn runs`() = runTest {
-        // GIVEN
-        coEvery { mockPostsRepository.clearCache() } returns Success(Unit)
-
-        // WHEN
-        val result = login(params = "app_review_mode")
-
-        // THEN
-        assertThat(result.getOrNull()).isEqualTo(Unit)
-        verify { mockUserRepository.appReviewMode = true }
-        coVerify { mockPostsRepository.clearCache() }
-        coVerify { mockAppStateRepository.runAction(UserLoggedIn) }
-        coVerify(exactly = 0) { mockPostsRepository.update() }
     }
 }

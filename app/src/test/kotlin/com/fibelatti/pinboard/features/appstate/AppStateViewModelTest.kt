@@ -2,6 +2,8 @@ package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.allSealedSubclasses
+import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.network.UnauthorizedInterceptor
 import com.fibelatti.pinboard.isEmpty
 import com.google.common.truth.Truth.assertThat
@@ -33,9 +35,14 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         every { content } returns contentFlow
     }
 
+    private val mockAppModeProvider = mockk<AppModeProvider> {
+        every { appMode } returns MutableStateFlow(AppMode.PINBOARD)
+    }
+
     private val appStateViewModel by lazy {
         AppStateViewModel(
             appStateRepository = mockAppStateRepository,
+            appModeProvider = mockAppModeProvider,
             unauthorizedInterceptor = mockUnauthorizedInterceptor,
         )
     }
@@ -46,7 +53,11 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
             every { unauthorized } returns flowOf(Unit)
         }
 
-        AppStateViewModel(mockAppStateRepository, mockUnauthorizedInterceptor)
+        AppStateViewModel(
+            appStateRepository = mockAppStateRepository,
+            appModeProvider = mockAppModeProvider,
+            unauthorizedInterceptor = mockUnauthorizedInterceptor,
+        )
 
         coVerify {
             mockAppStateRepository.runAction(UserUnauthorized)

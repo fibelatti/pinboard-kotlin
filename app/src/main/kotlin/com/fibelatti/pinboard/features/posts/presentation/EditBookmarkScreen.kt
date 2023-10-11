@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
@@ -64,10 +65,10 @@ fun EditBookmarkScreen(
     editPostViewModel: EditPostViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     tagManagerViewModel: TagManagerViewModel = hiltViewModel(),
-    mainVariant: Boolean,
 ) {
     val addPostContent by appStateViewModel.addPostContent.collectAsStateWithLifecycle(initialValue = null)
     val editPostContent by appStateViewModel.editPostContent.collectAsStateWithLifecycle(initialValue = null)
+    val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
 
     LaunchedEffect(addPostContent) {
         addPostContent?.let {
@@ -133,7 +134,7 @@ fun EditBookmarkScreen(
         currentTagsTitle = stringResource(id = tagManagerState.displayTitle),
         currentTags = tagManagerState.tags.toStableList(),
         onRemoveCurrentTagClicked = tagManagerViewModel::removeTag,
-        mainVariant = mainVariant,
+        appMode = appMode,
     )
 }
 
@@ -156,7 +157,7 @@ private fun EditBookmarkScreen(
     currentTagsTitle: String,
     currentTags: StableList<Tag>,
     onRemoveCurrentTagClicked: (Tag) -> Unit,
-    mainVariant: Boolean,
+    appMode: AppMode,
 ) {
     Box(
         modifier = Modifier
@@ -180,7 +181,7 @@ private fun EditBookmarkScreen(
             currentTagsTitle = currentTagsTitle,
             currentTags = currentTags,
             onRemoveCurrentTagClicked = onRemoveCurrentTagClicked,
-            mainVariant = mainVariant,
+            appMode = appMode,
         )
 
         if (isLoading) {
@@ -217,7 +218,7 @@ private fun BookmarkContent(
     currentTagsTitle: String,
     currentTags: StableList<Tag>,
     onRemoveCurrentTagClicked: (Tag) -> Unit,
-    mainVariant: Boolean,
+    appMode: AppMode,
 ) {
     val scrollState = rememberScrollState()
 
@@ -251,7 +252,7 @@ private fun BookmarkContent(
         )
 
         BookmarkFlags(
-            mainVariant = mainVariant,
+            appMode = appMode,
             private = post.private,
             onPrivateChanged = onPrivateChanged,
             readLater = post.readLater,
@@ -378,7 +379,7 @@ private enum class FocusedField {
 
 @Composable
 private fun BookmarkFlags(
-    mainVariant: Boolean,
+    appMode: AppMode,
     private: Boolean?,
     onPrivateChanged: (Boolean) -> Unit,
     readLater: Boolean?,
@@ -390,7 +391,7 @@ private fun BookmarkFlags(
             .padding(start = 16.dp, top = 8.dp, end = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        if (mainVariant) {
+        if (AppMode.PINBOARD == appMode) {
             SettingToggle(
                 title = stringResource(id = R.string.posts_add_private),
                 description = null,
@@ -434,7 +435,7 @@ private fun EditBookmarkScreenPreview(
             currentTagsTitle = stringResource(id = R.string.tags_added_title),
             currentTags = post.tags.orEmpty().toStableList(),
             onRemoveCurrentTagClicked = {},
-            mainVariant = true,
+            appMode = AppMode.PINBOARD,
         )
     }
 }

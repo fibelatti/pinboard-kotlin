@@ -1,5 +1,7 @@
 package com.fibelatti.pinboard.features.appstate
 
+import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.di.AppDispatchers
 import com.fibelatti.pinboard.core.di.Scope
@@ -18,6 +20,7 @@ class AppStateDataSource @Inject constructor(
     private val userRepository: UserRepository,
     private val actionHandlers: Map<Class<out Action>, @JvmSuppressWildcards ActionHandler<*>>,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
+    private val appModeProvider: AppModeProvider,
     @Scope(AppDispatchers.DEFAULT) scope: CoroutineScope,
     sharingStarted: SharingStarted,
 ) : AppStateRepository {
@@ -67,10 +70,12 @@ class AppStateDataSource @Inject constructor(
         return supertype as Class<Action>
     }
 
-    private fun getInitialContent(): Content = if (userRepository.hasAuthToken()) {
-        getInitialPostListContent()
-    } else {
-        LoginContent()
+    private fun getInitialContent(): Content {
+        return if (userRepository.hasAuthToken() || AppMode.NO_API == appModeProvider.appMode.value) {
+            getInitialPostListContent()
+        } else {
+            LoginContent()
+        }
     }
 
     private fun getInitialPostListContent(): Content = PostListContent(

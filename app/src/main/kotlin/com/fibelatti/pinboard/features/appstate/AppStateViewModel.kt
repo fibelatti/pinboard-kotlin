@@ -1,6 +1,8 @@
 package com.fibelatti.pinboard.features.appstate
 
 import androidx.lifecycle.viewModelScope
+import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.core.network.UnauthorizedInterceptor
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,8 +20,11 @@ import javax.inject.Inject
 @HiltViewModel
 class AppStateViewModel @Inject constructor(
     private val appStateRepository: AppStateRepository,
+    appModeProvider: AppModeProvider,
     unauthorizedInterceptor: UnauthorizedInterceptor,
 ) : BaseViewModel() {
+
+    val appMode: StateFlow<AppMode> = appModeProvider.appMode
 
     val content: StateFlow<Content> = appStateRepository.content
 

@@ -2,6 +2,8 @@ package com.fibelatti.pinboard.features.user.data
 
 import com.fibelatti.pinboard.MockDataProvider.mockApiToken
 import com.fibelatti.pinboard.MockDataProvider.mockTime
+import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
@@ -15,11 +17,12 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.Called
 import io.mockk.clearMocks
 import io.mockk.every
+import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
@@ -56,7 +59,15 @@ internal class UserDataSourceTest {
         defaultTags = emptyList(),
     )
 
-    private val userDataSource = UserDataSource(mockUserSharedPreferences, mainVariant = true)
+    private val mockAppModeProvider = mockk<AppModeProvider> {
+        every { appMode } returns MutableStateFlow(AppMode.PINBOARD)
+        justRun { setReviewMode(any()) }
+    }
+
+    private val userDataSource = UserDataSource(
+        userSharedPreferences = mockUserSharedPreferences,
+        appModeProvider = mockAppModeProvider,
+    )
 
     @Nested
     inner class InitialisationTests {
@@ -69,11 +80,6 @@ internal class UserDataSourceTest {
 
     @Nested
     inner class Methods {
-
-        @BeforeEach
-        fun setup() {
-            every { mockUserSharedPreferences.authToken } returns mockApiToken
-        }
 
         @Nested
         inner class LastUpdate {
@@ -575,18 +581,18 @@ internal class UserDataSourceTest {
         @Nested
         inner class AuthTokenTests {
 
-            private val altVariant = UserDataSource(mockUserSharedPreferences, mainVariant = false)
-
             @Test
             fun `hasAuthToken returns true if the auth token is not empty`() {
+                every { mockUserSharedPreferences.authToken } returns mockApiToken
+
                 assertThat(userDataSource.hasAuthToken()).isTrue()
             }
 
             @Test
-            fun `hasAuthToken returns true if the main variant is false`() {
+            fun `hasAuthToken returns false if the auth token is empty`() {
                 every { mockUserSharedPreferences.authToken } returns ""
 
-                assertThat(altVariant.hasAuthToken()).isTrue()
+                assertThat(userDataSource.hasAuthToken()).isFalse()
             }
 
             @Test
@@ -602,18 +608,21 @@ internal class UserDataSourceTest {
             fun `setAuthToken does not save the auth token if it is blank`() {
                 clearMocks(mockUserSharedPreferences)
 
-                altVariant.setAuthToken(" ")
+                userDataSource.setAuthToken(" ")
 
                 verify { mockUserSharedPreferences wasNot Called }
             }
 
             @Test
-            fun `setAuthToken does not save the auth token if main variant is false`() {
+            fun `setAuthToken sets review mode with the expected token`() {
                 clearMocks(mockUserSharedPreferences)
 
-                altVariant.setAuthToken("some-token")
+                userDataSource.setAuthToken("app_review_mode")
 
-                verify { mockUserSharedPreferences wasNot Called }
+                verify {
+                    mockAppModeProvider.setReviewMode(true)
+                    mockUserSharedPreferences wasNot Called
+                }
             }
 
             @Test
@@ -621,19 +630,10 @@ internal class UserDataSourceTest {
                 userDataSource.clearAuthToken()
 
                 verify {
+                    mockAppModeProvider.setReviewMode(false)
                     mockUserSharedPreferences.authToken = ""
                     mockUserSharedPreferences.lastUpdate = ""
                 }
-                assertThat(userDataSource.appReviewMode).isFalse()
-            }
-
-            @Test
-            fun `clearAuthToken does not clear tokens if main variant is false`() {
-                clearMocks(mockUserSharedPreferences)
-
-                altVariant.clearAuthToken()
-
-                verify { mockUserSharedPreferences wasNot Called }
             }
         }
     }

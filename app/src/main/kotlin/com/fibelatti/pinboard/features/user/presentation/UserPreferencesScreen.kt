@@ -40,10 +40,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
+import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
@@ -59,12 +61,14 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun UserPreferencesScreen(
+    appStateViewModel: AppStateViewModel = hiltViewModel(),
     userPreferencesViewModel: UserPreferencesViewModel = hiltViewModel(),
     tagManagerViewModel: TagManagerViewModel = hiltViewModel(),
-    mainVariant: Boolean,
     onDynamicColorChange: () -> Unit,
     onDisableScreenshotsChange: () -> Unit,
 ) {
+    val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
+
     BoxWithConstraints(
         modifier = Modifier
             .background(color = ExtendedTheme.colors.backgroundNoOverlay)
@@ -80,7 +84,7 @@ fun UserPreferencesScreen(
             ) {
                 AppPreferencesContent(
                     userPreferencesViewModel = userPreferencesViewModel,
-                    mainVariant = mainVariant,
+                    appMode = appMode,
                     onDynamicColorChange = onDynamicColorChange,
                     onDisableScreenshotsChange = onDisableScreenshotsChange,
                 )
@@ -88,7 +92,7 @@ fun UserPreferencesScreen(
                 BookmarkingPreferencesContent(
                     userPreferencesViewModel = userPreferencesViewModel,
                     tagManagerViewModel = tagManagerViewModel,
-                    mainVariant = mainVariant,
+                    appMode = appMode,
                     modifier = Modifier.padding(top = 32.dp),
                 )
             }
@@ -100,7 +104,7 @@ fun UserPreferencesScreen(
 
                 AppPreferencesContent(
                     userPreferencesViewModel = userPreferencesViewModel,
-                    mainVariant = mainVariant,
+                    appMode = appMode,
                     onDynamicColorChange = onDynamicColorChange,
                     onDisableScreenshotsChange = onDisableScreenshotsChange,
                     modifier = Modifier.requiredWidth(childWidth),
@@ -109,7 +113,7 @@ fun UserPreferencesScreen(
                 BookmarkingPreferencesContent(
                     userPreferencesViewModel = userPreferencesViewModel,
                     tagManagerViewModel = tagManagerViewModel,
-                    mainVariant = mainVariant,
+                    appMode = appMode,
                     modifier = Modifier.requiredWidth(childWidth),
                 )
             }
@@ -120,7 +124,7 @@ fun UserPreferencesScreen(
 @Composable
 private fun AppPreferencesContent(
     userPreferencesViewModel: UserPreferencesViewModel,
-    mainVariant: Boolean,
+    appMode: AppMode,
     onDynamicColorChange: () -> Unit,
     onDisableScreenshotsChange: () -> Unit,
     modifier: Modifier = Modifier,
@@ -157,7 +161,7 @@ private fun AppPreferencesContent(
         onAlwaysUseSidePanelChange = userPreferencesViewModel::saveAlwaysUseSidePanel,
         onMarkAsReadOnOpenChange = userPreferencesViewModel::saveMarkAsReadOnOpen,
         onShowDescriptionInListsChange = userPreferencesViewModel::saveShowDescriptionInLists,
-        mainVariant = mainVariant,
+        appMode = appMode,
         modifier = modifier,
     )
 }
@@ -174,7 +178,7 @@ private fun AppPreferencesContent(
     onAlwaysUseSidePanelChange: (Boolean) -> Unit,
     onMarkAsReadOnOpenChange: (Boolean) -> Unit,
     onShowDescriptionInListsChange: (Boolean) -> Unit,
-    mainVariant: Boolean,
+    appMode: AppMode,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -264,7 +268,7 @@ private fun AppPreferencesContent(
             onOptionSelected = onDateFormatChange,
         )
 
-        if (mainVariant) {
+        if (AppMode.NO_API != appMode) {
             Text(
                 text = stringResource(id = R.string.user_preferences_periodic_sync),
                 modifier = Modifier.padding(top = 16.dp),
@@ -395,7 +399,7 @@ private fun AppPreferencesContent(
 private fun BookmarkingPreferencesContent(
     userPreferencesViewModel: UserPreferencesViewModel,
     tagManagerViewModel: TagManagerViewModel,
-    mainVariant: Boolean,
+    appMode: AppMode,
     modifier: Modifier = Modifier,
 ) {
     val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
@@ -424,7 +428,7 @@ private fun BookmarkingPreferencesContent(
             onAutoFillDescriptionChange = userPreferencesViewModel::saveAutoFillDescription,
             onPrivateByDefaultChange = userPreferencesViewModel::saveDefaultPrivate,
             onReadLaterByDefaultChange = userPreferencesViewModel::saveDefaultReadLater,
-            mainVariant = mainVariant,
+            appMode = appMode,
         )
 
         Text(
@@ -461,7 +465,7 @@ private fun BookmarkingPreferencesContent(
     onAutoFillDescriptionChange: (Boolean) -> Unit,
     onPrivateByDefaultChange: (Boolean) -> Unit,
     onReadLaterByDefaultChange: (Boolean) -> Unit,
-    mainVariant: Boolean,
+    appMode: AppMode,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -515,7 +519,7 @@ private fun BookmarkingPreferencesContent(
             modifier = Modifier.padding(top = 16.dp),
         )
 
-        if (mainVariant) {
+        if (AppMode.PINBOARD == appMode) {
             SettingToggle(
                 title = stringResource(id = R.string.user_preferences_default_private_label),
                 description = stringResource(id = R.string.user_preferences_default_private_description),
@@ -594,7 +598,7 @@ private fun AppPreferencesContentPreview(
             onAlwaysUseSidePanelChange = {},
             onMarkAsReadOnOpenChange = {},
             onShowDescriptionInListsChange = {},
-            mainVariant = true,
+            appMode = AppMode.PINBOARD,
         )
     }
 }
@@ -611,7 +615,7 @@ private fun BookmarkingPreferencesContentPreview(
             onAutoFillDescriptionChange = {},
             onPrivateByDefaultChange = {},
             onReadLaterByDefaultChange = {},
-            mainVariant = true,
+            appMode = AppMode.PINBOARD,
         )
     }
 }

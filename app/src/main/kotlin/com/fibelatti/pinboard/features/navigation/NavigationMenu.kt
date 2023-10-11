@@ -7,22 +7,12 @@ import com.fibelatti.core.extension.shareText
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.android.ComposeBottomSheetDialog
-import com.fibelatti.pinboard.core.di.AppReviewMode
-import com.fibelatti.pinboard.core.di.MainVariant
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
 
 object NavigationMenu {
 
     fun show(activity: AppCompatActivity) {
         ComposeBottomSheetDialog(activity) {
-            val entryPoint = EntryPointAccessors.fromApplication<NavigationMenuEntryPoint>(activity.applicationContext)
-
             NavigationMenuScreen(
-                mainVariant = entryPoint.mainVariant(),
-                appReviewMode = entryPoint.appReviewMode(),
                 onShareClicked = {
                     activity.shareText(
                         R.string.share_title,
@@ -44,15 +34,4 @@ object NavigationMenu {
             )
         }.show()
     }
-}
-
-@EntryPoint
-@InstallIn(SingletonComponent::class)
-internal interface NavigationMenuEntryPoint {
-
-    @MainVariant
-    fun mainVariant(): Boolean
-
-    @AppReviewMode
-    fun appReviewMode(): Boolean
 }

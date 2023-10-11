@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
@@ -25,8 +26,10 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.Private
@@ -47,15 +50,14 @@ import com.fibelatti.ui.theme.ExtendedTheme
 fun NavigationMenuScreen(
     appStateViewModel: AppStateViewModel = hiltViewModel(),
     authViewModel: AuthViewModel = hiltViewModel(),
-    mainVariant: Boolean = true,
-    appReviewMode: Boolean = false,
     onShareClicked: () -> Unit,
     onRateClicked: () -> Unit,
     onOptionSelected: () -> Unit,
 ) {
+    val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
+
     NavigationMenuScreen(
-        mainVariant = mainVariant,
-        appReviewMode = appReviewMode,
+        appMode = appMode,
         onAllClicked = {
             appStateViewModel.runAction(All)
             onOptionSelected()
@@ -117,8 +119,7 @@ fun NavigationMenuScreen(
 
 @Composable
 private fun NavigationMenuScreen(
-    mainVariant: Boolean = true,
-    appReviewMode: Boolean = false,
+    appMode: AppMode = AppMode.PINBOARD,
     onAllClicked: () -> Unit,
     onRecentClicked: () -> Unit,
     onPublicClicked: () -> Unit,
@@ -153,7 +154,7 @@ private fun NavigationMenuScreen(
             iconRes = R.drawable.ic_bookmarks,
         )
 
-        if (mainVariant) {
+        if (AppMode.PINBOARD == appMode) {
             MenuItem(
                 textRes = R.string.menu_navigation_public,
                 onClick = onPublicClicked,
@@ -191,19 +192,19 @@ private fun NavigationMenuScreen(
             iconRes = R.drawable.ic_tag,
         )
 
-        if (mainVariant && !appReviewMode) {
+        if (AppMode.PINBOARD == appMode) {
             MenuItem(
                 textRes = R.string.menu_navigation_notes,
                 onClick = onNotesClicked,
                 iconRes = R.drawable.ic_notes,
             )
-        }
 
-        MenuItem(
-            textRes = R.string.menu_navigation_popular,
-            onClick = onPopularClicked,
-            iconRes = R.drawable.ic_bookmarks,
-        )
+            MenuItem(
+                textRes = R.string.menu_navigation_popular,
+                onClick = onPopularClicked,
+                iconRes = R.drawable.ic_bookmarks,
+            )
+        }
 
         Divider(
             modifier = Modifier.padding(all = 16.dp),
@@ -216,7 +217,7 @@ private fun NavigationMenuScreen(
             iconRes = R.drawable.ic_preferences,
         )
 
-        if (mainVariant) {
+        if (AppMode.NO_API != appMode) {
             MenuItem(
                 textRes = R.string.menu_navigation_logout,
                 onClick = onLogoutClicked,

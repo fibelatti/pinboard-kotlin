@@ -9,11 +9,11 @@ import com.fibelatti.core.extension.hideKeyboard
 import com.fibelatti.core.extension.navigateBack
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
-import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
+import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.onEach
@@ -22,10 +22,9 @@ import java.util.UUID
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class UserPreferencesFragment @Inject constructor(
-    @MainVariant private val mainVariant: Boolean,
-) : BaseFragment() {
+class UserPreferencesFragment @Inject constructor() : BaseFragment() {
 
+    private val appStateViewModel: AppStateViewModel by activityViewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -33,7 +32,7 @@ class UserPreferencesFragment @Inject constructor(
 
         setThemedContent {
             UserPreferencesScreen(
-                mainVariant = mainVariant,
+                appStateViewModel = appStateViewModel,
                 onDynamicColorChange = ::restartActivity,
                 onDisableScreenshotsChange = ::restartActivity,
             )

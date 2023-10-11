@@ -6,9 +6,9 @@ import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.functional.map
 import com.fibelatti.core.functional.mapCatching
+import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
-import com.fibelatti.pinboard.core.di.AppReviewMode
-import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.ApiResultCodes
@@ -25,15 +25,14 @@ class TagsDataSource @Inject constructor(
     private val tagsApi: TagsApi,
     private val postsDao: PostsDao,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
-    @MainVariant private val mainVariant: Boolean,
-    @AppReviewMode private val appReviewMode: Boolean,
+    private val appModeProvider: AppModeProvider,
 ) : TagsRepository {
 
     private var localTags: List<Tag>? = null
 
     override fun getAllTags(): Flow<Result<List<Tag>>> = flow {
         emit(getLocalTags())
-        if (mainVariant && !appReviewMode && connectivityInfoProvider.isConnected()) {
+        if (AppMode.PINBOARD == appModeProvider.appMode.value && connectivityInfoProvider.isConnected()) {
             emit(getRemoteTags())
         }
     }.onEach { result -> result.getOrNull()?.let { localTags = it } }

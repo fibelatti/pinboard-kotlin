@@ -1,8 +1,8 @@
 package com.fibelatti.pinboard.features.user.data
 
+import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
-import com.fibelatti.pinboard.core.di.MainVariant
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
@@ -19,13 +19,11 @@ import javax.inject.Singleton
 @Singleton
 class UserDataSource @Inject constructor(
     private val userSharedPreferences: UserSharedPreferences,
-    @MainVariant private val mainVariant: Boolean,
+    private val appModeProvider: AppModeProvider,
 ) : UserRepository {
 
     private val _currentPreferences = MutableStateFlow(getPreferences())
     override val currentPreferences: StateFlow<UserPreferences> = _currentPreferences.asStateFlow()
-
-    override var appReviewMode: Boolean = false
 
     override var lastUpdate: String
         get() = userSharedPreferences.lastUpdate
@@ -183,19 +181,18 @@ class UserDataSource @Inject constructor(
 
     override fun getUsername(): String = userSharedPreferences.authToken.substringBefore(":")
 
-    override fun hasAuthToken(): Boolean = userSharedPreferences.authToken.isNotEmpty() || !mainVariant
+    override fun hasAuthToken(): Boolean = userSharedPreferences.authToken.isNotEmpty()
 
     override fun setAuthToken(authToken: String) {
-        if (!mainVariant || authToken.isBlank()) return
-
-        userSharedPreferences.authToken = authToken
+        when {
+            authToken.isBlank() -> return
+            authToken == "app_review_mode" -> appModeProvider.setReviewMode(true)
+            else -> userSharedPreferences.authToken = authToken
+        }
     }
 
     override fun clearAuthToken() {
-        if (!mainVariant) return
-
-        appReviewMode = false
-
+        appModeProvider.setReviewMode(false)
         userSharedPreferences.authToken = ""
         userSharedPreferences.lastUpdate = ""
     }

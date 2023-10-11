@@ -12,8 +12,6 @@ interface UserRepository {
 
     val currentPreferences: StateFlow<UserPreferences>
 
-    var appReviewMode: Boolean
-
     var lastUpdate: String
 
     var periodicSync: PeriodicSync

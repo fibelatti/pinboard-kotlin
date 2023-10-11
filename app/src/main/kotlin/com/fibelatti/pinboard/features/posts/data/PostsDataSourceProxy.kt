@@ -1,25 +1,28 @@
 package com.fibelatti.pinboard.features.posts.data
 
 import com.fibelatti.core.functional.Result
-import com.fibelatti.pinboard.core.di.MainVariant
+import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import com.fibelatti.pinboard.features.user.domain.UserRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class PostsDataSourceProxy @Inject constructor(
     private val postsDataSourcePinboardApi: PostsDataSourcePinboardApi,
     private val postsDataSourceNoApi: PostsDataSourceNoApi,
-    private val userRepository: UserRepository,
-    @MainVariant private val mainVariant: Boolean,
+    private val appModeProvider: AppModeProvider,
 ) : PostsRepository {
 
     private val repository: PostsRepository
-        get() = if (mainVariant && !userRepository.appReviewMode) postsDataSourcePinboardApi else postsDataSourceNoApi
+        get() = if (AppMode.PINBOARD == appModeProvider.appMode.value) {
+            postsDataSourcePinboardApi
+        } else {
+            postsDataSourceNoApi
+        }
 
     override suspend fun update(): Result<String> = repository.update()
 
