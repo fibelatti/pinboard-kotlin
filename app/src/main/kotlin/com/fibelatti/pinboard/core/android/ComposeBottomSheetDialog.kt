@@ -5,6 +5,7 @@ import android.view.WindowManager
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
+import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.setViewTreeOwners
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -18,7 +19,7 @@ import dagger.hilt.components.SingletonComponent
 class ComposeBottomSheetDialog(
     context: Context,
     content: @Composable BottomSheetDialog.() -> Unit,
-) : BottomSheetDialog(context) {
+) : BottomSheetDialog(context, R.style.AppTheme_BottomSheetDialog) {
 
     init {
         val entryPoint = EntryPointAccessors.fromApplication<DialogEntryPoint>(context.applicationContext)
