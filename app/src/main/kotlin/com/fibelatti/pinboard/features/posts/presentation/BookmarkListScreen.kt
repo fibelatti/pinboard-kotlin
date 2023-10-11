@@ -50,6 +50,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_PAGE_SIZE
+import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.android.composable.TextWithBlockquote
@@ -98,6 +99,7 @@ fun BookmarkListScreen(
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
+        val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
         val content by appStateViewModel.content.collectAsStateWithLifecycle()
 
         val currentState by rememberUpdatedState(
@@ -155,6 +157,7 @@ fun BookmarkListScreen(
             onTagClicked = { post -> appStateViewModel.runAction(PostsForTag(post)) },
             showPostDescription = currentState.showDescription,
             sidePanelVisible = sidePanelVisible,
+            appMode = appMode,
         )
     }
 }
@@ -176,6 +179,7 @@ fun BookmarkListScreen(
     onTagClicked: (Tag) -> Unit,
     showPostDescription: Boolean,
     sidePanelVisible: Boolean,
+    appMode: AppMode,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -189,6 +193,7 @@ fun BookmarkListScreen(
                 onClearClicked = onClearClicked,
                 onSaveClicked = onSaveClicked,
                 onShareClicked = { onShareClicked(searchParameters) },
+                appMode = appMode,
                 modifier = Modifier.padding(
                     start = leftPadding,
                     end = if (sidePanelVisible) 16.dp else rightPadding,
@@ -281,6 +286,7 @@ private fun ActiveSearch(
     onClearClicked: () -> Unit,
     onSaveClicked: () -> Unit,
     onShareClicked: () -> Unit,
+    appMode: AppMode,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -332,17 +338,19 @@ private fun ActiveSearch(
             )
         }
 
-        FilledTonalButton(
-            onClick = onShareClicked,
-            modifier = Modifier.heightIn(min = minHeight),
-            shape = shape,
-            contentPadding = padding,
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_share),
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-            )
+        if (AppMode.PINBOARD == appMode) {
+            FilledTonalButton(
+                onClick = onShareClicked,
+                modifier = Modifier.heightIn(min = minHeight),
+                shape = shape,
+                contentPadding = padding,
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_share),
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
         }
     }
 }
@@ -533,6 +541,7 @@ private fun BookmarkListScreenPreview(
             showPostDescription = true,
             onTagClicked = {},
             sidePanelVisible = false,
+            appMode = AppMode.PINBOARD,
         )
     }
 }
@@ -547,6 +556,7 @@ private fun ActiveSearchPreview() {
                 onClearClicked = {},
                 onSaveClicked = {},
                 onShareClicked = {},
+                appMode = AppMode.PINBOARD,
             )
         }
     }
