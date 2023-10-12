@@ -13,6 +13,7 @@ import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.randomBoolean
+import com.fibelatti.pinboard.randomString
 import com.google.common.truth.Truth.assertThat
 import io.mockk.Called
 import io.mockk.clearMocks
@@ -44,6 +45,8 @@ internal class UserDataSourceTest {
     }
 
     private val defaultPreferences = UserPreferences(
+        useLinkding = false,
+        linkdingInstanceUrl = "",
         periodicSync = PeriodicSync.Off,
         appearance = Appearance.SystemDefault,
         applyDynamicColors = false,
@@ -80,6 +83,75 @@ internal class UserDataSourceTest {
 
     @Nested
     inner class Methods {
+
+        @Nested
+        inner class UseLinkding {
+
+            @Test
+            fun `WHEN useLinkding is called THEN UserSharedPreferences is returned`() {
+                val value = randomBoolean()
+
+                // GIVEN
+                every { mockUserSharedPreferences.useLinkding } returns value
+
+                // THEN
+                assertThat(userDataSource.useLinkding).isEqualTo(value)
+            }
+
+            @Test
+            fun `WHEN useLinkding is called THEN UserSharedPreferences is set`() {
+                val value = randomBoolean()
+
+                // WHEN
+                userDataSource.useLinkding = value
+
+                // THEN
+                verify { mockUserSharedPreferences.useLinkding = value }
+            }
+        }
+
+        @Nested
+        inner class LinkdingInstanceUrl {
+
+            @Test
+            fun `WHEN linkdingInstanceUrl is called THEN UserSharedPreferences is returned`() {
+                val value = randomString()
+
+                // GIVEN
+                every { mockUserSharedPreferences.linkdingInstanceUrl } returns value
+
+                // THEN
+                assertThat(userDataSource.linkdingInstanceUrl).isEqualTo(value)
+            }
+
+            @Test
+            fun `WHEN linkdingInstanceUrl is called THEN UserSharedPreferences is set`() {
+                // GIVEN
+                every { mockUserSharedPreferences.useLinkding } returns true
+
+                val value = randomString()
+
+                // WHEN
+                userDataSource.linkdingInstanceUrl = value
+
+                // THEN
+                verify { mockUserSharedPreferences.linkdingInstanceUrl = value }
+            }
+
+            @Test
+            fun `GIVEN useLinkding is false WHEN linkdingInstanceUrl is called THEN UserSharedPreferences is set to empty`() {
+                // GIVEN
+                every { mockUserSharedPreferences.useLinkding } returns false
+
+                val value = randomString()
+
+                // WHEN
+                userDataSource.linkdingInstanceUrl = value
+
+                // THEN
+                verify { mockUserSharedPreferences.linkdingInstanceUrl = "" }
+            }
+        }
 
         @Nested
         inner class LastUpdate {
