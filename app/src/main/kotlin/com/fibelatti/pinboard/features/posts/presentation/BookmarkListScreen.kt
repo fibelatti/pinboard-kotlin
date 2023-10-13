@@ -35,7 +35,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
@@ -419,8 +418,7 @@ private fun BookmarkItem(
                     text = post.description,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                        .clip(RoundedCornerShape(size = 6.dp)),
+                        .padding(vertical = 8.dp),
                     textColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     textSize = 14.sp,
                     maxLines = 5,
