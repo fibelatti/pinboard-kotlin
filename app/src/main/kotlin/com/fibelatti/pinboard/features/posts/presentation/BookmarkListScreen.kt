@@ -406,13 +406,6 @@ private fun BookmarkItem(
                 style = MaterialTheme.typography.bodySmall,
             )
 
-            if (post.private == true || post.readLater == true) {
-                BookmarkFlags(
-                    private = post.private,
-                    readLater = post.readLater,
-                )
-            }
-
             if (showDescription && post.description.isNotBlank()) {
                 TextWithBlockquote(
                     text = post.description,
@@ -423,6 +416,13 @@ private fun BookmarkItem(
                     textSize = 14.sp,
                     maxLines = 5,
                     clickableLinks = false,
+                )
+            }
+
+            if (post.private == true || post.readLater == true) {
+                BookmarkFlags(
+                    private = post.private,
+                    readLater = post.readLater,
                 )
             }
 
