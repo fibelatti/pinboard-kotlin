@@ -1,4 +1,4 @@
-# Pinkt - Privacy Policy
+# Privacy Policy
 
 Pinkt is an Open Source app. It is provided by Filipe Belatti and distributed in the [Google Play Store](https://play.google.com/store/apps/details?id=com.fibelatti.pinboard) at no cost and is intended for use as is.
 
