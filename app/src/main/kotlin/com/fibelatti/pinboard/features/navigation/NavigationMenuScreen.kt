@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.navigation
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +22,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -52,6 +54,7 @@ fun NavigationMenuScreen(
     authViewModel: AuthViewModel = hiltViewModel(),
     onShareClicked: () -> Unit,
     onRateClicked: () -> Unit,
+    onLicensesClicked: () -> Unit,
     onOptionSelected: () -> Unit,
 ) {
     val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
@@ -114,6 +117,10 @@ fun NavigationMenuScreen(
             onRateClicked()
             onOptionSelected()
         },
+        onLicensesClicked = {
+            onLicensesClicked()
+            onOptionSelected()
+        },
     )
 }
 
@@ -134,6 +141,7 @@ private fun NavigationMenuScreen(
     onLogoutClicked: () -> Unit,
     onShareClicked: () -> Unit,
     onRateClicked: () -> Unit,
+    onLicensesClicked: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -242,9 +250,25 @@ private fun NavigationMenuScreen(
             textStyle = MaterialTheme.typography.bodySmall,
         )
 
+        AppVersionDetails(
+            onClick = onLicensesClicked,
+            modifier = Modifier.padding(start = 16.dp, top = 32.dp, end = 16.dp),
+        )
+    }
+}
+
+@Composable
+private fun AppVersionDetails(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick, role = Role.Button),
+    ) {
         Text(
             text = stringResource(id = R.string.about_developer),
-            modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontFamily = FontFamily(Font(R.font.jetbrainsmono)),
             style = MaterialTheme.typography.bodySmall,
@@ -252,10 +276,16 @@ private fun NavigationMenuScreen(
 
         Text(
             text = stringResource(R.string.about_version, BuildConfig.VERSION_NAME),
-            modifier = Modifier.padding(horizontal = 16.dp),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontFamily = FontFamily(Font(R.font.jetbrainsmono)),
             style = MaterialTheme.typography.bodySmall,
+        )
+
+        Text(
+            text = stringResource(id = R.string.about_oss_licenses),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontFamily = FontFamily(Font(R.font.jetbrainsmono)),
+            style = MaterialTheme.typography.labelSmall,
         )
     }
 }
@@ -312,6 +342,7 @@ private fun NavigationMenuScreenPreview() {
             onLogoutClicked = {},
             onShareClicked = {},
             onRateClicked = {},
+            onLicensesClicked = {},
         )
     }
 }

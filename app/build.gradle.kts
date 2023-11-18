@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.room)
+    id("com.google.android.gms.oss-licenses-plugin")
 }
 
 val jacocoEnabled: Boolean by project
@@ -207,6 +208,8 @@ dependencies {
     implementation(libs.logging.interceptor)
 
     implementation(libs.jsoup)
+
+    implementation(libs.oss.licenses.library)
 
     debugImplementation(libs.leakcanary)
 

@@ -249,6 +249,7 @@
     <string name="about_rate">Rate Pinkt on Google Play</string>
     <string name="about_developer">Developed with ❤ by Filipe Belatti</string>
     <string name="about_version">App version: %s</string>
+    <string name="about_oss_licenses">OSS Licenses</string>
 
     <!-- Share -->
     <string name="share_to_pinkt">Save to pinboard</string>

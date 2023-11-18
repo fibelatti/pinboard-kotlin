@@ -21,6 +21,10 @@ buildscript {
 
     val jacocoEnabled: String? by project
     extra["jacocoEnabled"] = jacocoEnabled?.toBoolean() ?: false
+
+    dependencies {
+        classpath(libs.oss.licenses.plugin)
+    }
 }
 
 allprojects {
