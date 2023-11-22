@@ -55,6 +55,7 @@ import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
 import com.fibelatti.ui.foundation.StableList
 import com.fibelatti.ui.foundation.imePaddingCompat
 import com.fibelatti.ui.foundation.navigationBarsPaddingCompat
+import com.fibelatti.ui.foundation.stableListOf
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -430,7 +431,7 @@ private fun EditBookmarkScreenPreview(
             searchTagInput = "",
             onSearchTagInputChanged = {},
             onAddTagClicked = {},
-            suggestedTags = StableList(),
+            suggestedTags = stableListOf(),
             onSuggestedTagClicked = {},
             currentTagsTitle = stringResource(id = R.string.tags_added_title),
             currentTags = post.tags.orEmpty().toStableList(),

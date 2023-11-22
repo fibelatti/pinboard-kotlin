@@ -54,12 +54,12 @@ fun ColumnToggleButtonGroup(
 ) {
     Column(modifier = modifier) {
         val mode = when {
-            items.value.all { it.text != "" && it.icon == EmptyPainter } -> ToggleButtonGroup.Mode.TextOnly
-            items.value.all { it.text == "" && it.icon != EmptyPainter } -> ToggleButtonGroup.Mode.IconOnly
+            items.all { it.text != "" && it.icon == EmptyPainter } -> ToggleButtonGroup.Mode.TextOnly
+            items.all { it.text == "" && it.icon != EmptyPainter } -> ToggleButtonGroup.Mode.IconOnly
             else -> ToggleButtonGroup.Mode.TextAndIcon
         }
 
-        items.value.forEachIndexed { index, toggleButtonGroupItem ->
+        items.forEachIndexed { index, toggleButtonGroupItem ->
             val isButtonSelected = selectedIndex == index
 
             ToggleButton(
@@ -71,7 +71,7 @@ fun ColumnToggleButtonGroup(
                     .offset(y = borderSize * -index),
                 buttonShape = when (index) {
                     0 -> shape.copy(bottomStart = SquareCorner, bottomEnd = SquareCorner)
-                    items.value.size - 1 -> shape.copy(topStart = SquareCorner, topEnd = SquareCorner)
+                    items.size - 1 -> shape.copy(topStart = SquareCorner, topEnd = SquareCorner)
                     else -> shape.copy(all = SquareCorner)
                 },
                 border = border,
@@ -107,12 +107,12 @@ fun RowToggleButtonGroup(
     Row(modifier = modifier) {
         val squareCorner = CornerSize(0.dp)
         val mode = when {
-            items.value.all { it.text != "" && it.icon == EmptyPainter } -> ToggleButtonGroup.Mode.TextOnly
-            items.value.all { it.text == "" && it.icon != EmptyPainter } -> ToggleButtonGroup.Mode.IconOnly
+            items.all { it.text != "" && it.icon == EmptyPainter } -> ToggleButtonGroup.Mode.TextOnly
+            items.all { it.text == "" && it.icon != EmptyPainter } -> ToggleButtonGroup.Mode.IconOnly
             else -> ToggleButtonGroup.Mode.TextOnly
         }
 
-        items.value.forEachIndexed { index, toggleButtonGroupItem ->
+        items.forEachIndexed { index, toggleButtonGroupItem ->
             val isButtonSelected = selectedIndex == index
 
             ToggleButton(
@@ -124,7 +124,7 @@ fun RowToggleButtonGroup(
                     .offset(x = borderSize * -index),
                 buttonShape = when (index) {
                     0 -> shape.copy(bottomEnd = squareCorner, topEnd = squareCorner)
-                    items.value.size - 1 -> shape.copy(topStart = squareCorner, bottomStart = squareCorner)
+                    items.size - 1 -> shape.copy(topStart = squareCorner, bottomStart = squareCorner)
                     else -> shape.copy(all = squareCorner)
                 },
                 border = border,

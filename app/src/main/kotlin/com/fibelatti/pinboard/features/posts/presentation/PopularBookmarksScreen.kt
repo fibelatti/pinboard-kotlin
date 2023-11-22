@@ -153,7 +153,7 @@ fun PopularBookmarksContent(
     onBookmarkLongClicked: (Post) -> Unit = {},
     sidePanelVisible: Boolean = false,
 ) {
-    if (posts.value.isEmpty()) {
+    if (posts.isEmpty()) {
         EmptyListContent(
             icon = painterResource(id = R.drawable.ic_pin),
             title = stringResource(id = R.string.posts_empty_title),
@@ -171,7 +171,7 @@ fun PopularBookmarksContent(
                 bottom = 100.dp,
             ),
         ) {
-            items(posts.value) { bookmark ->
+            items(posts) { bookmark ->
                 PopularBookmarkItem(
                     post = bookmark,
                     onPostClicked = onBookmarkClicked,

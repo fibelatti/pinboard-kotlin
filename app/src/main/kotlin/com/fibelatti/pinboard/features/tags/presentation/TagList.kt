@@ -76,6 +76,7 @@ import com.fibelatti.ui.foundation.asHorizontalPaddingDp
 import com.fibelatti.ui.foundation.imeCompat
 import com.fibelatti.ui.foundation.navigationBarsCompat
 import com.fibelatti.ui.foundation.navigationBarsPaddingCompat
+import com.fibelatti.ui.foundation.stableListOf
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -206,7 +207,7 @@ fun TagList(
                     header()
                 }
 
-                if (items.value.isEmpty() && searchInput.isBlank()) {
+                if (items.isEmpty() && searchInput.isBlank()) {
                     item {
                         EmptyListContent(
                             icon = painterResource(id = R.drawable.ic_tag),
@@ -225,7 +226,7 @@ fun TagList(
                         )
                     }
 
-                    items(items.value) { item ->
+                    items(items) { item ->
                         TagListItem(
                             item = item,
                             onTagClicked = onTagClicked,
@@ -410,7 +411,7 @@ private fun EmptyTagListPreview() {
     ExtendedTheme {
         TagList(
             header = {},
-            items = StableList(),
+            items = stableListOf(),
             isLoading = false,
         )
     }

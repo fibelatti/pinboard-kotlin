@@ -51,6 +51,7 @@ import com.fibelatti.ui.components.ToggleButtonGroup
 import com.fibelatti.ui.foundation.StableList
 import com.fibelatti.ui.foundation.asHorizontalPaddingDp
 import com.fibelatti.ui.foundation.navigationBarsCompat
+import com.fibelatti.ui.foundation.stableListOf
 import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -162,7 +163,7 @@ private fun NoteListContent(
             listState.scrollToItem(index = 0)
         }
 
-        if (notes.value.isEmpty()) {
+        if (notes.isEmpty()) {
             EmptyListContent(
                 icon = painterResource(id = R.drawable.ic_notes),
                 title = stringResource(id = R.string.notes_empty_title),
@@ -209,7 +210,7 @@ private fun NoteListContent(
                     bottom = 100.dp,
                 ),
             ) {
-                items(notes.value) { note ->
+                items(notes) { note ->
                     NoteListItem(
                         note = note,
                         onNoteClicked = onNoteClicked,
@@ -282,7 +283,7 @@ object NoteList {
 private fun EmptyNoteListScreenPreview() {
     ExtendedTheme {
         NoteListContent(
-            notes = StableList(),
+            notes = stableListOf(),
         )
     }
 }

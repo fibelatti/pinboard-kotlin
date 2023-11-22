@@ -125,12 +125,12 @@ fun TagManager(
             )
         }
 
-        if (suggestedTags.value.isNotEmpty()) {
+        if (suggestedTags.isNotEmpty()) {
             SingleLineChipGroup(
-                items = remember(suggestedTags.value) {
-                    suggestedTags.value.map { tag -> ChipGroup.Item(text = tag) }.toStableList()
+                items = remember(suggestedTags) {
+                    suggestedTags.map { tag -> ChipGroup.Item(text = tag) }.toStableList()
                 },
-                onItemClick = { item -> onSuggestedTagClicked(suggestedTags.value.first { it == item.text }) },
+                onItemClick = { item -> onSuggestedTagClicked(suggestedTags.first { it == item.text }) },
                 modifier = Modifier
                     .constrainAs(clSuggestedTags) {
                         start.linkTo(parent.start)
@@ -166,7 +166,7 @@ fun TagManager(
                 .constrainAs(clCurrentTagsTitle) {
                     start.linkTo(parent.start, margin = horizontalPadding)
                     top.linkTo(
-                        anchor = if (suggestedTags.value.isNotEmpty()) clDivider.bottom else clAddTagInput.bottom,
+                        anchor = if (suggestedTags.isNotEmpty()) clDivider.bottom else clAddTagInput.bottom,
                         margin = 16.dp,
                     )
                     end.linkTo(parent.end, margin = horizontalPadding)
@@ -179,8 +179,8 @@ fun TagManager(
         val closeIcon = painterResource(id = R.drawable.ic_close)
 
         MultilineChipGroup(
-            items = remember(currentTags.value) {
-                currentTags.value
+            items = remember(currentTags) {
+                currentTags
                     .map { tag -> ChipGroup.Item(text = tag.name, icon = closeIcon) }
                     .toStableList()
             },
@@ -192,7 +192,7 @@ fun TagManager(
                 width = Dimension.fillToConstraints
             },
             itemTonalElevation = 16.dp,
-            onItemIconClick = { item -> onRemoveCurrentTagClicked(currentTags.value.first { it.name == item.text }) },
+            onItemIconClick = { item -> onRemoveCurrentTagClicked(currentTags.first { it.name == item.text }) },
             itemColors = ChipGroup.colors(
                 unselectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 unselectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,

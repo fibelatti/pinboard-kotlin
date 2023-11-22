@@ -293,7 +293,7 @@ private fun MenuItemsContent(
     onMenuItemClick: (MainState.MenuItemComponent, data: Any?) -> Unit,
 ) {
     AnimatedContent(
-        targetState = menuItems.value,
+        targetState = menuItems,
         label = "MenuItemsContent",
     ) { items ->
         Row {

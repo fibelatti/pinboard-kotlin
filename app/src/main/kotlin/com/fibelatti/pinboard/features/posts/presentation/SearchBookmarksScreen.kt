@@ -205,9 +205,9 @@ fun SearchBookmarksScreen(
     searchTerm: String = "",
     onSearchTermChanged: (String) -> Unit = {},
     onKeyboardSearch: () -> Unit = {},
-    selectedTags: StableList<Tag> = StableList(),
+    selectedTags: StableList<Tag> = stableListOf(),
     onSelectedTagRemoved: (Tag) -> Unit = {},
-    availableTags: StableList<Tag> = StableList(),
+    availableTags: StableList<Tag> = stableListOf(),
     isLoadingTags: Boolean = false,
     onTagsSortOptionClicked: (TagList.Sorting) -> Unit = {},
     tagsSearchTerm: String = "",
@@ -243,7 +243,7 @@ fun SearchBookmarksScreen(
             )
 
             AnimatedVisibility(
-                visible = selectedTags.value.isNotEmpty(),
+                visible = selectedTags.isNotEmpty(),
                 enter = fadeIn() + expandVertically(),
                 exit = fadeOut() + shrinkVertically(),
             ) {
@@ -261,7 +261,7 @@ fun SearchBookmarksScreen(
                     )
 
                     SingleLineChipGroup(
-                        items = selectedTags.value
+                        items = selectedTags
                             .map {
                                 ChipGroup.Item(
                                     text = it.name,
@@ -270,13 +270,13 @@ fun SearchBookmarksScreen(
                             }
                             .toStableList(),
                         onItemClick = { item ->
-                            onSelectedTagRemoved(selectedTags.value.first { it.name == item.text })
+                            onSelectedTagRemoved(selectedTags.first { it.name == item.text })
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 8.dp),
                         onItemIconClick = { item ->
-                            onSelectedTagRemoved(selectedTags.value.first { it.name == item.text })
+                            onSelectedTagRemoved(selectedTags.first { it.name == item.text })
                         },
                         contentPadding = PaddingValues(horizontal = 16.dp),
                     )

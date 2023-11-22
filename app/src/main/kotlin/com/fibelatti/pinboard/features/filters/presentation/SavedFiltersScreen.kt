@@ -107,7 +107,7 @@ private fun SavedFiltersScreen(
     onSavedFilterClicked: (SavedFilter) -> Unit,
     onSavedFilterLongClicked: (SavedFilter) -> Unit,
 ) {
-    if (savedFilters.value.isEmpty()) {
+    if (savedFilters.isEmpty()) {
         EmptyListContent(
             icon = painterResource(id = R.drawable.ic_filter),
             title = stringResource(id = R.string.saved_filters_empty_title),
@@ -121,7 +121,7 @@ private fun SavedFiltersScreen(
                 .asPaddingValues(),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            items(savedFilters.value) { savedFilter ->
+            items(savedFilters) { savedFilter ->
                 SavedFilterItem(
                     savedFilter = savedFilter,
                     onClicked = onSavedFilterClicked,

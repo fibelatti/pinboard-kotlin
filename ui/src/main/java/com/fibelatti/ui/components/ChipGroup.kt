@@ -97,7 +97,7 @@ fun MultilineChipGroup(
 ) {
     Layout(
         content = {
-            items.value.forEach { item ->
+            items.forEach { item ->
                 Chip(
                     item = item,
                     onClick = onItemClick,
@@ -154,7 +154,7 @@ fun SingleLineChipGroup(
         contentPadding = contentPadding,
         horizontalArrangement = Arrangement.spacedBy(spacing),
     ) {
-        items(items.value) { item ->
+        items(items) { item ->
             Chip(
                 item = item,
                 onClick = onItemClick,
