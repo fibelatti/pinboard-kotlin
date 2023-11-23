@@ -43,6 +43,7 @@ jobs:
   instrumented_tests:
     name: Instrumented Tests
     runs-on: macOS-latest
+    timeout-minutes: 30
     needs: [ unit_tests, build ]
     steps:
       - name: Project Checkout
