@@ -105,21 +105,6 @@ android {
         }
     }
 
-    androidComponents {
-        onVariants { variant ->
-            val appName = StringBuilder().apply {
-                append(AppInfo.appName)
-                if (variant.name.contains("noapi", ignoreCase = true)) append(" NoApi")
-                if (variant.name.contains("debug", ignoreCase = true)) append(" Dev")
-            }.toString()
-
-            variant.resValues.put(
-                variant.makeResValueKey("string", "app_name"),
-                com.android.build.api.variant.ResValue(appName, null),
-            )
-        }
-    }
-
     sourceSets {
         forEach { sourceSet -> getByName(sourceSet.name).java.srcDirs("src/${sourceSet.name}/kotlin") }
 
@@ -138,10 +123,24 @@ android {
     testOptions {
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
+}
 
-    packaging {
-        resources.excludes.add("META-INF/LICENSE.md")
-        resources.excludes.add("META-INF/LICENSE-notice.md")
+androidComponents {
+    onVariants { variant ->
+        val appName = StringBuilder().apply {
+            append(AppInfo.appName)
+            if (variant.name.contains("noapi", ignoreCase = true)) append(" NoApi")
+            if (variant.name.contains("debug", ignoreCase = true)) append(" Dev")
+        }.toString()
+
+        variant.resValues.put(
+            variant.makeResValueKey("string", "app_name"),
+            com.android.build.api.variant.ResValue(appName, null),
+        )
+    }
+
+    onVariants(selector().withBuildType("release")) { variant ->
+        variant.packaging.resources.excludes.add("META-INF/*.version")
     }
 }
 
