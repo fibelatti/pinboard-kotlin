@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.spotless) apply false
     alias(libs.plugins.cache.fix) apply false
+    alias(libs.plugins.about.libraries) apply false
 }
 
 buildscript {
@@ -21,10 +22,6 @@ buildscript {
 
     val jacocoEnabled: String? by project
     extra["jacocoEnabled"] = jacocoEnabled?.toBoolean() ?: false
-
-    dependencies {
-        classpath(libs.oss.licenses.plugin)
-    }
 }
 
 allprojects {

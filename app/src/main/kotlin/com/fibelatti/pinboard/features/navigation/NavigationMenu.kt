@@ -7,7 +7,7 @@ import com.fibelatti.core.extension.shareText
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.android.ComposeBottomSheetDialog
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import com.fibelatti.pinboard.features.licenses.OssLicensesActivity
 
 object NavigationMenu {
 
@@ -32,7 +32,7 @@ object NavigationMenu {
                     activity.startActivity(intent)
                 },
                 onLicensesClicked = {
-                    activity.startActivity(Intent(activity, OssLicensesMenuActivity::class.java))
+                    activity.startActivity(Intent(activity, OssLicensesActivity::class.java))
                 },
                 onOptionSelected = { dismiss() },
             )

@@ -5,6 +5,8 @@
         <item name="android:navigationBarColor">@color/color_navigation_bar</item>
         <item name="android:windowBackground">@color/color_background</item>
 
+        <item name="colorPrimary">#0051E1</item>
+
         <item name="android:windowAnimationStyle">@style/AppTheme.AppActivityAnimation</item>
 
         <item name="enableEdgeToEdge">true</item>
@@ -12,10 +14,6 @@
         <item name="fontFamily">@font/opensansregular</item>
 
         <item name="materialAlertDialogTheme">@style/AppTheme.MaterialDialog</item>
-    </style>
-
-    <style name="AppTheme.WithActionBar" parent="Theme.Material3.DayNight">
-        <item name="colorPrimary">#0051E1</item>
     </style>
 
     <style name="AppTheme.Overlay" parent="ThemeOverlay.Material3.DynamicColors.DayNight">

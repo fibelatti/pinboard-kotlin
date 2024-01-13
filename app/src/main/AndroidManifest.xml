@@ -60,11 +60,8 @@
         </activity>
 
         <activity
-            android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
-            android:theme="@style/AppTheme.WithActionBar" />
-        <activity
-            android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
-            android:theme="@style/AppTheme.WithActionBar" />
+            android:name=".features.licenses.OssLicensesActivity"
+            android:exported="false" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"

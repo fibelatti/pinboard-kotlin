@@ -11,6 +11,7 @@ moshi = "1.15.0"
 okhttp = "4.12.0"
 retrofit = "2.9.0"
 room = "2.6.1"
+aboutLibraries = "10.10.0"
 junit5 = "5.10.1"
 
 [libraries]
@@ -61,8 +62,7 @@ converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.r
 
 jsoup = { module = "org.jsoup:jsoup", version = "1.17.2" }
 
-oss-licenses-plugin = { module = "com.google.android.gms:oss-licenses-plugin", version = "0.10.6" }
-oss-licenses-library = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.0.1" }
+about-libraries = { module = "com.mikepenz:aboutlibraries-compose", version.ref = "aboutLibraries" }
 
 leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version = "2.13" }
 
@@ -98,3 +98,4 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 room = { id = "androidx.room", version.ref = "room" }
 spotless = { id = "com.diffplug.spotless", version = "6.23.3" }
 cache-fix = { id = "org.gradle.android.cache-fix", version = "3.0" }
+about-libraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
