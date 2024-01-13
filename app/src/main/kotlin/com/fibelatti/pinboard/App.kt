@@ -33,6 +33,12 @@ class App : Application(), Configuration.Provider {
     @Inject
     lateinit var userRepository: UserRepository
 
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setMinimumLoggingLevel(android.util.Log.INFO)
+            .setWorkerFactory(injectingWorkerFactory)
+            .build()
+
     override fun onCreate() {
         super.onCreate()
 
@@ -82,9 +88,4 @@ class App : Application(), Configuration.Provider {
         } catch (ignored: Exception) {
         }
     }
-
-    override fun getWorkManagerConfiguration(): Configuration = Configuration.Builder()
-        .setMinimumLoggingLevel(android.util.Log.INFO)
-        .setWorkerFactory(injectingWorkerFactory)
-        .build()
 }
