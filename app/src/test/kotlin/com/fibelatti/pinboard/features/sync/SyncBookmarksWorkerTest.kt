@@ -4,6 +4,7 @@ import androidx.work.ListenableWorker
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.google.common.truth.Truth.assertThat
@@ -28,7 +29,7 @@ internal class SyncBookmarksWorkerTest {
         // GIVEN
         coEvery {
             postsRepository.getAllPosts(
-                newestFirst = true,
+                sortType = NewestFirst,
                 searchTerm = "",
                 tags = null,
                 untaggedOnly = false,
@@ -53,7 +54,7 @@ internal class SyncBookmarksWorkerTest {
         // GIVEN
         coEvery {
             postsRepository.getAllPosts(
-                newestFirst = true,
+                sortType = NewestFirst,
                 searchTerm = "",
                 tags = null,
                 untaggedOnly = false,

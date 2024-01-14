@@ -3,6 +3,8 @@ package com.fibelatti.pinboard.features.posts.domain.usecase
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.MockDataProvider.mockTags
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
+import com.fibelatti.pinboard.features.appstate.Alphabetical
+import com.fibelatti.pinboard.features.appstate.AlphabeticalReverse
 import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.appstate.OldestFirst
 import com.fibelatti.pinboard.features.appstate.SortType
@@ -33,7 +35,7 @@ class GetAllPostsTest {
     fun setup() {
         every {
             mockPostsRepository.getAllPosts(
-                newestFirst = any(),
+                sortType = any(),
                 searchTerm = any(),
                 tags = any(),
                 untaggedOnly = any(),
@@ -65,7 +67,7 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    newestFirst = sorting == NewestFirst,
+                    sortType = sorting,
                     searchTerm = any(),
                     tags = any(),
                     untaggedOnly = any(),
@@ -79,7 +81,7 @@ class GetAllPostsTest {
             }
         }
 
-        fun testCases(): List<SortType> = listOf(NewestFirst, OldestFirst)
+        fun testCases(): List<SortType> = listOf(NewestFirst, OldestFirst, Alphabetical, AlphabeticalReverse)
     }
 
     @Test
@@ -94,7 +96,7 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    newestFirst = true,
+                    sortType = NewestFirst,
                     searchTerm = mockUrlValid,
                     tags = null,
                     untaggedOnly = false,
@@ -120,7 +122,7 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    newestFirst = any(),
+                    sortType = any(),
                     searchTerm = any(),
                     tags = isNull(),
                     untaggedOnly = any(),
@@ -146,7 +148,7 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    newestFirst = any(),
+                    sortType = any(),
                     searchTerm = any(),
                     tags = any(),
                     untaggedOnly = true,
@@ -172,7 +174,7 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    newestFirst = any(),
+                    sortType = any(),
                     searchTerm = any(),
                     tags = mockTags,
                     untaggedOnly = any(),
@@ -198,7 +200,7 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    newestFirst = any(),
+                    sortType = any(),
                     searchTerm = any(),
                     tags = any(),
                     untaggedOnly = any(),
@@ -224,7 +226,7 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    newestFirst = any(),
+                    sortType = any(),
                     searchTerm = any(),
                     tags = any(),
                     untaggedOnly = any(),
@@ -250,7 +252,7 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    newestFirst = any(),
+                    sortType = any(),
                     searchTerm = any(),
                     tags = any(),
                     untaggedOnly = any(),
@@ -276,7 +278,7 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    newestFirst = any(),
+                    sortType = any(),
                     searchTerm = any(),
                     tags = any(),
                     untaggedOnly = any(),
@@ -302,7 +304,7 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    newestFirst = any(),
+                    sortType = any(),
                     searchTerm = any(),
                     tags = any(),
                     untaggedOnly = any(),
@@ -328,7 +330,7 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    newestFirst = any(),
+                    sortType = any(),
                     searchTerm = any(),
                     tags = any(),
                     untaggedOnly = any(),
@@ -354,7 +356,7 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    newestFirst = any(),
+                    sortType = any(),
                     searchTerm = any(),
                     tags = any(),
                     untaggedOnly = any(),
@@ -380,7 +382,7 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    newestFirst = any(),
+                    sortType = any(),
                     searchTerm = any(),
                     tags = any(),
                     untaggedOnly = any(),

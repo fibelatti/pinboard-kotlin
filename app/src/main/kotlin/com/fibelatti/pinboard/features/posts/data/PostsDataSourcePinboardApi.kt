@@ -23,6 +23,7 @@ import com.fibelatti.pinboard.core.network.ApiResultCodes
 import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.core.network.resultFromNetwork
 import com.fibelatti.pinboard.core.util.DateFormatter
+import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
@@ -194,7 +195,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
     }
 
     override fun getAllPosts(
-        newestFirst: Boolean,
+        sortType: SortType,
         searchTerm: String,
         tags: List<Tag>?,
         untaggedOnly: Boolean,
@@ -207,7 +208,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
     ): Flow<Result<PostListResult>> = flow {
         val localData: suspend (upToDate: Boolean) -> Result<PostListResult> = { upToDate: Boolean ->
             getLocalData(
-                newestFirst,
+                sortType,
                 searchTerm,
                 tags,
                 untaggedOnly,
@@ -338,7 +339,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
 
     @VisibleForTesting
     suspend fun getLocalData(
-        newestFirst: Boolean,
+        sortType: SortType,
         searchTerm: String,
         tags: List<Tag>?,
         untaggedOnly: Boolean,
@@ -360,7 +361,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
 
         val localData = if (localDataSize > 0) {
             postsDao.getAllPosts(
-                newestFirst = newestFirst,
+                sortType = sortType.index,
                 term = PostsDao.preFormatTerm(searchTerm),
                 tag1 = tags.getAndFormat(0),
                 tag2 = tags.getAndFormat(1),

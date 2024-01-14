@@ -89,7 +89,7 @@ internal class PostsDataSourceProxyTest {
 
             every {
                 postsDataSourcePinboardApi.getAllPosts(
-                    newestFirst = booleanArg,
+                    sortType = any(),
                     searchTerm = stringArg,
                     tags = any(),
                     untaggedOnly = booleanArg,
@@ -103,7 +103,7 @@ internal class PostsDataSourceProxyTest {
             } returns flowOf(expectedResult)
 
             val result = proxy.getAllPosts(
-                newestFirst = booleanArg,
+                sortType = mockk(),
                 searchTerm = stringArg,
                 tags = mockk(),
                 untaggedOnly = booleanArg,
@@ -264,7 +264,7 @@ internal class PostsDataSourceProxyTest {
 
             every {
                 postsDataSourceNoApi.getAllPosts(
-                    newestFirst = booleanArg,
+                    sortType = any(),
                     searchTerm = stringArg,
                     tags = any(),
                     untaggedOnly = booleanArg,
@@ -278,7 +278,7 @@ internal class PostsDataSourceProxyTest {
             } returns flowOf(expectedResult)
 
             val result = proxy.getAllPosts(
-                newestFirst = booleanArg,
+                sortType = mockk(),
                 searchTerm = stringArg,
                 tags = mockk(),
                 untaggedOnly = booleanArg,

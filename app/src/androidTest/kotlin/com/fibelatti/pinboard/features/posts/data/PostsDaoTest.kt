@@ -82,11 +82,11 @@ class PostsDaoTest : BaseDbTest() {
         toread = AppConfig.PinboardApiLiterals.NO,
     )
 
-    private val postFirst = createPostDto(hash = randomHash(), time = mockTime1)
-    private val postSecond = createPostDto(hash = randomHash(), time = mockTime2)
-    private val postThird = createPostDto(hash = randomHash(), time = mockTime3)
-    private val postFourth = createPostDto(hash = randomHash(), time = mockTime4)
-    private val postFifth = createPostDto(hash = randomHash(), time = mockTime5)
+    private val postFirst = createPostDto(hash = randomHash(), description = "A title", time = mockTime1)
+    private val postSecond = createPostDto(hash = randomHash(), description = "B title", time = mockTime2)
+    private val postThird = createPostDto(hash = randomHash(), description = "C title", time = mockTime3)
+    private val postFourth = createPostDto(hash = randomHash(), description = "D title", time = mockTime4)
+    private val postFifth = createPostDto(hash = randomHash(), description = "E title", time = mockTime5)
     // endregion
 
     private val postsDao get() = appDatabase.postDao()
@@ -481,7 +481,7 @@ class PostsDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenDbHasDataAndNewestFirstIsTrueWhenGetAllPostsIsCalledThenPostsAreReturnedOrderByTimeDesc() = runTest {
+    fun givenDbHasDataAndSortTypeIs0WhenGetAllPostsIsCalledThenPostsAreReturnedOrderByTimeDesc() = runTest {
         // GIVEN
         val list = listOf(
             postFirst,
@@ -493,7 +493,7 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getAllPosts(newestFirst = true)
+        val result = postsDao.getAllPosts(sortType = 0)
 
         // THEN
         assertThat(result).isEqualTo(
@@ -508,7 +508,7 @@ class PostsDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenDbHasDataAndNewestFirstIsFalseWhenGetAllPostsIsCalledThenPostsAreReturnedOrderByTimeAsc() = runTest {
+    fun givenDbHasDataAndSortTypeIs1WhenGetAllPostsIsCalledThenPostsAreReturnedOrderByTimeAsc() = runTest {
         // GIVEN
         val list = listOf(
             postFirst,
@@ -520,7 +520,7 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getAllPosts(newestFirst = false)
+        val result = postsDao.getAllPosts(sortType = 1)
 
         // THEN
         assertThat(result).isEqualTo(
@@ -530,6 +530,60 @@ class PostsDaoTest : BaseDbTest() {
                 postThird,
                 postFourth,
                 postFifth,
+            ),
+        )
+    }
+
+    @Test
+    fun givenDbHasDataAndSortTypeIs2WhenGetAllPostsIsCalledThenPostsAreReturnedOrderByDescriptionAsc() = runTest {
+        // GIVEN
+        val list = listOf(
+            postFirst,
+            postSecond,
+            postThird,
+            postFourth,
+            postFifth,
+        )
+        postsDao.savePosts(list)
+
+        // WHEN
+        val result = postsDao.getAllPosts(sortType = 2)
+
+        // THEN
+        assertThat(result).isEqualTo(
+            listOf(
+                postFirst,
+                postSecond,
+                postThird,
+                postFourth,
+                postFifth,
+            ),
+        )
+    }
+
+    @Test
+    fun givenDbHasDataAndSortTypeIs3WhenGetAllPostsIsCalledThenPostsAreReturnedOrderByDescriptionDesc() = runTest {
+        // GIVEN
+        val list = listOf(
+            postFirst,
+            postSecond,
+            postThird,
+            postFourth,
+            postFifth,
+        )
+        postsDao.savePosts(list)
+
+        // WHEN
+        val result = postsDao.getAllPosts(sortType = 3)
+
+        // THEN
+        assertThat(result).isEqualTo(
+            listOf(
+                postFifth,
+                postFourth,
+                postThird,
+                postSecond,
+                postFirst,
             ),
         )
     }

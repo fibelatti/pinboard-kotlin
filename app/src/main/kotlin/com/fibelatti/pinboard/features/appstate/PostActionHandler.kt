@@ -15,7 +15,7 @@ class PostActionHandler @Inject constructor(
         is SetPosts -> setPosts(action, currentContent)
         is GetNextPostPage -> getNextPostPage(currentContent)
         is SetNextPostPage -> setNextPostPage(action, currentContent)
-        is ToggleSorting -> toggleSorting(currentContent)
+        is SetSorting -> setSorting(action, currentContent)
         is EditPost -> editPost(action, currentContent)
         is EditPostFromShare -> editPostFromShare(action)
         is PostSaved -> postSaved(action, currentContent)
@@ -109,14 +109,11 @@ class PostActionHandler @Inject constructor(
             }
     }
 
-    private fun toggleSorting(currentContent: Content): Content {
+    private fun setSorting(action: SetSorting, currentContent: Content): Content {
         val body = { postListContent: PostListContent ->
             if (connectivityInfoProvider.isConnected()) {
                 postListContent.copy(
-                    sortType = when (postListContent.sortType) {
-                        is NewestFirst -> OldestFirst
-                        is OldestFirst -> NewestFirst
-                    },
+                    sortType = action.sortType,
                     shouldLoad = ShouldLoadFirstPage,
                 )
             } else {

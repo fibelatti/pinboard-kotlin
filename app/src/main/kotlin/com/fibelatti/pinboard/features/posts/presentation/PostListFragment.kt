@@ -25,10 +25,13 @@ import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AddPost
 import com.fibelatti.pinboard.features.appstate.All
+import com.fibelatti.pinboard.features.appstate.Alphabetical
+import com.fibelatti.pinboard.features.appstate.AlphabeticalReverse
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.Loaded
 import com.fibelatti.pinboard.features.appstate.NewestFirst
+import com.fibelatti.pinboard.features.appstate.OldestFirst
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.Private
@@ -36,14 +39,15 @@ import com.fibelatti.pinboard.features.appstate.Public
 import com.fibelatti.pinboard.features.appstate.Recent
 import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.SearchParameters
+import com.fibelatti.pinboard.features.appstate.SetSorting
 import com.fibelatti.pinboard.features.appstate.SortType
-import com.fibelatti.pinboard.features.appstate.ToggleSorting
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.appstate.ViewCategory
 import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import com.fibelatti.ui.foundation.stableListOf
 import com.fibelatti.ui.foundation.toStableList
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -210,14 +214,21 @@ class PostListFragment @Inject constructor(
 
         mainViewModel.menuItemClicks(ACTION_ID)
             .onEach { (menuItem, _) ->
-                val action = when (menuItem) {
-                    is MainState.MenuItemComponent.SearchBookmarks -> ViewSearch
-                    is MainState.MenuItemComponent.SortBookmarks -> ToggleSorting
-                    is MainState.MenuItemComponent.SyncBookmarks -> Refresh(force = true)
-                    else -> return@onEach
-                }
+                when (menuItem) {
+                    is MainState.MenuItemComponent.SearchBookmarks -> {
+                        appStateViewModel.runAction(ViewSearch)
+                    }
 
-                appStateViewModel.runAction(action)
+                    is MainState.MenuItemComponent.SortBookmarks -> {
+                        showSortingSelector()
+                    }
+
+                    is MainState.MenuItemComponent.SyncBookmarks -> {
+                        appStateViewModel.runAction(Refresh(force = true))
+                    }
+
+                    else -> Unit
+                }
             }
             .launchInAndFlowWith(viewLifecycleOwner)
         mainViewModel.fabClicks(ACTION_ID)
@@ -277,12 +288,37 @@ class PostListFragment @Inject constructor(
         val countFormatArg = if (count % AppConfig.API_PAGE_SIZE == 0) "$count+" else "$count"
         val countString = resources.getQuantityString(R.plurals.posts_quantity, count, countFormatArg)
         return resources.getString(
-            if (sortType == NewestFirst) {
-                R.string.posts_sorting_newest_first
-            } else {
-                R.string.posts_sorting_oldest_first
+            when (sortType) {
+                is NewestFirst -> R.string.posts_sorting_newest_first
+                is OldestFirst -> R.string.posts_sorting_oldest_first
+                is Alphabetical -> R.string.posts_sorting_alphabetical
+                is AlphabeticalReverse -> R.string.posts_sorting_alphabetical_reverse
             },
             countString,
+        )
+    }
+
+    private fun showSortingSelector() {
+        SelectionDialog.show(
+            context = requireContext(),
+            title = getString(R.string.menu_main_sorting),
+            options = stableListOf(
+                NewestFirst,
+                OldestFirst,
+                Alphabetical,
+                AlphabeticalReverse,
+            ),
+            optionName = { option ->
+                when (option) {
+                    is NewestFirst -> getString(R.string.sorting_newest_first)
+                    is OldestFirst -> getString(R.string.sorting_oldest_first)
+                    is Alphabetical -> getString(R.string.sorting_alphabetical)
+                    is AlphabeticalReverse -> getString(R.string.sorting_alphabetical_reverse)
+                }
+            },
+            onOptionSelected = { option ->
+                appStateViewModel.runAction(SetSorting(option))
+            },
         )
     }
 

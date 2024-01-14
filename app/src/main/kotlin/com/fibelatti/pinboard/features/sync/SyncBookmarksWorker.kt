@@ -5,6 +5,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import kotlinx.coroutines.flow.toList
@@ -16,12 +17,13 @@ class SyncBookmarksWorker(
 ) : CoroutineWorker(context, workerParams) {
 
     companion object {
+
         const val UNIQUE_WORK_NAME = "SyncBookmarksWork"
     }
 
     override suspend fun doWork(): Result {
         val success = postsRepository.getAllPosts(
-            newestFirst = true,
+            sortType = NewestFirst,
             searchTerm = "",
             tags = null,
             untaggedOnly = false,

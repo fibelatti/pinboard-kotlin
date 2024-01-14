@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.posts.data
 import com.fibelatti.core.functional.Result
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.AppModeProvider
+import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -37,7 +38,7 @@ class PostsDataSourceProxy @Inject constructor(
     )
 
     override fun getAllPosts(
-        newestFirst: Boolean,
+        sortType: SortType,
         searchTerm: String,
         tags: List<Tag>?,
         untaggedOnly: Boolean,
@@ -48,7 +49,7 @@ class PostsDataSourceProxy @Inject constructor(
         pageOffset: Int,
         forceRefresh: Boolean,
     ): Flow<Result<PostListResult>> = repository.getAllPosts(
-        newestFirst = newestFirst,
+        sortType = sortType,
         searchTerm = searchTerm,
         tags = tags,
         untaggedOnly = untaggedOnly,

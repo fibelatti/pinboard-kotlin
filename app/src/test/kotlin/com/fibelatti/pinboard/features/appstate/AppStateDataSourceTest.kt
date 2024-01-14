@@ -197,61 +197,61 @@ internal class AppStateDataSourceTest {
         fun testCases(): List<Pair<Action, ExpectedHandler>> = Action::class.allSealedSubclasses.map {
             when (it.objectInstance ?: mockkClass(it)) {
                 // Auth
-                UserLoggedIn -> UserLoggedIn to ExpectedHandler.NONE
-                UserLoggedOut -> UserLoggedOut to ExpectedHandler.NONE
-                UserUnauthorized -> UserUnauthorized to ExpectedHandler.NONE
+                is UserLoggedIn -> UserLoggedIn to ExpectedHandler.NONE
+                is UserLoggedOut -> UserLoggedOut to ExpectedHandler.NONE
+                is UserUnauthorized -> UserUnauthorized to ExpectedHandler.NONE
 
                 // Navigation
-                NavigateBack -> NavigateBack to ExpectedHandler.NAVIGATION
-                All -> All to ExpectedHandler.NAVIGATION
-                Recent -> Recent to ExpectedHandler.NAVIGATION
-                Public -> Public to ExpectedHandler.NAVIGATION
-                Private -> Private to ExpectedHandler.NAVIGATION
-                Unread -> Unread to ExpectedHandler.NAVIGATION
-                Untagged -> Untagged to ExpectedHandler.NAVIGATION
+                is NavigateBack -> NavigateBack to ExpectedHandler.NAVIGATION
+                is All -> All to ExpectedHandler.NAVIGATION
+                is Recent -> Recent to ExpectedHandler.NAVIGATION
+                is Public -> Public to ExpectedHandler.NAVIGATION
+                is Private -> Private to ExpectedHandler.NAVIGATION
+                is Unread -> Unread to ExpectedHandler.NAVIGATION
+                is Untagged -> Untagged to ExpectedHandler.NAVIGATION
                 is ViewPost -> mockk<ViewPost>() to ExpectedHandler.NAVIGATION
-                ViewSearch -> ViewSearch to ExpectedHandler.NAVIGATION
-                AddPost -> AddPost to ExpectedHandler.NAVIGATION
-                ViewTags -> ViewTags to ExpectedHandler.NAVIGATION
-                ViewSavedFilters -> ViewSavedFilters to ExpectedHandler.NAVIGATION
-                ViewNotes -> ViewNotes to ExpectedHandler.NAVIGATION
+                is ViewSearch -> ViewSearch to ExpectedHandler.NAVIGATION
+                is AddPost -> AddPost to ExpectedHandler.NAVIGATION
+                is ViewTags -> ViewTags to ExpectedHandler.NAVIGATION
+                is ViewSavedFilters -> ViewSavedFilters to ExpectedHandler.NAVIGATION
+                is ViewNotes -> ViewNotes to ExpectedHandler.NAVIGATION
                 is ViewNote -> mockk<ViewNote>() to ExpectedHandler.NAVIGATION
-                ViewPopular -> ViewPopular to ExpectedHandler.NAVIGATION
-                ViewPreferences -> ViewPreferences to ExpectedHandler.NAVIGATION
+                is ViewPopular -> ViewPopular to ExpectedHandler.NAVIGATION
+                is ViewPreferences -> ViewPreferences to ExpectedHandler.NAVIGATION
 
                 // Post
                 is Refresh -> mockk<Refresh>() to ExpectedHandler.POST
                 is SetPosts -> mockk<SetPosts>() to ExpectedHandler.POST
-                GetNextPostPage -> GetNextPostPage to ExpectedHandler.POST
+                is GetNextPostPage -> GetNextPostPage to ExpectedHandler.POST
                 is SetNextPostPage -> mockk<SetNextPostPage>() to ExpectedHandler.POST
-                ToggleSorting -> ToggleSorting to ExpectedHandler.POST
+                is SetSorting -> mockk<SetSorting>() to ExpectedHandler.POST
                 is EditPost -> mockk<EditPost>() to ExpectedHandler.POST
                 is EditPostFromShare -> mockk<EditPostFromShare>() to ExpectedHandler.POST
                 is PostSaved -> mockk<PostSaved>() to ExpectedHandler.POST
-                PostDeleted -> PostDeleted to ExpectedHandler.POST
+                is PostDeleted -> PostDeleted to ExpectedHandler.POST
 
                 // Search
-                RefreshSearchTags -> RefreshSearchTags to ExpectedHandler.SEARCH
+                is RefreshSearchTags -> RefreshSearchTags to ExpectedHandler.SEARCH
                 is SetTerm -> mockk<SetTerm>() to ExpectedHandler.SEARCH
                 is SetSearchTags -> mockk<SetSearchTags>() to ExpectedHandler.SEARCH
                 is AddSearchTag -> mockk<AddSearchTag>() to ExpectedHandler.SEARCH
                 is RemoveSearchTag -> mockk<RemoveSearchTag>() to ExpectedHandler.SEARCH
                 is Search -> mockk<Search>() to ExpectedHandler.SEARCH
-                ClearSearch -> ClearSearch to ExpectedHandler.SEARCH
+                is ClearSearch -> ClearSearch to ExpectedHandler.SEARCH
                 is ViewSavedFilter -> mockk<ViewSavedFilter>() to ExpectedHandler.SEARCH
 
                 // Tag
-                RefreshTags -> RefreshTags to ExpectedHandler.TAG
+                is RefreshTags -> RefreshTags to ExpectedHandler.TAG
                 is SetTags -> mockk<SetTags>() to ExpectedHandler.TAG
                 is PostsForTag -> mockk<PostsForTag>() to ExpectedHandler.TAG
 
                 // Notes
-                RefreshNotes -> RefreshNotes to ExpectedHandler.NOTE
+                is RefreshNotes -> RefreshNotes to ExpectedHandler.NOTE
                 is SetNotes -> mockk<SetNotes>() to ExpectedHandler.NOTE
                 is SetNote -> mockk<SetNote>() to ExpectedHandler.NOTE
 
                 // Popular
-                RefreshPopular -> RefreshPopular to ExpectedHandler.POPULAR
+                is RefreshPopular -> RefreshPopular to ExpectedHandler.POPULAR
                 is SetPopularPosts -> mockk<SetPopularPosts>() to ExpectedHandler.POPULAR
             }
         }

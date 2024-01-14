@@ -11,6 +11,7 @@ import com.fibelatti.pinboard.core.extension.replaceHtmlChars
 import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.core.util.DateFormatter
+import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
@@ -59,7 +60,7 @@ class PostsDataSourceNoApi @Inject constructor(
     }
 
     override fun getAllPosts(
-        newestFirst: Boolean,
+        sortType: SortType,
         searchTerm: String,
         tags: List<Tag>?,
         untaggedOnly: Boolean,
@@ -71,7 +72,7 @@ class PostsDataSourceNoApi @Inject constructor(
         forceRefresh: Boolean,
     ): Flow<Result<PostListResult>> = flow {
         val data = getLocalData(
-            newestFirst = newestFirst,
+            sortType = sortType,
             searchTerm = searchTerm,
             tags = tags,
             untaggedOnly = untaggedOnly,
@@ -122,7 +123,7 @@ class PostsDataSourceNoApi @Inject constructor(
 
     @VisibleForTesting
     suspend fun getLocalData(
-        newestFirst: Boolean,
+        sortType: SortType,
         searchTerm: String,
         tags: List<Tag>?,
         untaggedOnly: Boolean,
@@ -143,7 +144,7 @@ class PostsDataSourceNoApi @Inject constructor(
 
         val localData = if (localDataSize > 0) {
             postsDao.getAllPosts(
-                newestFirst = newestFirst,
+                sortType = sortType.index,
                 term = PostsDao.preFormatTerm(searchTerm),
                 tag1 = tags.getAndFormat(0),
                 tag2 = tags.getAndFormat(1),

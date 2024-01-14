@@ -492,7 +492,7 @@ internal class PostActionHandlerTest {
     }
 
     @Nested
-    inner class ToggleSortingTests {
+    inner class SetSortingTests {
 
         @Test
         fun `WHEN currentContent is not PostListContent THEN same content is returned`() = runTest {
@@ -500,7 +500,7 @@ internal class PostActionHandlerTest {
             val content = mockk<EditPostContent>()
 
             // WHEN
-            val result = postActionHandler.runAction(ToggleSorting, content)
+            val result = postActionHandler.runAction(SetSorting(mockk()), content)
 
             // THEN
             assertThat(result).isEqualTo(content)
@@ -513,49 +513,29 @@ internal class PostActionHandlerTest {
                 every { mockConnectivityInfoProvider.isConnected() } returns false
 
                 // WHEN
-                val result = postActionHandler.runAction(ToggleSorting, initialContent)
+                val result = postActionHandler.runAction(SetSorting(mockk()), initialContent)
 
                 // THEN
                 assertThat(result).isEqualTo(initialContent.copy(isConnected = false))
             }
 
         @Test
-        fun `GIVEN sortType is NewestFirst WHEN currentContent is PostListContent THEN updated content is returned`() =
+        fun `WHEN currentContent is PostListContent THEN updated content is returned`() =
             runTest {
                 // GIVEN
                 every { mockConnectivityInfoProvider.isConnected() } returns true
 
                 // WHEN
+                val sortType = mockk<SortType>()
                 val result = postActionHandler.runAction(
-                    ToggleSorting,
+                    SetSorting(sortType),
                     initialContent.copy(sortType = NewestFirst),
                 )
 
                 // THEN
                 assertThat(result).isEqualTo(
                     initialContent.copy(
-                        sortType = OldestFirst,
-                        shouldLoad = ShouldLoadFirstPage,
-                    ),
-                )
-            }
-
-        @Test
-        fun `GIVEN sortType is OldestFirst WHEN currentContent is PostListContent THEN updated content is returned`() =
-            runTest {
-                // GIVEN
-                every { mockConnectivityInfoProvider.isConnected() } returns true
-
-                // WHEN
-                val result = postActionHandler.runAction(
-                    ToggleSorting,
-                    initialContent.copy(sortType = OldestFirst),
-                )
-
-                // THEN
-                assertThat(result).isEqualTo(
-                    initialContent.copy(
-                        sortType = NewestFirst,
+                        sortType = sortType,
                         shouldLoad = ShouldLoadFirstPage,
                     ),
                 )
@@ -573,7 +553,7 @@ internal class PostActionHandlerTest {
                 )
 
                 // WHEN
-                val result = postActionHandler.runAction(ToggleSorting, content)
+                val result = postActionHandler.runAction(SetSorting(mockk()), content)
 
                 // THEN
                 assertThat(result).isEqualTo(
@@ -584,7 +564,7 @@ internal class PostActionHandlerTest {
             }
 
         @Test
-        fun `GIVEN sortType is NewestFirst WHEN currentContent is PostDetailContent THEN updated content is returned`() =
+        fun `WHEN currentContent is PostDetailContent THEN updated content is returned`() =
             runTest {
                 // GIVEN
                 every { mockConnectivityInfoProvider.isConnected() } returns true
@@ -595,8 +575,9 @@ internal class PostActionHandlerTest {
                 )
 
                 // WHEN
+                val sortType = mockk<SortType>()
                 val result = postActionHandler.runAction(
-                    ToggleSorting,
+                    SetSorting(sortType),
                     content,
                 )
 
@@ -604,35 +585,7 @@ internal class PostActionHandlerTest {
                 assertThat(result).isEqualTo(
                     content.copy(
                         previousContent = initialContent.copy(
-                            sortType = OldestFirst,
-                            shouldLoad = ShouldLoadFirstPage,
-                        ),
-                    ),
-                )
-            }
-
-        @Test
-        fun `GIVEN sortType is OldestFirst WHEN currentContent is PostDetailContent THEN updated content is returned`() =
-            runTest {
-                // GIVEN
-                every { mockConnectivityInfoProvider.isConnected() } returns true
-
-                val content = PostDetailContent(
-                    post = mockk(),
-                    previousContent = initialContent.copy(sortType = OldestFirst),
-                )
-
-                // WHEN
-                val result = postActionHandler.runAction(
-                    ToggleSorting,
-                    content,
-                )
-
-                // THEN
-                assertThat(result).isEqualTo(
-                    content.copy(
-                        previousContent = initialContent.copy(
-                            sortType = NewestFirst,
+                            sortType = sortType,
                             shouldLoad = ShouldLoadFirstPage,
                         ),
                     ),

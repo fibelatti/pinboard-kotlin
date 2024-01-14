@@ -39,7 +39,7 @@ interface PostsDao {
 
     @Query("$SELECT_ALL_FROM_POST $WHERE_SUB_QUERY $ORDER_BY_SUB_QUERY limit :offset, :limit")
     suspend fun getAllPosts(
-        newestFirst: Boolean = true,
+        sortType: Int = 0,
         term: String = "",
         tag1: String = "",
         tag2: String = "",
@@ -114,8 +114,10 @@ interface PostsDao {
             "and $WHERE_READ_LATER"
 
         private const val ORDER_BY_SUB_QUERY = "order by " +
-            "case when :newestFirst = 1 then time end DESC, " +
-            "case when :newestFirst = 0 then time end ASC"
+            "case when :sortType = 0 then time end DESC, " +
+            "case when :sortType = 1 then time end ASC," +
+            "case when :sortType = 2 then description end ASC," +
+            "case when :sortType = 3 then description end DESC"
 
         @JvmStatic
         fun preFormatTerm(term: String): String = term

@@ -72,6 +72,8 @@
 
     <string name="posts_sorting_newest_first">%s — Newest first</string>
     <string name="posts_sorting_oldest_first">%s — Oldest first</string>
+    <string name="posts_sorting_alphabetical">%s — A to Z</string>
+    <string name="posts_sorting_alphabetical_reverse">%s — Z to A</string>
 
     <string name="posts_saved_on">Saved on %s</string>
     <string name="posts_last_modified_on">Last modified on %s</string>
@@ -137,6 +139,12 @@
     <string name="search_share_title">Sharing search results</string>
     <string name="search_share_query">Share query</string>
     <string name="search_share_tags">Share tags</string>
+
+    <!-- Sorting -->
+    <string name="sorting_newest_first">By date (Newest First)</string>
+    <string name="sorting_oldest_first">By date (Oldest First)</string>
+    <string name="sorting_alphabetical">By title (A to Z)</string>
+    <string name="sorting_alphabetical_reverse">By title (Z to A)</string>
 
     <!-- Tags -->
     <string name="tags_title">Tags</string>

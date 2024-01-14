@@ -4,6 +4,7 @@ import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.MockDataProvider.mockTags
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_RECENT_QUANTITY
+import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
@@ -27,7 +28,7 @@ class GetRecentPostsTest {
     fun setup() {
         every {
             mockPostsRepository.getAllPosts(
-                newestFirst = any(),
+                sortType = any(),
                 searchTerm = any(),
                 tags = any(),
                 untaggedOnly = any(),
@@ -53,7 +54,7 @@ class GetRecentPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    newestFirst = true,
+                    sortType = NewestFirst,
                     searchTerm = mockUrlValid,
                     tags = null,
                     untaggedOnly = false,
@@ -79,7 +80,7 @@ class GetRecentPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    newestFirst = true,
+                    sortType = NewestFirst,
                     searchTerm = "",
                     tags = null,
                     untaggedOnly = false,
@@ -105,7 +106,7 @@ class GetRecentPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    newestFirst = true,
+                    sortType = NewestFirst,
                     searchTerm = "",
                     tags = null,
                     untaggedOnly = false,
@@ -131,7 +132,7 @@ class GetRecentPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    newestFirst = true,
+                    sortType = NewestFirst,
                     searchTerm = "",
                     tags = mockTags,
                     untaggedOnly = false,
@@ -157,7 +158,7 @@ class GetRecentPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    newestFirst = true,
+                    sortType = NewestFirst,
                     searchTerm = "",
                     tags = null,
                     untaggedOnly = false,
