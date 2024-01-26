@@ -29,8 +29,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.fibelatti.ui.R
-import com.fibelatti.ui.foundation.StableList
-import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -85,7 +83,7 @@ fun Chip(
 
 @Composable
 fun MultilineChipGroup(
-    items: StableList<ChipGroup.Item>,
+    items: List<ChipGroup.Item>,
     onItemClick: (ChipGroup.Item) -> Unit,
     modifier: Modifier = Modifier,
     onItemIconClick: (ChipGroup.Item) -> Unit = onItemClick,
@@ -138,7 +136,7 @@ fun MultilineChipGroup(
 
 @Composable
 fun SingleLineChipGroup(
-    items: StableList<ChipGroup.Item>,
+    items: List<ChipGroup.Item>,
     onItemClick: (ChipGroup.Item) -> Unit,
     modifier: Modifier = Modifier,
     onItemIconClick: (ChipGroup.Item) -> Unit = onItemClick,
@@ -223,7 +221,7 @@ private fun MultilineChipGroupPreview() {
         }
 
         MultilineChipGroup(
-            items = items.toStableList(),
+            items = items,
             onItemClick = {},
             modifier = Modifier.padding(8.dp),
             spacing = 8.dp,
@@ -245,7 +243,7 @@ private fun SingleLineChipGroupPreview() {
         }
 
         SingleLineChipGroup(
-            items = items.toStableList(),
+            items = items,
             onItemClick = {},
             modifier = Modifier.padding(8.dp),
             spacing = 8.dp,

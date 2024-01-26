@@ -47,8 +47,6 @@ import com.fibelatti.pinboard.features.appstate.ViewCategory
 import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import com.fibelatti.ui.foundation.stableListOf
-import com.fibelatti.ui.foundation.toStableList
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
@@ -88,7 +86,7 @@ class PostListFragment @Inject constructor(
         SelectionDialog.show(
             context = requireContext(),
             title = getString(R.string.quick_actions_title),
-            options = PostQuickActions.allOptions(post).toStableList(),
+            options = PostQuickActions.allOptions(post),
             optionName = { option -> getString(option.title) },
             optionIcon = PostQuickActions::icon,
             onOptionSelected = { option ->
@@ -154,7 +152,7 @@ class PostListFragment @Inject constructor(
                 SelectionDialog.show(
                     context = requireContext(),
                     title = getString(R.string.search_share_title),
-                    options = ShareSearchOption.entries.toStableList(),
+                    options = ShareSearchOption.entries,
                     optionName = { option ->
                         when (option) {
                             ShareSearchOption.QUERY -> getString(R.string.search_share_query)
@@ -203,7 +201,7 @@ class PostListFragment @Inject constructor(
                                 if (content.category == All && content.canForceSync) {
                                     add(MainState.MenuItemComponent.SyncBookmarks)
                                 }
-                            }.toStableList(),
+                            },
                             navigationIcon = R.drawable.ic_menu,
                         ),
                         floatingActionButton = MainState.FabComponent.Visible(ACTION_ID, R.drawable.ic_pin),
@@ -302,7 +300,7 @@ class PostListFragment @Inject constructor(
         SelectionDialog.show(
             context = requireContext(),
             title = getString(R.string.menu_main_sorting),
-            options = stableListOf(
+            options = listOf(
                 NewestFirst,
                 OldestFirst,
                 Alphabetical,

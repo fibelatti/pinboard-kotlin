@@ -52,11 +52,8 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagManager
 import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
-import com.fibelatti.ui.foundation.StableList
 import com.fibelatti.ui.foundation.imePaddingCompat
 import com.fibelatti.ui.foundation.navigationBarsPaddingCompat
-import com.fibelatti.ui.foundation.stableListOf
-import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -130,10 +127,10 @@ fun EditBookmarkScreen(
         searchTagInput = tagManagerState.currentQuery,
         onSearchTagInputChanged = tagManagerViewModel::setQuery,
         onAddTagClicked = tagManagerViewModel::addTag,
-        suggestedTags = tagManagerState.suggestedTags.toStableList(),
+        suggestedTags = tagManagerState.suggestedTags,
         onSuggestedTagClicked = tagManagerViewModel::addTag,
         currentTagsTitle = stringResource(id = tagManagerState.displayTitle),
-        currentTags = tagManagerState.tags.toStableList(),
+        currentTags = tagManagerState.tags,
         onRemoveCurrentTagClicked = tagManagerViewModel::removeTag,
         appMode = appMode,
     )
@@ -153,10 +150,10 @@ private fun EditBookmarkScreen(
     searchTagInput: String,
     onSearchTagInputChanged: (String) -> Unit,
     onAddTagClicked: (String) -> Unit,
-    suggestedTags: StableList<String>,
+    suggestedTags: List<String>,
     onSuggestedTagClicked: (String) -> Unit,
     currentTagsTitle: String,
-    currentTags: StableList<Tag>,
+    currentTags: List<Tag>,
     onRemoveCurrentTagClicked: (Tag) -> Unit,
     appMode: AppMode,
 ) {
@@ -214,10 +211,10 @@ private fun BookmarkContent(
     searchTagInput: String,
     onSearchTagInputChanged: (String) -> Unit,
     onAddTagClicked: (String) -> Unit,
-    suggestedTags: StableList<String>,
+    suggestedTags: List<String>,
     onSuggestedTagClicked: (String) -> Unit,
     currentTagsTitle: String,
-    currentTags: StableList<Tag>,
+    currentTags: List<Tag>,
     onRemoveCurrentTagClicked: (Tag) -> Unit,
     appMode: AppMode,
 ) {
@@ -431,10 +428,10 @@ private fun EditBookmarkScreenPreview(
             searchTagInput = "",
             onSearchTagInputChanged = {},
             onAddTagClicked = {},
-            suggestedTags = stableListOf(),
+            suggestedTags = emptyList(),
             onSuggestedTagClicked = {},
             currentTagsTitle = stringResource(id = R.string.tags_added_title),
-            currentTags = post.tags.orEmpty().toStableList(),
+            currentTags = post.tags.orEmpty(),
             onRemoveCurrentTagClicked = {},
             appMode = AppMode.PINBOARD,
         )

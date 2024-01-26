@@ -58,10 +58,8 @@ import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.RefreshPopular
 import com.fibelatti.pinboard.features.navigation.NavigationMenu
-import com.fibelatti.ui.foundation.StableList
 import com.fibelatti.ui.foundation.navigationBarsPaddingCompat
 import com.fibelatti.ui.foundation.pxToDp
-import com.fibelatti.ui.foundation.stableListOf
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -288,7 +286,7 @@ private fun MainBottomAppBar(
 @Composable
 @OptIn(ExperimentalAnimationApi::class)
 private fun MenuItemsContent(
-    menuItems: StableList<MainState.MenuItemComponent>,
+    menuItems: List<MainState.MenuItemComponent>,
     data: Any?,
     onMenuItemClick: (MainState.MenuItemComponent, data: Any?) -> Unit,
 ) {
@@ -382,7 +380,7 @@ private fun MainTopAppBarPreview() {
                     actionButton = MainState.ActionButtonComponent.Visible(id = "", label = "Action"),
                     bottomAppBar = MainState.BottomAppBarComponent.Visible(
                         id = "",
-                        menuItems = stableListOf(MainState.MenuItemComponent.SearchBookmarks),
+                        menuItems = listOf(MainState.MenuItemComponent.SearchBookmarks),
                         navigationIcon = R.drawable.ic_menu,
                     ),
                     floatingActionButton = MainState.FabComponent.Visible(id = "", icon = R.drawable.ic_pin),
@@ -414,7 +412,7 @@ private fun MainBottomAppBarPreview() {
                         actionButton = MainState.ActionButtonComponent.Visible(id = "", label = "Action"),
                         bottomAppBar = MainState.BottomAppBarComponent.Visible(
                             id = "",
-                            menuItems = stableListOf(MainState.MenuItemComponent.SearchBookmarks),
+                            menuItems = listOf(MainState.MenuItemComponent.SearchBookmarks),
                             navigationIcon = R.drawable.ic_menu,
                         ),
                         floatingActionButton = MainState.FabComponent.Visible(id = "", icon = R.drawable.ic_pin),

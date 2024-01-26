@@ -31,14 +31,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.fibelatti.ui.components.ToggleButtonGroup.SquareCorner
-import com.fibelatti.ui.foundation.StableList
-import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
 fun ColumnToggleButtonGroup(
-    items: StableList<ToggleButtonGroup.Item>,
+    items: List<ToggleButtonGroup.Item>,
     onButtonClick: (ToggleButtonGroup.Item) -> Unit,
     modifier: Modifier = Modifier,
     selectedIndex: Int = -1,
@@ -90,7 +88,7 @@ fun ColumnToggleButtonGroup(
 
 @Composable
 fun RowToggleButtonGroup(
-    items: StableList<ToggleButtonGroup.Item>,
+    items: List<ToggleButtonGroup.Item>,
     onButtonClick: (ToggleButtonGroup.Item) -> Unit,
     modifier: Modifier = Modifier,
     selectedIndex: Int = -1,
@@ -358,7 +356,7 @@ private fun RowToggleButtonGroupPreview() {
         }
 
         RowToggleButtonGroup(
-            items = items.toStableList(),
+            items = items,
             onButtonClick = {},
             selectedIndex = 1,
         )

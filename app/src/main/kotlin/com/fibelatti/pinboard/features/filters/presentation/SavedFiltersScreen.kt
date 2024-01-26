@@ -40,10 +40,7 @@ import com.fibelatti.pinboard.features.appstate.ViewSavedFilter
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
-import com.fibelatti.ui.foundation.StableList
 import com.fibelatti.ui.foundation.navigationBarsCompat
-import com.fibelatti.ui.foundation.stableListOf
-import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.flow.onEach
@@ -92,7 +89,7 @@ fun SavedFiltersScreen(
         }
 
         SavedFiltersScreen(
-            savedFilters = savedFilters.toStableList(),
+            savedFilters = savedFilters,
             onSavedFilterClicked = { savedFilter ->
                 appStateViewModel.runAction(ViewSavedFilter(savedFilter = savedFilter))
             },
@@ -103,7 +100,7 @@ fun SavedFiltersScreen(
 
 @Composable
 private fun SavedFiltersScreen(
-    savedFilters: StableList<SavedFilter>,
+    savedFilters: List<SavedFilter>,
     onSavedFilterClicked: (SavedFilter) -> Unit,
     onSavedFilterLongClicked: (SavedFilter) -> Unit,
 ) {
@@ -185,7 +182,7 @@ private fun SavedFilterItem(
                 )
 
                 val tags = remember(savedFilter.tags) {
-                    savedFilter.tags.map { tag -> ChipGroup.Item(text = tag.name) }.toStableList()
+                    savedFilter.tags.map { tag -> ChipGroup.Item(text = tag.name) }
                 }
 
                 MultilineChipGroup(
@@ -207,7 +204,7 @@ private fun SavedFilterScreenPreview(
 ) {
     ExtendedTheme {
         SavedFiltersScreen(
-            savedFilters = remember { savedFilters.toStableList() },
+            savedFilters = remember { savedFilters },
             onSavedFilterClicked = {},
             onSavedFilterLongClicked = {},
         )
@@ -219,7 +216,7 @@ private fun SavedFilterScreenPreview(
 private fun SavedFilterScreenEmptyPreview() {
     ExtendedTheme {
         SavedFiltersScreen(
-            savedFilters = stableListOf(),
+            savedFilters = emptyList(),
             onSavedFilterClicked = {},
             onSavedFilterLongClicked = {},
         )

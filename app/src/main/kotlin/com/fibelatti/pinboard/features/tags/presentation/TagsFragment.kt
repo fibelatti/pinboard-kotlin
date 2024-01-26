@@ -15,7 +15,6 @@ import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import com.fibelatti.ui.foundation.toStableList
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -56,7 +55,7 @@ class TagsFragment @Inject constructor() : BaseFragment() {
         SelectionDialog.show(
             context = requireContext(),
             title = getString(R.string.quick_actions_title),
-            options = TagQuickActions.allOptions(tag).toStableList(),
+            options = TagQuickActions.allOptions(tag),
             optionName = { getString(it.title) },
             optionIcon = TagQuickActions::icon,
             onOptionSelected = { option ->

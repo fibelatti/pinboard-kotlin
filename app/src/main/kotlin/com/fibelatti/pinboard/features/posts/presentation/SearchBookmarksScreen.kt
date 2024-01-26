@@ -56,9 +56,6 @@ import com.fibelatti.pinboard.features.tags.presentation.TagList
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
-import com.fibelatti.ui.foundation.StableList
-import com.fibelatti.ui.foundation.stableListOf
-import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.flow.onEach
@@ -105,12 +102,12 @@ fun SearchBookmarksScreen(
                     bottomAppBar = MainState.BottomAppBarComponent.Visible(
                         id = actionId,
                         menuItems = if (isActive) {
-                            stableListOf(
+                            listOf(
                                 MainState.MenuItemComponent.ClearSearch,
                                 MainState.MenuItemComponent.SaveSearch,
                             )
                         } else {
-                            stableListOf()
+                            emptyList()
                         },
                         data = SavedFilter(
                             searchTerm = searchContent.searchParameters.term,
@@ -175,9 +172,9 @@ fun SearchBookmarksScreen(
             searchTerm = searchContent.searchParameters.term,
             onSearchTermChanged = { newValue -> appStateViewModel.runAction(SetTerm(newValue)) },
             onKeyboardSearch = { appStateViewModel.runAction(Search) },
-            selectedTags = searchContent.searchParameters.tags.toStableList(),
+            selectedTags = searchContent.searchParameters.tags,
             onSelectedTagRemoved = { tag -> appStateViewModel.runAction(RemoveSearchTag(tag)) },
-            availableTags = tagsState.filteredTags.toStableList(),
+            availableTags = tagsState.filteredTags,
             isLoadingTags = tagsState.isLoading,
             onTagsSortOptionClicked = { sorting ->
                 tagsViewModel.sortTags(
@@ -199,14 +196,13 @@ fun SearchBookmarksScreen(
 }
 
 @Composable
-@OptIn(ExperimentalComposeUiApi::class)
 fun SearchBookmarksScreen(
     searchTerm: String = "",
     onSearchTermChanged: (String) -> Unit = {},
     onKeyboardSearch: () -> Unit = {},
-    selectedTags: StableList<Tag> = stableListOf(),
+    selectedTags: List<Tag> = emptyList(),
     onSelectedTagRemoved: (Tag) -> Unit = {},
-    availableTags: StableList<Tag> = stableListOf(),
+    availableTags: List<Tag> = emptyList(),
     isLoadingTags: Boolean = false,
     onTagsSortOptionClicked: (TagList.Sorting) -> Unit = {},
     tagsSearchTerm: String = "",
@@ -260,14 +256,12 @@ fun SearchBookmarksScreen(
                     )
 
                     SingleLineChipGroup(
-                        items = selectedTags
-                            .map {
-                                ChipGroup.Item(
-                                    text = it.name,
-                                    icon = painterResource(id = R.drawable.ic_close),
-                                )
-                            }
-                            .toStableList(),
+                        items = selectedTags.map {
+                            ChipGroup.Item(
+                                text = it.name,
+                                icon = painterResource(id = R.drawable.ic_close),
+                            )
+                        },
                         onItemClick = { item ->
                             onSelectedTagRemoved(selectedTags.first { it.name == item.text })
                         },
@@ -315,8 +309,8 @@ private fun DefaultSearchBookmarksScreenPreview() {
 private fun ActiveSearchBookmarksScreenPreview() {
     ExtendedTheme {
         SearchBookmarksScreen(
-            selectedTags = stableListOf(Tag(name = "dev")),
-            availableTags = stableListOf(Tag(name = "compose"), Tag(name = "ui")),
+            selectedTags = listOf(Tag(name = "dev")),
+            availableTags = listOf(Tag(name = "compose"), Tag(name = "ui")),
         )
     }
 }

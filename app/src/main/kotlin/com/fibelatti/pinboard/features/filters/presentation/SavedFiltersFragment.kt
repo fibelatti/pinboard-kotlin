@@ -15,7 +15,6 @@ import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
-import com.fibelatti.ui.foundation.toStableList
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -45,7 +44,7 @@ class SavedFiltersFragment @Inject constructor() : BaseFragment() {
         SelectionDialog.show(
             context = requireContext(),
             title = getString(R.string.quick_actions_title),
-            options = SavedFiltersQuickActions.allOptions(savedFilter).toStableList(),
+            options = SavedFiltersQuickActions.allOptions(savedFilter),
             optionName = { getString(it.title) },
             optionIcon = SavedFiltersQuickActions::icon,
             onOptionSelected = { option ->

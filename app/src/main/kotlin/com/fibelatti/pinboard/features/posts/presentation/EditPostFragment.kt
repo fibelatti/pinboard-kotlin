@@ -23,7 +23,6 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
-import com.fibelatti.ui.foundation.toStableList
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
@@ -206,7 +205,7 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
                                     add(MainState.MenuItemComponent.DeleteBookmark)
                                     add(MainState.MenuItemComponent.OpenInBrowser)
                                 }
-                            }.toStableList(),
+                            },
                             navigationIcon = null,
                             data = post,
                         ),

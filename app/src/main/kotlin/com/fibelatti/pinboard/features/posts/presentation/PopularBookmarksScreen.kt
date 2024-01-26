@@ -49,10 +49,8 @@ import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
-import com.fibelatti.ui.foundation.StableList
 import com.fibelatti.ui.foundation.asHorizontalPaddingDp
 import com.fibelatti.ui.foundation.navigationBarsCompat
-import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.flow.onEach
@@ -130,8 +128,7 @@ fun PopularBookmarksScreen(
 
         CrossfadeLoadingLayout(
             data = popularPostsContent.posts
-                .takeUnless { popularPostsContent.shouldLoad || popularPostsScreenState.isLoading }
-                ?.toStableList(),
+                .takeUnless { popularPostsContent.shouldLoad || popularPostsScreenState.isLoading },
             modifier = Modifier.fillMaxSize(),
         ) { posts ->
             PopularBookmarksContent(
@@ -147,7 +144,7 @@ fun PopularBookmarksScreen(
 
 @Composable
 fun PopularBookmarksContent(
-    posts: StableList<Post>,
+    posts: List<Post>,
     onPullToRefresh: () -> Unit = {},
     onBookmarkClicked: (Post) -> Unit = {},
     onBookmarkLongClicked: (Post) -> Unit = {},
@@ -216,7 +213,7 @@ private fun PopularBookmarkItem(
 
             if (post.tags != null) {
                 val items = remember(post.tags) {
-                    post.tags.map { tag -> ChipGroup.Item(text = tag.name) }.toStableList()
+                    post.tags.map { tag -> ChipGroup.Item(text = tag.name) }
                 }
                 MultilineChipGroup(
                     items = items,
@@ -236,7 +233,7 @@ private fun PopularBookmarksContentPreview(
 ) {
     ExtendedTheme {
         PopularBookmarksContent(
-            posts = posts.toStableList(),
+            posts = posts,
         )
     }
 }

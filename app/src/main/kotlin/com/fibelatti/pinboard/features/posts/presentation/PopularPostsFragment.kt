@@ -18,7 +18,6 @@ import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.fibelatti.ui.foundation.toStableList
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -48,7 +47,7 @@ class PopularPostsFragment @Inject constructor() : BaseFragment() {
         SelectionDialog.show(
             context = requireContext(),
             title = getString(R.string.quick_actions_title),
-            options = PopularPostQuickActions.allOptions(post).toStableList(),
+            options = PopularPostQuickActions.allOptions(post),
             optionName = { option -> getString(option.title) },
             optionIcon = PopularPostQuickActions::icon,
             onOptionSelected = { option ->

@@ -54,7 +54,6 @@ import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.ui.foundation.imePaddingCompat
 import com.fibelatti.ui.foundation.navigationBarsPaddingCompat
-import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.launch
@@ -449,10 +448,10 @@ private fun BookmarkingPreferencesContent(
             searchTagInput = tagState.currentQuery,
             onSearchTagInputChanged = tagManagerViewModel::setQuery,
             onAddTagClicked = tagManagerViewModel::addTag,
-            suggestedTags = tagState.suggestedTags.toStableList(),
+            suggestedTags = tagState.suggestedTags,
             onSuggestedTagClicked = tagManagerViewModel::addTag,
             currentTagsTitle = stringResource(id = tagState.displayTitle),
-            currentTags = tagState.tags.toStableList(),
+            currentTags = tagState.tags,
             onRemoveCurrentTagClicked = tagManagerViewModel::removeTag,
         )
     }
@@ -554,7 +553,7 @@ private fun <T> PreferenceSelectionButton(
             SelectionDialog.show(
                 context = localContext,
                 title = localContext.getString(title),
-                options = options().toStableList(),
+                options = options(),
                 optionName = { option -> localContext.getString(buttonText(option)) },
                 onOptionSelected = onOptionSelected,
             )

@@ -30,7 +30,6 @@ import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.notes.domain.model.Note
-import com.fibelatti.ui.foundation.stableListOf
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.flow.onEach
@@ -60,7 +59,7 @@ fun NoteDetailsScreen(
                     currentState.copy(
                         sidePanelAppBar = MainState.SidePanelAppBarComponent.Visible(
                             id = actionId,
-                            menuItems = stableListOf(MainState.MenuItemComponent.CloseSidePanel),
+                            menuItems = listOf(MainState.MenuItemComponent.CloseSidePanel),
                         ),
                     )
                 } else {

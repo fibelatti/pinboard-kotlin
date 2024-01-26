@@ -25,8 +25,6 @@ import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.fibelatti.ui.foundation.stableListOf
-import com.fibelatti.ui.foundation.toStableList
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
@@ -134,7 +132,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
                             actionButton = actionButtonState,
                             sidePanelAppBar = MainState.SidePanelAppBarComponent.Visible(
                                 id = actionId,
-                                menuItems = stableListOf(
+                                menuItems = listOf(
                                     MainState.MenuItemComponent.ShareBookmark,
                                     *menuItems.toTypedArray(),
                                     MainState.MenuItemComponent.CloseSidePanel,
@@ -150,7 +148,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
                             actionButton = actionButtonState,
                             bottomAppBar = MainState.BottomAppBarComponent.Visible(
                                 id = actionId,
-                                menuItems = menuItems.toStableList(),
+                                menuItems = menuItems,
                                 navigationIcon = null,
                                 data = post,
                             ),

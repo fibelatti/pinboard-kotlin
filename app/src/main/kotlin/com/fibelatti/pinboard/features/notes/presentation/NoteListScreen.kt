@@ -48,11 +48,8 @@ import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
 import com.fibelatti.ui.components.RowToggleButtonGroup
 import com.fibelatti.ui.components.ToggleButtonGroup
-import com.fibelatti.ui.foundation.StableList
 import com.fibelatti.ui.foundation.asHorizontalPaddingDp
 import com.fibelatti.ui.foundation.navigationBarsCompat
-import com.fibelatti.ui.foundation.stableListOf
-import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.flow.onEach
@@ -129,7 +126,7 @@ fun NoteListScreen(
             LoadingContent()
         } else {
             NoteListContent(
-                notes = noteListContent.notes.toStableList(),
+                notes = noteListContent.notes,
                 onSortOptionClicked = { noteListSorting ->
                     val sorting = when (noteListSorting) {
                         NoteList.Sorting.ByDateUpdatedDesc -> NoteSorting.ByDateUpdatedDesc
@@ -149,7 +146,7 @@ fun NoteListScreen(
 
 @Composable
 private fun NoteListContent(
-    notes: StableList<Note>,
+    notes: List<Note>,
     onSortOptionClicked: (NoteList.Sorting) -> Unit = {},
     onPullToRefresh: () -> Unit = {},
     onNoteClicked: (Note) -> Unit = {},
@@ -174,14 +171,12 @@ private fun NoteListContent(
                 .asHorizontalPaddingDp(addStart = 16.dp, addEnd = 16.dp)
 
             RowToggleButtonGroup(
-                items = NoteList.Sorting.entries
-                    .map { sorting ->
-                        ToggleButtonGroup.Item(
-                            id = sorting.id,
-                            text = stringResource(id = sorting.label),
-                        )
-                    }
-                    .toStableList(),
+                items = NoteList.Sorting.entries.map { sorting ->
+                    ToggleButtonGroup.Item(
+                        id = sorting.id,
+                        text = stringResource(id = sorting.label),
+                    )
+                },
                 onButtonClick = {
                     val (index, sorting) = requireNotNull(NoteList.Sorting.findByIdWithIndex(it.id))
                     selectedSortingIndex = index
@@ -283,7 +278,7 @@ object NoteList {
 private fun EmptyNoteListScreenPreview() {
     ExtendedTheme {
         NoteListContent(
-            notes = stableListOf(),
+            notes = emptyList(),
         )
     }
 }
@@ -300,7 +295,7 @@ private fun NoteListContentPreview() {
                 updatedAt = "${if (it % 2 == 0) it else it + 1}",
                 text = "Note text $it",
             )
-        }.toStableList()
+        }
 
         NoteListContent(
             notes = notes,

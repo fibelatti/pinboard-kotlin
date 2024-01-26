@@ -33,7 +33,6 @@ import com.fibelatti.ui.theme.ExtendedTheme
 
 object RenameTagDialog {
 
-    @OptIn(ExperimentalComposeUiApi::class)
     fun show(
         context: Context,
         tag: Tag,

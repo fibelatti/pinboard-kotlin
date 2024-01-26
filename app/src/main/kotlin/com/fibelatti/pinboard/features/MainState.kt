@@ -3,7 +3,6 @@ package com.fibelatti.pinboard.features
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.fibelatti.pinboard.R
-import com.fibelatti.ui.foundation.StableList
 import java.util.UUID
 
 data class MainState(
@@ -66,7 +65,7 @@ data class MainState(
 
         data class Visible(
             override val id: String,
-            val menuItems: StableList<MenuItemComponent>,
+            val menuItems: List<MenuItemComponent>,
             @DrawableRes val navigationIcon: Int? = null,
             val data: Any? = null,
         ) : BottomAppBarComponent()
@@ -160,7 +159,7 @@ data class MainState(
 
         data class Visible(
             override val id: String,
-            val menuItems: StableList<MenuItemComponent>,
+            val menuItems: List<MenuItemComponent>,
             val data: Any? = null,
         ) : SidePanelAppBarComponent()
     }

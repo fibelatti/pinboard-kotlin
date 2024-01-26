@@ -81,7 +81,6 @@ import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
 import com.fibelatti.ui.foundation.asHorizontalPaddingDp
 import com.fibelatti.ui.foundation.navigationBarsCompat
-import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.delay
@@ -429,7 +428,7 @@ private fun BookmarkItem(
 
             if (!post.tags.isNullOrEmpty()) {
                 val tags = remember(post.tags) {
-                    post.tags.map { tag -> ChipGroup.Item(text = tag.name) }.toStableList()
+                    post.tags.map { tag -> ChipGroup.Item(text = tag.name) }
                 }
 
                 MultilineChipGroup(

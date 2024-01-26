@@ -71,13 +71,10 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
 import com.fibelatti.ui.components.RowToggleButtonGroup
 import com.fibelatti.ui.components.ToggleButtonGroup
-import com.fibelatti.ui.foundation.StableList
 import com.fibelatti.ui.foundation.asHorizontalPaddingDp
 import com.fibelatti.ui.foundation.imeCompat
 import com.fibelatti.ui.foundation.navigationBarsCompat
 import com.fibelatti.ui.foundation.navigationBarsPaddingCompat
-import com.fibelatti.ui.foundation.stableListOf
-import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.flow.onEach
@@ -132,7 +129,7 @@ fun TagListScreen(
 
     TagList(
         header = {},
-        items = state.filteredTags.toStableList(),
+        items = state.filteredTags,
         isLoading = state.isLoading,
         modifier = Modifier.background(color = ExtendedTheme.colors.backgroundNoOverlay),
         onSortOptionClicked = { sorting ->
@@ -158,7 +155,7 @@ fun TagListScreen(
 @OptIn(ExperimentalFoundationApi::class)
 fun TagList(
     header: @Composable LazyItemScope.() -> Unit,
-    items: StableList<Tag>,
+    items: List<Tag>,
     isLoading: Boolean,
     modifier: Modifier = Modifier,
     onSortOptionClicked: (TagList.Sorting) -> Unit = {},
@@ -276,14 +273,12 @@ private fun TagListSortingControls(
         val focusManager = LocalFocusManager.current
 
         RowToggleButtonGroup(
-            items = TagList.Sorting.entries
-                .map { sorting ->
-                    ToggleButtonGroup.Item(
-                        id = sorting.id,
-                        text = stringResource(id = sorting.label),
-                    )
-                }
-                .toStableList(),
+            items = TagList.Sorting.entries.map { sorting ->
+                ToggleButtonGroup.Item(
+                    id = sorting.id,
+                    text = stringResource(id = sorting.label),
+                )
+            },
             onButtonClick = {
                 val (index, sorting) = requireNotNull(TagList.Sorting.findByIdWithIndex(it.id))
                 selectedSortingIndex = index
@@ -411,7 +406,7 @@ private fun EmptyTagListPreview() {
     ExtendedTheme {
         TagList(
             header = {},
-            items = stableListOf(),
+            items = emptyList(),
             isLoading = false,
         )
     }
@@ -423,7 +418,7 @@ private fun TagListPreview() {
     ExtendedTheme {
         TagList(
             header = {},
-            items = List(size = 5) { Tag(name = "Tag $it", posts = it * it) }.toStableList(),
+            items = List(size = 5) { Tag(name = "Tag $it", posts = it * it) },
             isLoading = false,
         )
     }

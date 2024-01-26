@@ -13,7 +13,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.key.onKeyEvent
@@ -31,22 +30,18 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
-import com.fibelatti.ui.foundation.StableList
-import com.fibelatti.ui.foundation.stableListOf
-import com.fibelatti.ui.foundation.toStableList
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
-@OptIn(ExperimentalComposeUiApi::class)
 fun TagManager(
     searchTagInput: String,
     onSearchTagInputChanged: (String) -> Unit,
     onAddTagClicked: (String) -> Unit,
-    suggestedTags: StableList<String>,
+    suggestedTags: List<String>,
     onSuggestedTagClicked: (String) -> Unit,
     currentTagsTitle: String,
-    currentTags: StableList<Tag>,
+    currentTags: List<Tag>,
     onRemoveCurrentTagClicked: (Tag) -> Unit,
     modifier: Modifier = Modifier,
     onSearchTagInputFocusChanged: (hasFocus: Boolean) -> Unit = {},
@@ -128,7 +123,7 @@ fun TagManager(
         if (suggestedTags.isNotEmpty()) {
             SingleLineChipGroup(
                 items = remember(suggestedTags) {
-                    suggestedTags.map { tag -> ChipGroup.Item(text = tag) }.toStableList()
+                    suggestedTags.map { tag -> ChipGroup.Item(text = tag) }
                 },
                 onItemClick = { item -> onSuggestedTagClicked(suggestedTags.first { it == item.text }) },
                 modifier = Modifier
@@ -180,9 +175,7 @@ fun TagManager(
 
         MultilineChipGroup(
             items = remember(currentTags) {
-                currentTags
-                    .map { tag -> ChipGroup.Item(text = tag.name, icon = closeIcon) }
-                    .toStableList()
+                currentTags.map { tag -> ChipGroup.Item(text = tag.name, icon = closeIcon) }
             },
             onItemClick = {},
             modifier = Modifier.constrainAs(clCurrentTags) {
@@ -212,10 +205,10 @@ private fun TagManagerPreview() {
             searchTagInput = "",
             onSearchTagInputChanged = {},
             onAddTagClicked = {},
-            suggestedTags = stableListOf("Android", "Dev"),
+            suggestedTags = listOf("Android", "Dev"),
             onSuggestedTagClicked = {},
             currentTagsTitle = stringResource(id = R.string.tags_added_title),
-            currentTags = stableListOf(Tag(name = "Kotlin"), Tag(name = "Compose")),
+            currentTags = listOf(Tag(name = "Kotlin"), Tag(name = "Compose")),
             onRemoveCurrentTagClicked = {},
         )
     }
