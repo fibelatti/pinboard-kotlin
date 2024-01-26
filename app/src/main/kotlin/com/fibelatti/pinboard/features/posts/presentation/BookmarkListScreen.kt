@@ -210,6 +210,7 @@ fun BookmarkListScreen(
                         end = if (sidePanelVisible) 16.dp else rightPadding,
                         bottom = 8.dp,
                     ),
+                color = MaterialTheme.colorScheme.primary,
             )
         }
 

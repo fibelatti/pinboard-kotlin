@@ -17,7 +17,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
@@ -68,9 +67,10 @@ fun WindowInsets.asHorizontalPaddingDp(
     return base.calculateLeftPadding(LayoutDirection.Ltr) to base.calculateRightPadding(LayoutDirection.Ltr)
 }
 
-fun Modifier.imePaddingCompat(): Modifier = composed {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        imePadding()
+@Composable
+fun Modifier.imePaddingCompat(): Modifier {
+    return this then if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        Modifier.imePadding()
     } else {
         var insetValue by remember { mutableIntStateOf(0) }
 
@@ -79,18 +79,19 @@ fun Modifier.imePaddingCompat(): Modifier = composed {
             insets
         }
 
-        padding(bottom = insetValue.pxToDp())
+        Modifier.padding(bottom = insetValue.pxToDp())
     }
 }
 
-fun Modifier.navigationBarsPaddingCompat(): Modifier = composed {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        navigationBarsPadding()
+@Composable
+fun Modifier.navigationBarsPaddingCompat(): Modifier {
+    return this then if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        Modifier.navigationBarsPadding()
     } else {
         val inset = ViewCompat.getRootWindowInsets(LocalView.current)
             ?.getInsets(WindowInsetsCompat.Type.navigationBars())
 
-        padding(
+        Modifier.padding(
             start = (inset?.left ?: 0).pxToDp(),
             top = (inset?.top ?: 0).pxToDp(),
             end = (inset?.right ?: 0).pxToDp(),
@@ -99,11 +100,12 @@ fun Modifier.navigationBarsPaddingCompat(): Modifier = composed {
     }
 }
 
-fun Modifier.topSystemBarsPaddingCompat(): Modifier = composed {
+@Composable
+fun Modifier.topSystemBarsPaddingCompat(): Modifier {
     val inset = ViewCompat.getRootWindowInsets(LocalView.current)
         ?.getInsets(WindowInsetsCompat.Type.systemBars())
 
-    padding(
+    return this then Modifier.padding(
         start = (inset?.left ?: 0).pxToDp(),
         top = (inset?.top ?: 0).pxToDp(),
         end = (inset?.right ?: 0).pxToDp(),
