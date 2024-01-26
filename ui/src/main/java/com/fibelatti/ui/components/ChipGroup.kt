@@ -3,11 +3,12 @@ package com.fibelatti.ui.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerBasedShape
@@ -22,11 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.fibelatti.ui.R
 import com.fibelatti.ui.preview.ThemePreviews
@@ -82,6 +81,7 @@ fun Chip(
 }
 
 @Composable
+@OptIn(ExperimentalLayoutApi::class)
 fun MultilineChipGroup(
     items: List<ChipGroup.Item>,
     onItemClick: (ChipGroup.Item) -> Unit,
@@ -93,43 +93,21 @@ fun MultilineChipGroup(
     itemTextStyle: TextStyle = MaterialTheme.typography.labelMedium,
     spacing: Dp = ChipGroup.Spacing,
 ) {
-    Layout(
-        content = {
-            items.forEach { item ->
-                Chip(
-                    item = item,
-                    onClick = onItemClick,
-                    onIconClick = onItemIconClick,
-                    shape = itemShape,
-                    tonalElevation = itemTonalElevation,
-                    colors = itemColors,
-                    textStyle = itemTextStyle,
-                )
-            }
-        },
-        modifier = modifier.wrapContentSize(),
-    ) { measurables, constraints ->
-        var currentRow = 0
-        var currentOrigin = IntOffset.Zero
-        val spacingValue = spacing.toPx().toInt()
-        val placeables = measurables.map { measurable ->
-            val placeable = measurable.measure(constraints)
-
-            if (currentOrigin.x > 0f && currentOrigin.x + placeable.width > constraints.maxWidth) {
-                currentRow += 1
-                currentOrigin = currentOrigin.copy(x = 0, y = currentOrigin.y + placeable.height + spacingValue)
-            }
-
-            placeable to currentOrigin.also {
-                currentOrigin = it.copy(x = it.x + placeable.width + spacingValue)
-            }
-        }
-
-        layout(
-            width = constraints.maxWidth,
-            height = placeables.lastOrNull()?.let { (placeable, origin) -> origin.y + placeable.height } ?: 0,
-        ) {
-            placeables.forEach { (placeable, origin) -> placeable.place(origin.x, origin.y) }
+    FlowRow(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(spacing),
+        verticalArrangement = Arrangement.spacedBy(spacing),
+    ) {
+        items.forEach { item ->
+            Chip(
+                item = item,
+                onClick = onItemClick,
+                onIconClick = onItemIconClick,
+                shape = itemShape,
+                tonalElevation = itemTonalElevation,
+                colors = itemColors,
+                textStyle = itemTextStyle,
+            )
         }
     }
 }
@@ -169,7 +147,7 @@ fun SingleLineChipGroup(
 object ChipGroup {
 
     internal val MinSize: Dp = 40.dp
-    internal val Spacing: Dp = 8.dp
+    internal val Spacing: Dp = 4.dp
     internal val TonalElevation: Dp = 2.dp
 
     @Immutable
