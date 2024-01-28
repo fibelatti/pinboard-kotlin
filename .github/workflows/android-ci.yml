@@ -53,7 +53,7 @@ jobs:
         uses: ./.github/actions/setup-android-build
 
       - name: Run instrumented tests
-        uses: reactivecircus/android-emulator-runner@v2.30.0
+        uses: reactivecircus/android-emulator-runner@v2.30.1
         with:
           api-level: 30
           arch: x86_64
