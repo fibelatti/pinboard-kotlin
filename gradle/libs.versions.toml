@@ -75,7 +75,7 @@ junit5-vintage = { module = "org.junit.vintage:junit-vintage-engine", version.re
 runner = { module = "androidx.test:runner", version = "1.5.2" }
 orchestrator = { module = "androidx.test:orchestrator", version = "1.4.2" }
 
-truth = { module = "com.google.truth:truth", version = "1.3.0" }
+truth = { module = "com.google.truth:truth", version = "1.4.0" }
 mockk = { module = "io.mockk:mockk", version = "1.13.9" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 arch-core-testing = { module = "androidx.arch.core:core-testing", version = "2.2.0" }
