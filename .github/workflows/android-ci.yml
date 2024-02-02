@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Project Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
 
       - name: Setup Android Build
         uses: ./.github/actions/setup-android-build
@@ -26,7 +26,7 @@ jobs:
 
     steps:
       - name: Project Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
 
       - name: Setup Android Build
         uses: ./.github/actions/setup-android-build
@@ -36,7 +36,7 @@ jobs:
 
       - name: Upload Pinboard API APK
         if: success()
-        uses: actions/upload-artifact@v4.3.0
+        uses: actions/upload-artifact@v4
         with:
           path: app/build/outputs/apk/pinboardapi/debug/*.apk
 
@@ -47,13 +47,13 @@ jobs:
     needs: [ unit_tests, build ]
     steps:
       - name: Project Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
 
       - name: Setup Android Build
         uses: ./.github/actions/setup-android-build
 
       - name: Run instrumented tests
-        uses: reactivecircus/android-emulator-runner@v2.30.1
+        uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 30
           arch: x86_64
