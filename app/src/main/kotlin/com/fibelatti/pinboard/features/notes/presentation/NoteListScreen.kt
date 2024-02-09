@@ -10,7 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,8 +49,6 @@ import com.fibelatti.pinboard.features.appstate.SidePanelContent
 import com.fibelatti.pinboard.features.appstate.ViewNote
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
-import com.fibelatti.ui.components.RowToggleButtonGroup
-import com.fibelatti.ui.components.ToggleButtonGroup
 import com.fibelatti.ui.foundation.asHorizontalPaddingDp
 import com.fibelatti.ui.foundation.navigationBarsCompat
 import com.fibelatti.ui.preview.ThemePreviews
@@ -145,6 +146,7 @@ fun NoteListScreen(
 }
 
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 private fun NoteListContent(
     notes: List<Note>,
     onSortOptionClicked: (NoteList.Sorting) -> Unit = {},
@@ -170,28 +172,43 @@ private fun NoteListContent(
             val (leftPadding, rightPadding) = WindowInsets.navigationBarsCompat
                 .asHorizontalPaddingDp(addStart = 16.dp, addEnd = 16.dp)
 
-            RowToggleButtonGroup(
-                items = NoteList.Sorting.entries.map { sorting ->
-                    ToggleButtonGroup.Item(
-                        id = sorting.id,
-                        text = stringResource(id = sorting.label),
-                    )
-                },
-                onButtonClick = {
-                    val (index, sorting) = requireNotNull(NoteList.Sorting.findByIdWithIndex(it.id))
-                    selectedSortingIndex = index
-                    onSortOptionClicked(sorting)
-                },
+            SingleChoiceSegmentedButtonRow(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
                         start = leftPadding,
                         end = if (sidePanelVisible) 16.dp else rightPadding,
                     ),
-                selectedIndex = selectedSortingIndex,
-                buttonHeight = 40.dp,
-                textStyle = MaterialTheme.typography.bodySmall,
-            )
+            ) {
+                NoteList.Sorting.entries.forEachIndexed { index, sorting ->
+                    SegmentedButton(
+                        selected = index == selectedSortingIndex,
+                        onClick = {
+                            selectedSortingIndex = index
+                            onSortOptionClicked(sorting)
+                        },
+                        shape = when (index) {
+                            0 -> RoundedCornerShape(
+                                topStart = 16.dp,
+                                bottomStart = 16.dp,
+                            )
+
+                            NoteList.Sorting.entries.size - 1 -> RoundedCornerShape(
+                                topEnd = 16.dp,
+                                bottomEnd = 16.dp,
+                            )
+
+                            else -> RoundedCornerShape(0.dp)
+                        },
+                        label = {
+                            Text(
+                                text = stringResource(id = sorting.label),
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        },
+                    )
+                }
+            }
 
             val (listLeftPadding, listRightPadding) = WindowInsets.navigationBarsCompat.asHorizontalPaddingDp()
 
@@ -258,18 +275,11 @@ private fun NoteListItem(
 
 object NoteList {
 
-    enum class Sorting(val id: String, val label: Int) {
-        ByDateUpdatedDesc(id = "date-updated-desc", label = R.string.note_sorting_date_updated_desc),
-        ByDateUpdatedAsc(id = "date-updated-asc", label = R.string.note_sorting_date_updated_asc),
-        AtoZ(id = "a-to-z", label = R.string.note_sorting_a_to_z),
+    enum class Sorting(val label: Int) {
+        ByDateUpdatedDesc(label = R.string.note_sorting_date_updated_desc),
+        ByDateUpdatedAsc(label = R.string.note_sorting_date_updated_asc),
+        AtoZ(label = R.string.note_sorting_a_to_z),
         ;
-
-        companion object {
-
-            fun findByIdWithIndex(id: String): IndexedValue<Sorting>? = entries
-                .withIndex()
-                .find { it.value.id == id }
-        }
     }
 }
 

@@ -25,11 +25,14 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -69,8 +72,6 @@ import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.RefreshTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
-import com.fibelatti.ui.components.RowToggleButtonGroup
-import com.fibelatti.ui.components.ToggleButtonGroup
 import com.fibelatti.ui.foundation.asHorizontalPaddingDp
 import com.fibelatti.ui.foundation.imeCompat
 import com.fibelatti.ui.foundation.navigationBarsCompat
@@ -257,6 +258,7 @@ fun TagList(
 }
 
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 private fun TagListSortingControls(
     onSortOptionClicked: (TagList.Sorting) -> Unit,
     onSearchInputChanged: (newValue: String) -> Unit,
@@ -272,32 +274,47 @@ private fun TagListSortingControls(
         var showFilter by rememberSaveable { mutableStateOf(false) }
         val focusManager = LocalFocusManager.current
 
-        RowToggleButtonGroup(
-            items = TagList.Sorting.entries.map { sorting ->
-                ToggleButtonGroup.Item(
-                    id = sorting.id,
-                    text = stringResource(id = sorting.label),
-                )
-            },
-            onButtonClick = {
-                val (index, sorting) = requireNotNull(TagList.Sorting.findByIdWithIndex(it.id))
-                selectedSortingIndex = index
-                showFilter = sorting == TagList.Sorting.Search
-
-                onSortOptionClicked(sorting)
-
-                if (!showFilter) {
-                    onSearchInputChanged("")
-                    onSearchInputFocusChanged(false)
-                }
-            },
+        SingleChoiceSegmentedButtonRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
-            selectedIndex = selectedSortingIndex,
-            buttonHeight = 40.dp,
-            textStyle = MaterialTheme.typography.bodySmall,
-        )
+        ) {
+            TagList.Sorting.entries.forEachIndexed { index, sorting ->
+                SegmentedButton(
+                    selected = index == selectedSortingIndex,
+                    onClick = {
+                        selectedSortingIndex = index
+                        showFilter = sorting == TagList.Sorting.Search
+
+                        onSortOptionClicked(sorting)
+
+                        if (!showFilter) {
+                            onSearchInputChanged("")
+                            onSearchInputFocusChanged(false)
+                        }
+                    },
+                    shape = when (index) {
+                        0 -> RoundedCornerShape(
+                            topStart = 16.dp,
+                            bottomStart = 16.dp,
+                        )
+
+                        TagList.Sorting.entries.size - 1 -> RoundedCornerShape(
+                            topEnd = 16.dp,
+                            bottomEnd = 16.dp,
+                        )
+
+                        else -> RoundedCornerShape(0.dp)
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(id = sorting.label),
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    },
+                )
+            }
+        }
 
         AnimatedVisibility(
             visible = showFilter,
@@ -382,20 +399,13 @@ private fun ScrollToTopButton(
 
 object TagList {
 
-    enum class Sorting(val id: String, val label: Int) {
+    enum class Sorting(val label: Int) {
 
-        Alphabetically(id = "alphabetically", label = R.string.tags_sorting_a_to_z),
-        MoreFirst(id = "more-first", label = R.string.tags_sorting_more_first),
-        LessFirst(id = "less-first", label = R.string.tags_sorting_less_first),
-        Search(id = "search", label = R.string.tags_sorting_filter),
+        Alphabetically(label = R.string.tags_sorting_a_to_z),
+        MoreFirst(label = R.string.tags_sorting_more_first),
+        LessFirst(label = R.string.tags_sorting_less_first),
+        Search(label = R.string.tags_sorting_filter),
         ;
-
-        companion object {
-
-            fun findByIdWithIndex(id: String): IndexedValue<Sorting>? = entries
-                .withIndex()
-                .find { it.value.id == id }
-        }
     }
 }
 
