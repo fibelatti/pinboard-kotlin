@@ -1,7 +1,7 @@
 [versions]
 activity = "1.8.2"
 agp = "8.2.2"
-composeCompiler = "1.5.9"
+composeCompiler = "1.5.10"
 coroutines = "1.8.0"
 hilt = "2.50"
 kotlin = "1.9.22"
