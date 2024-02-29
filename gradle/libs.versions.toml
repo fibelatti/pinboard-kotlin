@@ -1,6 +1,6 @@
 [versions]
 activity = "1.8.2"
-agp = "8.2.2"
+agp = "8.3.0"
 composeCompiler = "1.5.9"
 coroutines = "1.8.0"
 hilt = "2.50"
