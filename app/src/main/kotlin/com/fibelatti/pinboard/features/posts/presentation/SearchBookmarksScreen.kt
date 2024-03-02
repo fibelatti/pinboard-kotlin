@@ -67,7 +67,6 @@ fun SearchBookmarksScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
     searchPostViewModel: SearchPostViewModel = hiltViewModel(),
     tagsViewModel: TagsViewModel = hiltViewModel(),
-    onBackPressed: () -> Unit,
     onError: (Throwable?, () -> Unit) -> Unit,
 ) {
     Surface(
@@ -133,7 +132,7 @@ fun SearchBookmarksScreen(
 
         LaunchedEffect(Unit) {
             mainViewModel.navigationClicks(actionId)
-                .onEach { onBackPressed() }
+                .onEach { appStateViewModel.runAction(Search) }
                 .launchInAndFlowWith(localLifecycleOwner)
 
             mainViewModel.menuItemClicks(actionId)
