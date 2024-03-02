@@ -199,8 +199,10 @@ dependencies {
     debugImplementation(libs.compose.ui.test.manifest)
 
     // Misc
-    implementation(libs.hilt.android)
+    ksp(libs.dagger.hilt.compiler)
     ksp(libs.hilt.compiler)
+    implementation(libs.dagger.hilt.android)
+    implementation(libs.hilt.work)
     implementation(libs.hilt.navigation.compose)
 
     implementation(libs.moshi)

@@ -6,10 +6,10 @@ import android.os.Bundle
 import android.view.WindowManager
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.fibelatti.core.android.SimpleActivityLifecycleCallbacks
 import com.fibelatti.pinboard.core.android.Appearance
-import com.fibelatti.pinboard.features.InjectingWorkerFactory
 import com.fibelatti.pinboard.features.sync.PendingSyncManager
 import com.fibelatti.pinboard.features.sync.PeriodicSyncManager
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -28,7 +28,7 @@ class App : Application(), Configuration.Provider {
     lateinit var pendingSyncManager: PendingSyncManager
 
     @Inject
-    lateinit var injectingWorkerFactory: InjectingWorkerFactory
+    lateinit var hiltWorkerFactory: HiltWorkerFactory
 
     @Inject
     lateinit var userRepository: UserRepository
@@ -36,7 +36,7 @@ class App : Application(), Configuration.Provider {
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
             .setMinimumLoggingLevel(android.util.Log.INFO)
-            .setWorkerFactory(injectingWorkerFactory)
+            .setWorkerFactory(hiltWorkerFactory)
             .build()
 
     override fun onCreate() {
