@@ -24,7 +24,6 @@ internal class PostListContentTest {
             list = listOf(createPost()),
             totalCount = 42,
             canPaginate = true,
-            shouldScrollToTop = true,
         ),
         showDescription = false,
         sortType = mockk(),

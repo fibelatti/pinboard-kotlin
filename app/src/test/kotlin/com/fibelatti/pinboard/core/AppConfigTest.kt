@@ -16,8 +16,8 @@ internal class AppConfigTest {
     }
 
     @Test
-    fun `DEFAULT_PAGE_SIZE should be 100`() {
-        assertThat(AppConfig.DEFAULT_PAGE_SIZE).isEqualTo(100)
+    fun `DEFAULT_PAGE_SIZE should be 1000`() {
+        assertThat(AppConfig.DEFAULT_PAGE_SIZE).isEqualTo(1_000)
     }
 
     @Test

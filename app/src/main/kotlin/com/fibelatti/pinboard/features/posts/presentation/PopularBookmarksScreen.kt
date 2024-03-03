@@ -41,11 +41,11 @@ import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
-import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.RefreshPopular
 import com.fibelatti.pinboard.features.appstate.SidePanelContent
 import com.fibelatti.pinboard.features.appstate.ViewPost
+import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
@@ -70,11 +70,7 @@ fun PopularBookmarksScreen(
     ) {
         val content by appStateViewModel.content.collectAsStateWithLifecycle()
         val popularPostsContent by rememberUpdatedState(
-            newValue = when (val current = content) {
-                is PopularPostsContent -> current
-                is PopularPostDetailContent -> current.previousContent
-                else -> return@Surface
-            },
+            newValue = content.find<PopularPostsContent>() ?: return@Surface,
         )
 
         val popularPostsScreenState by popularPostsViewModel.screenState.collectAsStateWithLifecycle()

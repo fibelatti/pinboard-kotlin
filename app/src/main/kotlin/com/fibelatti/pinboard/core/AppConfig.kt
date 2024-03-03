@@ -15,7 +15,7 @@ object AppConfig {
     // Pinboard API requires a minimum of 3 seconds between each request
     const val API_THROTTLE_TIME = 3_000L
 
-    const val DEFAULT_PAGE_SIZE = 100
+    const val DEFAULT_PAGE_SIZE = 1_000
     const val DEFAULT_RECENT_QUANTITY = 50
     const val DEFAULT_FILTER_MAX_TAGS = 3
 

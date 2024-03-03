@@ -8,5 +8,4 @@ data class PostList(
     val list: List<Post>,
     val totalCount: Int,
     val canPaginate: Boolean,
-    val shouldScrollToTop: Boolean,
 )

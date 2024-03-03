@@ -4,6 +4,7 @@ import com.fibelatti.core.functional.Either
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import kotlin.reflect.KClass
 
 sealed class Content
 
@@ -49,6 +50,15 @@ data class PostListContent(
         get() = posts?.list?.size ?: 0
     val currentList: List<Post>
         get() = posts?.list ?: emptyList()
+}
+
+inline fun <reified T : Content> Content.find(): T? = find(T::class)
+
+@Suppress("UNCHECKED_CAST")
+fun <T : Content> Content.find(type: KClass<T>): T? = when {
+    type.isInstance(this) -> this as? T
+    this !is ContentWithHistory -> null
+    else -> previousContent.find(type)
 }
 
 data class PostDetailContent(

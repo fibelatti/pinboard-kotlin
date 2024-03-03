@@ -42,11 +42,11 @@ import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
-import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.pinboard.features.appstate.NoteListContent
 import com.fibelatti.pinboard.features.appstate.RefreshNotes
 import com.fibelatti.pinboard.features.appstate.SidePanelContent
 import com.fibelatti.pinboard.features.appstate.ViewNote
+import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
 import com.fibelatti.ui.foundation.asHorizontalPaddingDp
@@ -69,11 +69,7 @@ fun NoteListScreen(
     ) {
         val content by appStateViewModel.content.collectAsStateWithLifecycle()
         val noteListContent by rememberUpdatedState(
-            newValue = when (val value = content) {
-                is NoteListContent -> value
-                is NoteDetailContent -> value.previousContent
-                else -> return@Surface
-            },
+            newValue = content.find<NoteListContent>() ?: return@Surface,
         )
 
         val multiPanelEnabled by mainViewModel.state.collectAsStateWithLifecycle()

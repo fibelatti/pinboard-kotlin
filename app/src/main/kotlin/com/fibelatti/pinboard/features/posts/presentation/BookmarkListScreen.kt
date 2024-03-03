@@ -29,10 +29,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -57,11 +55,11 @@ import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.rememberScrollDirection
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainViewModel
+import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.GetNextPostPage
 import com.fibelatti.pinboard.features.appstate.Loaded
-import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostList
 import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.PostsForTag
@@ -71,8 +69,10 @@ import com.fibelatti.pinboard.features.appstate.ShouldForceLoad
 import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
 import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
 import com.fibelatti.pinboard.features.appstate.SidePanelContent
+import com.fibelatti.pinboard.features.appstate.ViewCategory
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
+import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -101,11 +101,7 @@ fun BookmarkListScreen(
         val content by appStateViewModel.content.collectAsStateWithLifecycle()
 
         val currentState by rememberUpdatedState(
-            newValue = when (val current = content) {
-                is PostListContent -> current
-                is PostDetailContent -> current.previousContent
-                else -> return@Surface
-            },
+            newValue = content.find<PostListContent>() ?: return@Surface,
         )
 
         val postListLoading = currentState.shouldLoad != Loaded
@@ -132,6 +128,7 @@ fun BookmarkListScreen(
         }
 
         BookmarkListScreen(
+            category = currentState.category,
             posts = currentState.posts,
             isLoading = (postListLoading || postDetailScreenState.isLoading) && !hasError,
             onScrollDirectionChanged = mainViewModel::setCurrentScrollDirection,
@@ -162,6 +159,7 @@ fun BookmarkListScreen(
 
 @Composable
 fun BookmarkListScreen(
+    category: ViewCategory,
     posts: PostList?,
     isLoading: Boolean,
     onScrollDirectionChanged: (ScrollDirection) -> Unit,
@@ -235,8 +233,6 @@ fun BookmarkListScreen(
             }
             val currentOnNextPageRequested by rememberUpdatedState(onNextPageRequested)
 
-            var shouldScrollToTop by remember(posts) { mutableStateOf(posts.shouldScrollToTop) }
-
             LaunchedEffect(posts.canPaginate, shouldRequestNewPage) {
                 if (posts.canPaginate && shouldRequestNewPage) currentOnNextPageRequested()
             }
@@ -245,12 +241,9 @@ fun BookmarkListScreen(
                 currentOnScrollDirectionChanged(scrollDirection)
             }
 
-            LaunchedEffect(shouldScrollToTop) {
-                if (shouldScrollToTop) {
-                    delay(200L)
-                    listState.scrollToItem(index = 0)
-                    shouldScrollToTop = false
-                }
+            LaunchedEffect(category, posts.list.first(), searchParameters) {
+                delay(200L)
+                listState.scrollToItem(index = 0)
             }
 
             val (listLeftPadding, listRightPadding) = WindowInsets.navigationBarsCompat.asHorizontalPaddingDp()
@@ -519,11 +512,11 @@ private fun BookmarkListScreenPreview(
 ) {
     ExtendedTheme {
         BookmarkListScreen(
+            category = All,
             posts = PostList(
                 list = posts,
                 totalCount = posts.size,
                 canPaginate = false,
-                shouldScrollToTop = false,
             ),
             isLoading = true,
             onScrollDirectionChanged = {},
