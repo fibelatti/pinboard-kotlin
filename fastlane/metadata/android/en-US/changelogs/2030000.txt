@@ -1,0 +1,7 @@
+- *New*: Sorting options — Sort your bookmarks by date or by title
+- *Fix*: Search filters are updated automatically when navigating back from the search screen
+- *Fix*: The bookmark list remembers the scrolled position after editing or deleting a bookmark
+
+Feedback and suggestions are always welcome, visit the project page to contribute!
+
+Thanks for using Pinkt!
