@@ -1,11 +1,11 @@
 [versions]
 activity = "1.8.2"
-agp = "8.3.0"
-composeCompiler = "1.5.10"
+agp = "8.3.1"
+composeCompiler = "1.5.11"
 coroutines = "1.8.0"
 hilt = "2.50"
 hiltExtensions = "1.2.0"
-kotlin = "1.9.22"
+kotlin = "1.9.23"
 lifecycle = "2.7.0"
 moshi = "1.15.1"
 okhttp = "4.12.0"
@@ -39,7 +39,7 @@ viewbinding = { module = "androidx.databinding:viewbinding", version.ref = "agp"
 window = { module = "androidx.window:window", version = "1.2.0" }
 
 compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "composeCompiler" }
-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.02.02" }
+compose-bom = { module = "androidx.compose:compose-bom", version = "2024.03.00" }
 compose-runtime = { module = "androidx.compose.runtime:runtime" }
 compose-material = { module = "androidx.compose.material:material" }
 compose-material3 = { module = "androidx.compose.material3:material3" }
@@ -95,7 +95,7 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
-ksp = { id = "com.google.devtools.ksp", version = "1.9.22-1.0.18" }
+ksp = { id = "com.google.devtools.ksp", version = "1.9.23-1.0.19" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 room = { id = "androidx.room", version.ref = "room" }
 spotless = { id = "com.diffplug.spotless", version = "6.25.0" }

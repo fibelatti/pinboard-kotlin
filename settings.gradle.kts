@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 rootProject.name = "Pinkt"
 rootProject.buildFileName = "build.gradle.kts"
 
@@ -7,13 +9,13 @@ include(":ui")
 
 pluginManagement {
     repositories {
-        gradlePluginPortal()
         mavenCentral {
             content {
                 excludeGroupByRegex("com\\.android.*")
             }
         }
         google()
+        gradlePluginPortal()
     }
 }
 
