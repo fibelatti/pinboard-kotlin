@@ -22,7 +22,7 @@ coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", ve
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 
 appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1" }
-core-ktx = { module = "androidx.core:core-ktx", version = "1.12.0" }
+core-ktx = { module = "androidx.core:core-ktx", version = "1.13.1" }
 activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity" }
 fragment-ktx = { module = "androidx.fragment:fragment-ktx", version = "1.6.2" }
 material = { module = "com.google.android.material:material", version = "1.11.0" }
