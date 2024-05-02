@@ -65,10 +65,7 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
         with(mainPanelFragment.childFragmentManager) {
             if (findFragmentByTag(AuthFragment.TAG) == null) {
                 commit {
-                    setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-                    for (fragment in fragments) {
-                        remove(fragment)
-                    }
+                    for (fragment in fragments) remove(fragment)
                     add(mainPanelFragment.requireViewId(), activity.createFragment<AuthFragment>(), AuthFragment.TAG)
                 }
             }
@@ -78,7 +75,6 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
     fun showPostList() {
         if (mainPanelFragment.childFragmentManager.findFragmentByTag(PostListFragment.TAG) == null) {
             mainPanelFragment.childFragmentManager.commit {
-                setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                 replace(
                     mainPanelFragment.requireViewId(),
                     activity.createFragment<PostListFragment>(),
@@ -163,7 +159,9 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
         if (mainPanelFragment.childFragmentManager.findFragmentByTag(NoteListFragment.TAG) == null) {
             mainPanelFragment.childFragmentManager.slideUp(
                 containerId = mainPanelFragment.requireViewId(),
-                fragment = activity.createFragment<NoteListFragment>(),
+                fragment = activity.createFragment<NoteListFragment>().apply {
+                    enterTransitionRes = R.transition.slide_up
+                },
                 tag = NoteListFragment.TAG,
             )
         } else {

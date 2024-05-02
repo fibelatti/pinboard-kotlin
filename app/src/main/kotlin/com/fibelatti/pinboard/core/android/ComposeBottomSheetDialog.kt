@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.WindowManager
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.extension.setThemedContent
@@ -39,6 +40,7 @@ class ComposeBottomSheetDialog(
 
         setContentView(
             ComposeView(context).apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setThemedContent {
                     content()
                 }

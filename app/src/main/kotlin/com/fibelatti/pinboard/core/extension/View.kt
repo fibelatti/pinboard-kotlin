@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import com.fibelatti.core.extension.getContentView
 import com.fibelatti.pinboard.R
@@ -57,6 +58,7 @@ fun View.smoothScrollY(scrollBy: Int) {
 fun View.showBanner(message: String) {
     val banner = ComposeView(context).apply {
         alpha = 0F
+        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setThemedContent {
             Banner(message = message)
         }

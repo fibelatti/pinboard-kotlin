@@ -171,8 +171,9 @@ dependencies {
     // Android
     implementation(libs.appcompat)
     implementation(libs.core.ktx)
-    implementation(libs.activity.ktx)
+    implementation(libs.activity)
     implementation(libs.fragment.ktx)
+    implementation(libs.transition.ktx)
     implementation(libs.material)
     implementation(libs.constraint.layout)
     implementation(libs.constraint.layout.compose)

@@ -23,8 +23,10 @@ fun FragmentManager.slideUp(
     },
 ) {
     commit {
-        setCustomAnimations(R.anim.slide_up, -1, -1, R.anim.slide_down)
-        operation(containerId, fragment, tag)
+        val destination = fragment.apply {
+            enterTransition = R.transition.slide_up
+        }
+        operation(containerId, destination, tag)
 
         if (addToBackStack) {
             addToBackStack(tag)

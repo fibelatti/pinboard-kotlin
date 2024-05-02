@@ -38,10 +38,10 @@ fun getViewToApplyInsets(rootView: View): View? = when (rootView) {
  */
 fun View.doOnApplyWindowInsets(f: (View, WindowInsetsCompat, InitialPadding, InitialMargin) -> Unit) {
     val initialPadding = InitialPadding(
-        ViewCompat.getPaddingStart(this),
-        paddingTop,
-        ViewCompat.getPaddingEnd(this),
-        paddingBottom,
+        start = paddingStart,
+        top = paddingTop,
+        end = paddingEnd,
+        bottom = paddingBottom,
     )
     val initialMargin = (layoutParams as? ViewGroup.MarginLayoutParams)
         ?.run { InitialMargin(leftMargin, topMargin, rightMargin, bottomMargin) }
@@ -56,7 +56,7 @@ fun View.doOnApplyWindowInsets(f: (View, WindowInsetsCompat, InitialPadding, Ini
 }
 
 private fun View.requestApplyInsetsWhenAttached() {
-    if (ViewCompat.isAttachedToWindow(this)) {
+    if (isAttachedToWindow) {
         // We're already attached, just request as normal.
         ViewCompat.requestApplyInsets(this)
     } else {
