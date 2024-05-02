@@ -134,8 +134,6 @@
     <string name="search_tags">All tags</string>
     <string name="search_active">Filter applied</string>
     <string name="search_result_size">%d bookmarks match the current search</string>
-    <string name="search_clear">Clear</string>
-    <string name="search_share">Share</string>
     <string name="search_share_title">Sharing search results</string>
     <string name="search_share_query">Share query</string>
     <string name="search_share_tags">Share tags</string>
@@ -248,10 +246,6 @@
     <string name="user_preferences_edit_after_sharing_after_saving">After saving</string>
     <string name="user_preferences_edit_after_sharing_description">Controls when the bookmark editor should be displayed after choosing the \"Save to pinboard\" share action. To skip the editor, choose \"Quick save to pinboard\" when sharing instead</string>
 
-    <!-- In-app Update -->
-    <string name="in_app_update_ready">An app update is ready to install</string>
-    <string name="in_app_update_install">RESTART</string>
-
     <!-- About -->
     <string name="about_share">Share Pinkt</string>
     <string name="about_rate">Rate Pinkt on Google Play</string>
@@ -273,7 +267,6 @@
 
     <!-- Content Descriptions -->
     <string name="cd_navigate_back">Navigate back</string>
-    <string name="cd_empty_list_placeholder">Empty list placeholder image</string>
     <string name="cd_warning">Warning</string>
     <string name="cd_share_receiver_image">Adding bookmark to pinboard</string>
     <string name="cd_expand_menu">Expand menu</string>
