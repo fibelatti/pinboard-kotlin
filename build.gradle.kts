@@ -3,6 +3,7 @@
 import com.android.build.api.dsl.CommonExtension
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
+import com.diffplug.gradle.spotless.SpotlessPlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -27,7 +28,7 @@ buildscript {
 }
 
 allprojects {
-    apply(plugin = "com.diffplug.spotless")
+    apply<SpotlessPlugin>()
 
     val configureSpotless: SpotlessExtension.() -> Unit = {
         kotlin {
@@ -39,6 +40,10 @@ allprojects {
             targetExclude("**/build/**/*.kts")
 
             ktlint()
+        }
+        format("xml") {
+            target("**/*.xml")
+            targetExclude("**/build/**/*.xml")
         }
         format("misc") {
             target("*.gradle", "*.md", ".gitignore")
@@ -60,7 +65,7 @@ allprojects {
 subprojects {
     afterEvaluate {
         plugins.withType<com.android.build.gradle.api.AndroidBasePlugin> {
-            apply(plugin = "org.gradle.android.cache-fix")
+            apply(plugin = libs.plugins.cache.fix.get().pluginId)
         }
 
         extensions.findByType(CommonExtension::class.java)?.apply {

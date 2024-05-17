@@ -3,6 +3,8 @@
 rootProject.name = "Pinkt"
 rootProject.buildFileName = "build.gradle.kts"
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 include(":app")
 include(":core")
 include(":ui")
