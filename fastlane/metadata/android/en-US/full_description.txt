@@ -6,24 +6,26 @@ Save links from your favourite websites and apps quickly by sharing them to <b>P
 
 <b>FEATURES</b>
 
-- Manage all your bookmarks: add, edit, delete, share
-- View your saved bookmarks without leaving the app
-- View your saved notes without leaving the app
-- Save to Pinboard with the quick share item
-- Auto-fill bookmarks: Pinkt can optionally auto-fill the title and description of saved URLs
-- Search by term: find bookmarks that contain the term in its URL, Title or Description
-- Filter by tags
-- Six pre-defined filters: All, Recent, Public, Private, Unread and Untagged
-- Popular bookmarks: see what's trending and save them to your collection
-- Sync bookmarks and tags
-- Cached data for faster usage
-- Dark and Light themes
-- Portrait and Landscape support
-- Optimised for tablets and chromebooks
+* Manage all your bookmarks: add, edit, delete, share
+* View your saved bookmarks without leaving the app
+* View your saved notes without leaving the app
+* Save to Pinboard with the quick share item
+* Auto-fill bookmarks: Pinkt can optionally auto-fill the title and description of saved URLs
+* Search by term: find bookmarks that contain the term in its URL, Title or Description
+* Filter by tags
+* Six pre-defined filters: All, Recent, Public, Private, Unread and Untagged
+* Popular bookmarks: see what's trending and save them to your collection
+* Sync bookmarks and tags
+* Cached data for faster usage
+* Dark and Light themes
+* Dynamic color support
+* Portrait and Landscape support
+* Optimised for tablets and chromebooks
 
 <b>PERMISSIONS</b>
 
-Pinkt only uses the internet permission, required to reach the Pinboard REST API.
+* INTERNET, ACCESS_NETWORK_STATE — Required to fetch bookmarks whenever network is available
+* WAKE_LOCK, RECEIVE_BOOT_COMPLETED, FOREGROUND_SERVICE — Required by the worker which syncs bookmarks periodically
 
 ---------------
 
