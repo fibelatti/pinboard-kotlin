@@ -1,7 +1,6 @@
 [versions]
-activity = "1.9.0"
 agp = "8.4.2"
-coroutines = "1.8.0"
+coroutines = "1.8.1"
 hilt = "2.51.1"
 hiltExtensions = "1.2.0"
 kotlin = "2.0.0"
@@ -22,7 +21,7 @@ coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-androi
 
 appcompat = { module = "androidx.appcompat:appcompat", version = "1.7.0" }
 core-ktx = { module = "androidx.core:core-ktx", version = "1.13.1" }
-activity = { module = "androidx.activity:activity", version.ref = "activity" }
+activity = { module = "androidx.activity:activity", version = "1.9.0" }
 fragment-ktx = { module = "androidx.fragment:fragment-ktx", version = "1.7.1" }
 transition-ktx = { module = "androidx.transition:transition-ktx", version = "1.5.0" }
 material = { module = "com.google.android.material:material", version = "1.12.0" }
