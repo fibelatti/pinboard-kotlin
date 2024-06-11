@@ -30,11 +30,12 @@ object TestNetworkModule {
     fun retrofit(okHttpClient: OkHttpClient, json: Json): Retrofit = Retrofit.Builder()
         .baseUrl(MockServer.instance.url("/"))
         .client(okHttpClient)
-        .addConverterFactory(json.asConverterFactory("application/json; charset=UTF8".toMediaType()))
+        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()
 
     @Provides
     fun json(): Json = Json {
+        ignoreUnknownKeys = true
         serializersModule = SerializersModule {
             contextual(List::class) { args -> SkipBadElementsListSerializer(args[0]) }
         }
