@@ -11,14 +11,14 @@ import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
 import java.net.URLDecoder
 import java.net.URLEncoder
 import javax.inject.Inject
 
 const val POST_TABLE_NAME = "Posts"
 
-@JsonClass(generateAdapter = true)
+@Serializable
 @Entity(
     tableName = POST_TABLE_NAME,
     indices = [Index(value = ["shared"]), Index(value = ["toread"])],

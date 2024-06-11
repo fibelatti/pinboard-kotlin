@@ -1,10 +1,10 @@
 package com.fibelatti.pinboard.features.posts.data.model
 
 import com.fibelatti.core.functional.Mapper
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
 import javax.inject.Inject
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class PostRemoteDto(
     val href: String,
     val description: String?,

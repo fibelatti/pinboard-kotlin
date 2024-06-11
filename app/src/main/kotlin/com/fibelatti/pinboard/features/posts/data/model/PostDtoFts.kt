@@ -3,11 +3,11 @@ package com.fibelatti.pinboard.features.posts.data.model
 import androidx.room.Entity
 import androidx.room.Fts4
 import androidx.room.FtsOptions.TOKENIZER_UNICODE61
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
 
 const val POST_FTS_TABLE_NAME = "PostsFts"
 
-@JsonClass(generateAdapter = true)
+@Serializable
 @Fts4(
     contentEntity = PostDto::class,
     tokenizer = TOKENIZER_UNICODE61,

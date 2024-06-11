@@ -3,16 +3,16 @@ package com.fibelatti.pinboard.features.notes.data.model
 import com.fibelatti.core.functional.Mapper
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.notes.domain.model.Note
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import javax.inject.Inject
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class NoteDto(
     val id: String,
     val title: String?,
-    @Json(name = "created_at") val createdAt: String?,
-    @Json(name = "updated_at") val updatedAt: String?,
+    @SerialName(value = "created_at") val createdAt: String?,
+    @SerialName(value = "updated_at") val updatedAt: String?,
     val text: String?,
 )
 

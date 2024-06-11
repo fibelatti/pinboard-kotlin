@@ -1,6 +1,6 @@
 package com.fibelatti.pinboard.features.tags.data
 
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -16,5 +16,5 @@ interface TagsApi {
     ): RenameTagResponseDto
 }
 
-@JsonClass(generateAdapter = true)
+@Serializable
 class RenameTagResponseDto(val result: String)

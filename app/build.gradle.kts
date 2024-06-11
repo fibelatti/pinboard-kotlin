@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
@@ -174,6 +175,7 @@ dependencies {
     // Kotlin
     implementation(libs.kotlin)
     implementation(libs.kotlin.reflect)
+    implementation(libs.kotlin.serialization)
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)
 
@@ -215,12 +217,9 @@ dependencies {
     implementation(libs.hilt.work)
     implementation(libs.hilt.navigation.compose)
 
-    implementation(libs.moshi)
-    ksp(libs.moshi.codegen)
-
     implementation(libs.okhttp)
     implementation(libs.retrofit)
-    implementation(libs.converter.moshi)
+    implementation(libs.converter.serialization)
     implementation(libs.logging.interceptor)
 
     implementation(libs.jsoup)

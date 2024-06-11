@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.features.posts.data.model
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
-class GenericResponseDto(@Json(name = "result_code") val resultCode: String)
+@Serializable
+class GenericResponseDto(@SerialName(value = "result_code") val resultCode: String)

@@ -1,9 +1,11 @@
 package com.fibelatti.pinboard.features.notes.data.model
 
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class NoteListDto(
     val count: Int,
+    @Contextual
     val notes: List<NoteDto>,
 )

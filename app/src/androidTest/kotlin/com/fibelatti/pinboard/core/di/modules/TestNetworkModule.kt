@@ -3,17 +3,19 @@ package com.fibelatti.pinboard.core.di.modules
 import com.fibelatti.pinboard.MockServer
 import com.fibelatti.pinboard.core.di.UrlParser
 import com.fibelatti.pinboard.core.network.ApiInterceptor
-import com.fibelatti.pinboard.core.network.SkipBadElementsListAdapter
+import com.fibelatti.pinboard.core.network.SkipBadElementsListSerializer
 import com.fibelatti.pinboard.core.network.UnauthorizedInterceptor
-import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -25,14 +27,18 @@ object TestNetworkModule {
 
     @Provides
     @Singleton
-    fun retrofit(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit = Retrofit.Builder()
+    fun retrofit(okHttpClient: OkHttpClient, json: Json): Retrofit = Retrofit.Builder()
         .baseUrl(MockServer.instance.url("/"))
         .client(okHttpClient)
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
+        .addConverterFactory(json.asConverterFactory("application/json; charset=UTF8".toMediaType()))
         .build()
 
     @Provides
-    fun moshi(): Moshi = Moshi.Builder().add(SkipBadElementsListAdapter.Factory).build()
+    fun json(): Json = Json {
+        serializersModule = SerializersModule {
+            contextual(List::class) { args -> SkipBadElementsListSerializer(args[0]) }
+        }
+    }
 
     @Provides
     fun okHttpClient(
