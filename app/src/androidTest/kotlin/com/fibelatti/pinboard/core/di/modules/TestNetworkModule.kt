@@ -3,14 +3,12 @@ package com.fibelatti.pinboard.core.di.modules
 import com.fibelatti.pinboard.MockServer
 import com.fibelatti.pinboard.core.di.UrlParser
 import com.fibelatti.pinboard.core.network.ApiInterceptor
-import com.fibelatti.pinboard.core.network.SkipBadElementsListSerializer
 import com.fibelatti.pinboard.core.network.UnauthorizedInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerializersModule
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -36,9 +34,6 @@ object TestNetworkModule {
     @Provides
     fun json(): Json = Json {
         ignoreUnknownKeys = true
-        serializersModule = SerializersModule {
-            contextual(List::class) { args -> SkipBadElementsListSerializer(args[0]) }
-        }
     }
 
     @Provides

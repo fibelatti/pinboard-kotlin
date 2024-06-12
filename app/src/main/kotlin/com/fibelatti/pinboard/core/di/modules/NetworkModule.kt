@@ -4,14 +4,12 @@ import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.di.UrlParser
 import com.fibelatti.pinboard.core.network.ApiInterceptor
-import com.fibelatti.pinboard.core.network.SkipBadElementsListSerializer
 import com.fibelatti.pinboard.core.network.UnauthorizedInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerializersModule
 import okhttp3.CipherSuite
 import okhttp3.ConnectionPool
 import okhttp3.ConnectionSpec
@@ -38,9 +36,6 @@ object NetworkModule {
     @Provides
     fun json(): Json = Json {
         ignoreUnknownKeys = true
-        serializersModule = SerializersModule {
-            contextual(List::class) { args -> SkipBadElementsListSerializer(args[0]) }
-        }
     }
 
     @Provides
