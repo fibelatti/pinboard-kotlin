@@ -1,11 +1,8 @@
 package com.fibelatti.pinboard.core.di.modules
 
-import android.app.Application
 import android.content.Context
-import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import androidx.core.content.getSystemService
-import com.fibelatti.core.android.extension.getSharedPreferences
 import com.fibelatti.core.android.platform.AppResourceProvider
 import com.fibelatti.core.android.platform.ResourceProvider
 import dagger.Module
@@ -28,18 +25,9 @@ object AndroidModule {
     fun usCollator(): Collator = Collator.getInstance(Locale.US)
 
     @Provides
-    fun sharedPreferences(
-        application: Application,
-    ): SharedPreferences = application.getSharedPreferences("user_preferences")
-
-    @Provides
-    fun connectivityManager(
-        application: Application,
-    ): ConnectivityManager? = application.getSystemService()
+    fun connectivityManager(@ApplicationContext context: Context): ConnectivityManager? = context.getSystemService()
 
     @Provides
     @Singleton
-    fun resourceProvider(
-        @ApplicationContext context: Context,
-    ): ResourceProvider = AppResourceProvider(context)
+    fun resourceProvider(@ApplicationContext context: Context): ResourceProvider = AppResourceProvider(context)
 }

@@ -54,7 +54,7 @@ class ShareReceiverViewModel @Inject constructor(
                         ),
                     )
                 }
-                val existingPost = async { postsRepository.getPost(url = extractedUrl) }
+                val existingPost = async { postsRepository.getPost(id = "", url = extractedUrl) }
 
                 urlPreview.await().getOrThrow() to existingPost.await().getOrNull()
             }.onSuccess { (urlPreview, existingPost) ->

@@ -202,7 +202,7 @@ private fun PopularBookmarkItem(
             modifier = Modifier.padding(all = 8.dp),
         ) {
             Text(
-                text = post.title,
+                text = post.displayTitle,
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
             )

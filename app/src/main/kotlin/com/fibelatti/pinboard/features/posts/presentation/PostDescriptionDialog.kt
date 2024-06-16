@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.posts.presentation
 import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -17,6 +18,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.ComposeBottomSheetDialog
 import com.fibelatti.pinboard.core.android.composable.TextWithBlockquote
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -28,13 +30,16 @@ object PostDescriptionDialog {
 
     fun showPostDescriptionDialog(
         context: Context,
+        appMode: AppMode,
         post: Post,
     ) {
         ComposeBottomSheetDialog(context) {
             BookmarkDescriptionScreen(
-                title = post.title,
+                appMode = appMode,
+                title = post.displayTitle,
                 url = post.url,
-                description = post.description,
+                description = post.displayDescription,
+                notes = post.notes,
             )
         }.show()
     }
@@ -42,9 +47,11 @@ object PostDescriptionDialog {
 
 @Composable
 private fun BookmarkDescriptionScreen(
+    appMode: AppMode,
     title: String,
     url: String,
     description: String,
+    notes: String?,
 ) {
     Column(
         modifier = Modifier
@@ -76,10 +83,27 @@ private fun BookmarkDescriptionScreen(
         TextWithBlockquote(
             text = description,
             modifier = Modifier
+                .fillMaxWidth()
                 .padding(top = 16.dp),
             textColor = MaterialTheme.colorScheme.onSurfaceVariant,
             textSize = 16.sp,
         )
+
+        if (AppMode.LINKDING == appMode && !notes.isNullOrBlank()) {
+            HorizontalDivider(
+                modifier = Modifier.padding(top = 16.dp),
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+
+            TextWithBlockquote(
+                text = notes,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                textSize = 16.sp,
+            )
+        }
     }
 }
 
@@ -90,9 +114,11 @@ private fun BookmarkDescriptionScreenPreview(
 ) {
     ExtendedTheme {
         BookmarkDescriptionScreen(
+            appMode = AppMode.PINBOARD,
             title = "Some bookmark",
             url = "https://www.bookmark.com",
             description = description,
+            notes = description,
         )
     }
 }

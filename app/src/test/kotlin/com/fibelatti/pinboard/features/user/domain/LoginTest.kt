@@ -5,6 +5,7 @@ import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.pinboard.MockDataProvider.mockApiToken
+import com.fibelatti.pinboard.MockDataProvider.mockInstanceUrl
 import com.fibelatti.pinboard.MockDataProvider.mockTime
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.UserLoggedIn
@@ -35,7 +36,7 @@ class LoginTest {
         coEvery { mockPostsRepository.update() } returns Failure(Exception())
 
         // WHEN
-        val result = login(mockApiToken)
+        val result = login(Login.Params(authToken = mockApiToken))
 
         // THEN
         assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
@@ -50,11 +51,12 @@ class LoginTest {
         coEvery { mockPostsRepository.clearCache() } returns Success(Unit)
 
         // WHEN
-        val result = login(mockApiToken)
+        val result = login(Login.Params(authToken = mockApiToken, instanceUrl = mockInstanceUrl))
 
         // THEN
         assertThat(result.getOrNull()).isEqualTo(Unit)
         coVerify { mockUserRepository.setAuthToken(mockApiToken) }
+        coVerify { mockUserRepository.linkdingInstanceUrl = mockInstanceUrl }
         coVerify { mockPostsRepository.clearCache() }
         coVerify { mockAppStateRepository.runAction(UserLoggedIn) }
     }

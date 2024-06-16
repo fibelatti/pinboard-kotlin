@@ -1,6 +1,8 @@
 package com.fibelatti.pinboard.features.user.presentation
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -19,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,11 +37,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -51,21 +57,31 @@ import com.fibelatti.ui.theme.ExtendedTheme
 @Composable
 fun AuthScreen(
     authViewModel: AuthViewModel = hiltViewModel(),
+    userPreferencesViewModel: UserPreferencesViewModel = hiltViewModel(),
 ) {
     val screenState by authViewModel.screenState.collectAsStateWithLifecycle()
+    val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
 
     AuthScreen(
+        useLinkding = userPreferences.useLinkding,
+        linkdingInstanceUrl = userPreferences.linkdingInstanceUrl,
+        onUseLinkdingChanged = userPreferencesViewModel::useLinkding,
         onAuthRequested = authViewModel::login,
         isLoading = screenState.isLoading,
-        error = screenState.apiTokenError,
+        apiTokenError = screenState.apiTokenError,
+        instanceUrlError = screenState.instanceUrlError,
     )
 }
 
 @Composable
 private fun AuthScreen(
-    onAuthRequested: (token: String) -> Unit,
+    useLinkding: Boolean,
+    linkdingInstanceUrl: String,
+    onUseLinkdingChanged: (Boolean) -> Unit,
+    onAuthRequested: (token: String, instanceUrl: String) -> Unit,
     isLoading: Boolean,
-    error: String?,
+    apiTokenError: String?,
+    instanceUrlError: String?,
 ) {
     Column(
         modifier = Modifier
@@ -92,16 +108,47 @@ private fun AuthScreen(
             shadowElevation = 2.dp,
         ) {
             Column(
-                modifier = Modifier.padding(all = 16.dp),
+                modifier = Modifier
+                    .padding(all = 16.dp)
+                    .animateContentSize(),
             ) {
                 var authToken by remember { mutableStateOf("") }
+                var instanceUrl by remember { mutableStateOf(linkdingInstanceUrl) }
+                val focusManager = LocalFocusManager.current
 
                 Text(
-                    text = stringResource(id = R.string.auth_title),
+                    text = stringResource(
+                        id = if (useLinkding) R.string.auth_title_linkding else R.string.auth_title_pinboard,
+                    ),
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.titleLarge,
                 )
+
+                AnimatedVisibility(visible = useLinkding) {
+                    OutlinedTextField(
+                        value = instanceUrl,
+                        onValueChange = { instanceUrl = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        label = { Text(text = stringResource(id = R.string.auth_linkding_instance_url)) },
+                        isError = instanceUrlError != null,
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Uri),
+                        keyboardActions = KeyboardActions { focusManager.moveFocus(FocusDirection.Next) },
+                        singleLine = true,
+                        maxLines = 1,
+                    )
+
+                    if (instanceUrlError != null) {
+                        Text(
+                            text = instanceUrlError,
+                            modifier = Modifier.padding(top = 4.dp),
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
+                }
 
                 OutlinedTextField(
                     value = authToken,
@@ -109,17 +156,18 @@ private fun AuthScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp),
+                    visualTransformation = PasswordVisualTransformation(),
                     label = { Text(text = stringResource(id = R.string.auth_token_hint)) },
-                    isError = error != null,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
-                    keyboardActions = KeyboardActions { onAuthRequested(authToken) },
+                    isError = apiTokenError != null,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go, keyboardType = KeyboardType.Password),
+                    keyboardActions = KeyboardActions { onAuthRequested(authToken, instanceUrl) },
                     singleLine = true,
                     maxLines = 1,
                 )
 
-                if (error != null) {
+                if (apiTokenError != null) {
                     Text(
-                        text = error,
+                        text = apiTokenError,
                         modifier = Modifier.padding(top = 4.dp),
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall,
@@ -140,17 +188,34 @@ private fun AuthScreen(
                         )
                     } else {
                         Button(
-                            onClick = { onAuthRequested(authToken) },
+                            onClick = { onAuthRequested(authToken, instanceUrl) },
                         ) {
                             Text(text = stringResource(id = R.string.auth_button))
                         }
                     }
                 }
 
+                TextButton(
+                    onClick = { onUseLinkdingChanged(!useLinkding) },
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .align(Alignment.CenterHorizontally),
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.secondary,
+                    ),
+                ) {
+                    Text(
+                        text = stringResource(
+                            if (useLinkding) R.string.auth_switch_to_pinboard else R.string.auth_switch_to_linkding,
+                        ),
+                    )
+                }
+
                 AuthTokenHelp(
+                    useLinkding = useLinkding,
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
-                        .padding(top = 16.dp),
+                        .padding(top = 8.dp),
                 )
             }
         }
@@ -159,6 +224,7 @@ private fun AuthScreen(
 
 @Composable
 private fun AuthTokenHelp(
+    useLinkding: Boolean,
     modifier: Modifier = Modifier,
 ) {
     var helpVisible by remember { mutableStateOf(false) }
@@ -174,21 +240,16 @@ private fun AuthTokenHelp(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(
-                    text = stringResource(id = R.string.auth_token_title),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                )
-
                 TextWithLinks(
                     text = HtmlCompat.fromHtml(
-                        stringResource(R.string.auth_token_description),
+                        stringResource(
+                            if (useLinkding) R.string.auth_linkding_description else R.string.auth_token_description,
+                        ),
                         HtmlCompat.FROM_HTML_MODE_COMPACT,
                     ),
                     modifier = Modifier.padding(top = 8.dp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     linkColor = MaterialTheme.colorScheme.primary,
-                    textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
@@ -199,7 +260,7 @@ private fun AuthTokenHelp(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_help),
                     contentDescription = stringResource(id = R.string.hint_help),
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = MaterialTheme.colorScheme.secondary,
                 )
             }
         }
@@ -211,9 +272,29 @@ private fun AuthTokenHelp(
 private fun AuthScreenPreview() {
     ExtendedTheme {
         AuthScreen(
-            onAuthRequested = {},
+            useLinkding = false,
+            linkdingInstanceUrl = "",
+            onUseLinkdingChanged = {},
+            onAuthRequested = { _, _ -> },
             isLoading = false,
-            error = null,
+            apiTokenError = null,
+            instanceUrlError = null,
+        )
+    }
+}
+
+@Composable
+@ThemePreviews
+private fun AuthScreenLinkdingPreview() {
+    ExtendedTheme {
+        AuthScreen(
+            useLinkding = true,
+            linkdingInstanceUrl = "",
+            onUseLinkdingChanged = {},
+            onAuthRequested = { _, _ -> },
+            isLoading = false,
+            apiTokenError = null,
+            instanceUrlError = null,
         )
     }
 }
@@ -223,9 +304,13 @@ private fun AuthScreenPreview() {
 private fun AuthScreenLoadingPreview() {
     ExtendedTheme {
         AuthScreen(
-            onAuthRequested = {},
+            useLinkding = false,
+            linkdingInstanceUrl = "",
+            onUseLinkdingChanged = {},
+            onAuthRequested = { _, _ -> },
             isLoading = true,
-            error = null,
+            apiTokenError = null,
+            instanceUrlError = null,
         )
     }
 }
@@ -235,9 +320,13 @@ private fun AuthScreenLoadingPreview() {
 private fun AuthScreenErrorPreview() {
     ExtendedTheme {
         AuthScreen(
-            onAuthRequested = {},
+            useLinkding = false,
+            linkdingInstanceUrl = "",
+            onUseLinkdingChanged = {},
+            onAuthRequested = { _, _ -> },
             isLoading = false,
-            error = "Some error happened. Please try again.",
+            apiTokenError = "Some error happened. Please try again.",
+            instanceUrlError = null,
         )
     }
 }

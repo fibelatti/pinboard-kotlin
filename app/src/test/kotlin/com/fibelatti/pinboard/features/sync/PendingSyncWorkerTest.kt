@@ -79,7 +79,7 @@ internal class PendingSyncWorkerTest {
         // GIVEN
         val post = createPost(pendingSync = PendingSync.DELETE)
         coEvery { postsRepository.getPendingSyncPosts() } returns Success(listOf(post))
-        coEvery { postsRepository.delete(url = post.url) } returns Success(Unit)
+        coEvery { postsRepository.delete(id = post.id, url = post.url) } returns Success(Unit)
 
         // WHEN
         val result = worker.doWork()
@@ -95,7 +95,7 @@ internal class PendingSyncWorkerTest {
         val postDelete = createPost(pendingSync = PendingSync.DELETE)
         coEvery { postsRepository.getPendingSyncPosts() } returns Success(listOf(postAdd, postDelete))
         coEvery { postsRepository.add(postAdd) } returns Failure(Exception())
-        coEvery { postsRepository.delete(url = postDelete.url) } returns Success(Unit)
+        coEvery { postsRepository.delete(id = postDelete.id, url = postDelete.url) } returns Success(Unit)
 
         // WHEN
         val result = worker.doWork()
@@ -111,7 +111,7 @@ internal class PendingSyncWorkerTest {
         val postDelete = createPost(pendingSync = PendingSync.DELETE)
         coEvery { postsRepository.getPendingSyncPosts() } returns Success(listOf(postAdd, postDelete))
         coEvery { postsRepository.add(postAdd) } returns Success(postAdd)
-        coEvery { postsRepository.delete(url = postDelete.url) } returns Success(Unit)
+        coEvery { postsRepository.delete(id = postDelete.id, url = postDelete.url) } returns Success(Unit)
 
         // WHEN
         val result = worker.doWork()

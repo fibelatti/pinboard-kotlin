@@ -36,7 +36,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
     fun `WHEN deletePost fails THEN deleteError should receive a value`() = runUnconfinedTest {
         // GIVEN
         val error = Exception()
-        coEvery { mockDeletePost(mockPost.url) } returns Failure(error)
+        coEvery { mockDeletePost(mockPost) } returns Failure(error)
 
         // WHEN
         postDetailViewModel.deletePost(mockPost)
@@ -55,7 +55,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
     @Test
     fun `WHEN deletePost succeeds THEN appStateRepository should run PostDeleted`() = runUnconfinedTest {
         // GIVEN
-        coEvery { mockDeletePost(mockPost.url) } returns Success(Unit)
+        coEvery { mockDeletePost(mockPost) } returns Success(Unit)
 
         // WHEN
         postDetailViewModel.deletePost(mockPost)

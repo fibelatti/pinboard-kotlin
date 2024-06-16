@@ -55,7 +55,7 @@ class PostsDataSourceNoApi @Inject constructor(
         }
     }
 
-    override suspend fun delete(url: String): Result<Unit> = resultFrom {
+    override suspend fun delete(id: String, url: String): Result<Unit> = resultFrom {
         postsDao.deletePost(url)
     }
 
@@ -173,7 +173,7 @@ class PostsDataSourceNoApi @Inject constructor(
     private fun List<Tag>?.getAndFormat(index: Int): String =
         this?.getOrNull(index)?.name?.let(PostsDao.Companion::preFormatTag).orEmpty()
 
-    override suspend fun getPost(url: String): Result<Post> = resultFrom {
+    override suspend fun getPost(id: String, url: String): Result<Post> = resultFrom {
         postsDao.getPost(url)?.let(postDtoMapper::map) ?: throw InvalidRequestException()
     }
 

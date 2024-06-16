@@ -5,6 +5,7 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.mockApiToken
+import com.fibelatti.pinboard.MockDataProvider.mockInstanceUrl
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.UserLoggedOut
@@ -44,10 +45,20 @@ class AuthViewModelTest : BaseViewModelTest() {
         @Test
         fun `GIVEN Login is successful WHEN login is called THEN nothing else happens`() = runTest {
             // GIVEN
-            coEvery { mockLogin(mockApiToken) } returns Success(Unit)
+            coEvery {
+                mockLogin(
+                    Login.Params(
+                        authToken = mockApiToken,
+                        instanceUrl = mockInstanceUrl,
+                    ),
+                )
+            } returns Success(Unit)
 
             // WHEN
-            viewModel.login(mockApiToken)
+            viewModel.login(
+                apiToken = mockApiToken,
+                instanceUrl = mockInstanceUrl,
+            )
 
             // THEN
             assertThat(viewModel.error.isEmpty()).isTrue()
@@ -67,11 +78,21 @@ class AuthViewModelTest : BaseViewModelTest() {
                     ),
                 )
 
-                coEvery { mockLogin(mockApiToken) } returns Failure(error)
+                coEvery {
+                    mockLogin(
+                        Login.Params(
+                            authToken = mockApiToken,
+                            instanceUrl = mockInstanceUrl,
+                        ),
+                    )
+                } returns Failure(error)
                 every { mockResourceProvider.getString(R.string.auth_token_error) } returns "R.string.auth_token_error"
 
                 // WHEN
-                viewModel.login(mockApiToken)
+                viewModel.login(
+                    apiToken = mockApiToken,
+                    instanceUrl = mockInstanceUrl,
+                )
 
                 // THEN
                 assertThat(viewModel.error.isEmpty()).isTrue()
@@ -91,11 +112,21 @@ class AuthViewModelTest : BaseViewModelTest() {
                     ),
                 )
 
-                coEvery { mockLogin(mockApiToken) } returns Failure(error)
+                coEvery {
+                    mockLogin(
+                        Login.Params(
+                            authToken = mockApiToken,
+                            instanceUrl = mockInstanceUrl,
+                        ),
+                    )
+                } returns Failure(error)
                 every { mockResourceProvider.getString(R.string.auth_token_error) } returns "R.string.auth_token_error"
 
                 // WHEN
-                viewModel.login(mockApiToken)
+                viewModel.login(
+                    apiToken = mockApiToken,
+                    instanceUrl = mockInstanceUrl,
+                )
 
                 // THEN
                 assertThat(viewModel.error.isEmpty()).isTrue()
@@ -108,10 +139,20 @@ class AuthViewModelTest : BaseViewModelTest() {
         fun `GIVEN Login fails WHEN login is called THEN error should receive a value`() = runTest {
             // GIVEN
             val error = Exception()
-            coEvery { mockLogin(mockApiToken) } returns Failure(error)
+            coEvery {
+                mockLogin(
+                    Login.Params(
+                        authToken = mockApiToken,
+                        instanceUrl = mockInstanceUrl,
+                    ),
+                )
+            } returns Failure(error)
 
             // WHEN
-            viewModel.login(mockApiToken)
+            viewModel.login(
+                apiToken = mockApiToken,
+                instanceUrl = mockInstanceUrl,
+            )
 
             // THEN
             assertThat(viewModel.error.first()).isEqualTo(error)

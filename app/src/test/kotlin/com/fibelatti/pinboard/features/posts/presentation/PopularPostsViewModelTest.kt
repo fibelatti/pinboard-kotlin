@@ -32,7 +32,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
     private val mockAppStateRepository = mockk<AppStateRepository>(relaxed = true)
     private val mockUserRepository = mockk<UserRepository>(relaxed = true)
     private val mockPostsRepository = mockk<PostsRepository> {
-        coEvery { getPost(url = any()) } returns Failure(mockk())
+        coEvery { getPost(id = any(), url = any()) } returns Failure(mockk())
     }
     private val mockGetPopularPosts = mockk<GetPopularPosts>()
     private val mockAddPost = mockk<AddPost>()
@@ -78,7 +78,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
         runTest {
             // GIVEN
             val post = createPost()
-            coEvery { mockPostsRepository.getPost(url = post.url) } returns Success(post)
+            coEvery { mockPostsRepository.getPost(id = post.id, url = post.url) } returns Success(post)
 
             // WHEN
             popularPostsViewModel.saveLink(post)

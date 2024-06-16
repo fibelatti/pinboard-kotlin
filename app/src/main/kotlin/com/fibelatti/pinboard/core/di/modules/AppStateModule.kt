@@ -2,6 +2,8 @@ package com.fibelatti.pinboard.core.di.modules
 
 import com.fibelatti.pinboard.core.di.mapkeys.ActionHandlerKey
 import com.fibelatti.pinboard.features.appstate.ActionHandler
+import com.fibelatti.pinboard.features.appstate.AppStateDataSource
+import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.NavigationAction
 import com.fibelatti.pinboard.features.appstate.NavigationActionHandler
 import com.fibelatti.pinboard.features.appstate.NoteAction
@@ -53,4 +55,7 @@ abstract class AppStateModule {
     @IntoMap
     @ActionHandlerKey(PopularAction::class)
     abstract fun popularActionHandler(impl: PopularActionHandler): ActionHandler<*>
+
+    @Binds
+    abstract fun appStateRepository(impl: AppStateDataSource): AppStateRepository
 }

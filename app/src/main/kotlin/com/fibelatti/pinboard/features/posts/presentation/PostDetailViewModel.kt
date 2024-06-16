@@ -36,7 +36,7 @@ class PostDetailViewModel @Inject constructor(
                 currentState.copy(isLoading = true)
             }
 
-            deletePost(post.url)
+            deletePost(params = post)
                 .onSuccess {
                     _screenState.update { currentState ->
                         currentState.copy(

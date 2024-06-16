@@ -162,7 +162,7 @@ private fun NavigationMenuScreen(
             iconRes = R.drawable.ic_bookmarks,
         )
 
-        if (AppMode.PINBOARD == appMode) {
+        if (AppMode.NO_API != appMode) {
             MenuItem(
                 textRes = R.string.menu_navigation_public,
                 onClick = onPublicClicked,

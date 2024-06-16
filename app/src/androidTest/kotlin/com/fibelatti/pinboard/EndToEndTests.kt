@@ -55,7 +55,7 @@ class EndToEndTests {
     fun loginScreenIsVisibleWhenFirstLaunchingTheApp() {
         with(composeRule) {
             // Assert
-            onNodeWithText(context.getString(R.string.auth_title)).assertIsDisplayed()
+            onNodeWithText(context.getString(R.string.auth_title_pinboard)).assertIsDisplayed()
         }
     }
 

@@ -2,380 +2,291 @@ package com.fibelatti.pinboard.features.posts.data
 
 import com.fibelatti.core.functional.Result
 import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.features.linkding.data.PostsDataSourceLinkdingApi
+import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.randomBoolean
 import com.fibelatti.pinboard.randomInt
 import com.fibelatti.pinboard.randomString
 import com.google.common.truth.Truth.assertThat
-import io.mockk.Called
+import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class PostsDataSourceProxyTest {
 
     private val postsDataSourcePinboardApi = mockk<PostsDataSourcePinboardApi>()
+    private val postsDataSourceLinkdingApi = mockk<PostsDataSourceLinkdingApi>()
     private val postsDataSourceNoApi = mockk<PostsDataSourceNoApi>()
 
     private val booleanArg = randomBoolean()
     private val intArg = randomInt()
     private val stringArg = randomString()
 
-    @Nested
-    inner class AppModePinboardTest {
+    fun testCases(): List<Pair<AppMode, PostsRepository>> = listOf(
+        AppMode.NO_API to postsDataSourceNoApi,
+        AppMode.PINBOARD to postsDataSourcePinboardApi,
+        AppMode.LINKDING to postsDataSourceLinkdingApi,
+    )
 
-        private val proxy = PostsDataSourceProxy(
-            postsDataSourcePinboardApi = postsDataSourcePinboardApi,
-            postsDataSourceNoApi = postsDataSourceNoApi,
-            appModeProvider = mockk {
-                every { appMode } returns MutableStateFlow(AppMode.PINBOARD)
-            },
-        )
+    private fun getProxy(appMode: AppMode): PostsRepository = PostsDataSourceProxy(
+        postsDataSourcePinboardApi = { postsDataSourcePinboardApi },
+        postsDataSourceLinkdingApi = { postsDataSourceLinkdingApi },
+        postsDataSourceNoApi = { postsDataSourceNoApi },
+        appModeProvider = mockk {
+            every { this@mockk.appMode } returns MutableStateFlow(appMode)
+        },
+    )
 
-        @Test
-        fun `update calls the expected data source`() = runTest {
-            val expectedResult = mockk<Result<String>>()
-
-            coEvery { postsDataSourcePinboardApi.update() } returns expectedResult
-
-            val result = proxy.update()
-
-            assertThat(result).isEqualTo(expectedResult)
-            coVerify { postsDataSourceNoApi wasNot Called }
-        }
-
-        @Test
-        fun `add calls the expected data source`() = runTest {
-            val input = mockk<Post>()
-            val expectedResult = mockk<Result<Post>>()
-
-            coEvery { postsDataSourcePinboardApi.add(input) } returns expectedResult
-
-            val result = proxy.add(input)
-
-            assertThat(result).isEqualTo(expectedResult)
-            coVerify { postsDataSourceNoApi wasNot Called }
-        }
-
-        @Test
-        fun `delete calls the expected data source`() = runTest {
-            val expectedResult = mockk<Result<Unit>>()
-
-            coEvery {
-                postsDataSourcePinboardApi.delete(
-                    url = stringArg,
-                )
-            } returns expectedResult
-
-            val result = proxy.delete(
-                url = stringArg,
-            )
-
-            assertThat(result).isEqualTo(expectedResult)
-            coVerify { postsDataSourceNoApi wasNot Called }
-        }
-
-        @Test
-        fun `getAllPosts calls the expected data source`() = runTest {
-            val expectedResult = mockk<Result<PostListResult>>()
-
-            every {
-                postsDataSourcePinboardApi.getAllPosts(
-                    sortType = any(),
-                    searchTerm = stringArg,
-                    tags = any(),
-                    untaggedOnly = booleanArg,
-                    postVisibility = any(),
-                    readLaterOnly = booleanArg,
-                    countLimit = intArg,
-                    pageLimit = intArg,
-                    pageOffset = intArg,
-                    forceRefresh = booleanArg,
-                )
-            } returns flowOf(expectedResult)
-
-            val result = proxy.getAllPosts(
-                sortType = mockk(),
-                searchTerm = stringArg,
-                tags = mockk(),
-                untaggedOnly = booleanArg,
-                postVisibility = mockk(),
-                readLaterOnly = booleanArg,
-                countLimit = intArg,
-                pageLimit = intArg,
-                pageOffset = intArg,
-                forceRefresh = booleanArg,
-            )
-
-            assertThat(result.first()).isEqualTo(expectedResult)
-            coVerify { postsDataSourceNoApi wasNot Called }
-        }
-
-        @Test
-        fun `getQueryResultSize calls the expected data source`() = runTest {
-            val expectedResult = 13
-
-            coEvery {
-                postsDataSourcePinboardApi.getQueryResultSize(
-                    searchTerm = stringArg,
-                    tags = any(),
-                )
-            } returns expectedResult
-
-            val result = proxy.getQueryResultSize(
-                searchTerm = stringArg,
-                tags = mockk(),
-            )
-
-            assertThat(result).isEqualTo(expectedResult)
-            coVerify { postsDataSourceNoApi wasNot Called }
-        }
-
-        @Test
-        fun `getPost calls the expected data source`() = runTest {
-            val expectedResult = mockk<Result<Post>>()
-
-            coEvery {
-                postsDataSourcePinboardApi.getPost(
-                    url = stringArg,
-                )
-            } returns expectedResult
-
-            val result = proxy.getPost(
-                url = stringArg,
-            )
-
-            assertThat(result).isEqualTo(expectedResult)
-            coVerify { postsDataSourceNoApi wasNot Called }
-        }
-
-        @Test
-        fun `searchExistingPostTag calls the expected data source`() = runTest {
-            val expectedResult = mockk<Result<List<String>>>()
-
-            coEvery {
-                postsDataSourcePinboardApi.searchExistingPostTag(
-                    tag = stringArg,
-                )
-            } returns expectedResult
-
-            val result = proxy.searchExistingPostTag(
-                tag = stringArg,
-            )
-
-            assertThat(result).isEqualTo(expectedResult)
-            coVerify { postsDataSourceNoApi wasNot Called }
-        }
-
-        @Test
-        fun `getPendingSyncPosts calls the expected data source`() = runTest {
-            val expectedResult = mockk<Result<List<Post>>>()
-
-            coEvery {
-                postsDataSourcePinboardApi.getPendingSyncPosts()
-            } returns expectedResult
-
-            val result = proxy.getPendingSyncPosts()
-
-            assertThat(result).isEqualTo(expectedResult)
-            coVerify { postsDataSourceNoApi wasNot Called }
-        }
-
-        @Test
-        fun `clearCache calls the expected data source`() = runTest {
-            val expectedResult = mockk<Result<Unit>>()
-
-            coEvery {
-                postsDataSourcePinboardApi.clearCache()
-            } returns expectedResult
-
-            val result = proxy.clearCache()
-
-            assertThat(result).isEqualTo(expectedResult)
-            coVerify { postsDataSourceNoApi wasNot Called }
-        }
+    private fun verifyAllSources() {
+        confirmVerified(postsDataSourceNoApi, postsDataSourcePinboardApi, postsDataSourceLinkdingApi)
     }
 
-    @Nested
-    inner class AppModeNoApiTest {
+    @BeforeEach
+    fun setup() {
+        clearAllMocks()
+    }
 
-        private val proxy = PostsDataSourceProxy(
-            postsDataSourcePinboardApi = postsDataSourcePinboardApi,
-            postsDataSourceNoApi = postsDataSourceNoApi,
-            appModeProvider = mockk {
-                every { appMode } returns MutableStateFlow(AppMode.NO_API)
-            },
-        )
+    @ParameterizedTest
+    @MethodSource("testCases")
+    fun `update calls the expected data source`(params: Pair<AppMode, PostsRepository>) = runTest {
+        val (appMode, repository) = params
+        val proxy = getProxy(appMode)
+        val expectedResult = mockk<Result<String>>()
 
-        @Test
-        fun `update calls the expected data source`() = runTest {
-            val expectedResult = mockk<Result<String>>()
+        coEvery { repository.update() } returns expectedResult
 
-            coEvery { postsDataSourceNoApi.update() } returns expectedResult
+        val result = proxy.update()
 
-            val result = proxy.update()
+        assertThat(result).isEqualTo(expectedResult)
 
-            assertThat(result).isEqualTo(expectedResult)
-            coVerify { postsDataSourcePinboardApi wasNot Called }
-        }
+        coVerify { repository.update() }
+        verifyAllSources()
+    }
 
-        @Test
-        fun `add calls the expected data source`() = runTest {
-            val input = mockk<Post>()
-            val expectedResult = mockk<Result<Post>>()
+    @ParameterizedTest
+    @MethodSource("testCases")
+    fun `add calls the expected data source`(params: Pair<AppMode, PostsRepository>) = runTest {
+        val (appMode, repository) = params
+        val proxy = getProxy(appMode)
+        val input = mockk<Post>()
+        val expectedResult = mockk<Result<Post>>()
 
-            coEvery { postsDataSourceNoApi.add(input) } returns expectedResult
+        coEvery { repository.add(input) } returns expectedResult
 
-            val result = proxy.add(input)
+        val result = proxy.add(input)
 
-            assertThat(result).isEqualTo(expectedResult)
-            coVerify { postsDataSourcePinboardApi wasNot Called }
-        }
+        assertThat(result).isEqualTo(expectedResult)
 
-        @Test
-        fun `delete calls the expected data source`() = runTest {
-            val expectedResult = mockk<Result<Unit>>()
+        coVerify { repository.add(input) }
+        verifyAllSources()
+    }
 
-            coEvery {
-                postsDataSourceNoApi.delete(
-                    url = stringArg,
-                )
-            } returns expectedResult
+    @ParameterizedTest
+    @MethodSource("testCases")
+    fun `delete calls the expected data source`(params: Pair<AppMode, PostsRepository>) = runTest {
+        val (appMode, repository) = params
+        val proxy = getProxy(appMode)
+        val expectedResult = mockk<Result<Unit>>()
 
-            val result = proxy.delete(
+        coEvery {
+            repository.delete(
+                id = stringArg,
                 url = stringArg,
             )
+        } returns expectedResult
 
-            assertThat(result).isEqualTo(expectedResult)
-            coVerify { postsDataSourcePinboardApi wasNot Called }
+        val result = proxy.delete(
+            id = stringArg,
+            url = stringArg,
+        )
+
+        assertThat(result).isEqualTo(expectedResult)
+
+        coVerify {
+            repository.delete(
+                id = stringArg,
+                url = stringArg,
+            )
         }
+        verifyAllSources()
+    }
 
-        @Test
-        fun `getAllPosts calls the expected data source`() = runTest {
-            val expectedResult = mockk<Result<PostListResult>>()
+    @ParameterizedTest
+    @MethodSource("testCases")
+    fun `getAllPosts calls the expected data source`(params: Pair<AppMode, PostsRepository>) = runTest {
+        val (appMode, repository) = params
+        val proxy = getProxy(appMode)
+        val expectedResult = mockk<Result<PostListResult>>()
 
-            every {
-                postsDataSourceNoApi.getAllPosts(
-                    sortType = any(),
-                    searchTerm = stringArg,
-                    tags = any(),
-                    untaggedOnly = booleanArg,
-                    postVisibility = any(),
-                    readLaterOnly = booleanArg,
-                    countLimit = intArg,
-                    pageLimit = intArg,
-                    pageOffset = intArg,
-                    forceRefresh = booleanArg,
-                )
-            } returns flowOf(expectedResult)
-
-            val result = proxy.getAllPosts(
-                sortType = mockk(),
+        every {
+            repository.getAllPosts(
+                sortType = any(),
                 searchTerm = stringArg,
-                tags = mockk(),
+                tags = any(),
                 untaggedOnly = booleanArg,
-                postVisibility = mockk(),
+                postVisibility = any(),
                 readLaterOnly = booleanArg,
                 countLimit = intArg,
                 pageLimit = intArg,
                 pageOffset = intArg,
                 forceRefresh = booleanArg,
             )
+        } returns flowOf(expectedResult)
 
-            assertThat(result.first()).isEqualTo(expectedResult)
-            coVerify { postsDataSourcePinboardApi wasNot Called }
-        }
+        val result = proxy.getAllPosts(
+            sortType = mockk(),
+            searchTerm = stringArg,
+            tags = mockk(),
+            untaggedOnly = booleanArg,
+            postVisibility = mockk(),
+            readLaterOnly = booleanArg,
+            countLimit = intArg,
+            pageLimit = intArg,
+            pageOffset = intArg,
+            forceRefresh = booleanArg,
+        )
 
-        @Test
-        fun `getQueryResultSize calls the expected data source`() = runTest {
-            val expectedResult = 13
+        assertThat(result.first()).isEqualTo(expectedResult)
 
-            coEvery {
-                postsDataSourceNoApi.getQueryResultSize(
-                    searchTerm = stringArg,
-                    tags = any(),
-                )
-            } returns expectedResult
-
-            val result = proxy.getQueryResultSize(
+        coVerify {
+            repository.getAllPosts(
+                sortType = any(),
                 searchTerm = stringArg,
-                tags = mockk(),
+                tags = any(),
+                untaggedOnly = booleanArg,
+                postVisibility = any(),
+                readLaterOnly = booleanArg,
+                countLimit = intArg,
+                pageLimit = intArg,
+                pageOffset = intArg,
+                forceRefresh = booleanArg,
             )
-
-            assertThat(result).isEqualTo(expectedResult)
-            coVerify { postsDataSourcePinboardApi wasNot Called }
         }
+        verifyAllSources()
+    }
 
-        @Test
-        fun `getPost calls the expected data source`() = runTest {
-            val expectedResult = mockk<Result<Post>>()
+    @ParameterizedTest
+    @MethodSource("testCases")
+    fun `getQueryResultSize calls the expected data source`(params: Pair<AppMode, PostsRepository>) = runTest {
+        val (appMode, repository) = params
+        val proxy = getProxy(appMode)
+        val expectedResult = 13
 
-            coEvery {
-                postsDataSourceNoApi.getPost(
-                    url = stringArg,
-                )
-            } returns expectedResult
+        coEvery {
+            repository.getQueryResultSize(
+                searchTerm = stringArg,
+                tags = any(),
+            )
+        } returns expectedResult
 
-            val result = proxy.getPost(
+        val result = proxy.getQueryResultSize(
+            searchTerm = stringArg,
+            tags = mockk(),
+        )
+
+        assertThat(result).isEqualTo(expectedResult)
+
+        coVerify {
+            repository.getQueryResultSize(
+                searchTerm = stringArg,
+                tags = any(),
+            )
+        }
+        verifyAllSources()
+    }
+
+    @ParameterizedTest
+    @MethodSource("testCases")
+    fun `getPost calls the expected data source`(params: Pair<AppMode, PostsRepository>) = runTest {
+        val (appMode, repository) = params
+        val proxy = getProxy(appMode)
+        val expectedResult = mockk<Result<Post>>()
+
+        coEvery {
+            repository.getPost(
+                id = stringArg,
                 url = stringArg,
             )
+        } returns expectedResult
 
-            assertThat(result).isEqualTo(expectedResult)
-            coVerify { postsDataSourcePinboardApi wasNot Called }
-        }
+        val result = proxy.getPost(
+            id = stringArg,
+            url = stringArg,
+        )
 
-        @Test
-        fun `searchExistingPostTag calls the expected data source`() = runTest {
-            val expectedResult = mockk<Result<List<String>>>()
+        assertThat(result).isEqualTo(expectedResult)
 
-            coEvery {
-                postsDataSourceNoApi.searchExistingPostTag(
-                    tag = stringArg,
-                )
-            } returns expectedResult
-
-            val result = proxy.searchExistingPostTag(
-                tag = stringArg,
+        coVerify {
+            repository.getPost(
+                id = stringArg,
+                url = stringArg,
             )
-
-            assertThat(result).isEqualTo(expectedResult)
-            coVerify { postsDataSourcePinboardApi wasNot Called }
         }
+        verifyAllSources()
+    }
 
-        @Test
-        fun `getPendingSyncPosts calls the expected data source`() = runTest {
-            val expectedResult = mockk<Result<List<Post>>>()
+    @ParameterizedTest
+    @MethodSource("testCases")
+    fun `searchExistingPostTag calls the expected data source`(params: Pair<AppMode, PostsRepository>) = runTest {
+        val (appMode, repository) = params
+        val proxy = getProxy(appMode)
+        val expectedResult = mockk<Result<List<String>>>()
 
-            coEvery {
-                postsDataSourceNoApi.getPendingSyncPosts()
-            } returns expectedResult
+        coEvery { repository.searchExistingPostTag(tag = stringArg) } returns expectedResult
 
-            val result = proxy.getPendingSyncPosts()
+        val result = proxy.searchExistingPostTag(tag = stringArg)
 
-            assertThat(result).isEqualTo(expectedResult)
-            coVerify { postsDataSourcePinboardApi wasNot Called }
-        }
+        assertThat(result).isEqualTo(expectedResult)
 
-        @Test
-        fun `clearCache calls the expected data source`() = runTest {
-            val expectedResult = mockk<Result<Unit>>()
+        coVerify { repository.searchExistingPostTag(tag = stringArg) }
+        verifyAllSources()
+    }
 
-            coEvery {
-                postsDataSourceNoApi.clearCache()
-            } returns expectedResult
+    @ParameterizedTest
+    @MethodSource("testCases")
+    fun `getPendingSyncPosts calls the expected data source`(params: Pair<AppMode, PostsRepository>) = runTest {
+        val (appMode, repository) = params
+        val proxy = getProxy(appMode)
+        val expectedResult = mockk<Result<List<Post>>>()
 
-            val result = proxy.clearCache()
+        coEvery { repository.getPendingSyncPosts() } returns expectedResult
 
-            assertThat(result).isEqualTo(expectedResult)
-            coVerify { postsDataSourcePinboardApi wasNot Called }
-        }
+        val result = proxy.getPendingSyncPosts()
+
+        assertThat(result).isEqualTo(expectedResult)
+
+        coVerify { repository.getPendingSyncPosts() }
+        verifyAllSources()
+    }
+
+    @ParameterizedTest
+    @MethodSource("testCases")
+    fun `clearCache calls the expected data source`(params: Pair<AppMode, PostsRepository>) = runTest {
+        val (appMode, repository) = params
+        val proxy = getProxy(appMode)
+        val expectedResult = mockk<Result<Unit>>()
+
+        coEvery { repository.clearCache() } returns expectedResult
+
+        val result = proxy.clearCache()
+
+        assertThat(result).isEqualTo(expectedResult)
+
+        coVerify { repository.clearCache() }
+        verifyAllSources()
     }
 }

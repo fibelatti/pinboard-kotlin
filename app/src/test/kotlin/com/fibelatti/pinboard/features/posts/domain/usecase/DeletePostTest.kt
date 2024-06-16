@@ -4,6 +4,8 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
+import com.fibelatti.pinboard.MockDataProvider
+import com.fibelatti.pinboard.MockDataProvider.mockHash
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.InvalidRequestException
@@ -19,9 +21,11 @@ class DeletePostTest {
     private val mockPostsRepository = mockk<PostsRepository>()
     private val mockValidateUrl = mockk<ValidateUrl>()
 
+    private val mockPost = MockDataProvider.createPost()
+
     private val deletePost = DeletePost(
-        mockPostsRepository,
-        mockValidateUrl,
+        postsRepository = mockPostsRepository,
+        validateUrl = mockValidateUrl,
     )
 
     @Test
@@ -30,7 +34,7 @@ class DeletePostTest {
         coEvery { mockValidateUrl(mockUrlValid) } returns Failure(InvalidRequestException())
 
         // WHEN
-        val result = deletePost(mockUrlValid)
+        val result = deletePost(mockPost)
 
         // THEN
         assertThat(result.exceptionOrNull()).isInstanceOf(InvalidRequestException::class.java)
@@ -40,10 +44,10 @@ class DeletePostTest {
     fun `GIVEN posts repository add fails WHEN AddPost is called THEN Failure is returned`() = runTest {
         // GIVEN
         coEvery { mockValidateUrl(mockUrlValid) } returns Success(mockUrlValid)
-        coEvery { mockPostsRepository.delete(mockUrlValid) } returns Failure(ApiException())
+        coEvery { mockPostsRepository.delete(id = mockHash, url = mockUrlValid) } returns Failure(ApiException())
 
         // WHEN
-        val result = deletePost(mockUrlValid)
+        val result = deletePost(mockPost)
 
         // THEN
         assertThat(result.exceptionOrNull()).isInstanceOf(ApiException::class.java)
@@ -53,10 +57,10 @@ class DeletePostTest {
     fun `GIVEN posts repository add succeeds WHEN AddPost is called THEN Success is returned`() = runTest {
         // GIVEN
         coEvery { mockValidateUrl(mockUrlValid) } returns Success(mockUrlValid)
-        coEvery { mockPostsRepository.delete(mockUrlValid) } returns Success(Unit)
+        coEvery { mockPostsRepository.delete(id = mockHash, url = mockUrlValid) } returns Success(Unit)
 
         // WHEN
-        val result = deletePost(mockUrlValid)
+        val result = deletePost(mockPost)
 
         // THEN
         assertThat(result.getOrNull()).isEqualTo(Unit)

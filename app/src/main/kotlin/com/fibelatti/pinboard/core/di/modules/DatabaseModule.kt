@@ -7,6 +7,9 @@ import com.fibelatti.pinboard.core.persistence.database.DATABASE_NAME
 import com.fibelatti.pinboard.core.persistence.database.DATABASE_VERSION_1
 import com.fibelatti.pinboard.core.persistence.database.DATABASE_VERSION_2
 import com.fibelatti.pinboard.core.persistence.database.DatabaseResetCallback
+import com.fibelatti.pinboard.features.filters.data.SavedFiltersDao
+import com.fibelatti.pinboard.features.linkding.data.BookmarksDao
+import com.fibelatti.pinboard.features.posts.data.PostsDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,4 +29,13 @@ object DatabaseModule {
         .fallbackToDestructiveMigrationFrom(DATABASE_VERSION_1, DATABASE_VERSION_2)
         .addCallback(databaseResetCallback)
         .build()
+
+    @Provides
+    fun postsDao(database: AppDatabase): PostsDao = database.postDao()
+
+    @Provides
+    fun bookmarksDao(appDatabase: AppDatabase): BookmarksDao = appDatabase.linkdingBookmarksDao()
+
+    @Provides
+    fun savedFiltersDao(database: AppDatabase): SavedFiltersDao = database.savedFiltersDao()
 }

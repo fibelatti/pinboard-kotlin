@@ -19,6 +19,7 @@ object MockDataProvider {
     // region Properties
     const val mockUser = "user"
     const val mockApiToken = "user:00000000000"
+    const val mockInstanceUrl = "https://www.linkding-instance.com/"
     const val mockTime = "2019-01-10T08:20:10Z"
     const val mockFutureTime = "2019-01-20T08:20:10Z"
     const val mockUrlValid = "https://www.url.com"
