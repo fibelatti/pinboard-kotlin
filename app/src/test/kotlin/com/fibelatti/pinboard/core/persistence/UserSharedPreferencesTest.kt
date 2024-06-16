@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.core.persistence
 
 import android.content.SharedPreferences
-import com.fibelatti.core.extension.get
+import com.fibelatti.core.android.extension.get
 import com.fibelatti.core.test.MockSharedPreferencesEditor
 import com.fibelatti.pinboard.MockDataProvider.mockApiToken
 import com.fibelatti.pinboard.MockDataProvider.mockTime

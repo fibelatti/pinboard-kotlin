@@ -8,8 +8,8 @@ import android.view.View
 import android.webkit.MimeTypeMap
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import com.fibelatti.core.extension.navigateBack
-import com.fibelatti.core.extension.shareText
+import com.fibelatti.core.android.extension.navigateBack
+import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R

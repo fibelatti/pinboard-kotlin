@@ -8,8 +8,8 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import com.fibelatti.core.extension.doOnApplyWindowInsets
-import com.fibelatti.core.extension.hideKeyboard
+import com.fibelatti.core.android.extension.doOnApplyWindowInsets
+import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment

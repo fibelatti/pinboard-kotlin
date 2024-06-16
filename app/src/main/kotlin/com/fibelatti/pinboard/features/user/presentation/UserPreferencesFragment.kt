@@ -5,8 +5,8 @@ import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import com.fibelatti.core.extension.hideKeyboard
-import com.fibelatti.core.extension.navigateBack
+import com.fibelatti.core.android.extension.hideKeyboard
+import com.fibelatti.core.android.extension.navigateBack
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith

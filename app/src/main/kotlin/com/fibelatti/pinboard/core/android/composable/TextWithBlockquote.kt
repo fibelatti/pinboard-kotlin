@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
 import androidx.core.text.toSpannable
-import com.fibelatti.core.extension.setupLinks
+import com.fibelatti.core.android.extension.setupLinks
 import com.fibelatti.pinboard.core.android.CustomQuoteSpan
 import com.google.android.material.textview.MaterialTextView
 

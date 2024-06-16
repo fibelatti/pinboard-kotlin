@@ -2,8 +2,8 @@ package com.fibelatti.pinboard.core.persistence
 
 import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
-import com.fibelatti.core.extension.get
-import com.fibelatti.core.extension.put
+import com.fibelatti.core.android.extension.get
+import com.fibelatti.core.android.extension.put
 import javax.inject.Inject
 import javax.inject.Singleton
 

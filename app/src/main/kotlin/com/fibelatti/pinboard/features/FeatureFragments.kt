@@ -14,8 +14,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import androidx.fragment.app.commitNow
-import com.fibelatti.core.android.fragmentArgs
-import com.fibelatti.core.extension.createFragment
+import com.fibelatti.core.android.extension.createFragment
+import com.fibelatti.core.android.platform.fragmentArgs
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.extension.popTo
 import com.fibelatti.pinboard.core.extension.slideUp

@@ -8,7 +8,7 @@ import android.webkit.WebView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import com.fibelatti.core.android.SimpleActivityLifecycleCallbacks
+import com.fibelatti.core.android.platform.SimpleActivityLifecycleCallbacks
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.features.sync.PendingSyncManager
 import com.fibelatti.pinboard.features.sync.PeriodicSyncManager

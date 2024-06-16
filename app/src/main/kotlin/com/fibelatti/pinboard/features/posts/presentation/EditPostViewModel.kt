@@ -1,6 +1,6 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
-import com.fibelatti.core.android.ResourceProvider
+import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.R

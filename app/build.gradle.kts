@@ -170,6 +170,7 @@ room {
 
 dependencies {
     implementation(projects.core)
+    implementation(projects.coreAndroid)
     implementation(projects.ui)
 
     // Kotlin

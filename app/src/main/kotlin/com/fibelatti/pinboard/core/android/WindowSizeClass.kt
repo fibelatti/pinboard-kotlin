@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.view.View
 import androidx.window.layout.WindowMetricsCalculator
-import com.fibelatti.core.extension.findActivity
+import com.fibelatti.core.android.extension.findActivity
 
 enum class WindowSizeClass {
 
