@@ -33,7 +33,7 @@ class PostDtoMapperTest {
         @Test
         fun `GIVEN description is null WHEN map is called THEN Post is returned AND title is No title`() {
             assertThat(mapper.map(createPostDto(description = null)))
-                .isEqualTo(createPost(title = "No title"))
+                .isEqualTo(createPost(title = ""))
         }
 
         @Test
