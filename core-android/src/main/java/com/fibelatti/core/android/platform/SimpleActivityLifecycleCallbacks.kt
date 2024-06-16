@@ -4,7 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 
-open class SimpleActivityLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
+public open class SimpleActivityLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
 
     override fun onActivityCreated(p0: Activity, p1: Bundle?) {}
     override fun onActivityStarted(p0: Activity) {}

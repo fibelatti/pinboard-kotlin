@@ -15,7 +15,7 @@ import androidx.fragment.app.FragmentFactory
  *
  * @return the new instance
  */
-inline fun <reified T : Fragment> FragmentActivity.createFragment(): T =
+public inline fun <reified T : Fragment> FragmentActivity.createFragment(): T =
     supportFragmentManager.fragmentFactory.instantiate(T::class.java.classLoader!!, T::class.java.name) as T
 
 /**
@@ -24,7 +24,7 @@ inline fun <reified T : Fragment> FragmentActivity.createFragment(): T =
  * @param title the [StringRes] of the title to be displayed in the chooser
  * @param text the text to be shared
  */
-fun Activity.shareText(@StringRes title: Int, text: String) {
+public fun Activity.shareText(@StringRes title: Int, text: String) {
     ShareCompat.IntentBuilder(this)
         .setType("text/plain")
         .setChooserTitle(title)
@@ -38,7 +38,7 @@ fun Activity.shareText(@StringRes title: Int, text: String) {
  * @param title the text of the title to be displayed in the chooser
  * @param text the text to be shared
  */
-fun Activity.shareText(title: String, text: String) {
+public fun Activity.shareText(title: String, text: String) {
     ShareCompat.IntentBuilder(this)
         .setType("text/plain")
         .setChooserTitle(title)

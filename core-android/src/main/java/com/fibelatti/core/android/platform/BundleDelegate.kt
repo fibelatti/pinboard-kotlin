@@ -8,21 +8,21 @@ import androidx.fragment.app.Fragment
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-fun <T> bundleDelegate(default: T? = null): ReadWriteProperty<Bundle, T> = BundleDelegate(default)
+public fun <T> bundleDelegate(default: T? = null): ReadWriteProperty<Bundle, T> = BundleDelegate(default)
 
-fun <T> intentExtras(default: T? = null): ReadWriteProperty<Intent, T> = bundleDelegate(default).map(
+public fun <T> intentExtras(default: T? = null): ReadWriteProperty<Intent, T> = bundleDelegate(default).map(
     postWrite = Intent::replaceExtras,
     mapper = Intent::ensureExtras,
 )
 
-fun <T> activityIntent(default: T? = null): ReadWriteProperty<Activity, T> = intentExtras(default).map(
+public fun <T> activityIntent(default: T? = null): ReadWriteProperty<Activity, T> = intentExtras(default).map(
     postWrite = Activity::setIntent,
     mapper = Activity::getIntent,
 )
 
-fun <T> fragmentArgs(): ReadWriteProperty<Fragment, T> = bundleDelegate<T>().map(mapper = Fragment::ensureArgs)
+public fun <T> fragmentArgs(): ReadWriteProperty<Fragment, T> = bundleDelegate<T>().map(mapper = Fragment::ensureArgs)
 
-fun <T> Bundle.asDelegate(default: T? = null): ReadWriteProperty<Any?, T> = bundleDelegate(default).map(
+public fun <T> Bundle.asDelegate(default: T? = null): ReadWriteProperty<Any?, T> = bundleDelegate(default).map(
     mapper = { this },
 )
 

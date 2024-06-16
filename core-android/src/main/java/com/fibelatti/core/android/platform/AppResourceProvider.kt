@@ -16,7 +16,7 @@ import java.util.Locale
  * This class also registers a [BroadcastReceiver] to handle locale changes on its own, ensuring that the
  * provided resources are correctly localized.
  */
-class AppResourceProvider(context: Context) : ResourceProvider {
+public class AppResourceProvider(context: Context) : ResourceProvider {
 
     private var context: Context = getLocalizedContext(context)
 
@@ -60,7 +60,7 @@ class AppResourceProvider(context: Context) : ResourceProvider {
         }
     }
 
-    companion object {
+    private companion object {
 
         private const val TAG = "AppResourceProvider"
     }

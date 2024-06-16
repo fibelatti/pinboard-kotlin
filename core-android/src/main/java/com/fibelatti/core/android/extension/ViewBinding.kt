@@ -11,11 +11,11 @@ import androidx.viewbinding.ViewBinding
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
-inline fun <T : ViewBinding> AppCompatActivity.viewBinding(
+public inline fun <T : ViewBinding> AppCompatActivity.viewBinding(
     crossinline bindingInflater: (LayoutInflater) -> T,
-) = lazy(LazyThreadSafetyMode.NONE) { bindingInflater.invoke(layoutInflater) }
+): Lazy<T> = lazy(LazyThreadSafetyMode.NONE) { bindingInflater.invoke(layoutInflater) }
 
-fun <T : ViewBinding> Fragment.viewBinding(
+public fun <T : ViewBinding> Fragment.viewBinding(
     factory: (View) -> T,
 ): ReadOnlyProperty<Fragment, T> = object : ReadOnlyProperty<Fragment, T> {
 

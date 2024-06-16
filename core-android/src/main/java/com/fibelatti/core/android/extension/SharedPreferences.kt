@@ -5,9 +5,9 @@ import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.core.content.edit
 
-fun Context.getSharedPreferences(name: String): SharedPreferences = getSharedPreferences(name, MODE_PRIVATE)
+public fun Context.getSharedPreferences(name: String): SharedPreferences = getSharedPreferences(name, MODE_PRIVATE)
 
-fun SharedPreferences.put(key: String, value: Any?) {
+public fun SharedPreferences.put(key: String, value: Any?) {
     when (value) {
         is Boolean -> edit { putBoolean(key, value) }
         is Int -> edit { putInt(key, value) }
@@ -17,11 +17,11 @@ fun SharedPreferences.put(key: String, value: Any?) {
     }
 }
 
-fun SharedPreferences.clear() {
+public fun SharedPreferences.clear() {
     edit { clear() }
 }
 
-inline fun <reified T : Any> SharedPreferences.get(key: String, defaultValue: T): T = when (defaultValue) {
+public inline fun <reified T : Any> SharedPreferences.get(key: String, defaultValue: T): T = when (defaultValue) {
     is Boolean -> getBoolean(key, defaultValue) as? T ?: defaultValue
     is Int -> getInt(key, defaultValue) as? T ?: defaultValue
     is Float -> getFloat(key, defaultValue) as? T? ?: defaultValue

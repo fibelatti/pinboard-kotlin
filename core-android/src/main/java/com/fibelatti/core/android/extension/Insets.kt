@@ -24,7 +24,7 @@ import androidx.recyclerview.widget.RecyclerView
  *
  * @return the [View] to which insets must be applied
  */
-fun getViewToApplyInsets(rootView: View): View? = when (rootView) {
+public fun getViewToApplyInsets(rootView: View): View? = when (rootView) {
     is ScrollView, is NestedScrollingParent -> (rootView as? ViewGroup)?.children?.lastOrNull()
     is RecyclerView -> rootView
     is ViewGroup -> rootView.children.lastOrNull()?.let(::getViewToApplyInsets)
@@ -36,7 +36,7 @@ fun getViewToApplyInsets(rootView: View): View? = when (rootView) {
  *
  * @param f the function to be invoked when [View.setOnApplyWindowInsetsListener] is called.
  */
-fun View.doOnApplyWindowInsets(f: (View, WindowInsetsCompat, InitialPadding, InitialMargin) -> Unit) {
+public fun View.doOnApplyWindowInsets(f: (View, WindowInsetsCompat, InitialPadding, InitialMargin) -> Unit) {
     val initialPadding = InitialPadding(
         start = paddingStart,
         top = paddingTop,
@@ -81,11 +81,11 @@ private fun View.requestApplyInsetsWhenAttached() {
  *
  * @see [View.doOnApplyWindowInsets]
  */
-data class InitialPadding(val start: Int, val top: Int, val end: Int, val bottom: Int)
+public data class InitialPadding(val start: Int, val top: Int, val end: Int, val bottom: Int)
 
 /**
  * The initial margin values of a [View].
  *
  * @see [View.doOnApplyWindowInsets]
  */
-data class InitialMargin(val left: Int, val top: Int, val right: Int, val bottom: Int)
+public data class InitialMargin(val left: Int, val top: Int, val right: Int, val bottom: Int)

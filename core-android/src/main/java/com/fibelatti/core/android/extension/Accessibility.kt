@@ -6,7 +6,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.fragment.app.FragmentManager
 
-fun FragmentManager.setupForAccessibility() {
+public fun FragmentManager.setupForAccessibility() {
     addOnBackStackChangedListener {
         val lastIndex = fragments.size - 1
         fragments.forEachIndexed { index, fragment ->
@@ -21,7 +21,7 @@ fun FragmentManager.setupForAccessibility() {
     }
 }
 
-fun View.doOnInitializeAccessibilityNodeInfo(block: (info: AccessibilityNodeInfoCompat) -> Unit) {
+public fun View.doOnInitializeAccessibilityNodeInfo(block: (info: AccessibilityNodeInfoCompat) -> Unit) {
     ViewCompat.setAccessibilityDelegate(
         this,
         object : AccessibilityDelegateCompat() {

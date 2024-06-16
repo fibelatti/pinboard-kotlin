@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
  * Return the corresponding [color][ColorInt] for the given [attribute id][attrId].
  */
 @ColorInt
-fun Context.getAttributeColor(
+public fun Context.getAttributeColor(
     @AttrRes attrId: Int,
     @ColorInt default: Int = -1,
 ): Int {
@@ -20,7 +20,7 @@ fun Context.getAttributeColor(
     return color
 }
 
-fun Context?.findActivity(): AppCompatActivity? {
+public fun Context?.findActivity(): AppCompatActivity? {
     var currentContext = this
     while (currentContext != null) {
         if (currentContext is AppCompatActivity) return currentContext

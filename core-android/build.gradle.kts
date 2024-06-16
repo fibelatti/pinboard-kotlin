@@ -16,6 +16,10 @@ android {
     }
 }
 
+kotlin {
+    explicitApi()
+}
+
 dependencies {
     implementation(libs.kotlin)
 

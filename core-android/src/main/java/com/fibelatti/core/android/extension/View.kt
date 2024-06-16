@@ -20,7 +20,7 @@ import androidx.core.view.updateLayoutParams
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
-fun View.getContentView(): ViewGroup {
+public fun View.getContentView(): ViewGroup {
     var parent = parent as View
     while (parent.id != android.R.id.content) {
         parent = parent.parent as View
@@ -32,7 +32,7 @@ fun View.getContentView(): ViewGroup {
 /**
  * Set `this` height to 0.
  */
-fun View.heightCollapse() {
+public fun View.heightCollapse() {
     updateLayoutParams<ViewGroup.LayoutParams> {
         height = 0
     }
@@ -41,13 +41,13 @@ fun View.heightCollapse() {
 /**
  * @return true if `this` height is 0, false otherwise
  */
-fun View.heightIsCollapsed(): Boolean = layoutParams.height == 0
+public fun View.heightIsCollapsed(): Boolean = layoutParams.height == 0
 
 /**
  * Set `this` height to [ViewGroup.LayoutParams.WRAP_CONTENT]. It handles [LinearLayout],
  * [RelativeLayout] and [FrameLayout] specifically and tries to default to [ViewGroup] otherwise.
  */
-fun View.heightWrapContent() {
+public fun View.heightWrapContent() {
     updateLayoutParams<ViewGroup.LayoutParams> {
         height = when (this) {
             is LinearLayout.LayoutParams -> LinearLayout.LayoutParams.WRAP_CONTENT
@@ -62,14 +62,14 @@ fun View.heightWrapContent() {
  * Updates `this` layoutTransition to allow [LayoutTransition.CHANGING] transition types,
  * which is needed to animate height changes, for instance.
  */
-fun ViewGroup.animateChangingTransitions() {
+public fun ViewGroup.animateChangingTransitions() {
     layoutTransition = LayoutTransition().apply { enableTransitionType(LayoutTransition.CHANGING) }
 }
 
 /**
  * Calls [TextView.setCompoundDrawablesWithIntrinsicBounds] with null as values for all parameters.
  */
-fun TextView.clearDrawables() {
+public fun TextView.clearDrawables() {
     setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
 }
 
@@ -81,7 +81,7 @@ fun TextView.clearDrawables() {
  * @param drawableRightRes the [DrawableRes] id to be set as a right drawable
  * @param drawableBottomRes the [DrawableRes] id to be set as a bottom drawable
  */
-fun TextView.setDrawables(
+public fun TextView.setDrawables(
     @DrawableRes drawableLeftRes: Int? = null,
     @DrawableRes drawableTopRes: Int? = null,
     @DrawableRes drawableRightRes: Int? = null,
@@ -101,7 +101,7 @@ fun TextView.setDrawables(
  *
  * @param [transformationMethod] an optional [TransformationMethod] to be set as `this` transformationMethod
  */
-fun TextView.setupLinks(transformationMethod: TransformationMethod? = null) {
+public fun TextView.setupLinks(transformationMethod: TransformationMethod? = null) {
     Linkify.addLinks(this, Linkify.WEB_URLS)
     movementMethod = LinkMovementMethod.getInstance()
     transformationMethod?.let(::setTransformationMethod)
@@ -110,20 +110,20 @@ fun TextView.setupLinks(transformationMethod: TransformationMethod? = null) {
 /**
  * @return `this` text as string, or an empty string if text was null
  */
-fun EditText.textAsString(): String = this.text?.toString().orEmpty()
+public fun EditText.textAsString(): String = this.text?.toString().orEmpty()
 
 /**
  * Sets `this` text to an empty string.
  */
-fun EditText.clearText() {
-    setText("")
+public fun EditText.clearText() {
+    setText(null)
 }
 
 /**
  * Shorthand function for running the given [block] when the [EditText] receives a [handledAction] or a keyboard
  * submit.
  */
-inline fun EditText.onActionOrKeyboardSubmit(
+public inline fun EditText.onActionOrKeyboardSubmit(
     vararg handledAction: Int,
     crossinline block: EditText.() -> Unit,
 ) {
@@ -147,7 +147,7 @@ inline fun EditText.onActionOrKeyboardSubmit(
  *
  * @param errorMessage the message to be displayed
  */
-fun TextInputLayout.showError(errorMessage: String) {
+public fun TextInputLayout.showError(errorMessage: String) {
     error = errorMessage
     if (childCount == 1 && (getChildAt(0) is TextInputEditText || getChildAt(0) is EditText)) {
         getChildAt(0).requestFocus()
@@ -157,14 +157,14 @@ fun TextInputLayout.showError(errorMessage: String) {
 /**
  * Shorthand function to reset the error state of a [TextInputLayout].
  */
-fun TextInputLayout.clearError() {
+public fun TextInputLayout.clearError() {
     error = null
 }
 
-fun View.showKeyboard() {
+public fun View.showKeyboard() {
     context.getSystemService<InputMethodManager>()?.showSoftInput(this, 0)
 }
 
-fun View.hideKeyboard() {
+public fun View.hideKeyboard() {
     context.getSystemService<InputMethodManager>()?.hideSoftInputFromWindow(windowToken, 0)
 }
