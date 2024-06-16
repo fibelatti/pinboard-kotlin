@@ -15,6 +15,14 @@ data class Post(
     val readLater: Boolean? = null,
     val tags: List<Tag>? = null,
     val notes: String? = null,
+    val websiteTitle: String? = null,
+    val websiteDescription: String? = null,
     val isArchived: Boolean? = null,
     val pendingSync: PendingSync? = null,
-)
+) {
+
+    val displayTitle: String
+        get() = title.ifEmpty { websiteTitle ?: "" }
+    val displayDescription: String
+        get() = description.ifEmpty { websiteDescription ?: "" }
+}

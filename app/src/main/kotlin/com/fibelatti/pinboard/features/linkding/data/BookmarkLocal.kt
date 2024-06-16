@@ -23,6 +23,8 @@ data class BookmarkLocal(
     val title: String,
     val description: String,
     val notes: String? = null,
+    val websiteTitle: String? = null,
+    val websiteDescription: String? = null,
     val isArchived: Boolean? = false,
     val unread: Boolean? = false,
     val shared: Boolean? = true,
@@ -53,6 +55,8 @@ class BookmarkLocalMapper @Inject constructor(
             readLater = unread == true,
             tags = tagNames?.ifBlank { null }?.split(" ")?.sorted()?.map(::Tag),
             notes = notes,
+            websiteTitle = websiteTitle,
+            websiteDescription = websiteDescription,
             isArchived = isArchived,
             pendingSync = when (pendingSync) {
                 PendingSyncDto.ADD -> PendingSync.ADD
@@ -70,6 +74,8 @@ class BookmarkLocalMapper @Inject constructor(
             title = title,
             description = description,
             notes = notes,
+            websiteTitle = websiteTitle,
+            websiteDescription = websiteDescription,
             isArchived = isArchived,
             unread = readLater,
             shared = private != true,

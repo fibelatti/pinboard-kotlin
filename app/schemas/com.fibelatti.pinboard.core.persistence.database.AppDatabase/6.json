@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 6,
-    "identityHash": "ea953ac039e34f8831266271d08b2200",
+    "identityHash": "377d35fd086abc2b51628b3cc5b9699a",
     "entities": [
       {
         "tableName": "Posts",
@@ -148,7 +148,7 @@
       },
       {
         "tableName": "LinkdingBookmarks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `url` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `notes` TEXT, `isArchived` INTEGER, `unread` INTEGER, `shared` INTEGER, `tagNames` TEXT, `dateModified` TEXT NOT NULL, `pendingSync` TEXT, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `url` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `notes` TEXT, `websiteTitle` TEXT, `websiteDescription` TEXT, `isArchived` INTEGER, `unread` INTEGER, `shared` INTEGER, `tagNames` TEXT, `dateModified` TEXT NOT NULL, `pendingSync` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -177,6 +177,18 @@
           {
             "fieldPath": "notes",
             "columnName": "notes",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "websiteTitle",
+            "columnName": "websiteTitle",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "websiteDescription",
+            "columnName": "websiteDescription",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -331,7 +343,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ea953ac039e34f8831266271d08b2200')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '377d35fd086abc2b51628b3cc5b9699a')"
     ]
   }
 }

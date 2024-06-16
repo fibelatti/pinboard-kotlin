@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.linkding.data
 
-import com.fibelatti.core.extension.ifNullOrBlank
 import com.fibelatti.core.functional.Mapper
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -59,8 +58,8 @@ class BookmarkRemoteMapper @Inject constructor(
 
         Post(
             url = url,
-            title = title.ifNullOrBlank { websiteTitle.orEmpty() },
-            description = description.ifNullOrBlank { websiteDescription.orEmpty() },
+            title = title.orEmpty(),
+            description = description.orEmpty(),
             id = requireNotNull(id?.toString()),
             time = time,
             formattedTime = dateFormatter.tzFormatToDisplayFormat(time) ?: time,
@@ -68,6 +67,8 @@ class BookmarkRemoteMapper @Inject constructor(
             readLater = unread == true,
             tags = tagNames?.sorted()?.map(::Tag),
             notes = notes,
+            websiteTitle = websiteTitle,
+            websiteDescription = websiteDescription,
             isArchived = isArchived,
         )
     }
