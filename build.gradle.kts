@@ -6,6 +6,7 @@ import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import com.diffplug.gradle.spotless.SpotlessPlugin
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -71,6 +72,15 @@ subprojects {
     afterEvaluate {
         plugins.withType<com.android.build.gradle.api.AndroidBasePlugin> {
             apply(plugin = libs.plugins.cache.fix.get().pluginId)
+        }
+
+        extensions.findByType(KotlinMultiplatformExtension::class.java)?.apply {
+            sourceSets.all {
+                languageSettings {
+                    languageVersion = "2.0"
+                    apiVersion = "2.0"
+                }
+            }
         }
 
         extensions.findByType(CommonExtension::class.java)?.apply {
