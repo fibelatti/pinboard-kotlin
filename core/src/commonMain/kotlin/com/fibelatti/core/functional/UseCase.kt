@@ -8,11 +8,11 @@ package com.fibelatti.core.functional
  *
  * val result: Result<Bar> = foo()
  */
-abstract class UseCase<out Type> where Type : Any? {
+public abstract class UseCase<out Type> where Type : Any? {
 
-    abstract suspend fun run(): Result<Type>
+    public abstract suspend fun run(): Result<Type>
 
-    suspend operator fun invoke(): Result<Type> = run()
+    public suspend operator fun invoke(): Result<Type> = run()
 }
 
 /**
@@ -23,9 +23,9 @@ abstract class UseCase<out Type> where Type : Any? {
  *
  * val result: Result<Bar> = foo(Foo.Params(baz))
  */
-abstract class UseCaseWithParams<out Type, in Params> where Type : Any? {
+public abstract class UseCaseWithParams<out Type, in Params> where Type : Any? {
 
-    abstract suspend fun run(params: Params): Result<Type>
+    public abstract suspend fun run(params: Params): Result<Type>
 
-    suspend operator fun invoke(params: Params): Result<Type> = run(params)
+    public suspend operator fun invoke(params: Params): Result<Type> = run(params)
 }

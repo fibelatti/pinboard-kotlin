@@ -9,7 +9,7 @@ import kotlinx.coroutines.sync.withLock
  * [afterPrevious] will always ensure that all previously requested work has finished prior to running the given block,
  * and that future work will wait until the current work is finished before starting.
  */
-class SingleRunner {
+public class SingleRunner {
 
     /**
      * A coroutine [Mutex] implements a lock that may only be taken by one coroutine at a time.
@@ -26,5 +26,5 @@ class SingleRunner {
      *
      * @return the result of block
      */
-    suspend fun <T> afterPrevious(block: suspend () -> T): T = mutex.withLock { block() }
+    public suspend fun <T> afterPrevious(block: suspend () -> T): T = mutex.withLock { block() }
 }

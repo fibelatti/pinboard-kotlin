@@ -15,7 +15,7 @@ import java.io.IOException
  *
  * @return [T] if successful, IOException if all retries failed
  */
-suspend fun <T> retryIO(
+public suspend fun <T> retryIO(
     times: Int = 5,
     initialDelay: Long = 100,
     maxDelay: Long = 1000,

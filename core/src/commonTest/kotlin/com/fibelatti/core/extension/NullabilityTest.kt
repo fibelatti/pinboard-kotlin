@@ -6,7 +6,7 @@ import io.mockk.verify
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
-class NullabilityTest {
+internal class NullabilityTest {
 
     @Nested
     inner class SafeLetTests {

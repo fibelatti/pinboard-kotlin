@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.fail
 
-class EitherTest {
+internal class EitherTest {
 
     private val mockValue = true
     private val mockDefaultValue = false

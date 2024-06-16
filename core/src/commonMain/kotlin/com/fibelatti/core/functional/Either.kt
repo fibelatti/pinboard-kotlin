@@ -11,10 +11,10 @@ import com.fibelatti.core.functional.Either.Right
  * @see Left
  * @see Right
  */
-sealed class Either<out L, out R> {
+public sealed class Either<out L, out R> {
 
-    val isRight: Boolean get() = this is Right<R>
-    val isLeft: Boolean get() = this is Left<L>
+    public val isRight: Boolean get() = this is Right<R>
+    public val isLeft: Boolean get() = this is Left<L>
 
     /**
      * Calls a function depending on the type of `this`, with its value as a parameter.
@@ -24,7 +24,7 @@ sealed class Either<out L, out R> {
      *
      * @return the result of the invoked function
      */
-    inline fun either(fnL: (L) -> Unit, fnR: (R) -> Unit) {
+    public inline fun either(fnL: (L) -> Unit, fnR: (R) -> Unit) {
         when (this) {
             is Left -> fnL(value)
             is Right -> fnR(value)
@@ -34,7 +34,7 @@ sealed class Either<out L, out R> {
     /**
      * @return `this` value if it is [Left], null otherwise
      */
-    fun leftOrNull(): L? = when (this) {
+    public fun leftOrNull(): L? = when (this) {
         is Left -> value
         is Right -> null
     }
@@ -42,7 +42,7 @@ sealed class Either<out L, out R> {
     /**
      * @return `this` value if it is [Right], null otherwise
      */
-    fun rightOrNull(): R? = when (this) {
+    public fun rightOrNull(): R? = when (this) {
         is Left -> null
         is Right -> value
     }
@@ -50,59 +50,59 @@ sealed class Either<out L, out R> {
     /**
      * Represents the left side of [Either] class which by convention is a "Failure".
      */
-    data class Left<out L>(val value: L) : Either<L, Nothing>()
+    public data class Left<out L>(val value: L) : Either<L, Nothing>()
 
     /**
      * Represents the right side of [Either] class which by convention is a "Success".
      */
-    data class Right<out R>(val value: R) : Either<Nothing, R>()
+    public data class Right<out R>(val value: R) : Either<Nothing, R>()
 }
 
 // region Result
 /**
  * Alias to [Either] to be used in scenarios which the Failure is a [Throwable].
  */
-typealias Result<T> = Either<Throwable, T>
+public typealias Result<T> = Either<Throwable, T>
 
 /**
  * Semantic alias to [Right] that indicates a successful result.
  */
-typealias Success<T> = Right<T>
+public typealias Success<T> = Right<T>
 
 /**
  * Semantic alias to [Left] that indicates a failed result.
  */
-typealias Failure = Left<Throwable>
+public typealias Failure = Left<Throwable>
 
 /**
  * Semantic alias to value of [Left].
  */
-val Failure.error: Throwable get() = value
+public val Failure.error: Throwable get() = value
 
 /**
  * Semantic alias to check if `this` is an instance of [Success].
  */
-val <R> Result<R>.isSuccess: Boolean get() = isRight
+public val <R> Result<R>.isSuccess: Boolean get() = isRight
 
 /**
  * Semantic alias to check if `this` is an instance of [Failure].
  */
-val <R> Result<R>.isFailure: Boolean get() = isLeft
+public val <R> Result<R>.isFailure: Boolean get() = isLeft
 
 /**
  * @return this value if [Success], null otherwise
  */
-fun <R> Result<R>.getOrNull(): R? = rightOrNull()
+public fun <R> Result<R>.getOrNull(): R? = rightOrNull()
 
 /**
  * @return this error if [Failure], null otherwise
  */
-fun <R> Result<R>.exceptionOrNull(): Throwable? = leftOrNull()
+public fun <R> Result<R>.exceptionOrNull(): Throwable? = leftOrNull()
 
 /**
  * Throws the exception held by [Left], if `this` is an instance of [Left].
  */
-fun <R> Result<R>.throwOnFailure() {
+public fun <R> Result<R>.throwOnFailure() {
     if (this is Failure) throw this.error
 }
 
@@ -110,7 +110,7 @@ fun <R> Result<R>.throwOnFailure() {
  * @return the value if `this` is an instance of [Success]
  * @throws Throwable if `this` is an instance of [Failure]
  */
-fun <R> Result<R>.getOrThrow(): R = when (this) {
+public fun <R> Result<R>.getOrThrow(): R = when (this) {
     is Success -> this.value
     is Failure -> throw this.error
 }
@@ -122,7 +122,7 @@ fun <R> Result<R>.getOrThrow(): R = when (this) {
  *
  * @return `this` value if it is an instance of [Success], the result of [onFailure] otherwise
  */
-inline fun <R> Result<R>.getOrElse(onFailure: (exception: Throwable) -> R): R = when (this) {
+public inline fun <R> Result<R>.getOrElse(onFailure: (exception: Throwable) -> R): R = when (this) {
     is Success -> this.value
     is Failure -> onFailure(this.error)
 }
@@ -134,7 +134,7 @@ inline fun <R> Result<R>.getOrElse(onFailure: (exception: Throwable) -> R): R = 
  *
  * @return `this` value if it is an instance of [Success], the [defaultValue] otherwise
  */
-fun <R> Result<R>.getOrDefault(defaultValue: R): R = when (this) {
+public fun <R> Result<R>.getOrDefault(defaultValue: R): R = when (this) {
     is Success -> this.value
     is Failure -> defaultValue
 }
@@ -146,7 +146,7 @@ fun <R> Result<R>.getOrDefault(defaultValue: R): R = when (this) {
  *
  * @return `this` if it is an instance of [Success], a [Success] of value otherwise
  */
-fun <R> Result<R>.onFailureReturn(value: R): Result<R> = when (this) {
+public fun <R> Result<R>.onFailureReturn(value: R): Result<R> = when (this) {
     is Success -> this
     is Failure -> Success(value)
 }
@@ -159,7 +159,7 @@ fun <R> Result<R>.onFailureReturn(value: R): Result<R> = when (this) {
  *
  * @return the result of the invoked function
  */
-inline fun <R> Result<R>.fold(onSuccess: (R) -> R, onFailure: (Throwable) -> R): R = when (this) {
+public inline fun <R> Result<R>.fold(onSuccess: (R) -> R, onFailure: (Throwable) -> R): R = when (this) {
     is Success -> onSuccess(this.value)
     is Failure -> onFailure(this.error)
 }
@@ -171,7 +171,7 @@ inline fun <R> Result<R>.fold(onSuccess: (R) -> R, onFailure: (Throwable) -> R):
  *
  * @return the result of [onSuccess] if `this` is an instance of [Success], `this` otherwise
  */
-inline fun <T, R> Result<T>.map(onSuccess: (T) -> Result<R>): Result<R> = when (this) {
+public inline fun <T, R> Result<T>.map(onSuccess: (T) -> Result<R>): Result<R> = when (this) {
     is Success -> onSuccess(this.value)
     is Failure -> this
 }
@@ -184,7 +184,7 @@ inline fun <T, R> Result<T>.map(onSuccess: (T) -> Result<R>): Result<R> = when (
  *
  * @return the result of [fn] if `this` is an instance of [Success], `this` otherwise
  */
-inline fun <T, R> Result<T>.mapCatching(fn: (T) -> R): Result<R> = when (this) {
+public inline fun <T, R> Result<T>.mapCatching(fn: (T) -> R): Result<R> = when (this) {
     is Success -> catching { fn(this.value) }
     is Failure -> this
 }
@@ -196,7 +196,7 @@ inline fun <T, R> Result<T>.mapCatching(fn: (T) -> R): Result<R> = when (this) {
  *
  * @return the result of [onFailure] if `this` is an instance of [Failure], `this` otherwise
  */
-inline fun <T> Result<T>.mapFailure(onFailure: (Throwable) -> Result<T>): Result<T> = when (this) {
+public inline fun <T> Result<T>.mapFailure(onFailure: (Throwable) -> Result<T>): Result<T> = when (this) {
     is Success -> this
     is Failure -> onFailure(this.value)
 }
@@ -207,7 +207,7 @@ inline fun <T> Result<T>.mapFailure(onFailure: (Throwable) -> Result<T>): Result
  * @return a [Success] with the result of [block] as its value if successful, [Failure] with the exception as its value
  * if an exception was thrown
  */
-inline fun <R> catching(block: () -> R): Result<R> = try {
+public inline fun <R> catching(block: () -> R): Result<R> = try {
     Success(block())
 } catch (exception: Throwable) {
     Failure(exception)
@@ -220,7 +220,7 @@ inline fun <R> catching(block: () -> R): Result<R> = try {
  *
  * @return `this`
  */
-inline fun <T> Result<T>.onFailure(action: (exception: Throwable) -> Unit): Result<T> = also {
+public inline fun <T> Result<T>.onFailure(action: (exception: Throwable) -> Unit): Result<T> = also {
     it.exceptionOrNull()?.let(action)
 }
 
@@ -231,7 +231,7 @@ inline fun <T> Result<T>.onFailure(action: (exception: Throwable) -> Unit): Resu
  *
  * @return `this`
  */
-inline fun <T> Result<T>.onSuccess(action: (value: T) -> Unit): Result<T> = also {
+public inline fun <T> Result<T>.onSuccess(action: (value: T) -> Unit): Result<T> = also {
     it.getOrNull()?.let(action)
 }
 // endregion

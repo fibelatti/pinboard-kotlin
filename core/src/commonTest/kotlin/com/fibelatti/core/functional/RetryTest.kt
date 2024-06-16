@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
 
-class RetryTest {
+internal class RetryTest {
 
     @Nested
     inner class NetworkRetryTests {

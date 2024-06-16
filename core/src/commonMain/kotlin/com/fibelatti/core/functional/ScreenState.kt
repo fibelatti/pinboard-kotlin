@@ -4,22 +4,22 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.onEach
 
-sealed interface ScreenState<out T> {
+public sealed interface ScreenState<out T> {
 
-    sealed interface Loading<T> : ScreenState<T> {
+    public sealed interface Loading<T> : ScreenState<T> {
 
-        data object FromEmpty : Loading<Nothing>
+        public data object FromEmpty : Loading<Nothing>
 
-        data class FromData<T>(val previousData: T) : Loading<T>
+        public data class FromData<T>(val previousData: T) : Loading<T>
     }
 
-    data class Loaded<T>(val data: T) : ScreenState<T>
+    public data class Loaded<T>(val data: T) : ScreenState<T>
 
-    data class Error(val throwable: Throwable) : ScreenState<Nothing>
+    public data class Error(val throwable: Throwable) : ScreenState<Nothing>
 }
 
 // region Producer extensions
-fun <T> MutableStateFlow<ScreenState<T>>.emitLoading() {
+public fun <T> MutableStateFlow<ScreenState<T>>.emitLoading() {
     val currentValue = value
     value = if (currentValue is ScreenState.Loaded) {
         ScreenState.Loading.FromData(currentValue.data)
@@ -28,17 +28,17 @@ fun <T> MutableStateFlow<ScreenState<T>>.emitLoading() {
     }
 }
 
-fun <T> MutableStateFlow<ScreenState<T>>.emitLoaded(data: T) {
+public fun <T> MutableStateFlow<ScreenState<T>>.emitLoaded(data: T) {
     value = ScreenState.Loaded(data)
 }
 
-fun <T> MutableStateFlow<ScreenState<T>>.emitError(throwable: Throwable) {
+public fun <T> MutableStateFlow<ScreenState<T>>.emitError(throwable: Throwable) {
     value = ScreenState.Error(throwable)
 }
 // endregion Producer extensions
 
 // region Consumer extensions
-inline fun <reified T> Flow<ScreenState<T>>.onScreenState(
+public inline fun <reified T> Flow<ScreenState<T>>.onScreenState(
     noinline onLoading: suspend (previousData: T?) -> Unit = {},
     noinline onLoaded: suspend (data: T) -> Unit = {},
     noinline onError: suspend (Throwable) -> Unit = {},
@@ -53,7 +53,7 @@ inline fun <reified T> Flow<ScreenState<T>>.onScreenState(
     }
 }
 
-inline fun <reified T> Flow<ScreenState<T>>.onLoadingState(
+public inline fun <reified T> Flow<ScreenState<T>>.onLoadingState(
     noinline action: suspend (previousData: T?) -> Unit,
 ): Flow<ScreenState<T>> = onEach { state ->
     if (state is ScreenState.Loading) {
@@ -61,7 +61,7 @@ inline fun <reified T> Flow<ScreenState<T>>.onLoadingState(
     }
 }
 
-inline fun <reified T : Any> Flow<ScreenState<T>>.onLoadedState(
+public inline fun <reified T : Any> Flow<ScreenState<T>>.onLoadedState(
     noinline action: suspend (data: T) -> Unit,
 ): Flow<ScreenState<T>> = onEach { state ->
     if (state is ScreenState.Loaded) {
@@ -69,7 +69,7 @@ inline fun <reified T : Any> Flow<ScreenState<T>>.onLoadedState(
     }
 }
 
-fun Flow<ScreenState<*>>.onErrorState(
+public fun Flow<ScreenState<*>>.onErrorState(
     action: suspend (Throwable) -> Unit,
 ): Flow<ScreenState<*>> = onEach { state ->
     if (state is ScreenState.Error) {

@@ -17,6 +17,8 @@ android {
 }
 
 kotlin {
+    explicitApi()
+
     androidTarget()
 
     sourceSets {
