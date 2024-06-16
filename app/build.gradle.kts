@@ -64,7 +64,7 @@ android {
 
         resourceConfigurations.add("en")
 
-        testInstrumentationRunner = "com.fibelatti.pinboard.HiltTestRunner"
+        testInstrumentationRunner = "com.fibelatti.pinboard.tooling.HiltTestRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
 
         vectorDrawables.useSupportLibrary = true

@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard
+package com.fibelatti.pinboard.tooling
 
 import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry

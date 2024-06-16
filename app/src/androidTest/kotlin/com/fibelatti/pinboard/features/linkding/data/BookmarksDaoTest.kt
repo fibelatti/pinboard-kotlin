@@ -1,6 +1,6 @@
 package com.fibelatti.pinboard.features.linkding.data
 
-import com.fibelatti.pinboard.BaseDbTest
+import com.fibelatti.pinboard.tooling.BaseDbTest
 import com.fibelatti.pinboard.MockDataProvider.createBookmarkLocal
 import com.fibelatti.pinboard.MockDataProvider.mockHash
 import com.fibelatti.pinboard.MockDataProvider.mockTagString1

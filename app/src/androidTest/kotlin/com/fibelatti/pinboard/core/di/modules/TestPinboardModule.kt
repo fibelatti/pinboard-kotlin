@@ -1,6 +1,6 @@
 package com.fibelatti.pinboard.core.di.modules
 
-import com.fibelatti.pinboard.MockServer
+import com.fibelatti.pinboard.PinboardMockServer
 import com.fibelatti.pinboard.core.di.RestApi
 import com.fibelatti.pinboard.core.di.RestApiProvider
 import com.fibelatti.pinboard.core.network.ApiInterceptor
@@ -46,7 +46,7 @@ object TestPinboardModule {
         @RestApi(RestApiProvider.PINBOARD) okHttpClient: OkHttpClient,
         json: Json,
     ): Retrofit = Retrofit.Builder()
-        .baseUrl(MockServer.instance.url("/"))
+        .baseUrl(PinboardMockServer.instance.url("/"))
         .client(okHttpClient)
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()

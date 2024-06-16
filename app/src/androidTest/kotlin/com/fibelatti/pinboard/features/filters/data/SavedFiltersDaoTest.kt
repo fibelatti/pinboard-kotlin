@@ -1,6 +1,6 @@
 package com.fibelatti.pinboard.features.filters.data
 
-import com.fibelatti.pinboard.BaseDbTest
+import com.fibelatti.pinboard.tooling.BaseDbTest
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest

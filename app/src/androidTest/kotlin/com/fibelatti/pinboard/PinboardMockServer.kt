@@ -5,7 +5,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 
-object MockServer {
+object PinboardMockServer {
 
     val instance = MockWebServer()
 

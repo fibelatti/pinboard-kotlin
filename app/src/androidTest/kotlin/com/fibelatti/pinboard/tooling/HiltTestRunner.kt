@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard
+package com.fibelatti.pinboard.tooling
 
 import android.app.Application
 import android.content.Context

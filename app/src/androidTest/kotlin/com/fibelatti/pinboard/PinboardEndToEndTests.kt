@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 @HiltAndroidTest
 @OptIn(ExperimentalTestApi::class)
-class EndToEndTests {
+class PinboardEndToEndTests {
 
     @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
@@ -47,7 +47,7 @@ class EndToEndTests {
 
     @After
     fun tearDown() {
-        MockServer.instance.shutdown()
+        PinboardMockServer.instance.shutdown()
         sharedPreferences.clear()
     }
 
@@ -79,14 +79,14 @@ class EndToEndTests {
     @Test
     fun userCanLoginAndFetchBookmarks() {
         // Arrange
-        MockServer.setResponses(
-            MockServer.updateResponse(updateTimestamp = dateFormatter.nowAsTzFormat()),
-            MockServer.allBookmarksResponse(isEmpty = false),
+        PinboardMockServer.setResponses(
+            PinboardMockServer.updateResponse(updateTimestamp = dateFormatter.nowAsTzFormat()),
+            PinboardMockServer.allBookmarksResponse(isEmpty = false),
         )
 
         with(composeRule) {
             // Act
-            onNodeWithText(context.getString(R.string.auth_token_hint)).performTextInput(MockServer.TestData.TOKEN)
+            onNodeWithText(context.getString(R.string.auth_token_hint)).performTextInput(PinboardMockServer.TestData.TOKEN)
             onNodeWithText(context.getString(R.string.auth_button)).performClick()
 
             // Assert
@@ -111,15 +111,15 @@ class EndToEndTests {
     @Test
     fun userCanLoginAndAddBookmarks() {
         // Arrange
-        MockServer.setResponses(
-            MockServer.updateResponse(updateTimestamp = dateFormatter.nowAsTzFormat()),
-            MockServer.allBookmarksResponse(isEmpty = true),
-            MockServer.addBookmarkResponse(),
+        PinboardMockServer.setResponses(
+            PinboardMockServer.updateResponse(updateTimestamp = dateFormatter.nowAsTzFormat()),
+            PinboardMockServer.allBookmarksResponse(isEmpty = true),
+            PinboardMockServer.addBookmarkResponse(),
         )
 
         with(composeRule) {
             // Login
-            onNodeWithText(context.getString(R.string.auth_token_hint)).performTextInput(MockServer.TestData.TOKEN)
+            onNodeWithText(context.getString(R.string.auth_token_hint)).performTextInput(PinboardMockServer.TestData.TOKEN)
             onNodeWithText(context.getString(R.string.auth_button)).performClick()
             waitUntilAtLeastOneExists(
                 matcher = hasText(context.getString(R.string.posts_title_all)),

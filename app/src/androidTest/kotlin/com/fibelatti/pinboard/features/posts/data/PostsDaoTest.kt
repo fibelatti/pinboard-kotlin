@@ -1,6 +1,6 @@
 package com.fibelatti.pinboard.features.posts.data
 
-import com.fibelatti.pinboard.BaseDbTest
+import com.fibelatti.pinboard.tooling.BaseDbTest
 import com.fibelatti.pinboard.MockDataProvider.createPostDto
 import com.fibelatti.pinboard.MockDataProvider.mockHash
 import com.fibelatti.pinboard.MockDataProvider.mockTagString1
