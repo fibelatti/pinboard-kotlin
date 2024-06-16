@@ -56,7 +56,7 @@ class AddPostTest {
 
         // THEN
         assertThat(result.exceptionOrNull()).isInstanceOf(ApiException::class.java)
-        coVerify(exactly = 0) { mockPostsRepository.getPost(any()) }
+        coVerify(exactly = 0) { mockPostsRepository.getPost(id = any(), url = any()) }
     }
 
     @Test

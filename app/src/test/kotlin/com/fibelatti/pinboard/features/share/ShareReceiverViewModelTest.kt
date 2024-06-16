@@ -57,7 +57,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     }
     private val mockAddPost = mockk<AddPost>()
     private val mockPostsRepository = mockk<PostsRepository> {
-        coEvery { getPost(any()) } returns Failure(InvalidRequestException())
+        coEvery { getPost(id = any(), url = any()) } returns Failure(InvalidRequestException())
     }
     private val mockUserRepository = mockk<UserRepository>()
     private val mockAppStateRepository = mockk<AppStateRepository>(relaxUnitFun = true)
@@ -103,7 +103,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     @Test
     fun `GIVEN skipEdit is true WHEN an existing post is found THEN save should receive a value`() = runTest {
         // GIVEN
-        coEvery { mockPostsRepository.getPost(mockUrlValid) } returns Success(post)
+        coEvery { mockPostsRepository.getPost(id = "", url = mockUrlValid) } returns Success(post)
 
         // WHEN
         shareReceiverViewModel.saveUrl(url = mockUrlValid, title = mockUrlTitle, skipEdit = true)
@@ -120,7 +120,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     fun `GIVEN getEditAfterSharing is BeforeSaving WHEN an existing post is found THEN save should receive a value`() =
         runTest {
             // GIVEN
-            coEvery { mockPostsRepository.getPost(mockUrlValid) } returns Success(post)
+            coEvery { mockPostsRepository.getPost(id = "", url = mockUrlValid) } returns Success(post)
             every { mockUserRepository.editAfterSharing } returns EditAfterSharing.BeforeSaving
 
             // WHEN
@@ -139,7 +139,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     fun `GIVEN getEditAfterSharing is AfterSaving WHEN an existing post is found THEN save should receive a value`() =
         runTest {
             // GIVEN
-            coEvery { mockPostsRepository.getPost(mockUrlValid) } returns Success(post)
+            coEvery { mockPostsRepository.getPost(id = "", url = mockUrlValid) } returns Success(post)
             every { mockUserRepository.editAfterSharing } returns EditAfterSharing.AfterSaving
 
             // WHEN

@@ -97,7 +97,7 @@ fun BookmarkDetailsScreen(
     when {
         post.isFile() -> {
             FileBookmark(
-                title = post.title,
+                title = post.displayTitle,
                 url = post.url,
                 onOpenInFileViewerClicked = onOpenInFileViewerClicked,
             )
@@ -105,7 +105,7 @@ fun BookmarkDetailsScreen(
 
         !isConnected -> {
             BookmarkError(
-                title = post.title,
+                title = post.displayTitle,
                 url = post.url,
                 onButtonClicked = onOpenInBrowserClicked,
                 description = stringResource(id = R.string.posts_url_offline_error),
@@ -114,7 +114,7 @@ fun BookmarkDetailsScreen(
 
         hasError -> {
             BookmarkError(
-                title = post.title,
+                title = post.displayTitle,
                 url = post.url,
                 onButtonClicked = onOpenInBrowserClicked,
             )

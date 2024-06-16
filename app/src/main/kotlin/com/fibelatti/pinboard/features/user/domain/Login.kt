@@ -15,14 +15,20 @@ class Login @Inject constructor(
     private val userRepository: UserRepository,
     private val appStateRepository: AppStateRepository,
     private val postsRepository: PostsRepository,
-) : UseCaseWithParams<Unit, String>() {
+) : UseCaseWithParams<Unit, Login.Params>() {
 
-    override suspend fun run(params: String): Result<Unit> {
-        userRepository.setAuthToken(params.trim())
+    override suspend fun run(params: Params): Result<Unit> {
+        userRepository.setAuthToken(params.authToken.trim())
+        userRepository.linkdingInstanceUrl = params.instanceUrl.trim()
 
         return postsRepository.update()
             .map { postsRepository.clearCache() }
             .onSuccess { appStateRepository.runAction(UserLoggedIn) }
             .onFailure { appStateRepository.runAction(UserLoggedOut) }
     }
+
+    data class Params(
+        val authToken: String,
+        val instanceUrl: String = "",
+    )
 }

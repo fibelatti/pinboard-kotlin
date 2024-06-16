@@ -53,7 +53,12 @@ class PopularPostsFragment @Inject constructor() : BaseFragment() {
             onOptionSelected = { option ->
                 when (option) {
                     is PopularPostQuickActions.Save -> popularPostsViewModel.saveLink(option.post)
-                    is PopularPostQuickActions.CopyUrl -> requireContext().copyToClipboard(post.title, post.url)
+
+                    is PopularPostQuickActions.CopyUrl -> requireContext().copyToClipboard(
+                        label = post.displayTitle,
+                        text = post.url,
+                    )
+
                     is PopularPostQuickActions.Share -> requireActivity().shareText(
                         R.string.posts_share_title,
                         option.post.url,

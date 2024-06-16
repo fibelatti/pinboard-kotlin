@@ -145,7 +145,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
                     return@resultFromNetwork post
                 }
 
-                ApiResultCodes.ITEM_ALREADY_EXISTS.code -> getPost(post.url).getOrThrow()
+                ApiResultCodes.ITEM_ALREADY_EXISTS.code -> getPost(id = "", url = post.url).getOrThrow()
                 else -> throw ApiException(result.resultCode)
             }
         }
@@ -171,7 +171,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
         return@resultFrom postDtoMapper.map(newPost)
     }
 
-    override suspend fun delete(url: String): Result<Unit> = if (connectivityInfoProvider.isConnected()) {
+    override suspend fun delete(id: String, url: String): Result<Unit> = if (connectivityInfoProvider.isConnected()) {
         deletePostRemote(url)
     } else {
         deletePostLocal(url)
@@ -389,7 +389,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
     private fun List<Tag>?.getAndFormat(index: Int): String =
         this?.getOrNull(index)?.name?.let(PostsDao.Companion::preFormatTag).orEmpty()
 
-    override suspend fun getPost(url: String): Result<Post> = resultFromNetwork {
+    override suspend fun getPost(id: String, url: String): Result<Post> = resultFromNetwork {
         val post = postsDao.getPost(url)
             ?: postsApi.getPost(url).posts.firstOrNull()?.let(postRemoteDtoMapper::map)
 

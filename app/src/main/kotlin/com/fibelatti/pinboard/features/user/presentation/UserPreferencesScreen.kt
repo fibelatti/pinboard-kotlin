@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -61,8 +62,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun UserPreferencesScreen(
     appStateViewModel: AppStateViewModel = hiltViewModel(),
-    userPreferencesViewModel: UserPreferencesViewModel = hiltViewModel(),
-    tagManagerViewModel: TagManagerViewModel = hiltViewModel(),
     onDynamicColorChange: () -> Unit,
     onDisableScreenshotsChange: () -> Unit,
 ) {
@@ -82,15 +81,12 @@ fun UserPreferencesScreen(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 AppPreferencesContent(
-                    userPreferencesViewModel = userPreferencesViewModel,
                     appMode = appMode,
                     onDynamicColorChange = onDynamicColorChange,
                     onDisableScreenshotsChange = onDisableScreenshotsChange,
                 )
 
                 BookmarkingPreferencesContent(
-                    userPreferencesViewModel = userPreferencesViewModel,
-                    tagManagerViewModel = tagManagerViewModel,
                     appMode = appMode,
                     modifier = Modifier.padding(top = 32.dp),
                 )
@@ -102,7 +98,6 @@ fun UserPreferencesScreen(
                 val childWidth = this@BoxWithConstraints.maxWidth / 2
 
                 AppPreferencesContent(
-                    userPreferencesViewModel = userPreferencesViewModel,
                     appMode = appMode,
                     onDynamicColorChange = onDynamicColorChange,
                     onDisableScreenshotsChange = onDisableScreenshotsChange,
@@ -110,8 +105,6 @@ fun UserPreferencesScreen(
                 )
 
                 BookmarkingPreferencesContent(
-                    userPreferencesViewModel = userPreferencesViewModel,
-                    tagManagerViewModel = tagManagerViewModel,
                     appMode = appMode,
                     modifier = Modifier.requiredWidth(childWidth),
                 )
@@ -122,16 +115,17 @@ fun UserPreferencesScreen(
 
 @Composable
 private fun AppPreferencesContent(
-    userPreferencesViewModel: UserPreferencesViewModel,
     appMode: AppMode,
     onDynamicColorChange: () -> Unit,
     onDisableScreenshotsChange: () -> Unit,
     modifier: Modifier = Modifier,
+    userPreferencesViewModel: UserPreferencesViewModel = hiltViewModel(),
 ) {
     val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
     AppPreferencesContent(
+        appMode = appMode,
         userPreferences = userPreferences,
         onAppearanceChange = { newAppearance ->
             userPreferencesViewModel.saveAppearance(newAppearance)
@@ -160,13 +154,13 @@ private fun AppPreferencesContent(
         onAlwaysUseSidePanelChange = userPreferencesViewModel::saveAlwaysUseSidePanel,
         onMarkAsReadOnOpenChange = userPreferencesViewModel::saveMarkAsReadOnOpen,
         onShowDescriptionInListsChange = userPreferencesViewModel::saveShowDescriptionInLists,
-        appMode = appMode,
         modifier = modifier,
     )
 }
 
 @Composable
 private fun AppPreferencesContent(
+    appMode: AppMode,
     userPreferences: UserPreferences,
     onAppearanceChange: (Appearance) -> Unit,
     onDynamicColorChange: (Boolean) -> Unit,
@@ -177,7 +171,6 @@ private fun AppPreferencesContent(
     onAlwaysUseSidePanelChange: (Boolean) -> Unit,
     onMarkAsReadOnOpenChange: (Boolean) -> Unit,
     onShowDescriptionInListsChange: (Boolean) -> Unit,
-    appMode: AppMode,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -188,8 +181,26 @@ private fun AppPreferencesContent(
         Text(
             text = stringResource(id = R.string.user_preferences_section_app),
             style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.primary,
+            color = MaterialTheme.colorScheme.secondary,
         )
+
+        if (AppMode.LINKDING == appMode) {
+            Text(
+                text = stringResource(
+                    R.string.user_preferences_linkding_connection_description,
+                    userPreferences.linkdingInstanceUrl,
+                ),
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .padding(all = 8.dp),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
 
         Text(
             text = stringResource(id = R.string.user_preferences_appearance),
@@ -396,10 +407,10 @@ private fun AppPreferencesContent(
 
 @Composable
 private fun BookmarkingPreferencesContent(
-    userPreferencesViewModel: UserPreferencesViewModel,
-    tagManagerViewModel: TagManagerViewModel,
     appMode: AppMode,
     modifier: Modifier = Modifier,
+    userPreferencesViewModel: UserPreferencesViewModel = hiltViewModel(),
+    tagManagerViewModel: TagManagerViewModel = hiltViewModel(),
 ) {
     val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
     val suggestedTags by userPreferencesViewModel.suggestedTags.collectAsStateWithLifecycle(emptyList())
@@ -422,12 +433,12 @@ private fun BookmarkingPreferencesContent(
         modifier = modifier.fillMaxWidth(),
     ) {
         BookmarkingPreferencesContent(
+            appMode = appMode,
             userPreferences = userPreferences,
             onEditAfterSharingChange = userPreferencesViewModel::saveEditAfterSharing,
             onAutoFillDescriptionChange = userPreferencesViewModel::saveAutoFillDescription,
             onPrivateByDefaultChange = userPreferencesViewModel::saveDefaultPrivate,
             onReadLaterByDefaultChange = userPreferencesViewModel::saveDefaultReadLater,
-            appMode = appMode,
         )
 
         Text(
@@ -459,12 +470,12 @@ private fun BookmarkingPreferencesContent(
 
 @Composable
 private fun BookmarkingPreferencesContent(
+    appMode: AppMode,
     userPreferences: UserPreferences,
     onEditAfterSharingChange: (EditAfterSharing) -> Unit,
     onAutoFillDescriptionChange: (Boolean) -> Unit,
     onPrivateByDefaultChange: (Boolean) -> Unit,
     onReadLaterByDefaultChange: (Boolean) -> Unit,
-    appMode: AppMode,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -518,7 +529,7 @@ private fun BookmarkingPreferencesContent(
             modifier = Modifier.padding(top = 16.dp),
         )
 
-        if (AppMode.PINBOARD == appMode) {
+        if (AppMode.NO_API != appMode) {
             SettingToggle(
                 title = stringResource(id = R.string.user_preferences_default_private_label),
                 description = stringResource(id = R.string.user_preferences_default_private_description),
@@ -587,6 +598,7 @@ private fun AppPreferencesContentPreview(
 ) {
     ExtendedTheme {
         AppPreferencesContent(
+            appMode = AppMode.PINBOARD,
             userPreferences = userPreferences,
             onAppearanceChange = {},
             onDynamicColorChange = {},
@@ -597,7 +609,6 @@ private fun AppPreferencesContentPreview(
             onAlwaysUseSidePanelChange = {},
             onMarkAsReadOnOpenChange = {},
             onShowDescriptionInListsChange = {},
-            appMode = AppMode.PINBOARD,
         )
     }
 }
@@ -609,12 +620,12 @@ private fun BookmarkingPreferencesContentPreview(
 ) {
     ExtendedTheme {
         BookmarkingPreferencesContent(
+            appMode = AppMode.PINBOARD,
             userPreferences = userPreferences,
             onEditAfterSharingChange = {},
             onAutoFillDescriptionChange = {},
             onPrivateByDefaultChange = {},
             onReadLaterByDefaultChange = {},
-            appMode = AppMode.PINBOARD,
         )
     }
 }

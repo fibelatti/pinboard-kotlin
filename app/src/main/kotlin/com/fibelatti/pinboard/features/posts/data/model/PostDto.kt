@@ -47,7 +47,7 @@ class PostDtoMapper @Inject constructor(
 
         Post(
             url = URLDecoder.decode(preparedUrl, API_ENCODING),
-            title = description ?: "No title",
+            title = description.orEmpty(),
             description = extended.orEmpty(),
             id = hash,
             time = time,

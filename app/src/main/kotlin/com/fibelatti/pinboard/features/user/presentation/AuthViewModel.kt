@@ -28,16 +28,25 @@ class AuthViewModel @Inject constructor(
     private val _screenState = MutableStateFlow(ScreenState())
     val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
 
-    fun login(apiToken: String) {
+    fun login(
+        apiToken: String,
+        instanceUrl: String,
+    ) {
         launch {
             _screenState.update { currentState ->
                 currentState.copy(
                     isLoading = true,
                     apiTokenError = null,
+                    instanceUrlError = null,
                 )
             }
 
-            loginUseCase(apiToken)
+            val params = Login.Params(
+                authToken = apiToken,
+                instanceUrl = instanceUrl,
+            )
+
+            loginUseCase(params)
                 .onFailure { error ->
                     _screenState.update { currentState ->
                         currentState.copy(isLoading = false)
@@ -80,5 +89,6 @@ class AuthViewModel @Inject constructor(
     data class ScreenState(
         val isLoading: Boolean = false,
         val apiTokenError: String? = null,
+        val instanceUrlError: String? = null,
     )
 }

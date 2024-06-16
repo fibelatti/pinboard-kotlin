@@ -35,6 +35,10 @@ class UserPreferencesViewModel @Inject constructor(
 
     private var searchJob: Job? = null
 
+    fun useLinkding(value: Boolean) {
+        userRepository.useLinkding = value
+    }
+
     fun savePeriodicSync(periodicSync: PeriodicSync) {
         userRepository.periodicSync = periodicSync
         periodicSyncManager.enqueueWork(shouldReplace = true)

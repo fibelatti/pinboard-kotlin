@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Divider
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -128,6 +129,7 @@ fun BookmarkListScreen(
         }
 
         BookmarkListScreen(
+            appMode = appMode,
             category = currentState.category,
             posts = currentState.posts,
             isLoading = (postListLoading || postDetailScreenState.isLoading) && !hasError,
@@ -152,13 +154,13 @@ fun BookmarkListScreen(
             onTagClicked = { post -> appStateViewModel.runAction(PostsForTag(post)) },
             showPostDescription = currentState.showDescription,
             sidePanelVisible = sidePanelVisible,
-            appMode = appMode,
         )
     }
 }
 
 @Composable
 fun BookmarkListScreen(
+    appMode: AppMode,
     category: ViewCategory,
     posts: PostList?,
     isLoading: Boolean,
@@ -175,7 +177,6 @@ fun BookmarkListScreen(
     onTagClicked: (Tag) -> Unit,
     showPostDescription: Boolean,
     sidePanelVisible: Boolean,
-    appMode: AppMode,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -185,11 +186,11 @@ fun BookmarkListScreen(
 
         AnimatedVisibility(visible = searchParameters.isActive()) {
             ActiveSearch(
+                appMode = appMode,
                 onViewClicked = onActiveSearchClicked,
                 onClearClicked = onClearClicked,
                 onSaveClicked = onSaveClicked,
                 onShareClicked = { onShareClicked(searchParameters) },
-                appMode = appMode,
                 modifier = Modifier.padding(
                     start = leftPadding,
                     end = if (sidePanelVisible) 16.dp else rightPadding,
@@ -260,6 +261,7 @@ fun BookmarkListScreen(
             ) {
                 items(posts.list) { post ->
                     BookmarkItem(
+                        appMode = appMode,
                         post = post,
                         onPostClicked = onPostClicked,
                         onPostLongClicked = onPostLongClicked,
@@ -274,11 +276,11 @@ fun BookmarkListScreen(
 
 @Composable
 private fun ActiveSearch(
+    appMode: AppMode,
     onViewClicked: () -> Unit,
     onClearClicked: () -> Unit,
     onSaveClicked: () -> Unit,
     onShareClicked: () -> Unit,
-    appMode: AppMode,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -350,6 +352,7 @@ private fun ActiveSearch(
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
 private fun BookmarkItem(
+    appMode: AppMode,
     post: Post,
     onPostClicked: (Post) -> Unit,
     onPostLongClicked: (Post) -> Unit,
@@ -386,7 +389,7 @@ private fun BookmarkItem(
             }
 
             Text(
-                text = post.title,
+                text = post.displayTitle,
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
@@ -399,9 +402,24 @@ private fun BookmarkItem(
                 style = MaterialTheme.typography.bodySmall,
             )
 
-            if (showDescription && post.description.isNotBlank()) {
+            if (showDescription && post.displayDescription.isNotBlank()) {
                 TextWithBlockquote(
-                    text = post.description,
+                    text = post.displayDescription,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textSize = 14.sp,
+                    maxLines = 5,
+                    clickableLinks = false,
+                )
+            }
+
+            if (AppMode.LINKDING == appMode && !post.notes.isNullOrBlank()) {
+                Divider(color = MaterialTheme.colorScheme.onSurface)
+
+                TextWithBlockquote(
+                    text = post.notes,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
@@ -563,6 +581,7 @@ private fun BookmarkItemPreview(
             modifier = Modifier.background(ExtendedTheme.colors.backgroundNoOverlay),
         ) {
             BookmarkItem(
+                appMode = AppMode.PINBOARD,
                 post = post,
                 onPostClicked = {},
                 onPostLongClicked = {},

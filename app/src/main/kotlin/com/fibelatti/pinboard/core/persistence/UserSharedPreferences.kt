@@ -60,8 +60,17 @@ const val KEY_DEFAULT_TAGS = "DEFAULT_TAGS"
 @Singleton
 class UserSharedPreferences @Inject constructor(private val sharedPreferences: SharedPreferences) {
 
+    private var currentLinkdingInstanceUrl = ""
     private var currentAuthToken: String = ""
     private var currentLastUpdate: String = ""
+
+    var useLinkding: Boolean
+        get() = sharedPreferences.get("USE_LINKDING", false)
+        set(value) = sharedPreferences.put("USE_LINKDING", value)
+
+    var linkdingInstanceUrl: String
+        get() = sharedPreferences.get("LINKDING_INSTANCE_URL", currentLinkdingInstanceUrl)
+        set(value) = sharedPreferences.put("LINKDING_INSTANCE_URL", value).also { currentLinkdingInstanceUrl = value }
 
     var authToken: String
         get() = sharedPreferences.get(KEY_AUTH_TOKEN, currentAuthToken)

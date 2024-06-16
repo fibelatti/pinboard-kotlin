@@ -11,7 +11,7 @@
     <string name="alert_confirm_deletion">Are you sure you want to delete this bookmark?</string>
     <string name="alert_confirm_unsaved_changes">You have unsaved changes that will be lost, continue without saving?</string>
 
-    <string name="server_timeout_error">It looks like there\'s a problem with Pinboard. Please try again in a while.</string>
+    <string name="server_timeout_error">Unable to reach the service. Please try again in a short while.</string>
 
     <string name="feedback_copied_to_clipboard">Copied to the clipboard</string>
 
@@ -47,14 +47,21 @@
 
     <!-- Auth -->
     <string name="auth_token_hint">API Token</string>
-    <string name="auth_title">Login to Pinboard</string>
+    <string name="auth_title_pinboard">Login to Pinboard</string>
     <string name="auth_button">Login</string>
-    <string name="auth_token_title">Where can I find this?</string>
     <string name="auth_token_description"><![CDATA[You can find your API token in the <a href="https://pinboard.in/settings/password">Pinboard Settings</a> page. It is composed by your username and an alphanumeric string (e.g. username:00F0D0FE123456789012)]]></string>
     <string name="auth_token_error">Login failed. Please double check your API Token</string>
     <string name="auth_error_title">Login failed</string>
     <string name="auth_error">This is likely a server error, double check your API Token or try again in a short while.\n\nYou can click Report to send me an email with the error details to help troubleshooting.</string>
-    <string name="auth_logged_out_feedback">Unauthorised user. Please check your Pinboard API token.</string>
+    <string name="auth_logged_out_feedback">Unable to authenticate. Please verify the provided token.</string>
+
+    <string name="auth_switch_to_pinboard">Switch to Pinboard</string>
+    <string name="auth_switch_to_linkding">Switch to Linkding</string>
+
+    <string name="auth_title_linkding">Login to Linkding</string>
+    <string name="auth_linkding_instance_url">Linkding Instance URL</string>
+    <string name="auth_linkding_instance_url_error">Please enter a valid instance URL.</string>
+    <string name="auth_linkding_description"><![CDATA[<a href="https://github.com/sissbruecker/linkding/tree/master">Linkding</a> is a self-hosted bookmark manager. When using Pinkt for Linkding you must provide your instance URL and your token, which can be found in the Integration tab of the Settings page.]]></string>
 
     <!-- Posts -->
     <string name="posts_title_all">All Bookmarks</string>
@@ -85,7 +92,7 @@
     <string name="posts_empty_description">There are no bookmarks saved in the selected category</string>
 
     <string name="posts_deleted_feedback">Bookmark removed successfully</string>
-    <string name="posts_deleted_error">An error happened and the bookmark could not be removed. If the problem persists please delete it using the web version of Pinboard.</string>
+    <string name="posts_deleted_error">An error happened and the bookmark was not removed. If the problem persists please delete it using the web client.</string>
 
     <string name="posts_marked_as_read_feedback">Read Later flag updated successfully</string>
     <string name="posts_marked_as_read_error">Failed to update the Read Later flag. Please try again</string>
@@ -94,6 +101,7 @@
     <string name="posts_add_url">URL</string>
     <string name="posts_add_url_title">Title</string>
     <string name="posts_add_url_description">Description</string>
+    <string name="posts_add_url_notes">Notes</string>
     <string name="posts_add_private">Private</string>
     <string name="posts_add_read_later">Read later</string>
 
@@ -106,8 +114,8 @@
     <string name="posts_item_private">Private</string>
     <string name="posts_item_read_later">Read later</string>
 
-    <string name="posts_url_offline_error">It looks like you\'re offline. Please try again once you\'re back online</string>
-    <string name="posts_url_error">Unfortunately, Pinkt can\'t open this bookmark. Try opening it in your default browser</string>
+    <string name="posts_url_offline_error">Looks like you are offline. Please try again once connection is available</string>
+    <string name="posts_url_error">Unfortunately Pinkt cannot open this bookmark. Try opening it using your default browser</string>
     <string name="posts_open_in_browser">Open in browser</string>
 
     <string name="posts_pending_add">Pending add</string>
@@ -122,9 +130,9 @@
     <string name="offline_retry">Retry</string>
 
     <!-- Validation -->
-    <string name="validation_error_empty_url">The URL cannot be empty.</string>
+    <string name="validation_error_empty_url">The URL cannot be empty</string>
     <string name="validation_error_invalid_url">The URL is invalid</string>
-    <string name="validation_error_invalid_url_rationale">The bookmark URL cannot be added to Pinboard. Please double check that it is a valid URL.</string>
+    <string name="validation_error_invalid_url_rationale">The URL could not be saved. Please verify that it is valid</string>
     <string name="validation_error_empty_title">The title cannot be empty</string>
 
     <!-- Search -->
@@ -174,7 +182,7 @@
     <string name="notes_saved_at">Saved at %s</string>
     <string name="notes_updated_at">Last updated at %s</string>
     <string name="notes_empty_title">No notes</string>
-    <string name="notes_empty_description">You haven\'t saved any notes yet</string>
+    <string name="notes_empty_description">You have not saved any notes yet</string>
     <string name="note_sorting_date_updated_desc">Newest First</string>
     <string name="note_sorting_date_updated_asc">Oldest First</string>
     <string name="note_sorting_a_to_z">Title A to Z</string>
@@ -202,9 +210,10 @@
     <string name="user_preferences_section_app">App preferences</string>
     <string name="user_preferences_section_bookmarking">Bookmarking preferences</string>
 
+    <string name="user_preferences_linkding_connection_description">You are connected to a linkding instance (%1$s). Logout to switch instances or to use Pinboard.</string>
     <string name="user_preferences_periodic_sync">Background sync</string>
     <string name="user_preferences_periodic_sync_description">Automatically pull new bookmarks added to your collection on a regular interval</string>
-    <string name="user_preferences_periodic_sync_caveat">When the app is in the foreground your bookmarks are kept in sync regardless of this preference, given that the Pinboard service is available</string>
+    <string name="user_preferences_periodic_sync_caveat">When the app is in the foreground your bookmarks are kept in sync regardless of this preference</string>
     <string name="user_preferences_periodic_sync_off">Off</string>
     <string name="user_preferences_periodic_sync_6_hours">Every 6 hours</string>
     <string name="user_preferences_periodic_sync_12_hours">Every 12 hours</string>
@@ -236,15 +245,15 @@
     <string name="user_preferences_always_use_side_panel">Use side panel when available</string>
     <string name="user_preferences_always_use_side_panel_description">Bookmarks always open using the in-app browser with a side-by-side navigation. Available on foldable phones, tablets or when using the phone in landscape.</string>
     <string name="user_preferences_default_private_label">Private by default</string>
-    <string name="user_preferences_default_private_description">If active bookmarks shared to Pinkt are saved as private, otherwise your default Pinboard preferences apply</string>
+    <string name="user_preferences_default_private_description">If active bookmarks shared to Pinkt are saved as private, otherwise your default preferences apply</string>
     <string name="user_preferences_default_read_later_label">Read later by default</string>
-    <string name="user_preferences_default_read_later_description">If active bookmarks shared to Pinkt are saved as read later, otherwise your default Pinboard preferences apply</string>
+    <string name="user_preferences_default_read_later_description">If active bookmarks shared to Pinkt are saved as read later, otherwise your default preferences apply</string>
     <string name="user_preferences_default_tags">Default tags</string>
     <string name="user_preferences_default_tags_description">Tags to be added to all bookmarks created with or shared to Pinkt</string>
     <string name="user_preferences_edit_after_sharing_title">Open editor when sharing</string>
     <string name="user_preferences_edit_after_sharing_before_saving">Before saving</string>
     <string name="user_preferences_edit_after_sharing_after_saving">After saving</string>
-    <string name="user_preferences_edit_after_sharing_description">Controls when the bookmark editor should be displayed after choosing the \"Save to pinboard\" share action. To skip the editor, choose \"Quick save to pinboard\" when sharing instead</string>
+    <string name="user_preferences_edit_after_sharing_description">Controls when the bookmark editor should be displayed after choosing the \"Save bookmark\" share action. To skip the editor, choose \"Quick save bookmark\" when sharing instead</string>
 
     <!-- About -->
     <string name="about_share">Share Pinkt</string>
@@ -254,10 +263,10 @@
     <string name="about_oss_licenses">OSS Licenses</string>
 
     <!-- Share -->
-    <string name="share_to_pinkt">Save to pinboard</string>
-    <string name="share_to_pinkt_no_edit">Quick save to pinboard</string>
+    <string name="share_to_pinkt">Save bookmark</string>
+    <string name="share_to_pinkt_no_edit">Quick save bookmark</string>
     <string name="share_title">Sharing Pinkt</string>
-    <string name="share_text">Check out Pinkt for Pinboard. Download for free at %s</string>
+    <string name="share_text">Check out Pinkt, a bookmarking app for Pinboard and Linkding. Download for free at %s</string>
 
     <!-- Error -->
     <string name="error_send_email">Send email</string>
@@ -268,7 +277,7 @@
     <!-- Content Descriptions -->
     <string name="cd_navigate_back">Navigate back</string>
     <string name="cd_warning">Warning</string>
-    <string name="cd_share_receiver_image">Adding bookmark to pinboard</string>
+    <string name="cd_share_receiver_image">Saving your bookmark</string>
     <string name="cd_expand_menu">Expand menu</string>
     <string name="cd_scroll_to_top">Scroll to top</string>
 </resources>

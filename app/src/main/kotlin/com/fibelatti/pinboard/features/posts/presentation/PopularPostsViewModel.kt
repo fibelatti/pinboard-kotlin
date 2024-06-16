@@ -47,7 +47,7 @@ class PopularPostsViewModel @Inject constructor(
         launch {
             _screenState.update { currentState -> currentState.copy(isLoading = true) }
 
-            val existingPost = postsRepository.getPost(url = post.url).getOrNull()
+            val existingPost = postsRepository.getPost(id = post.id, url = post.url).getOrNull()
             val newPost = post.copy(
                 private = userRepository.defaultPrivate ?: false,
                 readLater = userRepository.defaultReadLater ?: false,

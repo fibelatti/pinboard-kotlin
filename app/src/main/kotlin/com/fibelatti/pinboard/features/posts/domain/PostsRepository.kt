@@ -13,7 +13,7 @@ interface PostsRepository {
 
     suspend fun add(post: Post): Result<Post>
 
-    suspend fun delete(url: String): Result<Unit>
+    suspend fun delete(id: String, url: String): Result<Unit>
 
     fun getAllPosts(
         sortType: SortType,
@@ -33,7 +33,7 @@ interface PostsRepository {
         tags: List<Tag>?,
     ): Int
 
-    suspend fun getPost(url: String): Result<Post>
+    suspend fun getPost(id: String, url: String): Result<Post>
 
     suspend fun searchExistingPostTag(
         tag: String,

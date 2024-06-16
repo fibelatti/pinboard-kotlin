@@ -152,7 +152,7 @@ class EditPostViewModel @Inject constructor(
                 }
             }
 
-            post.title.isBlank() -> {
+            post.displayTitle.isBlank() -> {
                 _screenState.update { currentState ->
                     currentState.copy(
                         invalidTitleError = resourceProvider.getString(R.string.validation_error_empty_title),

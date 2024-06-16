@@ -25,6 +25,19 @@ class UserDataSource @Inject constructor(
     private val _currentPreferences = MutableStateFlow(getPreferences())
     override val currentPreferences: StateFlow<UserPreferences> = _currentPreferences.asStateFlow()
 
+    override var useLinkding: Boolean
+        get() = userSharedPreferences.useLinkding
+        set(value) {
+            userSharedPreferences.useLinkding = value
+            updateCurrentPreferences()
+        }
+
+    override var linkdingInstanceUrl: String
+        get() = userSharedPreferences.linkdingInstanceUrl
+        set(value) {
+            userSharedPreferences.linkdingInstanceUrl = if (useLinkding) value else ""
+        }
+
     override var lastUpdate: String
         get() = userSharedPreferences.lastUpdate
         set(value) {
@@ -164,6 +177,8 @@ class UserDataSource @Inject constructor(
     }
 
     private fun getPreferences(): UserPreferences = UserPreferences(
+        useLinkding = useLinkding,
+        linkdingInstanceUrl = linkdingInstanceUrl,
         periodicSync = periodicSync,
         appearance = appearance,
         applyDynamicColors = applyDynamicColors,

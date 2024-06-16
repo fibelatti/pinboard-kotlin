@@ -64,9 +64,9 @@ fun EditBookmarkScreen(
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     tagManagerViewModel: TagManagerViewModel = hiltViewModel(),
 ) {
+    val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
     val addPostContent by appStateViewModel.addPostContent.collectAsStateWithLifecycle(initialValue = null)
     val editPostContent by appStateViewModel.editPostContent.collectAsStateWithLifecycle(initialValue = null)
-    val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
 
     LaunchedEffect(addPostContent) {
         addPostContent?.let {
@@ -105,6 +105,7 @@ fun EditBookmarkScreen(
     }
 
     EditBookmarkScreen(
+        appMode = appMode,
         post = currentState,
         isLoading = editPostScreenState.isLoading || postDetailScreenState.isLoading,
         onUrlChanged = { newValue ->
@@ -117,6 +118,9 @@ fun EditBookmarkScreen(
         titleError = editPostScreenState.invalidTitleError,
         onDescriptionChanged = { newValue ->
             editPostViewModel.updatePost { post -> post.copy(description = newValue) }
+        },
+        onNotesChanged = { newValue ->
+            editPostViewModel.updatePost { post -> post.copy(notes = newValue) }
         },
         onPrivateChanged = { newValue ->
             editPostViewModel.updatePost { post -> post.copy(private = newValue) }
@@ -132,12 +136,12 @@ fun EditBookmarkScreen(
         currentTagsTitle = stringResource(id = tagManagerState.displayTitle),
         currentTags = tagManagerState.tags,
         onRemoveCurrentTagClicked = tagManagerViewModel::removeTag,
-        appMode = appMode,
     )
 }
 
 @Composable
 private fun EditBookmarkScreen(
+    appMode: AppMode,
     post: Post,
     isLoading: Boolean,
     onUrlChanged: (String) -> Unit,
@@ -145,6 +149,7 @@ private fun EditBookmarkScreen(
     onTitleChanged: (String) -> Unit,
     titleError: String,
     onDescriptionChanged: (String) -> Unit,
+    onNotesChanged: (String) -> Unit,
     onPrivateChanged: (Boolean) -> Unit,
     onReadLaterChanged: (Boolean) -> Unit,
     searchTagInput: String,
@@ -155,7 +160,6 @@ private fun EditBookmarkScreen(
     currentTagsTitle: String,
     currentTags: List<Tag>,
     onRemoveCurrentTagClicked: (Tag) -> Unit,
-    appMode: AppMode,
 ) {
     Box(
         modifier = Modifier
@@ -163,12 +167,14 @@ private fun EditBookmarkScreen(
             .background(ExtendedTheme.colors.backgroundNoOverlay),
     ) {
         BookmarkContent(
+            appMode = appMode,
             post = post,
             onUrlChanged = onUrlChanged,
             urlError = urlError,
             onTitleChanged = onTitleChanged,
             titleError = titleError,
             onDescriptionChanged = onDescriptionChanged,
+            onNotesChanged = onNotesChanged,
             onPrivateChanged = onPrivateChanged,
             onReadLaterChanged = onReadLaterChanged,
             searchTagInput = searchTagInput,
@@ -179,7 +185,6 @@ private fun EditBookmarkScreen(
             currentTagsTitle = currentTagsTitle,
             currentTags = currentTags,
             onRemoveCurrentTagClicked = onRemoveCurrentTagClicked,
-            appMode = appMode,
         )
 
         if (isLoading) {
@@ -200,12 +205,14 @@ private fun EditBookmarkScreen(
 
 @Composable
 private fun BookmarkContent(
+    appMode: AppMode,
     post: Post,
     onUrlChanged: (String) -> Unit,
     urlError: String,
     onTitleChanged: (String) -> Unit,
     titleError: String,
     onDescriptionChanged: (String) -> Unit,
+    onNotesChanged: (String) -> Unit,
     onPrivateChanged: (Boolean) -> Unit,
     onReadLaterChanged: (Boolean) -> Unit,
     searchTagInput: String,
@@ -216,7 +223,6 @@ private fun BookmarkContent(
     currentTagsTitle: String,
     currentTags: List<Tag>,
     onRemoveCurrentTagClicked: (Tag) -> Unit,
-    appMode: AppMode,
 ) {
     val scrollState = rememberScrollState()
 
@@ -239,14 +245,17 @@ private fun BookmarkContent(
         }
 
         BookmarkBasicDetails(
+            appMode = appMode,
             url = post.url,
             onUrlChanged = onUrlChanged,
             urlError = urlError,
-            title = post.title,
+            title = post.displayTitle,
             onTitleChanged = onTitleChanged,
             titleError = titleError,
-            description = post.description,
+            description = post.displayDescription,
             onDescriptionChanged = onDescriptionChanged,
+            notes = post.notes.orEmpty(),
+            onNotesChanged = onNotesChanged,
         )
 
         BookmarkFlags(
@@ -274,6 +283,7 @@ private fun BookmarkContent(
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 private fun BookmarkBasicDetails(
+    appMode: AppMode,
     url: String,
     onUrlChanged: (String) -> Unit,
     urlError: String,
@@ -282,6 +292,8 @@ private fun BookmarkBasicDetails(
     titleError: String,
     description: String,
     onDescriptionChanged: (String) -> Unit,
+    notes: String,
+    onNotesChanged: (String) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -289,7 +301,7 @@ private fun BookmarkBasicDetails(
             .padding(horizontal = 16.dp),
     ) {
         val focusManager = LocalFocusManager.current
-        val (frUrl, frTitle, frDescription) = FocusRequester.createRefs()
+        val (frUrl, frTitle, frDescription, frNotes) = FocusRequester.createRefs()
         var focusedField by rememberSaveable { mutableStateOf(FocusedField.NONE) }
 
         LaunchedEffect(Unit) {
@@ -298,6 +310,7 @@ private fun BookmarkBasicDetails(
                 FocusedField.URL -> frUrl.requestFocus()
                 FocusedField.TITLE -> frTitle.requestFocus()
                 FocusedField.DESCRIPTION -> frDescription.requestFocus()
+                FocusedField.NOTES -> frNotes.requestFocus()
             }
         }
 
@@ -367,12 +380,35 @@ private fun BookmarkBasicDetails(
                 .focusRequester(frDescription)
                 .onFocusChanged { if (it.hasFocus) focusedField = FocusedField.DESCRIPTION },
             label = { Text(text = stringResource(id = R.string.posts_add_url_description)) },
+            supportingText = {},
         )
+
+        if (AppMode.LINKDING == appMode) {
+            var notesField by remember {
+                mutableStateOf(TextFieldValue(text = notes, selection = TextRange(notes.length)))
+            }
+            OutlinedTextField(
+                value = notesField,
+                onValueChange = { newValue ->
+                    notesField = newValue
+                    onNotesChanged(newValue.text)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(frNotes)
+                    .onFocusChanged { if (it.hasFocus) focusedField = FocusedField.NOTES },
+                label = { Text(text = stringResource(id = R.string.posts_add_url_notes)) },
+            )
+        }
     }
 }
 
 private enum class FocusedField {
-    NONE, URL, TITLE, DESCRIPTION,
+    NONE,
+    URL,
+    TITLE,
+    DESCRIPTION,
+    NOTES,
 }
 
 @Composable
@@ -389,7 +425,7 @@ private fun BookmarkFlags(
             .padding(start = 16.dp, top = 8.dp, end = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        if (AppMode.PINBOARD == appMode) {
+        if (AppMode.NO_API != appMode) {
             SettingToggle(
                 title = stringResource(id = R.string.posts_add_private),
                 description = null,
@@ -416,6 +452,7 @@ private fun EditBookmarkScreenPreview(
 ) {
     ExtendedTheme {
         EditBookmarkScreen(
+            appMode = AppMode.PINBOARD,
             post = post.copy(description = post.description.take(200)),
             isLoading = false,
             onUrlChanged = {},
@@ -423,6 +460,7 @@ private fun EditBookmarkScreenPreview(
             onTitleChanged = {},
             titleError = "",
             onDescriptionChanged = {},
+            onNotesChanged = {},
             onPrivateChanged = {},
             onReadLaterChanged = {},
             searchTagInput = "",
@@ -433,7 +471,6 @@ private fun EditBookmarkScreenPreview(
             currentTagsTitle = stringResource(id = R.string.tags_added_title),
             currentTags = post.tags.orEmpty(),
             onRemoveCurrentTagClicked = {},
-            appMode = AppMode.PINBOARD,
         )
     }
 }

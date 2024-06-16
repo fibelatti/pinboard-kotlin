@@ -3,6 +3,7 @@ package com.fibelatti.pinboard
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.network.ApiResultCodes
+import com.fibelatti.pinboard.features.linkding.data.BookmarkLocal
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.GetPostDto
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
@@ -18,12 +19,14 @@ object MockDataProvider {
     // region Properties
     const val mockUser = "user"
     const val mockApiToken = "user:00000000000"
+    const val mockInstanceUrl = "https://www.linkding-instance.com/"
     const val mockTime = "2019-01-10T08:20:10Z"
     const val mockFutureTime = "2019-01-20T08:20:10Z"
     const val mockUrlValid = "https://www.url.com"
     const val mockUrlInvalid = "www.url.com"
     const val mockUrlTitle = "Some url title"
     const val mockUrlDescription = "What the url is all about"
+    const val mockUrlNotes = "Some notes about this bookmark"
     const val mockHash = "7b7cc6c90a84124026569c84f2236ecb"
     const val mockShared = "yes"
     const val mockToRead = "no"
@@ -135,5 +138,33 @@ object MockDataProvider {
     fun createTag(
         name: String = mockTagString1,
     ): Tag = Tag(name)
+    // endregion
+
+    // region Linking
+    fun createBookmarkLocal(
+        id: String = mockHash,
+        url: String = mockUrlValid,
+        title: String = mockUrlTitle,
+        description: String = mockUrlDescription,
+        notes: String? = null,
+        isArchived: Boolean? = null,
+        unread: Boolean? = false,
+        shared: Boolean? = true,
+        tagNames: String? = mockTagsResponse,
+        dateModified: String = mockTime,
+        pendingSync: PendingSyncDto? = null,
+    ): BookmarkLocal = BookmarkLocal(
+        id = id,
+        url = url,
+        title = title,
+        description = description,
+        notes = notes,
+        isArchived = isArchived,
+        unread = unread,
+        shared = shared,
+        tagNames = tagNames,
+        dateModified = dateModified,
+        pendingSync = pendingSync,
+    )
     // endregion
 }

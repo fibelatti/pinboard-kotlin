@@ -104,7 +104,7 @@ class PostListFragment @Inject constructor(
                     )
 
                     is PostQuickActions.CopyUrl -> requireContext().copyToClipboard(
-                        label = post.title,
+                        label = post.displayTitle,
                         text = post.url,
                     )
 
@@ -115,6 +115,7 @@ class PostListFragment @Inject constructor(
 
                     is PostQuickActions.ExpandDescription -> PostDescriptionDialog.showPostDescriptionDialog(
                         context = requireContext(),
+                        appMode = appStateViewModel.appMode.value,
                         post = post,
                     )
 
@@ -400,7 +401,7 @@ private sealed class PostQuickActions(
             add(CopyUrl(post))
             add(Share(post))
 
-            if (post.description.isNotBlank()) {
+            if (post.displayDescription.isNotBlank()) {
                 add(ExpandDescription(post))
             }
 
