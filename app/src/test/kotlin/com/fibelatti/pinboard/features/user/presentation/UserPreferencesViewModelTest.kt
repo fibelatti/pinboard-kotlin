@@ -4,6 +4,7 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider
+import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
@@ -35,11 +36,13 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
     private val mockPeriodicSyncManager = mockk<PeriodicSyncManager> {
         every { enqueueWork(any()) } just runs
     }
+    private val mockAppModeProvider = mockk<AppModeProvider>(relaxed = true)
 
     private val userPreferencesViewModel = UserPreferencesViewModel(
         userRepository = mockUserRepository,
         postsRepository = mockPostsRepository,
         periodicSyncManager = mockPeriodicSyncManager,
+        appModeProvider = mockAppModeProvider,
     )
 
     @Test
@@ -61,7 +64,10 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         userPreferencesViewModel.useLinkding(value)
 
         // THEN
-        verify { mockUserRepository.useLinkding = value }
+        verify {
+            mockUserRepository.useLinkding = value
+            mockAppModeProvider.refresh()
+        }
     }
 
     @Test
