@@ -35,6 +35,7 @@ object NetworkModule {
 
     @Provides
     fun json(): Json = Json {
+        explicitNulls = false
         ignoreUnknownKeys = true
     }
 
