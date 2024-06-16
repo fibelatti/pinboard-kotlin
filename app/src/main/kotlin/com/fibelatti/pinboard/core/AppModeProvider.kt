@@ -5,6 +5,7 @@ import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,6 +19,10 @@ class AppModeProvider @Inject constructor(
 
     fun setReviewMode(value: Boolean) {
         _appMode.value = getValue(reviewMode = value)
+    }
+
+    fun refresh() {
+        _appMode.update { getValue(reviewMode = false) }
     }
 
     @Suppress("KotlinConstantConditions")
