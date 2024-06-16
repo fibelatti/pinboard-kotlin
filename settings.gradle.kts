@@ -7,6 +7,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":app")
 include(":core")
+include(":core-android")
 include(":ui")
 
 pluginManagement {
