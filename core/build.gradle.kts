@@ -20,11 +20,6 @@ dependencies {
     implementation(libs.kotlin)
     implementation(libs.coroutines.core)
 
-    implementation(libs.core.ktx)
-    implementation(libs.appcompat)
-    implementation(libs.material)
-    implementation(libs.viewbinding)
-
     testCompileOnly(libs.junit)
     testRuntimeOnly(libs.junit5.engine)
     testRuntimeOnly(libs.junit5.vintage)
