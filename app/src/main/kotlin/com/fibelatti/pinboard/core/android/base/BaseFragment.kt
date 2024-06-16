@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.transition.TransitionInflater
-import com.fibelatti.core.android.fragmentArgs
+import com.fibelatti.core.android.platform.fragmentArgs
 import com.fibelatti.pinboard.R
 
 abstract class BaseFragment : Fragment() {

@@ -1,4 +1,4 @@
-package com.fibelatti.core.android
+package com.fibelatti.core.android.platform
 
 import android.content.BroadcastReceiver
 import android.content.Context

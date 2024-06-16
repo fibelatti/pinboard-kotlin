@@ -9,7 +9,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import com.fibelatti.core.extension.clear
+import com.fibelatti.core.android.extension.clear
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.MainActivity
 import com.fibelatti.pinboard.features.posts.presentation.EditPostFragment

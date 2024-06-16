@@ -7,7 +7,7 @@ import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
-import com.fibelatti.core.extension.findActivity
+import com.fibelatti.core.android.extension.findActivity
 
 fun AppCompatDialog.setViewTreeOwners() {
     val activity = context.findActivity()

@@ -5,9 +5,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import androidx.core.content.getSystemService
-import com.fibelatti.core.android.AppResourceProvider
-import com.fibelatti.core.android.ResourceProvider
-import com.fibelatti.core.extension.getSharedPreferences
+import com.fibelatti.core.android.extension.getSharedPreferences
+import com.fibelatti.core.android.platform.AppResourceProvider
+import com.fibelatti.core.android.platform.ResourceProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

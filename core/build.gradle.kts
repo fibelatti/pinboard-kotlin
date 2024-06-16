@@ -1,6 +1,6 @@
 plugins {
+    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -16,22 +16,29 @@ android {
     }
 }
 
-dependencies {
-    implementation(libs.kotlin)
-    implementation(libs.coroutines.core)
+kotlin {
+    androidTarget()
 
-    implementation(libs.core.ktx)
-    implementation(libs.appcompat)
-    implementation(libs.material)
-    implementation(libs.viewbinding)
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation(libs.kotlin)
+                implementation(libs.coroutines.core)
+            }
+        }
 
-    testCompileOnly(libs.junit)
-    testRuntimeOnly(libs.junit5.engine)
-    testRuntimeOnly(libs.junit5.vintage)
-    testImplementation(libs.junit5.api)
-    testImplementation(libs.junit5.params)
+        commonTest {
+            dependencies {
+                compileOnly(libs.junit)
+                runtimeOnly(libs.junit5.engine)
+                runtimeOnly(libs.junit5.vintage)
+                implementation(libs.junit5.api)
+                implementation(libs.junit5.params)
 
-    testImplementation(libs.truth)
-    testImplementation(libs.mockk)
-    testImplementation(libs.coroutines.test)
+                implementation(libs.truth)
+                implementation(libs.mockk)
+                implementation(libs.coroutines.test)
+            }
+        }
+    }
 }

@@ -6,12 +6,14 @@ import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import com.diffplug.gradle.spotless.SpotlessPlugin
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.kotlin.parcelize) apply false
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.compose.compiler) apply false
@@ -70,6 +72,15 @@ subprojects {
     afterEvaluate {
         plugins.withType<com.android.build.gradle.api.AndroidBasePlugin> {
             apply(plugin = libs.plugins.cache.fix.get().pluginId)
+        }
+
+        extensions.findByType(KotlinMultiplatformExtension::class.java)?.apply {
+            sourceSets.all {
+                languageSettings {
+                    languageVersion = "2.0"
+                    apiVersion = "2.0"
+                }
+            }
         }
 
         extensions.findByType(CommonExtension::class.java)?.apply {

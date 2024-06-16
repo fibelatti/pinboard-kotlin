@@ -3,7 +3,7 @@ package com.fibelatti.pinboard.features.navigation
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
-import com.fibelatti.core.extension.shareText
+import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.android.ComposeBottomSheetDialog

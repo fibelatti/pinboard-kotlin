@@ -1,4 +1,4 @@
-package com.fibelatti.core.extension
+package com.fibelatti.core.android.extension
 
 import android.animation.LayoutTransition
 import android.text.method.LinkMovementMethod

@@ -1,6 +1,6 @@
 package com.fibelatti.pinboard.features.user.presentation
 
-import com.fibelatti.core.android.ResourceProvider
+import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest

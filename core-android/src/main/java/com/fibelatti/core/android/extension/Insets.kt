@@ -1,6 +1,6 @@
 @file:Suppress("Unused")
 
-package com.fibelatti.core.extension
+package com.fibelatti.core.android.extension
 
 import android.view.View
 import android.view.ViewGroup

@@ -1,4 +1,4 @@
-package com.fibelatti.core.extension
+package com.fibelatti.core.android.extension
 
 import android.view.View
 import androidx.core.view.AccessibilityDelegateCompat
