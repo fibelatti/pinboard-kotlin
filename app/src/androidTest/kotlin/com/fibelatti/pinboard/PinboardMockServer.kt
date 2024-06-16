@@ -7,7 +7,7 @@ import okhttp3.mockwebserver.RecordedRequest
 
 object PinboardMockServer {
 
-    val instance = MockWebServer()
+    val instance by lazy { MockWebServer() }
 
     fun setResponses(vararg responses: Pair<String, (RecordedRequest) -> MockResponse>) {
         instance.dispatcher = object : Dispatcher() {
