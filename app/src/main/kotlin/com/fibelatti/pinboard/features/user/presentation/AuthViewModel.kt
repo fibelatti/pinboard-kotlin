@@ -10,12 +10,12 @@ import com.fibelatti.pinboard.features.appstate.UserLoggedOut
 import com.fibelatti.pinboard.features.user.domain.Login
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 import java.net.HttpURLConnection
 import javax.inject.Inject
 
@@ -64,7 +64,7 @@ class AuthViewModel @Inject constructor(
                     )
 
                     when {
-                        error is HttpException && error.code() in loginFailedCodes -> {
+                        error is ResponseException && error.response.status.value in loginFailedCodes -> {
                             _screenState.update { currentState ->
                                 currentState.copy(
                                     apiTokenError = resourceProvider.getString(R.string.auth_token_error),

@@ -45,7 +45,7 @@ class PostsDataSourceNoApi @Inject constructor(
             time = existingPost?.time ?: post.time.ifEmpty { dateFormatter.nowAsTzFormat() },
             shared = if (post.private == true) AppConfig.PinboardApiLiterals.NO else AppConfig.PinboardApiLiterals.YES,
             toread = if (post.readLater == true) AppConfig.PinboardApiLiterals.YES else AppConfig.PinboardApiLiterals.NO,
-            tags = post.tags?.joinToString(AppConfig.PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name }
+            tags = post.tags?.joinToString(AppConfig.PinboardApiLiterals.TAG_SEPARATOR) { it.name }
                 .orEmpty(),
         )
 

@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
-import com.fibelatti.pinboard.core.network.UnauthorizedInterceptor
+import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
@@ -21,7 +21,7 @@ import javax.inject.Inject
 class AppStateViewModel @Inject constructor(
     private val appStateRepository: AppStateRepository,
     appModeProvider: AppModeProvider,
-    unauthorizedInterceptor: UnauthorizedInterceptor,
+    unauthorizedPluginProvider: UnauthorizedPluginProvider,
 ) : BaseViewModel() {
 
     val appMode: StateFlow<AppMode> = appModeProvider.appMode
@@ -41,7 +41,7 @@ class AppStateViewModel @Inject constructor(
     val userPreferencesContent: Flow<UserPreferencesContent> get() = filteredContent()
 
     init {
-        unauthorizedInterceptor.unauthorized
+        unauthorizedPluginProvider.unauthorized
             .onEach { appStateRepository.runAction(UserUnauthorized) }
             .launchIn(viewModelScope)
     }

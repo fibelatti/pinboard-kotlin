@@ -6,11 +6,6 @@ import org.junit.jupiter.api.Test
 internal class AppConfigTest {
 
     @Test
-    fun `API_BASE_URL should be correct `() {
-        assertThat(AppConfig.API_BASE_URL).isEqualTo("https://api.pinboard.in/v1/")
-    }
-
-    @Test
     fun `API_ENCODING should be UTF-8`() {
         assertThat(AppConfig.API_ENCODING).isEqualTo("UTF-8")
     }
@@ -41,12 +36,7 @@ internal class AppConfigTest {
     }
 
     @Test
-    fun `PinboardApiLiterals TAG_SEPARATOR_REQUEST should be +`() {
-        assertThat(AppConfig.PinboardApiLiterals.TAG_SEPARATOR_REQUEST).isEqualTo("+")
-    }
-
-    @Test
-    fun `PinboardApiLiterals TAG_SEPARATOR_RESPONSE should be an empty space`() {
-        assertThat(AppConfig.PinboardApiLiterals.TAG_SEPARATOR_RESPONSE).isEqualTo(" ")
+    fun `PinboardApiLiterals TAG_SEPARATOR should be an empty space`() {
+        assertThat(AppConfig.PinboardApiLiterals.TAG_SEPARATOR).isEqualTo(" ")
     }
 }

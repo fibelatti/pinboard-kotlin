@@ -2,14 +2,12 @@ package com.fibelatti.pinboard.core.network
 
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.exceptionOrNull
-import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.google.common.truth.Truth.assertThat
+import io.ktor.client.plugins.ResponseException
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.jupiter.api.Test
-import retrofit2.HttpException
-import retrofit2.Response
 import java.io.IOException
 
 internal class ResultFromNetworkKtTest {
@@ -17,11 +15,14 @@ internal class ResultFromNetworkKtTest {
     private var httpExceptionBlockExecutionCounter = 0
     private val httpExceptionBlock = {
         httpExceptionBlockExecutionCounter = httpExceptionBlockExecutionCounter.inc()
-        throw HttpException(
-            Response.error<GenericResponseDto>(
-                429,
-                "{}".toResponseBody("application/json".toMediaTypeOrNull()),
-            ),
+
+        throw ResponseException(
+            response = mockk {
+                every { status } returns mockk {
+                    every { value } returns 429
+                }
+            },
+            cachedResponseText = "",
         )
     }
 
@@ -42,7 +43,7 @@ internal class ResultFromNetworkKtTest {
     fun `resultFromNetwork should return a Failure when an HttpException happens`() = runTest {
         val result: Result<Any> = resultFromNetwork { httpExceptionBlock() }
 
-        assertThat(result.exceptionOrNull()).isInstanceOf(HttpException::class.java)
+        assertThat(result.exceptionOrNull()).isInstanceOf(ResponseException::class.java)
     }
 
     @Test

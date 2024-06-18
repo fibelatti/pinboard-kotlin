@@ -68,8 +68,8 @@ class PostsDataSourceLinkdingApi @Inject constructor(
             url = post.url,
             title = post.title,
             description = post.description,
-            notes = post.notes,
-            isArchived = post.isArchived,
+            notes = post.notes.orEmpty(),
+            isArchived = post.isArchived ?: false,
             unread = post.readLater == true,
             shared = post.private != true,
             tagNames = post.tags?.map { it.name }.orEmpty(),
@@ -119,7 +119,7 @@ class PostsDataSourceLinkdingApi @Inject constructor(
     }
 
     private suspend fun deleteBookmarkRemote(id: String): Result<Unit> = resultFromNetwork {
-        require(linkdingApi.deleteBookmark(id = id).isSuccessful)
+        require(linkdingApi.deleteBookmark(id = id))
     }.onSuccess {
         linkdingDao.deleteBookmark(id = id)
     }

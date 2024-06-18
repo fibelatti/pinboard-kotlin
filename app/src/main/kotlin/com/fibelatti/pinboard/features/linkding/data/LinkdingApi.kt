@@ -1,62 +1,81 @@
 package com.fibelatti.pinboard.features.linkding.data
 
-import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.DELETE
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Path
-import retrofit2.http.Query
+import com.fibelatti.pinboard.core.di.RestApi
+import com.fibelatti.pinboard.core.di.RestApiProvider
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.put
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import io.ktor.http.isSuccess
+import javax.inject.Inject
 
-interface LinkdingApi {
+class LinkdingApi @Inject constructor(
+    @RestApi(RestApiProvider.LINKDING) private val httpClient: HttpClient,
+) {
 
-    @GET("api/bookmarks/")
     suspend fun getBookmarks(
-        @Query("offset") offset: Int? = null,
-        @Query("limit") limit: Int? = null,
-    ): PaginatedResponseRemote<BookmarkRemote>
+        offset: Int? = null,
+        limit: Int? = null,
+    ): PaginatedResponseRemote<BookmarkRemote> = httpClient.get(urlString = "api/bookmarks/") {
+        url {
+            offset?.let { parameters.append(name = "offset", value = "$it") }
+            limit?.let { parameters.append(name = "limit", value = "$it") }
+        }
+    }.body()
 
-    @GET("api/bookmarks/{id}/")
     suspend fun getBookmark(
-        @Path("id") id: String,
-    ): BookmarkRemote
+        id: String,
+    ): BookmarkRemote = httpClient.get(urlString = "api/bookmarks/$id/").body()
 
-    @POST("api/bookmarks/")
     suspend fun createBookmark(
-        @Body bookmarkRemote: BookmarkRemote,
-    ): BookmarkRemote
+        bookmarkRemote: BookmarkRemote,
+    ): BookmarkRemote = httpClient.post(urlString = "api/bookmarks/") {
+        contentType(ContentType.Application.Json)
+        setBody(bookmarkRemote)
+    }.body()
 
-    @PUT("api/bookmarks/{id}/")
     suspend fun updateBookmark(
-        @Path("id") id: String,
-        @Body bookmarkRemote: BookmarkRemote,
-    ): BookmarkRemote
+        id: String,
+        bookmarkRemote: BookmarkRemote,
+    ): BookmarkRemote = httpClient.put(urlString = "api/bookmarks/$id/") {
+        contentType(ContentType.Application.Json)
+        setBody(bookmarkRemote)
+    }.body()
 
-    @DELETE("api/bookmarks/{id}/")
     suspend fun deleteBookmark(
-        @Path("id") id: String,
-    ): Response<Unit>
+        id: String,
+    ): Boolean = httpClient.delete(urlString = "api/bookmarks/$id/").status.isSuccess()
 
-    @GET("api/bookmarks/archived/")
     suspend fun getArchivedBookmarks(
-        @Query("offset") offset: Int? = null,
-        @Query("limit") limit: Int? = null,
-    ): PaginatedResponseRemote<BookmarkRemote>
+        offset: Int? = null,
+        limit: Int? = null,
+    ): PaginatedResponseRemote<BookmarkRemote> = httpClient.get(urlString = "api/bookmarks/archived/") {
+        url {
+            offset?.let { parameters.append(name = "offset", value = "$it") }
+            limit?.let { parameters.append(name = "limit", value = "$it") }
+        }
+    }.body()
 
-    @POST("api/bookmarks/{id}/archive/")
     suspend fun archiveBookmark(
-        @Path("id") id: String,
-    ): Response<Unit>
+        id: String,
+    ): Boolean = httpClient.post(urlString = "api/bookmarks/$id/archive/").status.isSuccess()
 
-    @POST("api/bookmarks/{id}/unarchive/")
     suspend fun unarchiveBookmark(
-        @Path("id") id: String,
-    ): Response<Unit>
+        id: String,
+    ): Boolean = httpClient.post(urlString = "api/bookmarks/$id/unarchive/").status.isSuccess()
 
-    @GET("api/tags/")
     suspend fun getTags(
-        @Query("offset") offset: Int? = null,
-        @Query("limit") limit: Int? = null,
-    ): PaginatedResponseRemote<TagRemote>
+        offset: Int? = null,
+        limit: Int? = null,
+    ): PaginatedResponseRemote<TagRemote> = httpClient.get(urlString = "api/tags/") {
+        url {
+            offset?.let { parameters.append(name = "offset", value = "$it") }
+            limit?.let { parameters.append(name = "limit", value = "$it") }
+        }
+    }.body()
 }

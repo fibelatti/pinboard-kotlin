@@ -30,22 +30,28 @@ object LinkdingMockServer {
         isEmpty: Boolean,
     ): Triple<String, String, (RecordedRequest) -> MockResponse> {
         return Triple("bookmarks", "GET") { request ->
-            MockResponse().setResponseCode(200).apply {
-                when {
-                    isEmpty -> setBody(TestData.emptyBookmarksResponse())
-                    request.requestUrl.toString().run { contains("limit=1") || contains("offset=0") } -> {
-                        setBody(TestData.bookmarksResponse())
-                    }
+            MockResponse()
+                .setResponseCode(200)
+                .setHeader("Content-Type", "application/json")
+                .apply {
+                    when {
+                        isEmpty -> setBody(TestData.emptyBookmarksResponse())
 
-                    else -> setBody(TestData.emptyBookmarksResponse())
+                        request.requestUrl.toString().run { contains("limit=1") || contains("offset=0") } -> {
+                            setBody(TestData.bookmarksResponse())
+                        }
+
+                        else -> setBody(TestData.emptyBookmarksResponse())
+                    }
                 }
-            }
         }
     }
 
     fun addBookmarkResponse(): Triple<String, String, (RecordedRequest) -> MockResponse> {
         return Triple("bookmarks", "POST") {
-            MockResponse().setResponseCode(200)
+            MockResponse()
+                .setResponseCode(200)
+                .setHeader("Content-Type", "application/json")
                 .setBody(TestData.addBookmarkResponse())
         }
     }

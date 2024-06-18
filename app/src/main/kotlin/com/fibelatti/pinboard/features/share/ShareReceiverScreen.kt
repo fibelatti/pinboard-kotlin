@@ -38,7 +38,7 @@ import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-import retrofit2.HttpException
+import io.ktor.client.plugins.ResponseException
 import java.net.HttpURLConnection
 
 @Composable
@@ -128,7 +128,10 @@ fun ShareReceiverErrorDialog(
     val errorMessage = when {
         throwable is InvalidUrlException -> R.string.validation_error_invalid_url_rationale
         throwable.isServerException() -> R.string.server_timeout_error
-        throwable is HttpException && throwable.code() in loginFailedCodes -> R.string.auth_logged_out_feedback
+        throwable is ResponseException && throwable.response.status.value in loginFailedCodes -> {
+            R.string.auth_logged_out_feedback
+        }
+
         else -> {
             ErrorReportDialog(throwable = throwable, postAction = action)
             return

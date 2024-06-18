@@ -9,12 +9,13 @@ import com.fibelatti.pinboard.MockDataProvider.mockInstanceUrl
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.UserLoggedOut
-import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.user.domain.Login
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.isEmpty
 import com.google.common.truth.Truth.assertThat
 import io.mockk.Called
+import io.ktor.client.plugins.ResponseException
+import io.ktor.client.statement.HttpResponse
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -22,13 +23,8 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import retrofit2.HttpException
-import retrofit2.Response
-import java.net.HttpURLConnection
 
 class AuthViewModelTest : BaseViewModelTest() {
 
@@ -128,12 +124,13 @@ class AuthViewModelTest : BaseViewModelTest() {
         fun `GIVEN Login fails and error code is 401 WHEN login is called THEN apiTokenError should receive a value`() =
             runTest {
                 // GIVEN
-                val error = HttpException(
-                    Response.error<GenericResponseDto>(
-                        HttpURLConnection.HTTP_UNAUTHORIZED,
-                        "{}".toResponseBody("application/json".toMediaTypeOrNull()),
-                    ),
-                )
+                val error = mockk<ResponseException> {
+                    every { response } returns mockk<HttpResponse> {
+                        every { status } returns mockk {
+                            every { value } returns 401
+                        }
+                    }
+                }
 
                 coEvery {
                     mockLogin(
@@ -171,12 +168,13 @@ class AuthViewModelTest : BaseViewModelTest() {
         fun `GIVEN Login fails and error code is 500 WHEN login is called THEN apiTokenError should receive a value`() =
             runTest {
                 // GIVEN
-                val error = HttpException(
-                    Response.error<GenericResponseDto>(
-                        HttpURLConnection.HTTP_INTERNAL_ERROR,
-                        "{}".toResponseBody("application/json".toMediaTypeOrNull()),
-                    ),
-                )
+                val error = mockk<ResponseException> {
+                    every { response } returns mockk<HttpResponse> {
+                        every { status } returns mockk {
+                            every { value } returns 500
+                        }
+                    }
+                }
 
                 coEvery {
                     mockLogin(

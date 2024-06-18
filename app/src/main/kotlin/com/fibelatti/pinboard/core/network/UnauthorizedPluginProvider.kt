@@ -1,16 +1,15 @@
 package com.fibelatti.pinboard.core.network
 
+import io.ktor.client.plugins.api.createClientPlugin
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import okhttp3.Interceptor
-import okhttp3.Response
-import java.net.HttpURLConnection
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class UnauthorizedInterceptor @Inject constructor() : Interceptor {
+class UnauthorizedPluginProvider @Inject constructor() {
 
     private val _unauthorized = MutableSharedFlow<Unit>(
         extraBufferCapacity = 1,
@@ -18,13 +17,11 @@ class UnauthorizedInterceptor @Inject constructor() : Interceptor {
     )
     val unauthorized: Flow<Unit> = _unauthorized
 
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val response = catchingSocketTimeoutException(chain, chain::request)
-
-        if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
-            _unauthorized.tryEmit(Unit)
+    val plugin = createClientPlugin("UnauthorizedPlugin") {
+        onResponse { response ->
+            if (response.status == HttpStatusCode.Unauthorized) {
+                _unauthorized.tryEmit(Unit)
+            }
         }
-
-        return response
     }
 }

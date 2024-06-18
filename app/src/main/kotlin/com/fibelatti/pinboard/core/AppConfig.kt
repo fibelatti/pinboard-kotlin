@@ -4,16 +4,12 @@ object AppConfig {
 
     const val MAIN_PACKAGE_NAME = "com.fibelatti.pinboard"
 
-    const val API_BASE_URL = "https://api.pinboard.in/v1/"
     const val API_ENCODING = "UTF-8"
 
     const val API_BASE_URL_LENGTH = 90
 
     const val API_PAGE_SIZE = 10_000
     const val MALFORMED_OBJECT_THRESHOLD = 1_000
-
-    // Pinboard API requires a minimum of 3 seconds between each request
-    const val API_THROTTLE_TIME = 3_000L
 
     const val DEFAULT_PAGE_SIZE = 1_000
     const val DEFAULT_RECENT_QUANTITY = 50
@@ -27,8 +23,7 @@ object AppConfig {
 
         const val YES = "yes"
         const val NO = "no"
-        const val TAG_SEPARATOR_REQUEST = "+"
-        const val TAG_SEPARATOR_RESPONSE = " "
+        const val TAG_SEPARATOR = " "
     }
 
     enum class PinboardApiMaxLength(val value: Int) {
