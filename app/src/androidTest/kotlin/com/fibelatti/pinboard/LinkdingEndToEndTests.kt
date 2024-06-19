@@ -13,33 +13,21 @@ import com.fibelatti.core.android.extension.clear
 import com.fibelatti.pinboard.features.MainActivity
 import com.fibelatti.pinboard.features.posts.presentation.EditPostFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import javax.inject.Inject
+import org.koin.test.KoinTest
+import org.koin.test.inject
 
-@HiltAndroidTest
 @OptIn(ExperimentalTestApi::class)
-class LinkdingEndToEndTests {
+class LinkdingEndToEndTests : KoinTest {
 
-    @get:Rule(order = 0)
-    val hiltRule = HiltAndroidRule(this)
-
-    @get:Rule(order = 1)
+    @get:Rule
     val composeRule = createAndroidComposeRule<MainActivity>()
 
-    @Inject
-    lateinit var sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences by inject()
 
     private val context get() = composeRule.activity
-
-    @Before
-    fun setup() {
-        hiltRule.inject()
-    }
 
     @After
     fun tearDown() {

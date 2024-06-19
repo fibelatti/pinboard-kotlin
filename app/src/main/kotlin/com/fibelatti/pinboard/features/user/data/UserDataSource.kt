@@ -14,12 +14,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.koin.core.annotation.Single
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Single
-@Singleton
-class UserDataSource @Inject constructor(
+class UserDataSource(
     private val userSharedPreferences: UserSharedPreferences,
     private val appModeProvider: AppModeProvider,
 ) : UserRepository {

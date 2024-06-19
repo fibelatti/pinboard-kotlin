@@ -39,7 +39,7 @@ internal class AppStateDataSourceTest {
     private val mockNoteActionHandler = mockk<NoteActionHandler>()
     private val mockPopularActionHandler = mockk<PopularActionHandler>()
 
-    private val handlers: List<ActionHandler<*>> = listOf(
+    private val handlers: Set<ActionHandler<*>> = setOf(
         mockNavigationActionHandler,
         mockPostActionHandler,
         mockSearchActionHandler,

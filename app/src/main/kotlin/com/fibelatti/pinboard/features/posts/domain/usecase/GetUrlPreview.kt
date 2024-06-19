@@ -5,8 +5,6 @@ import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.UseCaseWithParams
 import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.onFailureReturn
-import com.fibelatti.pinboard.core.di.RestApi
-import com.fibelatti.pinboard.core.di.RestApiProvider
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -18,12 +16,11 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.koin.core.annotation.Factory
-import org.koin.core.annotation.ScopeId
-import javax.inject.Inject
+import org.koin.core.annotation.Named
 
 @Factory
-class GetUrlPreview @Inject constructor(
-    @ScopeId(name = "base") @RestApi(RestApiProvider.BASE) private val httpClient: HttpClient,
+class GetUrlPreview(
+    @Named("base") private val httpClient: HttpClient,
     private val userRepository: UserRepository,
 ) : UseCaseWithParams<UrlPreview, GetUrlPreview.Params>() {
 

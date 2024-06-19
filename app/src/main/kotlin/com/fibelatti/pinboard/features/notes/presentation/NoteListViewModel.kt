@@ -9,14 +9,11 @@ import com.fibelatti.pinboard.features.appstate.SetNotes
 import com.fibelatti.pinboard.features.notes.domain.NotesRepository
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
-import javax.inject.Inject
 
 @KoinViewModel
-@HiltViewModel
-class NoteListViewModel @Inject constructor(
+class NoteListViewModel(
     private val notesRepository: NotesRepository,
     private val appStateRepository: AppStateRepository,
     private val dateFormatter: DateFormatter,

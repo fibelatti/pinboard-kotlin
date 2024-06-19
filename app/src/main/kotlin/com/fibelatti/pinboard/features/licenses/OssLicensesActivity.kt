@@ -18,9 +18,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.AppTheme
 import com.mikepenz.aboutlibraries.ui.compose.LibrariesContainer
 import com.mikepenz.aboutlibraries.ui.compose.LibraryDefaults
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class OssLicensesActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

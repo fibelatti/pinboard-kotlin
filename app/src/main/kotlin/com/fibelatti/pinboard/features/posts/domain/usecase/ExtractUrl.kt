@@ -9,10 +9,9 @@ import kotlinx.coroutines.withContext
 import org.koin.core.annotation.Factory
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
-import javax.inject.Inject
 
 @Factory
-class ExtractUrl @Inject constructor() : UseCaseWithParams<ExtractUrl.ExtractedUrl, String>() {
+class ExtractUrl : UseCaseWithParams<ExtractUrl.ExtractedUrl, String>() {
 
     override suspend fun run(params: String): Result<ExtractedUrl> {
         val schemes = ValidUrlScheme.ALL_SCHEMES.map { "$it://" }

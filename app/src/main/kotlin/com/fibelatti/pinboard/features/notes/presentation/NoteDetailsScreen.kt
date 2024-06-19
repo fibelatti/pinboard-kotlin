@@ -21,7 +21,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
@@ -33,13 +32,14 @@ import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.flow.onEach
+import org.koin.androidx.compose.koinViewModel
 import java.util.UUID
 
 @Composable
 fun NoteDetailsScreen(
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltViewModel(),
-    noteDetailsViewModel: NoteDetailsViewModel = hiltViewModel(),
+    appStateViewModel: AppStateViewModel = koinViewModel(),
+    mainViewModel: MainViewModel = koinViewModel(),
+    noteDetailsViewModel: NoteDetailsViewModel = koinViewModel(),
     onBackPressed: () -> Unit,
     onError: (Throwable?, () -> Unit) -> Unit,
 ) {

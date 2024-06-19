@@ -2,14 +2,12 @@ package com.fibelatti.pinboard.features.share
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.core.app.ShareCompat
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.features.MainActivity
-import dagger.hilt.android.AndroidEntryPoint
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
 open class ShareReceiverActivity : BaseActivity() {
 
     open val skipEdit: Boolean = false
@@ -35,7 +33,7 @@ open class ShareReceiverActivity : BaseActivity() {
             return
         }
 
-        val shareReceiverViewModel: ShareReceiverViewModel by viewModels()
+        val shareReceiverViewModel: ShareReceiverViewModel by viewModel()
         shareReceiverViewModel.saveUrl(
             url = url,
             title = intentReader.subject,

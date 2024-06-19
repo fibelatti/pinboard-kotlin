@@ -2,21 +2,18 @@ package com.fibelatti.pinboard.features.user.presentation
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.viewModels
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
-class AuthFragment @Inject constructor() : BaseFragment() {
+class AuthFragment : BaseFragment() {
 
-    private val authViewModel: AuthViewModel by viewModels()
+    private val authViewModel: AuthViewModel by viewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

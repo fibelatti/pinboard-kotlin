@@ -15,18 +15,15 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPopularPosts
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
-import javax.inject.Inject
 
 @KoinViewModel
-@HiltViewModel
-class PopularPostsViewModel @Inject constructor(
+class PopularPostsViewModel(
     private val appStateRepository: AppStateRepository,
     private val userRepository: UserRepository,
     private val postsRepository: PostsRepository,

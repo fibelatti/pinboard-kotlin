@@ -3,8 +3,6 @@ package com.fibelatti.pinboard.features.posts.domain.usecase
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.UseCase
 import com.fibelatti.core.functional.catching
-import com.fibelatti.pinboard.core.di.RestApi
-import com.fibelatti.pinboard.core.di.RestApiProvider
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import io.ktor.client.HttpClient
@@ -14,13 +12,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.koin.core.annotation.Factory
-import org.koin.core.annotation.ScopeId
+import org.koin.core.annotation.Named
 import java.util.UUID
-import javax.inject.Inject
 
 @Factory
-class GetPopularPosts @Inject constructor(
-    @ScopeId(name = "base") @RestApi(RestApiProvider.BASE) private val httpClient: HttpClient,
+class GetPopularPosts(
+    @Named("base") private val httpClient: HttpClient,
 ) : UseCase<List<Post>>() {
 
     override suspend fun run(): Result<List<Post>> = catching {

@@ -29,7 +29,6 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.core.functional.ScreenState
 import com.fibelatti.pinboard.R
@@ -39,6 +38,7 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import io.ktor.client.plugins.ResponseException
+import org.koin.androidx.compose.koinViewModel
 import java.net.HttpURLConnection
 
 @Composable
@@ -46,7 +46,7 @@ fun ShareReceiverScreen(
     onEdit: () -> Unit,
     onSaved: () -> Unit,
     errorDialogAction: () -> Unit,
-    shareReceiverViewModel: ShareReceiverViewModel = hiltViewModel(),
+    shareReceiverViewModel: ShareReceiverViewModel = koinViewModel(),
 ) {
     val state by shareReceiverViewModel.screenState.collectAsStateWithLifecycle()
 

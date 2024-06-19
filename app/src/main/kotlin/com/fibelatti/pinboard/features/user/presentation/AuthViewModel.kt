@@ -9,7 +9,6 @@ import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.UserLoggedOut
 import com.fibelatti.pinboard.features.user.domain.Login
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,11 +17,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 import java.net.HttpURLConnection
-import javax.inject.Inject
 
 @KoinViewModel
-@HiltViewModel
-class AuthViewModel @Inject constructor(
+class AuthViewModel(
     private val loginUseCase: Login,
     private val appStateRepository: AppStateRepository,
     private val userRepository: UserRepository,

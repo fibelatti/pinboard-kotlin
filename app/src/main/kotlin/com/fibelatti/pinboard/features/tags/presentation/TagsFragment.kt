@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.core.android.extension.navigateBack
 import com.fibelatti.pinboard.R
@@ -15,11 +13,10 @@ import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
-class TagsFragment @Inject constructor() : BaseFragment() {
+class TagsFragment : BaseFragment() {
 
     companion object {
 
@@ -27,9 +24,9 @@ class TagsFragment @Inject constructor() : BaseFragment() {
         val TAG: String = "TagsFragment"
     }
 
-    private val appStateViewModel: AppStateViewModel by activityViewModels()
-    private val mainViewModel: MainViewModel by activityViewModels()
-    private val tagsViewModel: TagsViewModel by viewModels()
+    private val appStateViewModel: AppStateViewModel by activityViewModel()
+    private val mainViewModel: MainViewModel by activityViewModel()
+    private val tagsViewModel: TagsViewModel by viewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt)
     alias(libs.plugins.room)
     alias(libs.plugins.about.libraries)
 }
@@ -63,7 +62,7 @@ android {
 
         resourceConfigurations.add("en")
 
-        testInstrumentationRunner = "com.fibelatti.pinboard.tooling.HiltTestRunner"
+        testInstrumentationRunner = "com.fibelatti.pinboard.tooling.InstrumentationTestRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
 
         vectorDrawables.useSupportLibrary = true
@@ -212,12 +211,6 @@ dependencies {
     debugImplementation(libs.compose.ui.test.manifest)
 
     // Misc
-    ksp(libs.dagger.hilt.compiler)
-    ksp(libs.hilt.compiler)
-    implementation(libs.dagger.hilt.android)
-    implementation(libs.hilt.work)
-    implementation(libs.hilt.navigation.compose)
-
     implementation(platform(libs.koin.bom))
     implementation(libs.bundles.koin.android)
     compileOnly(libs.koin.annotations)
@@ -256,8 +249,8 @@ dependencies {
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
 
-    androidTestImplementation(libs.hilt.android.testing)
-    kspAndroidTest(libs.hilt.android.compiler)
-
     androidTestImplementation(libs.mockwebserver)
+
+    androidTestImplementation(platform(libs.koin.bom))
+    androidTestImplementation(libs.koin.android.test)
 }

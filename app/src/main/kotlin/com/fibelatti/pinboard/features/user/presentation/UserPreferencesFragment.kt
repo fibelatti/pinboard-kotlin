@@ -3,7 +3,6 @@ package com.fibelatti.pinboard.features.user.presentation
 import android.os.Bundle
 import android.view.View
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.core.android.extension.navigateBack
@@ -14,18 +13,16 @@ import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import java.util.UUID
-import javax.inject.Inject
 
-@AndroidEntryPoint
-class UserPreferencesFragment @Inject constructor() : BaseFragment() {
+class UserPreferencesFragment : BaseFragment() {
 
-    private val appStateViewModel: AppStateViewModel by activityViewModels()
-    private val mainViewModel: MainViewModel by activityViewModels()
+    private val appStateViewModel: AppStateViewModel by activityViewModel()
+    private val mainViewModel: MainViewModel by activityViewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

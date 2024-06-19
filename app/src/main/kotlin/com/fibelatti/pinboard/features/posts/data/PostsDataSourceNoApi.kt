@@ -23,10 +23,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.koin.core.annotation.Factory
 import java.util.UUID
-import javax.inject.Inject
 
 @Factory
-class PostsDataSourceNoApi @Inject constructor(
+class PostsDataSourceNoApi(
     private val postsDao: PostsDao,
     private val postDtoMapper: PostDtoMapper,
     private val dateFormatter: DateFormatter,

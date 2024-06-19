@@ -38,7 +38,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
@@ -58,10 +57,11 @@ import com.fibelatti.ui.foundation.navigationBarsPaddingCompat
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun UserPreferencesScreen(
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
+    appStateViewModel: AppStateViewModel = koinViewModel(),
     onDynamicColorChange: () -> Unit,
     onDisableScreenshotsChange: () -> Unit,
 ) {
@@ -119,7 +119,7 @@ private fun AppPreferencesContent(
     onDynamicColorChange: () -> Unit,
     onDisableScreenshotsChange: () -> Unit,
     modifier: Modifier = Modifier,
-    userPreferencesViewModel: UserPreferencesViewModel = hiltViewModel(),
+    userPreferencesViewModel: UserPreferencesViewModel = koinViewModel(),
 ) {
     val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
@@ -409,8 +409,8 @@ private fun AppPreferencesContent(
 private fun BookmarkingPreferencesContent(
     appMode: AppMode,
     modifier: Modifier = Modifier,
-    userPreferencesViewModel: UserPreferencesViewModel = hiltViewModel(),
-    tagManagerViewModel: TagManagerViewModel = hiltViewModel(),
+    userPreferencesViewModel: UserPreferencesViewModel = koinViewModel(),
+    tagManagerViewModel: TagManagerViewModel = koinViewModel(),
 ) {
     val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
     val suggestedTags by userPreferencesViewModel.suggestedTags.collectAsStateWithLifecycle(emptyList())

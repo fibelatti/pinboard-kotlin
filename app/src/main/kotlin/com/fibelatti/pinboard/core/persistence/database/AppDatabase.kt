@@ -14,7 +14,6 @@ import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoFts
 import com.fibelatti.pinboard.features.user.data.UserDataSource
 import org.koin.core.annotation.Factory
-import javax.inject.Inject
 
 const val DATABASE_NAME = "com.fibelatti.pinboard.db"
 const val DATABASE_VERSION_1 = 1 // Release 1.0.0
@@ -46,7 +45,7 @@ abstract class AppDatabase : RoomDatabase() {
 }
 
 @Factory
-class DatabaseResetCallback @Inject constructor(
+class DatabaseResetCallback(
     private val userDataSource: UserDataSource,
 ) : RoomDatabase.Callback() {
 

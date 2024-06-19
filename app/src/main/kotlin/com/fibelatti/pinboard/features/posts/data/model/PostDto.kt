@@ -15,7 +15,6 @@ import kotlinx.serialization.Serializable
 import org.koin.core.annotation.Factory
 import java.net.URLDecoder
 import java.net.URLEncoder
-import javax.inject.Inject
 
 const val POST_TABLE_NAME = "Posts"
 
@@ -37,7 +36,7 @@ data class PostDto(
 )
 
 @Factory
-class PostDtoMapper @Inject constructor(
+class PostDtoMapper(
     private val dateFormatter: DateFormatter,
 ) : TwoWayMapper<PostDto, Post> {
 

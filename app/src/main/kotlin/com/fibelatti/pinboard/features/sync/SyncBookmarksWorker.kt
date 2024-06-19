@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.features.sync
 
 import android.content.Context
-import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.fibelatti.core.functional.Success
@@ -10,14 +9,11 @@ import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.user.data.UserDataSource
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.toList
 
-@HiltWorker
-class SyncBookmarksWorker @AssistedInject constructor(
-    @Assisted context: Context,
-    @Assisted workerParams: WorkerParameters,
+class SyncBookmarksWorker(
+    context: Context,
+    workerParams: WorkerParameters,
     private val userDataSource: UserDataSource,
     private val postsRepository: PostsRepository,
 ) : CoroutineWorker(context, workerParams) {

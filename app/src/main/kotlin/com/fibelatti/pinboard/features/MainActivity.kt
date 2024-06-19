@@ -9,7 +9,6 @@ import android.view.View
 import android.view.animation.LinearInterpolator
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.lifecycle.Lifecycle
 import com.fibelatti.core.android.extension.animateChangingTransitions
@@ -49,18 +48,15 @@ import com.fibelatti.pinboard.features.appstate.SearchContent
 import com.fibelatti.pinboard.features.appstate.SidePanelContent
 import com.fibelatti.pinboard.features.appstate.TagListContent
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
 class MainActivity : BaseActivity() {
 
-    private val appStateViewModel: AppStateViewModel by viewModels()
-    private val mainViewModel: MainViewModel by viewModels()
+    private val appStateViewModel: AppStateViewModel by viewModel()
+    private val mainViewModel: MainViewModel by viewModel()
 
-    @Inject
-    lateinit var featureFragments: FeatureFragments
+    private val featureFragments: FeatureFragments = FeatureFragments(this)
 
     private var isRecreating: Boolean = false
 

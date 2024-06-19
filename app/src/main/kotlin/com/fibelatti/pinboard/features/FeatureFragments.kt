@@ -32,10 +32,8 @@ import com.fibelatti.pinboard.features.posts.presentation.PostSearchFragment
 import com.fibelatti.pinboard.features.tags.presentation.TagsFragment
 import com.fibelatti.pinboard.features.user.presentation.AuthFragment
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
-class FeatureFragments @Inject constructor(private val activity: FragmentActivity) {
+class FeatureFragments(private val activity: FragmentActivity) {
 
     private val mainPanelFragment: Fragment
         get() = requireNotNull(activity.supportFragmentManager.findFragmentById(R.id.fragment_host))
@@ -218,8 +216,7 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
     }
 }
 
-@AndroidEntryPoint
-class ContainerFragment @Inject constructor() : Fragment() {
+class ContainerFragment : Fragment() {
 
     var applyNavBarInsets: Boolean? by fragmentArgs()
 

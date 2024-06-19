@@ -8,10 +8,9 @@ import com.fibelatti.pinboard.features.tags.domain.TagsRepository
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.flow.Flow
 import org.koin.core.annotation.Factory
-import javax.inject.Inject
 
 @Factory
-class TagsDataSourceProxy @Inject constructor(
+class TagsDataSourceProxy(
     private val tagsDataSource: TagsDataSource,
     private val tagsDataSourceLinkdingApi: TagsDataSourceLinkdingApi,
     private val appModeProvider: AppModeProvider,

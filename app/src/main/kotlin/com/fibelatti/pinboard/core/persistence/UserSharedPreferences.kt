@@ -5,8 +5,6 @@ import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.android.extension.get
 import com.fibelatti.core.android.extension.put
 import org.koin.core.annotation.Single
-import javax.inject.Inject
-import javax.inject.Singleton
 
 // region Constants
 @VisibleForTesting
@@ -59,8 +57,7 @@ const val KEY_DEFAULT_TAGS = "DEFAULT_TAGS"
 // endregion
 
 @Single
-@Singleton
-class UserSharedPreferences @Inject constructor(private val sharedPreferences: SharedPreferences) {
+class UserSharedPreferences(private val sharedPreferences: SharedPreferences) {
 
     private var currentLinkdingInstanceUrl = ""
     private var currentAuthToken: String = ""

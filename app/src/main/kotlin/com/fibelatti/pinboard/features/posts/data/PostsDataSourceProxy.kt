@@ -12,10 +12,9 @@ import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.flow.Flow
 import org.koin.core.annotation.Factory
-import javax.inject.Inject
 
 @Factory
-class PostsDataSourceProxy @Inject constructor(
+class PostsDataSourceProxy(
     private val postsDataSourcePinboardApi: PostsDataSourcePinboardApi,
     private val postsDataSourceLinkdingApi: PostsDataSourceLinkdingApi,
     private val postsDataSourceNoApi: PostsDataSourceNoApi,

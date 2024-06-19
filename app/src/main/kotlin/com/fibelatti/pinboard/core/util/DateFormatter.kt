@@ -7,13 +7,12 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
-import javax.inject.Inject
 
 private const val FORMAT_TZ = "yyyy-MM-dd'T'HH:mm:ss'Z'"
 private const val FORMAT_NOTES = "yyyy-MM-dd HH:mm:ss"
 
 @Factory
-class DateFormatter @Inject constructor(
+class DateFormatter(
     private val userRepository: UserRepository,
 ) {
 

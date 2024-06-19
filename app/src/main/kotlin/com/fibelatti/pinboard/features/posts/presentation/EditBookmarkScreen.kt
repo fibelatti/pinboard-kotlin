@@ -41,7 +41,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
@@ -56,13 +55,14 @@ import com.fibelatti.ui.foundation.imePaddingCompat
 import com.fibelatti.ui.foundation.navigationBarsPaddingCompat
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun EditBookmarkScreen(
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
-    editPostViewModel: EditPostViewModel = hiltViewModel(),
-    postDetailViewModel: PostDetailViewModel = hiltViewModel(),
-    tagManagerViewModel: TagManagerViewModel = hiltViewModel(),
+    appStateViewModel: AppStateViewModel = koinViewModel(),
+    editPostViewModel: EditPostViewModel = koinViewModel(),
+    postDetailViewModel: PostDetailViewModel = koinViewModel(),
+    tagManagerViewModel: TagManagerViewModel = koinViewModel(),
 ) {
     val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
     val addPostContent by appStateViewModel.addPostContent.collectAsStateWithLifecycle(initialValue = null)

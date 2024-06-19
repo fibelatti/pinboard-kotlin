@@ -13,7 +13,6 @@ import com.fibelatti.pinboard.features.sync.PeriodicSyncManager
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,11 +20,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
-import javax.inject.Inject
 
 @KoinViewModel
-@HiltViewModel
-class UserPreferencesViewModel @Inject constructor(
+class UserPreferencesViewModel(
     private val userRepository: UserRepository,
     private val postsRepository: PostsRepository,
     private val periodicSyncManager: PeriodicSyncManager,

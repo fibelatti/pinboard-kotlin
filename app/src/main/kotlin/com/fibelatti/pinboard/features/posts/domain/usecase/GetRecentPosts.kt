@@ -8,10 +8,9 @@ import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import kotlinx.coroutines.flow.Flow
 import org.koin.core.annotation.Factory
-import javax.inject.Inject
 
 @Factory
-class GetRecentPosts @Inject constructor(
+class GetRecentPosts(
     private val postsRepository: PostsRepository,
 ) {
 

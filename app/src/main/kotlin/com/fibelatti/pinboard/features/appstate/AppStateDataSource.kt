@@ -3,8 +3,6 @@ package com.fibelatti.pinboard.features.appstate
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
-import com.fibelatti.pinboard.core.di.AppDispatchers
-import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -12,19 +10,15 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
-import org.koin.core.annotation.ScopeId
 import org.koin.core.annotation.Single
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Single
-@Singleton
-class AppStateDataSource @Inject constructor(
+class AppStateDataSource(
     private val userRepository: UserRepository,
-    private val actionHandlers: List<@JvmSuppressWildcards ActionHandler<*>>,
+    private val actionHandlers: Set<ActionHandler<*>>,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
     private val appModeProvider: AppModeProvider,
-    @ScopeId(name = "default") @Scope(AppDispatchers.DEFAULT) scope: CoroutineScope,
+    scope: CoroutineScope,
     sharingStarted: SharingStarted,
 ) : AppStateRepository {
 

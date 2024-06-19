@@ -1,7 +1,5 @@
 package com.fibelatti.pinboard.features.linkding.data
 
-import com.fibelatti.pinboard.core.di.RestApi
-import com.fibelatti.pinboard.core.di.RestApiProvider
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
@@ -13,12 +11,11 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import org.koin.core.annotation.Factory
-import org.koin.core.annotation.ScopeId
-import javax.inject.Inject
+import org.koin.core.annotation.Named
 
 @Factory
-class LinkdingApi @Inject constructor(
-    @ScopeId(name = "linkding") @RestApi(RestApiProvider.LINKDING) private val httpClient: HttpClient,
+class LinkdingApi(
+    @Named("linkding") private val httpClient: HttpClient,
 ) {
 
     suspend fun getBookmarks(

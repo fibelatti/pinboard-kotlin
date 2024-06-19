@@ -57,7 +57,7 @@ import okhttp3.ConnectionSpec
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.fragment.dsl.fragmentOf
-import org.koin.androidx.workmanager.dsl.workerOf
+import org.koin.androidx.workmanager.dsl.worker
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 import org.koin.core.module.dsl.bind
@@ -70,8 +70,7 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 val coreModule = module {
-    factory(named("io")) { CoroutineScope(Dispatchers.IO + SupervisorJob()) }
-    factory(named("default")) { CoroutineScope(Dispatchers.Default + SupervisorJob()) }
+    factory { CoroutineScope(context = Dispatchers.Default + SupervisorJob()) }
     factory { SharingStarted.Eagerly }
 }
 
@@ -96,6 +95,7 @@ val networkModule = module {
             ignoreUnknownKeys = true
         }
     }
+
     factory(named("base")) {
         HttpClient(OkHttp) {
             engine {
@@ -186,19 +186,32 @@ val linkdingModule = module {
     }
 }
 
-val androidModule = module {
+val androidPlatformModule = module {
     single { Locale.getDefault() }
     single { Collator.getInstance(Locale.US) }
     single<ConnectivityManager?> { androidContext().getSystemService() }
+    singleOf(::AppResourceProvider) { bind<ResourceProvider>() }
+}
 
+val androidAppModule = module {
     single<SharedPreferences> { androidApplication().getSharedPreferences(name = "user_preferences") }
 
-    singleOf(::AppResourceProvider) { bind<ResourceProvider>() }
+    factory { getAll<ActionHandler<*>>().toSet() }
 
-    factory { getAll<ActionHandler<*>>() }
-
-    workerOf(::PendingSyncWorker)
-    workerOf(::SyncBookmarksWorker)
+    worker {
+        PendingSyncWorker(
+            context = get(),
+            workerParams = get(),
+            postsRepository = get(),
+        )
+    }
+    worker {
+        SyncBookmarksWorker(
+            context = get(),
+            workerParams = get(),
+            postsRepository = get(),
+        )
+    }
 
     fragmentOf(::ContainerFragment)
     fragmentOf(::AuthFragment)
@@ -220,7 +233,8 @@ fun allModules() = listOf(
     networkModule,
     pinboardModule,
     linkdingModule,
-    androidModule,
+    androidPlatformModule,
+    androidAppModule,
     KoinGeneratedModule().module,
 )
 

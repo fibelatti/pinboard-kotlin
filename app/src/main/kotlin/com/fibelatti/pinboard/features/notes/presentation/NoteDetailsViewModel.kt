@@ -6,14 +6,11 @@ import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.SetNote
 import com.fibelatti.pinboard.features.notes.domain.NotesRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
-import javax.inject.Inject
 
 @KoinViewModel
-@HiltViewModel
-class NoteDetailsViewModel @Inject constructor(
+class NoteDetailsViewModel(
     private val notesRepository: NotesRepository,
     private val appStateRepository: AppStateRepository,
 ) : BaseViewModel() {

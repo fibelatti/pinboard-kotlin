@@ -9,26 +9,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.di.modules.ActivityEntryPoint
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import dagger.hilt.android.EntryPointAccessors
+import org.koin.android.ext.android.inject
+import org.koin.androidx.fragment.android.setupKoinFragmentFactory
 import java.io.PrintWriter
 import java.io.StringWriter
-import javax.inject.Inject
 
 abstract class BaseActivity : AppCompatActivity() {
 
-    @Inject
-    lateinit var userRepository: UserRepository
+    private val userRepository: UserRepository by inject()
 
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
-        val entryPoint = EntryPointAccessors.fromActivity(this, ActivityEntryPoint::class.java)
-        supportFragmentManager.fragmentFactory = entryPoint.getFragmentFactory()
-//        setupKoinFragmentFactory()
+        setupKoinFragmentFactory()
 
         super.onCreate(savedInstanceState)
     }

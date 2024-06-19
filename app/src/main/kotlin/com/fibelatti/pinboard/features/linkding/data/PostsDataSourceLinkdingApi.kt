@@ -28,11 +28,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import org.koin.core.annotation.Factory
 import java.util.UUID
-import javax.inject.Inject
 import kotlin.time.Duration.Companion.minutes
 
 @Factory
-class PostsDataSourceLinkdingApi @Inject constructor(
+class PostsDataSourceLinkdingApi(
     private val linkdingApi: LinkdingApi,
     private val linkdingDao: BookmarksDao,
     private val bookmarkRemoteMapper: BookmarkRemoteMapper,
