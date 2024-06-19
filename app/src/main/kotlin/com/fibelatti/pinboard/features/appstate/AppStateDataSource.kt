@@ -12,16 +12,19 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
+import org.koin.core.annotation.ScopeId
+import org.koin.core.annotation.Single
 import javax.inject.Inject
 import javax.inject.Singleton
 
+@Single
 @Singleton
 class AppStateDataSource @Inject constructor(
     private val userRepository: UserRepository,
-    private val actionHandlers: Map<Class<out Action>, @JvmSuppressWildcards ActionHandler<*>>,
+    private val actionHandlers: List<@JvmSuppressWildcards ActionHandler<*>>,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
     private val appModeProvider: AppModeProvider,
-    @Scope(AppDispatchers.DEFAULT) scope: CoroutineScope,
+    @ScopeId(name = "default") @Scope(AppDispatchers.DEFAULT) scope: CoroutineScope,
     sharingStarted: SharingStarted,
 ) : AppStateRepository {
 
@@ -51,23 +54,20 @@ class AppStateDataSource @Inject constructor(
                 }
             } else {
                 @Suppress("UNCHECKED_CAST")
-                val handler = actionHandlers[action.getActionType()] as? ActionHandler<Action>
+                val handler: ActionHandler<Action>? = actionHandlers.first {
+                    it::class == when (action) {
+                        is NavigationAction -> NavigationActionHandler::class
+                        is PostAction -> PostActionHandler::class
+                        is SearchAction -> SearchActionHandler::class
+                        is TagAction -> TagActionHandler::class
+                        is NoteAction -> NoteActionHandler::class
+                        is PopularAction -> PopularActionHandler::class
+                        else -> null
+                    }
+                } as? ActionHandler<Action>
                 handler?.runAction(action, content) ?: content
             }
         }
-    }
-
-    private fun Action.getActionType(): Class<out Action> {
-        val thisType = this::class.java
-        if (thisType == Action::class.java) return thisType
-
-        var supertype = thisType.superclass
-        while (supertype.superclass != Action::class.java) {
-            supertype = supertype.superclass
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        return supertype as Class<Action>
     }
 
     private fun getInitialContent(): Content {

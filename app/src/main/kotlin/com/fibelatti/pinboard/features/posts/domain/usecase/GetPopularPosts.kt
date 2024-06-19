@@ -13,11 +13,14 @@ import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
+import org.koin.core.annotation.Factory
+import org.koin.core.annotation.ScopeId
 import java.util.UUID
 import javax.inject.Inject
 
+@Factory
 class GetPopularPosts @Inject constructor(
-    @RestApi(RestApiProvider.BASE) private val httpClient: HttpClient,
+    @ScopeId(name = "base") @RestApi(RestApiProvider.BASE) private val httpClient: HttpClient,
 ) : UseCase<List<Post>>() {
 
     override suspend fun run(): Result<List<Post>> = catching {

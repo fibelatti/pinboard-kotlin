@@ -43,9 +43,11 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withTimeout
+import org.koin.core.annotation.Factory
 import java.util.UUID
 import javax.inject.Inject
 
+@Factory
 class PostsDataSourcePinboardApi @Inject constructor(
     private val userRepository: UserRepository,
     private val postsApi: PostsApi,

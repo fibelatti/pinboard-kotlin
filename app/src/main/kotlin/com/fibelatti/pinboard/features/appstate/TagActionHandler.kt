@@ -2,8 +2,10 @@ package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import org.koin.core.annotation.Factory
 import javax.inject.Inject
 
+@Factory
 class TagActionHandler @Inject constructor(
     private val userRepository: UserRepository,
     private val connectivityInfoProvider: ConnectivityInfoProvider,

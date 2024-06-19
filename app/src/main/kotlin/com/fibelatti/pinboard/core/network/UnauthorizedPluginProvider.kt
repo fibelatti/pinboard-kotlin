@@ -5,9 +5,11 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import org.koin.core.annotation.Single
 import javax.inject.Inject
 import javax.inject.Singleton
 
+@Single
 @Singleton
 class UnauthorizedPluginProvider @Inject constructor() {
 

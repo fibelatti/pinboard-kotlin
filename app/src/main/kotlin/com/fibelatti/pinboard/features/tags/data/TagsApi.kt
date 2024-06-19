@@ -6,10 +6,13 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import kotlinx.serialization.Serializable
+import org.koin.core.annotation.Factory
+import org.koin.core.annotation.ScopeId
 import javax.inject.Inject
 
+@Factory
 class TagsApi @Inject constructor(
-    @RestApi(RestApiProvider.PINBOARD) private val httpClient: HttpClient,
+    @ScopeId(name = "pinboard") @RestApi(RestApiProvider.PINBOARD) private val httpClient: HttpClient,
 ) {
 
     suspend fun getTags(): Map<String, Int> = httpClient.get(urlString = "tags/get").body()

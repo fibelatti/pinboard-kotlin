@@ -39,13 +39,13 @@ internal class AppStateDataSourceTest {
     private val mockNoteActionHandler = mockk<NoteActionHandler>()
     private val mockPopularActionHandler = mockk<PopularActionHandler>()
 
-    private val handlers: Map<Class<out Action>, ActionHandler<*>> = mapOf(
-        NavigationAction::class.java to mockNavigationActionHandler,
-        PostAction::class.java to mockPostActionHandler,
-        SearchAction::class.java to mockSearchActionHandler,
-        TagAction::class.java to mockTagActionHandler,
-        NoteAction::class.java to mockNoteActionHandler,
-        PopularAction::class.java to mockPopularActionHandler,
+    private val handlers: List<ActionHandler<*>> = listOf(
+        mockNavigationActionHandler,
+        mockPostActionHandler,
+        mockSearchActionHandler,
+        mockTagActionHandler,
+        mockNoteActionHandler,
+        mockPopularActionHandler,
     )
 
     private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider>()

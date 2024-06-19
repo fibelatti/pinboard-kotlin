@@ -20,8 +20,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
 import javax.inject.Inject
 
+@KoinViewModel
 @HiltViewModel
 class UserPreferencesViewModel @Inject constructor(
     private val userRepository: UserRepository,

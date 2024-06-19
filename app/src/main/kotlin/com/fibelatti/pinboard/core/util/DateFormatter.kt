@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.core.util
 
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import org.koin.core.annotation.Factory
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -11,6 +12,7 @@ import javax.inject.Inject
 private const val FORMAT_TZ = "yyyy-MM-dd'T'HH:mm:ss'Z'"
 private const val FORMAT_NOTES = "yyyy-MM-dd HH:mm:ss"
 
+@Factory
 class DateFormatter @Inject constructor(
     private val userRepository: UserRepository,
 ) {

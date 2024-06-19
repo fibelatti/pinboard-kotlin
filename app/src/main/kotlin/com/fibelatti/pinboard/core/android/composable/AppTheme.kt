@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.ScopeId
 import javax.inject.Inject
 
 @Composable
@@ -27,10 +29,11 @@ fun AppTheme(
     ExtendedTheme(dynamicColor = state, content = content)
 }
 
+@KoinViewModel
 @HiltViewModel
 class AppThemeViewModel @Inject constructor(
     userRepository: UserRepository,
-    @Scope(AppDispatchers.DEFAULT) scope: CoroutineScope,
+    @ScopeId(name = "default") @Scope(AppDispatchers.DEFAULT) scope: CoroutineScope,
     sharingStarted: SharingStarted,
 ) : ViewModel() {
 

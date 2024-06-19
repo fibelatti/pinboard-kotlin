@@ -15,8 +15,10 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.android.annotation.KoinViewModel
 import javax.inject.Inject
 
+@KoinViewModel
 @HiltViewModel
 class AppStateViewModel @Inject constructor(
     private val appStateRepository: AppStateRepository,

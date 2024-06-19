@@ -13,6 +13,7 @@ import com.fibelatti.pinboard.features.posts.data.PostsDao
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoFts
 import com.fibelatti.pinboard.features.user.data.UserDataSource
+import org.koin.core.annotation.Factory
 import javax.inject.Inject
 
 const val DATABASE_NAME = "com.fibelatti.pinboard.db"
@@ -44,6 +45,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun savedFiltersDao(): SavedFiltersDao
 }
 
+@Factory
 class DatabaseResetCallback @Inject constructor(
     private val userDataSource: UserDataSource,
 ) : RoomDatabase.Callback() {

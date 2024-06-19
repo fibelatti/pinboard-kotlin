@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.android.extension.get
 import com.fibelatti.core.android.extension.put
+import org.koin.core.annotation.Single
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -57,6 +58,7 @@ const val KEY_NEW_EDIT_AFTER_SHARING = "NEW_EDIT_AFTER_SHARING"
 const val KEY_DEFAULT_TAGS = "DEFAULT_TAGS"
 // endregion
 
+@Single
 @Singleton
 class UserSharedPreferences @Inject constructor(private val sharedPreferences: SharedPreferences) {
 

@@ -34,15 +34,18 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.ScopeId
 import javax.inject.Inject
 
+@KoinViewModel
 @HiltViewModel
 class EditPostViewModel @Inject constructor(
     private val appStateRepository: AppStateRepository,
     private val postsRepository: PostsRepository,
     private val addPost: AddPost,
     private val resourceProvider: ResourceProvider,
-    @Scope(AppDispatchers.DEFAULT) scope: CoroutineScope,
+    @ScopeId(name = "default") @Scope(AppDispatchers.DEFAULT) scope: CoroutineScope,
     sharingStarted: SharingStarted,
 ) : BaseViewModel() {
 

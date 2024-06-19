@@ -6,9 +6,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import org.koin.core.annotation.Single
 import javax.inject.Inject
 import javax.inject.Singleton
 
+@Single
 @Singleton
 class AppModeProvider @Inject constructor(
     private val userSharedPreferences: UserSharedPreferences,

@@ -5,8 +5,10 @@ import com.fibelatti.pinboard.core.network.resultFromNetwork
 import com.fibelatti.pinboard.features.notes.data.model.NoteDtoMapper
 import com.fibelatti.pinboard.features.notes.domain.NotesRepository
 import com.fibelatti.pinboard.features.notes.domain.model.Note
+import org.koin.core.annotation.Factory
 import javax.inject.Inject
 
+@Factory
 class NotesDataSource @Inject constructor(
     private val notesApi: NotesApi,
     private val noteDtoMapper: NoteDtoMapper,

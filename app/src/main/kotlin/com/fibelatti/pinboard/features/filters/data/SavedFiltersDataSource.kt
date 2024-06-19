@@ -4,8 +4,10 @@ import com.fibelatti.pinboard.features.filters.domain.SavedFiltersRepository
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.koin.core.annotation.Factory
 import javax.inject.Inject
 
+@Factory
 class SavedFiltersDataSource @Inject constructor(
     private val savedFiltersDao: SavedFiltersDao,
     private val savedFiltersDtoMapper: SavedFilterDtoMapper,

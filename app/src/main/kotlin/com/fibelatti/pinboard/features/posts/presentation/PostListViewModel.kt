@@ -31,8 +31,10 @@ import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
 import javax.inject.Inject
 
+@KoinViewModel
 @HiltViewModel
 class PostListViewModel @Inject constructor(
     private val getAllPosts: GetAllPosts,

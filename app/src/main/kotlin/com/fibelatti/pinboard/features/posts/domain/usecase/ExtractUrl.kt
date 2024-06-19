@@ -6,10 +6,12 @@ import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.UseCaseWithParams
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.koin.core.annotation.Factory
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
 import javax.inject.Inject
 
+@Factory
 class ExtractUrl @Inject constructor() : UseCaseWithParams<ExtractUrl.ExtractedUrl, String>() {
 
     override suspend fun run(params: String): Result<ExtractedUrl> {

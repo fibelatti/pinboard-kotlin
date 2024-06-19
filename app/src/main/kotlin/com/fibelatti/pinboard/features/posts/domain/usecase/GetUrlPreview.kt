@@ -17,10 +17,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.koin.core.annotation.Factory
+import org.koin.core.annotation.ScopeId
 import javax.inject.Inject
 
+@Factory
 class GetUrlPreview @Inject constructor(
-    @RestApi(RestApiProvider.BASE) private val httpClient: HttpClient,
+    @ScopeId(name = "base") @RestApi(RestApiProvider.BASE) private val httpClient: HttpClient,
     private val userRepository: UserRepository,
 ) : UseCaseWithParams<UrlPreview, GetUrlPreview.Params>() {
 

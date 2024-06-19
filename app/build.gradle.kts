@@ -218,6 +218,11 @@ dependencies {
     implementation(libs.hilt.work)
     implementation(libs.hilt.navigation.compose)
 
+    implementation(platform(libs.koin.bom))
+    implementation(libs.bundles.koin.android)
+    compileOnly(libs.koin.annotations)
+    ksp(libs.koin.ksp.compiler)
+
     implementation(libs.bundles.ktor.common)
     implementation(libs.ktor.client.okhttp)
 
@@ -238,6 +243,8 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.arch.core.testing)
+
+    testImplementation(libs.koin.test)
 
     androidTestImplementation(libs.runner)
     androidTestUtil(libs.orchestrator)

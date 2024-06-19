@@ -12,8 +12,10 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
 import javax.inject.Inject
 
+@KoinViewModel
 @HiltViewModel
 class MainViewModel @Inject constructor() : BaseViewModel() {
 

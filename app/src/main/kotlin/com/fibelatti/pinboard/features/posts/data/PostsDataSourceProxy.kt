@@ -10,22 +10,23 @@ import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import dagger.Lazy
 import kotlinx.coroutines.flow.Flow
+import org.koin.core.annotation.Factory
 import javax.inject.Inject
 
+@Factory
 class PostsDataSourceProxy @Inject constructor(
-    private val postsDataSourcePinboardApi: Lazy<PostsDataSourcePinboardApi>,
-    private val postsDataSourceLinkdingApi: Lazy<PostsDataSourceLinkdingApi>,
-    private val postsDataSourceNoApi: Lazy<PostsDataSourceNoApi>,
+    private val postsDataSourcePinboardApi: PostsDataSourcePinboardApi,
+    private val postsDataSourceLinkdingApi: PostsDataSourceLinkdingApi,
+    private val postsDataSourceNoApi: PostsDataSourceNoApi,
     private val appModeProvider: AppModeProvider,
 ) : PostsRepository {
 
     private val repository: PostsRepository
         get() = when (appModeProvider.appMode.value) {
-            AppMode.NO_API -> postsDataSourceNoApi.get()
-            AppMode.PINBOARD -> postsDataSourcePinboardApi.get()
-            AppMode.LINKDING -> postsDataSourceLinkdingApi.get()
+            AppMode.NO_API -> postsDataSourceNoApi
+            AppMode.PINBOARD -> postsDataSourcePinboardApi
+            AppMode.LINKDING -> postsDataSourceLinkdingApi
         }
 
     override suspend fun update(): Result<String> = repository.update()

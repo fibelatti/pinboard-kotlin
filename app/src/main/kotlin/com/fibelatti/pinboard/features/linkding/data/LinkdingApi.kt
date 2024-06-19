@@ -12,10 +12,13 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
+import org.koin.core.annotation.Factory
+import org.koin.core.annotation.ScopeId
 import javax.inject.Inject
 
+@Factory
 class LinkdingApi @Inject constructor(
-    @RestApi(RestApiProvider.LINKDING) private val httpClient: HttpClient,
+    @ScopeId(name = "linkding") @RestApi(RestApiProvider.LINKDING) private val httpClient: HttpClient,
 ) {
 
     suspend fun getBookmarks(

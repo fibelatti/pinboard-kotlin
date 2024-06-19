@@ -21,8 +21,10 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
 import javax.inject.Inject
 
+@KoinViewModel
 @HiltViewModel
 class TagsViewModel @Inject constructor(
     private val tagsRepository: TagsRepository,

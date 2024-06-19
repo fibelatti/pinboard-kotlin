@@ -6,6 +6,7 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import org.koin.core.annotation.Factory
 import javax.inject.Inject
 
 @Serializable
@@ -47,6 +48,7 @@ data class TagRemote(
     val dateAdded: String,
 )
 
+@Factory
 class BookmarkRemoteMapper @Inject constructor(
     private val dateFormatter: DateFormatter,
 ) : Mapper<BookmarkRemote, Post> {

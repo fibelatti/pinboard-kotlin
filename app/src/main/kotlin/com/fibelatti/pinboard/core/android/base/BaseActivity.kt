@@ -28,6 +28,7 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val entryPoint = EntryPointAccessors.fromActivity(this, ActivityEntryPoint::class.java)
         supportFragmentManager.fragmentFactory = entryPoint.getFragmentFactory()
+//        setupKoinFragmentFactory()
 
         super.onCreate(savedInstanceState)
     }

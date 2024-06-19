@@ -21,9 +21,11 @@ import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.koin.core.annotation.Factory
 import java.util.UUID
 import javax.inject.Inject
 
+@Factory
 class PostsDataSourceNoApi @Inject constructor(
     private val postsDao: PostsDao,
     private val postDtoMapper: PostDtoMapper,

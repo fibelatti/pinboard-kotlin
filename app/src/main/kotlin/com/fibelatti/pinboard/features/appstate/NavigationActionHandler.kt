@@ -11,8 +11,10 @@ import com.fibelatti.pinboard.features.user.domain.UserRepository
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.core.annotation.Factory
 import javax.inject.Inject
 
+@Factory
 class NavigationActionHandler @Inject constructor(
     private val userRepository: UserRepository,
     private val postsRepository: PostsRepository,
