@@ -6,6 +6,7 @@ rootProject.buildFileName = "build.gradle.kts"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":app")
+include(":bookmarking")
 include(":core")
 include(":core-android")
 include(":ui")

@@ -167,6 +167,7 @@ room {
 }
 
 dependencies {
+    implementation(projects.bookmarking)
     implementation(projects.core)
     implementation(projects.coreAndroid)
     implementation(projects.ui)
