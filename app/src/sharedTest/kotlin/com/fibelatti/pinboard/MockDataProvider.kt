@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard
 
-import com.fibelatti.pinboard.core.AppConfig
-import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
+import com.fibelatti.bookmarking.core.Config.Pinboard
 import com.fibelatti.pinboard.core.network.ApiResultCodes
 import com.fibelatti.pinboard.features.linkding.data.BookmarkLocal
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
@@ -52,7 +51,7 @@ object MockDataProvider {
     val mockTagsString = listOf(mockTagString1, mockTagString2, mockTagString3, mockTagString4)
     val mockTags = mockTagsString.map(::Tag)
 
-    val mockTagsResponse = mockTagsString.joinToString(PinboardApiLiterals.TAG_SEPARATOR)
+    val mockTagsResponse = mockTagsString.joinToString(Pinboard.TAG_SEPARATOR)
 
     const val mockTitle = "All"
 
@@ -63,13 +62,13 @@ object MockDataProvider {
     fun createGenericResponse(responseCode: ApiResultCodes): GenericResponseDto = GenericResponseDto(responseCode.code)
 
     fun createPostDto(
-        href: String = URLEncoder.encode(mockUrlValid, AppConfig.API_ENCODING),
+        href: String = URLEncoder.encode(mockUrlValid, Pinboard.API_ENCODING),
         description: String? = mockUrlTitle,
         extended: String? = mockUrlDescription,
         hash: String = mockHash,
         time: String = mockTime,
-        shared: String = PinboardApiLiterals.YES,
-        toread: String = PinboardApiLiterals.NO,
+        shared: String = Pinboard.LITERAL_YES,
+        toread: String = Pinboard.LITERAL_NO,
         tags: String = mockTagsResponse,
         pendingSync: PendingSyncDto? = null,
     ): PostDto = PostDto(
@@ -85,13 +84,13 @@ object MockDataProvider {
     )
 
     fun createPostRemoteDto(
-        href: String = URLEncoder.encode(mockUrlValid, AppConfig.API_ENCODING),
+        href: String = URLEncoder.encode(mockUrlValid, Pinboard.API_ENCODING),
         description: String? = mockUrlTitle,
         extended: String? = mockUrlDescription,
         hash: String = mockHash,
         time: String = mockTime,
-        shared: String = PinboardApiLiterals.YES,
-        toread: String = PinboardApiLiterals.NO,
+        shared: String = Pinboard.LITERAL_YES,
+        toread: String = Pinboard.LITERAL_NO,
         tags: String = mockTagsResponse,
     ): PostRemoteDto = PostRemoteDto(
         href = href,

@@ -1,6 +1,6 @@
 package com.fibelatti.pinboard.features.appstate
 
-import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.bookmarking.core.Config
 import org.koin.core.annotation.Factory
 
 @Factory
@@ -44,7 +44,7 @@ class SearchActionHandler : ActionHandler<SearchAction>() {
     private fun addSearchTag(action: AddSearchTag, currentContent: Content): Content {
         return if (
             currentContent is SearchContent &&
-            currentContent.searchParameters.tags.size < AppConfig.DEFAULT_FILTER_MAX_TAGS &&
+            currentContent.searchParameters.tags.size < Config.DEFAULT_FILTER_MAX_TAGS &&
             currentContent.searchParameters.tags.none { it == action.tag }
         ) {
             val newSearchParameters = currentContent.searchParameters.copy(

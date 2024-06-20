@@ -3,7 +3,7 @@ package com.fibelatti.pinboard.features.posts.data
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
-import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.bookmarking.core.Config
 import com.fibelatti.pinboard.features.posts.data.model.POST_FTS_TABLE_NAME
 import com.fibelatti.pinboard.features.posts.data.model.POST_TABLE_NAME
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
@@ -98,13 +98,13 @@ interface PostsDao {
             "end"
 
         private const val WHERE_PUBLIC = "case " +
-            "when :publicPostsOnly = 1 then shared = '${AppConfig.PinboardApiLiterals.YES}' " +
-            "when :privatePostsOnly = 1 then shared = '${AppConfig.PinboardApiLiterals.NO}' " +
+            "when :publicPostsOnly = 1 then shared = '${Config.Pinboard.LITERAL_YES}' " +
+            "when :privatePostsOnly = 1 then shared = '${Config.Pinboard.LITERAL_NO}' " +
             "when :ignoreVisibility = 1 then 1 " +
             "end"
 
         private const val WHERE_READ_LATER = "case " +
-            "when :readLaterOnly = 1 then toread = '${AppConfig.PinboardApiLiterals.YES}' " +
+            "when :readLaterOnly = 1 then toread = '${Config.Pinboard.LITERAL_YES}' " +
             "else 1 " +
             "end"
 

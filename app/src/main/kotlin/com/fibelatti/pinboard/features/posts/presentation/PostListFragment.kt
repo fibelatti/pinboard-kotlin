@@ -6,12 +6,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import com.fibelatti.bookmarking.core.Config
 import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.AppConfig
-import com.fibelatti.pinboard.core.AppConfig.PINBOARD_USER_URL
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.applySecureFlag
@@ -134,8 +133,8 @@ class PostListFragment(
 
     private fun shareFilteredResults(searchParameters: SearchParameters) {
         val username = userRepository.getUsername()
-        val queryUrl = "$PINBOARD_USER_URL$username?query=${searchParameters.term}"
-        val tagsUrl = "$PINBOARD_USER_URL$username/${searchParameters.tags.joinToString { "t:${it.name}/" }}"
+        val queryUrl = "${Config.Pinboard.USER_URL}$username?query=${searchParameters.term}"
+        val tagsUrl = "${Config.Pinboard.USER_URL}$username/${searchParameters.tags.joinToString { "t:${it.name}/" }}"
 
         when {
             searchParameters.term.isNotBlank() && searchParameters.tags.isEmpty() -> {
@@ -281,7 +280,7 @@ class PostListFragment(
     }
 
     private fun buildPostCountSubTitle(count: Int, sortType: SortType): String {
-        val countFormatArg = if (count % AppConfig.API_PAGE_SIZE == 0) "$count+" else "$count"
+        val countFormatArg = if (count % Config.API_PAGE_SIZE == 0) "$count+" else "$count"
         val countString = resources.getQuantityString(R.plurals.posts_quantity, count, countFormatArg)
         return resources.getString(
             when (sortType) {

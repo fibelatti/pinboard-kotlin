@@ -3,9 +3,8 @@ package com.fibelatti.pinboard.features.posts.data.model
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.fibelatti.bookmarking.core.Config.Pinboard
 import com.fibelatti.core.functional.TwoWayMapper
-import com.fibelatti.pinboard.core.AppConfig.API_ENCODING
-import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
@@ -47,19 +46,19 @@ class PostDtoMapper(
         ).fold(href) { current, preparation -> preparation(current) }
 
         Post(
-            url = URLDecoder.decode(preparedUrl, API_ENCODING),
+            url = URLDecoder.decode(preparedUrl, Pinboard.API_ENCODING),
             title = description.orEmpty(),
             description = extended.orEmpty(),
             id = hash,
             time = time,
             formattedTime = dateFormatter.tzFormatToDisplayFormat(time),
-            private = shared == PinboardApiLiterals.NO,
-            readLater = toread == PinboardApiLiterals.YES,
+            private = shared == Pinboard.LITERAL_NO,
+            readLater = toread == Pinboard.LITERAL_YES,
             tags = if (tags.isBlank()) {
                 null
             } else {
                 tags.replaceHtmlChars()
-                    .split(PinboardApiLiterals.TAG_SEPARATOR)
+                    .split(Pinboard.TAG_SEPARATOR)
                     .sorted()
                     .map(::Tag)
             },
@@ -84,14 +83,14 @@ class PostDtoMapper(
 
     override fun mapReverse(param: Post): PostDto = with(param) {
         PostDto(
-            href = URLEncoder.encode(url, API_ENCODING),
+            href = URLEncoder.encode(url, Pinboard.API_ENCODING),
             description = title,
             extended = description,
             hash = id,
             time = time,
-            shared = if (private == true) PinboardApiLiterals.NO else PinboardApiLiterals.YES,
-            toread = if (readLater == true) PinboardApiLiterals.YES else PinboardApiLiterals.NO,
-            tags = tags?.joinToString(PinboardApiLiterals.TAG_SEPARATOR) { it.name }.orEmpty(),
+            shared = if (private == true) Pinboard.LITERAL_NO else Pinboard.LITERAL_YES,
+            toread = if (readLater == true) Pinboard.LITERAL_YES else Pinboard.LITERAL_NO,
+            tags = tags?.joinToString(Pinboard.TAG_SEPARATOR) { it.name }.orEmpty(),
             pendingSync = when (pendingSync) {
                 PendingSync.ADD -> PendingSyncDto.ADD
                 PendingSync.UPDATE -> PendingSyncDto.UPDATE

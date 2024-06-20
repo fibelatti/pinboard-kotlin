@@ -1,8 +1,8 @@
 package com.fibelatti.pinboard.features.posts.data.model
 
+import com.fibelatti.bookmarking.core.Config.Pinboard
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.createPostDto
-import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.google.common.truth.Truth.assertThat
@@ -96,27 +96,27 @@ class PostDtoMapperTest {
         @Test
         fun `GIVEN private is true WHEN map is called THEN PostDto is returned AND shared is no`() {
             assertThat(mapper.mapReverse(createPost(private = true)))
-                .isEqualTo(createPostDto(shared = PinboardApiLiterals.NO))
+                .isEqualTo(createPostDto(shared = Pinboard.LITERAL_NO))
         }
 
         @Test
         fun `GIVEN private is false WHEN map is called THEN PostDto is returned AND shared is yes`() {
             assertThat(mapper.mapReverse(createPost(private = false)))
                 .isEqualTo(
-                    createPostDto(shared = PinboardApiLiterals.YES),
+                    createPostDto(shared = Pinboard.LITERAL_YES),
                 )
         }
 
         @Test
         fun `GIVEN toread is true WHEN mapReverse is called THEN PostDto is returned AND toread is yes`() {
             assertThat(mapper.mapReverse(createPost(readLater = true)))
-                .isEqualTo(createPostDto(toread = PinboardApiLiterals.YES))
+                .isEqualTo(createPostDto(toread = Pinboard.LITERAL_YES))
         }
 
         @Test
         fun `GIVEN toread is false WHEN mapReverse is called THEN PostDto is returned AND toread is no`() {
             assertThat(mapper.mapReverse(createPost(readLater = false)))
-                .isEqualTo(createPostDto(toread = PinboardApiLiterals.NO))
+                .isEqualTo(createPostDto(toread = Pinboard.LITERAL_NO))
         }
 
         @Test

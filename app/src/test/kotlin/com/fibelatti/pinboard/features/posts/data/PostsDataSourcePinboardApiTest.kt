@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.posts.data
 
+import com.fibelatti.bookmarking.core.Config
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
@@ -25,8 +26,6 @@ import com.fibelatti.pinboard.MockDataProvider.mockTime
 import com.fibelatti.pinboard.MockDataProvider.mockUrlDescription
 import com.fibelatti.pinboard.MockDataProvider.mockUrlTitle
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
-import com.fibelatti.pinboard.core.AppConfig
-import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.extension.HTML_CHAR_MAP
 import com.fibelatti.pinboard.core.network.ApiException
@@ -149,7 +148,7 @@ class PostsDataSourcePinboardApiTest {
                     public = null,
                     readLater = null,
                     tags = mockTagsResponse,
-                    replace = AppConfig.PinboardApiLiterals.YES,
+                    replace = Config.Pinboard.LITERAL_YES,
                 )
             } throws Exception()
 
@@ -184,7 +183,7 @@ class PostsDataSourcePinboardApiTest {
                         public = null,
                         readLater = null,
                         tags = mockTagsResponse,
-                        replace = AppConfig.PinboardApiLiterals.YES,
+                        replace = Config.Pinboard.LITERAL_YES,
                     )
                 } returns createGenericResponse(ApiResultCodes.MISSING_URL)
 
@@ -223,7 +222,7 @@ class PostsDataSourcePinboardApiTest {
                             public = null,
                             readLater = null,
                             tags = mockTagsResponse,
-                            replace = AppConfig.PinboardApiLiterals.YES,
+                            replace = Config.Pinboard.LITERAL_YES,
                         )
                     } returns createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS)
                     coEvery { mockDao.getPost(mockUrlValid) } returns mockPostDto
@@ -260,7 +259,7 @@ class PostsDataSourcePinboardApiTest {
                             public = null,
                             readLater = null,
                             tags = mockTagsResponse,
-                            replace = AppConfig.PinboardApiLiterals.YES,
+                            replace = Config.Pinboard.LITERAL_YES,
                         )
                     } returns createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS)
                     coEvery { mockDao.getPost(mockUrlValid) } returns null
@@ -299,7 +298,7 @@ class PostsDataSourcePinboardApiTest {
                             public = null,
                             readLater = null,
                             tags = mockTagsResponse,
-                            replace = AppConfig.PinboardApiLiterals.YES,
+                            replace = Config.Pinboard.LITERAL_YES,
                         )
                     } returns createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS)
                     coEvery { mockDao.getPost(mockUrlValid) } returns null
@@ -361,7 +360,7 @@ class PostsDataSourcePinboardApiTest {
                         public = null,
                         readLater = null,
                         tags = mockTagsResponse,
-                        replace = AppConfig.PinboardApiLiterals.YES,
+                        replace = Config.Pinboard.LITERAL_YES,
                     )
                 } returns createGenericResponse(ApiResultCodes.DONE)
                 every { mockPostDtoMapper.mapReverse(expectedPost) } returns mockPostDto
@@ -390,7 +389,7 @@ class PostsDataSourcePinboardApiTest {
                     public = null,
                     readLater = null,
                     tags = expectedTags,
-                    replace = AppConfig.PinboardApiLiterals.YES,
+                    replace = Config.Pinboard.LITERAL_YES,
                 )
             } returns createGenericResponse(ApiResultCodes.DONE)
 
@@ -417,7 +416,7 @@ class PostsDataSourcePinboardApiTest {
                     public = null,
                     readLater = null,
                     tags = expectedTags,
-                    replace = AppConfig.PinboardApiLiterals.YES,
+                    replace = Config.Pinboard.LITERAL_YES,
                 )
             }
         }
@@ -427,16 +426,16 @@ class PostsDataSourcePinboardApiTest {
         fun `GIVEN the parameters THEN the expected api call parameters are sent`(testCases: Params) = runTest {
             // GIVEN
             val expectedPublic = when (testCases.private) {
-                true -> AppConfig.PinboardApiLiterals.NO
-                false -> AppConfig.PinboardApiLiterals.YES
+                true -> Config.Pinboard.LITERAL_NO
+                false -> Config.Pinboard.LITERAL_YES
                 else -> null
             }
             val expectedReadLater = when (testCases.readLater) {
-                true -> AppConfig.PinboardApiLiterals.YES
-                false -> AppConfig.PinboardApiLiterals.NO
+                true -> Config.Pinboard.LITERAL_YES
+                false -> Config.Pinboard.LITERAL_NO
                 else -> null
             }
-            val expectedReplace = AppConfig.PinboardApiLiterals.YES
+            val expectedReplace = Config.Pinboard.LITERAL_YES
 
             coEvery {
                 mockApi.add(
@@ -504,8 +503,8 @@ class PostsDataSourcePinboardApiTest {
 
             private val baseExpectedPost = createPostDto(
                 href = mockUrlValid,
-                shared = if (private) AppConfig.PinboardApiLiterals.NO else AppConfig.PinboardApiLiterals.YES,
-                toread = if (readLater) AppConfig.PinboardApiLiterals.YES else AppConfig.PinboardApiLiterals.NO,
+                shared = if (private) Config.Pinboard.LITERAL_NO else Config.Pinboard.LITERAL_YES,
+                toread = if (readLater) Config.Pinboard.LITERAL_YES else Config.Pinboard.LITERAL_NO,
             )
 
             @BeforeEach
@@ -854,7 +853,7 @@ class PostsDataSourcePinboardApiTest {
                 coEvery {
                     mockApi.getAllPosts(
                         offset = 0,
-                        limit = API_PAGE_SIZE,
+                        limit = Config.API_PAGE_SIZE,
                     )
                 } returns mockListPostRemoteDto
                 every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
@@ -877,7 +876,7 @@ class PostsDataSourcePinboardApiTest {
                 // THEN
                 assertThat(result.toList().map { it.getOrThrow() })
                     .isEqualTo(listOf(mockLocalData, mockUpToDateLocalData))
-                coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
+                coVerify { mockApi.getAllPosts(offset = 0, limit = Config.API_PAGE_SIZE) }
                 coVerify { mockDao.deleteAllSyncedPosts() }
                 coVerify { dataSource.savePosts(mockListPostDto) }
                 coVerify { mockUserRepository.lastUpdate = mockFutureTime }
@@ -920,11 +919,11 @@ class PostsDataSourcePinboardApiTest {
                 coEvery {
                     mockApi.getAllPosts(
                         offset = 0,
-                        limit = API_PAGE_SIZE,
+                        limit = Config.API_PAGE_SIZE,
                     )
                 } returns mockListPostRemoteDto
                 every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
-                every { mockListPostRemoteDto.size } returns API_PAGE_SIZE - 1
+                every { mockListPostRemoteDto.size } returns Config.API_PAGE_SIZE - 1
                 coEvery { dataSource.savePosts(any()) } returns Unit
 
                 // WHEN
@@ -944,7 +943,7 @@ class PostsDataSourcePinboardApiTest {
                 // THEN
                 assertThat(result.toList().map { it.getOrThrow() })
                     .isEqualTo(listOf(mockLocalData, mockUpToDateLocalData))
-                coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
+                coVerify { mockApi.getAllPosts(offset = 0, limit = Config.API_PAGE_SIZE) }
                 coVerify { mockDao.deleteAllSyncedPosts() }
                 coVerify { dataSource.savePosts(mockListPostDto) }
                 coVerify { mockUserRepository.lastUpdate = mockTime }
@@ -957,7 +956,7 @@ class PostsDataSourcePinboardApiTest {
                 coEvery {
                     mockApi.getAllPosts(
                         offset = 0,
-                        limit = API_PAGE_SIZE,
+                        limit = Config.API_PAGE_SIZE,
                     )
                 } throws Exception()
 
@@ -978,7 +977,7 @@ class PostsDataSourcePinboardApiTest {
                 // THEN
                 assertThat(result.toList().map { it.getOrThrow() })
                     .isEqualTo(listOf(mockLocalData, mockUpToDateLocalData))
-                coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
+                coVerify { mockApi.getAllPosts(offset = 0, limit = Config.API_PAGE_SIZE) }
                 coVerify(exactly = 0) { mockDao.deleteAllSyncedPosts() }
                 coVerify(exactly = 0) { mockDao.savePosts(any()) }
                 coVerify(exactly = 0) { mockUserRepository.lastUpdate = any() }
@@ -991,7 +990,7 @@ class PostsDataSourcePinboardApiTest {
                 coEvery {
                     mockApi.getAllPosts(
                         offset = 0,
-                        limit = API_PAGE_SIZE,
+                        limit = Config.API_PAGE_SIZE,
                     )
                 } returns mockListPostRemoteDto
                 coEvery { mockDao.deleteAllSyncedPosts() } throws Exception()
@@ -1013,7 +1012,7 @@ class PostsDataSourcePinboardApiTest {
                 // THEN
                 assertThat(result.toList().map { it.getOrThrow() })
                     .isEqualTo(listOf(mockLocalData, mockUpToDateLocalData))
-                coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
+                coVerify { mockApi.getAllPosts(offset = 0, limit = Config.API_PAGE_SIZE) }
                 coVerify { mockDao.deleteAllSyncedPosts() }
                 coVerify(exactly = 0) { mockDao.savePosts(any()) }
                 coVerify(exactly = 0) { mockUserRepository.lastUpdate = any() }
@@ -1026,7 +1025,7 @@ class PostsDataSourcePinboardApiTest {
                 coEvery {
                     mockApi.getAllPosts(
                         offset = 0,
-                        limit = API_PAGE_SIZE,
+                        limit = Config.API_PAGE_SIZE,
                     )
                 } returns mockListPostRemoteDto
                 every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
@@ -1049,7 +1048,7 @@ class PostsDataSourcePinboardApiTest {
                 // THEN
                 assertThat(result.toList().map { it.getOrThrow() })
                     .isEqualTo(listOf(mockLocalData, mockUpToDateLocalData))
-                coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
+                coVerify { mockApi.getAllPosts(offset = 0, limit = Config.API_PAGE_SIZE) }
                 coVerify { mockDao.deleteAllSyncedPosts() }
                 coVerify { dataSource.savePosts(mockListPostDto) }
                 verify(exactly = 0) { mockUserRepository.lastUpdate = any() }
@@ -1062,7 +1061,7 @@ class PostsDataSourcePinboardApiTest {
                 coEvery {
                     mockApi.getAllPosts(
                         offset = 0,
-                        limit = API_PAGE_SIZE,
+                        limit = Config.API_PAGE_SIZE,
                     )
                 } returns mockListPostRemoteDto
                 every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
@@ -1086,7 +1085,7 @@ class PostsDataSourcePinboardApiTest {
                 // THEN
                 assertThat(result.toList().map { it.getOrThrow() })
                     .isEqualTo(listOf(mockLocalData, mockUpToDateLocalData))
-                coVerify { mockApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
+                coVerify { mockApi.getAllPosts(offset = 0, limit = Config.API_PAGE_SIZE) }
                 coVerify { mockDao.deleteAllSyncedPosts() }
                 coVerify { dataSource.savePosts(mockListPostDto) }
                 coVerify { dataSource.getAdditionalPages(initialOffset = 1) }
@@ -1103,19 +1102,19 @@ class PostsDataSourcePinboardApiTest {
             // GIVEN
             coEvery {
                 mockApi.getAllPosts(
-                    offset = API_PAGE_SIZE,
-                    limit = API_PAGE_SIZE,
+                    offset = Config.API_PAGE_SIZE,
+                    limit = Config.API_PAGE_SIZE,
                 )
             } returns mockListPostRemoteDto
             every { mockPostRemoteDtoMapper.mapList(mockListPostRemoteDto) } returns mockListPostDto
             coEvery { dataSource.savePosts(any()) } returns Unit
 
             // WHEN
-            dataSource.getAdditionalPages(initialOffset = API_PAGE_SIZE)
+            dataSource.getAdditionalPages(initialOffset = Config.API_PAGE_SIZE)
 
             // THEN
             coVerify { dataSource.savePosts(mockListPostDto) }
-            coVerify { mockApi.getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
+            coVerify { mockApi.getAllPosts(offset = Config.API_PAGE_SIZE, limit = Config.API_PAGE_SIZE) }
         }
 
         @Test
@@ -1134,30 +1133,30 @@ class PostsDataSourcePinboardApiTest {
         fun `getAdditionalPages should run again if the next page is above the threshold`() = runTest {
             // GIVEN
             val mockResponse = mockk<List<PostRemoteDto>> {
-                every { size } returns API_PAGE_SIZE
+                every { size } returns Config.API_PAGE_SIZE
             }
             coEvery {
                 mockApi.getAllPosts(
-                    offset = API_PAGE_SIZE,
-                    limit = API_PAGE_SIZE,
+                    offset = Config.API_PAGE_SIZE,
+                    limit = Config.API_PAGE_SIZE,
                 )
             } returns mockResponse
             coEvery {
                 mockApi.getAllPosts(
-                    offset = API_PAGE_SIZE * 2,
-                    limit = API_PAGE_SIZE,
+                    offset = Config.API_PAGE_SIZE * 2,
+                    limit = Config.API_PAGE_SIZE,
                 )
             } returns emptyList()
             every { mockPostRemoteDtoMapper.mapList(mockResponse) } returns mockListPostDto
             coEvery { dataSource.savePosts(mockListPostDto) } returns Unit
 
             // WHEN
-            dataSource.getAdditionalPages(initialOffset = API_PAGE_SIZE)
+            dataSource.getAdditionalPages(initialOffset = Config.API_PAGE_SIZE)
 
             // THEN
             coVerify(exactly = 1) { dataSource.savePosts(mockListPostDto) }
-            coVerify { mockApi.getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
-            coVerify { mockApi.getAllPosts(offset = API_PAGE_SIZE * 2, limit = API_PAGE_SIZE) }
+            coVerify { mockApi.getAllPosts(offset = Config.API_PAGE_SIZE, limit = Config.API_PAGE_SIZE) }
+            coVerify { mockApi.getAllPosts(offset = Config.API_PAGE_SIZE * 2, limit = Config.API_PAGE_SIZE) }
             confirmVerified(mockApi)
         }
 
@@ -1166,16 +1165,16 @@ class PostsDataSourcePinboardApiTest {
             // GIVEN
             coEvery {
                 mockApi.getAllPosts(
-                    offset = API_PAGE_SIZE,
-                    limit = API_PAGE_SIZE,
+                    offset = Config.API_PAGE_SIZE,
+                    limit = Config.API_PAGE_SIZE,
                 )
             } returns mockk {
-                every { size } returns API_PAGE_SIZE
+                every { size } returns Config.API_PAGE_SIZE
             }
             coEvery {
                 mockApi.getAllPosts(
-                    offset = API_PAGE_SIZE * 2,
-                    limit = API_PAGE_SIZE,
+                    offset = Config.API_PAGE_SIZE * 2,
+                    limit = Config.API_PAGE_SIZE,
                 )
             } returns mockk {
                 every { size } returns 8000
@@ -1184,12 +1183,12 @@ class PostsDataSourcePinboardApiTest {
             coEvery { dataSource.savePosts(any()) } returns Unit
 
             // WHEN
-            dataSource.getAdditionalPages(initialOffset = API_PAGE_SIZE)
+            dataSource.getAdditionalPages(initialOffset = Config.API_PAGE_SIZE)
 
             // THEN
             coVerify(exactly = 2) { dataSource.savePosts(mockListPostDto) }
-            coVerify { mockApi.getAllPosts(offset = API_PAGE_SIZE, limit = API_PAGE_SIZE) }
-            coVerify { mockApi.getAllPosts(offset = API_PAGE_SIZE * 2, limit = API_PAGE_SIZE) }
+            coVerify { mockApi.getAllPosts(offset = Config.API_PAGE_SIZE, limit = Config.API_PAGE_SIZE) }
+            coVerify { mockApi.getAllPosts(offset = Config.API_PAGE_SIZE * 2, limit = Config.API_PAGE_SIZE) }
             confirmVerified(mockApi)
         }
     }

@@ -3,8 +3,8 @@ package com.fibelatti.pinboard.features.sync
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.fibelatti.bookmarking.core.Config
 import com.fibelatti.core.functional.Success
-import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
@@ -34,7 +34,7 @@ class SyncBookmarksWorker(
             postVisibility = PostVisibility.None,
             readLaterOnly = false,
             countLimit = -1,
-            pageLimit = AppConfig.DEFAULT_PAGE_SIZE,
+            pageLimit = Config.LOCAL_PAGE_SIZE,
             pageOffset = 0,
             forceRefresh = false,
         ).toList().all { it is Success }

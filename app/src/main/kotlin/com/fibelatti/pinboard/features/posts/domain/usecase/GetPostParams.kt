@@ -1,6 +1,6 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
-import com.fibelatti.pinboard.core.AppConfig.DEFAULT_PAGE_SIZE
+import com.fibelatti.bookmarking.core.Config.LOCAL_PAGE_SIZE
 import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
@@ -12,7 +12,7 @@ data class GetPostParams(
     val tags: Tags = Tags.None,
     val visibility: PostVisibility = PostVisibility.None,
     val readLater: Boolean = false,
-    val limit: Int = DEFAULT_PAGE_SIZE,
+    val limit: Int = LOCAL_PAGE_SIZE,
     val offset: Int = 0,
     val forceRefresh: Boolean = false,
 ) {

@@ -1,12 +1,12 @@
 package com.fibelatti.pinboard.features.posts.data
 
 import androidx.annotation.VisibleForTesting
+import com.fibelatti.bookmarking.core.Config
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
 import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.InvalidRequestException
@@ -44,9 +44,9 @@ class PostsDataSourceNoApi(
             extended = post.description,
             hash = existingPost?.hash ?: post.id.ifEmpty { UUID.randomUUID().toString() },
             time = existingPost?.time ?: post.time.ifEmpty { dateFormatter.nowAsTzFormat() },
-            shared = if (post.private == true) AppConfig.PinboardApiLiterals.NO else AppConfig.PinboardApiLiterals.YES,
-            toread = if (post.readLater == true) AppConfig.PinboardApiLiterals.YES else AppConfig.PinboardApiLiterals.NO,
-            tags = post.tags?.joinToString(AppConfig.PinboardApiLiterals.TAG_SEPARATOR) { it.name }
+            shared = if (post.private == true) Config.Pinboard.LITERAL_NO else Config.Pinboard.LITERAL_YES,
+            toread = if (post.readLater == true) Config.Pinboard.LITERAL_YES else Config.Pinboard.LITERAL_NO,
+            tags = post.tags?.joinToString(Config.Pinboard.TAG_SEPARATOR) { it.name }
                 .orEmpty(),
         )
 

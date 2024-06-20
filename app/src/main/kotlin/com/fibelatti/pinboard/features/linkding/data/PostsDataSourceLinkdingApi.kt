@@ -1,13 +1,13 @@
 package com.fibelatti.pinboard.features.linkding.data
 
 import androidx.annotation.VisibleForTesting
+import com.fibelatti.bookmarking.core.Config
 import com.fibelatti.core.extension.ifNullOrBlank
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onSuccess
-import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
 import com.fibelatti.pinboard.core.functional.resultFrom
@@ -175,7 +175,7 @@ class PostsDataSourceLinkdingApi(
     ) {
         pagedRequestsJob?.cancel()
 
-        val apiData = resultFromNetwork { linkdingApi.getBookmarks(offset = 0, limit = AppConfig.API_PAGE_SIZE) }
+        val apiData = resultFromNetwork { linkdingApi.getBookmarks(offset = 0, limit = Config.API_PAGE_SIZE) }
             .mapCatching { paginatedResponse ->
                 linkdingDao.deleteAllSyncedBookmarks()
                 linkdingDao.saveBookmarks(
@@ -194,14 +194,14 @@ class PostsDataSourceLinkdingApi(
 
     @VisibleForTesting
     suspend fun getAdditionalPages(totalCount: Int) = supervisorScope {
-        if (totalCount <= AppConfig.API_PAGE_SIZE) return@supervisorScope
+        if (totalCount <= Config.API_PAGE_SIZE) return@supervisorScope
 
         pagedRequestsJob = launch {
             runCatching {
-                for (currentOffset in AppConfig.API_PAGE_SIZE until totalCount step AppConfig.API_PAGE_SIZE) {
+                for (currentOffset in Config.API_PAGE_SIZE until totalCount step Config.API_PAGE_SIZE) {
                     val additionalPosts = linkdingApi.getBookmarks(
                         offset = currentOffset,
-                        limit = AppConfig.API_PAGE_SIZE,
+                        limit = Config.API_PAGE_SIZE,
                     )
 
                     linkdingDao.saveBookmarks(

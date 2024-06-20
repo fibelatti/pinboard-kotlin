@@ -1,9 +1,9 @@
 package com.fibelatti.pinboard.features.sync
 
 import androidx.work.ListenableWorker
+import com.fibelatti.bookmarking.core.Config
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
-import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
@@ -43,7 +43,7 @@ internal class SyncBookmarksWorkerTest {
                 postVisibility = PostVisibility.None,
                 readLaterOnly = false,
                 countLimit = -1,
-                pageLimit = AppConfig.DEFAULT_PAGE_SIZE,
+                pageLimit = Config.LOCAL_PAGE_SIZE,
                 pageOffset = 0,
                 forceRefresh = false,
             )
@@ -68,7 +68,7 @@ internal class SyncBookmarksWorkerTest {
                 postVisibility = PostVisibility.None,
                 readLaterOnly = false,
                 countLimit = -1,
-                pageLimit = AppConfig.DEFAULT_PAGE_SIZE,
+                pageLimit = Config.LOCAL_PAGE_SIZE,
                 pageOffset = 0,
                 forceRefresh = false,
             )

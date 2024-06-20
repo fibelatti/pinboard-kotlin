@@ -45,8 +45,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fibelatti.bookmarking.core.Config.LOCAL_PAGE_SIZE
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.AppConfig.DEFAULT_PAGE_SIZE
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
@@ -228,7 +228,7 @@ fun BookmarkListScreen(
                 derivedStateOf {
                     listState.layoutInfo.run {
                         visibleItemsInfo.isNotEmpty() &&
-                            visibleItemsInfo.last().index >= totalItemsCount - (DEFAULT_PAGE_SIZE / 2)
+                            visibleItemsInfo.last().index >= totalItemsCount - (LOCAL_PAGE_SIZE / 2)
                     }
                 }
             }

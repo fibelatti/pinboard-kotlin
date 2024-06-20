@@ -11,7 +11,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockTime2
 import com.fibelatti.pinboard.MockDataProvider.mockTime3
 import com.fibelatti.pinboard.MockDataProvider.mockTime4
 import com.fibelatti.pinboard.MockDataProvider.mockTime5
-import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.bookmarking.core.Config
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest
@@ -66,20 +66,20 @@ class PostsDaoTest : BaseDbTest() {
 
     private val postPublic = createPostDto(
         hash = randomHash(),
-        shared = AppConfig.PinboardApiLiterals.YES,
+        shared = Config.Pinboard.LITERAL_YES,
     )
     private val postPrivate = createPostDto(
         hash = randomHash(),
-        shared = AppConfig.PinboardApiLiterals.NO,
+        shared = Config.Pinboard.LITERAL_NO,
     )
 
     private val postReadLater = createPostDto(
         hash = randomHash(),
-        toread = AppConfig.PinboardApiLiterals.YES,
+        toread = Config.Pinboard.LITERAL_YES,
     )
     private val postNotReadLater = createPostDto(
         hash = randomHash(),
-        toread = AppConfig.PinboardApiLiterals.NO,
+        toread = Config.Pinboard.LITERAL_NO,
     )
 
     private val postFirst = createPostDto(hash = randomHash(), description = "A title", time = mockTime1)
@@ -136,8 +136,8 @@ class PostsDaoTest : BaseDbTest() {
     @Test
     fun givenEntryAlreadyExistsInDbWhenSavePostsIsCalledThenReplaceIsUsed() = runTest {
         // GIVEN
-        val original = createPostDto(toread = AppConfig.PinboardApiLiterals.YES)
-        val modified = createPostDto(toread = AppConfig.PinboardApiLiterals.NO)
+        val original = createPostDto(toread = Config.Pinboard.LITERAL_YES)
+        val modified = createPostDto(toread = Config.Pinboard.LITERAL_NO)
         val other = createPostDto(hash = "other-$mockHash")
         val another = createPostDto(hash = "another-$mockHash")
 

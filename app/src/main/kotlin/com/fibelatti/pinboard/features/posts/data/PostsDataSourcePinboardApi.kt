@@ -1,6 +1,8 @@
 package com.fibelatti.pinboard.features.posts.data
 
 import androidx.annotation.VisibleForTesting
+import com.fibelatti.bookmarking.core.Config
+import com.fibelatti.bookmarking.core.Config.Pinboard
 import com.fibelatti.core.extension.ifNullOrBlank
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
@@ -9,11 +11,6 @@ import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.getOrThrow
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.mapFailure
-import com.fibelatti.pinboard.core.AppConfig.API_BASE_URL_LENGTH
-import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
-import com.fibelatti.pinboard.core.AppConfig.MALFORMED_OBJECT_THRESHOLD
-import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
-import com.fibelatti.pinboard.core.AppConfig.PinboardApiMaxLength
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.extension.containsHtmlChars
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
@@ -102,16 +99,16 @@ class PostsDataSourcePinboardApi(
     }
 
     private suspend fun addPostRemote(post: Post): Result<Post> {
-        val trimmedTitle = post.title.take(PinboardApiMaxLength.TEXT_TYPE.value)
-        val publicLiteral = post.private?.let { if (it) PinboardApiLiterals.NO else PinboardApiLiterals.YES }
-        val readLaterLiteral = post.readLater?.let { if (it) PinboardApiLiterals.YES else PinboardApiLiterals.NO }
+        val trimmedTitle = post.title.take(Config.Pinboard.MaxLength.TEXT_TYPE.value)
+        val publicLiteral = post.private?.let { if (it) Pinboard.LITERAL_NO else Pinboard.LITERAL_YES }
+        val readLaterLiteral = post.readLater?.let { if (it) Pinboard.LITERAL_YES else Pinboard.LITERAL_NO }
         val trimmedTags = post.tags.orEmpty()
-            .joinToString(PinboardApiLiterals.TAG_SEPARATOR) { it.name }
-            .take(PinboardApiMaxLength.TEXT_TYPE.value)
-        val replaceLiteral = PinboardApiLiterals.YES
+            .joinToString(Pinboard.TAG_SEPARATOR) { it.name }
+            .take(Config.Pinboard.MaxLength.TEXT_TYPE.value)
+        val replaceLiteral = Pinboard.LITERAL_YES
 
         // The API abuses GET, this aims to avoid getting 414 errors
-        val currentLength = API_BASE_URL_LENGTH - post.url.length -
+        val currentLength = Pinboard.API_BASE_URL_LENGTH - post.url.length -
             trimmedTitle.length - (publicLiteral?.length ?: 0) - (readLaterLiteral?.length ?: 0) -
             trimmedTags.length - replaceLiteral.length
 
@@ -130,10 +127,10 @@ class PostsDataSourcePinboardApi(
         return resultFromNetwork {
             val result = withTimeout(SERVER_DOWN_TIMEOUT_LONG) {
                 try {
-                    add(PinboardApiMaxLength.URI.value - currentLength)
+                    add(Config.Pinboard.MaxLength.URI.value - currentLength)
                 } catch (httpException: ResponseException) {
                     if (HTTP_URI_TOO_LONG == httpException.response.status.value) {
-                        add(PinboardApiMaxLength.SAFE_URI.value - currentLength)
+                        add(Config.Pinboard.MaxLength.SAFE_URI.value - currentLength)
                     } else {
                         throw httpException
                     }
@@ -164,9 +161,9 @@ class PostsDataSourcePinboardApi(
             extended = post.description,
             hash = existingPost?.hash ?: post.id,
             time = existingPost?.time ?: post.time,
-            shared = if (post.private == true) PinboardApiLiterals.NO else PinboardApiLiterals.YES,
-            toread = if (post.readLater == true) PinboardApiLiterals.YES else PinboardApiLiterals.NO,
-            tags = post.tags.orEmpty().joinToString(PinboardApiLiterals.TAG_SEPARATOR) { it.name },
+            shared = if (post.private == true) Pinboard.LITERAL_NO else Pinboard.LITERAL_YES,
+            toread = if (post.readLater == true) Pinboard.LITERAL_YES else Pinboard.LITERAL_NO,
+            tags = post.tags.orEmpty().joinToString(Pinboard.TAG_SEPARATOR) { it.name },
             pendingSync = existingPost?.let { it.pendingSync ?: PendingSyncDto.UPDATE } ?: PendingSyncDto.ADD,
         )
 
@@ -248,7 +245,7 @@ class PostsDataSourcePinboardApi(
     ) {
         pagedRequestsJob?.cancel()
 
-        val apiData = resultFromNetwork { postsApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
+        val apiData = resultFromNetwork { postsApi.getAllPosts(offset = 0, limit = Config.API_PAGE_SIZE) }
             .mapApiRequestFailure(endpoint = "posts/all")
             .mapCatching { posts ->
                 postsDao.deleteAllSyncedPosts()
@@ -265,7 +262,7 @@ class PostsDataSourcePinboardApi(
 
     @VisibleForTesting
     suspend fun getAdditionalPages(initialOffset: Int) = supervisorScope {
-        if (API_PAGE_SIZE - initialOffset > MALFORMED_OBJECT_THRESHOLD) return@supervisorScope
+        if (Config.API_PAGE_SIZE - initialOffset > Pinboard.MALFORMED_OBJECT_THRESHOLD) return@supervisorScope
 
         pagedRequestsJob = launch {
             runCatching {
@@ -274,12 +271,12 @@ class PostsDataSourcePinboardApi(
                 while (currentOffset != 0) {
                     val additionalPosts = postsApi.getAllPosts(
                         offset = currentOffset,
-                        limit = API_PAGE_SIZE,
+                        limit = Config.API_PAGE_SIZE,
                     )
 
                     savePosts(postRemoteDtoMapper.mapList(additionalPosts))
 
-                    if (API_PAGE_SIZE - additionalPosts.size < MALFORMED_OBJECT_THRESHOLD) {
+                    if (Config.API_PAGE_SIZE - additionalPosts.size < Pinboard.MALFORMED_OBJECT_THRESHOLD) {
                         currentOffset += additionalPosts.size
                     } else {
                         currentOffset = 0
