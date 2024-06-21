@@ -378,9 +378,9 @@ private fun BookmarkItem(
         Column(
             modifier = Modifier.padding(all = 8.dp),
         ) {
-            if (post.pendingSync != null) {
+            post.pendingSync?.let {
                 PendingSyncIndicator(
-                    text = when (post.pendingSync) {
+                    text = when (it) {
                         PendingSync.ADD -> stringResource(id = R.string.posts_pending_add)
                         PendingSync.UPDATE -> stringResource(id = R.string.posts_pending_update)
                         PendingSync.DELETE -> stringResource(id = R.string.posts_pending_delete)
@@ -415,11 +415,11 @@ private fun BookmarkItem(
                 )
             }
 
-            if (AppMode.LINKDING == appMode && !post.notes.isNullOrBlank()) {
+            post.notes?.takeIf { AppMode.LINKDING == appMode && it.isNotEmpty() }?.let {
                 HorizontalDivider(color = MaterialTheme.colorScheme.onSurface)
 
                 TextWithBlockquote(
-                    text = post.notes,
+                    text = it,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
@@ -437,14 +437,12 @@ private fun BookmarkItem(
                 )
             }
 
-            if (!post.tags.isNullOrEmpty()) {
-                val tags = remember(post.tags) {
-                    post.tags.map { tag -> ChipGroup.Item(text = tag.name) }
-                }
+            post.tags?.takeIf { it.isNotEmpty() }?.let {
+                val tags = remember(it) { it.map { tag -> ChipGroup.Item(text = tag.name) } }
 
                 MultilineChipGroup(
                     items = tags,
-                    onItemClick = { item -> onTagClicked(post.tags.first { tag -> tag.name == item.text }) },
+                    onItemClick = { item -> onTagClicked(it.first { tag -> tag.name == item.text }) },
                     modifier = Modifier.padding(top = 8.dp),
                     itemTonalElevation = 16.dp,
                 )

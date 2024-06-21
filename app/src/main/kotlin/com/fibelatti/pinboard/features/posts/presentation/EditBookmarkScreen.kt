@@ -233,9 +233,9 @@ private fun BookmarkContent(
             .navigationBarsPaddingCompat()
             .imePaddingCompat(),
     ) {
-        if (post.pendingSync != null) {
+        post.pendingSync?.let {
             PendingSyncIndicator(
-                text = when (post.pendingSync) {
+                text = when (it) {
                     PendingSync.ADD -> stringResource(id = R.string.posts_pending_add_expanded)
                     PendingSync.UPDATE -> stringResource(id = R.string.posts_pending_update_expanded)
                     PendingSync.DELETE -> stringResource(id = R.string.posts_pending_delete_expanded)

@@ -207,10 +207,9 @@ private fun PopularBookmarkItem(
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
             )
 
-            if (post.tags != null) {
-                val items = remember(post.tags) {
-                    post.tags.map { tag -> ChipGroup.Item(text = tag.name) }
-                }
+            post.tags?.let {
+                val items = remember(it) { it.map { tag -> ChipGroup.Item(text = tag.name) } }
+
                 MultilineChipGroup(
                     items = items,
                     onItemClick = {},
