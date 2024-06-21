@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.posts.data
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.bookmarking.core.Config
 import com.fibelatti.bookmarking.core.Config.Pinboard
+import com.fibelatti.bookmarking.core.network.PinboardApiResultCode
 import com.fibelatti.core.extension.ifNullOrBlank
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
@@ -16,7 +17,6 @@ import com.fibelatti.pinboard.core.extension.containsHtmlChars
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
 import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.ApiException
-import com.fibelatti.pinboard.core.network.ApiResultCodes
 import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.core.network.resultFromNetwork
 import com.fibelatti.pinboard.core.util.DateFormatter
@@ -138,7 +138,7 @@ class PostsDataSourcePinboardApi(
             }
 
             when (result.resultCode) {
-                ApiResultCodes.DONE.code -> {
+                PinboardApiResultCode.DONE.value -> {
                     postsDao.deletePendingSyncPost(post.url)
 
                     savePosts(listOf(postDtoMapper.mapReverse(post)))
@@ -146,7 +146,7 @@ class PostsDataSourcePinboardApi(
                     return@resultFromNetwork post
                 }
 
-                ApiResultCodes.ITEM_ALREADY_EXISTS.code -> getPost(id = "", url = post.url).getOrThrow()
+                PinboardApiResultCode.ITEM_ALREADY_EXISTS.value -> getPost(id = "", url = post.url).getOrThrow()
                 else -> throw ApiException(result.resultCode)
             }
         }
@@ -181,7 +181,7 @@ class PostsDataSourcePinboardApi(
     private suspend fun deletePostRemote(url: String): Result<Unit> = resultFromNetwork {
         postsApi.delete(url)
     }.mapCatching { result ->
-        if (result.resultCode == ApiResultCodes.DONE.code) {
+        if (result.resultCode == PinboardApiResultCode.DONE.value) {
             postsDao.deletePost(url)
         } else {
             throw ApiException(result.resultCode)

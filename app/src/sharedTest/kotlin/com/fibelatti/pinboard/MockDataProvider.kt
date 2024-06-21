@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard
 
 import com.fibelatti.bookmarking.core.Config.Pinboard
-import com.fibelatti.pinboard.core.network.ApiResultCodes
+import com.fibelatti.bookmarking.core.network.PinboardApiResultCode
 import com.fibelatti.pinboard.features.linkding.data.BookmarkLocal
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.GetPostDto
@@ -59,7 +59,7 @@ object MockDataProvider {
     // endregion
 
     // region Data classes
-    fun createGenericResponse(responseCode: ApiResultCodes): GenericResponseDto = GenericResponseDto(responseCode.code)
+    fun createGenericResponse(responseCode: PinboardApiResultCode): GenericResponseDto = GenericResponseDto(responseCode.value)
 
     fun createPostDto(
         href: String = URLEncoder.encode(mockUrlValid, Pinboard.API_ENCODING),

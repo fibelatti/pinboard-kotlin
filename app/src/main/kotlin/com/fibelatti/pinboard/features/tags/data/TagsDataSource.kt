@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.tags.data
 
+import com.fibelatti.bookmarking.core.network.PinboardApiResultCode
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.Success
@@ -11,7 +12,6 @@ import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.ApiException
-import com.fibelatti.pinboard.core.network.ApiResultCodes
 import com.fibelatti.pinboard.core.network.resultFromNetwork
 import com.fibelatti.pinboard.features.posts.data.PostsDao
 import com.fibelatti.pinboard.features.tags.domain.TagsRepository
@@ -61,7 +61,7 @@ class TagsDataSource(
     ): Result<List<Tag>> = resultFromNetwork {
         tagsApi.renameTag(oldName = oldName, newName = newName)
     }.map { response ->
-        if (response.result == ApiResultCodes.DONE.code) {
+        if (response.result == PinboardApiResultCode.DONE.value) {
             localTags = localTags?.map { tag -> if (tag.name == oldName) tag.copy(name = newName) else tag }
             localTags?.let(::Success) ?: getRemoteTags()
         } else {

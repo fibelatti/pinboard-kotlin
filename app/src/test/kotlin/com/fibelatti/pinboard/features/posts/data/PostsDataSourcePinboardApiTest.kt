@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.posts.data
 
 import com.fibelatti.bookmarking.core.Config
+import com.fibelatti.bookmarking.core.network.PinboardApiResultCode
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
@@ -29,7 +30,6 @@ import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.extension.HTML_CHAR_MAP
 import com.fibelatti.pinboard.core.network.ApiException
-import com.fibelatti.pinboard.core.network.ApiResultCodes
 import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.appstate.NewestFirst
@@ -185,7 +185,7 @@ class PostsDataSourcePinboardApiTest {
                         tags = mockTagsResponse,
                         replace = Config.Pinboard.LITERAL_YES,
                     )
-                } returns createGenericResponse(ApiResultCodes.MISSING_URL)
+                } returns createGenericResponse(PinboardApiResultCode.MISSING_URL)
 
                 // WHEN
                 val result = dataSource.add(
@@ -224,7 +224,7 @@ class PostsDataSourcePinboardApiTest {
                             tags = mockTagsResponse,
                             replace = Config.Pinboard.LITERAL_YES,
                         )
-                    } returns createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS)
+                    } returns createGenericResponse(PinboardApiResultCode.ITEM_ALREADY_EXISTS)
                     coEvery { mockDao.getPost(mockUrlValid) } returns mockPostDto
                     every { mockPostDtoMapper.map(mockPostDto) } returns mockPost
 
@@ -261,7 +261,7 @@ class PostsDataSourcePinboardApiTest {
                             tags = mockTagsResponse,
                             replace = Config.Pinboard.LITERAL_YES,
                         )
-                    } returns createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS)
+                    } returns createGenericResponse(PinboardApiResultCode.ITEM_ALREADY_EXISTS)
                     coEvery { mockDao.getPost(mockUrlValid) } returns null
                     coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto(posts = mockListPostRemoteDto)
                     every { mockPostRemoteDtoMapper.map(mockPostRemoteDto) } returns mockPostDto
@@ -300,7 +300,7 @@ class PostsDataSourcePinboardApiTest {
                             tags = mockTagsResponse,
                             replace = Config.Pinboard.LITERAL_YES,
                         )
-                    } returns createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS)
+                    } returns createGenericResponse(PinboardApiResultCode.ITEM_ALREADY_EXISTS)
                     coEvery { mockDao.getPost(mockUrlValid) } returns null
                     coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto(posts = emptyList())
                     every { mockPostRemoteDtoMapper.mapList(emptyList()) } returns emptyList()
@@ -362,7 +362,7 @@ class PostsDataSourcePinboardApiTest {
                         tags = mockTagsResponse,
                         replace = Config.Pinboard.LITERAL_YES,
                     )
-                } returns createGenericResponse(ApiResultCodes.DONE)
+                } returns createGenericResponse(PinboardApiResultCode.DONE)
                 every { mockPostDtoMapper.mapReverse(expectedPost) } returns mockPostDto
                 coEvery { dataSource.savePosts(listOf(mockPostDto)) } returns Unit
 
@@ -391,7 +391,7 @@ class PostsDataSourcePinboardApiTest {
                     tags = expectedTags,
                     replace = Config.Pinboard.LITERAL_YES,
                 )
-            } returns createGenericResponse(ApiResultCodes.DONE)
+            } returns createGenericResponse(PinboardApiResultCode.DONE)
 
             // WHEN
             dataSource.add(
@@ -447,7 +447,7 @@ class PostsDataSourcePinboardApiTest {
                     tags = mockTagsResponse,
                     replace = expectedReplace,
                 )
-            } returns createGenericResponse(ApiResultCodes.DONE)
+            } returns createGenericResponse(PinboardApiResultCode.DONE)
 
             // WHEN
             dataSource.add(
@@ -646,7 +646,7 @@ class PostsDataSourcePinboardApiTest {
         fun `GIVEN that the api returns 200 but the result code is not DONE WHEN delete is called THEN Failure is returned`() =
             runTest {
                 // GIVEN
-                coEvery { mockApi.delete(mockUrlValid) } returns createGenericResponse(ApiResultCodes.MISSING_URL)
+                coEvery { mockApi.delete(mockUrlValid) } returns createGenericResponse(PinboardApiResultCode.MISSING_URL)
 
                 // WHEN
                 val result = dataSource.delete(id = "", url = mockUrlValid)
@@ -662,7 +662,7 @@ class PostsDataSourcePinboardApiTest {
         fun `GIVEN that the api returns 200 and the result code is DONE WHEN delete is called THEN Success is returned`() =
             runTest {
                 // GIVEN
-                coEvery { mockApi.delete(mockUrlValid) } returns createGenericResponse(ApiResultCodes.DONE)
+                coEvery { mockApi.delete(mockUrlValid) } returns createGenericResponse(PinboardApiResultCode.DONE)
                 coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
                 coEvery { mockDao.deletePost(mockUrlValid) } just Runs
 
