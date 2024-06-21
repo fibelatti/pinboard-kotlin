@@ -18,10 +18,10 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.ComposeBottomSheetDialog
 import com.fibelatti.pinboard.core.android.composable.TextWithBlockquote
-import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.components.TextWithLinks
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme

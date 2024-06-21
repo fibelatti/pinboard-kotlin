@@ -4,6 +4,9 @@ import androidx.annotation.VisibleForTesting
 import com.fibelatti.bookmarking.core.Config
 import com.fibelatti.bookmarking.core.Config.Pinboard
 import com.fibelatti.bookmarking.core.network.PinboardApiResultCode
+import com.fibelatti.bookmarking.features.posts.domain.model.Post
+import com.fibelatti.bookmarking.features.posts.domain.model.PostListResult
+import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.core.extension.ifNullOrBlank
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
@@ -28,9 +31,6 @@ import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
 import com.fibelatti.pinboard.features.posts.data.model.PostRemoteDtoMapper
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
-import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
-import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.Job

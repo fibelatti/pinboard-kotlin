@@ -1,6 +1,6 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
-import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.bookmarking.features.posts.domain.model.Post
 
 val knownFileExtensions = listOf(
     "pdf",

@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import androidx.fragment.app.commitNow
+import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.core.android.extension.createFragment
 import com.fibelatti.core.android.platform.fragmentArgs
 import com.fibelatti.pinboard.R
@@ -23,7 +24,6 @@ import com.fibelatti.pinboard.features.MainActivity.Companion.fromBuilder
 import com.fibelatti.pinboard.features.filters.presentation.SavedFiltersFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteListFragment
-import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.presentation.EditPostFragment
 import com.fibelatti.pinboard.features.posts.presentation.PopularPostsFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostDetailFragment

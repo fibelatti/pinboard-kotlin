@@ -1,13 +1,13 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
 import com.fibelatti.bookmarking.core.Config.DEFAULT_RECENT_QUANTITY
+import com.fibelatti.bookmarking.features.posts.domain.model.PostListResult
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.MockDataProvider.mockTags
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
-import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

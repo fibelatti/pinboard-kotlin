@@ -1,10 +1,10 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
+import com.fibelatti.bookmarking.features.posts.domain.model.Post
+import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.UseCase
 import com.fibelatti.core.functional.catching
-import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText

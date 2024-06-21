@@ -2,6 +2,9 @@ package com.fibelatti.pinboard.features.linkding.data
 
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.bookmarking.core.Config
+import com.fibelatti.bookmarking.features.posts.domain.model.Post
+import com.fibelatti.bookmarking.features.posts.domain.model.PostListResult
+import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.core.extension.ifNullOrBlank
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.catching
@@ -17,9 +20,6 @@ import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
-import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
-import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector

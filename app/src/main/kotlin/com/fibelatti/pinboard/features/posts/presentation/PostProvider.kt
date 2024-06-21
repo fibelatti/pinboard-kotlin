@@ -3,9 +3,9 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
-import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import com.fibelatti.bookmarking.features.posts.domain.model.PendingSync
+import com.fibelatti.bookmarking.features.posts.domain.model.Post
+import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import java.util.Random
 
 private val LOREM_IPSUM_SOURCE: String = """

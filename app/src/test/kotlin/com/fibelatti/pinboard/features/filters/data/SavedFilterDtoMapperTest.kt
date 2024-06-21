@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.features.filters.data
 
+import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
-import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test

@@ -3,8 +3,8 @@
 package com.fibelatti.pinboard.features.filters.presentation
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
-import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import java.util.Random
 
 private val LOREM_IPSUM_SOURCE: String = """

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.core.android.extension.navigateBack
 import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.pinboard.R
@@ -15,7 +16,6 @@ import com.fibelatti.pinboard.core.extension.copyToClipboard
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
-import com.fibelatti.pinboard.features.posts.domain.model.Post
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

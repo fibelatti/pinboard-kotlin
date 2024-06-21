@@ -2,15 +2,15 @@ package com.fibelatti.pinboard
 
 import com.fibelatti.bookmarking.core.Config.Pinboard
 import com.fibelatti.bookmarking.core.network.PinboardApiResultCode
+import com.fibelatti.bookmarking.features.posts.domain.model.PendingSync
+import com.fibelatti.bookmarking.features.posts.domain.model.Post
+import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.linkding.data.BookmarkLocal
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.GetPostDto
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostRemoteDto
-import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
-import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import java.net.URLEncoder
 
 object MockDataProvider {

@@ -1,10 +1,9 @@
 package com.fibelatti.pinboard.features.tags.presentation
 
 import androidx.annotation.StringRes
-import androidx.compose.runtime.Stable
+import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
-import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -50,7 +49,6 @@ class TagManagerViewModel : BaseViewModel() {
         _state.update { current -> current.copy(currentQuery = value) }
     }
 
-    @Stable
     data class State(
         val tags: List<Tag> = emptyList(),
         val suggestedTags: List<String> = emptyList(),

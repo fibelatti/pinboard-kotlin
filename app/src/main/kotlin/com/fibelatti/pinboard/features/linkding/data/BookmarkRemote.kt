@@ -1,9 +1,9 @@
 package com.fibelatti.pinboard.features.linkding.data
 
+import com.fibelatti.bookmarking.features.posts.domain.model.Post
+import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.core.functional.Mapper
 import com.fibelatti.pinboard.core.util.DateFormatter
-import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.koin.core.annotation.Factory

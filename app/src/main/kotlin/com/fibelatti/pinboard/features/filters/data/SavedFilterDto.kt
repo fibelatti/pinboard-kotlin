@@ -1,10 +1,10 @@
 package com.fibelatti.pinboard.features.filters.data
 
 import androidx.room.Entity
+import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.core.functional.TwoWayMapper
 import com.fibelatti.pinboard.features.filters.data.SavedFilterDto.Companion.TABLE_NAME
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
-import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import org.koin.core.annotation.Factory
 
 @Entity(

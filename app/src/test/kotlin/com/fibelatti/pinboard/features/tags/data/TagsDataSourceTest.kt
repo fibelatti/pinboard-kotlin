@@ -1,12 +1,12 @@
 package com.fibelatti.pinboard.features.tags.data
 
+import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.features.posts.data.PostsDao
-import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.every

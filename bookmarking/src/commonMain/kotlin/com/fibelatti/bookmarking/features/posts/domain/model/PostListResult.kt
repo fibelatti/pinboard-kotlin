@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.posts.domain.model
+package com.fibelatti.bookmarking.features.posts.domain.model
 
 /**
  * A model to wrap loaded bookmarks.
@@ -8,7 +8,7 @@ package com.fibelatti.pinboard.features.posts.domain.model
  * @param upToDate true if the content is up-to-date with the server, false otherwise
  * @param canPaginate true if there might be more content pages available, false otherwise
  */
-data class PostListResult(
+public data class PostListResult(
     val posts: List<Post>,
     val totalCount: Int,
     val upToDate: Boolean,

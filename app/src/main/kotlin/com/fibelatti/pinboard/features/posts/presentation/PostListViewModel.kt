@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.posts.presentation
 
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.viewModelScope
+import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
@@ -25,7 +26,6 @@ import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetAllPosts
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPostParams
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
-import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach

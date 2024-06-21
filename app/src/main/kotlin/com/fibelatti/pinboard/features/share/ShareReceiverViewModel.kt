@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.share
 
 import androidx.annotation.StringRes
+import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.core.functional.ScreenState
 import com.fibelatti.core.functional.emitError
 import com.fibelatti.core.functional.emitLoaded
@@ -15,7 +16,6 @@ import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.EditPostFromShare
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
-import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.ExtractUrl
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetUrlPreview

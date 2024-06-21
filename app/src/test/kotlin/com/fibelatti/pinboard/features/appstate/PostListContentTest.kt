@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.features.appstate
 
+import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.pinboard.MockDataProvider.createPost
-import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.google.common.truth.Truth.assertThat
 import io.mockk.mockk
 import org.junit.jupiter.api.Test

@@ -1,10 +1,10 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
 import com.fibelatti.bookmarking.core.Config.LOCAL_PAGE_SIZE
+import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
-import com.fibelatti.pinboard.features.tags.domain.model.Tag
 
 data class GetPostParams(
     val sorting: SortType = NewestFirst,

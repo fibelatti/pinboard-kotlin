@@ -1,8 +1,8 @@
 package com.fibelatti.pinboard.features.tags.presentation
 
+import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.collectIn
-import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.runUnconfinedTest
 import com.google.common.truth.Truth.assertThat
 import io.mockk.mockk
