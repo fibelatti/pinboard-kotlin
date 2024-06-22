@@ -55,21 +55,6 @@ class TagsDataSourceTest {
         }
 
         @Test
-        fun `GIVEN getTags returns a map with an invalid value WHEN getAllTags is called THEN Failure is returned`() =
-            runTest {
-                // GIVEN
-                coEvery { mockApi.getTags() } returns mapOf("tag" to "a")
-
-                // WHEN
-                val result = dataSource.getAllTags().toList()
-
-                // THEN
-                assertThat(result).hasSize(2)
-                assertThat(result[0].getOrNull()).isEmpty()
-                assertThat(result[1].exceptionOrNull()).isInstanceOf(NumberFormatException::class.java)
-            }
-
-        @Test
         fun `GIVEN getTags returns an empty map WHEN getAllTags is called THEN Success is returned`() = runTest {
             // GIVEN
             coEvery { mockApi.getTags() } returns emptyMap()
@@ -86,7 +71,7 @@ class TagsDataSourceTest {
         @Test
         fun `WHEN getAllTags is called THEN Success is returned`() = runTest {
             // GIVEN
-            coEvery { mockApi.getTags() } returns mapOf("tag" to "1")
+            coEvery { mockApi.getTags() } returns mapOf("tag" to 1)
 
             // WHEN
             val result = dataSource.getAllTags().toList()
@@ -165,7 +150,7 @@ class TagsDataSourceTest {
         fun `WHEN the result is done THEN the tags are returned`() = runTest {
             // GIVEN
             coEvery { mockApi.renameTag(any(), any()) } returns RenameTagResponseDto(result = "done")
-            coEvery { mockApi.getTags() } returns mapOf("new-name" to "1")
+            coEvery { mockApi.getTags() } returns mapOf("new-name" to 1)
 
             // WHEN
             val result = dataSource.renameTag(oldName = "old-name", newName = "new-name")

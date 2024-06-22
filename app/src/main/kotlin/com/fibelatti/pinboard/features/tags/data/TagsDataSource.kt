@@ -50,7 +50,7 @@ class TagsDataSource @Inject constructor(
         tagsApi.getTags()
     }.mapCatching { tagsAndPostCount ->
         tagsAndPostCount
-            .map { (tag, postCount) -> Tag(tag, postCount.toInt()) }
+            .map { (tag, postCount) -> Tag(tag, postCount) }
             .sortedBy { it.name }
     }
 

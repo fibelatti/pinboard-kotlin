@@ -7,7 +7,7 @@ import retrofit2.http.Query
 interface TagsApi {
 
     @GET("tags/get")
-    suspend fun getTags(): Map<String, String>
+    suspend fun getTags(): Map<String, Int>
 
     @GET("tags/rename")
     suspend fun renameTag(
