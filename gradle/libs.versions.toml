@@ -4,6 +4,7 @@ coroutines = "1.8.1"
 hilt = "2.51.1"
 hiltExtensions = "1.2.0"
 kotlin = "2.0.0"
+activity = "1.9.0"
 lifecycle = "2.8.2"
 okhttp = "4.12.0"
 retrofit = "2.11.0"
@@ -21,7 +22,8 @@ coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-androi
 
 appcompat = { module = "androidx.appcompat:appcompat", version = "1.7.0" }
 core-ktx = { module = "androidx.core:core-ktx", version = "1.13.1" }
-activity = { module = "androidx.activity:activity", version = "1.9.0" }
+activity = { module = "androidx.activity:activity", version.ref = "activity" }
+activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity" }
 fragment-ktx = { module = "androidx.fragment:fragment-ktx", version = "1.8.0" }
 transition-ktx = { module = "androidx.transition:transition-ktx", version = "1.5.0" }
 material = { module = "com.google.android.material:material", version = "1.12.0" }

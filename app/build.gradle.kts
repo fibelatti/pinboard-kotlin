@@ -184,6 +184,7 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.core.ktx)
     implementation(libs.activity)
+    implementation(libs.activity.compose)
     implementation(libs.fragment.ktx)
     implementation(libs.transition.ktx)
     implementation(libs.material)
