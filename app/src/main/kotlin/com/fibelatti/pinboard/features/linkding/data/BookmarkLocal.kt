@@ -51,7 +51,7 @@ class BookmarkLocalMapper(
             description = description,
             id = id,
             time = dateModified,
-            formattedTime = dateFormatter.tzFormatToDisplayFormat(dateModified) ?: dateModified,
+            formattedTime = dateFormatter.tzFormatToDisplayFormat(dateModified),
             private = shared == false,
             readLater = unread == true,
             tags = tagNames?.ifBlank { null }?.split(" ")?.sorted()?.map(::Tag),

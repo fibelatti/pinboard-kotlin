@@ -175,6 +175,7 @@ dependencies {
     implementation(libs.kotlin)
     implementation(libs.kotlin.reflect)
     implementation(libs.kotlin.serialization)
+    implementation(libs.kotlin.datetime)
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)
 
