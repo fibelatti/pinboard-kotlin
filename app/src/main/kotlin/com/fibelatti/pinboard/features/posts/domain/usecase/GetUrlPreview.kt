@@ -41,7 +41,7 @@ class GetUrlPreview @Inject constructor(
             .url(params.url)
             .apply {
                 // Prevent async loading of metadata
-                if (params.url.contains("twitter.com")) {
+                if (params.url.run { contains("twitter.com.") || contains("x.com") }) {
                     header(
                         name = "User-Agent",
                         value = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://google.com/bot.html)",
