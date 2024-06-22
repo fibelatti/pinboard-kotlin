@@ -209,6 +209,7 @@ val androidAppModule = module {
         SyncBookmarksWorker(
             context = get(),
             workerParams = get(),
+            userDataSource = get(),
             postsRepository = get(),
         )
     }

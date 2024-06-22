@@ -44,7 +44,6 @@ class AuthViewModel(
             return
         }
 
-
         launch {
             _screenState.value = ScreenState(isLoading = true)
 

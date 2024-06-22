@@ -14,6 +14,7 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.accept
 import io.ktor.client.request.header
 import io.ktor.http.ContentType
+import io.ktor.http.URLProtocol
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -32,10 +33,15 @@ val testPinboardModule = module {
         val httpClient: HttpClient = get(named("base"))
         val userSharedPreferences: UserSharedPreferences = get()
         val unauthorizedPluginProvider: UnauthorizedPluginProvider = get()
+        val mockServerUrl = PinboardMockServer.instance.url("/")
 
         httpClient.config {
             defaultRequest {
-                url(PinboardMockServer.instance.url("/").toString()) {
+                url {
+                    protocol = URLProtocol.HTTP
+                    host = mockServerUrl.host
+                    port = mockServerUrl.port
+
                     parameters.append(name = "format", value = "json")
                     parameters.append(name = "auth_token", value = userSharedPreferences.authToken)
                 }
@@ -52,10 +58,15 @@ val testLinkdingModule = module {
         val httpClient: HttpClient = get(named("base"))
         val userSharedPreferences: UserSharedPreferences = get()
         val unauthorizedPluginProvider: UnauthorizedPluginProvider = get()
+        val mockServerUrl = LinkdingMockServer.instance.url("/")
 
         httpClient.config {
             defaultRequest {
-                url(LinkdingMockServer.instance.url("/").toString())
+                url {
+                    protocol = URLProtocol.HTTP
+                    host = mockServerUrl.host
+                    port = mockServerUrl.port
+                }
                 header("Authorization", "Token ${userSharedPreferences.authToken}")
                 accept(ContentType.Application.Json)
             }
