@@ -9,6 +9,7 @@ import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
+import com.fibelatti.pinboard.features.user.data.UserDataSource
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.toList
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.toList
 class SyncBookmarksWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
+    private val userDataSource: UserDataSource,
     private val postsRepository: PostsRepository,
 ) : CoroutineWorker(context, workerParams) {
 
@@ -26,6 +28,8 @@ class SyncBookmarksWorker @AssistedInject constructor(
     }
 
     override suspend fun doWork(): Result {
+        if (!userDataSource.hasAuthToken()) return Result.success()
+
         val success = postsRepository.getAllPosts(
             sortType = NewestFirst,
             searchTerm = "",

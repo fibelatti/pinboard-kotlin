@@ -126,27 +126,29 @@ private fun AuthScreen(
                 )
 
                 AnimatedVisibility(visible = useLinkding) {
-                    OutlinedTextField(
-                        value = instanceUrl,
-                        onValueChange = { instanceUrl = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp),
-                        label = { Text(text = stringResource(id = R.string.auth_linkding_instance_url)) },
-                        isError = instanceUrlError != null,
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Uri),
-                        keyboardActions = KeyboardActions { focusManager.moveFocus(FocusDirection.Next) },
-                        singleLine = true,
-                        maxLines = 1,
-                    )
-
-                    if (instanceUrlError != null) {
-                        Text(
-                            text = instanceUrlError,
-                            modifier = Modifier.padding(top = 4.dp),
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodySmall,
+                    Column {
+                        OutlinedTextField(
+                            value = instanceUrl,
+                            onValueChange = { instanceUrl = it },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp),
+                            label = { Text(text = stringResource(id = R.string.auth_linkding_instance_url)) },
+                            isError = instanceUrlError != null,
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Uri),
+                            keyboardActions = KeyboardActions { focusManager.moveFocus(FocusDirection.Next) },
+                            singleLine = true,
+                            maxLines = 1,
                         )
+
+                        if (instanceUrlError != null) {
+                            Text(
+                                text = instanceUrlError,
+                                modifier = Modifier.padding(top = 4.dp),
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
                     }
                 }
 

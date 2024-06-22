@@ -8,6 +8,7 @@ import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.UserLoggedOut
 import com.fibelatti.pinboard.features.user.domain.Login
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,24 +23,31 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val loginUseCase: Login,
     private val appStateRepository: AppStateRepository,
+    private val userRepository: UserRepository,
     private val resourceProvider: ResourceProvider,
 ) : BaseViewModel() {
 
     private val _screenState = MutableStateFlow(ScreenState())
     val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
 
-    fun login(
-        apiToken: String,
-        instanceUrl: String,
-    ) {
+    fun login(apiToken: String, instanceUrl: String) {
+        if (userRepository.useLinkding && instanceUrl.isEmpty()) {
+            _screenState.value = ScreenState(
+                instanceUrlError = resourceProvider.getString(R.string.auth_linkding_instance_url_error),
+            )
+            return
+        }
+
+        if (apiToken.isEmpty()) {
+            _screenState.value = ScreenState(
+                apiTokenError = resourceProvider.getString(R.string.auth_token_empty),
+            )
+            return
+        }
+
+
         launch {
-            _screenState.update { currentState ->
-                currentState.copy(
-                    isLoading = true,
-                    apiTokenError = null,
-                    instanceUrlError = null,
-                )
-            }
+            _screenState.value = ScreenState(isLoading = true)
 
             val params = Login.Params(
                 authToken = apiToken,
@@ -48,9 +56,7 @@ class AuthViewModel @Inject constructor(
 
             loginUseCase(params)
                 .onFailure { error ->
-                    _screenState.update { currentState ->
-                        currentState.copy(isLoading = false)
-                    }
+                    _screenState.value = ScreenState(isLoading = false)
 
                     val loginFailedCodes = listOf(
                         HttpURLConnection.HTTP_UNAUTHORIZED,

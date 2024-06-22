@@ -7,8 +7,10 @@ import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
+import com.fibelatti.pinboard.features.user.data.UserDataSource
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -16,11 +18,16 @@ import org.junit.jupiter.api.Test
 
 internal class SyncBookmarksWorkerTest {
 
+    private val userDataSource = mockk<UserDataSource> {
+        every { hasAuthToken() } returns true
+    }
+
     private val postsRepository = mockk<PostsRepository>()
 
     private val worker = SyncBookmarksWorker(
         context = mockk(),
         workerParams = mockk(relaxed = true),
+        userDataSource = userDataSource,
         postsRepository = postsRepository,
     )
 
