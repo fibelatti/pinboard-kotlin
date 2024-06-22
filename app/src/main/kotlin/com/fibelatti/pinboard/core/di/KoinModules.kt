@@ -79,7 +79,11 @@ val databaseModule = module {
         val databaseResetCallback: DatabaseResetCallback = get()
 
         Room.databaseBuilder(androidApplication(), AppDatabase::class.java, DATABASE_NAME)
-            .fallbackToDestructiveMigrationFrom(DATABASE_VERSION_1, DATABASE_VERSION_2)
+            .fallbackToDestructiveMigrationFrom(
+                dropAllTables = true,
+                DATABASE_VERSION_1,
+                DATABASE_VERSION_2,
+            )
             .addCallback(databaseResetCallback)
             .build()
     }
