@@ -220,6 +220,7 @@ dependencies {
 
     implementation(libs.bundles.ktor.common)
     implementation(libs.ktor.client.okhttp)
+    implementation(libs.urlencoder)
 
     implementation(libs.multiplatform.settings)
 

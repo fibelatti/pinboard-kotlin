@@ -11,9 +11,8 @@ import com.fibelatti.core.functional.TwoWayMapper
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
 import com.fibelatti.pinboard.core.util.DateFormatter
 import kotlinx.serialization.Serializable
+import net.thauvin.erik.urlencoder.UrlEncoderUtil
 import org.koin.core.annotation.Factory
-import java.net.URLDecoder
-import java.net.URLEncoder
 
 const val POST_TABLE_NAME = "Posts"
 
@@ -46,7 +45,7 @@ class PostDtoMapper(
         ).fold(href) { current, preparation -> preparation(current) }
 
         Post(
-            url = URLDecoder.decode(preparedUrl, Pinboard.API_ENCODING),
+            url = UrlEncoderUtil.decode(preparedUrl),
             title = description.orEmpty(),
             description = extended.orEmpty(),
             id = hash,
@@ -83,7 +82,7 @@ class PostDtoMapper(
 
     override fun mapReverse(param: Post): PostDto = with(param) {
         PostDto(
-            href = URLEncoder.encode(url, Pinboard.API_ENCODING),
+            href = UrlEncoderUtil.encode(url),
             description = title,
             extended = description,
             hash = id,

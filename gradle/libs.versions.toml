@@ -67,6 +67,8 @@ koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref =
 
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version = "1.1.1" }
 
+urlencoder = { module = "net.thauvin.erik.urlencoder:urlencoder-lib", version = "1.5.0" }
+
 jsoup = { module = "org.jsoup:jsoup", version = "1.17.2" }
 
 about-libraries = { module = "com.mikepenz:aboutlibraries-compose", version.ref = "aboutLibraries" }

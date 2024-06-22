@@ -12,7 +12,6 @@ public object Config {
 
     public object Pinboard {
 
-        public const val API_ENCODING: String = "UTF-8"
         public const val API_BASE_URL_LENGTH: Int = 90
         public const val MALFORMED_OBJECT_THRESHOLD: Int = 1_000
         public const val USER_URL: String = "https://pinboard.in/u:"

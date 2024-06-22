@@ -36,6 +36,7 @@ kotlin {
                 implementation(libs.coroutines.core)
 
                 implementation(libs.bundles.ktor.common)
+                implementation(libs.urlencoder)
 
                 implementation(libs.room.runtime)
 

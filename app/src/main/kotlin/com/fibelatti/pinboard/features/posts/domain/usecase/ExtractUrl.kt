@@ -6,9 +6,8 @@ import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.UseCaseWithParams
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.thauvin.erik.urlencoder.UrlEncoderUtil
 import org.koin.core.annotation.Factory
-import java.io.UnsupportedEncodingException
-import java.net.URLDecoder
 
 @Factory
 class ExtractUrl : UseCaseWithParams<ExtractUrl.ExtractedUrl, String>() {
@@ -28,11 +27,11 @@ class ExtractUrl : UseCaseWithParams<ExtractUrl.ExtractedUrl, String>() {
         return try {
             Success(
                 ExtractedUrl(
-                    url = withContext(Dispatchers.IO) { URLDecoder.decode(sourceUrl, "UTF-8") },
+                    url = withContext(Dispatchers.IO) { UrlEncoderUtil.decode(sourceUrl) },
                     highlightedText = highlightedText,
                 ),
             )
-        } catch (ignored: UnsupportedEncodingException) {
+        } catch (ignored: Exception) {
             Failure(InvalidUrlException())
         }
     }

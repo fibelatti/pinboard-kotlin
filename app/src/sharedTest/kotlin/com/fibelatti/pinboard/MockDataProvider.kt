@@ -11,7 +11,7 @@ import com.fibelatti.pinboard.features.posts.data.model.GetPostDto
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostRemoteDto
-import java.net.URLEncoder
+import net.thauvin.erik.urlencoder.UrlEncoderUtil
 
 object MockDataProvider {
 
@@ -62,7 +62,7 @@ object MockDataProvider {
     fun createGenericResponse(responseCode: PinboardApiResultCode): GenericResponseDto = GenericResponseDto(responseCode.value)
 
     fun createPostDto(
-        href: String = URLEncoder.encode(mockUrlValid, Pinboard.API_ENCODING),
+        href: String = UrlEncoderUtil.encode(mockUrlValid),
         description: String? = mockUrlTitle,
         extended: String? = mockUrlDescription,
         hash: String = mockHash,
@@ -84,7 +84,7 @@ object MockDataProvider {
     )
 
     fun createPostRemoteDto(
-        href: String = URLEncoder.encode(mockUrlValid, Pinboard.API_ENCODING),
+        href: String = UrlEncoderUtil.encode(mockUrlValid),
         description: String? = mockUrlTitle,
         extended: String? = mockUrlDescription,
         hash: String = mockHash,
