@@ -1,12 +1,9 @@
 package com.fibelatti.pinboard.features.tags.domain.model
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
 @Serializable
-@Parcelize
-data class Tag(val name: String, val posts: Int) : Parcelable {
+data class Tag(val name: String, val posts: Int) {
 
     constructor(name: String) : this(name, 0)
 
