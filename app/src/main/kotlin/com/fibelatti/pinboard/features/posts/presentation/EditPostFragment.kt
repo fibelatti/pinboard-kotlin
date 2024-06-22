@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import com.fibelatti.core.android.extension.doOnApplyWindowInsets
 import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.core.functional.Success
@@ -24,19 +22,18 @@ import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.UUID
-import javax.inject.Inject
 
-@AndroidEntryPoint
-class EditPostFragment @Inject constructor() : BaseFragment() {
+class EditPostFragment : BaseFragment() {
 
-    private val appStateViewModel: AppStateViewModel by activityViewModels()
-    private val mainViewModel: MainViewModel by activityViewModels()
-    private val editPostViewModel: EditPostViewModel by viewModels()
-    private val postDetailViewModel: PostDetailViewModel by viewModels()
-    private val tagManagerViewModel: TagManagerViewModel by viewModels()
+    private val appStateViewModel: AppStateViewModel by activityViewModel()
+    private val mainViewModel: MainViewModel by activityViewModel()
+    private val editPostViewModel: EditPostViewModel by viewModel()
+    private val postDetailViewModel: PostDetailViewModel by viewModel()
+    private val tagManagerViewModel: TagManagerViewModel by viewModel()
 
     /**
      * This hackery is needed because [androidx.activity.OnBackPressedDispatcher] is misbehaving

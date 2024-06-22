@@ -6,8 +6,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.webkit.MimeTypeMap
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import com.fibelatti.core.android.extension.navigateBack
 import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.core.functional.Failure
@@ -26,18 +24,17 @@ import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.UUID
-import javax.inject.Inject
 
-@AndroidEntryPoint
-class PostDetailFragment @Inject constructor() : BaseFragment() {
+class PostDetailFragment : BaseFragment() {
 
-    private val appStateViewModel: AppStateViewModel by activityViewModels()
-    private val mainViewModel: MainViewModel by activityViewModels()
-    private val postDetailViewModel: PostDetailViewModel by viewModels()
-    private val popularPostsViewModel: PopularPostsViewModel by viewModels()
+    private val appStateViewModel: AppStateViewModel by activityViewModel()
+    private val mainViewModel: MainViewModel by activityViewModel()
+    private val postDetailViewModel: PostDetailViewModel by viewModel()
+    private val popularPostsViewModel: PopularPostsViewModel by viewModel()
 
     private val actionId = UUID.randomUUID().toString()
 

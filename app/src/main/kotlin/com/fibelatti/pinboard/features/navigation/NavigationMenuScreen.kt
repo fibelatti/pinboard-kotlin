@@ -27,7 +27,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
@@ -47,11 +46,12 @@ import com.fibelatti.pinboard.features.appstate.ViewTags
 import com.fibelatti.pinboard.features.user.presentation.AuthViewModel
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun NavigationMenuScreen(
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
-    authViewModel: AuthViewModel = hiltViewModel(),
+    appStateViewModel: AppStateViewModel = koinViewModel(),
+    authViewModel: AuthViewModel = koinViewModel(),
     onShareClicked: () -> Unit,
     onRateClicked: () -> Unit,
     onLicensesClicked: () -> Unit,

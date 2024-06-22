@@ -13,11 +13,10 @@ import com.fibelatti.pinboard.features.user.domain.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import javax.inject.Inject
-import javax.inject.Singleton
+import org.koin.core.annotation.Single
 
-@Singleton
-class UserDataSource @Inject constructor(
+@Single
+class UserDataSource(
     private val userSharedPreferences: UserSharedPreferences,
     private val appModeProvider: AppModeProvider,
 ) : UserRepository {

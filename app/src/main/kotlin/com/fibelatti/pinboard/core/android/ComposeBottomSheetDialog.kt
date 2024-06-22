@@ -12,20 +12,17 @@ import com.fibelatti.pinboard.core.extension.setViewTreeOwners
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
+import org.koin.java.KoinJavaComponent.getKoin
 
 class ComposeBottomSheetDialog(
     context: Context,
     content: @Composable BottomSheetDialog.() -> Unit,
 ) : BottomSheetDialog(context, R.style.AppTheme_BottomSheetDialog) {
 
-    init {
-        val entryPoint = EntryPointAccessors.fromApplication<DialogEntryPoint>(context.applicationContext)
+    private val userRepository: UserRepository by getKoin().inject()
 
-        if (entryPoint.userRepository().disableScreenshots) {
+    init {
+        if (userRepository.disableScreenshots) {
             window?.setFlags(
                 WindowManager.LayoutParams.FLAG_SECURE,
                 WindowManager.LayoutParams.FLAG_SECURE,
@@ -47,11 +44,4 @@ class ComposeBottomSheetDialog(
             },
         )
     }
-}
-
-@EntryPoint
-@InstallIn(SingletonComponent::class)
-internal interface DialogEntryPoint {
-
-    fun userRepository(): UserRepository
 }

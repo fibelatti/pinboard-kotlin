@@ -1,7 +1,5 @@
 package com.fibelatti.pinboard.features.posts.data
 
-import com.fibelatti.pinboard.core.di.RestApi
-import com.fibelatti.pinboard.core.di.RestApiProvider
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.GetPostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostRemoteDto
@@ -9,10 +7,12 @@ import com.fibelatti.pinboard.features.posts.data.model.UpdateDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import javax.inject.Inject
+import org.koin.core.annotation.Factory
+import org.koin.core.annotation.Named
 
-class PostsApi @Inject constructor(
-    @RestApi(RestApiProvider.PINBOARD) private val httpClient: HttpClient,
+@Factory
+class PostsApi(
+    @Named("pinboard") private val httpClient: HttpClient,
 ) {
 
     suspend fun update(): UpdateDto = httpClient.get(urlString = "posts/update").body()

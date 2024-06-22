@@ -5,7 +5,7 @@ import com.fibelatti.core.functional.TwoWayMapper
 import com.fibelatti.pinboard.features.filters.data.SavedFilterDto.Companion.TABLE_NAME
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import javax.inject.Inject
+import org.koin.core.annotation.Factory
 
 @Entity(
     tableName = TABLE_NAME,
@@ -22,7 +22,8 @@ data class SavedFilterDto(
     }
 }
 
-class SavedFilterDtoMapper @Inject constructor() : TwoWayMapper<SavedFilterDto, SavedFilter> {
+@Factory
+class SavedFilterDtoMapper : TwoWayMapper<SavedFilterDto, SavedFilter> {
 
     override fun map(param: SavedFilterDto): SavedFilter = SavedFilter(
         searchTerm = param.term,

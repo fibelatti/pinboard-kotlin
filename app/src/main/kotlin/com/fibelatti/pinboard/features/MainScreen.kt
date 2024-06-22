@@ -44,7 +44,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.core.android.extension.findActivity
 import com.fibelatti.pinboard.R
@@ -62,11 +61,12 @@ import com.fibelatti.ui.foundation.navigationBarsPaddingCompat
 import com.fibelatti.ui.foundation.pxToDp
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun MainTopAppBar(
-    mainViewModel: MainViewModel = hiltViewModel(),
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = koinViewModel(),
+    appStateViewModel: AppStateViewModel = koinViewModel(),
 ) {
     val state by mainViewModel.state.collectAsStateWithLifecycle()
     val content by appStateViewModel.content.collectAsStateWithLifecycle()
@@ -92,8 +92,8 @@ fun MainTopAppBar(
 
 @Composable
 fun MainBottomAppBar(
-    mainViewModel: MainViewModel = hiltViewModel(),
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = koinViewModel(),
+    appStateViewModel: AppStateViewModel = koinViewModel(),
 ) {
     Box(
         modifier = Modifier.fillMaxWidth(),

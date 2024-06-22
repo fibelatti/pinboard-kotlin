@@ -1,23 +1,19 @@
 package com.fibelatti.pinboard.features.sync
 
 import android.content.Context
-import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
-@HiltWorker
-class PendingSyncWorker @AssistedInject constructor(
-    @Assisted context: Context,
-    @Assisted workerParams: WorkerParameters,
+class PendingSyncWorker(
+    context: Context,
+    workerParams: WorkerParameters,
     private val postsRepository: PostsRepository,
 ) : CoroutineWorker(context, workerParams) {
 

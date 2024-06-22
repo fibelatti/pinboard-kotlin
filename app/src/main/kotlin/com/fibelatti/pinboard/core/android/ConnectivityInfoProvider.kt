@@ -2,9 +2,10 @@ package com.fibelatti.pinboard.core.android
 
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import javax.inject.Inject
+import org.koin.core.annotation.Single
 
-class ConnectivityInfoProvider @Inject constructor(
+@Single
+class ConnectivityInfoProvider(
     private val connectivityManager: ConnectivityManager?,
 ) {
 

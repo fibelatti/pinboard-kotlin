@@ -34,7 +34,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.pinboard.R
@@ -59,14 +58,15 @@ import com.fibelatti.ui.components.SingleLineChipGroup
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.flow.onEach
+import org.koin.androidx.compose.koinViewModel
 import java.util.UUID
 
 @Composable
 fun SearchBookmarksScreen(
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltViewModel(),
-    searchPostViewModel: SearchPostViewModel = hiltViewModel(),
-    tagsViewModel: TagsViewModel = hiltViewModel(),
+    appStateViewModel: AppStateViewModel = koinViewModel(),
+    mainViewModel: MainViewModel = koinViewModel(),
+    searchPostViewModel: SearchPostViewModel = koinViewModel(),
+    tagsViewModel: TagsViewModel = koinViewModel(),
     onError: (Throwable?, () -> Unit) -> Unit,
 ) {
     Surface(

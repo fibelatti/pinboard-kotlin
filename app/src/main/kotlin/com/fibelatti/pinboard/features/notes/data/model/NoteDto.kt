@@ -5,7 +5,7 @@ import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import javax.inject.Inject
+import org.koin.core.annotation.Factory
 
 @Serializable
 data class NoteDto(
@@ -16,7 +16,8 @@ data class NoteDto(
     val text: String?,
 )
 
-class NoteDtoMapper @Inject constructor(
+@Factory
+class NoteDtoMapper(
     private val dateFormatter: DateFormatter,
 ) : Mapper<NoteDto, Note> {
 

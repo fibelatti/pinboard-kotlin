@@ -43,9 +43,9 @@ internal class PostsDataSourceProxyTest {
     )
 
     private fun getProxy(appMode: AppMode): PostsRepository = PostsDataSourceProxy(
-        postsDataSourcePinboardApi = { postsDataSourcePinboardApi },
-        postsDataSourceLinkdingApi = { postsDataSourceLinkdingApi },
-        postsDataSourceNoApi = { postsDataSourceNoApi },
+        postsDataSourcePinboardApi = postsDataSourcePinboardApi,
+        postsDataSourceLinkdingApi = postsDataSourceLinkdingApi,
+        postsDataSourceNoApi = postsDataSourceNoApi,
         appModeProvider = mockk {
             every { this@mockk.appMode } returns MutableStateFlow(appMode)
         },

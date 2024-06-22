@@ -37,7 +37,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.extension.ScrollDirection
@@ -47,13 +46,14 @@ import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun BookmarkDetailsScreen(
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltViewModel(),
-    postDetailViewModel: PostDetailViewModel = hiltViewModel(),
-    popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
+    appStateViewModel: AppStateViewModel = koinViewModel(),
+    mainViewModel: MainViewModel = koinViewModel(),
+    postDetailViewModel: PostDetailViewModel = koinViewModel(),
+    popularPostsViewModel: PopularPostsViewModel = koinViewModel(),
     onOpenInFileViewerClicked: (Post) -> Unit,
     onOpenInBrowserClicked: (Post) -> Unit,
 ) {

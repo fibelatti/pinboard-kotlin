@@ -4,9 +4,10 @@ import com.fibelatti.core.functional.Result
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
+import org.koin.core.annotation.Factory
 
-class GetAllPosts @Inject constructor(
+@Factory
+class GetAllPosts(
     private val postsRepository: PostsRepository,
 ) {
 

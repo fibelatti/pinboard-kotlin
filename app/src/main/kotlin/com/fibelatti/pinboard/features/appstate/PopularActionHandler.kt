@@ -1,9 +1,10 @@
 package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
-import javax.inject.Inject
+import org.koin.core.annotation.Factory
 
-class PopularActionHandler @Inject constructor(
+@Factory
+class PopularActionHandler(
     private val connectivityInfoProvider: ConnectivityInfoProvider,
 ) : ActionHandler<PopularAction>() {
 

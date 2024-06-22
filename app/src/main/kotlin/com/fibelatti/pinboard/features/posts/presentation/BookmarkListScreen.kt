@@ -44,7 +44,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_PAGE_SIZE
@@ -85,13 +84,14 @@ import com.fibelatti.ui.foundation.navigationBarsCompat
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.delay
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun BookmarkListScreen(
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltViewModel(),
-    postListViewModel: PostListViewModel = hiltViewModel(),
-    postDetailViewModel: PostDetailViewModel = hiltViewModel(),
+    appStateViewModel: AppStateViewModel = koinViewModel(),
+    mainViewModel: MainViewModel = koinViewModel(),
+    postListViewModel: PostListViewModel = koinViewModel(),
+    postDetailViewModel: PostDetailViewModel = koinViewModel(),
     onPostLongClicked: (Post) -> Unit,
     onShareClicked: (SearchParameters) -> Unit,
 ) {

@@ -26,11 +26,12 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import org.koin.core.annotation.Factory
 import java.util.UUID
-import javax.inject.Inject
 import kotlin.time.Duration.Companion.minutes
 
-class PostsDataSourceLinkdingApi @Inject constructor(
+@Factory
+class PostsDataSourceLinkdingApi(
     private val linkdingApi: LinkdingApi,
     private val linkdingDao: BookmarksDao,
     private val bookmarkRemoteMapper: BookmarkRemoteMapper,

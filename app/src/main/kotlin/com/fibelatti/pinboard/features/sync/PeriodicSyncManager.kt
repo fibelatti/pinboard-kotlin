@@ -7,12 +7,12 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import dagger.hilt.android.qualifiers.ApplicationContext
+import org.koin.core.annotation.Single
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
-class PeriodicSyncManager @Inject constructor(
-    @ApplicationContext private val context: Context,
+@Single
+class PeriodicSyncManager(
+    private val context: Context,
     private val userRepository: UserRepository,
 ) {
 

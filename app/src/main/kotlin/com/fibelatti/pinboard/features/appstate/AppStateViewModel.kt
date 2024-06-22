@@ -5,7 +5,6 @@ import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
@@ -15,10 +14,10 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
+import org.koin.android.annotation.KoinViewModel
 
-@HiltViewModel
-class AppStateViewModel @Inject constructor(
+@KoinViewModel
+class AppStateViewModel(
     private val appStateRepository: AppStateRepository,
     appModeProvider: AppModeProvider,
     unauthorizedPluginProvider: UnauthorizedPluginProvider,

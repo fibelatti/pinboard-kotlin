@@ -19,9 +19,10 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
+import org.koin.core.annotation.Factory
 
-class TagsDataSource @Inject constructor(
+@Factory
+class TagsDataSource(
     private val tagsApi: TagsApi,
     private val postsDao: PostsDao,
     private val connectivityInfoProvider: ConnectivityInfoProvider,

@@ -7,9 +7,10 @@ import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
+import org.koin.core.annotation.Factory
 
-class AddPost @Inject constructor(
+@Factory
+class AddPost(
     private val postsRepository: PostsRepository,
     private val validateUrl: ValidateUrl,
 ) : UseCaseWithParams<Post, Post>() {

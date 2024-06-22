@@ -6,21 +6,21 @@ import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.features.linkding.data.TagsDataSourceLinkdingApi
 import com.fibelatti.pinboard.features.tags.domain.TagsRepository
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import dagger.Lazy
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
+import org.koin.core.annotation.Factory
 
-class TagsDataSourceProxy @Inject constructor(
-    private val tagsDataSource: Lazy<TagsDataSource>,
-    private val tagsDataSourceLinkdingApi: Lazy<TagsDataSourceLinkdingApi>,
+@Factory
+class TagsDataSourceProxy(
+    private val tagsDataSource: TagsDataSource,
+    private val tagsDataSourceLinkdingApi: TagsDataSourceLinkdingApi,
     private val appModeProvider: AppModeProvider,
 ) : TagsRepository {
 
     private val repository: TagsRepository
         get() = if (AppMode.LINKDING == appModeProvider.appMode.value) {
-            tagsDataSourceLinkdingApi.get()
+            tagsDataSourceLinkdingApi
         } else {
-            tagsDataSource.get()
+            tagsDataSource
         }
 
     override fun getAllTags(): Flow<Result<List<Tag>>> = repository.getAllTags()

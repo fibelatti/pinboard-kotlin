@@ -9,9 +9,10 @@ import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.UserLoggedIn
 import com.fibelatti.pinboard.features.appstate.UserLoggedOut
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
-import javax.inject.Inject
+import org.koin.core.annotation.Factory
 
-class Login @Inject constructor(
+@Factory
+class Login(
     private val userRepository: UserRepository,
     private val appStateRepository: AppStateRepository,
     private val postsRepository: PostsRepository,

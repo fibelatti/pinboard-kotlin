@@ -1,15 +1,15 @@
 package com.fibelatti.pinboard.features.tags.data
 
-import com.fibelatti.pinboard.core.di.RestApi
-import com.fibelatti.pinboard.core.di.RestApiProvider
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import kotlinx.serialization.Serializable
-import javax.inject.Inject
+import org.koin.core.annotation.Factory
+import org.koin.core.annotation.Named
 
-class TagsApi @Inject constructor(
-    @RestApi(RestApiProvider.PINBOARD) private val httpClient: HttpClient,
+@Factory
+class TagsApi(
+    @Named("pinboard") private val httpClient: HttpClient,
 ) {
 
     suspend fun getTags(): Map<String, Int> = httpClient.get(urlString = "tags/get").body()

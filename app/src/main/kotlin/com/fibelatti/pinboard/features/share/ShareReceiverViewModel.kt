@@ -21,16 +21,15 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.ExtractUrl
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetUrlPreview
 import com.fibelatti.pinboard.features.posts.domain.usecase.UrlPreview
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import org.koin.android.annotation.KoinViewModel
 
-@HiltViewModel
-class ShareReceiverViewModel @Inject constructor(
+@KoinViewModel
+class ShareReceiverViewModel(
     private val extractUrl: ExtractUrl,
     private val getUrlPreview: GetUrlPreview,
     private val addPost: AddPost,

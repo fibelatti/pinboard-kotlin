@@ -32,7 +32,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
@@ -54,13 +53,14 @@ import com.fibelatti.ui.foundation.navigationBarsCompat
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.flow.onEach
+import org.koin.androidx.compose.koinViewModel
 import java.util.UUID
 
 @Composable
 fun NoteListScreen(
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltViewModel(),
-    noteListViewModel: NoteListViewModel = hiltViewModel(),
+    appStateViewModel: AppStateViewModel = koinViewModel(),
+    mainViewModel: MainViewModel = koinViewModel(),
+    noteListViewModel: NoteListViewModel = koinViewModel(),
     onBackPressed: () -> Unit,
     onError: (Throwable?, () -> Unit) -> Unit,
 ) {

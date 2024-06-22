@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
@@ -48,22 +46,21 @@ import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onEach
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.UUID
-import javax.inject.Inject
 
-@AndroidEntryPoint
-class PostListFragment @Inject constructor(
+class PostListFragment(
     private val userRepository: UserRepository,
 ) : BaseFragment() {
 
-    private val appStateViewModel: AppStateViewModel by activityViewModels()
-    private val mainViewModel: MainViewModel by activityViewModels()
-    private val postListViewModel: PostListViewModel by viewModels()
-    private val postDetailViewModel: PostDetailViewModel by viewModels()
+    private val appStateViewModel: AppStateViewModel by activityViewModel()
+    private val mainViewModel: MainViewModel by activityViewModel()
+    private val postListViewModel: PostListViewModel by viewModel()
+    private val postDetailViewModel: PostDetailViewModel by viewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -2,7 +2,7 @@ package com.fibelatti.pinboard.features.posts.data.model
 
 import com.fibelatti.core.functional.Mapper
 import kotlinx.serialization.Serializable
-import javax.inject.Inject
+import org.koin.core.annotation.Factory
 
 @Serializable
 data class PostRemoteDto(
@@ -16,7 +16,8 @@ data class PostRemoteDto(
     val tags: String,
 )
 
-class PostRemoteDtoMapper @Inject constructor() : Mapper<PostRemoteDto, PostDto> {
+@Factory
+class PostRemoteDtoMapper : Mapper<PostRemoteDto, PostDto> {
 
     override fun map(param: PostRemoteDto): PostDto = with(param) {
         PostDto(

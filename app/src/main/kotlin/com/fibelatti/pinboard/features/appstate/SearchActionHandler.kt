@@ -1,9 +1,10 @@
 package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.pinboard.core.AppConfig
-import javax.inject.Inject
+import org.koin.core.annotation.Factory
 
-class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() {
+@Factory
+class SearchActionHandler : ActionHandler<SearchAction>() {
 
     override suspend fun runAction(action: SearchAction, currentContent: Content): Content {
         return when (action) {

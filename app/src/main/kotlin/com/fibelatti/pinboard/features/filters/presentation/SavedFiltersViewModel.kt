@@ -1,22 +1,19 @@
 package com.fibelatti.pinboard.features.filters.presentation
 
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
-import com.fibelatti.pinboard.core.di.AppDispatchers
-import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.features.filters.domain.SavedFiltersRepository
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import org.koin.android.annotation.KoinViewModel
 
-@HiltViewModel
-class SavedFiltersViewModel @Inject constructor(
+@KoinViewModel
+class SavedFiltersViewModel(
     private val savedFiltersRepository: SavedFiltersRepository,
-    @Scope(AppDispatchers.DEFAULT) scope: CoroutineScope,
+    scope: CoroutineScope,
     sharingStarted: SharingStarted,
 ) : BaseViewModel() {
 

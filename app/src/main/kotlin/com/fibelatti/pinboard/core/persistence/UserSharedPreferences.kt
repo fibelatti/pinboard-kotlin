@@ -4,8 +4,7 @@ import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.android.extension.get
 import com.fibelatti.core.android.extension.put
-import javax.inject.Inject
-import javax.inject.Singleton
+import org.koin.core.annotation.Single
 
 // region Constants
 @VisibleForTesting
@@ -57,8 +56,8 @@ const val KEY_NEW_EDIT_AFTER_SHARING = "NEW_EDIT_AFTER_SHARING"
 const val KEY_DEFAULT_TAGS = "DEFAULT_TAGS"
 // endregion
 
-@Singleton
-class UserSharedPreferences @Inject constructor(private val sharedPreferences: SharedPreferences) {
+@Single
+class UserSharedPreferences(private val sharedPreferences: SharedPreferences) {
 
     private var currentLinkdingInstanceUrl = ""
     private var currentAuthToken: String = ""

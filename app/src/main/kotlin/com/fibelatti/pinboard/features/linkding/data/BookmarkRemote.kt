@@ -6,7 +6,7 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import javax.inject.Inject
+import org.koin.core.annotation.Factory
 
 @Serializable
 data class PaginatedResponseRemote<T>(
@@ -47,7 +47,8 @@ data class TagRemote(
     val dateAdded: String,
 )
 
-class BookmarkRemoteMapper @Inject constructor(
+@Factory
+class BookmarkRemoteMapper(
     private val dateFormatter: DateFormatter,
 ) : Mapper<BookmarkRemote, Post> {
 

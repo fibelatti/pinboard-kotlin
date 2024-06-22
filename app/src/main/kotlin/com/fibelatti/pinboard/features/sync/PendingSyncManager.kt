@@ -11,13 +11,11 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import javax.inject.Singleton
+import org.koin.core.annotation.Single
 
-@Singleton
-class PendingSyncManager @Inject constructor(
-    @ApplicationContext private val context: Context,
+@Single
+class PendingSyncManager(
+    private val context: Context,
 ) {
 
     private val connectivityManager: ConnectivityManager? get() = context.getSystemService()

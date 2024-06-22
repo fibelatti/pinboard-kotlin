@@ -46,18 +46,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.ui.components.TextWithLinks
 import com.fibelatti.ui.foundation.topSystemBarsPaddingCompat
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AuthScreen(
-    authViewModel: AuthViewModel = hiltViewModel(),
-    userPreferencesViewModel: UserPreferencesViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel = koinViewModel(),
+    userPreferencesViewModel: UserPreferencesViewModel = koinViewModel(),
 ) {
     val screenState by authViewModel.screenState.collectAsStateWithLifecycle()
     val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()

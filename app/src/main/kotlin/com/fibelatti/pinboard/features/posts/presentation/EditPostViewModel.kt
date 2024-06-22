@@ -5,8 +5,6 @@ import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
-import com.fibelatti.pinboard.core.di.AppDispatchers
-import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostSaved
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
@@ -14,7 +12,6 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -34,15 +31,15 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import org.koin.android.annotation.KoinViewModel
 
-@HiltViewModel
-class EditPostViewModel @Inject constructor(
+@KoinViewModel
+class EditPostViewModel(
     private val appStateRepository: AppStateRepository,
     private val postsRepository: PostsRepository,
     private val addPost: AddPost,
     private val resourceProvider: ResourceProvider,
-    @Scope(AppDispatchers.DEFAULT) scope: CoroutineScope,
+    scope: CoroutineScope,
     sharingStarted: SharingStarted,
 ) : BaseViewModel() {
 

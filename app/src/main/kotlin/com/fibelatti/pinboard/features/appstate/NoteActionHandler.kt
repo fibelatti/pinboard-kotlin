@@ -2,9 +2,10 @@ package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.core.functional.Either
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
-import javax.inject.Inject
+import org.koin.core.annotation.Factory
 
-class NoteActionHandler @Inject constructor(
+@Factory
+class NoteActionHandler(
     private val connectivityInfoProvider: ConnectivityInfoProvider,
 ) : ActionHandler<NoteAction>() {
 

@@ -5,11 +5,10 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import javax.inject.Inject
-import javax.inject.Singleton
+import org.koin.core.annotation.Single
 
-@Singleton
-class UnauthorizedPluginProvider @Inject constructor() {
+@Single
+class UnauthorizedPluginProvider {
 
     private val _unauthorized = MutableSharedFlow<Unit>(
         extraBufferCapacity = 1,

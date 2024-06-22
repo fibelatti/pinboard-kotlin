@@ -2,7 +2,6 @@ package com.fibelatti.pinboard.features
 
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.core.extension.ScrollDirection
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,10 +11,10 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import org.koin.android.annotation.KoinViewModel
 
-@HiltViewModel
-class MainViewModel @Inject constructor() : BaseViewModel() {
+@KoinViewModel
+class MainViewModel : BaseViewModel() {
 
     private val _state: MutableStateFlow<MainState> = MutableStateFlow(MainState())
     val state: StateFlow<MainState> = _state.asStateFlow()

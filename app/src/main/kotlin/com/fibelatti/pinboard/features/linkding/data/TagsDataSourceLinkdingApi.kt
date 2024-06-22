@@ -12,9 +12,10 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
+import org.koin.core.annotation.Factory
 
-class TagsDataSourceLinkdingApi @Inject constructor(
+@Factory
+class TagsDataSourceLinkdingApi(
     private val linkdingApi: LinkdingApi,
     private val bookmarksDao: BookmarksDao,
     private val connectivityInfoProvider: ConnectivityInfoProvider,

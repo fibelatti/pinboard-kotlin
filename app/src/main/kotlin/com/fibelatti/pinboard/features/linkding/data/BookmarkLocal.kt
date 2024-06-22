@@ -10,7 +10,7 @@ import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import javax.inject.Inject
+import org.koin.core.annotation.Factory
 
 @Entity(
     tableName = TABLE_NAME,
@@ -39,7 +39,8 @@ data class BookmarkLocal(
     }
 }
 
-class BookmarkLocalMapper @Inject constructor(
+@Factory
+class BookmarkLocalMapper(
     private val dateFormatter: DateFormatter,
 ) : TwoWayMapper<BookmarkLocal, Post> {
 

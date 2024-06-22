@@ -12,9 +12,9 @@ import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.serialization.Serializable
+import org.koin.core.annotation.Factory
 import java.net.URLDecoder
 import java.net.URLEncoder
-import javax.inject.Inject
 
 const val POST_TABLE_NAME = "Posts"
 
@@ -35,7 +35,8 @@ data class PostDto(
     val pendingSync: PendingSyncDto? = null,
 )
 
-class PostDtoMapper @Inject constructor(
+@Factory
+class PostDtoMapper(
     private val dateFormatter: DateFormatter,
 ) : TwoWayMapper<PostDto, Post> {
 
