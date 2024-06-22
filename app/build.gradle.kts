@@ -220,6 +220,8 @@ dependencies {
     implementation(libs.bundles.ktor.common)
     implementation(libs.ktor.client.okhttp)
 
+    implementation(libs.multiplatform.settings)
+
     implementation(libs.jsoup)
 
     implementation(libs.about.libraries)

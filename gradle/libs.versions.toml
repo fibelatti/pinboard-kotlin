@@ -65,6 +65,8 @@ koin-android-test = { module = "io.insert-koin:koin-android-test" }
 koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koinAnnotations" }
 koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koinAnnotations" }
 
+multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version = "1.1.1" }
+
 jsoup = { module = "org.jsoup:jsoup", version = "1.17.2" }
 
 about-libraries = { module = "com.mikepenz:aboutlibraries-compose", version.ref = "aboutLibraries" }

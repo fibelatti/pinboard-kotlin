@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard
 
-import android.content.SharedPreferences
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
@@ -9,10 +8,10 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import com.fibelatti.core.android.extension.clear
 import com.fibelatti.pinboard.features.MainActivity
 import com.fibelatti.pinboard.features.posts.presentation.EditPostFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
+import com.russhwolf.settings.Settings
 import org.junit.After
 import org.junit.Rule
 import org.junit.Test
@@ -25,14 +24,14 @@ class LinkdingEndToEndTests : KoinTest {
     @get:Rule
     val composeRule = createAndroidComposeRule<MainActivity>()
 
-    private val sharedPreferences: SharedPreferences by inject()
+    private val settings: Settings by inject()
 
     private val context get() = composeRule.activity
 
     @After
     fun tearDown() {
         LinkdingMockServer.instance.shutdown()
-        sharedPreferences.clear()
+        settings.clear()
     }
 
     @Test

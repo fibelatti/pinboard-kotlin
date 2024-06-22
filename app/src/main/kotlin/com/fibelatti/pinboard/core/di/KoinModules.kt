@@ -1,10 +1,8 @@
 package com.fibelatti.pinboard.core.di
 
-import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import androidx.core.content.getSystemService
 import androidx.room.Room
-import com.fibelatti.core.android.extension.getSharedPreferences
 import com.fibelatti.core.android.platform.AppResourceProvider
 import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.pinboard.BuildConfig
@@ -33,6 +31,8 @@ import com.fibelatti.pinboard.features.sync.SyncBookmarksWorker
 import com.fibelatti.pinboard.features.tags.presentation.TagsFragment
 import com.fibelatti.pinboard.features.user.presentation.AuthFragment
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesFragment
+import com.russhwolf.settings.Settings
+import com.russhwolf.settings.SharedPreferencesSettings
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -198,7 +198,7 @@ val androidPlatformModule = module {
 }
 
 val androidAppModule = module {
-    single<SharedPreferences> { androidApplication().getSharedPreferences(name = "user_preferences") }
+    single<Settings> { SharedPreferencesSettings.Factory(androidContext()).create(name = "user_preferences") }
 
     factory { getAll<ActionHandler<*>>().toSet() }
 
