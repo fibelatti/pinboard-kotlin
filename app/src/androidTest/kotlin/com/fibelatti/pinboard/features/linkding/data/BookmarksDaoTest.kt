@@ -47,6 +47,30 @@ class BookmarksDaoTest : BaseDbTest() {
         title = "",
         description = "term",
     )
+    private val bookmarkWithTermInTheNotes = createBookmarkLocal(
+        id = randomHash(),
+        url = "",
+        title = "",
+        description = "",
+        notes = "Notes with term and other",
+    )
+    private val bookmarkWithTermInTheWebsiteTitle = createBookmarkLocal(
+        id = randomHash(),
+        url = "",
+        title = "",
+        description = "",
+        notes = "",
+        websiteTitle = "Website title term-with-hyphen",
+    )
+    private val bookmarkWithTermInTheWebsiteDescription = createBookmarkLocal(
+        id = randomHash(),
+        url = "",
+        title = "",
+        description = "",
+        notes = "",
+        websiteTitle = "",
+        websiteDescription = "Website description term",
+    )
 
     private val bookmarkWithoutTags = createBookmarkLocal(id = randomHash(), tagNames = "")
     private val bookmarkWithOneTag = createBookmarkLocal(id = randomHash(), tagNames = mockTagString1)
@@ -183,6 +207,9 @@ class BookmarksDaoTest : BaseDbTest() {
                 bookmarkWithTermInTheUrl,
                 bookmarkWithTermInTheTitle,
                 bookmarkWithTermInTheDescription,
+                bookmarkWithTermInTheNotes,
+                bookmarkWithTermInTheWebsiteTitle,
+                bookmarkWithTermInTheWebsiteDescription,
             )
             bookmarksDao.saveBookmarks(list)
 
@@ -190,7 +217,7 @@ class BookmarksDaoTest : BaseDbTest() {
             val result = bookmarksDao.getBookmarkCount(term = BookmarksDao.preFormatTerm(mockTerm))
 
             // THEN
-            assertThat(result).isEqualTo(3)
+            assertThat(result).isEqualTo(6)
         }
 
     @Test
@@ -202,6 +229,9 @@ class BookmarksDaoTest : BaseDbTest() {
                 bookmarkWithTermInTheUrl,
                 bookmarkWithTermInTheTitle,
                 bookmarkWithTermInTheDescription,
+                bookmarkWithTermInTheNotes,
+                bookmarkWithTermInTheWebsiteTitle,
+                bookmarkWithTermInTheWebsiteDescription,
             )
             bookmarksDao.saveBookmarks(list)
 
@@ -211,7 +241,7 @@ class BookmarksDaoTest : BaseDbTest() {
             )
 
             // THEN
-            assertThat(result).isEqualTo(1)
+            assertThat(result).isEqualTo(2)
         }
 
     @Test
@@ -223,6 +253,9 @@ class BookmarksDaoTest : BaseDbTest() {
                 bookmarkWithTermInTheUrl,
                 bookmarkWithTermInTheTitle,
                 bookmarkWithTermInTheDescription,
+                bookmarkWithTermInTheNotes,
+                bookmarkWithTermInTheWebsiteTitle,
+                bookmarkWithTermInTheWebsiteDescription,
             )
             bookmarksDao.saveBookmarks(list)
 
@@ -230,7 +263,7 @@ class BookmarksDaoTest : BaseDbTest() {
             val result = bookmarksDao.getBookmarkCount(term = BookmarksDao.preFormatTerm("term-with"))
 
             // THEN
-            assertThat(result).isEqualTo(1)
+            assertThat(result).isEqualTo(2)
         }
 
     @Test
@@ -596,6 +629,9 @@ class BookmarksDaoTest : BaseDbTest() {
                 bookmarkWithTermInTheUrl,
                 bookmarkWithTermInTheTitle,
                 bookmarkWithTermInTheDescription,
+                bookmarkWithTermInTheNotes,
+                bookmarkWithTermInTheWebsiteTitle,
+                bookmarkWithTermInTheWebsiteDescription,
             )
             bookmarksDao.saveBookmarks(list)
 
@@ -605,7 +641,7 @@ class BookmarksDaoTest : BaseDbTest() {
             )
 
             // THEN
-            assertThat(result).isEqualTo(listOf(bookmarkWithTermInTheUrl))
+            assertThat(result).isEqualTo(listOf(bookmarkWithTermInTheUrl, bookmarkWithTermInTheNotes))
         }
 
     @Test
@@ -617,6 +653,9 @@ class BookmarksDaoTest : BaseDbTest() {
                 bookmarkWithTermInTheUrl,
                 bookmarkWithTermInTheTitle,
                 bookmarkWithTermInTheDescription,
+                bookmarkWithTermInTheNotes,
+                bookmarkWithTermInTheWebsiteTitle,
+                bookmarkWithTermInTheWebsiteDescription,
             )
             bookmarksDao.saveBookmarks(list)
 
@@ -629,6 +668,9 @@ class BookmarksDaoTest : BaseDbTest() {
                     bookmarkWithTermInTheUrl,
                     bookmarkWithTermInTheTitle,
                     bookmarkWithTermInTheDescription,
+                    bookmarkWithTermInTheNotes,
+                    bookmarkWithTermInTheWebsiteTitle,
+                    bookmarkWithTermInTheWebsiteDescription,
                 ),
             )
         }
@@ -642,6 +684,9 @@ class BookmarksDaoTest : BaseDbTest() {
                 bookmarkWithTermInTheUrl,
                 bookmarkWithTermInTheTitle,
                 bookmarkWithTermInTheDescription,
+                bookmarkWithTermInTheNotes,
+                bookmarkWithTermInTheWebsiteTitle,
+                bookmarkWithTermInTheWebsiteDescription,
             )
             bookmarksDao.saveBookmarks(list)
 
@@ -649,7 +694,7 @@ class BookmarksDaoTest : BaseDbTest() {
             val result = bookmarksDao.getAllBookmarks(term = BookmarksDao.preFormatTerm("term-with"))
 
             // THEN
-            assertThat(result).isEqualTo(listOf(bookmarkWithTermInTheTitle))
+            assertThat(result).isEqualTo(listOf(bookmarkWithTermInTheTitle, bookmarkWithTermInTheWebsiteTitle))
         }
 
     @Test

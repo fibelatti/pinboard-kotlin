@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 6,
-    "identityHash": "377d35fd086abc2b51628b3cc5b9699a",
+    "identityHash": "63707c486917129fcea37517d9eef381",
     "entities": [
       {
         "tableName": "Posts",
@@ -274,11 +274,11 @@
         "contentSyncTriggers": [
           "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_LinkdingBookmarksFts_BEFORE_UPDATE BEFORE UPDATE ON `LinkdingBookmarks` BEGIN DELETE FROM `LinkdingBookmarksFts` WHERE `docid`=OLD.`rowid`; END",
           "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_LinkdingBookmarksFts_BEFORE_DELETE BEFORE DELETE ON `LinkdingBookmarks` BEGIN DELETE FROM `LinkdingBookmarksFts` WHERE `docid`=OLD.`rowid`; END",
-          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_LinkdingBookmarksFts_AFTER_UPDATE AFTER UPDATE ON `LinkdingBookmarks` BEGIN INSERT INTO `LinkdingBookmarksFts`(`docid`, `url`, `title`, `description`, `tagNames`) VALUES (NEW.`rowid`, NEW.`url`, NEW.`title`, NEW.`description`, NEW.`tagNames`); END",
-          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_LinkdingBookmarksFts_AFTER_INSERT AFTER INSERT ON `LinkdingBookmarks` BEGIN INSERT INTO `LinkdingBookmarksFts`(`docid`, `url`, `title`, `description`, `tagNames`) VALUES (NEW.`rowid`, NEW.`url`, NEW.`title`, NEW.`description`, NEW.`tagNames`); END"
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_LinkdingBookmarksFts_AFTER_UPDATE AFTER UPDATE ON `LinkdingBookmarks` BEGIN INSERT INTO `LinkdingBookmarksFts`(`docid`, `url`, `title`, `description`, `notes`, `websiteTitle`, `websiteDescription`, `tagNames`) VALUES (NEW.`rowid`, NEW.`url`, NEW.`title`, NEW.`description`, NEW.`notes`, NEW.`websiteTitle`, NEW.`websiteDescription`, NEW.`tagNames`); END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_LinkdingBookmarksFts_AFTER_INSERT AFTER INSERT ON `LinkdingBookmarks` BEGIN INSERT INTO `LinkdingBookmarksFts`(`docid`, `url`, `title`, `description`, `notes`, `websiteTitle`, `websiteDescription`, `tagNames`) VALUES (NEW.`rowid`, NEW.`url`, NEW.`title`, NEW.`description`, NEW.`notes`, NEW.`websiteTitle`, NEW.`websiteDescription`, NEW.`tagNames`); END"
         ],
         "tableName": "LinkdingBookmarksFts",
-        "createSql": "CREATE VIRTUAL TABLE IF NOT EXISTS `${TABLE_NAME}` USING FTS4(`url` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `tagNames` TEXT, tokenize=unicode61 `tokenchars=._-=#@&`, content=`LinkdingBookmarks`)",
+        "createSql": "CREATE VIRTUAL TABLE IF NOT EXISTS `${TABLE_NAME}` USING FTS4(`url` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `notes` TEXT, `websiteTitle` TEXT, `websiteDescription` TEXT, `tagNames` TEXT, tokenize=unicode61 `tokenchars=._-=#@&`, content=`LinkdingBookmarks`)",
         "fields": [
           {
             "fieldPath": "url",
@@ -297,6 +297,24 @@
             "columnName": "description",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "notes",
+            "columnName": "notes",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "websiteTitle",
+            "columnName": "websiteTitle",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "websiteDescription",
+            "columnName": "websiteDescription",
+            "affinity": "TEXT",
+            "notNull": false
           },
           {
             "fieldPath": "tagNames",
@@ -343,7 +361,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '377d35fd086abc2b51628b3cc5b9699a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '63707c486917129fcea37517d9eef381')"
     ]
   }
 }

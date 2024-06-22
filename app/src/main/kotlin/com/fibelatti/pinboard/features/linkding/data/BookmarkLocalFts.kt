@@ -15,6 +15,9 @@ data class BookmarkLocalFts(
     val url: String,
     val title: String,
     val description: String,
+    val notes: String?,
+    val websiteTitle: String?,
+    val websiteDescription: String?,
     val tagNames: String?,
 ) {
 
