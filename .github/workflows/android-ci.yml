@@ -18,7 +18,7 @@ jobs:
         uses: ./.github/actions/setup-android-build
 
       - name: Run Tests
-        run: ./gradlew testPinboardapiDebugUnitTest --stacktrace
+        run: ./gradlew testDebugUnitTest testPinboardapiDebugUnitTest --stacktrace
 
   build:
     name: Build
