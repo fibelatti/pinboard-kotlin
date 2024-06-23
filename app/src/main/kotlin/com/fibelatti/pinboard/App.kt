@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.view.WindowManager
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatDelegate
+import com.fibelatti.bookmarking.core.ui.Appearance
 import com.fibelatti.core.android.platform.SimpleActivityLifecycleCallbacks
-import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.di.allModules
 import com.fibelatti.pinboard.features.sync.PendingSyncManager
 import com.fibelatti.pinboard.features.sync.PeriodicSyncManager

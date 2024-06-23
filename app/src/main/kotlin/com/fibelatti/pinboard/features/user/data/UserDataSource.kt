@@ -1,13 +1,13 @@
 package com.fibelatti.pinboard.features.user.data
 
+import com.fibelatti.bookmarking.core.ui.Appearance
+import com.fibelatti.bookmarking.core.ui.PreferredDateFormat
+import com.fibelatti.bookmarking.features.posts.domain.EditAfterSharing
+import com.fibelatti.bookmarking.features.posts.domain.PreferredDetailsView
+import com.fibelatti.bookmarking.features.sync.PeriodicSync
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.core.AppModeProvider
-import com.fibelatti.pinboard.core.android.Appearance
-import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
-import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
-import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
-import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow

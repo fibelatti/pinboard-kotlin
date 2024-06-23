@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import androidx.annotation.StringRes
+import com.fibelatti.bookmarking.features.posts.domain.EditAfterSharing
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.functional.onFailure
@@ -10,7 +11,6 @@ import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostSaved
 import com.fibelatti.pinboard.features.appstate.SetPopularPosts
-import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPopularPosts

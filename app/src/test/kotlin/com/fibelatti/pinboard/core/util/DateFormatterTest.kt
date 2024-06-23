@@ -1,6 +1,6 @@
 package com.fibelatti.pinboard.core.util
 
-import com.fibelatti.pinboard.core.android.PreferredDateFormat
+import com.fibelatti.bookmarking.core.ui.PreferredDateFormat
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
