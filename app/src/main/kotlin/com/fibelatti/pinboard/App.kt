@@ -27,10 +27,13 @@ open class App : Application() {
     private val pendingSyncManager: PendingSyncManager by inject()
     private val userRepository: UserRepository by inject()
 
+    @Suppress("KotlinConstantConditions")
     override fun onCreate() {
         super.onCreate()
 
         setupDependencyGraph()
+
+        userRepository.noApiMode = BuildConfig.FLAVOR == "noapi"
 
         setupTheme()
 

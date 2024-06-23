@@ -10,6 +10,10 @@ public class UserSharedPreferences(private val settings: Settings) {
     private var currentAuthToken: String = ""
     private var currentLastUpdate: String = ""
 
+    public var noApiMode: Boolean
+        get() = settings.getBoolean("NO_API_MODE", false)
+        set(value) = settings.putBoolean("NO_API_MODE", value)
+
     public var useLinkding: Boolean
         get() = settings.getBoolean("USE_LINKDING", false)
         set(value) = settings.putBoolean("USE_LINKDING", value)

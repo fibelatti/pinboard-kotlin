@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test
 class AppModeProviderTest {
 
     private val mockUserSharedPreferences: UserSharedPreferences = mockk {
+        every { noApiMode } returns false
         every { useLinkding } returns false
     }
 
@@ -26,6 +27,15 @@ class AppModeProviderTest {
     @BeforeEach
     fun setup() {
         mockkStatic(BuildConfig::class)
+    }
+
+    @Test
+    fun `appMode is NO_API when noApiMode is true`() = runUnconfinedTest {
+        every { mockUserSharedPreferences.noApiMode } returns true
+
+        val values = appModeProvider.appMode.collectIn(this)
+
+        assertThat(values).containsExactly(AppMode.NO_API)
     }
 
     @Test

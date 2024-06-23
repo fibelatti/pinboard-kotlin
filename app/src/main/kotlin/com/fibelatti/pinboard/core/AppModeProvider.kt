@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.core
 
 import com.fibelatti.bookmarking.core.persistence.UserSharedPreferences
-import com.fibelatti.pinboard.BuildConfig
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,9 +23,8 @@ class AppModeProvider(
         _appMode.update { getValue(reviewMode = false) }
     }
 
-    @Suppress("KotlinConstantConditions")
     private fun getValue(reviewMode: Boolean): AppMode = when {
-        BuildConfig.FLAVOR == "noapi" || reviewMode -> AppMode.NO_API
+        userSharedPreferences.noApiMode || reviewMode -> AppMode.NO_API
         userSharedPreferences.useLinkding -> AppMode.LINKDING
         else -> AppMode.PINBOARD
     }

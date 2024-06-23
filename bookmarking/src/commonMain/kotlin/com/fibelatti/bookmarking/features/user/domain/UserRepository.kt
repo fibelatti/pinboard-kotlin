@@ -12,6 +12,8 @@ public interface UserRepository {
 
     public val currentPreferences: StateFlow<UserPreferences>
 
+    public var noApiMode: Boolean
+
     public var useLinkding: Boolean
 
     public var linkdingInstanceUrl: String

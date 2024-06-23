@@ -24,6 +24,12 @@ class UserDataSource(
     private val _currentPreferences = MutableStateFlow(getPreferences())
     override val currentPreferences: StateFlow<UserPreferences> = _currentPreferences.asStateFlow()
 
+    override var noApiMode: Boolean
+        get() = userSharedPreferences.noApiMode
+        set(value) {
+            userSharedPreferences.noApiMode = value
+        }
+
     override var useLinkding: Boolean
         get() = userSharedPreferences.useLinkding
         set(value) {
