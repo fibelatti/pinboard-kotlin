@@ -5,7 +5,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
-import org.koin.core.annotation.Factory
+import org.koin.core.annotation.Single
 
 public interface RateLimitRunner {
 
@@ -21,7 +21,7 @@ public interface RateLimitRunner {
  * straight away, otherwise it waits until a new call can be made. Requests will be queued and made
  * one at a time.
  */
-@Factory
+@Single
 internal class ApiRateLimitRunner(private val throttleTime: Long) : RateLimitRunner {
 
     private val mutex = Mutex()

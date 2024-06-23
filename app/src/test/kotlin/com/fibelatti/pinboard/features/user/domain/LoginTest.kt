@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.user.domain
 
+import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_API_TOKEN
 import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_INSTANCE_URL
@@ -11,7 +12,6 @@ import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.UserLoggedIn
 import com.fibelatti.pinboard.features.appstate.UserLoggedOut
-import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify

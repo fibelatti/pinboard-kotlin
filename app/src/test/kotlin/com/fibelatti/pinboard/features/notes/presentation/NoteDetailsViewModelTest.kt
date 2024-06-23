@@ -1,13 +1,13 @@
 package com.fibelatti.pinboard.features.notes.presentation
 
+import com.fibelatti.bookmarking.features.notes.domain.NotesRepository
+import com.fibelatti.bookmarking.features.notes.domain.model.Note
 import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_NOTE_ID
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.SetNote
-import com.fibelatti.pinboard.features.notes.domain.NotesRepository
-import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.isEmpty
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery

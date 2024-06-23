@@ -3,6 +3,7 @@ package com.fibelatti.bookmarking.core.persistence
 import com.russhwolf.settings.Settings
 import org.koin.core.annotation.Single
 
+// TODO: Make internal once the migration is completed
 @Single
 public class UserSharedPreferences(private val settings: Settings) {
 

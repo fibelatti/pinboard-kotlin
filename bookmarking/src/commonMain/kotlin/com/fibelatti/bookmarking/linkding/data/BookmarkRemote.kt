@@ -48,7 +48,7 @@ public data class TagRemote(
 )
 
 @Factory
-public class BookmarkRemoteMapper(
+internal class BookmarkRemoteMapper(
     private val dateFormatter: DateFormatter,
 ) : Mapper<BookmarkRemote, Post> {
 

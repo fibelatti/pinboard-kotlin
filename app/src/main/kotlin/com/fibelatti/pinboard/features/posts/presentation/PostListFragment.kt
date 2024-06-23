@@ -7,6 +7,11 @@ import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.fibelatti.bookmarking.core.Config
+import com.fibelatti.bookmarking.features.appstate.Alphabetical
+import com.fibelatti.bookmarking.features.appstate.AlphabeticalReverse
+import com.fibelatti.bookmarking.features.appstate.NewestFirst
+import com.fibelatti.bookmarking.features.appstate.OldestFirst
+import com.fibelatti.bookmarking.features.appstate.SortType
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.core.android.extension.shareText
@@ -25,13 +30,9 @@ import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AddPost
 import com.fibelatti.pinboard.features.appstate.All
-import com.fibelatti.pinboard.features.appstate.Alphabetical
-import com.fibelatti.pinboard.features.appstate.AlphabeticalReverse
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.Loaded
-import com.fibelatti.pinboard.features.appstate.NewestFirst
-import com.fibelatti.pinboard.features.appstate.OldestFirst
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.Private
@@ -40,7 +41,6 @@ import com.fibelatti.pinboard.features.appstate.Recent
 import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.SearchParameters
 import com.fibelatti.pinboard.features.appstate.SetSorting
-import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.appstate.ViewCategory

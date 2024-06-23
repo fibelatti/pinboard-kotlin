@@ -6,6 +6,9 @@ import androidx.room.Room
 import com.fibelatti.bookmarking.core.network.UnauthorizedPluginProvider
 import com.fibelatti.bookmarking.core.persistence.UserSharedPreferences
 import com.fibelatti.bookmarking.di.GeneratedBookmarkingModule
+import com.fibelatti.bookmarking.features.filters.data.SavedFiltersDao
+import com.fibelatti.bookmarking.linkding.data.BookmarksDao
+import com.fibelatti.bookmarking.pinboard.data.PostsDao
 import com.fibelatti.core.android.platform.AppResourceProvider
 import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.pinboard.BuildConfig
@@ -16,12 +19,9 @@ import com.fibelatti.pinboard.core.persistence.database.DATABASE_VERSION_2
 import com.fibelatti.pinboard.core.persistence.database.DatabaseResetCallback
 import com.fibelatti.pinboard.features.ContainerFragment
 import com.fibelatti.pinboard.features.appstate.ActionHandler
-import com.fibelatti.pinboard.features.filters.data.SavedFiltersDao
 import com.fibelatti.pinboard.features.filters.presentation.SavedFiltersFragment
-import com.fibelatti.pinboard.features.linkding.data.BookmarksDao
 import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsFragment
 import com.fibelatti.pinboard.features.notes.presentation.NoteListFragment
-import com.fibelatti.pinboard.features.posts.data.PostsDao
 import com.fibelatti.pinboard.features.posts.presentation.EditPostFragment
 import com.fibelatti.pinboard.features.posts.presentation.PopularPostsFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostDetailFragment

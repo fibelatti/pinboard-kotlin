@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import org.koin.core.annotation.Single
 
+// TODO: Make internal once the migration is completed
 @Single
 public class UnauthorizedPluginProvider {
 

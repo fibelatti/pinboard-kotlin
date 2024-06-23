@@ -1,11 +1,11 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
 import com.fibelatti.bookmarking.core.Config.DEFAULT_RECENT_QUANTITY
+import com.fibelatti.bookmarking.features.appstate.NewestFirst
+import com.fibelatti.bookmarking.features.posts.domain.PostVisibility
+import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.posts.domain.model.PostListResult
 import com.fibelatti.core.functional.Result
-import com.fibelatti.pinboard.features.appstate.NewestFirst
-import com.fibelatti.pinboard.features.posts.domain.PostVisibility
-import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import kotlinx.coroutines.flow.Flow
 import org.koin.core.annotation.Factory
 

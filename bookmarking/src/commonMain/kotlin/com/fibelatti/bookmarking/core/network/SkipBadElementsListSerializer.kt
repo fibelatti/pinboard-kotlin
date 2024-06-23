@@ -8,7 +8,7 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.jsonArray
 
-public class SkipBadElementsListSerializer<E>(private val elementSerializer: KSerializer<E>) : KSerializer<List<E>> {
+internal class SkipBadElementsListSerializer<E>(private val elementSerializer: KSerializer<E>) : KSerializer<List<E>> {
 
     private val listSerializer = ListSerializer(elementSerializer)
 

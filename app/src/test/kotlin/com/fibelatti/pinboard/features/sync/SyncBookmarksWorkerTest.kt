@@ -2,12 +2,12 @@ package com.fibelatti.pinboard.features.sync
 
 import androidx.work.ListenableWorker
 import com.fibelatti.bookmarking.core.Config
+import com.fibelatti.bookmarking.features.appstate.NewestFirst
+import com.fibelatti.bookmarking.features.posts.domain.PostVisibility
+import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
-import com.fibelatti.pinboard.features.appstate.NewestFirst
-import com.fibelatti.pinboard.features.posts.domain.PostVisibility
-import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.every

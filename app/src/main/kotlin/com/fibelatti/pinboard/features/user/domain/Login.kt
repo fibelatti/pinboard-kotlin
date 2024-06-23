@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.user.domain
 
+import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.UseCaseWithParams
@@ -9,7 +10,6 @@ import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.UserLoggedIn
 import com.fibelatti.pinboard.features.appstate.UserLoggedOut
-import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import org.koin.core.annotation.Factory
 
 @Factory

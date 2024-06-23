@@ -1,13 +1,14 @@
 package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.bookmarking.core.network.ConnectivityInfoProvider
+import com.fibelatti.bookmarking.features.appstate.NewestFirst
+import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.posts.domain.PreferredDetailsView
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.bookmarking.test.MockDataProvider.createPost
 import com.fibelatti.core.functional.Either
 import com.fibelatti.pinboard.allSealedSubclasses
-import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearMocks

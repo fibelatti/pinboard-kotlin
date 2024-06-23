@@ -1,8 +1,8 @@
 package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.bookmarking.core.network.ConnectivityInfoProvider
+import com.fibelatti.bookmarking.features.notes.domain.model.Note
 import com.fibelatti.core.functional.Either
-import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk

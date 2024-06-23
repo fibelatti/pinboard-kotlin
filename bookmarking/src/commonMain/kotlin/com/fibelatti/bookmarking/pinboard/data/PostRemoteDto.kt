@@ -17,7 +17,7 @@ public data class PostRemoteDto(
 )
 
 @Factory
-public class PostRemoteDtoMapper : Mapper<PostRemoteDto, PostDto> {
+internal class PostRemoteDtoMapper : Mapper<PostRemoteDto, PostDto> {
 
     override fun map(param: PostRemoteDto): PostDto = with(param) {
         PostDto(

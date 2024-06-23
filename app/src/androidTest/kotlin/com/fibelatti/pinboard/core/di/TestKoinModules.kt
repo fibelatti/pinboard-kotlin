@@ -3,12 +3,12 @@ package com.fibelatti.pinboard.core.di
 import androidx.room.Room
 import com.fibelatti.bookmarking.core.network.UnauthorizedPluginProvider
 import com.fibelatti.bookmarking.core.persistence.UserSharedPreferences
+import com.fibelatti.bookmarking.features.filters.data.SavedFiltersDao
+import com.fibelatti.bookmarking.linkding.data.BookmarksDao
+import com.fibelatti.bookmarking.pinboard.data.PostsDao
 import com.fibelatti.pinboard.LinkdingMockServer
 import com.fibelatti.pinboard.PinboardMockServer
 import com.fibelatti.pinboard.core.persistence.database.AppDatabase
-import com.fibelatti.pinboard.features.filters.data.SavedFiltersDao
-import com.fibelatti.pinboard.features.linkding.data.BookmarksDao
-import com.fibelatti.pinboard.features.posts.data.PostsDao
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.accept

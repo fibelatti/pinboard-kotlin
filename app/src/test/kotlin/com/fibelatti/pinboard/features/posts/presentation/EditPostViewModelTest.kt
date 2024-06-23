@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
+import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAGS
 import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_1
@@ -17,7 +18,6 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.collectIn
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostSaved
-import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import com.fibelatti.pinboard.isEmpty

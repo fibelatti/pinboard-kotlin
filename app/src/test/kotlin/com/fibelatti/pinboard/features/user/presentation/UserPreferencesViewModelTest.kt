@@ -4,6 +4,7 @@ import com.fibelatti.bookmarking.core.AppModeProvider
 import com.fibelatti.bookmarking.core.ui.Appearance
 import com.fibelatti.bookmarking.core.ui.PreferredDateFormat
 import com.fibelatti.bookmarking.features.posts.domain.EditAfterSharing
+import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.posts.domain.PreferredDetailsView
 import com.fibelatti.bookmarking.features.sync.PeriodicSync
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
@@ -12,7 +13,6 @@ import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
-import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.sync.PeriodicSyncManager
 import com.fibelatti.pinboard.isEmpty
 import com.fibelatti.pinboard.randomBoolean

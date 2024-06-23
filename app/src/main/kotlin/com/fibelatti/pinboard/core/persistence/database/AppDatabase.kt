@@ -4,15 +4,15 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.fibelatti.bookmarking.features.filters.data.SavedFilterDto
+import com.fibelatti.bookmarking.features.filters.data.SavedFiltersDao
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.bookmarking.linkding.data.BookmarkLocal
 import com.fibelatti.bookmarking.linkding.data.BookmarkLocalFts
+import com.fibelatti.bookmarking.linkding.data.BookmarksDao
 import com.fibelatti.bookmarking.pinboard.data.PostDto
 import com.fibelatti.bookmarking.pinboard.data.PostDtoFts
-import com.fibelatti.pinboard.features.filters.data.SavedFilterDto
-import com.fibelatti.pinboard.features.filters.data.SavedFiltersDao
-import com.fibelatti.pinboard.features.linkding.data.BookmarksDao
-import com.fibelatti.pinboard.features.posts.data.PostsDao
+import com.fibelatti.bookmarking.pinboard.data.PostsDao
 import org.koin.core.annotation.Factory
 
 const val DATABASE_NAME = "com.fibelatti.pinboard.db"

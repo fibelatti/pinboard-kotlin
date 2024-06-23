@@ -1,8 +1,8 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
+import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.posts.domain.model.PostListResult
 import com.fibelatti.core.functional.Result
-import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import kotlinx.coroutines.flow.Flow
 import org.koin.core.annotation.Factory
 

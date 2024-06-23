@@ -4,11 +4,11 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.fibelatti.bookmarking.core.Config
+import com.fibelatti.bookmarking.features.appstate.NewestFirst
+import com.fibelatti.bookmarking.features.posts.domain.PostVisibility
+import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.core.functional.Success
-import com.fibelatti.pinboard.features.appstate.NewestFirst
-import com.fibelatti.pinboard.features.posts.domain.PostVisibility
-import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import kotlinx.coroutines.flow.toList
 
 class SyncBookmarksWorker(

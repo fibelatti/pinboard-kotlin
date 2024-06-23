@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.bookmarking.core.Config
+import com.fibelatti.bookmarking.features.appstate.NewestFirst
 import org.koin.core.annotation.Factory
 
 @Factory

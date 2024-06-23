@@ -3,10 +3,10 @@ package com.fibelatti.pinboard.features.sync
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.posts.domain.model.PendingSync
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope

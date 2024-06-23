@@ -35,6 +35,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fibelatti.bookmarking.features.filters.domain.model.SavedFilter
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.bookmarking.features.tags.domain.model.TagSorting
 import com.fibelatti.core.android.extension.hideKeyboard
@@ -51,7 +52,6 @@ import com.fibelatti.pinboard.features.appstate.RefreshSearchTags
 import com.fibelatti.pinboard.features.appstate.RemoveSearchTag
 import com.fibelatti.pinboard.features.appstate.Search
 import com.fibelatti.pinboard.features.appstate.SetTerm
-import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.pinboard.features.tags.presentation.TagList
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
 import com.fibelatti.ui.components.ChipGroup

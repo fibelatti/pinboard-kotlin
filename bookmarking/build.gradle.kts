@@ -53,6 +53,7 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(projects.core)
+                implementation(projects.bookmarkingTest)
 
                 compileOnly(libs.junit)
                 runtimeOnly(libs.junit5.engine)

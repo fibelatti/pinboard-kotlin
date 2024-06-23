@@ -1,8 +1,8 @@
 package com.fibelatti.pinboard.features.filters.presentation
 
+import com.fibelatti.bookmarking.features.filters.domain.SavedFiltersRepository
+import com.fibelatti.bookmarking.features.filters.domain.model.SavedFilter
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
-import com.fibelatti.pinboard.features.filters.domain.SavedFiltersRepository
-import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

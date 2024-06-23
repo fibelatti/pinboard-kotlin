@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.bookmarking.core.network.ConnectivityInfoProvider
+import com.fibelatti.bookmarking.features.appstate.NewestFirst
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import org.koin.core.annotation.Factory
 

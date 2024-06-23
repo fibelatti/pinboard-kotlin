@@ -40,7 +40,7 @@ public data class BookmarkLocal(
 }
 
 @Factory
-public class BookmarkLocalMapper(
+internal class BookmarkLocalMapper(
     private val dateFormatter: DateFormatter,
 ) : TwoWayMapper<BookmarkLocal, Post> {
 

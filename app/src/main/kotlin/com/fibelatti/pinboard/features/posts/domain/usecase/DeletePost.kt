@@ -1,10 +1,10 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
+import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.UseCaseWithParams
 import com.fibelatti.core.functional.map
-import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import org.koin.core.annotation.Factory

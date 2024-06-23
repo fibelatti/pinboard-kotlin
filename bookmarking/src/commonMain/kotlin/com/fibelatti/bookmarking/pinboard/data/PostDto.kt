@@ -35,7 +35,7 @@ public data class PostDto(
 )
 
 @Factory
-public class PostDtoMapper(
+internal class PostDtoMapper(
     private val dateFormatter: DateFormatter,
 ) : TwoWayMapper<PostDto, Post> {
 

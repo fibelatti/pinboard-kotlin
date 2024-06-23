@@ -1,5 +1,9 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
+import com.fibelatti.bookmarking.features.appstate.SortType
+import com.fibelatti.bookmarking.features.filters.domain.SavedFiltersRepository
+import com.fibelatti.bookmarking.features.filters.domain.model.SavedFilter
+import com.fibelatti.bookmarking.features.posts.domain.PostVisibility
 import com.fibelatti.bookmarking.features.posts.domain.model.PostListResult
 import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAGS
 import com.fibelatti.core.functional.Failure
@@ -19,13 +23,9 @@ import com.fibelatti.pinboard.features.appstate.ShouldForceLoad
 import com.fibelatti.pinboard.features.appstate.ShouldLoad
 import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
 import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
-import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.appstate.ViewCategory
-import com.fibelatti.pinboard.features.filters.domain.SavedFiltersRepository
-import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
-import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetAllPosts
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPostParams
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts

@@ -33,6 +33,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fibelatti.bookmarking.features.notes.domain.model.Note
+import com.fibelatti.bookmarking.features.notes.domain.model.NoteSorting
 import com.fibelatti.core.randomUUID
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
@@ -47,8 +49,6 @@ import com.fibelatti.pinboard.features.appstate.RefreshNotes
 import com.fibelatti.pinboard.features.appstate.SidePanelContent
 import com.fibelatti.pinboard.features.appstate.ViewNote
 import com.fibelatti.pinboard.features.appstate.find
-import com.fibelatti.pinboard.features.notes.domain.model.Note
-import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
 import com.fibelatti.ui.foundation.asHorizontalPaddingDp
 import com.fibelatti.ui.foundation.navigationBarsCompat
 import com.fibelatti.ui.preview.ThemePreviews
