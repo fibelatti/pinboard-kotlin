@@ -102,6 +102,7 @@ public fun <R> Result<R>.exceptionOrNull(): Throwable? = leftOrNull()
 /**
  * Throws the exception held by [Left], if `this` is an instance of [Left].
  */
+@Throws(Throwable::class)
 public fun <R> Result<R>.throwOnFailure() {
     if (this is Failure) throw this.error
 }
@@ -110,6 +111,7 @@ public fun <R> Result<R>.throwOnFailure() {
  * @return the value if `this` is an instance of [Success]
  * @throws Throwable if `this` is an instance of [Failure]
  */
+@Throws(Throwable::class)
 public fun <R> Result<R>.getOrThrow(): R = when (this) {
     is Success -> this.value
     is Failure -> throw this.error

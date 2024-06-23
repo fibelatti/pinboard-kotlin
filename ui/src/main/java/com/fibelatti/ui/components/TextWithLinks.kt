@@ -22,13 +22,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import com.fibelatti.ui.components.TextWithLinks.findLinks
-import java.util.regex.Pattern
 
 @Composable
 fun TextWithLinks(
     text: String,
     modifier: Modifier = Modifier,
-    pattern: Pattern = TextWithLinks.urlPattern,
+    regex: Regex = TextWithLinks.urlRegex,
     color: Color = Color.Unspecified,
     linkColor: Color = Color.Blue,
     linkTextDecoration: TextDecoration? = TextDecoration.Underline,
@@ -40,7 +39,7 @@ fun TextWithLinks(
     TextWithLinks(
         text = SpannableString(text),
         modifier = modifier,
-        pattern = pattern,
+        regex = regex,
         color = color,
         linkColor = linkColor,
         linkTextDecoration = linkTextDecoration,
@@ -55,7 +54,7 @@ fun TextWithLinks(
 fun TextWithLinks(
     text: Spanned,
     modifier: Modifier = Modifier,
-    pattern: Pattern = TextWithLinks.urlPattern,
+    regex: Regex = TextWithLinks.urlRegex,
     color: Color = Color.Unspecified,
     linkColor: Color = Color.Blue,
     linkTextDecoration: TextDecoration? = TextDecoration.Underline,
@@ -70,7 +69,7 @@ fun TextWithLinks(
         buildAnnotatedString {
             append(text)
 
-            val explicitLinks = findLinks(text.toString(), pattern)
+            val explicitLinks = findLinks(text.toString(), regex)
             val aTagLinks = text.getSpans(0, text.length, URLSpan::class.java)
 
             explicitLinks.forEach { linkInfo ->
@@ -139,25 +138,23 @@ private fun AnnotatedString.Builder.addUrlStringAnnotation(
 
 object TextWithLinks {
 
-    internal val urlPattern: Pattern = Pattern.compile(
+    internal val urlRegex = Regex(
         "(?:^|\\W)((ht|f)tp(s?)://|www\\.)" +
             "(([\\w\\-]+\\.)+([\\w\\-.~]+/?)*" +
             "[\\p{Alnum}.,%_=?&#\\-+()\\[\\]*$~@!:/{};']*)",
-        Pattern.CASE_INSENSITIVE or Pattern.MULTILINE or Pattern.DOTALL,
+        setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL)
     )
 
     internal fun findLinks(
         text: String,
-        pattern: Pattern = urlPattern,
+        regex: Regex = urlRegex,
     ): List<LinkInfo> {
-        val matcher = pattern.matcher(text)
-        var matchStart: Int
-        var matchEnd: Int
+        val matches = regex.findAll(text)
 
         return buildList {
-            while (matcher.find()) {
-                matchStart = matcher.start(1)
-                matchEnd = matcher.end()
+            for (match in matches) {
+                val matchStart = match.range.first
+                val matchEnd = match.range.last + 1
 
                 var url = text.substring(matchStart, matchEnd)
                 if (!url.startsWith("http://") && !url.startsWith("https://")) url = "https://$url"

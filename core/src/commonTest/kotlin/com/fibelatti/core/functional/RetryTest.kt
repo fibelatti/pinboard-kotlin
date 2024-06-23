@@ -1,6 +1,7 @@
 package com.fibelatti.core.functional
 
 import com.google.common.truth.Truth.assertThat
+import io.ktor.utils.io.errors.IOException
 import io.mockk.Runs
 import io.mockk.andThenJust
 import io.mockk.every
@@ -9,7 +10,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.io.IOException
 
 internal class RetryTest {
 

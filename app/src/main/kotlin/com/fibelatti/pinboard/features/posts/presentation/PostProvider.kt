@@ -6,7 +6,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.fibelatti.bookmarking.features.posts.domain.model.PendingSync
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
-import java.util.Random
+import kotlin.random.Random
 
 private val LOREM_IPSUM_SOURCE: String = """
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sodales
@@ -26,8 +26,6 @@ class PostProvider : PreviewParameterProvider<Post> {
     override val values: Sequence<Post>
         get() = sequenceOf(generatePost())
 
-    private val random = Random()
-
     private fun generatePost(): Post {
         val range = 0..9
         val value = range.random()
@@ -35,8 +33,8 @@ class PostProvider : PreviewParameterProvider<Post> {
             url = "https://post-$value.com",
             title = "Post #$value",
             description = LOREM_IPSUM_SOURCE,
-            private = random.nextBoolean(),
-            readLater = random.nextBoolean(),
+            private = Random.Default.nextBoolean(),
+            readLater = Random.Default.nextBoolean(),
             tags = LOREM_IPSUM_SOURCE.split(" ").take(value).map { Tag(name = it) },
             pendingSync = when {
                 value % 2 == 0 -> PendingSync.ADD
@@ -55,8 +53,6 @@ class PostListProvider(val size: Int) : PreviewParameterProvider<List<Post>> {
     override val values: Sequence<List<Post>>
         get() = sequenceOf(List(size, ::generatePost))
 
-    private val random = Random()
-
     private fun generatePost(index: Int): Post {
         val range = 0..9
         val value = range.random()
@@ -64,8 +60,8 @@ class PostListProvider(val size: Int) : PreviewParameterProvider<List<Post>> {
             url = "https://post-$index.com",
             title = "Post #$index",
             description = LOREM_IPSUM_SOURCE,
-            private = random.nextBoolean(),
-            readLater = random.nextBoolean(),
+            private = Random.Default.nextBoolean(),
+            readLater = Random.Default.nextBoolean(),
             tags = LOREM_IPSUM_SOURCE.split(" ").take(value).map { Tag(name = it) },
             pendingSync = when {
                 value % 2 == 0 -> PendingSync.ADD

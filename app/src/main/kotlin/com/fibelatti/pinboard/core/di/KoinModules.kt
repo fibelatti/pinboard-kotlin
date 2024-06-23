@@ -65,8 +65,6 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.koin.ksp.generated.module
-import java.text.Collator
-import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 val coreModule = module {
@@ -191,8 +189,6 @@ val linkdingModule = module {
 }
 
 val androidPlatformModule = module {
-    single { Locale.getDefault() }
-    single { Collator.getInstance(Locale.US) }
     single<ConnectivityManager?> { androidContext().getSystemService() }
     singleOf(::AppResourceProvider) { bind<ResourceProvider>() }
 }

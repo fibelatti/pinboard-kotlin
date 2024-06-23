@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.user.presentation
 
+import com.fibelatti.bookmarking.core.Config
 import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.pinboard.R
@@ -16,7 +17,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
-import java.net.HttpURLConnection
 
 @KoinViewModel
 class AuthViewModel(
@@ -56,13 +56,8 @@ class AuthViewModel(
                 .onFailure { error ->
                     _screenState.value = ScreenState(isLoading = false)
 
-                    val loginFailedCodes = listOf(
-                        HttpURLConnection.HTTP_UNAUTHORIZED,
-                        HttpURLConnection.HTTP_INTERNAL_ERROR,
-                    )
-
                     when {
-                        error is ResponseException && error.response.status.value in loginFailedCodes -> {
+                        error is ResponseException && error.response.status.value in Config.LOGIN_FAILED_CODES -> {
                             _screenState.update { currentState ->
                                 currentState.copy(
                                     apiTokenError = resourceProvider.getString(R.string.auth_token_error),

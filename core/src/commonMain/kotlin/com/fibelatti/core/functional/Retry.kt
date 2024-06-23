@@ -1,7 +1,7 @@
 package com.fibelatti.core.functional
 
+import io.ktor.utils.io.errors.IOException
 import kotlinx.coroutines.delay
-import java.io.IOException
 
 /**
  * Shorthand function to retry executing [block] automatically for [times] in case an [IOException] happens.

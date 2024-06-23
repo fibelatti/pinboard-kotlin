@@ -10,6 +10,8 @@ public object Config {
     public const val DEFAULT_RECENT_QUANTITY: Int = 50
     public const val DEFAULT_FILTER_MAX_TAGS: Int = 3
 
+    public val LOGIN_FAILED_CODES: List<Int> = listOf(401, 500)
+
     public object Pinboard {
 
         public const val API_BASE_URL_LENGTH: Int = 90

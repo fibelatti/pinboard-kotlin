@@ -16,6 +16,7 @@ import kotlinx.coroutines.delay
  *
  * @return [T] if successful, HttpException if all retries failed
  */
+@Throws(ResponseException::class)
 suspend fun <T> tooManyRequestsBackoff(
     times: Int = 3,
     initialDelay: Long = 500,

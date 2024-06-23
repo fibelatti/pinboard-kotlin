@@ -30,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fibelatti.bookmarking.core.Config
 import com.fibelatti.core.functional.ScreenState
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.ErrorReportDialog
@@ -39,7 +40,6 @@ import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import io.ktor.client.plugins.ResponseException
 import org.koin.androidx.compose.koinViewModel
-import java.net.HttpURLConnection
 
 @Composable
 fun ShareReceiverScreen(
@@ -120,15 +120,10 @@ fun ShareReceiverErrorDialog(
 
     if (!openDialog.value) return
 
-    val loginFailedCodes = listOf(
-        HttpURLConnection.HTTP_UNAUTHORIZED,
-        HttpURLConnection.HTTP_INTERNAL_ERROR,
-    )
-
     val errorMessage = when {
         throwable is InvalidUrlException -> R.string.validation_error_invalid_url_rationale
         throwable.isServerException() -> R.string.server_timeout_error
-        throwable is ResponseException && throwable.response.status.value in loginFailedCodes -> {
+        throwable is ResponseException && throwable.response.status.value in Config.LOGIN_FAILED_CODES -> {
             R.string.auth_logged_out_feedback
         }
 

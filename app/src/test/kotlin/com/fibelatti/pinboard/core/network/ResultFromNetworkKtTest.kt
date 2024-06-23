@@ -4,11 +4,11 @@ import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.exceptionOrNull
 import com.google.common.truth.Truth.assertThat
 import io.ktor.client.plugins.ResponseException
+import io.ktor.utils.io.errors.IOException
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
-import java.io.IOException
 
 internal class ResultFromNetworkKtTest {
 
