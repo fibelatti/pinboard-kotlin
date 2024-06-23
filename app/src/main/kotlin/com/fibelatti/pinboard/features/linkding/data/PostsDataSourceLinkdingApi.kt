@@ -11,6 +11,7 @@ import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onSuccess
+import com.fibelatti.core.randomUUID
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
 import com.fibelatti.pinboard.core.functional.resultFrom
@@ -27,7 +28,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import org.koin.core.annotation.Factory
-import java.util.UUID
 import kotlin.time.Duration.Companion.minutes
 
 @Factory
@@ -93,7 +93,7 @@ class PostsDataSourceLinkdingApi(
         val existingPost = linkdingDao.getBookmark(id = id?.toString().orEmpty(), url = post.url)
 
         val newPost = BookmarkLocal(
-            id = UUID.randomUUID().toString(),
+            id = randomUUID(),
             url = existingPost?.url ?: post.url,
             title = post.title,
             description = post.description,

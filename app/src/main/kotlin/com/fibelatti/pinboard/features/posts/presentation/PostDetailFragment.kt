@@ -11,6 +11,7 @@ import com.fibelatti.core.android.extension.navigateBack
 import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
+import com.fibelatti.core.randomUUID
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.applySecureFlag
@@ -27,7 +28,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.util.UUID
 
 class PostDetailFragment : BaseFragment() {
 
@@ -36,7 +36,7 @@ class PostDetailFragment : BaseFragment() {
     private val postDetailViewModel: PostDetailViewModel by viewModel()
     private val popularPostsViewModel: PopularPostsViewModel by viewModel()
 
-    private val actionId = UUID.randomUUID().toString()
+    private val actionId = randomUUID()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

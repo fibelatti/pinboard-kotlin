@@ -10,6 +10,7 @@ import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.core.android.extension.doOnApplyWindowInsets
 import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.core.functional.Success
+import com.fibelatti.core.randomUUID
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.applySecureFlag
@@ -25,7 +26,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.util.UUID
 
 class EditPostFragment : BaseFragment() {
 
@@ -260,6 +260,6 @@ class EditPostFragment : BaseFragment() {
         @JvmStatic
         val TAG: String = "EditPostFragment"
 
-        val ACTION_ID = UUID.randomUUID().toString()
+        val ACTION_ID = randomUUID()
     }
 }

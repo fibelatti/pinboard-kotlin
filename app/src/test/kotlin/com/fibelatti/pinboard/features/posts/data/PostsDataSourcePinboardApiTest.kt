@@ -9,6 +9,7 @@ import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.functional.getOrThrow
+import com.fibelatti.core.randomUUID
 import com.fibelatti.pinboard.MockDataProvider.createGenericResponse
 import com.fibelatti.pinboard.MockDataProvider.createGetPostDto
 import com.fibelatti.pinboard.MockDataProvider.createPost
@@ -67,7 +68,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import java.util.UUID
 
 class PostsDataSourcePinboardApiTest {
 
@@ -346,10 +346,8 @@ class PostsDataSourcePinboardApiTest {
                     time = mockTime,
                 )
 
-                mockkStatic(UUID::class)
-                every { UUID.randomUUID() } returns mockk {
-                    every { this@mockk.toString() } returns mockHash
-                }
+                mockkStatic(::randomUUID)
+                every { randomUUID() } returns mockHash
                 every { mockDateFormatter.nowAsTzFormat() } returns mockTime
                 coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
                 coEvery {
@@ -518,10 +516,8 @@ class PostsDataSourcePinboardApiTest {
                 val expectedPost = baseExpectedPost.copy(pendingSync = PendingSyncDto.ADD)
 
                 coEvery { mockDao.getPost(mockUrlValid) } returns null
-                mockkStatic(UUID::class)
-                every { UUID.randomUUID() } returns mockk {
-                    every { this@mockk.toString() } returns mockHash
-                }
+                mockkStatic(::randomUUID)
+                every { randomUUID() } returns mockHash
                 every { mockDateFormatter.nowAsTzFormat() } returns mockTime
                 every { mockPostDtoMapper.map(expectedPost) } returns createPost()
 

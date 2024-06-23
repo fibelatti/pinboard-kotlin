@@ -15,6 +15,7 @@ import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.getOrThrow
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.mapFailure
+import com.fibelatti.core.randomUUID
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.extension.containsHtmlChars
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
@@ -41,7 +42,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withTimeout
 import org.koin.core.annotation.Factory
-import java.util.UUID
 
 @Factory
 class PostsDataSourcePinboardApi(
@@ -87,7 +87,7 @@ class PostsDataSourcePinboardApi(
 
     override suspend fun add(post: Post): Result<Post> {
         val resolvedPost = post.copy(
-            id = post.id.ifNullOrBlank { UUID.randomUUID().toString() },
+            id = post.id.ifNullOrBlank { randomUUID() },
             time = post.time.ifNullOrBlank { dateFormatter.nowAsTzFormat() },
         )
 

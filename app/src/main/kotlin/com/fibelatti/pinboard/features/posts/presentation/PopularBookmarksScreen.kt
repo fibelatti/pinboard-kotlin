@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
+import com.fibelatti.core.randomUUID
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
@@ -54,7 +55,6 @@ import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.compose.koinViewModel
-import java.util.UUID
 
 @Composable
 fun PopularBookmarksScreen(
@@ -80,7 +80,7 @@ fun PopularBookmarksScreen(
             derivedStateOf { content is SidePanelContent && multiPanelEnabled.multiPanelEnabled }
         }
 
-        val actionId = remember { UUID.randomUUID().toString() }
+        val actionId = remember { randomUUID() }
 
         val localContext = LocalContext.current
         val localView = LocalView.current

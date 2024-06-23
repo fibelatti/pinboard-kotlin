@@ -5,6 +5,7 @@ import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.UseCase
 import com.fibelatti.core.functional.catching
+import com.fibelatti.core.randomUUID
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
@@ -13,7 +14,6 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Named
-import java.util.UUID
 
 @Factory
 class GetPopularPosts(
@@ -35,7 +35,7 @@ class GetPopularPosts(
                 url = url,
                 title = title,
                 description = "",
-                id = UUID.randomUUID().toString(),
+                id = randomUUID(),
                 private = false,
                 readLater = false,
                 tags = tags,

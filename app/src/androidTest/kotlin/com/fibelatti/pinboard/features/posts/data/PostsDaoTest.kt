@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.posts.data
 
-import com.fibelatti.pinboard.tooling.BaseDbTest
+import com.fibelatti.bookmarking.core.Config
+import com.fibelatti.core.randomUUID
 import com.fibelatti.pinboard.MockDataProvider.createPostDto
 import com.fibelatti.pinboard.MockDataProvider.mockHash
 import com.fibelatti.pinboard.MockDataProvider.mockTagString1
@@ -11,12 +12,11 @@ import com.fibelatti.pinboard.MockDataProvider.mockTime2
 import com.fibelatti.pinboard.MockDataProvider.mockTime3
 import com.fibelatti.pinboard.MockDataProvider.mockTime4
 import com.fibelatti.pinboard.MockDataProvider.mockTime5
-import com.fibelatti.bookmarking.core.Config
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
+import com.fibelatti.pinboard.tooling.BaseDbTest
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import java.util.UUID
 
 class PostsDaoTest : BaseDbTest() {
 
@@ -91,7 +91,7 @@ class PostsDaoTest : BaseDbTest() {
 
     private val postsDao get() = appDatabase.postDao()
 
-    private fun randomHash(): String = UUID.randomUUID().toString()
+    private fun randomHash(): String = randomUUID()
 
     @Test
     fun whenDeleteIsCalledThenAllDataIsDeleted() = runTest {

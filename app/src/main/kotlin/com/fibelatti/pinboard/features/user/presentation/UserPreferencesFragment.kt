@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.core.android.extension.navigateBack
+import com.fibelatti.core.randomUUID
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
@@ -17,7 +18,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
-import java.util.UUID
 
 class UserPreferencesFragment : BaseFragment() {
 
@@ -66,6 +66,6 @@ class UserPreferencesFragment : BaseFragment() {
         @JvmStatic
         val TAG: String = "UserPreferencesFragment"
 
-        private val ACTION_ID = UUID.randomUUID().toString()
+        private val ACTION_ID = randomUUID()
     }
 }

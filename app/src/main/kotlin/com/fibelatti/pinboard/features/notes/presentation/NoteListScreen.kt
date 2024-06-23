@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fibelatti.core.randomUUID
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LoadingContent
@@ -54,7 +55,6 @@ import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.compose.koinViewModel
-import java.util.UUID
 
 @Composable
 fun NoteListScreen(
@@ -77,7 +77,7 @@ fun NoteListScreen(
             derivedStateOf { content is SidePanelContent && multiPanelEnabled.multiPanelEnabled }
         }
 
-        val actionId = remember { UUID.randomUUID().toString() }
+        val actionId = remember { randomUUID() }
         val localContext = LocalContext.current
         val localLifecycleOwner = LocalLifecycleOwner.current
 

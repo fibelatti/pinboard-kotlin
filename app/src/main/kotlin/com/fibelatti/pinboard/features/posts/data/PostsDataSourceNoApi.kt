@@ -10,6 +10,7 @@ import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.getOrNull
+import com.fibelatti.core.randomUUID
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
 import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.InvalidRequestException
@@ -22,7 +23,6 @@ import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.koin.core.annotation.Factory
-import java.util.UUID
 
 @Factory
 class PostsDataSourceNoApi(
@@ -42,7 +42,7 @@ class PostsDataSourceNoApi(
             href = existingPost?.href ?: post.url,
             description = post.title,
             extended = post.description,
-            hash = existingPost?.hash ?: post.id.ifEmpty { UUID.randomUUID().toString() },
+            hash = existingPost?.hash ?: post.id.ifEmpty { randomUUID() },
             time = existingPost?.time ?: post.time.ifEmpty { dateFormatter.nowAsTzFormat() },
             shared = if (post.private == true) Config.Pinboard.LITERAL_NO else Config.Pinboard.LITERAL_YES,
             toread = if (post.readLater == true) Config.Pinboard.LITERAL_YES else Config.Pinboard.LITERAL_NO,

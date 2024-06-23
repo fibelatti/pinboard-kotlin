@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.bookmarking.features.tags.domain.model.TagSorting
+import com.fibelatti.core.randomUUID
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
@@ -80,7 +81,6 @@ import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-import java.util.UUID
 
 @Composable
 fun TagListScreen(
@@ -95,7 +95,7 @@ fun TagListScreen(
     val state by tagsViewModel.state.collectAsStateWithLifecycle()
 
     val screenTitle = stringResource(id = R.string.tags_title)
-    val actionId = remember { UUID.randomUUID().toString() }
+    val actionId = remember { randomUUID() }
     val localLifecycleOwner = LocalLifecycleOwner.current
 
     LaunchedEffect(Unit) {

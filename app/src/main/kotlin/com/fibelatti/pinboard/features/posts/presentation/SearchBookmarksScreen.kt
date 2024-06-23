@@ -38,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.bookmarking.features.tags.domain.model.TagSorting
 import com.fibelatti.core.android.extension.hideKeyboard
+import com.fibelatti.core.randomUUID
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.showBanner
@@ -59,7 +60,6 @@ import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.compose.koinViewModel
-import java.util.UUID
 
 @Composable
 fun SearchBookmarksScreen(
@@ -78,7 +78,7 @@ fun SearchBookmarksScreen(
         val tagsState by tagsViewModel.state.collectAsStateWithLifecycle()
 
         val title = stringResource(id = R.string.search_title)
-        val actionId = remember { UUID.randomUUID().toString() }
+        val actionId = remember { randomUUID() }
         val queryResultSize by searchPostViewModel.queryResultSize.collectAsStateWithLifecycle()
         val activeSearchLabel = stringResource(id = R.string.search_result_size, queryResultSize)
 

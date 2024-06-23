@@ -11,6 +11,7 @@ import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
+import com.fibelatti.core.randomUUID
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
@@ -50,7 +51,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.util.UUID
 
 class PostListFragment(
     private val userRepository: UserRepository,
@@ -322,7 +322,7 @@ class PostListFragment(
         @JvmStatic
         val TAG: String = "PostListFragment"
 
-        val ACTION_ID = UUID.randomUUID().toString()
+        val ACTION_ID = randomUUID()
     }
 }
 

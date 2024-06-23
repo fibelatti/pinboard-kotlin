@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fibelatti.core.randomUUID
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
@@ -33,7 +34,6 @@ import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.compose.koinViewModel
-import java.util.UUID
 
 @Composable
 fun NoteDetailsScreen(
@@ -50,7 +50,7 @@ fun NoteDetailsScreen(
         val noteDetailContent by rememberUpdatedState(newValue = appState ?: return@Surface)
         val isLoading = noteDetailContent.note.isLeft
 
-        val actionId = remember { UUID.randomUUID().toString() }
+        val actionId = remember { randomUUID() }
         val localLifecycleOwner = LocalLifecycleOwner.current
 
         LaunchedEffect(noteDetailContent) {

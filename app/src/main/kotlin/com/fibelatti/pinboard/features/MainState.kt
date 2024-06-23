@@ -2,8 +2,8 @@ package com.fibelatti.pinboard.features
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import com.fibelatti.core.randomUUID
 import com.fibelatti.pinboard.R
-import java.util.UUID
 
 data class MainState(
     val title: TitleComponent = TitleComponent.Gone,
@@ -29,7 +29,7 @@ data class MainState(
 
         data object Gone : NavigationComponent() {
 
-            override val id: String = UUID.randomUUID().toString()
+            override val id: String = randomUUID()
         }
 
         data class Visible(
@@ -44,7 +44,7 @@ data class MainState(
 
         data object Gone : ActionButtonComponent() {
 
-            override val id: String = UUID.randomUUID().toString()
+            override val id: String = randomUUID()
         }
 
         data class Visible(
@@ -60,7 +60,7 @@ data class MainState(
 
         data object Gone : BottomAppBarComponent() {
 
-            override val id: String = UUID.randomUUID().toString()
+            override val id: String = randomUUID()
         }
 
         data class Visible(
@@ -138,7 +138,7 @@ data class MainState(
 
         data object Gone : FabComponent() {
 
-            override val id: String = UUID.randomUUID().toString()
+            override val id: String = randomUUID()
         }
 
         data class Visible(
@@ -154,7 +154,7 @@ data class MainState(
 
         data object Gone : SidePanelAppBarComponent() {
 
-            override val id: String = UUID.randomUUID().toString()
+            override val id: String = randomUUID()
         }
 
         data class Visible(

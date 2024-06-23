@@ -1,10 +1,10 @@
 package com.fibelatti.pinboard
 
+import com.fibelatti.core.randomUUID
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
-import java.util.UUID
 
 object LinkdingMockServer {
 
@@ -58,7 +58,7 @@ object LinkdingMockServer {
 
     object TestData {
 
-        val TOKEN = UUID.randomUUID().toString()
+        val TOKEN = randomUUID()
 
         fun bookmarksResponse(): String = """
             {
