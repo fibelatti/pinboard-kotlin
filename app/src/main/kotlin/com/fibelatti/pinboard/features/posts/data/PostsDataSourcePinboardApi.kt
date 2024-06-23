@@ -6,6 +6,7 @@ import com.fibelatti.bookmarking.core.Config.Pinboard
 import com.fibelatti.bookmarking.core.extension.containsHtmlChars
 import com.fibelatti.bookmarking.core.extension.replaceHtmlChars
 import com.fibelatti.bookmarking.core.network.ApiException
+import com.fibelatti.bookmarking.core.network.ConnectivityInfoProvider
 import com.fibelatti.bookmarking.core.network.InvalidRequestException
 import com.fibelatti.bookmarking.core.network.PinboardApiResultCode
 import com.fibelatti.bookmarking.core.network.resultFromNetwork
@@ -29,7 +30,6 @@ import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.mapFailure
 import com.fibelatti.core.functional.resultFrom
 import com.fibelatti.core.randomUUID
-import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository

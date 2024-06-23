@@ -2,10 +2,10 @@ package com.fibelatti.pinboard.features.tags.data
 
 import com.fibelatti.bookmarking.core.AppMode
 import com.fibelatti.bookmarking.core.network.ApiException
+import com.fibelatti.bookmarking.core.network.ConnectivityInfoProvider
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.data.PostsDao
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery

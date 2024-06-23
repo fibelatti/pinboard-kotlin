@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.posts.data
 import com.fibelatti.bookmarking.core.Config
 import com.fibelatti.bookmarking.core.extension.HTML_CHAR_MAP
 import com.fibelatti.bookmarking.core.network.ApiException
+import com.fibelatti.bookmarking.core.network.ConnectivityInfoProvider
 import com.fibelatti.bookmarking.core.network.InvalidRequestException
 import com.fibelatti.bookmarking.core.network.PinboardApiResultCode
 import com.fibelatti.bookmarking.core.util.DateFormatter
@@ -42,7 +43,6 @@ import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.functional.getOrThrow
 import com.fibelatti.core.randomUUID
-import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.randomBoolean

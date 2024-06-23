@@ -1,12 +1,12 @@
 package com.fibelatti.pinboard.features.appstate
 
 import androidx.annotation.VisibleForTesting
+import com.fibelatti.bookmarking.core.network.ConnectivityInfoProvider
 import com.fibelatti.bookmarking.features.posts.domain.PreferredDetailsView
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.core.functional.Either
 import com.fibelatti.core.functional.catching
-import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch

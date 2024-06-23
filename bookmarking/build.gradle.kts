@@ -17,6 +17,8 @@ android {
     defaultConfig {
         minSdk = minSdkVersion
     }
+
+    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
 }
 
 kotlin {

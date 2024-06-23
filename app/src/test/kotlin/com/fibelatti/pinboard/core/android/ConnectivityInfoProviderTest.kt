@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.core.android
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
+import com.fibelatti.bookmarking.core.network.ConnectivityInfoProvider
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk

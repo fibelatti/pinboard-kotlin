@@ -2,8 +2,8 @@ package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.bookmarking.core.AppMode
 import com.fibelatti.bookmarking.core.AppModeProvider
+import com.fibelatti.bookmarking.core.network.ConnectivityInfoProvider
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
-import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
