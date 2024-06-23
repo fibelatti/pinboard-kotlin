@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.features.notes.data.model
 
+import com.fibelatti.bookmarking.core.util.DateFormatter
 import com.fibelatti.pinboard.MockDataProvider.mockNoteId
-import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every

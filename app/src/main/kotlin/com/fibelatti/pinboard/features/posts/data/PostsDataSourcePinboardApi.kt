@@ -4,6 +4,7 @@ import androidx.annotation.VisibleForTesting
 import com.fibelatti.bookmarking.core.Config
 import com.fibelatti.bookmarking.core.Config.Pinboard
 import com.fibelatti.bookmarking.core.network.PinboardApiResultCode
+import com.fibelatti.bookmarking.core.util.DateFormatter
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.bookmarking.features.posts.domain.model.PostListResult
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
@@ -24,7 +25,6 @@ import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.core.network.resultFromNetwork
-import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto

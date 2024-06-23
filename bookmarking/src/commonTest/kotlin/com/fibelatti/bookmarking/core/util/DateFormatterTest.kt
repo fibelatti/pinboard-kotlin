@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.core.util
+package com.fibelatti.bookmarking.core.util
 
 import com.fibelatti.bookmarking.core.ui.PreferredDateFormat
 import com.fibelatti.bookmarking.features.user.domain.UserRepository

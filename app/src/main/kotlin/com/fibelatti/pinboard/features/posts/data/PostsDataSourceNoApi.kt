@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.posts.data
 
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.bookmarking.core.Config
+import com.fibelatti.bookmarking.core.util.DateFormatter
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.bookmarking.features.posts.domain.model.PostListResult
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
@@ -14,7 +15,6 @@ import com.fibelatti.core.randomUUID
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
 import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.InvalidRequestException
-import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper

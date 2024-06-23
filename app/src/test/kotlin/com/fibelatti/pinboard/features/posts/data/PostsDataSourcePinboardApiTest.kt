@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.posts.data
 
 import com.fibelatti.bookmarking.core.Config
 import com.fibelatti.bookmarking.core.network.PinboardApiResultCode
+import com.fibelatti.bookmarking.core.util.DateFormatter
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.bookmarking.features.posts.domain.model.PostListResult
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
@@ -36,7 +37,6 @@ import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.extension.HTML_CHAR_MAP
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.InvalidRequestException
-import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto

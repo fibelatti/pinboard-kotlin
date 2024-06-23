@@ -4,12 +4,12 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.fibelatti.bookmarking.core.Config.Pinboard
+import com.fibelatti.bookmarking.core.util.DateFormatter
 import com.fibelatti.bookmarking.features.posts.domain.model.PendingSync
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.core.functional.TwoWayMapper
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
-import com.fibelatti.pinboard.core.util.DateFormatter
 import kotlinx.serialization.Serializable
 import net.thauvin.erik.urlencoder.UrlEncoderUtil
 import org.koin.core.annotation.Factory

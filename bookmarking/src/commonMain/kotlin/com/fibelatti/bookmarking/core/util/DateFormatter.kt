@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.core.util
+package com.fibelatti.bookmarking.core.util
 
 import com.fibelatti.bookmarking.core.ui.PreferredDateFormat
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
@@ -14,32 +14,29 @@ import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import org.koin.core.annotation.Factory
 
-private const val FORMAT_TZ = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-private const val FORMAT_NOTES = "yyyy-MM-dd HH:mm:ss"
-
 @Factory
 @OptIn(FormatStringsInDatetimeFormats::class)
-class DateFormatter(
+public class DateFormatter(
     private val userRepository: UserRepository,
 ) {
 
-    fun tzFormatToDisplayFormat(input: String): String {
+    public fun tzFormatToDisplayFormat(input: String): String {
         val parsed: LocalDateTime = LocalDateTime.Format { byUnicodePattern(FORMAT_TZ) }.parse(input)
         return getLocalDateTimeFormat(userRepository.preferredDateFormat).format(parsed)
     }
 
-    fun notesFormatToDisplayFormat(input: String): String {
+    public fun notesFormatToDisplayFormat(input: String): String {
         val parsed: LocalDateTime = LocalDateTime.Format { byUnicodePattern(FORMAT_NOTES) }.parse(input)
         return getLocalDateTimeFormat(userRepository.preferredDateFormat).format(parsed)
     }
 
-    fun nowAsTzFormat(): String {
+    public fun nowAsTzFormat(): String {
         val nowInUtc = Clock.System.now().toLocalDateTime(TimeZone.UTC)
 
         return LocalDateTime.Format { byUnicodePattern(FORMAT_TZ) }.format(nowInUtc)
     }
 
-    fun displayFormatToMillis(input: String): Long {
+    public fun displayFormatToMillis(input: String): Long {
         return getLocalDateTimeFormat(userRepository.preferredDateFormat)
             .parse(input)
             .toInstant(TimeZone.UTC)
@@ -88,5 +85,11 @@ class DateFormatter(
             char(value = ':')
             minute(padding = Padding.ZERO)
         }
+    }
+
+    private companion object {
+
+        const val FORMAT_TZ = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+        const val FORMAT_NOTES = "yyyy-MM-dd HH:mm:ss"
     }
 }
