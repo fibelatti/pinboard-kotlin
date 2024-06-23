@@ -2,7 +2,6 @@ package com.fibelatti.pinboard.features.posts.domain.usecase
 
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.pinboard.MockDataProvider
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.TestInstance
@@ -16,14 +15,14 @@ class ValidateUrlTest {
 
     fun validUrls(): List<String> = mutableListOf<String>().apply {
         ValidUrlScheme.ALL_SCHEMES.forEach {
-            add("$it://${MockDataProvider.mockUrlInvalid}")
+            add("$it://${com.fibelatti.bookmarking.test.MockDataProvider.MOCK_URL_INVALID}")
         }
         add("https://bit.ly")
         add("http://192.168.0.92/something")
     }
 
     fun invalidUrls(): List<String> = mutableListOf<String>().apply {
-        add(MockDataProvider.mockUrlInvalid)
+        add(com.fibelatti.bookmarking.test.MockDataProvider.MOCK_URL_INVALID)
         add("google")
         add("google com")
     }

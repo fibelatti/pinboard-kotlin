@@ -12,7 +12,6 @@ import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
-import com.fibelatti.pinboard.MockDataProvider
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.sync.PeriodicSyncManager
 import com.fibelatti.pinboard.isEmpty
@@ -234,7 +233,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
             coEvery { mockPostsRepository.searchExistingPostTag(any(), any()) } returns Failure(Exception())
 
             // WHEN
-            userPreferencesViewModel.searchForTag(MockDataProvider.mockTagString1, mockk())
+            userPreferencesViewModel.searchForTag(com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_1, mockk())
 
             // THEN
             assertThat(userPreferencesViewModel.suggestedTags.isEmpty()).isTrue()
@@ -244,17 +243,17 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
     fun `GIVEN getSuggestedTags will succeed WHEN searchForTag is called THEN suggestedTags should receive its response`() =
         runTest {
             // GIVEN
-            val result = listOf(MockDataProvider.mockTagString1, MockDataProvider.mockTagString2)
+            val result = listOf(com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_1, com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_2)
             coEvery {
                 mockPostsRepository.searchExistingPostTag(
-                    tag = MockDataProvider.mockTagString1,
+                    tag = com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_1,
                     currentTags = emptyList(),
                 )
             } returns Success(result)
 
             // WHEN
             userPreferencesViewModel.searchForTag(
-                tag = MockDataProvider.mockTagString1,
+                tag = com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_1,
                 currentTags = emptyList(),
             )
 

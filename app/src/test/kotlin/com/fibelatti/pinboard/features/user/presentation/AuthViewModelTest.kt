@@ -1,12 +1,12 @@
 package com.fibelatti.pinboard.features.user.presentation
 
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_API_TOKEN
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_INSTANCE_URL
 import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
-import com.fibelatti.pinboard.MockDataProvider.mockApiToken
-import com.fibelatti.pinboard.MockDataProvider.mockInstanceUrl
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.UserLoggedOut
@@ -53,7 +53,7 @@ class AuthViewModelTest : BaseViewModelTest() {
             // WHEN
             viewModel.login(
                 apiToken = "",
-                instanceUrl = mockInstanceUrl,
+                instanceUrl = MOCK_INSTANCE_URL,
             )
 
             verify { mockLogin wasNot Called }
@@ -74,7 +74,7 @@ class AuthViewModelTest : BaseViewModelTest() {
 
                 // WHEN
                 viewModel.login(
-                    apiToken = mockApiToken,
+                    apiToken = MOCK_API_TOKEN,
                     instanceUrl = "",
                 )
 
@@ -91,24 +91,24 @@ class AuthViewModelTest : BaseViewModelTest() {
             coEvery {
                 mockLogin(
                     Login.Params(
-                        authToken = mockApiToken,
-                        instanceUrl = mockInstanceUrl,
+                        authToken = MOCK_API_TOKEN,
+                        instanceUrl = MOCK_INSTANCE_URL,
                     ),
                 )
             } returns Success(Unit)
 
             // WHEN
             viewModel.login(
-                apiToken = mockApiToken,
-                instanceUrl = mockInstanceUrl,
+                apiToken = MOCK_API_TOKEN,
+                instanceUrl = MOCK_INSTANCE_URL,
             )
 
             // THEN
             coVerify {
                 mockLogin(
                     Login.Params(
-                        authToken = mockApiToken,
-                        instanceUrl = mockInstanceUrl,
+                        authToken = MOCK_API_TOKEN,
+                        instanceUrl = MOCK_INSTANCE_URL,
                     ),
                 )
             }
@@ -134,8 +134,8 @@ class AuthViewModelTest : BaseViewModelTest() {
                 coEvery {
                     mockLogin(
                         Login.Params(
-                            authToken = mockApiToken,
-                            instanceUrl = mockInstanceUrl,
+                            authToken = MOCK_API_TOKEN,
+                            instanceUrl = MOCK_INSTANCE_URL,
                         ),
                     )
                 } returns Failure(error)
@@ -143,16 +143,16 @@ class AuthViewModelTest : BaseViewModelTest() {
 
                 // WHEN
                 viewModel.login(
-                    apiToken = mockApiToken,
-                    instanceUrl = mockInstanceUrl,
+                    apiToken = MOCK_API_TOKEN,
+                    instanceUrl = MOCK_INSTANCE_URL,
                 )
 
                 // THEN
                 coVerify {
                     mockLogin(
                         Login.Params(
-                            authToken = mockApiToken,
-                            instanceUrl = mockInstanceUrl,
+                            authToken = MOCK_API_TOKEN,
+                            instanceUrl = MOCK_INSTANCE_URL,
                         ),
                     )
                 }
@@ -178,8 +178,8 @@ class AuthViewModelTest : BaseViewModelTest() {
                 coEvery {
                     mockLogin(
                         Login.Params(
-                            authToken = mockApiToken,
-                            instanceUrl = mockInstanceUrl,
+                            authToken = MOCK_API_TOKEN,
+                            instanceUrl = MOCK_INSTANCE_URL,
                         ),
                     )
                 } returns Failure(error)
@@ -187,16 +187,16 @@ class AuthViewModelTest : BaseViewModelTest() {
 
                 // WHEN
                 viewModel.login(
-                    apiToken = mockApiToken,
-                    instanceUrl = mockInstanceUrl,
+                    apiToken = MOCK_API_TOKEN,
+                    instanceUrl = MOCK_INSTANCE_URL,
                 )
 
                 // THEN
                 coVerify {
                     mockLogin(
                         Login.Params(
-                            authToken = mockApiToken,
-                            instanceUrl = mockInstanceUrl,
+                            authToken = MOCK_API_TOKEN,
+                            instanceUrl = MOCK_INSTANCE_URL,
                         ),
                     )
                 }
@@ -214,24 +214,24 @@ class AuthViewModelTest : BaseViewModelTest() {
             coEvery {
                 mockLogin(
                     Login.Params(
-                        authToken = mockApiToken,
-                        instanceUrl = mockInstanceUrl,
+                        authToken = MOCK_API_TOKEN,
+                        instanceUrl = MOCK_INSTANCE_URL,
                     ),
                 )
             } returns Failure(error)
 
             // WHEN
             viewModel.login(
-                apiToken = mockApiToken,
-                instanceUrl = mockInstanceUrl,
+                apiToken = MOCK_API_TOKEN,
+                instanceUrl = MOCK_INSTANCE_URL,
             )
 
             // THEN
             coVerify {
                 mockLogin(
                     Login.Params(
-                        authToken = mockApiToken,
-                        instanceUrl = mockInstanceUrl,
+                        authToken = MOCK_API_TOKEN,
+                        instanceUrl = MOCK_INSTANCE_URL,
                     ),
                 )
             }

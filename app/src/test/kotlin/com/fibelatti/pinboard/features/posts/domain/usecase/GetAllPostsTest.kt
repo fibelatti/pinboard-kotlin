@@ -1,9 +1,9 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
 import com.fibelatti.bookmarking.features.posts.domain.model.PostListResult
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAGS
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_URL_VALID
 import com.fibelatti.core.functional.Success
-import com.fibelatti.pinboard.MockDataProvider.mockTags
-import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.features.appstate.Alphabetical
 import com.fibelatti.pinboard.features.appstate.AlphabeticalReverse
 import com.fibelatti.pinboard.features.appstate.NewestFirst
@@ -88,7 +88,7 @@ class GetAllPostsTest {
     fun `GIVEN search term was set in the params WHEN getAllPosts is called THEN repository is called with the expected params`() =
         runTest {
             // GIVEN
-            val params = GetPostParams(searchTerm = mockUrlValid)
+            val params = GetPostParams(searchTerm = MOCK_URL_VALID)
 
             // WHEN
             getAllPosts(params)
@@ -97,7 +97,7 @@ class GetAllPostsTest {
             verify {
                 mockPostsRepository.getAllPosts(
                     sortType = NewestFirst,
-                    searchTerm = mockUrlValid,
+                    searchTerm = MOCK_URL_VALID,
                     tags = null,
                     untaggedOnly = false,
                     postVisibility = PostVisibility.None,
@@ -166,7 +166,7 @@ class GetAllPostsTest {
     fun `GIVEN tagParams was Tagged WHEN getAllPosts is called THEN repository is called with the expected params`() =
         runTest {
             // GIVEN
-            val params = GetPostParams(tags = GetPostParams.Tags.Tagged(mockTags))
+            val params = GetPostParams(tags = GetPostParams.Tags.Tagged(MOCK_TAGS))
 
             // WHEN
             getAllPosts(params)
@@ -176,7 +176,7 @@ class GetAllPostsTest {
                 mockPostsRepository.getAllPosts(
                     sortType = any(),
                     searchTerm = any(),
-                    tags = mockTags,
+                    tags = MOCK_TAGS,
                     untaggedOnly = any(),
                     postVisibility = any(),
                     readLaterOnly = any(),

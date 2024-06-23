@@ -14,32 +14,32 @@ import com.fibelatti.bookmarking.pinboard.data.PostDtoMapper
 import com.fibelatti.bookmarking.pinboard.data.PostRemoteDto
 import com.fibelatti.bookmarking.pinboard.data.PostRemoteDtoMapper
 import com.fibelatti.bookmarking.pinboard.data.UpdateDto
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_FUTURE_TIME
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_HASH
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAGS
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAGS_RESPONSE
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_1
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_2
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_3
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_1
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_2
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_3
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_HTML
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_HTML_ESCAPED
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TIME
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_URL_DESCRIPTION
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_URL_TITLE
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_URL_VALID
+import com.fibelatti.bookmarking.test.MockDataProvider.createGenericResponse
+import com.fibelatti.bookmarking.test.MockDataProvider.createGetPostDto
+import com.fibelatti.bookmarking.test.MockDataProvider.createPost
+import com.fibelatti.bookmarking.test.MockDataProvider.createPostDto
+import com.fibelatti.bookmarking.test.MockDataProvider.createPostRemoteDto
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.functional.getOrThrow
 import com.fibelatti.core.randomUUID
-import com.fibelatti.pinboard.MockDataProvider.createGenericResponse
-import com.fibelatti.pinboard.MockDataProvider.createGetPostDto
-import com.fibelatti.pinboard.MockDataProvider.createPost
-import com.fibelatti.pinboard.MockDataProvider.createPostDto
-import com.fibelatti.pinboard.MockDataProvider.createPostRemoteDto
-import com.fibelatti.pinboard.MockDataProvider.mockFutureTime
-import com.fibelatti.pinboard.MockDataProvider.mockHash
-import com.fibelatti.pinboard.MockDataProvider.mockTag1
-import com.fibelatti.pinboard.MockDataProvider.mockTag2
-import com.fibelatti.pinboard.MockDataProvider.mockTag3
-import com.fibelatti.pinboard.MockDataProvider.mockTagString1
-import com.fibelatti.pinboard.MockDataProvider.mockTagString2
-import com.fibelatti.pinboard.MockDataProvider.mockTagString3
-import com.fibelatti.pinboard.MockDataProvider.mockTagStringHtml
-import com.fibelatti.pinboard.MockDataProvider.mockTagStringHtmlEscaped
-import com.fibelatti.pinboard.MockDataProvider.mockTags
-import com.fibelatti.pinboard.MockDataProvider.mockTagsResponse
-import com.fibelatti.pinboard.MockDataProvider.mockTime
-import com.fibelatti.pinboard.MockDataProvider.mockUrlDescription
-import com.fibelatti.pinboard.MockDataProvider.mockUrlTitle
-import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.InvalidRequestException
@@ -118,13 +118,13 @@ class PostsDataSourcePinboardApiTest {
         @Test
         fun `WHEN update is called THEN Success is returned`() = runTest {
             // GIVEN
-            coEvery { mockApi.update() } returns UpdateDto(mockTime)
+            coEvery { mockApi.update() } returns UpdateDto(MOCK_TIME)
 
             // WHEN
             val result = dataSource.update()
 
             // THEN
-            assertThat(result.getOrNull()).isEqualTo(mockTime)
+            assertThat(result.getOrNull()).isEqualTo(MOCK_TIME)
         }
     }
 
@@ -142,12 +142,12 @@ class PostsDataSourcePinboardApiTest {
             // GIVEN
             coEvery {
                 mockApi.add(
-                    url = mockUrlValid,
-                    title = mockUrlTitle,
+                    url = MOCK_URL_VALID,
+                    title = MOCK_URL_TITLE,
                     description = null,
                     public = null,
                     readLater = null,
-                    tags = mockTagsResponse,
+                    tags = MOCK_TAGS_RESPONSE,
                     replace = Config.Pinboard.LITERAL_YES,
                 )
             } throws Exception()
@@ -155,12 +155,12 @@ class PostsDataSourcePinboardApiTest {
             // WHEN
             val result = dataSource.add(
                 Post(
-                    url = mockUrlValid,
-                    title = mockUrlTitle,
+                    url = MOCK_URL_VALID,
+                    title = MOCK_URL_TITLE,
                     description = "",
                     private = null,
                     readLater = null,
-                    tags = mockTags,
+                    tags = MOCK_TAGS,
                     id = "",
                     time = "",
                 ),
@@ -177,12 +177,12 @@ class PostsDataSourcePinboardApiTest {
                 // GIVEN
                 coEvery {
                     mockApi.add(
-                        url = mockUrlValid,
-                        title = mockUrlTitle,
+                        url = MOCK_URL_VALID,
+                        title = MOCK_URL_TITLE,
                         description = null,
                         public = null,
                         readLater = null,
-                        tags = mockTagsResponse,
+                        tags = MOCK_TAGS_RESPONSE,
                         replace = Config.Pinboard.LITERAL_YES,
                     )
                 } returns createGenericResponse(PinboardApiResultCode.MISSING_URL)
@@ -190,12 +190,12 @@ class PostsDataSourcePinboardApiTest {
                 // WHEN
                 val result = dataSource.add(
                     Post(
-                        url = mockUrlValid,
-                        title = mockUrlTitle,
+                        url = MOCK_URL_VALID,
+                        title = MOCK_URL_TITLE,
                         description = "",
                         private = null,
                         readLater = null,
-                        tags = mockTags,
+                        tags = MOCK_TAGS,
                         id = "",
                         time = "",
                     ),
@@ -216,27 +216,27 @@ class PostsDataSourcePinboardApiTest {
                     // GIVEN
                     coEvery {
                         mockApi.add(
-                            url = mockUrlValid,
-                            title = mockUrlTitle,
+                            url = MOCK_URL_VALID,
+                            title = MOCK_URL_TITLE,
                             description = null,
                             public = null,
                             readLater = null,
-                            tags = mockTagsResponse,
+                            tags = MOCK_TAGS_RESPONSE,
                             replace = Config.Pinboard.LITERAL_YES,
                         )
                     } returns createGenericResponse(PinboardApiResultCode.ITEM_ALREADY_EXISTS)
-                    coEvery { mockDao.getPost(mockUrlValid) } returns mockPostDto
+                    coEvery { mockDao.getPost(MOCK_URL_VALID) } returns mockPostDto
                     every { mockPostDtoMapper.map(mockPostDto) } returns mockPost
 
                     // WHEN
                     val result = dataSource.add(
                         Post(
-                            url = mockUrlValid,
-                            title = mockUrlTitle,
+                            url = MOCK_URL_VALID,
+                            title = MOCK_URL_TITLE,
                             description = "",
                             private = null,
                             readLater = null,
-                            tags = mockTags,
+                            tags = MOCK_TAGS,
                             id = "",
                             time = "",
                         ),
@@ -253,29 +253,29 @@ class PostsDataSourcePinboardApiTest {
                     // GIVEN
                     coEvery {
                         mockApi.add(
-                            url = mockUrlValid,
-                            title = mockUrlTitle,
+                            url = MOCK_URL_VALID,
+                            title = MOCK_URL_TITLE,
                             description = null,
                             public = null,
                             readLater = null,
-                            tags = mockTagsResponse,
+                            tags = MOCK_TAGS_RESPONSE,
                             replace = Config.Pinboard.LITERAL_YES,
                         )
                     } returns createGenericResponse(PinboardApiResultCode.ITEM_ALREADY_EXISTS)
-                    coEvery { mockDao.getPost(mockUrlValid) } returns null
-                    coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto(posts = mockListPostRemoteDto)
+                    coEvery { mockDao.getPost(MOCK_URL_VALID) } returns null
+                    coEvery { mockApi.getPost(MOCK_URL_VALID) } returns createGetPostDto(posts = mockListPostRemoteDto)
                     every { mockPostRemoteDtoMapper.map(mockPostRemoteDto) } returns mockPostDto
                     every { mockPostDtoMapper.map(mockPostDto) } returns mockPost
 
                     // WHEN
                     val result = dataSource.add(
                         Post(
-                            url = mockUrlValid,
-                            title = mockUrlTitle,
+                            url = MOCK_URL_VALID,
+                            title = MOCK_URL_TITLE,
                             description = "",
                             private = null,
                             readLater = null,
-                            tags = mockTags,
+                            tags = MOCK_TAGS,
                             id = "",
                             time = "",
                         ),
@@ -292,28 +292,28 @@ class PostsDataSourcePinboardApiTest {
                     // GIVEN
                     coEvery {
                         mockApi.add(
-                            url = mockUrlValid,
-                            title = mockUrlTitle,
+                            url = MOCK_URL_VALID,
+                            title = MOCK_URL_TITLE,
                             description = null,
                             public = null,
                             readLater = null,
-                            tags = mockTagsResponse,
+                            tags = MOCK_TAGS_RESPONSE,
                             replace = Config.Pinboard.LITERAL_YES,
                         )
                     } returns createGenericResponse(PinboardApiResultCode.ITEM_ALREADY_EXISTS)
-                    coEvery { mockDao.getPost(mockUrlValid) } returns null
-                    coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto(posts = emptyList())
+                    coEvery { mockDao.getPost(MOCK_URL_VALID) } returns null
+                    coEvery { mockApi.getPost(MOCK_URL_VALID) } returns createGetPostDto(posts = emptyList())
                     every { mockPostRemoteDtoMapper.mapList(emptyList()) } returns emptyList()
 
                     // WHEN
                     val result = dataSource.add(
                         Post(
-                            url = mockUrlValid,
-                            title = mockUrlTitle,
+                            url = MOCK_URL_VALID,
+                            title = MOCK_URL_TITLE,
                             description = "",
                             private = null,
                             readLater = null,
-                            tags = mockTags,
+                            tags = MOCK_TAGS,
                             id = "",
                             time = "",
                         ),
@@ -331,33 +331,33 @@ class PostsDataSourcePinboardApiTest {
             runTest {
                 // GIVEN
                 val input = Post(
-                    url = mockUrlValid,
-                    title = mockUrlTitle,
+                    url = MOCK_URL_VALID,
+                    title = MOCK_URL_TITLE,
                     description = "",
                     id = "",
                     time = "",
                     private = null,
                     readLater = null,
-                    tags = mockTags,
+                    tags = MOCK_TAGS,
                 )
 
                 val expectedPost = input.copy(
-                    id = mockHash,
-                    time = mockTime,
+                    id = MOCK_HASH,
+                    time = MOCK_TIME,
                 )
 
                 mockkStatic(::randomUUID)
-                every { randomUUID() } returns mockHash
-                every { mockDateFormatter.nowAsTzFormat() } returns mockTime
-                coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
+                every { randomUUID() } returns MOCK_HASH
+                every { mockDateFormatter.nowAsTzFormat() } returns MOCK_TIME
+                coEvery { mockApi.update() } returns UpdateDto(MOCK_FUTURE_TIME)
                 coEvery {
                     mockApi.add(
-                        url = mockUrlValid,
-                        title = mockUrlTitle,
+                        url = MOCK_URL_VALID,
+                        title = MOCK_URL_TITLE,
                         description = null,
                         public = null,
                         readLater = null,
-                        tags = mockTagsResponse,
+                        tags = MOCK_TAGS_RESPONSE,
                         replace = Config.Pinboard.LITERAL_YES,
                     )
                 } returns createGenericResponse(PinboardApiResultCode.DONE)
@@ -368,7 +368,7 @@ class PostsDataSourcePinboardApiTest {
                 val result = dataSource.add(input)
 
                 // THEN
-                coVerify { mockDao.deletePendingSyncPost(mockUrlValid) }
+                coVerify { mockDao.deletePendingSyncPost(MOCK_URL_VALID) }
                 coVerify { dataSource.savePosts(listOf(mockPostDto)) }
                 assertThat(result.getOrNull()).isEqualTo(expectedPost)
             }
@@ -381,8 +381,8 @@ class PostsDataSourcePinboardApiTest {
 
             coEvery {
                 mockApi.add(
-                    url = mockUrlValid,
-                    title = mockUrlTitle,
+                    url = MOCK_URL_VALID,
+                    title = MOCK_URL_TITLE,
                     description = null,
                     public = null,
                     readLater = null,
@@ -394,8 +394,8 @@ class PostsDataSourcePinboardApiTest {
             // WHEN
             dataSource.add(
                 Post(
-                    url = mockUrlValid,
-                    title = mockUrlTitle,
+                    url = MOCK_URL_VALID,
+                    title = MOCK_URL_TITLE,
                     description = "",
                     private = null,
                     readLater = null,
@@ -408,8 +408,8 @@ class PostsDataSourcePinboardApiTest {
             // THEN
             coVerify {
                 mockApi.add(
-                    url = mockUrlValid,
-                    title = mockUrlTitle,
+                    url = MOCK_URL_VALID,
+                    title = MOCK_URL_TITLE,
                     description = null,
                     public = null,
                     readLater = null,
@@ -437,12 +437,12 @@ class PostsDataSourcePinboardApiTest {
 
             coEvery {
                 mockApi.add(
-                    url = mockUrlValid,
-                    title = mockUrlTitle,
+                    url = MOCK_URL_VALID,
+                    title = MOCK_URL_TITLE,
                     description = null,
                     public = expectedPublic,
                     readLater = expectedReadLater,
-                    tags = mockTagsResponse,
+                    tags = MOCK_TAGS_RESPONSE,
                     replace = expectedReplace,
                 )
             } returns createGenericResponse(PinboardApiResultCode.DONE)
@@ -450,12 +450,12 @@ class PostsDataSourcePinboardApiTest {
             // WHEN
             dataSource.add(
                 Post(
-                    url = mockUrlValid,
-                    title = mockUrlTitle,
+                    url = MOCK_URL_VALID,
+                    title = MOCK_URL_TITLE,
                     description = "",
                     private = testCases.private,
                     readLater = testCases.readLater,
-                    tags = mockTags,
+                    tags = MOCK_TAGS,
                     id = "",
                     time = "",
                 ),
@@ -464,12 +464,12 @@ class PostsDataSourcePinboardApiTest {
             // THEN
             coVerify {
                 mockApi.add(
-                    url = mockUrlValid,
-                    title = mockUrlTitle,
+                    url = MOCK_URL_VALID,
+                    title = MOCK_URL_TITLE,
                     description = null,
                     public = expectedPublic,
                     readLater = expectedReadLater,
-                    tags = mockTagsResponse,
+                    tags = MOCK_TAGS_RESPONSE,
                     replace = expectedReplace,
                 )
             }
@@ -500,7 +500,7 @@ class PostsDataSourcePinboardApiTest {
             private val readLater = randomBoolean()
 
             private val baseExpectedPost = createPostDto(
-                href = mockUrlValid,
+                href = MOCK_URL_VALID,
                 shared = if (private) Config.Pinboard.LITERAL_NO else Config.Pinboard.LITERAL_YES,
                 toread = if (readLater) Config.Pinboard.LITERAL_YES else Config.Pinboard.LITERAL_NO,
             )
@@ -515,21 +515,21 @@ class PostsDataSourcePinboardApiTest {
                 // GIVEN
                 val expectedPost = baseExpectedPost.copy(pendingSync = PendingSyncDto.ADD)
 
-                coEvery { mockDao.getPost(mockUrlValid) } returns null
+                coEvery { mockDao.getPost(MOCK_URL_VALID) } returns null
                 mockkStatic(::randomUUID)
-                every { randomUUID() } returns mockHash
-                every { mockDateFormatter.nowAsTzFormat() } returns mockTime
+                every { randomUUID() } returns MOCK_HASH
+                every { mockDateFormatter.nowAsTzFormat() } returns MOCK_TIME
                 every { mockPostDtoMapper.map(expectedPost) } returns createPost()
 
                 // WHEN
                 val result = dataSource.add(
                     Post(
-                        url = mockUrlValid,
-                        title = mockUrlTitle,
-                        description = mockUrlDescription,
+                        url = MOCK_URL_VALID,
+                        title = MOCK_URL_TITLE,
+                        description = MOCK_URL_DESCRIPTION,
                         private = private,
                         readLater = readLater,
-                        tags = mockTags,
+                        tags = MOCK_TAGS,
                         id = "",
                         time = "",
                     ),
@@ -545,18 +545,18 @@ class PostsDataSourcePinboardApiTest {
                 // GIVEN
                 val expectedPost = baseExpectedPost.copy(pendingSync = PendingSyncDto.ADD)
 
-                coEvery { mockDao.getPost(mockUrlValid) } returns expectedPost
+                coEvery { mockDao.getPost(MOCK_URL_VALID) } returns expectedPost
                 every { mockPostDtoMapper.map(expectedPost) } returns createPost()
 
                 // WHEN
                 val result = dataSource.add(
                     Post(
-                        url = mockUrlValid,
-                        title = mockUrlTitle,
-                        description = mockUrlDescription,
+                        url = MOCK_URL_VALID,
+                        title = MOCK_URL_TITLE,
+                        description = MOCK_URL_DESCRIPTION,
                         private = private,
                         readLater = readLater,
-                        tags = mockTags,
+                        tags = MOCK_TAGS,
                         id = "",
                         time = "",
                     ),
@@ -572,18 +572,18 @@ class PostsDataSourcePinboardApiTest {
                 // GIVEN
                 val expectedPost = baseExpectedPost.copy(pendingSync = PendingSyncDto.UPDATE)
 
-                coEvery { mockDao.getPost(mockUrlValid) } returns baseExpectedPost.copy(pendingSync = null)
+                coEvery { mockDao.getPost(MOCK_URL_VALID) } returns baseExpectedPost.copy(pendingSync = null)
                 every { mockPostDtoMapper.map(expectedPost) } returns createPost()
 
                 // WHEN
                 val result = dataSource.add(
                     Post(
-                        url = mockUrlValid,
-                        title = mockUrlTitle,
-                        description = mockUrlDescription,
+                        url = MOCK_URL_VALID,
+                        title = MOCK_URL_TITLE,
+                        description = MOCK_URL_DESCRIPTION,
                         private = private,
                         readLater = readLater,
-                        tags = mockTags,
+                        tags = MOCK_TAGS,
                         id = "",
                         time = "",
                     ),
@@ -597,18 +597,18 @@ class PostsDataSourcePinboardApiTest {
             @Test
             fun `GIVEN save fails THEN failure is returned`() = runTest {
                 // GIVEN
-                coEvery { mockDao.getPost(mockUrlValid) } returns baseExpectedPost.copy(pendingSync = null)
+                coEvery { mockDao.getPost(MOCK_URL_VALID) } returns baseExpectedPost.copy(pendingSync = null)
                 coEvery { mockDao.savePosts(any()) } throws Exception()
 
                 // WHEN
                 val result = dataSource.add(
                     Post(
-                        url = mockUrlValid,
-                        title = mockUrlTitle,
-                        description = mockUrlDescription,
+                        url = MOCK_URL_VALID,
+                        title = MOCK_URL_TITLE,
+                        description = MOCK_URL_DESCRIPTION,
                         private = private,
                         readLater = readLater,
-                        tags = mockTags,
+                        tags = MOCK_TAGS,
                         id = "",
                         time = "",
                     ),
@@ -626,13 +626,13 @@ class PostsDataSourcePinboardApiTest {
         @Test
         fun `GIVEN that the api returns an error WHEN delete is called THEN Failure is returned`() = runTest {
             // GIVEN
-            coEvery { mockApi.delete(mockUrlValid) } throws Exception()
+            coEvery { mockApi.delete(MOCK_URL_VALID) } throws Exception()
 
             // WHEN
-            val result = dataSource.delete(id = "", url = mockUrlValid)
+            val result = dataSource.delete(id = "", url = MOCK_URL_VALID)
 
             // THEN
-            coVerify(exactly = 0) { mockDao.deletePost(mockUrlValid) }
+            coVerify(exactly = 0) { mockDao.deletePost(MOCK_URL_VALID) }
             verify(exactly = 0) { mockUserRepository.lastUpdate = any() }
 
             assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
@@ -642,13 +642,13 @@ class PostsDataSourcePinboardApiTest {
         fun `GIVEN that the api returns 200 but the result code is not DONE WHEN delete is called THEN Failure is returned`() =
             runTest {
                 // GIVEN
-                coEvery { mockApi.delete(mockUrlValid) } returns createGenericResponse(PinboardApiResultCode.MISSING_URL)
+                coEvery { mockApi.delete(MOCK_URL_VALID) } returns createGenericResponse(PinboardApiResultCode.MISSING_URL)
 
                 // WHEN
-                val result = dataSource.delete(id = "", url = mockUrlValid)
+                val result = dataSource.delete(id = "", url = MOCK_URL_VALID)
 
                 // THEN
-                coVerify(exactly = 0) { mockDao.deletePost(mockUrlValid) }
+                coVerify(exactly = 0) { mockDao.deletePost(MOCK_URL_VALID) }
                 verify(exactly = 0) { mockUserRepository.lastUpdate = any() }
 
                 assertThat(result.exceptionOrNull()).isInstanceOf(ApiException::class.java)
@@ -658,15 +658,15 @@ class PostsDataSourcePinboardApiTest {
         fun `GIVEN that the api returns 200 and the result code is DONE WHEN delete is called THEN Success is returned`() =
             runTest {
                 // GIVEN
-                coEvery { mockApi.delete(mockUrlValid) } returns createGenericResponse(PinboardApiResultCode.DONE)
-                coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
-                coEvery { mockDao.deletePost(mockUrlValid) } just Runs
+                coEvery { mockApi.delete(MOCK_URL_VALID) } returns createGenericResponse(PinboardApiResultCode.DONE)
+                coEvery { mockApi.update() } returns UpdateDto(MOCK_FUTURE_TIME)
+                coEvery { mockDao.deletePost(MOCK_URL_VALID) } just Runs
 
                 // WHEN
-                val result = dataSource.delete(id = "", url = mockUrlValid)
+                val result = dataSource.delete(id = "", url = MOCK_URL_VALID)
 
                 // THEN
-                coVerify { mockDao.deletePost(mockUrlValid) }
+                coVerify { mockDao.deletePost(MOCK_URL_VALID) }
                 assertThat(result.getOrNull()).isEqualTo(Unit)
             }
 
@@ -682,10 +682,10 @@ class PostsDataSourcePinboardApiTest {
             fun `GIVEN the post exists THEN it is updated with the delete flag`() = runTest {
                 // GIVEN
                 val post = createPostDto()
-                coEvery { mockDao.getPost(mockUrlValid) } returns post
+                coEvery { mockDao.getPost(MOCK_URL_VALID) } returns post
 
                 // WHEN
-                val result = dataSource.delete(id = "", url = mockUrlValid)
+                val result = dataSource.delete(id = "", url = MOCK_URL_VALID)
 
                 // THEN
                 coVerify { mockDao.savePosts(listOf(post.copy(pendingSync = PendingSyncDto.DELETE))) }
@@ -697,11 +697,11 @@ class PostsDataSourcePinboardApiTest {
             fun `GIVEN the post exists AND some operation fails THEN failure is returned`() = runTest {
                 // GIVEN
                 val post = createPostDto()
-                coEvery { mockDao.getPost(mockUrlValid) } returns post
+                coEvery { mockDao.getPost(MOCK_URL_VALID) } returns post
                 coEvery { mockDao.savePosts(any()) } throws Exception()
 
                 // WHEN
-                val result = dataSource.delete(id = "", url = mockUrlValid)
+                val result = dataSource.delete(id = "", url = MOCK_URL_VALID)
 
                 // THEN
                 verify { mockApi wasNot Called }
@@ -711,10 +711,10 @@ class PostsDataSourcePinboardApiTest {
             @Test
             fun `GIVEN the post does not exist THEN failure is returned`() = runTest {
                 // GIVEN
-                coEvery { mockDao.getPost(mockUrlValid) } returns null
+                coEvery { mockDao.getPost(MOCK_URL_VALID) } returns null
 
                 // WHEN
-                val result = dataSource.delete(id = "", url = mockUrlValid)
+                val result = dataSource.delete(id = "", url = MOCK_URL_VALID)
 
                 // THEN
                 verify { mockApi wasNot Called }
@@ -780,7 +780,7 @@ class PostsDataSourcePinboardApiTest {
             @BeforeEach
             fun setup() {
                 every { mockConnectivityInfoProvider.isConnected() } returns true
-                coEvery { mockUserRepository.lastUpdate } returns mockTime
+                coEvery { mockUserRepository.lastUpdate } returns MOCK_TIME
                 coEvery {
                     dataSource.getLocalData(
                         sortType = NewestFirst,
@@ -815,7 +815,7 @@ class PostsDataSourcePinboardApiTest {
             fun `WHEN update fails THEN nowAsTzFormat is used instead`() = runTest {
                 // GIVEN
                 coEvery { mockApi.update() } throws Exception()
-                every { mockDateFormatter.nowAsTzFormat() } returns mockTime
+                every { mockDateFormatter.nowAsTzFormat() } returns MOCK_TIME
 
                 // WHEN
                 val result = dataSource.getAllPosts(
@@ -845,7 +845,7 @@ class PostsDataSourcePinboardApiTest {
             fun `WHEN user last update is null THEN api should be called`() = runTest {
                 // GIVEN
                 coEvery { mockUserRepository.lastUpdate } returns ""
-                coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
+                coEvery { mockApi.update() } returns UpdateDto(MOCK_FUTURE_TIME)
                 coEvery {
                     mockApi.getAllPosts(
                         offset = 0,
@@ -875,13 +875,13 @@ class PostsDataSourcePinboardApiTest {
                 coVerify { mockApi.getAllPosts(offset = 0, limit = Config.API_PAGE_SIZE) }
                 coVerify { mockDao.deleteAllSyncedPosts() }
                 coVerify { dataSource.savePosts(mockListPostDto) }
-                coVerify { mockUserRepository.lastUpdate = mockFutureTime }
+                coVerify { mockUserRepository.lastUpdate = MOCK_FUTURE_TIME }
             }
 
             @Test
             fun `WHEN update time stamps match THEN local data is returned`() = runTest {
                 // GIVEN
-                coEvery { mockApi.update() } returns UpdateDto(mockTime)
+                coEvery { mockApi.update() } returns UpdateDto(MOCK_TIME)
 
                 // WHEN
                 val result = dataSource.getAllPosts(
@@ -911,7 +911,7 @@ class PostsDataSourcePinboardApiTest {
                 // GIVEN
                 val mockListPostDto = mockk<List<PostDto>>()
                 val mockListPostRemoteDto = mockk<List<PostRemoteDto>>()
-                coEvery { mockApi.update() } returns UpdateDto(mockTime)
+                coEvery { mockApi.update() } returns UpdateDto(MOCK_TIME)
                 coEvery {
                     mockApi.getAllPosts(
                         offset = 0,
@@ -942,13 +942,13 @@ class PostsDataSourcePinboardApiTest {
                 coVerify { mockApi.getAllPosts(offset = 0, limit = Config.API_PAGE_SIZE) }
                 coVerify { mockDao.deleteAllSyncedPosts() }
                 coVerify { dataSource.savePosts(mockListPostDto) }
-                coVerify { mockUserRepository.lastUpdate = mockTime }
+                coVerify { mockUserRepository.lastUpdate = MOCK_TIME }
             }
 
             @Test
             fun `WHEN getAllPosts fails THEN the error is handled and data is returned`() = runTest {
                 // GIVEN
-                coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
+                coEvery { mockApi.update() } returns UpdateDto(MOCK_FUTURE_TIME)
                 coEvery {
                     mockApi.getAllPosts(
                         offset = 0,
@@ -982,7 +982,7 @@ class PostsDataSourcePinboardApiTest {
             @Test
             fun `WHEN deleteAllPosts fails THEN the error is handled and data is returned`() = runTest {
                 // GIVEN
-                coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
+                coEvery { mockApi.update() } returns UpdateDto(MOCK_FUTURE_TIME)
                 coEvery {
                     mockApi.getAllPosts(
                         offset = 0,
@@ -1017,7 +1017,7 @@ class PostsDataSourcePinboardApiTest {
             @Test
             fun `WHEN savePosts fails THEN the error is handled and data is returned`() = runTest {
                 // GIVEN
-                coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
+                coEvery { mockApi.update() } returns UpdateDto(MOCK_FUTURE_TIME)
                 coEvery {
                     mockApi.getAllPosts(
                         offset = 0,
@@ -1053,7 +1053,7 @@ class PostsDataSourcePinboardApiTest {
             @Test
             fun `WHEN first call result is successful THEN getAdditionalPages is called`() = runTest {
                 // GIVEN
-                coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
+                coEvery { mockApi.update() } returns UpdateDto(MOCK_FUTURE_TIME)
                 coEvery {
                     mockApi.getAllPosts(
                         offset = 0,
@@ -1085,7 +1085,7 @@ class PostsDataSourcePinboardApiTest {
                 coVerify { mockDao.deleteAllSyncedPosts() }
                 coVerify { dataSource.savePosts(mockListPostDto) }
                 coVerify { dataSource.getAdditionalPages(initialOffset = 1) }
-                coVerify { mockUserRepository.lastUpdate = mockFutureTime }
+                coVerify { mockUserRepository.lastUpdate = MOCK_FUTURE_TIME }
             }
         }
     }
@@ -1224,8 +1224,8 @@ class PostsDataSourcePinboardApiTest {
         fun `WHEN getQueryResultSize is called then it returns the dao post count`() = runTest {
             coEvery {
                 mockDao.getPostCount(
-                    term = PostsDao.preFormatTerm(mockUrlTitle),
-                    tag1 = PostsDao.preFormatTag(mockTag1.name),
+                    term = PostsDao.preFormatTerm(MOCK_URL_TITLE),
+                    tag1 = PostsDao.preFormatTag(MOCK_TAG_1.name),
                     tag2 = "",
                     tag3 = "",
                     untaggedOnly = false,
@@ -1237,7 +1237,7 @@ class PostsDataSourcePinboardApiTest {
                 )
             } returns 13
 
-            val result = dataSource.getQueryResultSize(mockUrlTitle, listOf(mockTag1))
+            val result = dataSource.getQueryResultSize(MOCK_URL_TITLE, listOf(MOCK_TAG_1))
 
             assertThat(result).isEqualTo(13)
         }
@@ -1258,7 +1258,7 @@ class PostsDataSourcePinboardApiTest {
                 )
             } throws Exception()
 
-            val result = dataSource.getQueryResultSize(mockUrlTitle, listOf(mockTag1))
+            val result = dataSource.getQueryResultSize(MOCK_URL_TITLE, listOf(MOCK_TAG_1))
 
             assertThat(result).isEqualTo(0)
         }
@@ -1286,7 +1286,7 @@ class PostsDataSourcePinboardApiTest {
 
             // WHEN
             val result = dataSource.getLocalDataSize(
-                searchTerm = mockUrlTitle,
+                searchTerm = MOCK_URL_TITLE,
                 tags = emptyList(),
                 untaggedOnly = false,
                 postVisibility = PostVisibility.None,
@@ -1297,7 +1297,7 @@ class PostsDataSourcePinboardApiTest {
             // THEN
             coVerify {
                 mockDao.getPostCount(
-                    term = PostsDao.preFormatTerm(mockUrlTitle),
+                    term = PostsDao.preFormatTerm(MOCK_URL_TITLE),
                     tag1 = "",
                     tag2 = "",
                     tag3 = "",
@@ -1330,8 +1330,8 @@ class PostsDataSourcePinboardApiTest {
 
             // WHEN
             val result = dataSource.getLocalDataSize(
-                searchTerm = mockUrlTitle,
-                tags = listOf(mockTag1),
+                searchTerm = MOCK_URL_TITLE,
+                tags = listOf(MOCK_TAG_1),
                 untaggedOnly = false,
                 postVisibility = PostVisibility.None,
                 readLaterOnly = false,
@@ -1341,8 +1341,8 @@ class PostsDataSourcePinboardApiTest {
             // THEN
             coVerify {
                 mockDao.getPostCount(
-                    term = PostsDao.preFormatTerm(mockUrlTitle),
-                    tag1 = PostsDao.preFormatTag(mockTag1.name),
+                    term = PostsDao.preFormatTerm(MOCK_URL_TITLE),
+                    tag1 = PostsDao.preFormatTag(MOCK_TAG_1.name),
                     tag2 = "",
                     tag3 = "",
                     untaggedOnly = false,
@@ -1374,8 +1374,8 @@ class PostsDataSourcePinboardApiTest {
 
             // WHEN
             val result = dataSource.getLocalDataSize(
-                searchTerm = mockUrlTitle,
-                tags = listOf(mockTag1, mockTag2),
+                searchTerm = MOCK_URL_TITLE,
+                tags = listOf(MOCK_TAG_1, MOCK_TAG_2),
                 untaggedOnly = false,
                 postVisibility = PostVisibility.None,
                 readLaterOnly = false,
@@ -1385,9 +1385,9 @@ class PostsDataSourcePinboardApiTest {
             // THEN
             coVerify {
                 mockDao.getPostCount(
-                    term = PostsDao.preFormatTerm(mockUrlTitle),
-                    tag1 = PostsDao.preFormatTag(mockTag1.name),
-                    tag2 = PostsDao.preFormatTag(mockTag2.name),
+                    term = PostsDao.preFormatTerm(MOCK_URL_TITLE),
+                    tag1 = PostsDao.preFormatTag(MOCK_TAG_1.name),
+                    tag2 = PostsDao.preFormatTag(MOCK_TAG_2.name),
                     tag3 = "",
                     untaggedOnly = false,
                     publicPostsOnly = false,
@@ -1418,8 +1418,8 @@ class PostsDataSourcePinboardApiTest {
 
             // WHEN
             val result = dataSource.getLocalDataSize(
-                searchTerm = mockUrlTitle,
-                tags = listOf(mockTag1, mockTag2, mockTag3),
+                searchTerm = MOCK_URL_TITLE,
+                tags = listOf(MOCK_TAG_1, MOCK_TAG_2, MOCK_TAG_3),
                 untaggedOnly = false,
                 postVisibility = PostVisibility.None,
                 readLaterOnly = false,
@@ -1429,10 +1429,10 @@ class PostsDataSourcePinboardApiTest {
             // THEN
             coVerify {
                 mockDao.getPostCount(
-                    term = PostsDao.preFormatTerm(mockUrlTitle),
-                    tag1 = PostsDao.preFormatTag(mockTag1.name),
-                    tag2 = PostsDao.preFormatTag(mockTag2.name),
-                    tag3 = PostsDao.preFormatTag(mockTag3.name),
+                    term = PostsDao.preFormatTerm(MOCK_URL_TITLE),
+                    tag1 = PostsDao.preFormatTag(MOCK_TAG_1.name),
+                    tag2 = PostsDao.preFormatTag(MOCK_TAG_2.name),
+                    tag3 = PostsDao.preFormatTag(MOCK_TAG_3.name),
                     untaggedOnly = false,
                     publicPostsOnly = false,
                     privatePostsOnly = false,
@@ -1499,7 +1499,7 @@ class PostsDataSourcePinboardApiTest {
             // WHEN
             val result = dataSource.getLocalData(
                 sortType = NewestFirst,
-                searchTerm = mockUrlTitle,
+                searchTerm = MOCK_URL_TITLE,
                 tags = emptyList(),
                 untaggedOnly = false,
                 postVisibility = PostVisibility.None,
@@ -1526,7 +1526,7 @@ class PostsDataSourcePinboardApiTest {
             // WHEN
             val result = dataSource.getLocalData(
                 sortType = NewestFirst,
-                searchTerm = mockUrlTitle,
+                searchTerm = MOCK_URL_TITLE,
                 tags = emptyList(),
                 untaggedOnly = false,
                 postVisibility = PostVisibility.None,
@@ -1541,7 +1541,7 @@ class PostsDataSourcePinboardApiTest {
             coVerify {
                 mockDao.getAllPosts(
                     sortType = NewestFirst.index,
-                    term = PostsDao.preFormatTerm(mockUrlTitle),
+                    term = PostsDao.preFormatTerm(MOCK_URL_TITLE),
                     tag1 = "",
                     tag2 = "",
                     tag3 = "",
@@ -1568,8 +1568,8 @@ class PostsDataSourcePinboardApiTest {
             // WHEN
             val result = dataSource.getLocalData(
                 sortType = NewestFirst,
-                searchTerm = mockUrlTitle,
-                tags = listOf(mockTag1),
+                searchTerm = MOCK_URL_TITLE,
+                tags = listOf(MOCK_TAG_1),
                 untaggedOnly = false,
                 postVisibility = PostVisibility.None,
                 readLaterOnly = false,
@@ -1583,8 +1583,8 @@ class PostsDataSourcePinboardApiTest {
             coVerify {
                 mockDao.getAllPosts(
                     sortType = NewestFirst.index,
-                    term = PostsDao.preFormatTerm(mockUrlTitle),
-                    tag1 = PostsDao.preFormatTag(mockTag1.name),
+                    term = PostsDao.preFormatTerm(MOCK_URL_TITLE),
+                    tag1 = PostsDao.preFormatTag(MOCK_TAG_1.name),
                     tag2 = "",
                     tag3 = "",
                     untaggedOnly = false,
@@ -1610,8 +1610,8 @@ class PostsDataSourcePinboardApiTest {
             // WHEN
             val result = dataSource.getLocalData(
                 sortType = NewestFirst,
-                searchTerm = mockUrlTitle,
-                tags = listOf(mockTag1, mockTag2),
+                searchTerm = MOCK_URL_TITLE,
+                tags = listOf(MOCK_TAG_1, MOCK_TAG_2),
                 untaggedOnly = false,
                 postVisibility = PostVisibility.None,
                 readLaterOnly = false,
@@ -1625,9 +1625,9 @@ class PostsDataSourcePinboardApiTest {
             coVerify {
                 mockDao.getAllPosts(
                     sortType = NewestFirst.index,
-                    term = PostsDao.preFormatTerm(mockUrlTitle),
-                    tag1 = PostsDao.preFormatTag(mockTag1.name),
-                    tag2 = PostsDao.preFormatTag(mockTag2.name),
+                    term = PostsDao.preFormatTerm(MOCK_URL_TITLE),
+                    tag1 = PostsDao.preFormatTag(MOCK_TAG_1.name),
+                    tag2 = PostsDao.preFormatTag(MOCK_TAG_2.name),
                     tag3 = "",
                     untaggedOnly = false,
                     publicPostsOnly = false,
@@ -1652,8 +1652,8 @@ class PostsDataSourcePinboardApiTest {
             // WHEN
             val result = dataSource.getLocalData(
                 sortType = NewestFirst,
-                searchTerm = mockUrlTitle,
-                tags = listOf(mockTag1, mockTag2, mockTag3),
+                searchTerm = MOCK_URL_TITLE,
+                tags = listOf(MOCK_TAG_1, MOCK_TAG_2, MOCK_TAG_3),
                 untaggedOnly = false,
                 postVisibility = PostVisibility.None,
                 readLaterOnly = false,
@@ -1667,10 +1667,10 @@ class PostsDataSourcePinboardApiTest {
             coVerify {
                 mockDao.getAllPosts(
                     sortType = NewestFirst.index,
-                    term = PostsDao.preFormatTerm(mockUrlTitle),
-                    tag1 = PostsDao.preFormatTag(mockTag1.name),
-                    tag2 = PostsDao.preFormatTag(mockTag2.name),
-                    tag3 = PostsDao.preFormatTag(mockTag3.name),
+                    term = PostsDao.preFormatTerm(MOCK_URL_TITLE),
+                    tag1 = PostsDao.preFormatTag(MOCK_TAG_1.name),
+                    tag2 = PostsDao.preFormatTag(MOCK_TAG_2.name),
+                    tag3 = PostsDao.preFormatTag(MOCK_TAG_3.name),
                     untaggedOnly = false,
                     publicPostsOnly = false,
                     privatePostsOnly = false,
@@ -1711,7 +1711,7 @@ class PostsDataSourcePinboardApiTest {
             // WHEN
             val result = dataSource.getLocalData(
                 sortType = NewestFirst,
-                searchTerm = mockUrlTitle,
+                searchTerm = MOCK_URL_TITLE,
                 tags = emptyList(),
                 untaggedOnly = false,
                 postVisibility = PostVisibility.None,
@@ -1733,10 +1733,10 @@ class PostsDataSourcePinboardApiTest {
         @Test
         fun `GIVEN that the api returns an error WHEN getPost is called THEN Failure is returned`() = runTest {
             // GIVEN
-            coEvery { mockApi.getPost(mockUrlValid) } throws Exception()
+            coEvery { mockApi.getPost(MOCK_URL_VALID) } throws Exception()
 
             // WHEN
-            val result = dataSource.getPost(id = "", url = mockUrlValid)
+            val result = dataSource.getPost(id = "", url = MOCK_URL_VALID)
 
             // THEN
             assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
@@ -1745,10 +1745,10 @@ class PostsDataSourcePinboardApiTest {
         @Test
         fun `GIVEN the list is empty WHEN getPost is called THEN Failure is returned`() = runTest {
             // GIVEN
-            coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto(posts = emptyList())
+            coEvery { mockApi.getPost(MOCK_URL_VALID) } returns createGetPostDto(posts = emptyList())
 
             // WHEN
-            val result = dataSource.getPost(id = "", url = mockUrlValid)
+            val result = dataSource.getPost(id = "", url = MOCK_URL_VALID)
 
             // THEN
             assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
@@ -1759,13 +1759,13 @@ class PostsDataSourcePinboardApiTest {
             // GIVEN
             val post = createPost()
 
-            coEvery { mockDao.getPost(mockUrlValid) } returns null
-            coEvery { mockApi.getPost(mockUrlValid) } returns createGetPostDto()
+            coEvery { mockDao.getPost(MOCK_URL_VALID) } returns null
+            coEvery { mockApi.getPost(MOCK_URL_VALID) } returns createGetPostDto()
             every { mockPostRemoteDtoMapper.map(createPostRemoteDto()) } returns createPostDto()
             every { mockPostDtoMapper.map(createPostDto()) } returns post
 
             // WHEN
-            val result = dataSource.getPost(id = "", url = mockUrlValid)
+            val result = dataSource.getPost(id = "", url = MOCK_URL_VALID)
 
             // THEN
             assertThat(result.getOrNull()).isEqualTo(post)
@@ -1781,7 +1781,7 @@ class PostsDataSourcePinboardApiTest {
             coEvery { mockDao.searchExistingPostTag(any()) } throws Exception()
 
             // WHEN
-            val result = dataSource.searchExistingPostTag(mockTagString1)
+            val result = dataSource.searchExistingPostTag(MOCK_TAG_STRING_1)
 
             // THEN
             assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
@@ -1792,16 +1792,16 @@ class PostsDataSourcePinboardApiTest {
             // GIVEN
             coEvery { mockDao.searchExistingPostTag(any()) } returns
                 listOf(
-                    mockTagString1,
-                    "$mockTagString2 $mockTagString1",
-                    "$mockTagString1 $mockTagString2 $mockTagString3",
-                    mockTagStringHtmlEscaped,
+                    MOCK_TAG_STRING_1,
+                    "$MOCK_TAG_STRING_2 $MOCK_TAG_STRING_1",
+                    "$MOCK_TAG_STRING_1 $MOCK_TAG_STRING_2 $MOCK_TAG_STRING_3",
+                    MOCK_TAG_STRING_HTML_ESCAPED,
                 )
 
-            val commonPrefix = mockTagString1
-                .commonPrefixWith(mockTagString2)
-                .commonPrefixWith(mockTagString3)
-                .commonPrefixWith(mockTagStringHtmlEscaped)
+            val commonPrefix = MOCK_TAG_STRING_1
+                .commonPrefixWith(MOCK_TAG_STRING_2)
+                .commonPrefixWith(MOCK_TAG_STRING_3)
+                .commonPrefixWith(MOCK_TAG_STRING_HTML_ESCAPED)
 
             // WHEN
             val result = dataSource.searchExistingPostTag(commonPrefix)
@@ -1809,10 +1809,10 @@ class PostsDataSourcePinboardApiTest {
             // THEN
             assertThat(result.getOrNull()).isEqualTo(
                 listOf(
-                    mockTagString1,
-                    mockTagString2,
-                    mockTagString3,
-                    mockTagStringHtml,
+                    MOCK_TAG_STRING_1,
+                    MOCK_TAG_STRING_2,
+                    MOCK_TAG_STRING_3,
+                    MOCK_TAG_STRING_HTML,
                 ),
             )
         }
@@ -1822,29 +1822,29 @@ class PostsDataSourcePinboardApiTest {
             // GIVEN
             coEvery { mockDao.searchExistingPostTag(any()) } returns
                 listOf(
-                    mockTagString1,
-                    "$mockTagString2 $mockTagString1",
-                    "$mockTagString1 $mockTagString2 $mockTagString3",
-                    mockTagStringHtmlEscaped,
+                    MOCK_TAG_STRING_1,
+                    "$MOCK_TAG_STRING_2 $MOCK_TAG_STRING_1",
+                    "$MOCK_TAG_STRING_1 $MOCK_TAG_STRING_2 $MOCK_TAG_STRING_3",
+                    MOCK_TAG_STRING_HTML_ESCAPED,
                 )
 
-            val commonPrefix = mockTagString1
-                .commonPrefixWith(mockTagString2)
-                .commonPrefixWith(mockTagString3)
-                .commonPrefixWith(mockTagStringHtmlEscaped)
+            val commonPrefix = MOCK_TAG_STRING_1
+                .commonPrefixWith(MOCK_TAG_STRING_2)
+                .commonPrefixWith(MOCK_TAG_STRING_3)
+                .commonPrefixWith(MOCK_TAG_STRING_HTML_ESCAPED)
 
             // WHEN
             val result = dataSource.searchExistingPostTag(
                 tag = commonPrefix,
-                currentTags = listOf(Tag(name = mockTagString1)),
+                currentTags = listOf(Tag(name = MOCK_TAG_STRING_1)),
             )
 
             // THEN
             assertThat(result.getOrNull()).isEqualTo(
                 listOf(
-                    mockTagString2,
-                    mockTagString3,
-                    mockTagStringHtml,
+                    MOCK_TAG_STRING_2,
+                    MOCK_TAG_STRING_3,
+                    MOCK_TAG_STRING_HTML,
                 ),
             )
         }
@@ -1853,24 +1853,24 @@ class PostsDataSourcePinboardApiTest {
         fun `WHEN tag is empty THEN top db tags are returned`() = runTest {
             // GIVEN
             coEvery { mockDao.getAllPostTags() } returns listOf(
-                mockTagString1,
-                "$mockTagString2 $mockTagString1",
-                "$mockTagString1 $mockTagString2 $mockTagString3",
-                mockTagStringHtmlEscaped,
+                MOCK_TAG_STRING_1,
+                "$MOCK_TAG_STRING_2 $MOCK_TAG_STRING_1",
+                "$MOCK_TAG_STRING_1 $MOCK_TAG_STRING_2 $MOCK_TAG_STRING_3",
+                MOCK_TAG_STRING_HTML_ESCAPED,
             )
 
             // WHEN
             val result = dataSource.searchExistingPostTag(
                 tag = "",
-                currentTags = listOf(Tag(name = mockTagString3)),
+                currentTags = listOf(Tag(name = MOCK_TAG_STRING_3)),
             )
 
             // THEN
             assertThat(result.getOrNull()).isEqualTo(
                 listOf(
-                    mockTagString1,
-                    mockTagString2,
-                    mockTagStringHtml,
+                    MOCK_TAG_STRING_1,
+                    MOCK_TAG_STRING_2,
+                    MOCK_TAG_STRING_HTML,
                 ),
             )
         }

@@ -5,16 +5,16 @@ import com.fibelatti.bookmarking.features.posts.domain.model.PendingSync
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.bookmarking.linkding.data.BookmarkLocal
 import com.fibelatti.bookmarking.linkding.data.BookmarkLocalMapper
-import com.fibelatti.pinboard.MockDataProvider.createBookmarkLocal
-import com.fibelatti.pinboard.MockDataProvider.createPost
-import com.fibelatti.pinboard.MockDataProvider.mockHash
-import com.fibelatti.pinboard.MockDataProvider.mockTags
-import com.fibelatti.pinboard.MockDataProvider.mockTagsResponse
-import com.fibelatti.pinboard.MockDataProvider.mockTime
-import com.fibelatti.pinboard.MockDataProvider.mockTitle
-import com.fibelatti.pinboard.MockDataProvider.mockUrlDescription
-import com.fibelatti.pinboard.MockDataProvider.mockUrlNotes
-import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_HASH
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAGS
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAGS_RESPONSE
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TIME
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TITLE
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_URL_DESCRIPTION
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_URL_NOTES
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_URL_VALID
+import com.fibelatti.bookmarking.test.MockDataProvider.createBookmarkLocal
+import com.fibelatti.bookmarking.test.MockDataProvider.createPost
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
@@ -40,30 +40,30 @@ class BookmarkLocalMapperTest {
             val shared = randomBoolean()
 
             val input = BookmarkLocal(
-                id = mockHash,
-                url = mockUrlValid,
-                title = mockTitle,
-                description = mockUrlDescription,
-                notes = mockUrlNotes,
+                id = MOCK_HASH,
+                url = MOCK_URL_VALID,
+                title = MOCK_TITLE,
+                description = MOCK_URL_DESCRIPTION,
+                notes = MOCK_URL_NOTES,
                 isArchived = archived,
                 unread = unread,
                 shared = shared,
-                tagNames = mockTagsResponse,
-                dateModified = mockTime,
+                tagNames = MOCK_TAGS_RESPONSE,
+                dateModified = MOCK_TIME,
                 pendingSync = null,
             )
 
             val expected = Post(
-                url = mockUrlValid,
-                title = mockTitle,
-                description = mockUrlDescription,
-                id = mockHash,
-                time = mockTime,
-                formattedTime = mockTime,
+                url = MOCK_URL_VALID,
+                title = MOCK_TITLE,
+                description = MOCK_URL_DESCRIPTION,
+                id = MOCK_HASH,
+                time = MOCK_TIME,
+                formattedTime = MOCK_TIME,
                 private = !shared,
                 readLater = unread,
-                tags = mockTags,
-                notes = mockUrlNotes,
+                tags = MOCK_TAGS,
+                notes = MOCK_URL_NOTES,
                 isArchived = archived,
                 pendingSync = null,
             )
@@ -94,31 +94,31 @@ class BookmarkLocalMapperTest {
             val shared = randomBoolean()
 
             val input = Post(
-                url = mockUrlValid,
-                title = mockTitle,
-                description = mockUrlDescription,
-                id = mockHash,
-                time = mockTime,
-                formattedTime = mockTime,
+                url = MOCK_URL_VALID,
+                title = MOCK_TITLE,
+                description = MOCK_URL_DESCRIPTION,
+                id = MOCK_HASH,
+                time = MOCK_TIME,
+                formattedTime = MOCK_TIME,
                 private = !shared,
                 readLater = unread,
-                tags = mockTags,
-                notes = mockUrlNotes,
+                tags = MOCK_TAGS,
+                notes = MOCK_URL_NOTES,
                 isArchived = archived,
                 pendingSync = null,
             )
 
             val expected = BookmarkLocal(
-                id = mockHash,
-                url = mockUrlValid,
-                title = mockTitle,
-                description = mockUrlDescription,
-                notes = mockUrlNotes,
+                id = MOCK_HASH,
+                url = MOCK_URL_VALID,
+                title = MOCK_TITLE,
+                description = MOCK_URL_DESCRIPTION,
+                notes = MOCK_URL_NOTES,
                 isArchived = archived,
                 unread = unread,
                 shared = shared,
-                tagNames = mockTagsResponse,
-                dateModified = mockTime,
+                tagNames = MOCK_TAGS_RESPONSE,
+                dateModified = MOCK_TIME,
                 pendingSync = null,
             )
 

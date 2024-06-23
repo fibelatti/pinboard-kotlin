@@ -2,9 +2,9 @@ package com.fibelatti.pinboard.features.sync
 
 import androidx.work.ListenableWorker
 import com.fibelatti.bookmarking.features.posts.domain.model.PendingSync
+import com.fibelatti.bookmarking.test.MockDataProvider.createPost
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
-import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery

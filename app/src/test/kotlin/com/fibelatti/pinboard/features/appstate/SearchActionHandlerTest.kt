@@ -1,10 +1,10 @@
 package com.fibelatti.pinboard.features.appstate
 
-import com.fibelatti.pinboard.MockDataProvider.mockTag1
-import com.fibelatti.pinboard.MockDataProvider.mockTag2
-import com.fibelatti.pinboard.MockDataProvider.mockTag3
-import com.fibelatti.pinboard.MockDataProvider.mockTag4
-import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_1
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_2
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_3
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_4
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_URL_VALID
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.google.common.truth.Truth.assertThat
 import io.mockk.mockk
@@ -75,7 +75,7 @@ internal class SearchActionHandlerTest {
             // GIVEN
             val mockPreviousContent = mockk<PostListContent>()
             val initialContent = SearchContent(
-                searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
+                searchParameters = SearchParameters(term = MOCK_URL_VALID, tags = listOf(MOCK_TAG_1)),
                 previousContent = mockPreviousContent,
             )
 
@@ -90,7 +90,7 @@ internal class SearchActionHandlerTest {
                 SearchContent(
                     searchParameters = SearchParameters(
                         term = "updated-term",
-                        tags = listOf(mockTag1),
+                        tags = listOf(MOCK_TAG_1),
                     ),
                     availableTags = emptyList(),
                     allTags = emptyList(),
@@ -121,13 +121,13 @@ internal class SearchActionHandlerTest {
             // GIVEN
             val mockPreviousContent = mockk<PostListContent>()
             val initialContent = SearchContent(
-                searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
+                searchParameters = SearchParameters(term = MOCK_URL_VALID, tags = listOf(MOCK_TAG_1)),
                 previousContent = mockPreviousContent,
             )
 
             // WHEN
             val result = searchActionHandler.runAction(
-                SetSearchTags(listOf(mockTag1, mockTag2, mockTag3)),
+                SetSearchTags(listOf(MOCK_TAG_1, MOCK_TAG_2, MOCK_TAG_3)),
                 initialContent,
             )
 
@@ -135,11 +135,11 @@ internal class SearchActionHandlerTest {
             assertThat(result).isEqualTo(
                 SearchContent(
                     searchParameters = SearchParameters(
-                        term = mockUrlValid,
-                        tags = listOf(mockTag1),
+                        term = MOCK_URL_VALID,
+                        tags = listOf(MOCK_TAG_1),
                     ),
-                    availableTags = listOf(mockTag2, mockTag3),
-                    allTags = listOf(mockTag1, mockTag2, mockTag3),
+                    availableTags = listOf(MOCK_TAG_2, MOCK_TAG_3),
+                    allTags = listOf(MOCK_TAG_1, MOCK_TAG_2, MOCK_TAG_3),
                     shouldLoadTags = false,
                     previousContent = mockPreviousContent,
                 ),
@@ -168,14 +168,14 @@ internal class SearchActionHandlerTest {
                 // GIVEN
                 val mockPreviousContent = mockk<PostListContent>()
                 val initialContent = SearchContent(
-                    searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
-                    availableTags = listOf(mockTag2, mockTag3),
-                    allTags = listOf(mockTag1, mockTag2, mockTag3),
+                    searchParameters = SearchParameters(term = MOCK_URL_VALID, tags = listOf(MOCK_TAG_1)),
+                    availableTags = listOf(MOCK_TAG_2, MOCK_TAG_3),
+                    allTags = listOf(MOCK_TAG_1, MOCK_TAG_2, MOCK_TAG_3),
                     previousContent = mockPreviousContent,
                 )
 
                 // WHEN
-                val result = searchActionHandler.runAction(AddSearchTag(mockTag1), initialContent)
+                val result = searchActionHandler.runAction(AddSearchTag(MOCK_TAG_1), initialContent)
 
                 // THEN
                 assertThat(result).isEqualTo(initialContent)
@@ -188,16 +188,16 @@ internal class SearchActionHandlerTest {
                 val mockPreviousContent = mockk<PostListContent>()
                 val initialContent = SearchContent(
                     searchParameters = SearchParameters(
-                        term = mockUrlValid,
-                        tags = listOf(mockTag1, mockTag2, mockTag3),
+                        term = MOCK_URL_VALID,
+                        tags = listOf(MOCK_TAG_1, MOCK_TAG_2, MOCK_TAG_3),
                     ),
-                    availableTags = listOf(mockTag4),
-                    allTags = listOf(mockTag1, mockTag2, mockTag3, mockTag4),
+                    availableTags = listOf(MOCK_TAG_4),
+                    allTags = listOf(MOCK_TAG_1, MOCK_TAG_2, MOCK_TAG_3, MOCK_TAG_4),
                     previousContent = mockPreviousContent,
                 )
 
                 // WHEN
-                val result = searchActionHandler.runAction(AddSearchTag(mockTag4), initialContent)
+                val result = searchActionHandler.runAction(AddSearchTag(MOCK_TAG_4), initialContent)
 
                 // THEN
                 assertThat(result).isEqualTo(initialContent)
@@ -208,24 +208,24 @@ internal class SearchActionHandlerTest {
             // GIVEN
             val mockPreviousContent = mockk<PostListContent>()
             val initialContent = SearchContent(
-                searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
-                availableTags = listOf(mockTag2, mockTag3),
-                allTags = listOf(mockTag1, mockTag2, mockTag3),
+                searchParameters = SearchParameters(term = MOCK_URL_VALID, tags = listOf(MOCK_TAG_1)),
+                availableTags = listOf(MOCK_TAG_2, MOCK_TAG_3),
+                allTags = listOf(MOCK_TAG_1, MOCK_TAG_2, MOCK_TAG_3),
                 previousContent = mockPreviousContent,
             )
 
             // WHEN
-            val result = searchActionHandler.runAction(AddSearchTag(mockTag2), initialContent)
+            val result = searchActionHandler.runAction(AddSearchTag(MOCK_TAG_2), initialContent)
 
             // THEN
             assertThat(result).isEqualTo(
                 SearchContent(
                     searchParameters = SearchParameters(
-                        term = mockUrlValid,
-                        tags = listOf(mockTag1, mockTag2),
+                        term = MOCK_URL_VALID,
+                        tags = listOf(MOCK_TAG_1, MOCK_TAG_2),
                     ),
-                    availableTags = listOf(mockTag3),
-                    allTags = listOf(mockTag1, mockTag2, mockTag3),
+                    availableTags = listOf(MOCK_TAG_3),
+                    allTags = listOf(MOCK_TAG_1, MOCK_TAG_2, MOCK_TAG_3),
                     previousContent = mockPreviousContent,
                 ),
             )
@@ -252,24 +252,24 @@ internal class SearchActionHandlerTest {
             // GIVEN
             val mockPreviousContent = mockk<PostListContent>()
             val initialContent = SearchContent(
-                searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
-                availableTags = listOf(mockTag2, mockTag3),
-                allTags = listOf(mockTag1, mockTag2, mockTag3),
+                searchParameters = SearchParameters(term = MOCK_URL_VALID, tags = listOf(MOCK_TAG_1)),
+                availableTags = listOf(MOCK_TAG_2, MOCK_TAG_3),
+                allTags = listOf(MOCK_TAG_1, MOCK_TAG_2, MOCK_TAG_3),
                 previousContent = mockPreviousContent,
             )
 
             // WHEN
-            val result = searchActionHandler.runAction(RemoveSearchTag(mockTag1), initialContent)
+            val result = searchActionHandler.runAction(RemoveSearchTag(MOCK_TAG_1), initialContent)
 
             // THEN
             assertThat(result).isEqualTo(
                 SearchContent(
                     searchParameters = SearchParameters(
-                        term = mockUrlValid,
+                        term = MOCK_URL_VALID,
                         tags = emptyList(),
                     ),
-                    availableTags = listOf(mockTag1, mockTag2, mockTag3),
-                    allTags = listOf(mockTag1, mockTag2, mockTag3),
+                    availableTags = listOf(MOCK_TAG_1, MOCK_TAG_2, MOCK_TAG_3),
+                    allTags = listOf(MOCK_TAG_1, MOCK_TAG_2, MOCK_TAG_3),
                     previousContent = mockPreviousContent,
                 ),
             )
@@ -303,7 +303,7 @@ internal class SearchActionHandlerTest {
                 shouldLoad = ShouldLoadFirstPage,
             )
             val initialContent = SearchContent(
-                searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
+                searchParameters = SearchParameters(term = MOCK_URL_VALID, tags = listOf(MOCK_TAG_1)),
                 previousContent = mockPreviousContent,
             )
 
@@ -317,7 +317,7 @@ internal class SearchActionHandlerTest {
                     posts = null,
                     showDescription = false,
                     sortType = NewestFirst,
-                    searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
+                    searchParameters = SearchParameters(term = MOCK_URL_VALID, tags = listOf(MOCK_TAG_1)),
                     shouldLoad = ShouldLoadFirstPage,
                 ),
             )
@@ -336,7 +336,7 @@ internal class SearchActionHandlerTest {
                     shouldLoad = ShouldLoadFirstPage,
                 )
                 val initialContent = SearchContent(
-                    searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
+                    searchParameters = SearchParameters(term = MOCK_URL_VALID, tags = listOf(MOCK_TAG_1)),
                     previousContent = mockPreviousContent,
                 )
 
@@ -350,7 +350,7 @@ internal class SearchActionHandlerTest {
                         posts = null,
                         showDescription = false,
                         sortType = NewestFirst,
-                        searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
+                        searchParameters = SearchParameters(term = MOCK_URL_VALID, tags = listOf(MOCK_TAG_1)),
                         shouldLoad = ShouldLoadFirstPage,
                     ),
                 )
@@ -380,7 +380,7 @@ internal class SearchActionHandlerTest {
                 posts = null,
                 showDescription = false,
                 sortType = NewestFirst,
-                searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
+                searchParameters = SearchParameters(term = MOCK_URL_VALID, tags = listOf(MOCK_TAG_1)),
                 shouldLoad = Loaded,
             )
 
@@ -410,7 +410,7 @@ internal class SearchActionHandlerTest {
                     posts = null,
                     showDescription = false,
                     sortType = NewestFirst,
-                    searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
+                    searchParameters = SearchParameters(term = MOCK_URL_VALID, tags = listOf(MOCK_TAG_1)),
                     shouldLoad = Loaded,
                 ),
             )
@@ -441,13 +441,13 @@ internal class SearchActionHandlerTest {
                 posts = null,
                 showDescription = false,
                 sortType = NewestFirst,
-                searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
+                searchParameters = SearchParameters(term = MOCK_URL_VALID, tags = listOf(MOCK_TAG_1)),
                 shouldLoad = Loaded,
             )
             val searchContent = SearchContent(
-                searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
-                availableTags = listOf(mockTag2, mockTag3),
-                allTags = listOf(mockTag1, mockTag2, mockTag3),
+                searchParameters = SearchParameters(term = MOCK_URL_VALID, tags = listOf(MOCK_TAG_1)),
+                availableTags = listOf(MOCK_TAG_2, MOCK_TAG_3),
+                allTags = listOf(MOCK_TAG_1, MOCK_TAG_2, MOCK_TAG_3),
                 previousContent = previousContent,
             )
 
@@ -491,7 +491,7 @@ internal class SearchActionHandlerTest {
                 posts = null,
                 showDescription = false,
                 sortType = NewestFirst,
-                searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
+                searchParameters = SearchParameters(term = MOCK_URL_VALID, tags = listOf(MOCK_TAG_1)),
                 shouldLoad = ShouldLoadFirstPage,
             )
             val initialContent = SavedFiltersContent(
@@ -500,7 +500,7 @@ internal class SearchActionHandlerTest {
 
             // WHEN
             val result = searchActionHandler.runAction(
-                ViewSavedFilter(savedFilter = SavedFilter(searchTerm = mockUrlValid, tags = listOf(mockTag1))),
+                ViewSavedFilter(savedFilter = SavedFilter(searchTerm = MOCK_URL_VALID, tags = listOf(MOCK_TAG_1))),
                 initialContent,
             )
 
@@ -511,7 +511,7 @@ internal class SearchActionHandlerTest {
                     posts = null,
                     showDescription = false,
                     sortType = NewestFirst,
-                    searchParameters = SearchParameters(term = mockUrlValid, tags = listOf(mockTag1)),
+                    searchParameters = SearchParameters(term = MOCK_URL_VALID, tags = listOf(MOCK_TAG_1)),
                     shouldLoad = ShouldLoadFirstPage,
                 ),
             )

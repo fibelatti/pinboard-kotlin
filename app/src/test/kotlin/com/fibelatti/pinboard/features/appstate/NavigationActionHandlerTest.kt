@@ -3,8 +3,8 @@ package com.fibelatti.pinboard.features.appstate
 import com.fibelatti.bookmarking.features.posts.domain.PreferredDetailsView
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
+import com.fibelatti.bookmarking.test.MockDataProvider.createPost
 import com.fibelatti.core.functional.Either
-import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.allSealedSubclasses
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository

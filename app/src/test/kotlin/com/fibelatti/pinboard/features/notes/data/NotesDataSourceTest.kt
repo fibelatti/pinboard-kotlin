@@ -1,8 +1,8 @@
 package com.fibelatti.pinboard.features.notes.data
 
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_NOTE_ID
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.pinboard.MockDataProvider.mockNoteId
 import com.fibelatti.pinboard.features.notes.data.model.NoteDto
 import com.fibelatti.pinboard.features.notes.data.model.NoteDtoMapper
 import com.fibelatti.pinboard.features.notes.data.model.NoteListDto
@@ -62,10 +62,10 @@ internal class NotesDataSourceTest {
         @Test
         fun `GIVEN api returns an error WHEN getNote is called THEN Failure is returned`() = runTest {
             // GIVEN
-            coEvery { mockApi.getNote(mockNoteId) } throws Exception()
+            coEvery { mockApi.getNote(MOCK_NOTE_ID) } throws Exception()
 
             // WHEN
-            val result = dataSource.getNote(mockNoteId)
+            val result = dataSource.getNote(MOCK_NOTE_ID)
 
             // THEN
             assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
@@ -77,11 +77,11 @@ internal class NotesDataSourceTest {
             val mockNoteDto = mockk<NoteDto>()
             val mockNote = mockk<Note>()
 
-            coEvery { mockApi.getNote(mockNoteId) } returns mockNoteDto
+            coEvery { mockApi.getNote(MOCK_NOTE_ID) } returns mockNoteDto
             every { mockNoteDtoMapper.map(mockNoteDto) } returns mockNote
 
             // WHEN
-            val result = dataSource.getNote(mockNoteId)
+            val result = dataSource.getNote(MOCK_NOTE_ID)
 
             // THEN
             assertThat(result.getOrNull()).isEqualTo(mockNote)

@@ -2,10 +2,10 @@ package com.fibelatti.pinboard.features.tags.presentation
 
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.bookmarking.features.tags.domain.model.TagSorting
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAGS
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
-import com.fibelatti.pinboard.MockDataProvider.mockTags
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.SetSearchTags
 import com.fibelatti.pinboard.features.appstate.SetTags
@@ -51,25 +51,25 @@ internal class TagsViewModelTest : BaseViewModelTest() {
     @Test
     fun `GIVEN source is MENU WHEN getAllTags succeeds THEN AppStateRepository should run SetTags`() {
         // GIVEN
-        every { mockTagsRepository.getAllTags() } returns flowOf(Success(mockTags))
+        every { mockTagsRepository.getAllTags() } returns flowOf(Success(MOCK_TAGS))
 
         // WHEN
         tagsViewModel.getAll(TagsViewModel.Source.MENU)
 
         // THEN
-        coVerify { mockAppStateRepository.runAction(SetTags(mockTags)) }
+        coVerify { mockAppStateRepository.runAction(SetTags(MOCK_TAGS)) }
     }
 
     @Test
     fun `GIVEN source is SEARCH WHEN getAllTags succeeds THEN AppStateRepository should run SetSearchTags`() {
         // GIVEN
-        every { mockTagsRepository.getAllTags() } returns flowOf(Success(mockTags))
+        every { mockTagsRepository.getAllTags() } returns flowOf(Success(MOCK_TAGS))
 
         // WHEN
         tagsViewModel.getAll(TagsViewModel.Source.SEARCH)
 
         // THEN
-        coVerify { mockAppStateRepository.runAction(SetSearchTags(mockTags)) }
+        coVerify { mockAppStateRepository.runAction(SetSearchTags(MOCK_TAGS)) }
     }
 
     @Test

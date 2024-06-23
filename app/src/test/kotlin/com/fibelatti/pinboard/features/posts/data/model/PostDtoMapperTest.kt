@@ -5,8 +5,8 @@ import com.fibelatti.bookmarking.features.posts.data.model.PendingSyncDto
 import com.fibelatti.bookmarking.features.posts.domain.model.PendingSync
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.bookmarking.pinboard.data.PostDtoMapper
-import com.fibelatti.pinboard.MockDataProvider.createPost
-import com.fibelatti.pinboard.MockDataProvider.createPostDto
+import com.fibelatti.bookmarking.test.MockDataProvider.createPost
+import com.fibelatti.bookmarking.test.MockDataProvider.createPostDto
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk

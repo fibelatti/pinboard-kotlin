@@ -1,17 +1,17 @@
 package com.fibelatti.pinboard.features.linkding.data
 
 import com.fibelatti.bookmarking.features.posts.data.model.PendingSyncDto
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_HASH
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_1
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_2
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_3
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TIME_1
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TIME_2
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TIME_3
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TIME_4
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TIME_5
+import com.fibelatti.bookmarking.test.MockDataProvider.createBookmarkLocal
 import com.fibelatti.core.randomUUID
-import com.fibelatti.pinboard.MockDataProvider.createBookmarkLocal
-import com.fibelatti.pinboard.MockDataProvider.mockHash
-import com.fibelatti.pinboard.MockDataProvider.mockTagString1
-import com.fibelatti.pinboard.MockDataProvider.mockTagString2
-import com.fibelatti.pinboard.MockDataProvider.mockTagString3
-import com.fibelatti.pinboard.MockDataProvider.mockTime1
-import com.fibelatti.pinboard.MockDataProvider.mockTime2
-import com.fibelatti.pinboard.MockDataProvider.mockTime3
-import com.fibelatti.pinboard.MockDataProvider.mockTime4
-import com.fibelatti.pinboard.MockDataProvider.mockTime5
 import com.fibelatti.pinboard.tooling.BaseDbTest
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest
@@ -73,16 +73,16 @@ class BookmarksDaoTest : BaseDbTest() {
     )
 
     private val bookmarkWithoutTags = createBookmarkLocal(id = randomHash(), tagNames = "")
-    private val bookmarkWithOneTag = createBookmarkLocal(id = randomHash(), tagNames = mockTagString1)
+    private val bookmarkWithOneTag = createBookmarkLocal(id = randomHash(), tagNames = MOCK_TAG_STRING_1)
     private val bookmarkWithTwoTags = createBookmarkLocal(
         id = randomHash(),
-        tagNames = listOf(mockTagString1, mockTagString2)
+        tagNames = listOf(MOCK_TAG_STRING_1, MOCK_TAG_STRING_2)
             .shuffled() // Intentionally shuffled because the order shouldn't matter
             .joinToString(separator = " "),
     )
     private val bookmarkWithThreeTags = createBookmarkLocal(
         id = randomHash(),
-        tagNames = listOf(mockTagString1, mockTagString2, mockTagString3)
+        tagNames = listOf(MOCK_TAG_STRING_1, MOCK_TAG_STRING_2, MOCK_TAG_STRING_3)
             .shuffled() // Intentionally shuffled because the order shouldn't matter
             .joinToString(separator = " "),
     )
@@ -105,11 +105,11 @@ class BookmarksDaoTest : BaseDbTest() {
         unread = false,
     )
 
-    private val bookmarkFirst = createBookmarkLocal(id = randomHash(), title = "A title", dateModified = mockTime1)
-    private val bookmarkSecond = createBookmarkLocal(id = randomHash(), title = "B title", dateModified = mockTime2)
-    private val bookmarkThird = createBookmarkLocal(id = randomHash(), title = "C title", dateModified = mockTime3)
-    private val bookmarkFourth = createBookmarkLocal(id = randomHash(), title = "D title", dateModified = mockTime4)
-    private val bookmarkFifth = createBookmarkLocal(id = randomHash(), title = "E title", dateModified = mockTime5)
+    private val bookmarkFirst = createBookmarkLocal(id = randomHash(), title = "A title", dateModified = MOCK_TIME_1)
+    private val bookmarkSecond = createBookmarkLocal(id = randomHash(), title = "B title", dateModified = MOCK_TIME_2)
+    private val bookmarkThird = createBookmarkLocal(id = randomHash(), title = "C title", dateModified = MOCK_TIME_3)
+    private val bookmarkFourth = createBookmarkLocal(id = randomHash(), title = "D title", dateModified = MOCK_TIME_4)
+    private val bookmarkFifth = createBookmarkLocal(id = randomHash(), title = "E title", dateModified = MOCK_TIME_5)
     // endregion
 
     private val bookmarksDao get() = appDatabase.linkdingBookmarksDao()
@@ -119,7 +119,7 @@ class BookmarksDaoTest : BaseDbTest() {
     @Test
     fun whenDeleteIsCalledThenAllDataIsDeleted() = runTest {
         // GIVEN
-        val list = listOf(createBookmarkLocal(), createBookmarkLocal(id = "other-$mockHash"))
+        val list = listOf(createBookmarkLocal(), createBookmarkLocal(id = "other-$MOCK_HASH"))
         bookmarksDao.saveBookmarks(list)
 
         // WHEN
@@ -135,7 +135,7 @@ class BookmarksDaoTest : BaseDbTest() {
         // GIVEN
         val list = listOf(
             createBookmarkLocal(),
-            createBookmarkLocal(id = "other-$mockHash"),
+            createBookmarkLocal(id = "other-$MOCK_HASH"),
             createBookmarkLocal(id = "not-synced-add", pendingSync = PendingSyncDto.ADD),
             createBookmarkLocal(id = "not-synced-update", pendingSync = PendingSyncDto.UPDATE),
             createBookmarkLocal(id = "not-synced-delete", pendingSync = PendingSyncDto.DELETE),
@@ -161,8 +161,8 @@ class BookmarksDaoTest : BaseDbTest() {
         // GIVEN
         val original = createBookmarkLocal(unread = true)
         val modified = createBookmarkLocal(unread = false)
-        val other = createBookmarkLocal(id = "other-$mockHash")
-        val another = createBookmarkLocal(id = "another-$mockHash")
+        val other = createBookmarkLocal(id = "other-$MOCK_HASH")
+        val another = createBookmarkLocal(id = "another-$MOCK_HASH")
 
         val list = listOf(original, other)
         bookmarksDao.saveBookmarks(list)
@@ -279,7 +279,7 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getBookmarkCount(tag1 = BookmarksDao.preFormatTag(mockTagString1))
+            val result = bookmarksDao.getBookmarkCount(tag1 = BookmarksDao.preFormatTag(MOCK_TAG_STRING_1))
 
             // THEN
             assertThat(result).isEqualTo(3)
@@ -298,7 +298,7 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getBookmarkCount(tag1 = BookmarksDao.preFormatTag(mockTagString1))
+            val result = bookmarksDao.getBookmarkCount(tag1 = BookmarksDao.preFormatTag(MOCK_TAG_STRING_1))
 
             // THEN
             assertThat(result).isEqualTo(3)
@@ -318,8 +318,8 @@ class BookmarksDaoTest : BaseDbTest() {
 
             // WHEN
             val result = bookmarksDao.getBookmarkCount(
-                tag1 = BookmarksDao.preFormatTag(mockTagString1),
-                tag2 = BookmarksDao.preFormatTag(mockTagString2),
+                tag1 = BookmarksDao.preFormatTag(MOCK_TAG_STRING_1),
+                tag2 = BookmarksDao.preFormatTag(MOCK_TAG_STRING_2),
             )
 
             // THEN
@@ -340,9 +340,9 @@ class BookmarksDaoTest : BaseDbTest() {
 
             // WHEN
             val result = bookmarksDao.getBookmarkCount(
-                tag1 = BookmarksDao.preFormatTag(mockTagString1),
-                tag2 = BookmarksDao.preFormatTag(mockTagString2),
-                tag3 = BookmarksDao.preFormatTag(mockTagString3),
+                tag1 = BookmarksDao.preFormatTag(MOCK_TAG_STRING_1),
+                tag2 = BookmarksDao.preFormatTag(MOCK_TAG_STRING_2),
+                tag3 = BookmarksDao.preFormatTag(MOCK_TAG_STRING_3),
             )
 
             // THEN
@@ -710,7 +710,7 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getAllBookmarks(tag1 = BookmarksDao.preFormatTag(mockTagString1))
+            val result = bookmarksDao.getAllBookmarks(tag1 = BookmarksDao.preFormatTag(MOCK_TAG_STRING_1))
 
             // THEN
             assertThat(result).isEqualTo(listOf(bookmarkWithOneTag, bookmarkWithTwoTags, bookmarkWithThreeTags))
@@ -729,7 +729,7 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getAllBookmarks(tag1 = BookmarksDao.preFormatTag(mockTagString1))
+            val result = bookmarksDao.getAllBookmarks(tag1 = BookmarksDao.preFormatTag(MOCK_TAG_STRING_1))
 
             // THEN
             assertThat(result).isEqualTo(listOf(bookmarkWithOneTag, bookmarkWithTwoTags, bookmarkWithThreeTags))
@@ -749,8 +749,8 @@ class BookmarksDaoTest : BaseDbTest() {
 
             // WHEN
             val result = bookmarksDao.getAllBookmarks(
-                tag1 = BookmarksDao.preFormatTag(mockTagString1),
-                tag2 = BookmarksDao.preFormatTag(mockTagString2),
+                tag1 = BookmarksDao.preFormatTag(MOCK_TAG_STRING_1),
+                tag2 = BookmarksDao.preFormatTag(MOCK_TAG_STRING_2),
             )
 
             // THEN
@@ -771,9 +771,9 @@ class BookmarksDaoTest : BaseDbTest() {
 
             // WHEN
             val result = bookmarksDao.getAllBookmarks(
-                tag1 = BookmarksDao.preFormatTag(mockTagString1),
-                tag2 = BookmarksDao.preFormatTag(mockTagString2),
-                tag3 = BookmarksDao.preFormatTag(mockTagString3),
+                tag1 = BookmarksDao.preFormatTag(MOCK_TAG_STRING_1),
+                tag2 = BookmarksDao.preFormatTag(MOCK_TAG_STRING_2),
+                tag3 = BookmarksDao.preFormatTag(MOCK_TAG_STRING_3),
             )
 
             // THEN
@@ -999,7 +999,7 @@ class BookmarksDaoTest : BaseDbTest() {
         bookmarksDao.saveBookmarks(list)
 
         // WHEN
-        val result = bookmarksDao.searchExistingBookmarkTags(BookmarksDao.preFormatTag(mockTagString1))
+        val result = bookmarksDao.searchExistingBookmarkTags(BookmarksDao.preFormatTag(MOCK_TAG_STRING_1))
 
         // THEN
         assertThat(result).isEqualTo(
@@ -1024,7 +1024,7 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.searchExistingBookmarkTags(BookmarksDao.preFormatTag(mockTagString1))
+            val result = bookmarksDao.searchExistingBookmarkTags(BookmarksDao.preFormatTag(MOCK_TAG_STRING_1))
 
             // THEN
             assertThat(result).isEqualTo(
@@ -1041,7 +1041,7 @@ class BookmarksDaoTest : BaseDbTest() {
         // GIVEN
         val list = listOf(
             createBookmarkLocal(),
-            createBookmarkLocal(id = "other-$mockHash"),
+            createBookmarkLocal(id = "other-$MOCK_HASH"),
             createBookmarkLocal(id = "not-synced-add", pendingSync = PendingSyncDto.ADD),
             createBookmarkLocal(id = "not-synced-update", pendingSync = PendingSyncDto.UPDATE),
             createBookmarkLocal(id = "not-synced-delete", pendingSync = PendingSyncDto.DELETE),
@@ -1066,7 +1066,7 @@ class BookmarksDaoTest : BaseDbTest() {
         // GIVEN
         val list = listOf(
             createBookmarkLocal(),
-            createBookmarkLocal(id = "other-$mockHash"),
+            createBookmarkLocal(id = "other-$MOCK_HASH"),
             createBookmarkLocal(id = "not-synced-add", url = "href-add", pendingSync = PendingSyncDto.ADD),
             createBookmarkLocal(id = "not-synced-update", url = "href-update", pendingSync = PendingSyncDto.UPDATE),
             createBookmarkLocal(id = "not-synced-delete", url = "href-delete", pendingSync = PendingSyncDto.DELETE),
@@ -1081,7 +1081,7 @@ class BookmarksDaoTest : BaseDbTest() {
         assertThat(result).isEqualTo(
             listOf(
                 createBookmarkLocal(),
-                createBookmarkLocal(id = "other-$mockHash"),
+                createBookmarkLocal(id = "other-$MOCK_HASH"),
                 createBookmarkLocal(id = "not-synced-update", url = "href-update", pendingSync = PendingSyncDto.UPDATE),
                 createBookmarkLocal(id = "not-synced-delete", url = "href-delete", pendingSync = PendingSyncDto.DELETE),
             ),

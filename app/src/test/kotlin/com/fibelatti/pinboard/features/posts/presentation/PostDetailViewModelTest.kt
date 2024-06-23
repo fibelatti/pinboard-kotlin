@@ -1,9 +1,9 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
+import com.fibelatti.bookmarking.test.MockDataProvider.createPost
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
-import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostDeleted
 import com.fibelatti.pinboard.features.appstate.PostSaved

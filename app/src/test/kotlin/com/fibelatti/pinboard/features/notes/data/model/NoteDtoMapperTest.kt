@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.features.notes.data.model
 
 import com.fibelatti.bookmarking.core.util.DateFormatter
-import com.fibelatti.pinboard.MockDataProvider.mockNoteId
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_NOTE_ID
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
@@ -20,7 +20,7 @@ internal class NoteDtoMapperTest {
         // WHEN
         val result = mapper.map(
             NoteDto(
-                id = mockNoteId,
+                id = MOCK_NOTE_ID,
                 title = null,
                 createdAt = null,
                 updatedAt = null,
@@ -37,7 +37,7 @@ internal class NoteDtoMapperTest {
         // WHEN
         val result = mapper.map(
             NoteDto(
-                id = mockNoteId,
+                id = MOCK_NOTE_ID,
                 title = null,
                 createdAt = null,
                 updatedAt = null,
@@ -54,7 +54,7 @@ internal class NoteDtoMapperTest {
         // WHEN
         val result = mapper.map(
             NoteDto(
-                id = mockNoteId,
+                id = MOCK_NOTE_ID,
                 title = null,
                 createdAt = null,
                 updatedAt = null,
@@ -71,7 +71,7 @@ internal class NoteDtoMapperTest {
         // WHEN
         val result = mapper.map(
             NoteDto(
-                id = mockNoteId,
+                id = MOCK_NOTE_ID,
                 title = null,
                 createdAt = null,
                 updatedAt = null,
@@ -96,7 +96,7 @@ internal class NoteDtoMapperTest {
         // WHEN
         val result = mapper.map(
             NoteDto(
-                id = mockNoteId,
+                id = MOCK_NOTE_ID,
                 title = mockTitle,
                 createdAt = inputDate,
                 updatedAt = inputDate,
@@ -107,7 +107,7 @@ internal class NoteDtoMapperTest {
         // THEN
         assertThat(result).isEqualTo(
             Note(
-                id = mockNoteId,
+                id = MOCK_NOTE_ID,
                 title = mockTitle,
                 createdAt = outputDate,
                 updatedAt = outputDate,

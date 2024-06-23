@@ -2,17 +2,17 @@ package com.fibelatti.pinboard.features.posts.data
 
 import com.fibelatti.bookmarking.core.Config
 import com.fibelatti.bookmarking.features.posts.data.model.PendingSyncDto
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_HASH
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_1
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_2
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_3
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TIME_1
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TIME_2
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TIME_3
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TIME_4
+import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TIME_5
+import com.fibelatti.bookmarking.test.MockDataProvider.createPostDto
 import com.fibelatti.core.randomUUID
-import com.fibelatti.pinboard.MockDataProvider.createPostDto
-import com.fibelatti.pinboard.MockDataProvider.mockHash
-import com.fibelatti.pinboard.MockDataProvider.mockTagString1
-import com.fibelatti.pinboard.MockDataProvider.mockTagString2
-import com.fibelatti.pinboard.MockDataProvider.mockTagString3
-import com.fibelatti.pinboard.MockDataProvider.mockTime1
-import com.fibelatti.pinboard.MockDataProvider.mockTime2
-import com.fibelatti.pinboard.MockDataProvider.mockTime3
-import com.fibelatti.pinboard.MockDataProvider.mockTime4
-import com.fibelatti.pinboard.MockDataProvider.mockTime5
 import com.fibelatti.pinboard.tooling.BaseDbTest
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest
@@ -50,16 +50,16 @@ class PostsDaoTest : BaseDbTest() {
     )
 
     private val postWithNoTags = createPostDto(hash = randomHash(), tags = "")
-    private val postWithOneTag = createPostDto(hash = randomHash(), tags = mockTagString1)
+    private val postWithOneTag = createPostDto(hash = randomHash(), tags = MOCK_TAG_STRING_1)
     private val postWithTwoTags = createPostDto(
         hash = randomHash(),
-        tags = listOf(mockTagString1, mockTagString2)
+        tags = listOf(MOCK_TAG_STRING_1, MOCK_TAG_STRING_2)
             .shuffled() // Intentionally shuffled because the order shouldn't matter
             .joinToString(separator = " "),
     )
     private val postWithThreeTags = createPostDto(
         hash = randomHash(),
-        tags = listOf(mockTagString1, mockTagString2, mockTagString3)
+        tags = listOf(MOCK_TAG_STRING_1, MOCK_TAG_STRING_2, MOCK_TAG_STRING_3)
             .shuffled() // Intentionally shuffled because the order shouldn't matter
             .joinToString(separator = " "),
     )
@@ -82,11 +82,11 @@ class PostsDaoTest : BaseDbTest() {
         toread = Config.Pinboard.LITERAL_NO,
     )
 
-    private val postFirst = createPostDto(hash = randomHash(), description = "A title", time = mockTime1)
-    private val postSecond = createPostDto(hash = randomHash(), description = "B title", time = mockTime2)
-    private val postThird = createPostDto(hash = randomHash(), description = "C title", time = mockTime3)
-    private val postFourth = createPostDto(hash = randomHash(), description = "D title", time = mockTime4)
-    private val postFifth = createPostDto(hash = randomHash(), description = "E title", time = mockTime5)
+    private val postFirst = createPostDto(hash = randomHash(), description = "A title", time = MOCK_TIME_1)
+    private val postSecond = createPostDto(hash = randomHash(), description = "B title", time = MOCK_TIME_2)
+    private val postThird = createPostDto(hash = randomHash(), description = "C title", time = MOCK_TIME_3)
+    private val postFourth = createPostDto(hash = randomHash(), description = "D title", time = MOCK_TIME_4)
+    private val postFifth = createPostDto(hash = randomHash(), description = "E title", time = MOCK_TIME_5)
     // endregion
 
     private val postsDao get() = appDatabase.postDao()
@@ -96,7 +96,7 @@ class PostsDaoTest : BaseDbTest() {
     @Test
     fun whenDeleteIsCalledThenAllDataIsDeleted() = runTest {
         // GIVEN
-        val list = listOf(createPostDto(), createPostDto(hash = "other-$mockHash"))
+        val list = listOf(createPostDto(), createPostDto(hash = "other-$MOCK_HASH"))
         postsDao.savePosts(list)
 
         // WHEN
@@ -112,7 +112,7 @@ class PostsDaoTest : BaseDbTest() {
         // GIVEN
         val list = listOf(
             createPostDto(),
-            createPostDto(hash = "other-$mockHash"),
+            createPostDto(hash = "other-$MOCK_HASH"),
             createPostDto(hash = "not-synced-add", pendingSync = PendingSyncDto.ADD),
             createPostDto(hash = "not-synced-update", pendingSync = PendingSyncDto.UPDATE),
             createPostDto(hash = "not-synced-delete", pendingSync = PendingSyncDto.DELETE),
@@ -138,8 +138,8 @@ class PostsDaoTest : BaseDbTest() {
         // GIVEN
         val original = createPostDto(toread = Config.Pinboard.LITERAL_YES)
         val modified = createPostDto(toread = Config.Pinboard.LITERAL_NO)
-        val other = createPostDto(hash = "other-$mockHash")
-        val another = createPostDto(hash = "another-$mockHash")
+        val other = createPostDto(hash = "other-$MOCK_HASH")
+        val another = createPostDto(hash = "another-$MOCK_HASH")
 
         val list = listOf(original, other)
         postsDao.savePosts(list)
@@ -247,7 +247,7 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getPostCount(tag1 = PostsDao.preFormatTag(mockTagString1))
+            val result = postsDao.getPostCount(tag1 = PostsDao.preFormatTag(MOCK_TAG_STRING_1))
 
             // THEN
             assertThat(result).isEqualTo(3)
@@ -266,7 +266,7 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getPostCount(tag1 = PostsDao.preFormatTag(mockTagString1))
+            val result = postsDao.getPostCount(tag1 = PostsDao.preFormatTag(MOCK_TAG_STRING_1))
 
             // THEN
             assertThat(result).isEqualTo(3)
@@ -286,8 +286,8 @@ class PostsDaoTest : BaseDbTest() {
 
             // WHEN
             val result = postsDao.getPostCount(
-                tag1 = PostsDao.preFormatTag(mockTagString1),
-                tag2 = PostsDao.preFormatTag(mockTagString2),
+                tag1 = PostsDao.preFormatTag(MOCK_TAG_STRING_1),
+                tag2 = PostsDao.preFormatTag(MOCK_TAG_STRING_2),
             )
 
             // THEN
@@ -308,9 +308,9 @@ class PostsDaoTest : BaseDbTest() {
 
             // WHEN
             val result = postsDao.getPostCount(
-                tag1 = PostsDao.preFormatTag(mockTagString1),
-                tag2 = PostsDao.preFormatTag(mockTagString2),
-                tag3 = PostsDao.preFormatTag(mockTagString3),
+                tag1 = PostsDao.preFormatTag(MOCK_TAG_STRING_1),
+                tag2 = PostsDao.preFormatTag(MOCK_TAG_STRING_2),
+                tag3 = PostsDao.preFormatTag(MOCK_TAG_STRING_3),
             )
 
             // THEN
@@ -664,7 +664,7 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getAllPosts(tag1 = PostsDao.preFormatTag(mockTagString1))
+        val result = postsDao.getAllPosts(tag1 = PostsDao.preFormatTag(MOCK_TAG_STRING_1))
 
         // THEN
         assertThat(result).isEqualTo(listOf(postWithOneTag, postWithTwoTags, postWithThreeTags))
@@ -683,7 +683,7 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getAllPosts(tag1 = PostsDao.preFormatTag(mockTagString1))
+            val result = postsDao.getAllPosts(tag1 = PostsDao.preFormatTag(MOCK_TAG_STRING_1))
 
             // THEN
             assertThat(result).isEqualTo(listOf(postWithOneTag, postWithTwoTags, postWithThreeTags))
@@ -703,8 +703,8 @@ class PostsDaoTest : BaseDbTest() {
 
             // WHEN
             val result = postsDao.getAllPosts(
-                tag1 = PostsDao.preFormatTag(mockTagString1),
-                tag2 = PostsDao.preFormatTag(mockTagString2),
+                tag1 = PostsDao.preFormatTag(MOCK_TAG_STRING_1),
+                tag2 = PostsDao.preFormatTag(MOCK_TAG_STRING_2),
             )
 
             // THEN
@@ -725,9 +725,9 @@ class PostsDaoTest : BaseDbTest() {
 
             // WHEN
             val result = postsDao.getAllPosts(
-                tag1 = PostsDao.preFormatTag(mockTagString1),
-                tag2 = PostsDao.preFormatTag(mockTagString2),
-                tag3 = PostsDao.preFormatTag(mockTagString3),
+                tag1 = PostsDao.preFormatTag(MOCK_TAG_STRING_1),
+                tag2 = PostsDao.preFormatTag(MOCK_TAG_STRING_2),
+                tag3 = PostsDao.preFormatTag(MOCK_TAG_STRING_3),
             )
 
             // THEN
@@ -952,7 +952,7 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.searchExistingPostTag(PostsDao.preFormatTag(mockTagString1))
+        val result = postsDao.searchExistingPostTag(PostsDao.preFormatTag(MOCK_TAG_STRING_1))
 
         // THEN
         assertThat(result).isEqualTo(
@@ -977,7 +977,7 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.searchExistingPostTag(PostsDao.preFormatTag(mockTagString1))
+            val result = postsDao.searchExistingPostTag(PostsDao.preFormatTag(MOCK_TAG_STRING_1))
 
             // THEN
             assertThat(result).isEqualTo(
@@ -994,7 +994,7 @@ class PostsDaoTest : BaseDbTest() {
         // GIVEN
         val list = listOf(
             createPostDto(),
-            createPostDto(hash = "other-$mockHash"),
+            createPostDto(hash = "other-$MOCK_HASH"),
             createPostDto(hash = "not-synced-add", pendingSync = PendingSyncDto.ADD),
             createPostDto(hash = "not-synced-update", pendingSync = PendingSyncDto.UPDATE),
             createPostDto(hash = "not-synced-delete", pendingSync = PendingSyncDto.DELETE),
@@ -1019,7 +1019,7 @@ class PostsDaoTest : BaseDbTest() {
         // GIVEN
         val list = listOf(
             createPostDto(),
-            createPostDto(hash = "other-$mockHash"),
+            createPostDto(hash = "other-$MOCK_HASH"),
             createPostDto(hash = "not-synced-add", href = "href-add", pendingSync = PendingSyncDto.ADD),
             createPostDto(hash = "not-synced-update", href = "href-update", pendingSync = PendingSyncDto.UPDATE),
             createPostDto(hash = "not-synced-delete", href = "href-delete", pendingSync = PendingSyncDto.DELETE),
@@ -1034,7 +1034,7 @@ class PostsDaoTest : BaseDbTest() {
         assertThat(result).isEqualTo(
             listOf(
                 createPostDto(),
-                createPostDto(hash = "other-$mockHash"),
+                createPostDto(hash = "other-$MOCK_HASH"),
                 createPostDto(hash = "not-synced-update", href = "href-update", pendingSync = PendingSyncDto.UPDATE),
                 createPostDto(hash = "not-synced-delete", href = "href-delete", pendingSync = PendingSyncDto.DELETE),
             ),

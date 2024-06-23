@@ -112,10 +112,7 @@ android {
     sourceSets {
         forEach { sourceSet -> getByName(sourceSet.name).java.srcDirs("src/${sourceSet.name}/kotlin") }
 
-        getByName("test").java.srcDirs("src/sharedTest/kotlin")
-
         getByName("androidTest") {
-            java.srcDirs("src/sharedTest/kotlin")
             assets.srcDirs(files("$projectDir/schemas"))
         }
     }
@@ -231,6 +228,8 @@ dependencies {
     debugImplementation(libs.leakcanary)
 
     // Test
+    testImplementation(projects.bookmarkingTest)
+
     testCompileOnly(libs.junit)
     testRuntimeOnly(libs.junit5.engine)
     testRuntimeOnly(libs.junit5.vintage)
@@ -243,6 +242,8 @@ dependencies {
     testImplementation(libs.arch.core.testing)
 
     testImplementation(libs.koin.test)
+
+    androidTestImplementation(projects.bookmarkingTest)
 
     androidTestImplementation(libs.runner)
     androidTestUtil(libs.orchestrator)
