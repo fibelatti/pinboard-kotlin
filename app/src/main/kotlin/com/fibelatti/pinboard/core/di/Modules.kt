@@ -237,10 +237,10 @@ fun allModules() = listOf(
     linkdingModule,
     androidPlatformModule,
     androidAppModule,
-    KoinGeneratedModule().module,
+    GeneratedModule().module,
     GeneratedBookmarkingModule().module,
 )
 
 @Module
 @ComponentScan("com.fibelatti.pinboard")
-class KoinGeneratedModule
+class GeneratedModule
