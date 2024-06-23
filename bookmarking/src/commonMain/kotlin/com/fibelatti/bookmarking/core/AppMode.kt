@@ -1,6 +1,6 @@
-package com.fibelatti.pinboard.core
+package com.fibelatti.bookmarking.core
 
-enum class AppMode {
+public enum class AppMode {
 
     /**
      * The app uses no external API and all bookmarks are stored only in the local database.

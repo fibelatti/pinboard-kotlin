@@ -1,9 +1,9 @@
 package com.fibelatti.pinboard.features.posts.data
 
+import com.fibelatti.bookmarking.core.AppMode
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.bookmarking.features.posts.domain.model.PostListResult
 import com.fibelatti.core.functional.Result
-import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.features.linkding.data.PostsDataSourceLinkdingApi
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.randomBoolean

@@ -28,9 +28,9 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fibelatti.bookmarking.core.AppMode
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.Private

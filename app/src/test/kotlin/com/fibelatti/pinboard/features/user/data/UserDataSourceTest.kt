@@ -1,5 +1,7 @@
 package com.fibelatti.pinboard.features.user.data
 
+import com.fibelatti.bookmarking.core.AppMode
+import com.fibelatti.bookmarking.core.AppModeProvider
 import com.fibelatti.bookmarking.core.persistence.UserSharedPreferences
 import com.fibelatti.bookmarking.core.ui.Appearance
 import com.fibelatti.bookmarking.core.ui.PreferredDateFormat
@@ -10,8 +12,6 @@ import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.bookmarking.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.MockDataProvider.mockApiToken
 import com.fibelatti.pinboard.MockDataProvider.mockTime
-import com.fibelatti.pinboard.core.AppMode
-import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.randomBoolean
 import com.fibelatti.pinboard.randomString
 import com.google.common.truth.Truth.assertThat

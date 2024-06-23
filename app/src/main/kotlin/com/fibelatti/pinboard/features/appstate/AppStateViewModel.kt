@@ -1,8 +1,8 @@
 package com.fibelatti.pinboard.features.appstate
 
 import androidx.lifecycle.viewModelScope
-import com.fibelatti.pinboard.core.AppMode
-import com.fibelatti.pinboard.core.AppModeProvider
+import com.fibelatti.bookmarking.core.AppMode
+import com.fibelatti.bookmarking.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
 import kotlinx.coroutines.Dispatchers

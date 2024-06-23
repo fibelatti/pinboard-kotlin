@@ -45,12 +45,12 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fibelatti.bookmarking.core.AppMode
 import com.fibelatti.bookmarking.core.Config.LOCAL_PAGE_SIZE
 import com.fibelatti.bookmarking.features.posts.domain.model.PendingSync
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.android.composable.TextWithBlockquote

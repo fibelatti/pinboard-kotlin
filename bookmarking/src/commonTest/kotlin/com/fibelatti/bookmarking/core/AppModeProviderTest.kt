@@ -1,14 +1,11 @@
-package com.fibelatti.pinboard.core
+package com.fibelatti.bookmarking.core
 
+import com.fibelatti.bookmarking.collectIn
 import com.fibelatti.bookmarking.core.persistence.UserSharedPreferences
-import com.fibelatti.pinboard.BuildConfig
-import com.fibelatti.pinboard.collectIn
-import com.fibelatti.pinboard.runUnconfinedTest
+import com.fibelatti.bookmarking.runUnconfinedTest
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkStatic
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class AppModeProviderTest {
@@ -22,11 +19,6 @@ class AppModeProviderTest {
         AppModeProvider(
             userSharedPreferences = mockUserSharedPreferences,
         )
-    }
-
-    @BeforeEach
-    fun setup() {
-        mockkStatic(BuildConfig::class)
     }
 
     @Test

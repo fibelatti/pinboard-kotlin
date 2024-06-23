@@ -1,9 +1,9 @@
 package com.fibelatti.pinboard.features.appstate
 
+import com.fibelatti.bookmarking.core.AppMode
+import com.fibelatti.bookmarking.core.AppModeProvider
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.allSealedSubclasses
-import com.fibelatti.pinboard.core.AppMode
-import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
 import com.fibelatti.pinboard.isEmpty
 import com.google.common.truth.Truth.assertThat

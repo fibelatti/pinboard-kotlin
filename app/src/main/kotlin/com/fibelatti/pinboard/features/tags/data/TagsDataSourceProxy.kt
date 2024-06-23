@@ -1,9 +1,9 @@
 package com.fibelatti.pinboard.features.tags.data
 
+import com.fibelatti.bookmarking.core.AppMode
+import com.fibelatti.bookmarking.core.AppModeProvider
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.core.functional.Result
-import com.fibelatti.pinboard.core.AppMode
-import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.features.linkding.data.TagsDataSourceLinkdingApi
 import com.fibelatti.pinboard.features.tags.domain.TagsRepository
 import kotlinx.coroutines.flow.Flow

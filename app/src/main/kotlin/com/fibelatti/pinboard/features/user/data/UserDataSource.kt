@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.user.data
 
+import com.fibelatti.bookmarking.core.AppModeProvider
 import com.fibelatti.bookmarking.core.persistence.UserSharedPreferences
 import com.fibelatti.bookmarking.core.ui.Appearance
 import com.fibelatti.bookmarking.core.ui.PreferredDateFormat
@@ -9,7 +10,6 @@ import com.fibelatti.bookmarking.features.sync.PeriodicSync
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.bookmarking.features.user.domain.UserPreferences
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
-import com.fibelatti.pinboard.core.AppModeProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

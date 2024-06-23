@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.core
+package com.fibelatti.bookmarking.core
 
 import com.fibelatti.bookmarking.core.persistence.UserSharedPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -8,18 +8,18 @@ import kotlinx.coroutines.flow.update
 import org.koin.core.annotation.Single
 
 @Single
-class AppModeProvider(
+public class AppModeProvider(
     private val userSharedPreferences: UserSharedPreferences,
 ) {
 
     private val _appMode: MutableStateFlow<AppMode> = MutableStateFlow(getValue(reviewMode = false))
-    val appMode: StateFlow<AppMode> = _appMode.asStateFlow()
+    public val appMode: StateFlow<AppMode> = _appMode.asStateFlow()
 
-    fun setReviewMode(value: Boolean) {
+    public fun setReviewMode(value: Boolean) {
         _appMode.value = getValue(reviewMode = value)
     }
 
-    fun refresh() {
+    public fun refresh() {
         _appMode.update { getValue(reviewMode = false) }
     }
 
