@@ -11,6 +11,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.lifecycle.Lifecycle
+import com.fibelatti.bookmarking.core.extension.isServerException
 import com.fibelatti.core.android.extension.animateChangingTransitions
 import com.fibelatti.core.android.extension.doOnInitializeAccessibilityNodeInfo
 import com.fibelatti.core.android.extension.setupForAccessibility
@@ -23,7 +24,6 @@ import com.fibelatti.pinboard.core.android.WindowSizeClass
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.android.widthWindowSizeClassReactiveView
-import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.showBanner

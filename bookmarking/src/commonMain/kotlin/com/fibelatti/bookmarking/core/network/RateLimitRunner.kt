@@ -1,16 +1,17 @@
-package com.fibelatti.pinboard.core.network
+package com.fibelatti.bookmarking.core.network
 
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
+import org.koin.core.annotation.Factory
 
-interface RateLimitRunner {
+public interface RateLimitRunner {
 
-    suspend fun <T> run(body: suspend () -> T): T
+    public suspend fun <T> run(body: suspend () -> T): T
 
-    suspend fun <T> run(throttleTime: Long, body: suspend () -> T): T
+    public suspend fun <T> run(throttleTime: Long, body: suspend () -> T): T
 }
 
 /**
@@ -20,7 +21,8 @@ interface RateLimitRunner {
  * straight away, otherwise it waits until a new call can be made. Requests will be queued and made
  * one at a time.
  */
-class ApiRateLimitRunner constructor(private val throttleTime: Long) : RateLimitRunner {
+@Factory
+internal class ApiRateLimitRunner(private val throttleTime: Long) : RateLimitRunner {
 
     private val mutex = Mutex()
 

@@ -5,7 +5,10 @@ import com.fibelatti.bookmarking.core.Config
 import com.fibelatti.bookmarking.core.Config.Pinboard
 import com.fibelatti.bookmarking.core.extension.containsHtmlChars
 import com.fibelatti.bookmarking.core.extension.replaceHtmlChars
+import com.fibelatti.bookmarking.core.network.ApiException
+import com.fibelatti.bookmarking.core.network.InvalidRequestException
 import com.fibelatti.bookmarking.core.network.PinboardApiResultCode
+import com.fibelatti.bookmarking.core.network.resultFromNetwork
 import com.fibelatti.bookmarking.core.util.DateFormatter
 import com.fibelatti.bookmarking.features.posts.data.model.PendingSyncDto
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
@@ -24,12 +27,9 @@ import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.getOrThrow
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.mapFailure
+import com.fibelatti.core.functional.resultFrom
 import com.fibelatti.core.randomUUID
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
-import com.fibelatti.pinboard.core.functional.resultFrom
-import com.fibelatti.pinboard.core.network.ApiException
-import com.fibelatti.pinboard.core.network.InvalidRequestException
-import com.fibelatti.pinboard.core.network.resultFromNetwork
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
@@ -127,10 +127,10 @@ class PostsDataSourcePinboardApi(
         return resultFromNetwork {
             val result = withTimeout(SERVER_DOWN_TIMEOUT_LONG) {
                 try {
-                    add(Config.Pinboard.MaxLength.URI.value - currentLength)
+                    add(Pinboard.MaxLength.URI.value - currentLength)
                 } catch (httpException: ResponseException) {
                     if (HTTP_URI_TOO_LONG == httpException.response.status.value) {
-                        add(Config.Pinboard.MaxLength.SAFE_URI.value - currentLength)
+                        add(Pinboard.MaxLength.SAFE_URI.value - currentLength)
                     } else {
                         throw httpException
                     }

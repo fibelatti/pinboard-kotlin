@@ -3,12 +3,12 @@ package com.fibelatti.pinboard.core.di
 import android.net.ConnectivityManager
 import androidx.core.content.getSystemService
 import androidx.room.Room
+import com.fibelatti.bookmarking.core.network.UnauthorizedPluginProvider
 import com.fibelatti.bookmarking.core.persistence.UserSharedPreferences
 import com.fibelatti.bookmarking.di.GeneratedBookmarkingModule
 import com.fibelatti.core.android.platform.AppResourceProvider
 import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.pinboard.BuildConfig
-import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
 import com.fibelatti.pinboard.core.persistence.database.AppDatabase
 import com.fibelatti.pinboard.core.persistence.database.DATABASE_NAME
 import com.fibelatti.pinboard.core.persistence.database.DATABASE_VERSION_1

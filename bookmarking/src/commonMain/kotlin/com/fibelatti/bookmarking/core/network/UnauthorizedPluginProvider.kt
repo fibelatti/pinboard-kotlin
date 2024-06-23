@@ -1,5 +1,6 @@
-package com.fibelatti.pinboard.core.network
+package com.fibelatti.bookmarking.core.network
 
+import io.ktor.client.plugins.api.ClientPlugin
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.channels.BufferOverflow
@@ -8,15 +9,15 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import org.koin.core.annotation.Single
 
 @Single
-class UnauthorizedPluginProvider {
+public class UnauthorizedPluginProvider {
 
     private val _unauthorized = MutableSharedFlow<Unit>(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
-    val unauthorized: Flow<Unit> = _unauthorized
+    public val unauthorized: Flow<Unit> = _unauthorized
 
-    val plugin = createClientPlugin("UnauthorizedPlugin") {
+    public val plugin: ClientPlugin<Unit> = createClientPlugin("UnauthorizedPlugin") {
         onResponse { response ->
             if (response.status == HttpStatusCode.Unauthorized) {
                 _unauthorized.tryEmit(Unit)

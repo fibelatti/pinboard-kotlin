@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.linkding.data
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.bookmarking.core.Config
 import com.fibelatti.bookmarking.core.extension.replaceHtmlChars
+import com.fibelatti.bookmarking.core.network.resultFromNetwork
 import com.fibelatti.bookmarking.core.util.DateFormatter
 import com.fibelatti.bookmarking.features.posts.data.model.PendingSyncDto
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
@@ -18,10 +19,9 @@ import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onSuccess
+import com.fibelatti.core.functional.resultFrom
 import com.fibelatti.core.randomUUID
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
-import com.fibelatti.pinboard.core.functional.resultFrom
-import com.fibelatti.pinboard.core.network.resultFromNetwork
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository

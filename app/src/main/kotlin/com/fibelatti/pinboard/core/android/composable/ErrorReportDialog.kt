@@ -15,9 +15,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.fibelatti.bookmarking.core.extension.isServerException
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import java.io.PrintWriter

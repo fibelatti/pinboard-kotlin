@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.core.network
+package com.fibelatti.bookmarking.core.network
 
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.delay
@@ -17,7 +17,7 @@ import kotlinx.coroutines.delay
  * @return [T] if successful, HttpException if all retries failed
  */
 @Throws(ResponseException::class)
-suspend fun <T> tooManyRequestsBackoff(
+public suspend fun <T> tooManyRequestsBackoff(
     times: Int = 3,
     initialDelay: Long = 500,
     maxDelay: Long = 2000,

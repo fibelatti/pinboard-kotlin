@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.core.network
+package com.fibelatti.bookmarking.core.network
 
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.exceptionOrNull

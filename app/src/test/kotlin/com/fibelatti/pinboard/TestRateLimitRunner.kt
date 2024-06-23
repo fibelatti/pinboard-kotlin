@@ -1,6 +1,6 @@
 package com.fibelatti.pinboard
 
-import com.fibelatti.pinboard.core.network.RateLimitRunner
+import com.fibelatti.bookmarking.core.network.RateLimitRunner
 
 class TestRateLimitRunner : RateLimitRunner {
 

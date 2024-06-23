@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.features.notes.data
 
+import com.fibelatti.bookmarking.core.network.resultFromNetwork
 import com.fibelatti.core.functional.Result
-import com.fibelatti.pinboard.core.network.resultFromNetwork
 import com.fibelatti.pinboard.features.notes.data.model.NoteDtoMapper
 import com.fibelatti.pinboard.features.notes.domain.NotesRepository
 import com.fibelatti.pinboard.features.notes.domain.model.Note
