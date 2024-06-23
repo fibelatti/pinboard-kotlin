@@ -2,7 +2,7 @@ package com.fibelatti.pinboard.core.extension
 
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
-import com.fibelatti.pinboard.features.user.domain.UserRepository
+import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import org.koin.java.KoinJavaComponent.getKoin
 
 fun AlertDialog.Builder.applySecureFlag(): AlertDialog = create().apply {

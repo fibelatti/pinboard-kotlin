@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.fibelatti.pinboard.features.user.domain.UserRepository
+import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted

@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.user.domain
 
+import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull

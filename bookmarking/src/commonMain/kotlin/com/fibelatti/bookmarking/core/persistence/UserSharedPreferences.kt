@@ -1,119 +1,68 @@
-package com.fibelatti.pinboard.core.persistence
+package com.fibelatti.bookmarking.core.persistence
 
-import androidx.annotation.VisibleForTesting
 import com.russhwolf.settings.Settings
 import org.koin.core.annotation.Single
 
-// region Constants
-@VisibleForTesting
-const val KEY_AUTH_TOKEN = "AUTH_TOKEN"
-
-@VisibleForTesting
-const val KEY_LAST_UPDATE = "LAST_UPDATE"
-
-@VisibleForTesting
-const val KEY_PERIODIC_SYNC = "PERIODIC_SYNC"
-
-@VisibleForTesting
-const val KEY_APPEARANCE = "APPEARANCE"
-
-@VisibleForTesting
-const val KEY_APPLY_DYNAMIC_COLORS = "APPLY_DYNAMIC_COLORS"
-
-@VisibleForTesting
-const val KEY_DISABLE_SCREENSHOTS = "DISABLE_SCREENSHOTS"
-
-@VisibleForTesting
-const val KEY_PREFERRED_DATE_FORMAT = "PREFERRED_DATE_FORMAT"
-
-@VisibleForTesting
-const val KEY_PREFERRED_DETAILS_VIEW = "PREFERRED_DETAILS_VIEW"
-
-@VisibleForTesting
-const val KEY_ALWAYS_USE_SIDE_PANEL = "ALWAYS_USE_SIDE_PANEL"
-
-@VisibleForTesting
-const val KEY_MARK_AS_READ_ON_OPEN = "MARK_AS_READ_ON_OPEN"
-
-@VisibleForTesting
-const val KEY_AUTO_FILL_DESCRIPTION = "AUTO_FILL_DESCRIPTION"
-
-@VisibleForTesting
-const val KEY_SHOW_DESCRIPTION_IN_LISTS = "SHOW_DESCRIPTION_IN_LISTS"
-
-@VisibleForTesting
-const val KEY_DEFAULT_PRIVATE = "DEFAULT_PRIVATE"
-
-@VisibleForTesting
-const val KEY_DEFAULT_READ_LATER = "DEFAULT_READ_LATER"
-
-@VisibleForTesting
-const val KEY_NEW_EDIT_AFTER_SHARING = "NEW_EDIT_AFTER_SHARING"
-
-@VisibleForTesting
-const val KEY_DEFAULT_TAGS = "DEFAULT_TAGS"
-// endregion
-
 @Single
-class UserSharedPreferences(private val settings: Settings) {
+public class UserSharedPreferences(private val settings: Settings) {
 
     private var currentLinkdingInstanceUrl = ""
     private var currentAuthToken: String = ""
     private var currentLastUpdate: String = ""
 
-    var useLinkding: Boolean
+    public var useLinkding: Boolean
         get() = settings.getBoolean("USE_LINKDING", false)
         set(value) = settings.putBoolean("USE_LINKDING", value)
 
-    var linkdingInstanceUrl: String
+    public var linkdingInstanceUrl: String
         get() = settings.getString("LINKDING_INSTANCE_URL", currentLinkdingInstanceUrl)
         set(value) = settings.putString("LINKDING_INSTANCE_URL", value).also { currentLinkdingInstanceUrl = value }
 
-    var authToken: String
+    public var authToken: String
         get() = settings.getString(KEY_AUTH_TOKEN, currentAuthToken)
         set(value) = settings.putString(KEY_AUTH_TOKEN, value).also { currentAuthToken = value }
 
-    var lastUpdate: String
+    public var lastUpdate: String
         get() = settings.getString(KEY_LAST_UPDATE, currentLastUpdate)
         set(value) = settings.putString(KEY_LAST_UPDATE, value).also { currentLastUpdate = value }
 
-    var periodicSync: Long
+    public var periodicSync: Long
         get() = settings.getLong(KEY_PERIODIC_SYNC, 24)
         set(value) = settings.putLong(KEY_PERIODIC_SYNC, value)
 
-    var appearance: String
+    public var appearance: String
         get() = settings.getString(KEY_APPEARANCE, "")
         set(value) = settings.putString(KEY_APPEARANCE, value)
 
-    var applyDynamicColors: Boolean
+    public var applyDynamicColors: Boolean
         get() = settings.getBoolean(KEY_APPLY_DYNAMIC_COLORS, false)
         set(value) = settings.putBoolean(KEY_APPLY_DYNAMIC_COLORS, value)
 
-    var disableScreenshots: Boolean
+    public var disableScreenshots: Boolean
         get() = settings.getBoolean(KEY_DISABLE_SCREENSHOTS, false)
         set(value) = settings.putBoolean(KEY_DISABLE_SCREENSHOTS, value)
 
-    var preferredDateFormat: String
+    public var preferredDateFormat: String
         get() = settings.getString(KEY_PREFERRED_DATE_FORMAT, "")
         set(value) = settings.putString(KEY_PREFERRED_DATE_FORMAT, value)
 
-    var preferredDetailsView: String
+    public var preferredDetailsView: String
         get() = settings.getString(KEY_PREFERRED_DETAILS_VIEW, "")
         set(value) = settings.putString(KEY_PREFERRED_DETAILS_VIEW, value)
 
-    var alwaysUseSidePanel: Boolean
+    public var alwaysUseSidePanel: Boolean
         get() = settings.getBoolean(KEY_ALWAYS_USE_SIDE_PANEL, false)
         set(value) = settings.putBoolean(KEY_ALWAYS_USE_SIDE_PANEL, value)
 
-    var markAsReadOnOpen: Boolean
+    public var markAsReadOnOpen: Boolean
         get() = settings.getBoolean(KEY_MARK_AS_READ_ON_OPEN, false)
         set(value) = settings.putBoolean(KEY_MARK_AS_READ_ON_OPEN, value)
 
-    var autoFillDescription: Boolean
+    public var autoFillDescription: Boolean
         get() = settings.getBoolean(KEY_AUTO_FILL_DESCRIPTION, false)
         set(value) = settings.putBoolean(KEY_AUTO_FILL_DESCRIPTION, value)
 
-    var showDescriptionInLists: Boolean
+    public var showDescriptionInLists: Boolean
         get() = settings.getBoolean(KEY_SHOW_DESCRIPTION_IN_LISTS, true)
         set(value) = settings.putBoolean(KEY_SHOW_DESCRIPTION_IN_LISTS, value)
 
@@ -123,7 +72,7 @@ class UserSharedPreferences(private val settings: Settings) {
      *
      * @return the stored preference if true, null otherwise
      */
-    var defaultPrivate: Boolean?
+    public var defaultPrivate: Boolean?
         get() = settings.getBoolean(KEY_DEFAULT_PRIVATE, false).takeIf { it }
         set(value) = settings.putBoolean(KEY_DEFAULT_PRIVATE, value ?: false)
 
@@ -133,16 +82,36 @@ class UserSharedPreferences(private val settings: Settings) {
      *
      * @return the stored preference if true, null otherwise
      */
-    var defaultReadLater: Boolean?
+    public var defaultReadLater: Boolean?
         get() = settings.getBoolean(KEY_DEFAULT_READ_LATER, false).takeIf { it }
         set(value) = settings.putBoolean(KEY_DEFAULT_READ_LATER, value ?: false)
 
-    var editAfterSharing: String
+    public var editAfterSharing: String
         get() = settings.getString(KEY_NEW_EDIT_AFTER_SHARING, "")
         set(value) = settings.putString(KEY_NEW_EDIT_AFTER_SHARING, value)
 
-    var defaultTags: List<String>
+    public var defaultTags: List<String>
         get() = settings.getString(KEY_DEFAULT_TAGS, "")
             .takeIf { it.isNotBlank() }?.split(",").orEmpty()
         set(value) = settings.putString(KEY_DEFAULT_TAGS, value.joinToString(separator = ","))
+
+    internal companion object {
+
+        internal const val KEY_AUTH_TOKEN = "AUTH_TOKEN"
+        internal const val KEY_LAST_UPDATE = "LAST_UPDATE"
+        internal const val KEY_PERIODIC_SYNC = "PERIODIC_SYNC"
+        internal const val KEY_APPEARANCE = "APPEARANCE"
+        internal const val KEY_APPLY_DYNAMIC_COLORS = "APPLY_DYNAMIC_COLORS"
+        internal const val KEY_DISABLE_SCREENSHOTS = "DISABLE_SCREENSHOTS"
+        internal const val KEY_PREFERRED_DATE_FORMAT = "PREFERRED_DATE_FORMAT"
+        internal const val KEY_PREFERRED_DETAILS_VIEW = "PREFERRED_DETAILS_VIEW"
+        internal const val KEY_ALWAYS_USE_SIDE_PANEL = "ALWAYS_USE_SIDE_PANEL"
+        internal const val KEY_MARK_AS_READ_ON_OPEN = "MARK_AS_READ_ON_OPEN"
+        internal const val KEY_AUTO_FILL_DESCRIPTION = "AUTO_FILL_DESCRIPTION"
+        internal const val KEY_SHOW_DESCRIPTION_IN_LISTS = "SHOW_DESCRIPTION_IN_LISTS"
+        internal const val KEY_DEFAULT_PRIVATE = "DEFAULT_PRIVATE"
+        internal const val KEY_DEFAULT_READ_LATER = "DEFAULT_READ_LATER"
+        internal const val KEY_NEW_EDIT_AFTER_SHARING = "NEW_EDIT_AFTER_SHARING"
+        internal const val KEY_DEFAULT_TAGS = "DEFAULT_TAGS"
+    }
 }

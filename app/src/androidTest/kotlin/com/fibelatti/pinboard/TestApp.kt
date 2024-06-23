@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard
 
 import com.fibelatti.pinboard.core.di.KoinGeneratedModule
+import com.fibelatti.bookmarking.di.GeneratedBookmarkingModule
 import com.fibelatti.pinboard.core.di.androidAppModule
 import com.fibelatti.pinboard.core.di.androidPlatformModule
 import com.fibelatti.pinboard.core.di.coreModule
@@ -33,6 +34,7 @@ class TestApp : App() {
                 androidPlatformModule,
                 androidAppModule,
                 KoinGeneratedModule().module,
+                GeneratedBookmarkingModule().module,
             )
         }
     }

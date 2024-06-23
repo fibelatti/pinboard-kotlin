@@ -6,6 +6,8 @@ import com.fibelatti.bookmarking.features.posts.domain.EditAfterSharing
 import com.fibelatti.bookmarking.features.posts.domain.PreferredDetailsView
 import com.fibelatti.bookmarking.features.sync.PeriodicSync
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
+import com.fibelatti.bookmarking.features.user.domain.UserPreferences
+import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
@@ -13,8 +15,6 @@ import com.fibelatti.pinboard.MockDataProvider
 import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.sync.PeriodicSyncManager
-import com.fibelatti.pinboard.features.user.domain.UserPreferences
-import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.isEmpty
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat

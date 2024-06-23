@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.user.domain
+package com.fibelatti.bookmarking.features.user.domain
 
 import com.fibelatti.bookmarking.core.ui.Appearance
 import com.fibelatti.bookmarking.core.ui.PreferredDateFormat
@@ -7,7 +7,7 @@ import com.fibelatti.bookmarking.features.posts.domain.PreferredDetailsView
 import com.fibelatti.bookmarking.features.sync.PeriodicSync
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 
-data class UserPreferences(
+public data class UserPreferences(
     val useLinkding: Boolean,
     val linkdingInstanceUrl: String,
     val periodicSync: PeriodicSync,

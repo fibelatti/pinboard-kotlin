@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.core.util
 
 import com.fibelatti.bookmarking.core.ui.PreferredDateFormat
-import com.fibelatti.pinboard.features.user.domain.UserRepository
+import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone

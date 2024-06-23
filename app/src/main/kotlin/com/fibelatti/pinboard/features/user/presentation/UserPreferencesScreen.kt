@@ -44,6 +44,7 @@ import com.fibelatti.bookmarking.core.ui.PreferredDateFormat
 import com.fibelatti.bookmarking.features.posts.domain.EditAfterSharing
 import com.fibelatti.bookmarking.features.posts.domain.PreferredDetailsView
 import com.fibelatti.bookmarking.features.sync.PeriodicSync
+import com.fibelatti.bookmarking.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.SelectionDialog
@@ -51,7 +52,6 @@ import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.tags.presentation.TagManager
 import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
-import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.ui.foundation.imePaddingCompat
 import com.fibelatti.ui.foundation.navigationBarsPaddingCompat
 import com.fibelatti.ui.preview.ThemePreviews

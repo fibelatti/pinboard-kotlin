@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.core
 
+import com.fibelatti.bookmarking.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.BuildConfig
-import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

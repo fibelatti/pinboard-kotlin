@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.user.presentation
 
+import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
@@ -10,7 +11,6 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.UserLoggedOut
 import com.fibelatti.pinboard.features.user.domain.Login
-import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.isEmpty
 import com.google.common.truth.Truth.assertThat
 import io.ktor.client.plugins.ResponseException

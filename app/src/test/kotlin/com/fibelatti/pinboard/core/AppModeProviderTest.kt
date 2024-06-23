@@ -1,8 +1,8 @@
 package com.fibelatti.pinboard.core
 
+import com.fibelatti.bookmarking.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.collectIn
-import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.runUnconfinedTest
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every

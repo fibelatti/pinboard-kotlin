@@ -39,6 +39,7 @@ kotlin {
                 implementation(libs.urlencoder)
 
                 implementation(libs.room.runtime)
+                implementation(libs.multiplatform.settings)
 
                 implementation(project.dependencies.platform(libs.koin.bom))
                 implementation(libs.koin.core)
@@ -48,6 +49,8 @@ kotlin {
 
         commonTest {
             dependencies {
+                implementation(projects.core)
+
                 compileOnly(libs.junit)
                 runtimeOnly(libs.junit5.engine)
                 runtimeOnly(libs.junit5.vintage)

@@ -1,10 +1,10 @@
 package com.fibelatti.pinboard.core.di
 
 import androidx.room.Room
+import com.fibelatti.bookmarking.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.LinkdingMockServer
 import com.fibelatti.pinboard.PinboardMockServer
 import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
-import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.core.persistence.database.AppDatabase
 import com.fibelatti.pinboard.features.filters.data.SavedFiltersDao
 import com.fibelatti.pinboard.features.linkding.data.BookmarksDao

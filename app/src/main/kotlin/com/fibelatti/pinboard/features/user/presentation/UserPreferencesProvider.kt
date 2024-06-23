@@ -7,7 +7,7 @@ import com.fibelatti.bookmarking.features.posts.domain.EditAfterSharing
 import com.fibelatti.bookmarking.features.posts.domain.PreferredDetailsView
 import com.fibelatti.bookmarking.features.sync.PeriodicSync
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
-import com.fibelatti.pinboard.features.user.domain.UserPreferences
+import com.fibelatti.bookmarking.features.user.domain.UserPreferences
 
 class UserPreferencesProvider : PreviewParameterProvider<UserPreferences> {
 

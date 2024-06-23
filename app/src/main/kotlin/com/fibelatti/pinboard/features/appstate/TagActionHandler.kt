@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.features.appstate
 
+import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
-import com.fibelatti.pinboard.features.user.domain.UserRepository
 import org.koin.core.annotation.Factory
 
 @Factory

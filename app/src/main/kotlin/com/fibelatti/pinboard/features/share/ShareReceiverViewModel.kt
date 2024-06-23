@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.share
 import androidx.annotation.StringRes
 import com.fibelatti.bookmarking.features.posts.domain.EditAfterSharing
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
+import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.core.functional.ScreenState
 import com.fibelatti.core.functional.emitError
 import com.fibelatti.core.functional.emitLoaded
@@ -20,7 +21,6 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.ExtractUrl
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetUrlPreview
 import com.fibelatti.pinboard.features.posts.domain.usecase.UrlPreview
-import com.fibelatti.pinboard.features.user.domain.UserRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

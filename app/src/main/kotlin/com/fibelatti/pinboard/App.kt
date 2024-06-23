@@ -7,11 +7,11 @@ import android.view.WindowManager
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatDelegate
 import com.fibelatti.bookmarking.core.ui.Appearance
+import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.core.android.platform.SimpleActivityLifecycleCallbacks
 import com.fibelatti.pinboard.core.di.allModules
 import com.fibelatti.pinboard.features.sync.PendingSyncManager
 import com.fibelatti.pinboard.features.sync.PeriodicSyncManager
-import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
 import org.koin.android.ext.android.inject
