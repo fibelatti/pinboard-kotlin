@@ -1,22 +1,22 @@
-package com.fibelatti.pinboard.features.linkding.data
+package com.fibelatti.bookmarking.linkding.data
 
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.fibelatti.bookmarking.core.util.DateFormatter
+import com.fibelatti.bookmarking.features.posts.data.model.PendingSyncDto
 import com.fibelatti.bookmarking.features.posts.domain.model.PendingSync
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
+import com.fibelatti.bookmarking.linkding.data.BookmarkLocal.Companion.TABLE_NAME
 import com.fibelatti.core.functional.TwoWayMapper
-import com.fibelatti.pinboard.features.linkding.data.BookmarkLocal.Companion.TABLE_NAME
-import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import org.koin.core.annotation.Factory
 
 @Entity(
     tableName = TABLE_NAME,
     indices = [Index(value = ["shared"]), Index(value = ["unread"])],
 )
-data class BookmarkLocal(
+public data class BookmarkLocal(
     @PrimaryKey
     val id: String,
     val url: String,
@@ -33,14 +33,14 @@ data class BookmarkLocal(
     val pendingSync: PendingSyncDto? = null,
 ) {
 
-    companion object {
+    public companion object {
 
-        const val TABLE_NAME = "LinkdingBookmarks"
+        public const val TABLE_NAME: String = "LinkdingBookmarks"
     }
 }
 
 @Factory
-class BookmarkLocalMapper(
+public class BookmarkLocalMapper(
     private val dateFormatter: DateFormatter,
 ) : TwoWayMapper<BookmarkLocal, Post> {
 

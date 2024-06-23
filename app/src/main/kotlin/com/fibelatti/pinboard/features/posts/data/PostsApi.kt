@@ -1,9 +1,9 @@
 package com.fibelatti.pinboard.features.posts.data
 
-import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
-import com.fibelatti.pinboard.features.posts.data.model.GetPostDto
-import com.fibelatti.pinboard.features.posts.data.model.PostRemoteDto
-import com.fibelatti.pinboard.features.posts.data.model.UpdateDto
+import com.fibelatti.bookmarking.pinboard.data.GenericResponseDto
+import com.fibelatti.bookmarking.pinboard.data.GetPostDto
+import com.fibelatti.bookmarking.pinboard.data.PostRemoteDto
+import com.fibelatti.bookmarking.pinboard.data.UpdateDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get

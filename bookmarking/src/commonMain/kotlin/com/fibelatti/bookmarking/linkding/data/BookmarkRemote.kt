@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.linkding.data
+package com.fibelatti.bookmarking.linkding.data
 
 import com.fibelatti.bookmarking.core.util.DateFormatter
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 import org.koin.core.annotation.Factory
 
 @Serializable
-data class PaginatedResponseRemote<T>(
+public data class PaginatedResponseRemote<T>(
     val count: Int,
     val next: String?,
     val previous: String?,
@@ -17,7 +17,7 @@ data class PaginatedResponseRemote<T>(
 )
 
 @Serializable
-data class BookmarkRemote(
+public data class BookmarkRemote(
     val id: Int?,
     val url: String,
     val title: String?,
@@ -40,7 +40,7 @@ data class BookmarkRemote(
 )
 
 @Serializable
-data class TagRemote(
+public data class TagRemote(
     val id: Int,
     val name: String,
     @SerialName(value = "date_added")
@@ -48,7 +48,7 @@ data class TagRemote(
 )
 
 @Factory
-class BookmarkRemoteMapper(
+public class BookmarkRemoteMapper(
     private val dateFormatter: DateFormatter,
 ) : Mapper<BookmarkRemote, Post> {
 

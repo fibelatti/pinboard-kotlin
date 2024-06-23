@@ -1,6 +1,8 @@
 package com.fibelatti.pinboard.features.linkding.data
 
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
+import com.fibelatti.bookmarking.linkding.data.BookmarkRemote
+import com.fibelatti.bookmarking.linkding.data.BookmarkRemoteMapper
 import com.fibelatti.pinboard.MockDataProvider.mockTags
 import com.fibelatti.pinboard.MockDataProvider.mockTagsString
 import com.fibelatti.pinboard.MockDataProvider.mockTime

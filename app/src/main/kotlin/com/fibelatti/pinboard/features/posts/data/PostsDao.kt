@@ -4,9 +4,9 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import com.fibelatti.bookmarking.core.Config
-import com.fibelatti.pinboard.features.posts.data.model.POST_FTS_TABLE_NAME
-import com.fibelatti.pinboard.features.posts.data.model.POST_TABLE_NAME
-import com.fibelatti.pinboard.features.posts.data.model.PostDto
+import com.fibelatti.bookmarking.pinboard.data.POST_FTS_TABLE_NAME
+import com.fibelatti.bookmarking.pinboard.data.POST_TABLE_NAME
+import com.fibelatti.bookmarking.pinboard.data.PostDto
 
 @Dao
 interface PostsDao {

@@ -2,10 +2,16 @@ package com.fibelatti.pinboard.features.linkding.data
 
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.bookmarking.core.Config
+import com.fibelatti.bookmarking.core.extension.replaceHtmlChars
 import com.fibelatti.bookmarking.core.util.DateFormatter
+import com.fibelatti.bookmarking.features.posts.data.model.PendingSyncDto
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.bookmarking.features.posts.domain.model.PostListResult
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
+import com.fibelatti.bookmarking.linkding.data.BookmarkLocal
+import com.fibelatti.bookmarking.linkding.data.BookmarkLocalMapper
+import com.fibelatti.bookmarking.linkding.data.BookmarkRemote
+import com.fibelatti.bookmarking.linkding.data.BookmarkRemoteMapper
 import com.fibelatti.core.extension.ifNullOrBlank
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.catching
@@ -14,11 +20,9 @@ import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.core.randomUUID
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
-import com.fibelatti.pinboard.core.extension.replaceHtmlChars
 import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.resultFromNetwork
 import com.fibelatti.pinboard.features.appstate.SortType
-import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import kotlinx.coroutines.Job

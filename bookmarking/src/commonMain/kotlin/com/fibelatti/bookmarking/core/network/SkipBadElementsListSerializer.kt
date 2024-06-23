@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.core.network
+package com.fibelatti.bookmarking.core.network
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
@@ -8,7 +8,7 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.jsonArray
 
-class SkipBadElementsListSerializer<E>(private val elementSerializer: KSerializer<E>) : KSerializer<List<E>> {
+public class SkipBadElementsListSerializer<E>(private val elementSerializer: KSerializer<E>) : KSerializer<List<E>> {
 
     private val listSerializer = ListSerializer(elementSerializer)
 

@@ -1,9 +1,9 @@
-package com.fibelatti.pinboard.features.linkding.data
+package com.fibelatti.bookmarking.linkding.data
 
 import androidx.room.Entity
 import androidx.room.Fts4
 import androidx.room.FtsOptions.TOKENIZER_UNICODE61
-import com.fibelatti.pinboard.features.linkding.data.BookmarkLocalFts.Companion.TABLE_NAME
+import com.fibelatti.bookmarking.linkding.data.BookmarkLocalFts.Companion.TABLE_NAME
 
 @Fts4(
     contentEntity = BookmarkLocal::class,
@@ -11,7 +11,7 @@ import com.fibelatti.pinboard.features.linkding.data.BookmarkLocalFts.Companion.
     tokenizerArgs = ["tokenchars=._-=#@&"],
 )
 @Entity(tableName = TABLE_NAME)
-data class BookmarkLocalFts(
+public data class BookmarkLocalFts(
     val url: String,
     val title: String,
     val description: String,
@@ -21,8 +21,8 @@ data class BookmarkLocalFts(
     val tagNames: String?,
 ) {
 
-    companion object {
+    public companion object {
 
-        const val TABLE_NAME = "LinkdingBookmarksFts"
+        public const val TABLE_NAME: String = "LinkdingBookmarksFts"
     }
 }

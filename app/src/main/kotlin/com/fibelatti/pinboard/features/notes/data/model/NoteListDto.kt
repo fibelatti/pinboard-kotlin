@@ -1,6 +1,6 @@
 package com.fibelatti.pinboard.features.notes.data.model
 
-import com.fibelatti.pinboard.core.network.SkipBadElementsListSerializer
+import com.fibelatti.bookmarking.core.network.SkipBadElementsListSerializer
 import kotlinx.serialization.Serializable
 
 @Serializable

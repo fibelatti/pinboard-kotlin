@@ -1,8 +1,10 @@
 package com.fibelatti.pinboard.features.posts.data.model
 
 import com.fibelatti.bookmarking.core.Config.Pinboard
+import com.fibelatti.bookmarking.features.posts.data.model.PendingSyncDto
 import com.fibelatti.bookmarking.features.posts.domain.model.PendingSync
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
+import com.fibelatti.bookmarking.pinboard.data.PostDtoMapper
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.createPostDto
 import com.google.common.truth.Truth.assertThat

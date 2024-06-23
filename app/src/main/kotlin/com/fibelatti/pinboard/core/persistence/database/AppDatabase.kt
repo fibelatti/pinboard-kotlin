@@ -4,15 +4,15 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.fibelatti.bookmarking.features.user.domain.UserRepository
+import com.fibelatti.bookmarking.linkding.data.BookmarkLocal
+import com.fibelatti.bookmarking.linkding.data.BookmarkLocalFts
+import com.fibelatti.bookmarking.pinboard.data.PostDto
+import com.fibelatti.bookmarking.pinboard.data.PostDtoFts
 import com.fibelatti.pinboard.features.filters.data.SavedFilterDto
 import com.fibelatti.pinboard.features.filters.data.SavedFiltersDao
-import com.fibelatti.pinboard.features.linkding.data.BookmarkLocal
-import com.fibelatti.pinboard.features.linkding.data.BookmarkLocalFts
 import com.fibelatti.pinboard.features.linkding.data.BookmarksDao
 import com.fibelatti.pinboard.features.posts.data.PostsDao
-import com.fibelatti.pinboard.features.posts.data.model.PostDto
-import com.fibelatti.pinboard.features.posts.data.model.PostDtoFts
-import com.fibelatti.pinboard.features.user.data.UserDataSource
 import org.koin.core.annotation.Factory
 
 const val DATABASE_NAME = "com.fibelatti.pinboard.db"
@@ -46,14 +46,14 @@ abstract class AppDatabase : RoomDatabase() {
 
 @Factory
 class DatabaseResetCallback(
-    private val userDataSource: UserDataSource,
+    private val userRepository: UserRepository,
 ) : RoomDatabase.Callback() {
 
     override fun onCreate(db: SupportSQLiteDatabase) {
-        userDataSource.lastUpdate = ""
+        userRepository.lastUpdate = ""
     }
 
     override fun onDestructiveMigration(db: SupportSQLiteDatabase) {
-        userDataSource.lastUpdate = ""
+        userRepository.lastUpdate = ""
     }
 }

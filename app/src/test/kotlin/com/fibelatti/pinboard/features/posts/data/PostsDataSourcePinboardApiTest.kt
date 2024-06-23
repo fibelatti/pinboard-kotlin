@@ -1,12 +1,19 @@
 package com.fibelatti.pinboard.features.posts.data
 
 import com.fibelatti.bookmarking.core.Config
+import com.fibelatti.bookmarking.core.extension.HTML_CHAR_MAP
 import com.fibelatti.bookmarking.core.network.PinboardApiResultCode
 import com.fibelatti.bookmarking.core.util.DateFormatter
+import com.fibelatti.bookmarking.features.posts.data.model.PendingSyncDto
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.bookmarking.features.posts.domain.model.PostListResult
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
+import com.fibelatti.bookmarking.pinboard.data.PostDto
+import com.fibelatti.bookmarking.pinboard.data.PostDtoMapper
+import com.fibelatti.bookmarking.pinboard.data.PostRemoteDto
+import com.fibelatti.bookmarking.pinboard.data.PostRemoteDtoMapper
+import com.fibelatti.bookmarking.pinboard.data.UpdateDto
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
@@ -34,16 +41,9 @@ import com.fibelatti.pinboard.MockDataProvider.mockUrlDescription
 import com.fibelatti.pinboard.MockDataProvider.mockUrlTitle
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
-import com.fibelatti.pinboard.core.extension.HTML_CHAR_MAP
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.features.appstate.NewestFirst
-import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
-import com.fibelatti.pinboard.features.posts.data.model.PostDto
-import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
-import com.fibelatti.pinboard.features.posts.data.model.PostRemoteDto
-import com.fibelatti.pinboard.features.posts.data.model.PostRemoteDtoMapper
-import com.fibelatti.pinboard.features.posts.data.model.UpdateDto
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat

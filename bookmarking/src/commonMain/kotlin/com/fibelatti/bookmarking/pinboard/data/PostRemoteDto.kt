@@ -1,11 +1,11 @@
-package com.fibelatti.pinboard.features.posts.data.model
+package com.fibelatti.bookmarking.pinboard.data
 
 import com.fibelatti.core.functional.Mapper
 import kotlinx.serialization.Serializable
 import org.koin.core.annotation.Factory
 
 @Serializable
-data class PostRemoteDto(
+public data class PostRemoteDto(
     val href: String,
     val description: String?,
     val extended: String?,
@@ -17,7 +17,7 @@ data class PostRemoteDto(
 )
 
 @Factory
-class PostRemoteDtoMapper : Mapper<PostRemoteDto, PostDto> {
+public class PostRemoteDtoMapper : Mapper<PostRemoteDto, PostDto> {
 
     override fun map(param: PostRemoteDto): PostDto = with(param) {
         PostDto(

@@ -1,7 +1,10 @@
 package com.fibelatti.pinboard.features.linkding.data
 
+import com.fibelatti.bookmarking.features.posts.data.model.PendingSyncDto
 import com.fibelatti.bookmarking.features.posts.domain.model.PendingSync
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
+import com.fibelatti.bookmarking.linkding.data.BookmarkLocal
+import com.fibelatti.bookmarking.linkding.data.BookmarkLocalMapper
 import com.fibelatti.pinboard.MockDataProvider.createBookmarkLocal
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.mockHash
@@ -12,7 +15,6 @@ import com.fibelatti.pinboard.MockDataProvider.mockTitle
 import com.fibelatti.pinboard.MockDataProvider.mockUrlDescription
 import com.fibelatti.pinboard.MockDataProvider.mockUrlNotes
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
-import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every

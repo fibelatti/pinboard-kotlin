@@ -1,12 +1,9 @@
-package com.fibelatti.pinboard.core.extension
-
-import androidx.annotation.VisibleForTesting
+package com.fibelatti.bookmarking.core.extension
 
 /**
  * A map with known escaped HTML characters and their unescaped counterparts.
  */
-@VisibleForTesting
-val HTML_CHAR_MAP: Map<String, String> = mapOf(
+public val HTML_CHAR_MAP: Map<String, String> = mapOf(
     "&lt;" to "<",
     "&gt;" to ">",
     "&quot;" to "\"",
@@ -22,7 +19,7 @@ val HTML_CHAR_MAP: Map<String, String> = mapOf(
  *
  * @see HTML_CHAR_MAP
  */
-fun String.containsHtmlChars(): Boolean {
+public fun String.containsHtmlChars(): Boolean {
     for (escaped in HTML_CHAR_MAP.keys) {
         if (contains(escaped)) {
             return true
@@ -41,7 +38,7 @@ fun String.containsHtmlChars(): Boolean {
  *
  * @see HTML_CHAR_MAP
  */
-fun String.replaceHtmlChars(): String {
+public fun String.replaceHtmlChars(): String {
     var updatedString = this
 
     for ((escaped, unescaped) in HTML_CHAR_MAP) {

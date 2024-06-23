@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.user.data
+package com.fibelatti.bookmarking.features.user.data
 
 import com.fibelatti.bookmarking.core.AppModeProvider
 import com.fibelatti.bookmarking.core.persistence.UserSharedPreferences
@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import org.koin.core.annotation.Single
 
 @Single
-class UserDataSource(
+internal class UserDataSource(
     private val userSharedPreferences: UserSharedPreferences,
     private val appModeProvider: AppModeProvider,
 ) : UserRepository {

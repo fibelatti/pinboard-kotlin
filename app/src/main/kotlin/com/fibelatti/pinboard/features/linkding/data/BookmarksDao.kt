@@ -3,8 +3,9 @@ package com.fibelatti.pinboard.features.linkding.data
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
-import com.fibelatti.pinboard.features.linkding.data.BookmarkLocal.Companion.TABLE_NAME
-import com.fibelatti.pinboard.features.linkding.data.BookmarkLocalFts.Companion.TABLE_NAME as FTS_TABLE_NAME
+import com.fibelatti.bookmarking.linkding.data.BookmarkLocal
+import com.fibelatti.bookmarking.linkding.data.BookmarkLocal.Companion.TABLE_NAME
+import com.fibelatti.bookmarking.linkding.data.BookmarkLocalFts.Companion.TABLE_NAME as FTS_TABLE_NAME
 
 @Dao
 interface BookmarksDao {

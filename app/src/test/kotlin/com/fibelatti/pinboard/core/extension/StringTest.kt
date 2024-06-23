@@ -1,5 +1,7 @@
 package com.fibelatti.pinboard.core.extension
 
+import com.fibelatti.bookmarking.core.extension.containsHtmlChars
+import com.fibelatti.bookmarking.core.extension.replaceHtmlChars
 import com.google.common.truth.Truth.assertThat
 import org.junit.jupiter.api.Test
 

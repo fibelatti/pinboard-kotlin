@@ -2,12 +2,12 @@ package com.fibelatti.pinboard.features.sync
 
 import androidx.work.ListenableWorker
 import com.fibelatti.bookmarking.core.Config
+import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.features.appstate.NewestFirst
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
-import com.fibelatti.pinboard.features.user.data.UserDataSource
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.every
@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test
 
 internal class SyncBookmarksWorkerTest {
 
-    private val userDataSource = mockk<UserDataSource> {
+    private val userRepository = mockk<UserRepository> {
         every { hasAuthToken() } returns true
     }
 
@@ -27,7 +27,7 @@ internal class SyncBookmarksWorkerTest {
     private val worker = SyncBookmarksWorker(
         context = mockk(),
         workerParams = mockk(relaxed = true),
-        userDataSource = userDataSource,
+        userRepository = userRepository,
         postsRepository = postsRepository,
     )
 

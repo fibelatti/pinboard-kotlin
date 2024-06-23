@@ -1,10 +1,10 @@
-package com.fibelatti.pinboard.features.posts.data.model
+package com.fibelatti.bookmarking.pinboard.data
 
-import com.fibelatti.pinboard.core.network.SkipBadElementsListSerializer
+import com.fibelatti.bookmarking.core.network.SkipBadElementsListSerializer
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class GetPostDto(
+public data class GetPostDto(
     val date: String,
     val user: String,
     @Serializable(with = SkipBadElementsListSerializer::class)

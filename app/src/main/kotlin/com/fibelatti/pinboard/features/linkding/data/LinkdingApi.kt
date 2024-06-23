@@ -1,5 +1,8 @@
 package com.fibelatti.pinboard.features.linkding.data
 
+import com.fibelatti.bookmarking.linkding.data.BookmarkRemote
+import com.fibelatti.bookmarking.linkding.data.PaginatedResponseRemote
+import com.fibelatti.bookmarking.linkding.data.TagRemote
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete

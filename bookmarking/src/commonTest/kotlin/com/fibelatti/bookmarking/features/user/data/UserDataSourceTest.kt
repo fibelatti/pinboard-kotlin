@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.user.data
+package com.fibelatti.bookmarking.features.user.data
 
 import com.fibelatti.bookmarking.core.AppMode
 import com.fibelatti.bookmarking.core.AppModeProvider
@@ -10,10 +10,8 @@ import com.fibelatti.bookmarking.features.posts.domain.PreferredDetailsView
 import com.fibelatti.bookmarking.features.sync.PeriodicSync
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.bookmarking.features.user.domain.UserPreferences
-import com.fibelatti.pinboard.MockDataProvider.mockApiToken
-import com.fibelatti.pinboard.MockDataProvider.mockTime
-import com.fibelatti.pinboard.randomBoolean
-import com.fibelatti.pinboard.randomString
+import com.fibelatti.bookmarking.randomBoolean
+import com.fibelatti.bookmarking.randomString
 import com.google.common.truth.Truth.assertThat
 import io.mockk.Called
 import io.mockk.clearMocks
@@ -159,19 +157,19 @@ internal class UserDataSourceTest {
             @Test
             fun `WHEN getLastUpdate is called THEN UserSharedPreferences is returned`() {
                 // GIVEN
-                every { mockUserSharedPreferences.lastUpdate } returns mockTime
+                every { mockUserSharedPreferences.lastUpdate } returns MOCK_TIME
 
                 // THEN
-                assertThat(userDataSource.lastUpdate).isEqualTo(mockTime)
+                assertThat(userDataSource.lastUpdate).isEqualTo(MOCK_TIME)
             }
 
             @Test
             fun `WHEN setLastUpdate is called THEN UserSharedPreferences is set`() {
                 // WHEN
-                userDataSource.lastUpdate = mockTime
+                userDataSource.lastUpdate = MOCK_TIME
 
                 // THEN
-                verify { mockUserSharedPreferences.lastUpdate = mockTime }
+                verify { mockUserSharedPreferences.lastUpdate = MOCK_TIME }
             }
         }
 
@@ -655,7 +653,7 @@ internal class UserDataSourceTest {
 
             @Test
             fun `hasAuthToken returns true if the auth token is not empty`() {
-                every { mockUserSharedPreferences.authToken } returns mockApiToken
+                every { mockUserSharedPreferences.authToken } returns MOCK_API_TOKEN
 
                 assertThat(userDataSource.hasAuthToken()).isTrue()
             }
@@ -708,5 +706,11 @@ internal class UserDataSourceTest {
                 }
             }
         }
+    }
+
+    private companion object {
+
+        private const val MOCK_API_TOKEN = "user:00000000000"
+        private const val MOCK_TIME = "2019-01-10T08:20:10Z"
     }
 }
