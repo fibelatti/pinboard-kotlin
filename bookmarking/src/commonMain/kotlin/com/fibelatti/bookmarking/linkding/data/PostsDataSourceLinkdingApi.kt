@@ -27,10 +27,8 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
-import org.koin.core.annotation.Single
 import kotlin.time.Duration.Companion.minutes
 
-@Single
 internal class PostsDataSourceLinkdingApi(
     private val linkdingApi: LinkdingApi,
     private val linkdingDao: BookmarksDao,

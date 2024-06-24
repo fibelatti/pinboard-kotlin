@@ -25,9 +25,18 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                implementation(projects.core)
                 implementation(projects.bookmarking)
 
+                implementation(libs.room.testing)
+
+                implementation(libs.bundles.ktor.common)
                 implementation(libs.urlencoder)
+                implementation(libs.mockwebserver)
+
+                implementation(project.dependencies.platform(libs.koin.bom))
+                implementation(libs.koin.core)
+                implementation(libs.koin.android)
             }
         }
     }

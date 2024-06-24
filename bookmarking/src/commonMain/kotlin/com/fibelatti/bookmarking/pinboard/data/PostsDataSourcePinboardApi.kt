@@ -37,10 +37,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withTimeout
-import org.koin.core.annotation.Factory
-import org.koin.core.annotation.Single
 
-@Single
 internal class PostsDataSourcePinboardApi(
     private val userRepository: UserRepository,
     private val postsApi: PostsApi,

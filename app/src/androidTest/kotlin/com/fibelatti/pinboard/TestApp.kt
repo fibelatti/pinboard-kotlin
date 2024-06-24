@@ -1,14 +1,8 @@
 package com.fibelatti.pinboard
 
 import com.fibelatti.bookmarking.di.GeneratedBookmarkingModule
-import com.fibelatti.pinboard.core.di.GeneratedModule
-import com.fibelatti.pinboard.core.di.androidAppModule
-import com.fibelatti.pinboard.core.di.androidPlatformModule
-import com.fibelatti.pinboard.core.di.coreModule
-import com.fibelatti.pinboard.core.di.networkModule
-import com.fibelatti.pinboard.core.di.testDatabaseModule
-import com.fibelatti.pinboard.core.di.testLinkdingModule
-import com.fibelatti.pinboard.core.di.testPinboardModule
+import com.fibelatti.bookmarking.test.di.testBookmarkingModules
+import com.fibelatti.pinboard.core.di.appModules
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.fragment.koin.fragmentFactory
@@ -25,17 +19,11 @@ class TestApp : App() {
             fragmentFactory()
             workManagerFactory()
 
-            modules(
-                coreModule,
-                testDatabaseModule,
-                networkModule,
-                testPinboardModule,
-                testLinkdingModule,
-                androidPlatformModule,
-                androidAppModule,
-                GeneratedBookmarkingModule().module,
-                GeneratedModule().module,
-            )
+            val allModules = appModules() +
+                testBookmarkingModules() +
+                GeneratedBookmarkingModule().module
+
+            modules(allModules)
         }
     }
 }

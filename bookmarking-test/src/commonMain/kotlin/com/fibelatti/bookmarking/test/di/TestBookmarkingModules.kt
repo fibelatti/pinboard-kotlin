@@ -1,14 +1,17 @@
-package com.fibelatti.pinboard.core.di
+package com.fibelatti.bookmarking.test.di
 
 import androidx.room.Room
 import com.fibelatti.bookmarking.core.network.UnauthorizedPluginProvider
 import com.fibelatti.bookmarking.core.persistence.UserSharedPreferences
+import com.fibelatti.bookmarking.core.persistence.database.AppDatabase
+import com.fibelatti.bookmarking.di.libraryModule
+import com.fibelatti.bookmarking.di.networkModule
+import com.fibelatti.bookmarking.di.platformModule
 import com.fibelatti.bookmarking.features.filters.data.SavedFiltersDao
 import com.fibelatti.bookmarking.linkding.data.BookmarksDao
 import com.fibelatti.bookmarking.pinboard.data.PostsDao
-import com.fibelatti.pinboard.LinkdingMockServer
-import com.fibelatti.pinboard.PinboardMockServer
-import com.fibelatti.pinboard.core.persistence.database.AppDatabase
+import com.fibelatti.bookmarking.test.LinkdingMockServer
+import com.fibelatti.bookmarking.test.PinboardMockServer
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.accept
@@ -16,10 +19,11 @@ import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.URLProtocol
 import org.koin.android.ext.koin.androidApplication
+import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-val testDatabaseModule = module {
+public val testDatabaseModule: Module = module {
     single<AppDatabase> {
         Room.inMemoryDatabaseBuilder(androidApplication(), AppDatabase::class.java).build()
     }
@@ -28,7 +32,7 @@ val testDatabaseModule = module {
     single<SavedFiltersDao> { get<AppDatabase>().savedFiltersDao() }
 }
 
-val testPinboardModule = module {
+public val testPinboardModule: Module = module {
     factory(named("pinboard")) {
         val httpClient: HttpClient = get(named("base"))
         val userSharedPreferences: UserSharedPreferences = get()
@@ -53,7 +57,7 @@ val testPinboardModule = module {
     }
 }
 
-val testLinkdingModule = module {
+public val testLinkdingModule: Module = module {
     factory(named("linkding")) {
         val httpClient: HttpClient = get(named("base"))
         val userSharedPreferences: UserSharedPreferences = get()
@@ -75,3 +79,12 @@ val testLinkdingModule = module {
         }
     }
 }
+
+public fun testBookmarkingModules(): List<Module> = listOf(
+    platformModule(),
+    testDatabaseModule,
+    networkModule,
+    testPinboardModule,
+    testLinkdingModule,
+    libraryModule,
+)

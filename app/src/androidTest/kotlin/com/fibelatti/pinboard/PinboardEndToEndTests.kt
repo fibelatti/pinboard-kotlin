@@ -9,6 +9,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import com.fibelatti.bookmarking.core.util.DateFormatter
+import com.fibelatti.bookmarking.test.PinboardMockServer
 import com.fibelatti.pinboard.features.MainActivity
 import com.fibelatti.pinboard.features.posts.presentation.EditPostFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostListFragment

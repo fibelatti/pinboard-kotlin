@@ -1,9 +1,9 @@
-package com.fibelatti.pinboard.core.persistence.database
+package com.fibelatti.bookmarking.core.persistence.database
 
 import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.sqlite.SQLiteConnection
 import com.fibelatti.bookmarking.features.filters.data.SavedFilterDto
 import com.fibelatti.bookmarking.features.filters.data.SavedFiltersDao
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
@@ -15,13 +15,13 @@ import com.fibelatti.bookmarking.pinboard.data.PostDtoFts
 import com.fibelatti.bookmarking.pinboard.data.PostsDao
 import org.koin.core.annotation.Factory
 
-const val DATABASE_NAME = "com.fibelatti.pinboard.db"
-const val DATABASE_VERSION_1 = 1 // Release 1.0.0
-const val DATABASE_VERSION_2 = 2 // Release 1.7.0
-const val DATABASE_VERSION_3 = 3 // Release 1.16.4
-const val DATABASE_VERSION_4 = 4 // Release 1.18.0
-const val DATABASE_VERSION_5 = 5 // Release 2.2.0
-const val DATABASE_VERSION_6 = 6 // Release 2.x (Linkding support)
+internal const val DATABASE_NAME: String = "com.fibelatti.pinboard.db"
+internal const val DATABASE_VERSION_1: Int = 1 // Release 1.0.0
+internal const val DATABASE_VERSION_2: Int = 2 // Release 1.7.0
+internal const val DATABASE_VERSION_3: Int = 3 // Release 1.16.4
+internal const val DATABASE_VERSION_4: Int = 4 // Release 1.18.0
+internal const val DATABASE_VERSION_5: Int = 5 // Release 2.2.0
+internal const val DATABASE_VERSION_6: Int = 6 // Release 2.x (Linkding support)
 
 @Database(
     entities = [
@@ -37,23 +37,24 @@ const val DATABASE_VERSION_6 = 6 // Release 2.x (Linkding support)
         AutoMigration(from = DATABASE_VERSION_5, to = DATABASE_VERSION_6),
     ],
 )
-abstract class AppDatabase : RoomDatabase() {
+// TODO: Make internal once the test code is migrated
+public abstract class AppDatabase : RoomDatabase() {
 
-    abstract fun postDao(): PostsDao
-    abstract fun linkdingBookmarksDao(): BookmarksDao
-    abstract fun savedFiltersDao(): SavedFiltersDao
+    public abstract fun postDao(): PostsDao
+    public abstract fun linkdingBookmarksDao(): BookmarksDao
+    public abstract fun savedFiltersDao(): SavedFiltersDao
 }
 
 @Factory
-class DatabaseResetCallback(
+internal class DatabaseResetCallback(
     private val userRepository: UserRepository,
 ) : RoomDatabase.Callback() {
 
-    override fun onCreate(db: SupportSQLiteDatabase) {
+    override fun onCreate(connection: SQLiteConnection) {
         userRepository.lastUpdate = ""
     }
 
-    override fun onDestructiveMigration(db: SupportSQLiteDatabase) {
+    override fun onDestructiveMigration(connection: SQLiteConnection) {
         userRepository.lastUpdate = ""
     }
 }

@@ -1,15 +1,15 @@
-package com.fibelatti.pinboard
+package com.fibelatti.bookmarking.test
 
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 
-object PinboardMockServer {
+public object PinboardMockServer {
 
-    val instance by lazy { MockWebServer() }
+    public val instance: MockWebServer by lazy { MockWebServer() }
 
-    fun setResponses(vararg responses: Pair<String, (RecordedRequest) -> MockResponse>) {
+    public fun setResponses(vararg responses: Pair<String, (RecordedRequest) -> MockResponse>) {
         instance.dispatcher = object : Dispatcher() {
             private val handlers = responses.toList()
 
@@ -22,7 +22,7 @@ object PinboardMockServer {
         }
     }
 
-    fun updateResponse(
+    public fun updateResponse(
         updateTimestamp: String,
     ): Pair<String, (RecordedRequest) -> MockResponse> {
         return "/posts/update" to {
@@ -33,7 +33,7 @@ object PinboardMockServer {
         }
     }
 
-    fun allBookmarksResponse(
+    public fun allBookmarksResponse(
         isEmpty: Boolean,
     ): Pair<String, (RecordedRequest) -> MockResponse> {
         return "/posts/all" to { request ->
@@ -50,7 +50,7 @@ object PinboardMockServer {
         }
     }
 
-    fun addBookmarkResponse(): Pair<String, (RecordedRequest) -> MockResponse> {
+    public fun addBookmarkResponse(): Pair<String, (RecordedRequest) -> MockResponse> {
         return "posts/add" to {
             MockResponse()
                 .setResponseCode(200)
@@ -59,17 +59,17 @@ object PinboardMockServer {
         }
     }
 
-    object TestData {
+    public object TestData {
 
-        const val TOKEN = "instrumented:1000"
+        public const val TOKEN: String = "instrumented:1000"
 
-        fun updateResponse(timestamp: String): String = """
+        public fun updateResponse(timestamp: String): String = """
             {
                 "update_time":"$timestamp"
             }
         """.trimIndent()
 
-        fun allBookmarksResponse(): String = """
+        public fun allBookmarksResponse(): String = """
             [
                 {
                     "href":"https:\/\/www.google.com",
@@ -85,9 +85,9 @@ object PinboardMockServer {
             ]
         """.trimIndent()
 
-        fun emptyBookmarksResponse(): String = "[]"
+        public fun emptyBookmarksResponse(): String = "[]"
 
-        fun genericResponseDone(): String = """
+        public fun genericResponseDone(): String = """
             {
                 "result_code": "done"
             }

@@ -2,7 +2,7 @@ package com.fibelatti.pinboard.tooling
 
 import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
-import com.fibelatti.pinboard.core.persistence.database.AppDatabase
+import com.fibelatti.bookmarking.core.persistence.database.AppDatabase
 import org.junit.After
 import org.junit.Before
 

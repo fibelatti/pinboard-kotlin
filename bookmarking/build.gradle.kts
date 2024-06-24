@@ -28,6 +28,15 @@ kotlin {
     androidTarget()
 
     sourceSets {
+        androidMain {
+            dependencies {
+                implementation(libs.ktor.client.okhttp)
+
+                implementation(project.dependencies.platform(libs.koin.bom))
+                implementation(libs.koin.android)
+            }
+        }
+
         commonMain {
             dependencies {
                 implementation(projects.core)
@@ -42,6 +51,7 @@ kotlin {
                 implementation(libs.urlencoder)
 
                 implementation(libs.room.runtime)
+                implementation(libs.sqlite.bundled)
                 implementation(libs.multiplatform.settings)
 
                 implementation(project.dependencies.platform(libs.koin.bom))

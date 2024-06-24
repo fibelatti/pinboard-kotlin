@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard
+package com.fibelatti.bookmarking.test
 
 import com.fibelatti.core.randomUUID
 import okhttp3.mockwebserver.Dispatcher
@@ -6,11 +6,11 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 
-object LinkdingMockServer {
+public object LinkdingMockServer {
 
-    val instance by lazy { MockWebServer() }
+    public val instance: MockWebServer by lazy { MockWebServer() }
 
-    fun setResponses(vararg responses: Triple<String, String, (RecordedRequest) -> MockResponse>) {
+    public fun setResponses(vararg responses: Triple<String, String, (RecordedRequest) -> MockResponse>) {
         instance.dispatcher = object : Dispatcher() {
             private val handlers = responses.toList()
 
@@ -26,7 +26,7 @@ object LinkdingMockServer {
         }
     }
 
-    fun allBookmarksResponse(
+    public fun allBookmarksResponse(
         isEmpty: Boolean,
     ): Triple<String, String, (RecordedRequest) -> MockResponse> {
         return Triple("bookmarks", "GET") { request ->
@@ -47,7 +47,7 @@ object LinkdingMockServer {
         }
     }
 
-    fun addBookmarkResponse(): Triple<String, String, (RecordedRequest) -> MockResponse> {
+    public fun addBookmarkResponse(): Triple<String, String, (RecordedRequest) -> MockResponse> {
         return Triple("bookmarks", "POST") {
             MockResponse()
                 .setResponseCode(200)
@@ -56,11 +56,11 @@ object LinkdingMockServer {
         }
     }
 
-    object TestData {
+    public object TestData {
 
-        val TOKEN = randomUUID()
+        public val TOKEN: String = randomUUID()
 
-        fun bookmarksResponse(): String = """
+        public fun bookmarksResponse(): String = """
             {
                 "count":1,
                 "next":null,
@@ -86,7 +86,7 @@ object LinkdingMockServer {
             }
         """.trimIndent()
 
-        fun emptyBookmarksResponse(): String = """
+        public fun emptyBookmarksResponse(): String = """
             {
                 "count":0,
                 "next":null,
@@ -95,7 +95,7 @@ object LinkdingMockServer {
             }
         """.trimIndent()
 
-        fun addBookmarkResponse(): String = """
+        public fun addBookmarkResponse(): String = """
             {
                 "id":1,
                 "url":"https://www.google.com",

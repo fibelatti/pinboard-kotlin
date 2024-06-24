@@ -23,9 +23,7 @@ import com.fibelatti.core.functional.resultFrom
 import com.fibelatti.core.randomUUID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import org.koin.core.annotation.Single
 
-@Single
 internal class PostsDataSourceNoApi(
     private val postsDao: PostsDao,
     private val postDtoMapper: PostDtoMapper,

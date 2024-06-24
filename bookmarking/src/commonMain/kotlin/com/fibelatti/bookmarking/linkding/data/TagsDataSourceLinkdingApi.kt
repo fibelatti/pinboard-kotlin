@@ -12,9 +12,7 @@ import com.fibelatti.core.functional.resultFrom
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
-import org.koin.core.annotation.Single
 
-@Single
 internal class TagsDataSourceLinkdingApi(
     private val linkdingApi: LinkdingApi,
     private val bookmarksDao: BookmarksDao,
