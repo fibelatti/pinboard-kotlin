@@ -27,6 +27,11 @@ write_common_properties() {
     write_property "android.enableBuildConfigAsBytecode=false"
     write_property "android.enableJetifier=false"
     write_property "android.useAndroidX=true"
+
+    # Kotlin Multiplatform properties common to all build environments
+    write_property "kotlin.mpp.androidGradlePluginCompatibility.nowarn=true"
+    # Disabled due to https://youtrack.jetbrains.com/issue/KT-65761
+    write_property "kotlin.native.disableCompilerDaemon = true"
 }
 
 write_macos_properties() {
