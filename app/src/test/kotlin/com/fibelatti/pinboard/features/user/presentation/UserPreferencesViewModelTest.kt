@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.user.presentation
 
+import com.fibelatti.bookmarking.MockDataProvider
 import com.fibelatti.bookmarking.core.AppModeProvider
 import com.fibelatti.bookmarking.core.ui.Appearance
 import com.fibelatti.bookmarking.core.ui.PreferredDateFormat
@@ -233,7 +234,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
             coEvery { mockPostsRepository.searchExistingPostTag(any(), any()) } returns Failure(Exception())
 
             // WHEN
-            userPreferencesViewModel.searchForTag(com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_1, mockk())
+            userPreferencesViewModel.searchForTag(MockDataProvider.MOCK_TAG_STRING_1, mockk())
 
             // THEN
             assertThat(userPreferencesViewModel.suggestedTags.isEmpty()).isTrue()
@@ -243,17 +244,17 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
     fun `GIVEN getSuggestedTags will succeed WHEN searchForTag is called THEN suggestedTags should receive its response`() =
         runTest {
             // GIVEN
-            val result = listOf(com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_1, com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_2)
+            val result = listOf(MockDataProvider.MOCK_TAG_STRING_1, MockDataProvider.MOCK_TAG_STRING_2)
             coEvery {
                 mockPostsRepository.searchExistingPostTag(
-                    tag = com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_1,
+                    tag = MockDataProvider.MOCK_TAG_STRING_1,
                     currentTags = emptyList(),
                 )
             } returns Success(result)
 
             // WHEN
             userPreferencesViewModel.searchForTag(
-                tag = com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_1,
+                tag = MockDataProvider.MOCK_TAG_STRING_1,
                 currentTags = emptyList(),
             )
 

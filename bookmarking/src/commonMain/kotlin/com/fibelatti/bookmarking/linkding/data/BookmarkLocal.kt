@@ -16,7 +16,7 @@ import org.koin.core.annotation.Factory
     tableName = TABLE_NAME,
     indices = [Index(value = ["shared"]), Index(value = ["unread"])],
 )
-public data class BookmarkLocal(
+internal data class BookmarkLocal(
     @PrimaryKey
     val id: String,
     val url: String,
@@ -33,9 +33,9 @@ public data class BookmarkLocal(
     val pendingSync: PendingSyncDto? = null,
 ) {
 
-    public companion object {
+    companion object {
 
-        public const val TABLE_NAME: String = "LinkdingBookmarks"
+        const val TABLE_NAME: String = "LinkdingBookmarks"
     }
 }
 

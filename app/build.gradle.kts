@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.room)
     alias(libs.plugins.about.libraries)
 }
 
@@ -111,10 +110,6 @@ android {
 
     sourceSets {
         forEach { sourceSet -> getByName(sourceSet.name).java.srcDirs("src/${sourceSet.name}/kotlin") }
-
-        getByName("androidTest") {
-            assets.srcDirs(files("$projectDir/schemas"))
-        }
     }
 
     packaging {
@@ -154,15 +149,6 @@ androidComponents {
     }
 }
 
-ksp {
-    arg("room.incremental", "true")
-    arg("room.generateKotlin", "true")
-}
-
-room {
-    schemaDirectory("$projectDir/schemas")
-}
-
 dependencies {
     implementation(projects.bookmarking)
     implementation(projects.core)
@@ -172,7 +158,6 @@ dependencies {
     // Kotlin
     implementation(libs.kotlin)
     implementation(libs.kotlin.reflect)
-    implementation(libs.kotlin.serialization)
     implementation(libs.kotlin.datetime)
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)
@@ -192,9 +177,6 @@ dependencies {
     implementation(libs.lifecycle.java8)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.runtime.compose)
-
-    implementation(libs.room.ktx)
-    ksp(libs.room.compiler)
 
     implementation(libs.work.runtime.ktx)
 
@@ -216,7 +198,6 @@ dependencies {
     ksp(libs.koin.ksp.compiler)
 
     implementation(libs.bundles.ktor.common)
-    implementation(libs.ktor.client.okhttp)
     implementation(libs.urlencoder)
 
     implementation(libs.multiplatform.settings)
@@ -227,8 +208,8 @@ dependencies {
 
     debugImplementation(libs.leakcanary)
 
-    // Test
-    testImplementation(projects.bookmarkingTest)
+    // region Unit tests
+    testImplementation(testFixtures(projects.bookmarking))
 
     testCompileOnly(libs.junit)
     testRuntimeOnly(libs.junit5.engine)
@@ -242,15 +223,13 @@ dependencies {
     testImplementation(libs.arch.core.testing)
 
     testImplementation(libs.koin.test)
+    // endregion Unit tests
 
-    androidTestImplementation(projects.bookmarkingTest)
+    // region Instrumented tests
+    androidTestImplementation(testFixtures(projects.bookmarking))
 
     androidTestImplementation(libs.runner)
     androidTestUtil(libs.orchestrator)
-
-    androidTestImplementation(libs.truth)
-    androidTestImplementation(libs.coroutines.test)
-    androidTestImplementation(libs.room.testing)
 
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
@@ -259,4 +238,5 @@ dependencies {
 
     androidTestImplementation(platform(libs.koin.bom))
     androidTestImplementation(libs.koin.android.test)
+    // endregion Instrumented tests
 }

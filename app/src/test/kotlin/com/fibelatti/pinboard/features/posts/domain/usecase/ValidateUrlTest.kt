@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
+import com.fibelatti.bookmarking.MockDataProvider
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
 import com.google.common.truth.Truth.assertThat
@@ -15,14 +16,14 @@ class ValidateUrlTest {
 
     fun validUrls(): List<String> = mutableListOf<String>().apply {
         ValidUrlScheme.ALL_SCHEMES.forEach {
-            add("$it://${com.fibelatti.bookmarking.test.MockDataProvider.MOCK_URL_INVALID}")
+            add("$it://${MockDataProvider.MOCK_URL_INVALID}")
         }
         add("https://bit.ly")
         add("http://192.168.0.92/something")
     }
 
     fun invalidUrls(): List<String> = mutableListOf<String>().apply {
-        add(com.fibelatti.bookmarking.test.MockDataProvider.MOCK_URL_INVALID)
+        add(MockDataProvider.MOCK_URL_INVALID)
         add("google")
         add("google com")
     }

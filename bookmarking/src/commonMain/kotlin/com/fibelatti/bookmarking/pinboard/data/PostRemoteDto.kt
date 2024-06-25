@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import org.koin.core.annotation.Factory
 
 @Serializable
-public data class PostRemoteDto(
+internal data class PostRemoteDto(
     val href: String,
     val description: String?,
     val extended: String?,

@@ -7,7 +7,6 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":app")
 include(":bookmarking")
-include(":bookmarking-test")
 include(":core")
 include(":core-android")
 include(":ui")

@@ -21,7 +21,7 @@ public object Config {
         public const val LITERAL_NO: String = "no"
         public const val TAG_SEPARATOR: String = " "
 
-        public enum class MaxLength(public val value: Int) {
+        internal enum class MaxLength(val value: Int) {
 
             TEXT_TYPE(value = 255),
 

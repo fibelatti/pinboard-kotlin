@@ -28,6 +28,9 @@ write_common_properties() {
     write_property "android.enableJetifier=false"
     write_property "android.useAndroidX=true"
 
+    # Test fixtures support
+    write_property "android.experimental.enableTestFixturesKotlinSupport=true"
+
     # Kotlin Multiplatform properties common to all build environments
     write_property "kotlin.mpp.androidGradlePluginCompatibility.nowarn=true"
     # Disabled due to https://youtrack.jetbrains.com/issue/KT-65761

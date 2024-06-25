@@ -5,24 +5,23 @@ import androidx.room.Query
 import androidx.room.Upsert
 import com.fibelatti.bookmarking.core.Config
 
-// TODO: Make internal once the migration is completed
 @Dao
-public interface PostsDao {
+internal interface PostsDao {
 
     @Query("delete from $POST_TABLE_NAME")
-    public suspend fun deleteAllPosts()
+    suspend fun deleteAllPosts()
 
     @Query("delete from $POST_TABLE_NAME where pendingSync is null")
-    public suspend fun deleteAllSyncedPosts()
+    suspend fun deleteAllSyncedPosts()
 
     @Query("delete from $POST_TABLE_NAME where href = :url")
-    public suspend fun deletePost(url: String)
+    suspend fun deletePost(url: String)
 
     @Upsert
-    public suspend fun savePosts(posts: List<PostDto>)
+    suspend fun savePosts(posts: List<PostDto>)
 
     @Query("select count(*) from (select hash from $POST_TABLE_NAME $WHERE_SUB_QUERY limit :limit)")
-    public suspend fun getPostCount(
+    suspend fun getPostCount(
         term: String = "",
         tag1: String = "",
         tag2: String = "",
@@ -36,7 +35,7 @@ public interface PostsDao {
     ): Int
 
     @Query("$SELECT_ALL_FROM_POST $WHERE_SUB_QUERY $ORDER_BY_SUB_QUERY limit :offset, :limit")
-    public suspend fun getAllPosts(
+    suspend fun getAllPosts(
         sortType: Int = 0,
         term: String = "",
         tag1: String = "",
@@ -52,21 +51,21 @@ public interface PostsDao {
     ): List<PostDto>
 
     @Query("select tags from $POST_FTS_TABLE_NAME where tags match :tag")
-    public suspend fun searchExistingPostTag(tag: String): List<String>
+    suspend fun searchExistingPostTag(tag: String): List<String>
 
     @Query("select * from $POST_TABLE_NAME where href = :url")
-    public suspend fun getPost(url: String): PostDto?
+    suspend fun getPost(url: String): PostDto?
 
     @Query("select tags from $POST_TABLE_NAME where tags != ''")
-    public suspend fun getAllPostTags(): List<String>
+    suspend fun getAllPostTags(): List<String>
 
     @Query("select * from $POST_TABLE_NAME where pendingSync is not null")
-    public suspend fun getPendingSyncPosts(): List<PostDto>
+    suspend fun getPendingSyncPosts(): List<PostDto>
 
     @Query("delete from $POST_TABLE_NAME where href = :url and pendingSync is not null")
-    public suspend fun deletePendingSyncPost(url: String)
+    suspend fun deletePendingSyncPost(url: String)
 
-    public companion object {
+    companion object {
 
         private const val SELECT_ALL_FROM_POST = "select $POST_TABLE_NAME.* from $POST_TABLE_NAME"
 
@@ -118,7 +117,7 @@ public interface PostsDao {
             "case when :sortType = 3 then description end DESC"
 
         @JvmStatic
-        public fun preFormatTerm(term: String): String = term
+        fun preFormatTerm(term: String): String = term
             .replace("[^A-Za-z0-9 ._\\-=#@&]".toRegex(), "")
             .trim()
             .takeIf(String::isNotEmpty)
@@ -127,6 +126,6 @@ public interface PostsDao {
             .orEmpty()
 
         @JvmStatic
-        public fun preFormatTag(tag: String): String = "\"${tag.replace(oldValue = "\"", newValue = "")}*\""
+        fun preFormatTag(tag: String): String = "\"${tag.replace(oldValue = "\"", newValue = "")}*\""
     }
 }

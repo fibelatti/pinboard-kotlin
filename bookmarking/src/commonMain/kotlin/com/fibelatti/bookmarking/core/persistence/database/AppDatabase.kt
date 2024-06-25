@@ -37,12 +37,11 @@ internal const val DATABASE_VERSION_6: Int = 6 // Release 2.x (Linkding support)
         AutoMigration(from = DATABASE_VERSION_5, to = DATABASE_VERSION_6),
     ],
 )
-// TODO: Make internal once the test code is migrated
-public abstract class AppDatabase : RoomDatabase() {
+internal abstract class AppDatabase : RoomDatabase() {
 
-    public abstract fun postDao(): PostsDao
-    public abstract fun linkdingBookmarksDao(): BookmarksDao
-    public abstract fun savedFiltersDao(): SavedFiltersDao
+    abstract fun postDao(): PostsDao
+    abstract fun linkdingBookmarksDao(): BookmarksDao
+    abstract fun savedFiltersDao(): SavedFiltersDao
 }
 
 @Factory

@@ -1,11 +1,11 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
+import com.fibelatti.bookmarking.MockDataProvider.createPost
 import com.fibelatti.bookmarking.features.posts.domain.EditAfterSharing
 import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
-import com.fibelatti.bookmarking.test.MockDataProvider.createPost
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest

@@ -1,15 +1,15 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_TAGS
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_TAG_STRING_1
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_TAG_STRING_2
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_URL_DESCRIPTION
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_URL_INVALID
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_URL_TITLE
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_URL_VALID
+import com.fibelatti.bookmarking.MockDataProvider.createPost
 import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAGS
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_1
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_2
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_URL_DESCRIPTION
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_URL_INVALID
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_URL_TITLE
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_URL_VALID
-import com.fibelatti.bookmarking.test.MockDataProvider.createPost
 import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success

@@ -1,10 +1,10 @@
 package com.fibelatti.pinboard.features.user.domain
 
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_API_TOKEN
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_INSTANCE_URL
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_TIME
 import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_API_TOKEN
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_INSTANCE_URL
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TIME
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull

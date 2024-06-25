@@ -1,7 +1,7 @@
-package com.fibelatti.pinboard
+package com.fibelatti.pinboard.tooling
 
 import com.fibelatti.bookmarking.di.GeneratedBookmarkingModule
-import com.fibelatti.bookmarking.test.di.testBookmarkingModules
+import com.fibelatti.pinboard.App
 import com.fibelatti.pinboard.core.di.appModules
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger

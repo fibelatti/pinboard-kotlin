@@ -11,7 +11,7 @@ import com.fibelatti.bookmarking.linkding.data.BookmarkLocalFts.Companion.TABLE_
     tokenizerArgs = ["tokenchars=._-=#@&"],
 )
 @Entity(tableName = TABLE_NAME)
-public data class BookmarkLocalFts(
+internal data class BookmarkLocalFts(
     val url: String,
     val title: String,
     val description: String,
@@ -21,8 +21,8 @@ public data class BookmarkLocalFts(
     val tagNames: String?,
 ) {
 
-    public companion object {
+    companion object {
 
-        public const val TABLE_NAME: String = "LinkdingBookmarksFts"
+        const val TABLE_NAME: String = "LinkdingBookmarksFts"
     }
 }

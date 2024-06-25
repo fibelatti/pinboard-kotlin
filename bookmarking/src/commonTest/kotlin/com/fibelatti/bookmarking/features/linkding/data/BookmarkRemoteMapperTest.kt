@@ -1,16 +1,16 @@
 package com.fibelatti.bookmarking.features.linkding.data
 
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_TAGS
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_TAGS_STRING
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_TIME
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_TITLE
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_URL_DESCRIPTION
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_URL_NOTES
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_URL_VALID
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.bookmarking.linkding.data.BookmarkRemote
 import com.fibelatti.bookmarking.linkding.data.BookmarkRemoteMapper
 import com.fibelatti.bookmarking.randomBoolean
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAGS
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAGS_STRING
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TIME
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TITLE
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_URL_DESCRIPTION
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_URL_NOTES
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_URL_VALID
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk

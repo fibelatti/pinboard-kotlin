@@ -1,13 +1,12 @@
-package com.fibelatti.pinboard.features.filters.data
+package com.fibelatti.bookmarking.features.filters.data
 
-import com.fibelatti.bookmarking.features.filters.data.SavedFilterDto
-import com.fibelatti.pinboard.tooling.BaseDbTest
+import com.fibelatti.bookmarking.tooling.BaseDbTest
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
-class SavedFiltersDaoTest : BaseDbTest() {
+internal class SavedFiltersDaoTest : BaseDbTest() {
 
     private val dto1 = SavedFilterDto(
         term = "term",

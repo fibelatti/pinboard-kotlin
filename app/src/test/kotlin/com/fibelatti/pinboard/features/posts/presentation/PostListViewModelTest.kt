@@ -1,11 +1,11 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_TAGS
 import com.fibelatti.bookmarking.features.appstate.SortType
 import com.fibelatti.bookmarking.features.filters.domain.SavedFiltersRepository
 import com.fibelatti.bookmarking.features.filters.domain.model.SavedFilter
 import com.fibelatti.bookmarking.features.posts.domain.PostVisibility
 import com.fibelatti.bookmarking.features.posts.domain.model.PostListResult
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAGS
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest

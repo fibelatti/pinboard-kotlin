@@ -1,8 +1,8 @@
 package com.fibelatti.bookmarking.features.notes.data.model
 
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_NOTE_ID
 import com.fibelatti.bookmarking.core.util.DateFormatter
 import com.fibelatti.bookmarking.features.notes.domain.model.Note
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_NOTE_ID
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk

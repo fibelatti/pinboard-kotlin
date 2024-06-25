@@ -13,6 +13,7 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.ContentType
 import io.ktor.serialization.kotlinx.json.json
+import java.util.concurrent.TimeUnit
 import okhttp3.CipherSuite
 import okhttp3.ConnectionPool
 import okhttp3.ConnectionSpec
@@ -20,7 +21,6 @@ import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
-import java.util.concurrent.TimeUnit
 
 public actual fun platformModule(): Module = module {
     single {

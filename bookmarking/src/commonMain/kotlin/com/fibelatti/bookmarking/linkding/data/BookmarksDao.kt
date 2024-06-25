@@ -6,24 +6,23 @@ import androidx.room.Upsert
 import com.fibelatti.bookmarking.linkding.data.BookmarkLocal.Companion.TABLE_NAME
 import com.fibelatti.bookmarking.linkding.data.BookmarkLocalFts.Companion.TABLE_NAME as FTS_TABLE_NAME
 
-// TODO: Make internal once the migration is completed
 @Dao
-public interface BookmarksDao {
+internal interface BookmarksDao {
 
     @Query("delete from $TABLE_NAME")
-    public suspend fun deleteAllBookmarks()
+    suspend fun deleteAllBookmarks()
 
     @Query("delete from $TABLE_NAME where pendingSync is null")
-    public suspend fun deleteAllSyncedBookmarks()
+    suspend fun deleteAllSyncedBookmarks()
 
     @Query("delete from $TABLE_NAME where id = :id")
-    public suspend fun deleteBookmark(id: String)
+    suspend fun deleteBookmark(id: String)
 
     @Upsert
-    public suspend fun saveBookmarks(bookmarks: List<BookmarkLocal>)
+    suspend fun saveBookmarks(bookmarks: List<BookmarkLocal>)
 
     @Query("select count(*) from (select id from $TABLE_NAME $WHERE_SUB_QUERY limit :limit)")
-    public suspend fun getBookmarkCount(
+    suspend fun getBookmarkCount(
         term: String = "",
         tag1: String = "",
         tag2: String = "",
@@ -37,7 +36,7 @@ public interface BookmarksDao {
     ): Int
 
     @Query("$SELECT_ALL_FROM_BOOKMARKS $WHERE_SUB_QUERY $ORDER_BY_SUB_QUERY limit :offset, :limit")
-    public suspend fun getAllBookmarks(
+    suspend fun getAllBookmarks(
         sortType: Int = 0,
         term: String = "",
         tag1: String = "",
@@ -53,21 +52,21 @@ public interface BookmarksDao {
     ): List<BookmarkLocal>
 
     @Query("select tagNames from $FTS_TABLE_NAME where tagNames match :tag")
-    public suspend fun searchExistingBookmarkTags(tag: String): List<String>
+    suspend fun searchExistingBookmarkTags(tag: String): List<String>
 
     @Query("select * from $TABLE_NAME where id = :id or url = :url")
-    public suspend fun getBookmark(id: String, url: String): BookmarkLocal?
+    suspend fun getBookmark(id: String, url: String): BookmarkLocal?
 
     @Query("select tagNames from $TABLE_NAME where tagNames != ''")
-    public suspend fun getAllBookmarkTags(): List<String>
+    suspend fun getAllBookmarkTags(): List<String>
 
     @Query("select * from $TABLE_NAME where pendingSync is not null")
-    public suspend fun getPendingSyncBookmarks(): List<BookmarkLocal>
+    suspend fun getPendingSyncBookmarks(): List<BookmarkLocal>
 
     @Query("delete from $TABLE_NAME where url = :url and pendingSync is not null")
-    public suspend fun deletePendingSyncBookmark(url: String)
+    suspend fun deletePendingSyncBookmark(url: String)
 
-    public companion object {
+    companion object {
 
         private const val SELECT_ALL_FROM_BOOKMARKS = "select $TABLE_NAME.* from $TABLE_NAME"
 
@@ -119,7 +118,7 @@ public interface BookmarksDao {
             "case when :sortType = 3 then title end DESC"
 
         @JvmStatic
-        public fun preFormatTerm(term: String): String = term
+        fun preFormatTerm(term: String): String = term
             .replace("[^A-Za-z0-9 ._\\-=#@&]".toRegex(), "")
             .trim()
             .takeIf(String::isNotEmpty)
@@ -128,6 +127,6 @@ public interface BookmarksDao {
             .orEmpty()
 
         @JvmStatic
-        public fun preFormatTag(tag: String): String = "\"${tag.replace(oldValue = "\"", newValue = "")}*\""
+        fun preFormatTag(tag: String): String = "\"${tag.replace(oldValue = "\"", newValue = "")}*\""
     }
 }

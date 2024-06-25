@@ -14,7 +14,7 @@ public const val POST_FTS_TABLE_NAME: String = "PostsFts"
     tokenizerArgs = ["tokenchars=._-=#@&"],
 )
 @Entity(tableName = POST_FTS_TABLE_NAME)
-public data class PostDtoFts(
+internal data class PostDtoFts(
     val href: String,
     val description: String?,
     val extended: String?,

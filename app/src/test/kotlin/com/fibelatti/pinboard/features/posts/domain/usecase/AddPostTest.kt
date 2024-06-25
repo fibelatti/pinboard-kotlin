@@ -1,10 +1,10 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_URL_VALID
 import com.fibelatti.bookmarking.core.network.ApiException
 import com.fibelatti.bookmarking.core.network.InvalidRequestException
 import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_URL_VALID
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull

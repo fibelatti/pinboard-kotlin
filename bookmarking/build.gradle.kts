@@ -16,9 +16,14 @@ android {
 
     defaultConfig {
         minSdk = minSdkVersion
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+
+    testFixtures {
+        enable = true
+    }
 }
 
 kotlin {
@@ -27,6 +32,8 @@ kotlin {
 
     androidTarget()
 
+    applyDefaultHierarchyTemplate()
+
     sourceSets {
         androidMain {
             dependencies {
@@ -34,6 +41,18 @@ kotlin {
 
                 implementation(project.dependencies.platform(libs.koin.bom))
                 implementation(libs.koin.android)
+            }
+        }
+
+        val androidInstrumentedTest by getting {
+            dependencies {
+                implementation(libs.runner)
+
+                implementation(libs.truth)
+
+                implementation(libs.coroutines.test)
+
+                implementation(libs.room.testing)
             }
         }
 
@@ -63,7 +82,6 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(projects.core)
-                implementation(projects.bookmarkingTest)
 
                 compileOnly(libs.junit)
                 runtimeOnly(libs.junit5.engine)
@@ -74,6 +92,18 @@ kotlin {
                 implementation(libs.truth)
                 implementation(libs.mockk)
                 implementation(libs.coroutines.test)
+            }
+        }
+
+        val testFixtures by creating {
+            dependencies {
+                implementation(libs.room.testing)
+
+                implementation(libs.urlencoder)
+
+                implementation(project.dependencies.platform(libs.koin.bom))
+                implementation(libs.koin.core)
+                implementation(libs.koin.android)
             }
         }
     }

@@ -1,5 +1,7 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_TAGS
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_URL_VALID
 import com.fibelatti.bookmarking.features.appstate.Alphabetical
 import com.fibelatti.bookmarking.features.appstate.AlphabeticalReverse
 import com.fibelatti.bookmarking.features.appstate.NewestFirst
@@ -8,8 +10,6 @@ import com.fibelatti.bookmarking.features.appstate.SortType
 import com.fibelatti.bookmarking.features.posts.domain.PostVisibility
 import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.posts.domain.model.PostListResult
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAGS
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_URL_VALID
 import com.fibelatti.core.functional.Success
 import io.mockk.every
 import io.mockk.mockk

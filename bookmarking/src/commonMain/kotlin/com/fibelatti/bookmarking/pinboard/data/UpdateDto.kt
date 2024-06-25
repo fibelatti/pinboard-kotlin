@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-public class UpdateDto(
+internal class UpdateDto(
     @SerialName(value = "update_time")
-    public val updateTime: String,
+    val updateTime: String,
 )

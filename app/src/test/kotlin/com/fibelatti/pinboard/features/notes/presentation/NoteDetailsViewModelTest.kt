@@ -1,8 +1,8 @@
 package com.fibelatti.pinboard.features.notes.presentation
 
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_NOTE_ID
 import com.fibelatti.bookmarking.features.notes.domain.NotesRepository
 import com.fibelatti.bookmarking.features.notes.domain.model.Note
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_NOTE_ID
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest

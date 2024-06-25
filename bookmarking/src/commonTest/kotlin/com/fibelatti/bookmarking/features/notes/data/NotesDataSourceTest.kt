@@ -1,10 +1,10 @@
 package com.fibelatti.bookmarking.features.notes.data
 
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_NOTE_ID
 import com.fibelatti.bookmarking.features.notes.data.model.NoteDto
 import com.fibelatti.bookmarking.features.notes.data.model.NoteDtoMapper
 import com.fibelatti.bookmarking.features.notes.data.model.NoteListDto
 import com.fibelatti.bookmarking.features.notes.domain.model.Note
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_NOTE_ID
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
 import com.google.common.truth.Truth.assertThat

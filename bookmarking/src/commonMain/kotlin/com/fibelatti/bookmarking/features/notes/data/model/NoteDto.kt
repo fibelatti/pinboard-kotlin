@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 import org.koin.core.annotation.Factory
 
 @Serializable
-public data class NoteDto(
+internal data class NoteDto(
     val id: String,
     val title: String?,
     @SerialName(value = "created_at") val createdAt: String?,

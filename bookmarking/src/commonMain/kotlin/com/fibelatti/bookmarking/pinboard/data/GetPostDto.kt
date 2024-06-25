@@ -4,7 +4,7 @@ import com.fibelatti.bookmarking.core.network.SkipBadElementsListSerializer
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class GetPostDto(
+internal data class GetPostDto(
     val date: String,
     val user: String,
     @Serializable(with = SkipBadElementsListSerializer::class)

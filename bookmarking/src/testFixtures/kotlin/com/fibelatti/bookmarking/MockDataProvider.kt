@@ -1,4 +1,4 @@
-package com.fibelatti.bookmarking.test
+package com.fibelatti.bookmarking
 
 import com.fibelatti.bookmarking.core.Config.Pinboard
 import com.fibelatti.bookmarking.core.network.PinboardApiResultCode
@@ -65,13 +65,13 @@ public object MockDataProvider {
     // endregion
 
     // region Pinboard
-    public fun createGenericResponse(
+    internal fun createGenericResponse(
         responseCode: PinboardApiResultCode,
     ): GenericResponseDto = GenericResponseDto(
         resultCode = responseCode.value,
     )
 
-    public fun createPostDto(
+    internal fun createPostDto(
         href: String = UrlEncoderUtil.encode(MOCK_URL_VALID),
         description: String? = MOCK_URL_TITLE,
         extended: String? = MOCK_URL_DESCRIPTION,
@@ -93,7 +93,7 @@ public object MockDataProvider {
         pendingSync = pendingSync,
     )
 
-    public fun createPostRemoteDto(
+    internal fun createPostRemoteDto(
         href: String = UrlEncoderUtil.encode(MOCK_URL_VALID),
         description: String? = MOCK_URL_TITLE,
         extended: String? = MOCK_URL_DESCRIPTION,
@@ -113,7 +113,7 @@ public object MockDataProvider {
         tags = tags,
     )
 
-    public fun createGetPostDto(
+    internal fun createGetPostDto(
         posts: List<PostRemoteDto> = listOf(createPostRemoteDto()),
     ): GetPostDto = GetPostDto(
         date = MOCK_TIME,
@@ -123,7 +123,7 @@ public object MockDataProvider {
     // endregion Pinboard
 
     // region Linking
-    public fun createBookmarkLocal(
+    internal fun createBookmarkLocal(
         id: String = MOCK_HASH,
         url: String = MOCK_URL_VALID,
         title: String = MOCK_URL_TITLE,

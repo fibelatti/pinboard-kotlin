@@ -11,7 +11,7 @@ import org.koin.core.annotation.Factory
     tableName = TABLE_NAME,
     primaryKeys = ["term", "tags"],
 )
-public data class SavedFilterDto(
+internal data class SavedFilterDto(
     val term: String,
     val tags: String,
 ) {

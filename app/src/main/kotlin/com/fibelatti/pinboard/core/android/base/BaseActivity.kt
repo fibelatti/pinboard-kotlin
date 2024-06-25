@@ -13,10 +13,10 @@ import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import org.koin.android.ext.android.inject
-import org.koin.androidx.fragment.android.setupKoinFragmentFactory
 import java.io.PrintWriter
 import java.io.StringWriter
+import org.koin.android.ext.android.inject
+import org.koin.androidx.fragment.android.setupKoinFragmentFactory
 
 abstract class BaseActivity : AppCompatActivity() {
 

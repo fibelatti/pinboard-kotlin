@@ -8,8 +8,8 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.fibelatti.bookmarking.features.sync.PeriodicSync
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
-import org.koin.core.annotation.Single
 import java.util.concurrent.TimeUnit
+import org.koin.core.annotation.Single
 
 @Single
 class PeriodicSyncManager(

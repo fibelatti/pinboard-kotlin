@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.tooling
+package com.fibelatti.bookmarking.tooling
 
 import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
@@ -6,7 +6,7 @@ import com.fibelatti.bookmarking.core.persistence.database.AppDatabase
 import org.junit.After
 import org.junit.Before
 
-abstract class BaseDbTest {
+internal abstract class BaseDbTest {
 
     protected lateinit var appDatabase: AppDatabase
 

@@ -1,24 +1,23 @@
-package com.fibelatti.pinboard.bookmarking.linkding.data
+package com.fibelatti.bookmarking.linkding.data
 
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_HASH
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_TAG_STRING_1
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_TAG_STRING_2
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_TAG_STRING_3
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_TIME_1
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_TIME_2
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_TIME_3
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_TIME_4
+import com.fibelatti.bookmarking.MockDataProvider.MOCK_TIME_5
+import com.fibelatti.bookmarking.MockDataProvider.createBookmarkLocal
 import com.fibelatti.bookmarking.features.posts.data.model.PendingSyncDto
-import com.fibelatti.bookmarking.linkding.data.BookmarksDao
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_HASH
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_1
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_2
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TAG_STRING_3
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TIME_1
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TIME_2
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TIME_3
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TIME_4
-import com.fibelatti.bookmarking.test.MockDataProvider.MOCK_TIME_5
-import com.fibelatti.bookmarking.test.MockDataProvider.createBookmarkLocal
+import com.fibelatti.bookmarking.tooling.BaseDbTest
 import com.fibelatti.core.randomUUID
-import com.fibelatti.pinboard.tooling.BaseDbTest
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
-class BookmarksDaoTest : BaseDbTest() {
+internal class BookmarksDaoTest : BaseDbTest() {
 
     // region Data
     private val mockTerm = "ter" // Intentionally incomplete to test wildcard matching

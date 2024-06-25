@@ -22,7 +22,7 @@ public const val POST_TABLE_NAME: String = "Posts"
     tableName = POST_TABLE_NAME,
     indices = [Index(value = ["shared"]), Index(value = ["toread"])],
 )
-public data class PostDto(
+internal data class PostDto(
     val href: String,
     val description: String?,
     val extended: String?,

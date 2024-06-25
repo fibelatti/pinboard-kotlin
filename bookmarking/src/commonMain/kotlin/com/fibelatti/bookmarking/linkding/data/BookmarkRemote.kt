@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 import org.koin.core.annotation.Factory
 
 @Serializable
-public data class PaginatedResponseRemote<T>(
+internal data class PaginatedResponseRemote<T>(
     val count: Int,
     val next: String?,
     val previous: String?,
@@ -17,7 +17,7 @@ public data class PaginatedResponseRemote<T>(
 )
 
 @Serializable
-public data class BookmarkRemote(
+internal data class BookmarkRemote(
     val id: Int?,
     val url: String,
     val title: String?,
@@ -40,7 +40,7 @@ public data class BookmarkRemote(
 )
 
 @Serializable
-public data class TagRemote(
+internal data class TagRemote(
     val id: Int,
     val name: String,
     @SerialName(value = "date_added")

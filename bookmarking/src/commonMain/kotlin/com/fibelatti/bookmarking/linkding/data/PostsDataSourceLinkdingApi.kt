@@ -21,13 +21,13 @@ import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.core.functional.resultFrom
 import com.fibelatti.core.randomUUID
+import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
-import kotlin.time.Duration.Companion.minutes
 
 internal class PostsDataSourceLinkdingApi(
     private val linkdingApi: LinkdingApi,

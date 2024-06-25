@@ -1,6 +1,6 @@
 package com.fibelatti.pinboard.features.appstate
 
-import com.fibelatti.bookmarking.test.MockDataProvider.createTag
+import com.fibelatti.bookmarking.MockDataProvider.createTag
 import com.google.common.truth.Truth.assertThat
 import org.junit.jupiter.api.Test
 

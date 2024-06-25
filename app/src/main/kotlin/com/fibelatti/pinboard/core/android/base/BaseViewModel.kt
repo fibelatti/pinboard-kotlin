@@ -2,12 +2,12 @@ package com.fibelatti.pinboard.core.android.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlin.coroutines.CoroutineContext
 
 /**
  * [ViewModel] that also implements [CoroutineScope], allowing coroutines to be launched from it.
