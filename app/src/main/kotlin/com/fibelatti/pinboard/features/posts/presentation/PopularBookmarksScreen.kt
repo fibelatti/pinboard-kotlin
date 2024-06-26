@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fibelatti.bookmarking.features.appstate.AppStateViewModel
 import com.fibelatti.bookmarking.features.appstate.PopularPostsContent
 import com.fibelatti.bookmarking.features.appstate.RefreshPopular
 import com.fibelatti.bookmarking.features.appstate.SidePanelContent
@@ -46,7 +47,6 @@ import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
 import com.fibelatti.ui.foundation.asHorizontalPaddingDp

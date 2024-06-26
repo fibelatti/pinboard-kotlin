@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fibelatti.bookmarking.features.appstate.AppStateViewModel
 import com.fibelatti.bookmarking.features.appstate.NoteListContent
 import com.fibelatti.bookmarking.features.appstate.RefreshNotes
 import com.fibelatti.bookmarking.features.appstate.SidePanelContent
@@ -40,6 +41,7 @@ import com.fibelatti.bookmarking.features.appstate.ViewNote
 import com.fibelatti.bookmarking.features.appstate.find
 import com.fibelatti.bookmarking.features.notes.domain.model.Note
 import com.fibelatti.bookmarking.features.notes.domain.model.NoteSorting
+import com.fibelatti.bookmarking.features.notes.presentation.NoteListViewModel
 import com.fibelatti.core.randomUUID
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
@@ -48,7 +50,6 @@ import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.ui.foundation.asHorizontalPaddingDp
 import com.fibelatti.ui.foundation.navigationBarsCompat
 import com.fibelatti.ui.preview.ThemePreviews

@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.bookmarking.core.AppMode
 import com.fibelatti.bookmarking.features.appstate.All
+import com.fibelatti.bookmarking.features.appstate.AppStateViewModel
 import com.fibelatti.bookmarking.features.appstate.Private
 import com.fibelatti.bookmarking.features.appstate.Public
 import com.fibelatti.bookmarking.features.appstate.Recent
@@ -42,7 +43,6 @@ import com.fibelatti.bookmarking.features.appstate.ViewSavedFilters
 import com.fibelatti.bookmarking.features.appstate.ViewTags
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.user.presentation.AuthViewModel
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme

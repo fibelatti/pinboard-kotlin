@@ -1,4 +1,4 @@
-package com.fibelatti.bookmarking.features.linkding.data
+package com.fibelatti.bookmarking.linkding.data
 
 import com.fibelatti.bookmarking.MockDataProvider.MOCK_HASH
 import com.fibelatti.bookmarking.MockDataProvider.MOCK_TAGS
@@ -13,8 +13,6 @@ import com.fibelatti.bookmarking.MockDataProvider.createPost
 import com.fibelatti.bookmarking.features.posts.data.model.PendingSyncDto
 import com.fibelatti.bookmarking.features.posts.domain.model.PendingSync
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
-import com.fibelatti.bookmarking.linkding.data.BookmarkLocal
-import com.fibelatti.bookmarking.linkding.data.BookmarkLocalMapper
 import com.fibelatti.bookmarking.randomBoolean
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
@@ -22,7 +20,7 @@ import io.mockk.mockk
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
-class BookmarkLocalMapperTest {
+internal class BookmarkLocalMapperTest {
 
     private val mapper = BookmarkLocalMapper(
         dateFormatter = mockk {

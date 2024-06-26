@@ -1,8 +1,8 @@
-package com.fibelatti.pinboard.features.filters.presentation
+package com.fibelatti.bookmarking.features.filters.presentation
 
+import com.fibelatti.bookmarking.core.base.BaseViewModel
 import com.fibelatti.bookmarking.features.filters.domain.SavedFiltersRepository
 import com.fibelatti.bookmarking.features.filters.domain.model.SavedFilter
-import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -11,20 +11,20 @@ import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
-class SavedFiltersViewModel(
+public class SavedFiltersViewModel(
     private val savedFiltersRepository: SavedFiltersRepository,
     scope: CoroutineScope,
     sharingStarted: SharingStarted,
 ) : BaseViewModel() {
 
-    val state: StateFlow<List<SavedFilter>> = savedFiltersRepository.getSavedFilters()
+    public val state: StateFlow<List<SavedFilter>> = savedFiltersRepository.getSavedFilters()
         .stateIn(
             scope = scope,
             started = sharingStarted,
             initialValue = emptyList(),
         )
 
-    fun deleteSavedFilter(savedFilter: SavedFilter) {
+    public fun deleteSavedFilter(savedFilter: SavedFilter) {
         launch {
             savedFiltersRepository.deleteFilter(savedFilter = savedFilter)
         }

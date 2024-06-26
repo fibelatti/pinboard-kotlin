@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.core.android.base
+package com.fibelatti.bookmarking.core.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
  *
  * All coroutine jobs will be cancelled when [onCleared] is called.
  */
-abstract class BaseViewModel : ViewModel(), CoroutineScope {
+public abstract class BaseViewModel : ViewModel(), CoroutineScope {
 
     override val coroutineContext: CoroutineContext
         get() = viewModelScope.coroutineContext
@@ -23,14 +23,14 @@ abstract class BaseViewModel : ViewModel(), CoroutineScope {
      * A [Flow] of [Throwable] that will hold the latest error that happened in this [ViewModel]
      * until [errorHandled] is called.
      */
-    val error: StateFlow<Throwable?> get() = _error.asStateFlow()
+    public val error: StateFlow<Throwable?> get() = _error.asStateFlow()
     private val _error = MutableStateFlow<Throwable?>(null)
 
     protected fun handleError(error: Throwable) {
         _error.value = error
     }
 
-    fun errorHandled() {
+    public fun errorHandled() {
         _error.value = null
     }
 }

@@ -13,6 +13,7 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.lifecycle.Lifecycle
 import com.fibelatti.bookmarking.core.extension.isServerException
 import com.fibelatti.bookmarking.features.appstate.AddPostContent
+import com.fibelatti.bookmarking.features.appstate.AppStateViewModel
 import com.fibelatti.bookmarking.features.appstate.Content
 import com.fibelatti.bookmarking.features.appstate.ContentWithHistory
 import com.fibelatti.bookmarking.features.appstate.EditPostContent
@@ -47,7 +48,6 @@ import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.databinding.ActivityMainBinding
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

@@ -1,5 +1,6 @@
-package com.fibelatti.pinboard.features.posts.presentation
+package com.fibelatti.bookmarking.features.posts.presentation
 
+import com.fibelatti.bookmarking.core.base.BaseViewModel
 import com.fibelatti.bookmarking.features.appstate.AppStateRepository
 import com.fibelatti.bookmarking.features.appstate.PostDeleted
 import com.fibelatti.bookmarking.features.appstate.PostSaved
@@ -11,7 +12,6 @@ import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onSuccess
-import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,16 +20,16 @@ import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
-class PostDetailViewModel(
+public class PostDetailViewModel(
     private val appStateRepository: AppStateRepository,
     private val deletePost: DeletePost,
     private val addPost: AddPost,
 ) : BaseViewModel() {
 
     private val _screenState = MutableStateFlow(ScreenState())
-    val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
+    public val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
 
-    fun deletePost(post: Post) {
+    public fun deletePost(post: Post) {
         launch {
             _screenState.update { currentState ->
                 currentState.copy(isLoading = true)
@@ -56,7 +56,7 @@ class PostDetailViewModel(
         }
     }
 
-    fun toggleReadLater(post: Post) {
+    public fun toggleReadLater(post: Post) {
         launch {
             _screenState.update { currentState ->
                 currentState.copy(isLoading = true)
@@ -84,7 +84,7 @@ class PostDetailViewModel(
         }
     }
 
-    fun userNotified() {
+    public fun userNotified() {
         _screenState.update { currentState ->
             currentState.copy(
                 deleted = Success(value = false),
@@ -93,7 +93,7 @@ class PostDetailViewModel(
         }
     }
 
-    data class ScreenState(
+    public data class ScreenState(
         val isLoading: Boolean = false,
         val deleted: Result<Boolean> = Success(value = false),
         val updated: Result<Boolean> = Success(value = false),

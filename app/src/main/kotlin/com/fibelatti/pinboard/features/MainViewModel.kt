@@ -1,6 +1,6 @@
 package com.fibelatti.pinboard.features
 
-import com.fibelatti.pinboard.core.android.base.BaseViewModel
+import com.fibelatti.bookmarking.core.base.BaseViewModel
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow

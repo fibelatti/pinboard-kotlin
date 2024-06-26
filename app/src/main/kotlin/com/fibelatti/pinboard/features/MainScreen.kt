@@ -45,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fibelatti.bookmarking.features.appstate.AppStateViewModel
 import com.fibelatti.bookmarking.features.appstate.ConnectionAwareContent
 import com.fibelatti.bookmarking.features.appstate.LoginContent
 import com.fibelatti.bookmarking.features.appstate.PopularPostsContent
@@ -55,7 +56,6 @@ import com.fibelatti.core.android.extension.findActivity
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.MainTitle
 import com.fibelatti.pinboard.core.extension.ScrollDirection
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.navigation.NavigationMenu
 import com.fibelatti.ui.foundation.navigationBarsPaddingCompat
 import com.fibelatti.ui.foundation.pxToDp

@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.WindowInsetsCompat
+import com.fibelatti.bookmarking.features.appstate.AppStateViewModel
 import com.fibelatti.bookmarking.features.appstate.NavigateBack
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
+import com.fibelatti.bookmarking.features.posts.presentation.PostDetailViewModel
 import com.fibelatti.core.android.extension.doOnApplyWindowInsets
 import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.core.functional.Success
@@ -20,7 +22,6 @@ import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.onEach
@@ -216,7 +217,7 @@ class EditPostFragment : BaseFragment() {
     private fun setupPostDetailViewModel() {
         postDetailViewModel.screenState
             .onEach { state ->
-                if (state.deleted is Success<Boolean> && state.deleted.value) {
+                if ((state.deleted as? Success<Boolean>)?.value == true) {
                     requireView().showBanner(getString(R.string.posts_deleted_feedback))
                     postDetailViewModel.userNotified()
                 }

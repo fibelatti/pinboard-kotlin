@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.user.presentation
 
 import com.fibelatti.bookmarking.core.AppModeProvider
+import com.fibelatti.bookmarking.core.base.BaseViewModel
 import com.fibelatti.bookmarking.core.ui.Appearance
 import com.fibelatti.bookmarking.core.ui.PreferredDateFormat
 import com.fibelatti.bookmarking.features.posts.domain.EditAfterSharing
@@ -11,7 +12,6 @@ import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.bookmarking.features.user.domain.UserPreferences
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.sync.PeriodicSyncManager
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow

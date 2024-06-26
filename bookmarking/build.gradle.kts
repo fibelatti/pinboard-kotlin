@@ -78,6 +78,8 @@ kotlin {
                 implementation(project.dependencies.platform(libs.koin.bom))
                 implementation(libs.koin.core)
                 compileOnly(libs.koin.annotations)
+
+                implementation(libs.lifecycle.viewmodel)
             }
         }
 
@@ -94,6 +96,7 @@ kotlin {
                 implementation(libs.truth)
                 implementation(libs.mockk)
                 implementation(libs.coroutines.test)
+                implementation(libs.arch.core.testing)
             }
         }
 

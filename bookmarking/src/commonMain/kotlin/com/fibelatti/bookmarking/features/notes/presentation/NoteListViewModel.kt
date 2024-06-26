@@ -1,5 +1,6 @@
-package com.fibelatti.pinboard.features.notes.presentation
+package com.fibelatti.bookmarking.features.notes.presentation
 
+import com.fibelatti.bookmarking.core.base.BaseViewModel
 import com.fibelatti.bookmarking.core.util.DateFormatter
 import com.fibelatti.bookmarking.features.appstate.AppStateRepository
 import com.fibelatti.bookmarking.features.appstate.SetNotes
@@ -8,18 +9,17 @@ import com.fibelatti.bookmarking.features.notes.domain.model.Note
 import com.fibelatti.bookmarking.features.notes.domain.model.NoteSorting
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onFailure
-import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
-class NoteListViewModel(
+public class NoteListViewModel(
     private val notesRepository: NotesRepository,
     private val appStateRepository: AppStateRepository,
     private val dateFormatter: DateFormatter,
 ) : BaseViewModel() {
 
-    fun getAllNotes() {
+    public fun getAllNotes() {
         launch {
             notesRepository.getAllNotes()
                 .mapCatching { appStateRepository.runAction(SetNotes(it)) }
@@ -27,7 +27,7 @@ class NoteListViewModel(
         }
     }
 
-    fun sort(notes: List<Note>, sorting: NoteSorting) {
+    public fun sort(notes: List<Note>, sorting: NoteSorting) {
         launch {
             val updatedNotes = when (sorting) {
                 NoteSorting.ByDateUpdatedDesc -> {

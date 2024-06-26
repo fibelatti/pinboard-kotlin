@@ -43,12 +43,13 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.bookmarking.core.AppMode
+import com.fibelatti.bookmarking.features.appstate.AppStateViewModel
 import com.fibelatti.bookmarking.features.posts.domain.model.PendingSync
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
+import com.fibelatti.bookmarking.features.posts.presentation.PostDetailViewModel
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.tags.presentation.TagManager
 import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
 import com.fibelatti.ui.foundation.imePaddingCompat

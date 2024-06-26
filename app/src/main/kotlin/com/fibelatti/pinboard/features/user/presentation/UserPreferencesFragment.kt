@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
+import com.fibelatti.bookmarking.features.appstate.AppStateViewModel
 import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.core.android.extension.navigateBack
 import com.fibelatti.core.randomUUID
@@ -13,7 +14,6 @@ import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch

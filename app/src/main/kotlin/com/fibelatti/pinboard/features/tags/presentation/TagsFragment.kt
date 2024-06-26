@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import com.fibelatti.bookmarking.features.appstate.AppStateViewModel
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
+import com.fibelatti.bookmarking.features.tags.presentation.TagsViewModel
 import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.core.android.extension.navigateBack
 import com.fibelatti.pinboard.R
@@ -12,7 +14,6 @@ import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.features.MainViewModel
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

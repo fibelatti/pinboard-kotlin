@@ -1,9 +1,9 @@
-package com.fibelatti.pinboard.features.filters.presentation
+package com.fibelatti.bookmarking.features.filters.presentation
 
+import com.fibelatti.bookmarking.BaseViewModelTest
+import com.fibelatti.bookmarking.collectIn
 import com.fibelatti.bookmarking.features.filters.domain.SavedFiltersRepository
 import com.fibelatti.bookmarking.features.filters.domain.model.SavedFilter
-import com.fibelatti.pinboard.BaseViewModelTest
-import com.fibelatti.pinboard.collectIn
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coJustRun
 import io.mockk.coVerify

@@ -1,10 +1,10 @@
-package com.fibelatti.pinboard.features.posts.presentation
+package com.fibelatti.bookmarking.features.posts.presentation
 
+import com.fibelatti.bookmarking.BaseViewModelTest
 import com.fibelatti.bookmarking.features.appstate.SearchParameters
 import com.fibelatti.bookmarking.features.filters.domain.SavedFiltersRepository
 import com.fibelatti.bookmarking.features.filters.domain.model.SavedFilter
 import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
-import com.fibelatti.pinboard.BaseViewModelTest
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coJustRun

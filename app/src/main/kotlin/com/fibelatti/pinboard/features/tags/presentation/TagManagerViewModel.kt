@@ -1,9 +1,9 @@
 package com.fibelatti.pinboard.features.tags.presentation
 
 import androidx.annotation.StringRes
+import com.fibelatti.bookmarking.core.base.BaseViewModel
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

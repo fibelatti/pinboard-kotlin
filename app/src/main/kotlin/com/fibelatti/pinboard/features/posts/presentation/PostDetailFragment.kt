@@ -6,10 +6,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.webkit.MimeTypeMap
+import com.fibelatti.bookmarking.features.appstate.AppStateViewModel
 import com.fibelatti.bookmarking.features.appstate.EditPost
 import com.fibelatti.bookmarking.features.appstate.PopularPostDetailContent
 import com.fibelatti.bookmarking.features.appstate.PostDetailContent
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
+import com.fibelatti.bookmarking.features.posts.presentation.PostDetailViewModel
 import com.fibelatti.core.android.extension.navigateBack
 import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.core.functional.Failure
@@ -23,7 +25,6 @@ import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
@@ -195,7 +196,7 @@ class PostDetailFragment : BaseFragment() {
         postDetailViewModel.screenState
             .onEach { state ->
                 when {
-                    state.deleted is Success<Boolean> && state.deleted.value -> {
+                    (state.deleted as? Success<Boolean>)?.value == true -> {
                         requireView().showBanner(getString(R.string.posts_deleted_feedback))
                         postDetailViewModel.userNotified()
                     }
@@ -207,7 +208,7 @@ class PostDetailFragment : BaseFragment() {
                         }.applySecureFlag().show()
                     }
 
-                    state.updated is Success<Boolean> && state.updated.value -> {
+                    (state.updated as? Success<Boolean>)?.value == true -> {
                         requireView().showBanner(getString(R.string.posts_marked_as_read_feedback))
                         postDetailViewModel.userNotified()
                         mainViewModel.updateState { currentState ->

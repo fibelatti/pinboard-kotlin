@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import androidx.annotation.StringRes
+import com.fibelatti.bookmarking.core.base.BaseViewModel
 import com.fibelatti.bookmarking.features.appstate.AppStateRepository
 import com.fibelatti.bookmarking.features.appstate.PostSaved
 import com.fibelatti.bookmarking.features.appstate.SetPopularPosts
@@ -14,7 +15,6 @@ import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

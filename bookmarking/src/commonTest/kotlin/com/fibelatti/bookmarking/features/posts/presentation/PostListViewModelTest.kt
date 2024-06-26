@@ -1,5 +1,6 @@
-package com.fibelatti.pinboard.features.posts.presentation
+package com.fibelatti.bookmarking.features.posts.presentation
 
+import com.fibelatti.bookmarking.BaseViewModelTest
 import com.fibelatti.bookmarking.MockDataProvider.MOCK_TAGS
 import com.fibelatti.bookmarking.features.appstate.All
 import com.fibelatti.bookmarking.features.appstate.AppStateRepository
@@ -26,11 +27,10 @@ import com.fibelatti.bookmarking.features.posts.domain.model.PostListResult
 import com.fibelatti.bookmarking.features.posts.domain.usecase.GetAllPosts
 import com.fibelatti.bookmarking.features.posts.domain.usecase.GetPostParams
 import com.fibelatti.bookmarking.features.posts.domain.usecase.GetRecentPosts
+import com.fibelatti.bookmarking.isEmpty
+import com.fibelatti.bookmarking.randomBoolean
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
-import com.fibelatti.pinboard.BaseViewModelTest
-import com.fibelatti.pinboard.isEmpty
-import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coJustRun
 import io.mockk.coVerify
