@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.posts.domain.usecase
+package com.fibelatti.bookmarking.features.posts.domain.usecase
 
 import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
@@ -10,15 +10,14 @@ import kotlinx.coroutines.withContext
 import org.koin.core.annotation.Factory
 
 @Factory
-class DeletePost(
+public class AddPost(
     private val postsRepository: PostsRepository,
     private val validateUrl: ValidateUrl,
-) : UseCaseWithParams<Unit, Post>() {
+) : UseCaseWithParams<Post, Post>() {
 
-    override suspend fun run(params: Post): Result<Unit> =
-        validateUrl(params.url).map {
-            withContext(NonCancellable) {
-                postsRepository.delete(id = params.id, url = params.url)
-            }
+    override suspend fun run(params: Post): Result<Post> = validateUrl(params.url).map {
+        withContext(NonCancellable) {
+            postsRepository.add(post = params)
         }
+    }
 }

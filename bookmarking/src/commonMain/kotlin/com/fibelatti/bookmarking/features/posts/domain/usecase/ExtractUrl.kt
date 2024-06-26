@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.posts.domain.usecase
+package com.fibelatti.bookmarking.features.posts.domain.usecase
 
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
@@ -10,7 +10,7 @@ import net.thauvin.erik.urlencoder.UrlEncoderUtil
 import org.koin.core.annotation.Factory
 
 @Factory
-class ExtractUrl : UseCaseWithParams<ExtractUrl.ExtractedUrl, String>() {
+public class ExtractUrl : UseCaseWithParams<ExtractUrl.ExtractedUrl, String>() {
 
     override suspend fun run(params: String): Result<ExtractedUrl> {
         val schemes = ValidUrlScheme.ALL_SCHEMES.map { "$it://" }
@@ -36,7 +36,7 @@ class ExtractUrl : UseCaseWithParams<ExtractUrl.ExtractedUrl, String>() {
         }
     }
 
-    data class ExtractedUrl(
+    public data class ExtractedUrl(
         val url: String,
         val highlightedText: String? = null,
     )

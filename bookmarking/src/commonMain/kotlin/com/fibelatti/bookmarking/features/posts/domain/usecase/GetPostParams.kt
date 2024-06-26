@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.posts.domain.usecase
+package com.fibelatti.bookmarking.features.posts.domain.usecase
 
 import com.fibelatti.bookmarking.core.Config.LOCAL_PAGE_SIZE
 import com.fibelatti.bookmarking.features.appstate.NewestFirst
@@ -6,7 +6,7 @@ import com.fibelatti.bookmarking.features.appstate.SortType
 import com.fibelatti.bookmarking.features.posts.domain.PostVisibility
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 
-data class GetPostParams(
+public data class GetPostParams(
     val sorting: SortType = NewestFirst,
     val searchTerm: String = "",
     val tags: Tags = Tags.None,
@@ -16,9 +16,9 @@ data class GetPostParams(
     val offset: Int = 0,
     val forceRefresh: Boolean = false,
 ) {
-    sealed class Tags {
-        data object Untagged : Tags()
-        data class Tagged(val tags: List<Tag>?) : Tags()
-        data object None : Tags()
+    public sealed class Tags {
+        public data object Untagged : Tags()
+        public data class Tagged(val tags: List<Tag>?) : Tags()
+        public data object None : Tags()
     }
 }

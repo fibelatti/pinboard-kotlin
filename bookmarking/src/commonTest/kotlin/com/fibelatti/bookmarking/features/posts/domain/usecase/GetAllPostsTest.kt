@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.posts.domain.usecase
+package com.fibelatti.bookmarking.features.posts.domain.usecase
 
 import com.fibelatti.bookmarking.MockDataProvider.MOCK_TAGS
 import com.fibelatti.bookmarking.MockDataProvider.MOCK_URL_VALID
@@ -23,7 +23,7 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
-class GetAllPostsTest {
+internal class GetAllPostsTest {
 
     private val mockResponse = mockk<PostListResult>()
 

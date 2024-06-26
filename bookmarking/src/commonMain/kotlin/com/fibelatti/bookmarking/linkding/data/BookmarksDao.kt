@@ -1,10 +1,10 @@
 package com.fibelatti.bookmarking.linkding.data
 
+import com.fibelatti.bookmarking.linkding.data.BookmarkLocalFts.Companion.TABLE_NAME as FTS_TABLE_NAME
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import com.fibelatti.bookmarking.linkding.data.BookmarkLocal.Companion.TABLE_NAME
-import com.fibelatti.bookmarking.linkding.data.BookmarkLocalFts.Companion.TABLE_NAME as FTS_TABLE_NAME
 
 @Dao
 internal interface BookmarksDao {

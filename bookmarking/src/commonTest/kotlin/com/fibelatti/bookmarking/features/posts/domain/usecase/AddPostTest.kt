@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.posts.domain.usecase
+package com.fibelatti.bookmarking.features.posts.domain.usecase
 
 import com.fibelatti.bookmarking.MockDataProvider.MOCK_URL_VALID
 import com.fibelatti.bookmarking.core.network.ApiException
@@ -18,7 +18,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
-class AddPostTest {
+internal class AddPostTest {
 
     private val mockPostsRepository = mockk<PostsRepository>()
     private val mockValidateUrl = mockk<ValidateUrl>()

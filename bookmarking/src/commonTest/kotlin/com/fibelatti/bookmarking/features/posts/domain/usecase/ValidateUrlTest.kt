@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.posts.domain.usecase
+package com.fibelatti.bookmarking.features.posts.domain.usecase
 
 import com.fibelatti.bookmarking.MockDataProvider
 import com.fibelatti.core.functional.exceptionOrNull
@@ -10,7 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ValidateUrlTest {
+internal class ValidateUrlTest {
 
     private val validateUrl = ValidateUrl()
 

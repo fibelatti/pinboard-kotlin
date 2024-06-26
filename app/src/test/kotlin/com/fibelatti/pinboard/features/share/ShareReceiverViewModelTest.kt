@@ -7,6 +7,8 @@ import com.fibelatti.bookmarking.core.network.InvalidRequestException
 import com.fibelatti.bookmarking.features.posts.domain.EditAfterSharing
 import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
+import com.fibelatti.bookmarking.features.posts.domain.usecase.AddPost
+import com.fibelatti.bookmarking.features.posts.domain.usecase.ExtractUrl
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.core.functional.Failure
@@ -16,8 +18,6 @@ import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.EditPostFromShare
-import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
-import com.fibelatti.pinboard.features.posts.domain.usecase.ExtractUrl
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetUrlPreview
 import com.fibelatti.pinboard.features.posts.domain.usecase.UrlPreview
 import com.fibelatti.pinboard.randomBoolean

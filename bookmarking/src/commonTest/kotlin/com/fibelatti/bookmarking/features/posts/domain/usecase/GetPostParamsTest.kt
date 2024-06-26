@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.posts.domain.usecase
+package com.fibelatti.bookmarking.features.posts.domain.usecase
 
 import com.fibelatti.bookmarking.core.Config.LOCAL_PAGE_SIZE
 import com.fibelatti.bookmarking.features.appstate.NewestFirst

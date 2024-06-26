@@ -1,6 +1,6 @@
-package com.fibelatti.pinboard.features.posts.domain.usecase
+package com.fibelatti.bookmarking.features.posts.domain.usecase
 
-enum class ValidUrlScheme(val scheme: String) {
+internal enum class ValidUrlScheme(val scheme: String) {
     HTTP("http"),
     HTTPS("https"),
     JAVASCRIPT("javascript"),
@@ -23,4 +23,4 @@ enum class ValidUrlScheme(val scheme: String) {
     }
 }
 
-class InvalidUrlException : Throwable()
+public class InvalidUrlException : Throwable()

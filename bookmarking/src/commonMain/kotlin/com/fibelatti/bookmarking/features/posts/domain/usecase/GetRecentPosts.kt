@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.posts.domain.usecase
+package com.fibelatti.bookmarking.features.posts.domain.usecase
 
 import com.fibelatti.bookmarking.core.Config.DEFAULT_RECENT_QUANTITY
 import com.fibelatti.bookmarking.features.appstate.NewestFirst
@@ -10,11 +10,11 @@ import kotlinx.coroutines.flow.Flow
 import org.koin.core.annotation.Factory
 
 @Factory
-class GetRecentPosts(
+public class GetRecentPosts(
     private val postsRepository: PostsRepository,
 ) {
 
-    operator fun invoke(params: GetPostParams): Flow<Result<PostListResult>> = postsRepository.getAllPosts(
+    public operator fun invoke(params: GetPostParams): Flow<Result<PostListResult>> = postsRepository.getAllPosts(
         sortType = NewestFirst,
         searchTerm = params.searchTerm,
         tags = (params.tags as? GetPostParams.Tags.Tagged)?.tags,

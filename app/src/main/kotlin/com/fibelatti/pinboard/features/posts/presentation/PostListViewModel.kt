@@ -6,6 +6,9 @@ import com.fibelatti.bookmarking.features.appstate.SortType
 import com.fibelatti.bookmarking.features.filters.domain.SavedFiltersRepository
 import com.fibelatti.bookmarking.features.filters.domain.model.SavedFilter
 import com.fibelatti.bookmarking.features.posts.domain.PostVisibility
+import com.fibelatti.bookmarking.features.posts.domain.usecase.GetAllPosts
+import com.fibelatti.bookmarking.features.posts.domain.usecase.GetPostParams
+import com.fibelatti.bookmarking.features.posts.domain.usecase.GetRecentPosts
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onSuccess
@@ -23,9 +26,6 @@ import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
 import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
-import com.fibelatti.pinboard.features.posts.domain.usecase.GetAllPosts
-import com.fibelatti.pinboard.features.posts.domain.usecase.GetPostParams
-import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach

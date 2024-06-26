@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.posts.domain.usecase
+package com.fibelatti.bookmarking.features.posts.domain.usecase
 
 import com.fibelatti.bookmarking.MockDataProvider
 import com.fibelatti.bookmarking.MockDataProvider.MOCK_HASH
@@ -16,7 +16,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
-class DeletePostTest {
+internal class DeletePostTest {
 
     private val mockPostsRepository = mockk<PostsRepository>()
     private val mockValidateUrl = mockk<ValidateUrl>()

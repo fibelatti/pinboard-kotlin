@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.posts.domain.usecase
+package com.fibelatti.bookmarking.features.posts.domain.usecase
 
 import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.posts.domain.model.PostListResult
@@ -7,11 +7,11 @@ import kotlinx.coroutines.flow.Flow
 import org.koin.core.annotation.Factory
 
 @Factory
-class GetAllPosts(
+public class GetAllPosts(
     private val postsRepository: PostsRepository,
 ) {
 
-    operator fun invoke(params: GetPostParams): Flow<Result<PostListResult>> = postsRepository.getAllPosts(
+    public operator fun invoke(params: GetPostParams): Flow<Result<PostListResult>> = postsRepository.getAllPosts(
         sortType = params.sorting,
         searchTerm = params.searchTerm,
         tags = (params.tags as? GetPostParams.Tags.Tagged)?.tags,

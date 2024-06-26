@@ -32,10 +32,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.bookmarking.core.Config
 import com.fibelatti.bookmarking.core.extension.isServerException
+import com.fibelatti.bookmarking.features.posts.domain.usecase.InvalidUrlException
 import com.fibelatti.core.functional.ScreenState
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.ErrorReportDialog
-import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import io.ktor.client.plugins.ResponseException

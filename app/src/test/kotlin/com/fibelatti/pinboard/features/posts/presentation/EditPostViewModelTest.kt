@@ -10,6 +10,8 @@ import com.fibelatti.bookmarking.MockDataProvider.MOCK_URL_VALID
 import com.fibelatti.bookmarking.MockDataProvider.createPost
 import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
+import com.fibelatti.bookmarking.features.posts.domain.usecase.AddPost
+import com.fibelatti.bookmarking.features.posts.domain.usecase.InvalidUrlException
 import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
@@ -18,8 +20,6 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.collectIn
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostSaved
-import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
-import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import com.fibelatti.pinboard.isEmpty
 import com.fibelatti.pinboard.runUnconfinedTest
 import com.google.common.truth.Truth.assertThat

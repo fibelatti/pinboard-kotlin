@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.posts.domain.usecase
+package com.fibelatti.bookmarking.features.posts.domain.usecase
 
 import com.fibelatti.bookmarking.MockDataProvider.MOCK_TAGS
 import com.fibelatti.bookmarking.MockDataProvider.MOCK_URL_VALID
@@ -16,7 +16,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class GetRecentPostsTest {
+internal class GetRecentPostsTest {
 
     private val mockResponse = mockk<PostListResult>()
 
