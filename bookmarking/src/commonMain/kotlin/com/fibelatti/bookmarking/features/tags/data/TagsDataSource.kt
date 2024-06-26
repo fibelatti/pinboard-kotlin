@@ -20,7 +20,9 @@ import com.fibelatti.core.functional.resultFrom
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
+import org.koin.core.annotation.Single
 
+@Single(binds = [])
 internal class TagsDataSource(
     private val tagsApi: TagsApi,
     private val postsDao: PostsDao,

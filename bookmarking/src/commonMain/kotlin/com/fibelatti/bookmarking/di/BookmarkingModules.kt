@@ -10,13 +10,8 @@ import com.fibelatti.bookmarking.core.persistence.database.DATABASE_VERSION_2
 import com.fibelatti.bookmarking.core.persistence.database.DatabaseResetCallback
 import com.fibelatti.bookmarking.features.appstate.ActionHandler
 import com.fibelatti.bookmarking.features.filters.data.SavedFiltersDao
-import com.fibelatti.bookmarking.features.posts.data.PostsDataSourceNoApi
-import com.fibelatti.bookmarking.features.tags.data.TagsDataSource
 import com.fibelatti.bookmarking.linkding.data.BookmarksDao
-import com.fibelatti.bookmarking.linkding.data.PostsDataSourceLinkdingApi
-import com.fibelatti.bookmarking.linkding.data.TagsDataSourceLinkdingApi
 import com.fibelatti.bookmarking.pinboard.data.PostsDao
-import com.fibelatti.bookmarking.pinboard.data.PostsDataSourcePinboardApi
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.accept
@@ -30,7 +25,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.serialization.json.Json
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
-import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -110,12 +104,6 @@ public val libraryModule: org.koin.core.module.Module = module {
     factory { SharingStarted.Eagerly }
 
     factory { getAll<ActionHandler<*>>().toSet() }
-
-    singleOf(::PostsDataSourceNoApi)
-    singleOf(::PostsDataSourcePinboardApi)
-    singleOf(::PostsDataSourceLinkdingApi)
-    singleOf(::TagsDataSource)
-    singleOf(::TagsDataSourceLinkdingApi)
 }
 
 public fun bookmarkingModules(): List<org.koin.core.module.Module> = listOf(
