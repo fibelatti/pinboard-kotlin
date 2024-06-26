@@ -6,6 +6,8 @@ import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.UseCaseWithParams
 import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.onFailureReturn
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Document
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
@@ -13,8 +15,6 @@ import io.ktor.client.statement.request
 import io.ktor.http.userAgent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Named
 
@@ -48,7 +48,7 @@ class GetUrlPreview(
                 }
             }
 
-            response.request.url.toString() to Jsoup.parse(response.bodyAsText())
+            response.request.url.toString() to Ksoup.parse(response.bodyAsText())
         }
 
         val title = document.getMetaProperty(property = "og:title")

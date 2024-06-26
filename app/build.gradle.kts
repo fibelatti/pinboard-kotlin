@@ -202,7 +202,7 @@ dependencies {
 
     implementation(libs.multiplatform.settings)
 
-    implementation(libs.jsoup)
+    implementation(libs.ksoup)
 
     implementation(libs.about.libraries)
 

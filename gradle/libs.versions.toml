@@ -70,7 +70,7 @@ multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", vers
 
 urlencoder = { module = "net.thauvin.erik.urlencoder:urlencoder-lib", version = "1.5.0" }
 
-jsoup = { module = "org.jsoup:jsoup", version = "1.17.2" }
+ksoup = { module = "com.fleeksoft.ksoup:ksoup", version = "0.1.2" }
 
 about-libraries = { module = "com.mikepenz:aboutlibraries-compose", version.ref = "aboutLibraries" }
 

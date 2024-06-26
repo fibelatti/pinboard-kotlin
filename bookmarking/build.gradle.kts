@@ -68,6 +68,7 @@ kotlin {
 
                 implementation(libs.bundles.ktor.common)
                 implementation(libs.urlencoder)
+                implementation(libs.ksoup)
 
                 implementation(libs.room.runtime)
                 implementation(libs.sqlite.bundled)
