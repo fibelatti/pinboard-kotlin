@@ -35,6 +35,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fibelatti.bookmarking.features.appstate.AddSearchTag
+import com.fibelatti.bookmarking.features.appstate.ClearSearch
+import com.fibelatti.bookmarking.features.appstate.RefreshSearchTags
+import com.fibelatti.bookmarking.features.appstate.RemoveSearchTag
+import com.fibelatti.bookmarking.features.appstate.Search
+import com.fibelatti.bookmarking.features.appstate.SetTerm
 import com.fibelatti.bookmarking.features.filters.domain.model.SavedFilter
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.bookmarking.features.tags.domain.model.TagSorting
@@ -45,13 +51,7 @@ import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
-import com.fibelatti.pinboard.features.appstate.AddSearchTag
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
-import com.fibelatti.pinboard.features.appstate.ClearSearch
-import com.fibelatti.pinboard.features.appstate.RefreshSearchTags
-import com.fibelatti.pinboard.features.appstate.RemoveSearchTag
-import com.fibelatti.pinboard.features.appstate.Search
-import com.fibelatti.pinboard.features.appstate.SetTerm
 import com.fibelatti.pinboard.features.tags.presentation.TagList
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
 import com.fibelatti.ui.components.ChipGroup

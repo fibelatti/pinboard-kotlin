@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.appstate
+package com.fibelatti.bookmarking.features.appstate
 
 import com.fibelatti.bookmarking.MockDataProvider.createTag
 import com.google.common.truth.Truth.assertThat

@@ -8,6 +8,7 @@ import com.fibelatti.bookmarking.core.persistence.database.AppDatabase
 import com.fibelatti.bookmarking.core.persistence.database.DATABASE_VERSION_1
 import com.fibelatti.bookmarking.core.persistence.database.DATABASE_VERSION_2
 import com.fibelatti.bookmarking.core.persistence.database.DatabaseResetCallback
+import com.fibelatti.bookmarking.features.appstate.ActionHandler
 import com.fibelatti.bookmarking.features.filters.data.SavedFiltersDao
 import com.fibelatti.bookmarking.features.posts.data.PostsDataSourceNoApi
 import com.fibelatti.bookmarking.features.tags.data.TagsDataSource
@@ -22,7 +23,10 @@ import io.ktor.client.request.accept
 import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.URLProtocol
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.serialization.json.Json
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
@@ -102,6 +106,11 @@ private val linkdingModule: org.koin.core.module.Module = module {
 }
 
 public val libraryModule: org.koin.core.module.Module = module {
+    factory { CoroutineScope(context = Dispatchers.Default + SupervisorJob()) }
+    factory { SharingStarted.Eagerly }
+
+    factory { getAll<ActionHandler<*>>().toSet() }
+
     singleOf(::PostsDataSourceNoApi)
     singleOf(::PostsDataSourcePinboardApi)
     singleOf(::PostsDataSourceLinkdingApi)

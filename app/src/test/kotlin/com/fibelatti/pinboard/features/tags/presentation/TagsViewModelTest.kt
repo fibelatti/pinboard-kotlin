@@ -1,15 +1,15 @@
 package com.fibelatti.pinboard.features.tags.presentation
 
 import com.fibelatti.bookmarking.MockDataProvider.MOCK_TAGS
+import com.fibelatti.bookmarking.features.appstate.AppStateRepository
+import com.fibelatti.bookmarking.features.appstate.SetSearchTags
+import com.fibelatti.bookmarking.features.appstate.SetTags
 import com.fibelatti.bookmarking.features.tags.domain.TagsRepository
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.bookmarking.features.tags.domain.model.TagSorting
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
-import com.fibelatti.pinboard.features.appstate.AppStateRepository
-import com.fibelatti.pinboard.features.appstate.SetSearchTags
-import com.fibelatti.pinboard.features.appstate.SetTags
 import com.fibelatti.pinboard.isEmpty
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery

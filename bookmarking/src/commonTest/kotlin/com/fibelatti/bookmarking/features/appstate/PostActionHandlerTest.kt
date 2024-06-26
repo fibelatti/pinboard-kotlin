@@ -1,14 +1,12 @@
-package com.fibelatti.pinboard.features.appstate
+package com.fibelatti.bookmarking.features.appstate
 
 import com.fibelatti.bookmarking.MockDataProvider.createPost
 import com.fibelatti.bookmarking.core.network.ConnectivityInfoProvider
-import com.fibelatti.bookmarking.features.appstate.NewestFirst
-import com.fibelatti.bookmarking.features.appstate.SortType
 import com.fibelatti.bookmarking.features.posts.domain.EditAfterSharing
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.bookmarking.features.posts.domain.model.PostListResult
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
-import com.fibelatti.pinboard.randomBoolean
+import com.fibelatti.bookmarking.randomBoolean
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk

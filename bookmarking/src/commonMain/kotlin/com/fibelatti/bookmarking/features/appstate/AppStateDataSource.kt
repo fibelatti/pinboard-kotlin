@@ -1,9 +1,8 @@
-package com.fibelatti.pinboard.features.appstate
+package com.fibelatti.bookmarking.features.appstate
 
 import com.fibelatti.bookmarking.core.AppMode
 import com.fibelatti.bookmarking.core.AppModeProvider
 import com.fibelatti.bookmarking.core.network.ConnectivityInfoProvider
-import com.fibelatti.bookmarking.features.appstate.NewestFirst
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -14,7 +13,7 @@ import kotlinx.coroutines.flow.stateIn
 import org.koin.core.annotation.Single
 
 @Single
-class AppStateDataSource(
+internal class AppStateDataSource(
     private val userRepository: UserRepository,
     private val actionHandlers: Set<ActionHandler<*>>,
     private val connectivityInfoProvider: ConnectivityInfoProvider,

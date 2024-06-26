@@ -1,10 +1,10 @@
-package com.fibelatti.pinboard.features.appstate
+package com.fibelatti.bookmarking.features.appstate
 
 import com.fibelatti.bookmarking.core.network.ConnectivityInfoProvider
 import org.koin.core.annotation.Factory
 
 @Factory
-class PopularActionHandler(
+internal class PopularActionHandler(
     private val connectivityInfoProvider: ConnectivityInfoProvider,
 ) : ActionHandler<PopularAction>() {
 

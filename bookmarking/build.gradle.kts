@@ -61,6 +61,7 @@ kotlin {
                 implementation(projects.core)
 
                 implementation(libs.kotlin)
+                implementation(libs.kotlin.reflect)
                 implementation(libs.kotlin.serialization)
                 implementation(libs.kotlin.datetime)
 

@@ -1,13 +1,12 @@
-package com.fibelatti.pinboard.features.appstate
+package com.fibelatti.bookmarking.features.appstate
 
+import com.fibelatti.bookmarking.allSealedSubclasses
+import com.fibelatti.bookmarking.collectIn
 import com.fibelatti.bookmarking.core.AppMode
 import com.fibelatti.bookmarking.core.AppModeProvider
 import com.fibelatti.bookmarking.core.network.ConnectivityInfoProvider
-import com.fibelatti.bookmarking.features.appstate.NewestFirst
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
-import com.fibelatti.pinboard.allSealedSubclasses
-import com.fibelatti.pinboard.collectIn
-import com.fibelatti.pinboard.runUnconfinedTest
+import com.fibelatti.bookmarking.runUnconfinedTest
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify

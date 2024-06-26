@@ -1,14 +1,14 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import com.fibelatti.bookmarking.MockDataProvider.createPost
+import com.fibelatti.bookmarking.features.appstate.AppStateRepository
+import com.fibelatti.bookmarking.features.appstate.PostDeleted
+import com.fibelatti.bookmarking.features.appstate.PostSaved
 import com.fibelatti.bookmarking.features.posts.domain.usecase.AddPost
 import com.fibelatti.bookmarking.features.posts.domain.usecase.DeletePost
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
-import com.fibelatti.pinboard.features.appstate.AppStateRepository
-import com.fibelatti.pinboard.features.appstate.PostDeleted
-import com.fibelatti.pinboard.features.appstate.PostSaved
 import com.fibelatti.pinboard.randomBoolean
 import com.fibelatti.pinboard.runUnconfinedTest
 import com.google.common.truth.Truth.assertThat

@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.appstate
+package com.fibelatti.bookmarking.features.appstate
 
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
@@ -7,7 +7,7 @@ import kotlin.contracts.contract
 /**
  * A base class for ActionHandlers that can take [Action]s of type [A] and return [Content].
  */
-abstract class ActionHandler<A : Action> {
+internal abstract class ActionHandler<A : Action> {
 
     /**
      * Base method to apply [Action] of type [A] to the [currentContent], returning an updated [Content].

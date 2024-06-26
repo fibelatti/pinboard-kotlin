@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.appstate
+package com.fibelatti.bookmarking.features.appstate
 
 import com.fibelatti.bookmarking.core.network.ConnectivityInfoProvider
 import com.fibelatti.bookmarking.features.posts.domain.EditAfterSharing
@@ -6,7 +6,7 @@ import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import org.koin.core.annotation.Factory
 
 @Factory
-class PostActionHandler(
+internal class PostActionHandler(
     private val userRepository: UserRepository,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
 ) : ActionHandler<PostAction>() {

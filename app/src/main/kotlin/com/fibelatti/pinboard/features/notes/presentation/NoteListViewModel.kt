@@ -1,14 +1,14 @@
 package com.fibelatti.pinboard.features.notes.presentation
 
 import com.fibelatti.bookmarking.core.util.DateFormatter
+import com.fibelatti.bookmarking.features.appstate.AppStateRepository
+import com.fibelatti.bookmarking.features.appstate.SetNotes
 import com.fibelatti.bookmarking.features.notes.domain.NotesRepository
 import com.fibelatti.bookmarking.features.notes.domain.model.Note
 import com.fibelatti.bookmarking.features.notes.domain.model.NoteSorting
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
-import com.fibelatti.pinboard.features.appstate.AppStateRepository
-import com.fibelatti.pinboard.features.appstate.SetNotes
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 

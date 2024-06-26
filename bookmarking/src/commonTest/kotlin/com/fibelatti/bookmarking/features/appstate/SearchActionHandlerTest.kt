@@ -1,11 +1,10 @@
-package com.fibelatti.pinboard.features.appstate
+package com.fibelatti.bookmarking.features.appstate
 
 import com.fibelatti.bookmarking.MockDataProvider.MOCK_TAG_1
 import com.fibelatti.bookmarking.MockDataProvider.MOCK_TAG_2
 import com.fibelatti.bookmarking.MockDataProvider.MOCK_TAG_3
 import com.fibelatti.bookmarking.MockDataProvider.MOCK_TAG_4
 import com.fibelatti.bookmarking.MockDataProvider.MOCK_URL_VALID
-import com.fibelatti.bookmarking.features.appstate.NewestFirst
 import com.fibelatti.bookmarking.features.filters.domain.model.SavedFilter
 import com.google.common.truth.Truth.assertThat
 import io.mockk.mockk

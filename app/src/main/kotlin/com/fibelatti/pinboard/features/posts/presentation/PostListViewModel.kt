@@ -2,7 +2,20 @@ package com.fibelatti.pinboard.features.posts.presentation
 
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.viewModelScope
+import com.fibelatti.bookmarking.features.appstate.All
+import com.fibelatti.bookmarking.features.appstate.AppStateRepository
+import com.fibelatti.bookmarking.features.appstate.PostListContent
+import com.fibelatti.bookmarking.features.appstate.Private
+import com.fibelatti.bookmarking.features.appstate.Public
+import com.fibelatti.bookmarking.features.appstate.Recent
+import com.fibelatti.bookmarking.features.appstate.SetNextPostPage
+import com.fibelatti.bookmarking.features.appstate.SetPosts
+import com.fibelatti.bookmarking.features.appstate.ShouldForceLoad
+import com.fibelatti.bookmarking.features.appstate.ShouldLoadFirstPage
+import com.fibelatti.bookmarking.features.appstate.ShouldLoadNextPage
 import com.fibelatti.bookmarking.features.appstate.SortType
+import com.fibelatti.bookmarking.features.appstate.Unread
+import com.fibelatti.bookmarking.features.appstate.Untagged
 import com.fibelatti.bookmarking.features.filters.domain.SavedFiltersRepository
 import com.fibelatti.bookmarking.features.filters.domain.model.SavedFilter
 import com.fibelatti.bookmarking.features.posts.domain.PostVisibility
@@ -13,19 +26,6 @@ import com.fibelatti.bookmarking.features.tags.domain.model.Tag
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
-import com.fibelatti.pinboard.features.appstate.All
-import com.fibelatti.pinboard.features.appstate.AppStateRepository
-import com.fibelatti.pinboard.features.appstate.PostListContent
-import com.fibelatti.pinboard.features.appstate.Private
-import com.fibelatti.pinboard.features.appstate.Public
-import com.fibelatti.pinboard.features.appstate.Recent
-import com.fibelatti.pinboard.features.appstate.SetNextPostPage
-import com.fibelatti.pinboard.features.appstate.SetPosts
-import com.fibelatti.pinboard.features.appstate.ShouldForceLoad
-import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
-import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
-import com.fibelatti.pinboard.features.appstate.Unread
-import com.fibelatti.pinboard.features.appstate.Untagged
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -43,9 +43,9 @@ class PostListViewModel(
     fun loadContent(content: PostListContent) {
         coroutineContext.cancelChildren()
 
-        val offset = when (content.shouldLoad) {
+        val offset = when (val shouldLoad = content.shouldLoad) {
             is ShouldLoadFirstPage, ShouldForceLoad -> 0
-            is ShouldLoadNextPage -> content.shouldLoad.offset
+            is ShouldLoadNextPage -> shouldLoad.offset
             else -> return
         }
 

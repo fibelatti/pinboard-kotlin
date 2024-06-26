@@ -1,8 +1,7 @@
-package com.fibelatti.pinboard.features.appstate
+package com.fibelatti.bookmarking.features.appstate
 
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.bookmarking.core.network.ConnectivityInfoProvider
-import com.fibelatti.bookmarking.features.appstate.NewestFirst
 import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.posts.domain.PreferredDetailsView
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
@@ -15,7 +14,7 @@ import kotlinx.coroutines.withContext
 import org.koin.core.annotation.Factory
 
 @Factory
-class NavigationActionHandler(
+internal class NavigationActionHandler(
     private val userRepository: UserRepository,
     private val postsRepository: PostsRepository,
     private val connectivityInfoProvider: ConnectivityInfoProvider,

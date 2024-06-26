@@ -1,11 +1,10 @@
-package com.fibelatti.pinboard.features.appstate
+package com.fibelatti.bookmarking.features.appstate
 
 import com.fibelatti.bookmarking.core.Config
-import com.fibelatti.bookmarking.features.appstate.NewestFirst
 import org.koin.core.annotation.Factory
 
 @Factory
-class SearchActionHandler : ActionHandler<SearchAction>() {
+internal class SearchActionHandler : ActionHandler<SearchAction>() {
 
     override suspend fun runAction(action: SearchAction, currentContent: Content): Content {
         return when (action) {

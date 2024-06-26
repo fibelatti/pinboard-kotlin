@@ -1,5 +1,8 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
+import com.fibelatti.bookmarking.features.appstate.AppStateRepository
+import com.fibelatti.bookmarking.features.appstate.PostDeleted
+import com.fibelatti.bookmarking.features.appstate.PostSaved
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.bookmarking.features.posts.domain.usecase.AddPost
 import com.fibelatti.bookmarking.features.posts.domain.usecase.DeletePost
@@ -9,9 +12,6 @@ import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
-import com.fibelatti.pinboard.features.appstate.AppStateRepository
-import com.fibelatti.pinboard.features.appstate.PostDeleted
-import com.fibelatti.pinboard.features.appstate.PostSaved
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
