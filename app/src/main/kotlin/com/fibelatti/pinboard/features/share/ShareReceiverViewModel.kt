@@ -6,6 +6,8 @@ import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.bookmarking.features.posts.domain.usecase.AddPost
 import com.fibelatti.bookmarking.features.posts.domain.usecase.ExtractUrl
+import com.fibelatti.bookmarking.features.posts.domain.usecase.GetUrlPreview
+import com.fibelatti.bookmarking.features.posts.domain.usecase.UrlPreview
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.core.functional.ScreenState
 import com.fibelatti.core.functional.emitError
@@ -19,8 +21,6 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.EditPostFromShare
-import com.fibelatti.pinboard.features.posts.domain.usecase.GetUrlPreview
-import com.fibelatti.pinboard.features.posts.domain.usecase.UrlPreview
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

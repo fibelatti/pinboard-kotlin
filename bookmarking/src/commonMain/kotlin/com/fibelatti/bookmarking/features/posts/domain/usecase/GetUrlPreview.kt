@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.posts.domain.usecase
+package com.fibelatti.bookmarking.features.posts.domain.usecase
 
 import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.core.extension.ifNullOrBlank
@@ -19,7 +19,7 @@ import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Named
 
 @Factory
-class GetUrlPreview(
+public class GetUrlPreview(
     @Named("base") private val httpClient: HttpClient,
     private val userRepository: UserRepository,
 ) : UseCaseWithParams<UrlPreview, GetUrlPreview.Params>() {
@@ -64,7 +64,7 @@ class GetUrlPreview(
         ?.attr("content")
         ?.ifBlank { null }
 
-    data class Params(
+    public data class Params(
         val url: String,
         val title: String? = null,
         val highlightedText: String? = null,

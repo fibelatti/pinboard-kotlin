@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.posts.domain.usecase
+package com.fibelatti.bookmarking.features.posts.domain.usecase
 
 import com.fibelatti.bookmarking.features.posts.domain.model.Post
 import com.fibelatti.bookmarking.features.tags.domain.model.Tag
@@ -16,7 +16,7 @@ import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Named
 
 @Factory
-class GetPopularPosts(
+public class GetPopularPosts(
     @Named("base") private val httpClient: HttpClient,
 ) : UseCase<List<Post>>() {
 
