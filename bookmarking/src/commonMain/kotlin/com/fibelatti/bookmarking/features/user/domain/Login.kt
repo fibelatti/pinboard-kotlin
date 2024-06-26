@@ -1,10 +1,9 @@
-package com.fibelatti.pinboard.features.user.domain
+package com.fibelatti.bookmarking.features.user.domain
 
 import com.fibelatti.bookmarking.features.appstate.AppStateRepository
 import com.fibelatti.bookmarking.features.appstate.UserLoggedIn
 import com.fibelatti.bookmarking.features.appstate.UserLoggedOut
 import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
-import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.UseCaseWithParams
 import com.fibelatti.core.functional.map
@@ -13,7 +12,7 @@ import com.fibelatti.core.functional.onSuccess
 import org.koin.core.annotation.Factory
 
 @Factory
-class Login(
+public class Login(
     private val userRepository: UserRepository,
     private val appStateRepository: AppStateRepository,
     private val postsRepository: PostsRepository,
@@ -29,7 +28,7 @@ class Login(
             .onFailure { appStateRepository.runAction(UserLoggedOut) }
     }
 
-    data class Params(
+    public data class Params(
         val authToken: String,
         val instanceUrl: String = "",
     )

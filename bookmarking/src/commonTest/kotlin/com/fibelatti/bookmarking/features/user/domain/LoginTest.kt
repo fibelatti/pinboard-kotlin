@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features.user.domain
+package com.fibelatti.bookmarking.features.user.domain
 
 import com.fibelatti.bookmarking.MockDataProvider.MOCK_API_TOKEN
 import com.fibelatti.bookmarking.MockDataProvider.MOCK_INSTANCE_URL
@@ -7,7 +7,6 @@ import com.fibelatti.bookmarking.features.appstate.AppStateRepository
 import com.fibelatti.bookmarking.features.appstate.UserLoggedIn
 import com.fibelatti.bookmarking.features.appstate.UserLoggedOut
 import com.fibelatti.bookmarking.features.posts.domain.PostsRepository
-import com.fibelatti.bookmarking.features.user.domain.UserRepository
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
@@ -19,7 +18,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
-class LoginTest {
+internal class LoginTest {
 
     private val mockUserRepository = mockk<UserRepository>(relaxed = true)
     private val mockAppStateRepository = mockk<AppStateRepository>(relaxUnitFun = true)
