@@ -72,7 +72,7 @@ junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref
 junit5-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit5" }
 junit5-vintage = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "junit5" }
 
-runner = { module = "androidx.test:runner", version = "1.5.2" }
+runner = { module = "androidx.test:runner", version = "1.6.1" }
 orchestrator = { module = "androidx.test:orchestrator", version = "1.4.2" }
 
 truth = { module = "com.google.truth:truth", version = "1.4.0" }
