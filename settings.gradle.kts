@@ -12,12 +12,14 @@ include(":ui")
 
 pluginManagement {
     repositories {
-        mavenCentral {
-            content {
-                excludeGroupByRegex("com\\.android.*")
+        google {
+            mavenContent {
+                includeGroupAndSubgroups("androidx")
+                includeGroupAndSubgroups("com.android")
+                includeGroupAndSubgroups("com.google")
             }
         }
-        google()
+        mavenCentral()
         gradlePluginPortal()
     }
 }
@@ -25,12 +27,13 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        mavenCentral {
-            content {
-                excludeGroupByRegex("androidx.*")
-                excludeGroupByRegex("com\\.android.*")
+        google {
+            mavenContent {
+                includeGroupAndSubgroups("androidx")
+                includeGroupAndSubgroups("com.android")
+                includeGroupAndSubgroups("com.google")
             }
         }
-        google()
+        mavenCentral()
     }
 }
