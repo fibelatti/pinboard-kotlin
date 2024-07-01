@@ -1,31 +1,48 @@
 package com.fibelatti.core.functional
 
+import kotlinx.coroutines.flow.Flow
+
 /**
- * Handy class to define single responsibility use cases. It can be invoked as a function thanks to operator
- * overloading.
+ * A functional interface to define single responsibility use cases.
  *
- * class Foo : UseCase<Bar>
+ * ```
+ * class Foo : UseCase<Result<Bar>> {
+ *
+ *     override suspend operator fun invoke(): Result<Bar> = TODO()
+ * }
  *
  * val result: Result<Bar> = foo()
+ * ```
  */
-public abstract class UseCase<out Type> where Type : Any? {
-
-    public abstract suspend fun run(): Result<Type>
-
-    public suspend operator fun invoke(): Result<Type> = run()
-}
+public fun interface UseCase<out Type> : suspend () -> Type where Type : Any?
 
 /**
- * Handy class to define single responsibility use cases that require parameters. It can be invoked as a function
- * thanks to operator overloading.
+ * A functional interface to define single responsibility use cases that require parameters.
  *
- * class Foo : UseCaseWithParams<Bar, Foo.Params>
+ * ```
+ * class Foo : UseCaseWithParams<Foo.Params, Result<Bar>> {
+ *
+ *     override suspend operator fun invoke(params: Post): Result<Bar> = TODO()
+ * }
  *
  * val result: Result<Bar> = foo(Foo.Params(baz))
+ * ```
  */
-public abstract class UseCaseWithParams<out Type, in Params> where Type : Any? {
+public fun interface UseCaseWithParams<in Params, out Type> : suspend (Params) -> Type where Type : Any?
 
-    public abstract suspend fun run(params: Params): Result<Type>
-
-    public suspend operator fun invoke(params: Params): Result<Type> = run(params)
-}
+/**
+ * A functional interface to define single responsibility use cases that require parameters and
+ * return a [Flow] of [Type].
+ *
+ * ```
+ * class Foo : ObservableUseCaseWithParams<Foo.Params, Bar> {
+ *
+ *     override operator fun invoke(params: Foo.Params): Flow<Bar> = = TODO()
+ * }
+ *
+ * foo(Foo.Params(baz)).collect { bar ->
+ *     // Use bar
+ * }
+ * ```
+ */
+public fun interface ObservableUseCaseWithParams<in Params, out Type> : (Params) -> Flow<Type> where Type : Any?

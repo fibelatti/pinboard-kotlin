@@ -7,20 +7,20 @@ import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.onFailureReturn
 import com.fibelatti.pinboard.core.di.UrlParser
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import javax.inject.Inject
 
 class GetUrlPreview @Inject constructor(
     @UrlParser private val okHttpClient: OkHttpClient,
     private val userRepository: UserRepository,
-) : UseCaseWithParams<UrlPreview, GetUrlPreview.Params>() {
+) : UseCaseWithParams<GetUrlPreview.Params, Result<UrlPreview>> {
 
-    override suspend fun run(params: Params): Result<UrlPreview> = catching {
+    override suspend operator fun invoke(params: Params): Result<UrlPreview> = catching {
         if (userRepository.autoFillDescription) {
             fetchTitleAndDescription(params)
         } else {

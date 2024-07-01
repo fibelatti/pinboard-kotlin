@@ -6,9 +6,9 @@ import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.UseCaseWithParams
 import javax.inject.Inject
 
-class ValidateUrl @Inject constructor() : UseCaseWithParams<String, String>() {
+class ValidateUrl @Inject constructor() : UseCaseWithParams<String, Result<String>> {
 
-    override suspend fun run(params: String): Result<String> =
+    override suspend operator fun invoke(params: String): Result<String> =
         if (validate(params)) Success(params) else Failure(InvalidUrlException())
 
     private fun validate(url: String): Boolean =

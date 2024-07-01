@@ -15,9 +15,9 @@ class Login @Inject constructor(
     private val userRepository: UserRepository,
     private val appStateRepository: AppStateRepository,
     private val postsRepository: PostsRepository,
-) : UseCaseWithParams<Unit, Login.Params>() {
+) : UseCaseWithParams<Login.Params, Result<Unit>> {
 
-    override suspend fun run(params: Params): Result<Unit> {
+    override suspend operator fun invoke(params: Params): Result<Unit> {
         userRepository.setAuthToken(params.authToken.trim())
         userRepository.linkdingInstanceUrl = params.instanceUrl.trim()
 

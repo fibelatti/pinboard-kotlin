@@ -4,15 +4,15 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.UseCaseWithParams
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class ExtractUrl @Inject constructor() : UseCaseWithParams<ExtractUrl.ExtractedUrl, String>() {
+class ExtractUrl @Inject constructor() : UseCaseWithParams<String, Result<ExtractUrl.ExtractedUrl>> {
 
-    override suspend fun run(params: String): Result<ExtractedUrl> {
+    override suspend operator fun invoke(params: String): Result<ExtractedUrl> {
         val schemes = ValidUrlScheme.ALL_SCHEMES.map { "$it://" }
         val firstSchemeIndex = schemes.mapNotNull { scheme -> params.indexOf(scheme).takeIf { it >= 0 } }
             .minOrNull()

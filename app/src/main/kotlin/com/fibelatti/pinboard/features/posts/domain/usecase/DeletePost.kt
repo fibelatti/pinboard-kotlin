@@ -5,16 +5,16 @@ import com.fibelatti.core.functional.UseCaseWithParams
 import com.fibelatti.core.functional.map
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import javax.inject.Inject
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 class DeletePost @Inject constructor(
     private val postsRepository: PostsRepository,
     private val validateUrl: ValidateUrl,
-) : UseCaseWithParams<Unit, Post>() {
+) : UseCaseWithParams<Post, Result<Unit>> {
 
-    override suspend fun run(params: Post): Result<Unit> =
+    override suspend operator fun invoke(params: Post): Result<Unit> =
         validateUrl(params.url).map {
             withContext(NonCancellable) {
                 postsRepository.delete(id = params.id, url = params.url)
