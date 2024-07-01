@@ -5,7 +5,7 @@ hilt = "2.51.1"
 hiltExtensions = "1.2.0"
 kotlin = "2.0.0"
 activity = "1.9.0"
-lifecycle = "2.8.2"
+lifecycle = "2.8.3"
 okhttp = "4.12.0"
 retrofit = "2.11.0"
 room = "2.6.1"
@@ -24,7 +24,7 @@ appcompat = { module = "androidx.appcompat:appcompat", version = "1.7.0" }
 core-ktx = { module = "androidx.core:core-ktx", version = "1.13.1" }
 activity = { module = "androidx.activity:activity", version.ref = "activity" }
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity" }
-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version = "1.8.0" }
+fragment-ktx = { module = "androidx.fragment:fragment-ktx", version = "1.8.1" }
 transition-ktx = { module = "androidx.transition:transition-ktx", version = "1.5.0" }
 material = { module = "com.google.android.material:material", version = "1.12.0" }
 constraint-layout = { module = "androidx.constraintlayout:constraintlayout", version = "2.1.4" }
@@ -72,8 +72,8 @@ junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref
 junit5-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit5" }
 junit5-vintage = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "junit5" }
 
-runner = { module = "androidx.test:runner", version = "1.5.2" }
-orchestrator = { module = "androidx.test:orchestrator", version = "1.4.2" }
+runner = { module = "androidx.test:runner", version = "1.6.1" }
+orchestrator = { module = "androidx.test:orchestrator", version = "1.5.0" }
 
 truth = { module = "com.google.truth:truth", version = "1.4.0" }
 mockk = { module = "io.mockk:mockk", version = "1.13.9" }
