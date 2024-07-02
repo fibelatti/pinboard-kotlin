@@ -63,7 +63,7 @@ jsoup = { module = "org.jsoup:jsoup", version = "1.17.2" }
 
 about-libraries = { module = "com.mikepenz:aboutlibraries-compose", version.ref = "aboutLibraries" }
 
-leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version = "2.13" }
+leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version = "2.14" }
 
 junit = { module = "junit:junit", version = "4.13.2" }
 
