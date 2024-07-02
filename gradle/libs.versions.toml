@@ -9,7 +9,7 @@ lifecycle = "2.8.3"
 okhttp = "4.12.0"
 retrofit = "2.11.0"
 room = "2.6.1"
-aboutLibraries = "10.10.0"
+aboutLibraries = "11.2.2"
 junit5 = "5.10.3"
 
 [libraries]
