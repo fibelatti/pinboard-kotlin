@@ -1,0 +1,9 @@
+This major release brings initial support for using Pinkt for Linkding, a self-hosted bookmark manager.
+
+* Browser and manage your existing bookmarks
+* Add new ones by sharing them directly to the app
+* All existing Pinkt features at your disposal, now for Linkding users as well
+
+Feedback and suggestions are always welcome, visit the project page to contribute!
+
+Thanks for using Pinkt!
