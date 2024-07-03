@@ -14,6 +14,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
+import okhttp3.CipherSuite
+import okhttp3.ConnectionSpec
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -32,11 +34,28 @@ object PinboardModule {
         apiInterceptor: ApiInterceptor,
         unauthorizedInterceptor: UnauthorizedInterceptor,
         loggingInterceptor: HttpLoggingInterceptor,
-    ): OkHttpClient = okHttpClient.newBuilder()
-        .addInterceptor(apiInterceptor)
-        .addInterceptor(unauthorizedInterceptor)
-        .apply { if (BuildConfig.DEBUG) addInterceptor(loggingInterceptor) }
-        .build()
+    ): OkHttpClient {
+        // These are the server preferred Ciphers + all the ones included in COMPATIBLE_TLS
+        val cipherSuites: List<CipherSuite> = listOf(
+            CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,
+            CipherSuite.TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,
+            CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+            CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+        ) + ConnectionSpec.COMPATIBLE_TLS.cipherSuites.orEmpty()
+
+        val connectionSpecs = listOf(
+            ConnectionSpec.Builder(ConnectionSpec.COMPATIBLE_TLS)
+                .cipherSuites(*cipherSuites.toTypedArray())
+                .build()
+        )
+
+        return okHttpClient.newBuilder()
+            .connectionSpecs(connectionSpecs)
+            .addInterceptor(apiInterceptor)
+            .addInterceptor(unauthorizedInterceptor)
+            .apply { if (BuildConfig.DEBUG) addInterceptor(loggingInterceptor) }
+            .build()
+    }
 
     @Provides
     @RestApi(RestApiProvider.PINBOARD)
