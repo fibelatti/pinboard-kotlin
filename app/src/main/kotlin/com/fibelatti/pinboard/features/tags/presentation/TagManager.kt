@@ -133,10 +133,6 @@ fun TagManager(
                         end.linkTo(parent.end)
                     }
                     .fillMaxWidth(),
-                itemColors = ChipGroup.colors(
-                    unselectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    unselectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                ),
                 itemTextStyle = MaterialTheme.typography.labelSmall.copy(
                     fontSize = 12.sp,
                     fontFamily = FontFamily.SansSerif,
@@ -186,10 +182,6 @@ fun TagManager(
             },
             itemTonalElevation = 16.dp,
             onItemIconClick = { item -> onRemoveCurrentTagClicked(currentTags.first { it.name == item.text }) },
-            itemColors = ChipGroup.colors(
-                unselectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                unselectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            ),
             itemTextStyle = MaterialTheme.typography.labelMedium.copy(
                 fontFamily = FontFamily.SansSerif,
             ),

@@ -60,7 +60,6 @@ fun Chip(
         ) {
             Text(
                 text = item.text,
-                color = if (item.isSelected) colors.selectedTextColor else colors.unselectedTextColor,
                 maxLines = 1,
                 style = textStyle,
             )
@@ -73,7 +72,6 @@ fun Chip(
                         .defaultMinSize(minHeight = ChipGroup.MinSize)
                         .clickable(interactionSource = interactionSource, indication = null) { onIconClick(item) }
                         .padding(all = 8.dp),
-                    tint = if (item.isSelected) colors.selectedIconColor else colors.unselectedIconColor,
                 )
             }
         }
@@ -161,27 +159,15 @@ object ChipGroup {
     data class Colors(
         val selectedChipColor: Color,
         val unselectedChipColor: Color,
-        val selectedTextColor: Color,
-        val unselectedTextColor: Color,
-        val selectedIconColor: Color,
-        val unselectedIconColor: Color,
     )
 
     @Composable
     fun colors(
         selectedChipColor: Color = MaterialTheme.colorScheme.primaryContainer,
-        unselectedChipColor: Color = MaterialTheme.colorScheme.surface,
-        selectedTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
-        unselectedTextColor: Color = MaterialTheme.colorScheme.onSurface,
-        selectedIconColor: Color = selectedTextColor,
-        unselectedIconColor: Color = unselectedTextColor,
+        unselectedChipColor: Color = MaterialTheme.colorScheme.secondaryContainer,
     ): Colors = Colors(
         selectedChipColor = selectedChipColor,
         unselectedChipColor = unselectedChipColor,
-        selectedTextColor = selectedTextColor,
-        unselectedTextColor = unselectedTextColor,
-        selectedIconColor = selectedIconColor,
-        unselectedIconColor = unselectedIconColor,
     )
 }
 
