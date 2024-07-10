@@ -59,7 +59,7 @@ logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", ver
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 converter-serialization = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit" }
 
-jsoup = { module = "org.jsoup:jsoup", version = "1.17.2" }
+jsoup = { module = "org.jsoup:jsoup", version = "1.18.1" }
 
 about-libraries = { module = "com.mikepenz:aboutlibraries-compose", version.ref = "aboutLibraries" }
 
