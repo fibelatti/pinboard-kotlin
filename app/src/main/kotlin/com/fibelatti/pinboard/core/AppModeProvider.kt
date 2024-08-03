@@ -2,12 +2,12 @@ package com.fibelatti.pinboard.core
 
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class AppModeProvider @Inject constructor(
@@ -28,7 +28,7 @@ class AppModeProvider @Inject constructor(
     @Suppress("KotlinConstantConditions")
     private fun getValue(reviewMode: Boolean): AppMode = when {
         BuildConfig.FLAVOR == "noapi" || reviewMode -> AppMode.NO_API
-        userSharedPreferences.useLinkding -> AppMode.LINKDING
+        userSharedPreferences.useLinkding && userSharedPreferences.linkdingInstanceUrl.isNotEmpty() -> AppMode.LINKDING
         else -> AppMode.PINBOARD
     }
 }
