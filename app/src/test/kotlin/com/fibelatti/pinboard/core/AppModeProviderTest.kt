@@ -40,6 +40,7 @@ class AppModeProviderTest {
     @Test
     fun `appMode is LINKDING when useLinkding is true`() = runUnconfinedTest {
         every { mockUserSharedPreferences.useLinkding } returns true
+        every { mockUserSharedPreferences.linkdingInstanceUrl } returns "https://test.com"
 
         val values = appModeProvider.appMode.collectIn(this)
 
