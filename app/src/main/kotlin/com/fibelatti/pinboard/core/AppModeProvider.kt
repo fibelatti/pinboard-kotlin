@@ -1,34 +1,37 @@
 package com.fibelatti.pinboard.core
 
 import com.fibelatti.pinboard.BuildConfig
-import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
+import com.fibelatti.pinboard.core.di.AppDispatchers
+import com.fibelatti.pinboard.core.di.Scope
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 
 @Singleton
 class AppModeProvider @Inject constructor(
-    private val userSharedPreferences: UserSharedPreferences,
+    private val userRepository: UserRepository,
+    @Scope(AppDispatchers.DEFAULT) scope: CoroutineScope,
+    sharingStarted: SharingStarted,
 ) {
 
-    private val _appMode: MutableStateFlow<AppMode> = MutableStateFlow(getValue(reviewMode = false))
-    val appMode: StateFlow<AppMode> = _appMode.asStateFlow()
-
-    fun setReviewMode(value: Boolean) {
-        _appMode.value = getValue(reviewMode = value)
-    }
-
-    fun refresh() {
-        _appMode.update { getValue(reviewMode = false) }
-    }
+    val appMode: StateFlow<AppMode> = combine(
+        userRepository.currentPreferences,
+        userRepository.authToken,
+    ) { preferences, authToken -> getValue(preferences.useLinkding, authToken) }
+        .stateIn(scope, sharingStarted, getValue())
 
     @Suppress("KotlinConstantConditions")
-    private fun getValue(reviewMode: Boolean): AppMode = when {
-        BuildConfig.FLAVOR == "noapi" || reviewMode -> AppMode.NO_API
-        userSharedPreferences.useLinkding && userSharedPreferences.linkdingInstanceUrl.isNotEmpty() -> AppMode.LINKDING
+    private fun getValue(
+        useLinkding: Boolean = userRepository.useLinkding,
+        authToken: String = userRepository.authToken.value,
+    ): AppMode = when {
+        BuildConfig.FLAVOR == "noapi" || authToken == "app_review_mode" -> AppMode.NO_API
+        useLinkding -> AppMode.LINKDING
         else -> AppMode.PINBOARD
     }
 }

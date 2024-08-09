@@ -12,6 +12,8 @@ interface UserRepository {
 
     val currentPreferences: StateFlow<UserPreferences>
 
+    val authToken: StateFlow<String>
+
     var useLinkding: Boolean
 
     var linkdingInstanceUrl: String

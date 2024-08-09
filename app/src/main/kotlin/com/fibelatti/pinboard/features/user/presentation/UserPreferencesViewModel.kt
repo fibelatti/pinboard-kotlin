@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.features.user.presentation
 
 import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
@@ -14,20 +13,19 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class UserPreferencesViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val postsRepository: PostsRepository,
     private val periodicSyncManager: PeriodicSyncManager,
-    private val appModeProvider: AppModeProvider,
 ) : BaseViewModel() {
 
     val currentPreferences: StateFlow<UserPreferences> get() = userRepository.currentPreferences
@@ -39,7 +37,6 @@ class UserPreferencesViewModel @Inject constructor(
 
     fun useLinkding(value: Boolean) {
         userRepository.useLinkding = value
-        appModeProvider.refresh()
     }
 
     fun savePeriodicSync(periodicSync: PeriodicSync) {

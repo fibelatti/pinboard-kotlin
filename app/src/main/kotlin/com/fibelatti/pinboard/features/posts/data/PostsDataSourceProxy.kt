@@ -10,22 +10,35 @@ import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import dagger.Lazy
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+import javax.inject.Provider
+import javax.inject.Singleton
+import kotlinx.coroutines.flow.Flow
 
+@Singleton
 class PostsDataSourceProxy @Inject constructor(
-    private val postsDataSourcePinboardApi: Lazy<PostsDataSourcePinboardApi>,
-    private val postsDataSourceLinkdingApi: Lazy<PostsDataSourceLinkdingApi>,
-    private val postsDataSourceNoApi: Lazy<PostsDataSourceNoApi>,
+    private val postsDataSourcePinboardApi: Provider<PostsDataSourcePinboardApi>,
+    private val postsDataSourceLinkdingApi: Provider<PostsDataSourceLinkdingApi>,
+    private val postsDataSourceNoApi: Provider<PostsDataSourceNoApi>,
     private val appModeProvider: AppModeProvider,
 ) : PostsRepository {
 
+    private var currentAppMode: AppMode? = null
+    private var currentRepository: PostsRepository? = null
+
     private val repository: PostsRepository
-        get() = when (appModeProvider.appMode.value) {
-            AppMode.NO_API -> postsDataSourceNoApi.get()
-            AppMode.PINBOARD -> postsDataSourcePinboardApi.get()
-            AppMode.LINKDING -> postsDataSourceLinkdingApi.get()
+        get() {
+            val appMode = appModeProvider.appMode.value
+
+            return currentRepository?.takeIf { currentAppMode == appMode }
+                ?: when (appMode) {
+                    AppMode.NO_API -> postsDataSourceNoApi.get()
+                    AppMode.PINBOARD -> postsDataSourcePinboardApi.get()
+                    AppMode.LINKDING -> postsDataSourceLinkdingApi.get()
+                }.also {
+                    currentAppMode = appMode
+                    currentRepository = it
+                }
         }
 
     override suspend fun update(): Result<String> = repository.update()

@@ -2,8 +2,6 @@ package com.fibelatti.pinboard.features.user.data
 
 import com.fibelatti.pinboard.MockDataProvider.mockApiToken
 import com.fibelatti.pinboard.MockDataProvider.mockTime
-import com.fibelatti.pinboard.core.AppMode
-import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
@@ -18,10 +16,8 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.Called
 import io.mockk.clearMocks
 import io.mockk.every
-import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Nested
@@ -30,6 +26,7 @@ import org.junit.jupiter.api.Test
 internal class UserDataSourceTest {
 
     private val mockUserSharedPreferences = mockk<UserSharedPreferences>(relaxed = true) {
+        every { authToken } returns ""
         every { periodicSync } returns 0L
         every { appearance } returns ""
         every { applyDynamicColors } returns false
@@ -62,14 +59,8 @@ internal class UserDataSourceTest {
         defaultTags = emptyList(),
     )
 
-    private val mockAppModeProvider = mockk<AppModeProvider> {
-        every { appMode } returns MutableStateFlow(AppMode.PINBOARD)
-        justRun { setReviewMode(any()) }
-    }
-
     private val userDataSource = UserDataSource(
         userSharedPreferences = mockUserSharedPreferences,
-        appModeProvider = mockAppModeProvider,
     )
 
     @Nested
@@ -686,23 +677,10 @@ internal class UserDataSourceTest {
             }
 
             @Test
-            fun `setAuthToken sets review mode with the expected token`() {
-                clearMocks(mockUserSharedPreferences)
-
-                userDataSource.setAuthToken("app_review_mode")
-
-                verify {
-                    mockAppModeProvider.setReviewMode(true)
-                    mockUserSharedPreferences wasNot Called
-                }
-            }
-
-            @Test
             fun `clearAuthToken clears the auth token and last updated`() {
                 userDataSource.clearAuthToken()
 
                 verify {
-                    mockAppModeProvider.setReviewMode(false)
                     mockUserSharedPreferences.authToken = ""
                     mockUserSharedPreferences.lastUpdate = ""
                 }

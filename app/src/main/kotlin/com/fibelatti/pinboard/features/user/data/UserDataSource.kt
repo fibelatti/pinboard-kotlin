@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.user.data
 
-import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
@@ -10,20 +9,22 @@ import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class UserDataSource @Inject constructor(
     private val userSharedPreferences: UserSharedPreferences,
-    private val appModeProvider: AppModeProvider,
 ) : UserRepository {
 
     private val _currentPreferences = MutableStateFlow(getPreferences())
     override val currentPreferences: StateFlow<UserPreferences> = _currentPreferences.asStateFlow()
+
+    private val _authToken = MutableStateFlow(userSharedPreferences.authToken)
+    override val authToken: StateFlow<String> = _authToken.asStateFlow()
 
     override var useLinkding: Boolean
         get() = userSharedPreferences.useLinkding
@@ -36,6 +37,7 @@ class UserDataSource @Inject constructor(
         get() = userSharedPreferences.linkdingInstanceUrl
         set(value) {
             userSharedPreferences.linkdingInstanceUrl = if (useLinkding) value else ""
+            updateCurrentPreferences()
         }
 
     override var lastUpdate: String
@@ -199,16 +201,15 @@ class UserDataSource @Inject constructor(
     override fun hasAuthToken(): Boolean = userSharedPreferences.authToken.isNotEmpty()
 
     override fun setAuthToken(authToken: String) {
-        when {
-            authToken.isBlank() -> return
-            authToken == "app_review_mode" -> appModeProvider.setReviewMode(true)
-            else -> userSharedPreferences.authToken = authToken
+        if (authToken.isNotBlank()) {
+            _authToken.value = authToken
+            userSharedPreferences.authToken = authToken
         }
     }
 
     override fun clearAuthToken() {
-        appModeProvider.setReviewMode(false)
         userSharedPreferences.authToken = ""
         userSharedPreferences.lastUpdate = ""
+        _authToken.value = ""
     }
 }
