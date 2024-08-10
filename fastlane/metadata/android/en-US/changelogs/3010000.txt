@@ -1,0 +1,11 @@
+Version 3.1.0 brings small updates to ensure that Pinkt keeps running smoothly.
+
+* Fix the colors of tags in bookmark lists
+* Fix login sometimes not working after switching between Pinboard/Linkding
+* Fix "Share to Pinkt" to save a bookmark sometimes not working
+* Make the required changes to allow for reproducible builds
+
+Feedback and suggestions are always welcome, visit the project page to
+contribute!
+
+Thanks for using Pinkt!
