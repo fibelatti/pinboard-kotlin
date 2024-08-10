@@ -92,9 +92,9 @@ subprojects {
 
                 managedDevices {
                     devices {
-                        maybeCreate<com.android.build.api.dsl.ManagedVirtualDevice>("pixel6api33").apply {
-                            device = "Pixel 6"
-                            apiLevel = 33
+                        maybeCreate<com.android.build.api.dsl.ManagedVirtualDevice>("pixel8api34").apply {
+                            device = "Pixel 8"
+                            apiLevel = 34
                             systemImageSource = "google"
                         }
                     }
