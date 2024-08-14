@@ -12,6 +12,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -44,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -152,20 +154,52 @@ private fun AuthScreen(
                     }
                 }
 
-                OutlinedTextField(
-                    value = authToken,
-                    onValueChange = { authToken = it },
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp),
-                    visualTransformation = PasswordVisualTransformation(),
-                    label = { Text(text = stringResource(id = R.string.auth_token_hint)) },
-                    isError = apiTokenError != null,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go, keyboardType = KeyboardType.Password),
-                    keyboardActions = KeyboardActions { onAuthRequested(authToken, instanceUrl) },
-                    singleLine = true,
-                    maxLines = 1,
-                )
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.Bottom,
+                ) {
+                    var authTokenVisible by remember { mutableStateOf(false) }
+
+                    OutlinedTextField(
+                        value = authToken,
+                        onValueChange = { authToken = it },
+                        modifier = Modifier.weight(1f),
+                        visualTransformation = if (authTokenVisible) {
+                            VisualTransformation.None
+                        } else {
+                            PasswordVisualTransformation()
+                        },
+                        label = { Text(text = stringResource(id = R.string.auth_token_hint)) },
+                        isError = apiTokenError != null,
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Go,
+                            keyboardType = KeyboardType.Password,
+                        ),
+                        keyboardActions = KeyboardActions { onAuthRequested(authToken, instanceUrl) },
+                        singleLine = true,
+                        maxLines = 1,
+                    )
+
+                    IconButton(
+                        onClick = { authTokenVisible = !authTokenVisible },
+                    ) {
+                        AnimatedContent(
+                            targetState = authTokenVisible,
+                            label = "AuthTokenIconVisibility",
+                        ) { visible ->
+                            Icon(
+                                painter = painterResource(
+                                    id = if (visible) R.drawable.ic_eye else R.drawable.ic_eye_slash,
+                                ),
+                                contentDescription = null,
+                                modifier = Modifier.size(30.dp),
+                            )
+                        }
+                    }
+                }
 
                 if (apiTokenError != null) {
                     Text(
