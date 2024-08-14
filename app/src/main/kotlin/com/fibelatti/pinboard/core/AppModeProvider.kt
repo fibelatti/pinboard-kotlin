@@ -31,6 +31,7 @@ class AppModeProvider @Inject constructor(
         authToken: String = userRepository.authToken.value,
     ): AppMode = when {
         BuildConfig.FLAVOR == "noapi" || authToken == "app_review_mode" -> AppMode.NO_API
+        authToken.isBlank() -> AppMode.UNSET
         useLinkding -> AppMode.LINKDING
         else -> AppMode.PINBOARD
     }

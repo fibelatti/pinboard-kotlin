@@ -57,7 +57,7 @@ class AppModeProviderTest {
         verify(exactly = 1) { mockUserRepository.useLinkding }
 
         assertThat(values).containsExactly(
-            AppMode.PINBOARD,
+            AppMode.UNSET,
             AppMode.NO_API,
             AppMode.LINKDING,
             AppMode.PINBOARD,

@@ -31,14 +31,14 @@ class AuthViewModel @Inject constructor(
     val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
 
     fun login(apiToken: String, instanceUrl: String) {
-        if (userRepository.useLinkding && instanceUrl.isEmpty()) {
+        if (userRepository.useLinkding && instanceUrl.isBlank()) {
             _screenState.value = ScreenState(
                 instanceUrlError = resourceProvider.getString(R.string.auth_linkding_instance_url_error),
             )
             return
         }
 
-        if (apiToken.isEmpty()) {
+        if (apiToken.isBlank()) {
             _screenState.value = ScreenState(
                 apiTokenError = resourceProvider.getString(R.string.auth_token_empty),
             )

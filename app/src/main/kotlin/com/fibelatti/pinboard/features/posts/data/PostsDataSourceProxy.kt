@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.posts.data
 
 import com.fibelatti.core.functional.Result
+import com.fibelatti.pinboard.App
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.features.appstate.SortType
@@ -14,6 +15,8 @@ import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 @Singleton
 class PostsDataSourceProxy @Inject constructor(
@@ -27,14 +30,15 @@ class PostsDataSourceProxy @Inject constructor(
     private var currentRepository: PostsRepository? = null
 
     private val repository: PostsRepository
-        get() {
-            val appMode = appModeProvider.appMode.value
+        get() = runBlocking {
+            val appMode = appModeProvider.appMode.first { AppMode.UNSET != it }
 
-            return currentRepository?.takeIf { currentAppMode == appMode }
+            currentRepository?.takeIf { currentAppMode == appMode }
                 ?: when (appMode) {
                     AppMode.NO_API -> postsDataSourceNoApi.get()
                     AppMode.PINBOARD -> postsDataSourcePinboardApi.get()
                     AppMode.LINKDING -> postsDataSourceLinkdingApi.get()
+                    AppMode.UNSET -> throw IllegalStateException()
                 }.also {
                     currentAppMode = appMode
                     currentRepository = it
