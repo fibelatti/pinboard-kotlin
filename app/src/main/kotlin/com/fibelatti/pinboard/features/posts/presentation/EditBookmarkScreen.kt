@@ -26,7 +26,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
@@ -281,7 +280,6 @@ private fun BookmarkContent(
 }
 
 @Composable
-@OptIn(ExperimentalComposeUiApi::class)
 private fun BookmarkBasicDetails(
     appMode: AppMode,
     url: String,

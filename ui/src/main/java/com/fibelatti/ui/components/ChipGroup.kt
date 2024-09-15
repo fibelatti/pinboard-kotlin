@@ -128,10 +128,11 @@ fun SingleLineChipGroup(
         contentPadding = contentPadding,
         horizontalArrangement = Arrangement.spacedBy(spacing),
     ) {
-        items(items) { item ->
+        items(items, key = { it.hashCode() }) { item ->
             Chip(
                 item = item,
                 onClick = onItemClick,
+                modifier = Modifier.animateItem(),
                 onIconClick = onItemIconClick,
                 shape = itemShape,
                 tonalElevation = itemTonalElevation,

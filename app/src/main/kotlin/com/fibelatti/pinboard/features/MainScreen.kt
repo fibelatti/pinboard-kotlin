@@ -2,7 +2,6 @@ package com.fibelatti.pinboard.features
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -284,7 +283,6 @@ private fun MainBottomAppBar(
 }
 
 @Composable
-@OptIn(ExperimentalAnimationApi::class)
 private fun MenuItemsContent(
     menuItems: List<MainState.MenuItemComponent>,
     data: Any?,
