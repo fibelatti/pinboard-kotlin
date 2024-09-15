@@ -49,11 +49,11 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.UUID
+import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onEach
-import java.util.UUID
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class PostListFragment @Inject constructor(
@@ -121,6 +121,14 @@ class PostListFragment @Inject constructor(
 
                     is PostQuickActions.OpenBrowser -> startActivity(
                         Intent(Intent.ACTION_VIEW, Uri.parse(option.post.url)),
+                    )
+
+                    is PostQuickActions.SubmitToWayback -> startActivity(
+                        Intent(Intent.ACTION_VIEW, Uri.parse("https://web.archive.org/save/${option.post.url}")),
+                    )
+
+                    is PostQuickActions.SearchWayback -> startActivity(
+                        Intent(Intent.ACTION_VIEW, Uri.parse("https://web.archive.org/web/*/${option.post.url}")),
                     )
                 }
             },
@@ -390,6 +398,20 @@ private sealed class PostQuickActions(
         icon = R.drawable.ic_open_in_browser,
     )
 
+    data class SubmitToWayback(
+        override val post: Post,
+    ) : PostQuickActions(
+        title = R.string.quick_actions_submit_to_wayback,
+        icon = R.drawable.ic_share,
+    )
+
+    data class SearchWayback(
+        override val post: Post,
+    ) : PostQuickActions(
+        title = R.string.quick_actions_search_wayback,
+        icon = R.drawable.ic_search,
+    )
+
     companion object {
 
         fun allOptions(
@@ -400,6 +422,8 @@ private sealed class PostQuickActions(
             add(Delete(post))
             add(CopyUrl(post))
             add(Share(post))
+            add(SubmitToWayback(post))
+            add(SearchWayback(post))
 
             if (post.displayDescription.isNotBlank()) {
                 add(ExpandDescription(post))
