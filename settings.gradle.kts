@@ -12,7 +12,7 @@ include(":ui")
 
 pluginManagement {
     repositories {
-        google {
+        maven(url = "https://maven.google.com/") {
             mavenContent {
                 includeGroupAndSubgroups("androidx")
                 includeGroupAndSubgroups("com.android")
@@ -27,7 +27,7 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        google {
+        maven(url = "https://maven.google.com/") {
             mavenContent {
                 includeGroupAndSubgroups("androidx")
                 includeGroupAndSubgroups("com.android")
