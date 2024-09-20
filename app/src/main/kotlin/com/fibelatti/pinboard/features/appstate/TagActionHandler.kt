@@ -48,7 +48,7 @@ class TagActionHandler @Inject constructor(
                 // Use the current posts for a smoother transition until the tagged posts are loaded
                 posts = postListContent?.posts,
                 showDescription = userRepository.showDescriptionInLists,
-                sortType = NewestFirst,
+                sortType = ByDateAddedNewestFirst,
                 searchParameters = SearchParameters(tags = listOf(action.tag)),
                 shouldLoad = ShouldLoadFirstPage,
                 isConnected = connectivityInfoProvider.isConnected(),

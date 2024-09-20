@@ -2,7 +2,7 @@ package com.fibelatti.pinboard.features.appstate
 
 sealed class SortType(val index: Int)
 
-data object NewestFirst : SortType(index = 0)
-data object OldestFirst : SortType(index = 1)
-data object Alphabetical : SortType(index = 2)
-data object AlphabeticalReverse : SortType(index = 3)
+data object ByDateAddedNewestFirst : SortType(index = 0)
+data object ByDateAddedOldestFirst : SortType(index = 1)
+data object ByTitleAlphabetical : SortType(index = 2)
+data object ByTitleAlphabeticalReverse : SortType(index = 3)

@@ -72,7 +72,7 @@ internal class AppStateDataSourceTest {
         category = All,
         posts = null,
         showDescription = false,
-        sortType = NewestFirst,
+        sortType = ByDateAddedNewestFirst,
         searchParameters = SearchParameters(),
         shouldLoad = ShouldLoadFirstPage,
         isConnected = false,

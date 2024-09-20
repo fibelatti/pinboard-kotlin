@@ -146,10 +146,10 @@
     <string name="search_share_tags">Share tags</string>
 
     <!-- Sorting -->
-    <string name="sorting_newest_first">By date (Newest First)</string>
-    <string name="sorting_oldest_first">By date (Oldest First)</string>
-    <string name="sorting_alphabetical">By title (A to Z)</string>
-    <string name="sorting_alphabetical_reverse">By title (Z to A)</string>
+    <string name="sorting_by_date_added_newest_first">By date added (Newest first)</string>
+    <string name="sorting_by_date_added_oldest_first">By date added (Oldest first)</string>
+    <string name="sorting_by_title_alphabetical">By title (A to Z)</string>
+    <string name="sorting_by_title_alphabetical_reverse">By title (Z to A)</string>
 
     <!-- Tags -->
     <string name="tags_title">Tags</string>

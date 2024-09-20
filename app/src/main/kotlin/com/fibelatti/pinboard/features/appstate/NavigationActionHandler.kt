@@ -8,10 +8,10 @@ import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import javax.inject.Inject
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 class NavigationActionHandler @Inject constructor(
     private val userRepository: UserRepository,
@@ -53,7 +53,7 @@ class NavigationActionHandler @Inject constructor(
             // Use the current posts for a smoother transition until the category posts are loaded
             posts = (currentContent as? PostListContent)?.posts,
             showDescription = userRepository.showDescriptionInLists,
-            sortType = NewestFirst,
+            sortType = ByDateAddedNewestFirst,
             searchParameters = SearchParameters(),
             shouldLoad = ShouldLoadFirstPage,
             isConnected = connectivityInfoProvider.isConnected(),

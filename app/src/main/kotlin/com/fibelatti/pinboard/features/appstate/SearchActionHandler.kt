@@ -76,7 +76,7 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
         return currentContent.reduce<SearchContent> { searchContent ->
             searchContent.previousContent.copy(
                 category = All,
-                sortType = NewestFirst,
+                sortType = ByDateAddedNewestFirst,
                 searchParameters = searchContent.searchParameters.copy(term = searchContent.searchParameters.term),
                 shouldLoad = ShouldLoadFirstPage,
             )
@@ -106,7 +106,7 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
         return currentContent.reduce<SavedFiltersContent> { savedFiltersContent ->
             savedFiltersContent.previousContent.copy(
                 category = All,
-                sortType = NewestFirst,
+                sortType = ByDateAddedNewestFirst,
                 searchParameters = SearchParameters(
                     term = action.savedFilter.searchTerm,
                     tags = action.savedFilter.tags,

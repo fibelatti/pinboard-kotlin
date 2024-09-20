@@ -3,10 +3,10 @@ package com.fibelatti.pinboard.features.posts.domain.usecase
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.MockDataProvider.mockTags
 import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
-import com.fibelatti.pinboard.features.appstate.Alphabetical
-import com.fibelatti.pinboard.features.appstate.AlphabeticalReverse
-import com.fibelatti.pinboard.features.appstate.NewestFirst
-import com.fibelatti.pinboard.features.appstate.OldestFirst
+import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
+import com.fibelatti.pinboard.features.appstate.ByDateAddedOldestFirst
+import com.fibelatti.pinboard.features.appstate.ByTitleAlphabetical
+import com.fibelatti.pinboard.features.appstate.ByTitleAlphabeticalReverse
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
@@ -81,7 +81,7 @@ class GetAllPostsTest {
             }
         }
 
-        fun testCases(): List<SortType> = listOf(NewestFirst, OldestFirst, Alphabetical, AlphabeticalReverse)
+        fun testCases(): List<SortType> = listOf(ByDateAddedNewestFirst, ByDateAddedOldestFirst, ByTitleAlphabetical, ByTitleAlphabeticalReverse)
     }
 
     @Test
@@ -96,7 +96,7 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    sortType = NewestFirst,
+                    sortType = ByDateAddedNewestFirst,
                     searchTerm = mockUrlValid,
                     tags = null,
                     untaggedOnly = false,

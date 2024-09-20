@@ -33,7 +33,7 @@ import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.ApiResultCodes
 import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.core.util.DateFormatter
-import com.fibelatti.pinboard.features.appstate.NewestFirst
+import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
@@ -59,6 +59,7 @@ import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.spyk
 import io.mockk.verify
+import java.util.UUID
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
@@ -68,7 +69,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import java.util.UUID
 
 class PostsDataSourcePinboardApiTest {
 
@@ -747,7 +747,7 @@ class PostsDataSourcePinboardApiTest {
                 // GIVEN
                 coEvery {
                     dataSource.getLocalData(
-                        sortType = NewestFirst,
+                        sortType = ByDateAddedNewestFirst,
                         searchTerm = "",
                         tags = null,
                         untaggedOnly = false,
@@ -762,7 +762,7 @@ class PostsDataSourcePinboardApiTest {
 
                 // WHEN
                 val result = dataSource.getAllPosts(
-                    sortType = NewestFirst,
+                    sortType = ByDateAddedNewestFirst,
                     searchTerm = "",
                     tags = null,
                     untaggedOnly = false,
@@ -788,7 +788,7 @@ class PostsDataSourcePinboardApiTest {
                 coEvery { mockUserRepository.lastUpdate } returns mockTime
                 coEvery {
                     dataSource.getLocalData(
-                        sortType = NewestFirst,
+                        sortType = ByDateAddedNewestFirst,
                         searchTerm = "",
                         tags = null,
                         untaggedOnly = false,
@@ -802,7 +802,7 @@ class PostsDataSourcePinboardApiTest {
                 } returns Success(mockLocalData)
                 coEvery {
                     dataSource.getLocalData(
-                        sortType = NewestFirst,
+                        sortType = ByDateAddedNewestFirst,
                         searchTerm = "",
                         tags = null,
                         untaggedOnly = false,
@@ -824,7 +824,7 @@ class PostsDataSourcePinboardApiTest {
 
                 // WHEN
                 val result = dataSource.getAllPosts(
-                    sortType = NewestFirst,
+                    sortType = ByDateAddedNewestFirst,
                     searchTerm = "",
                     tags = null,
                     untaggedOnly = false,
@@ -862,7 +862,7 @@ class PostsDataSourcePinboardApiTest {
 
                 // WHEN
                 val result = dataSource.getAllPosts(
-                    sortType = NewestFirst,
+                    sortType = ByDateAddedNewestFirst,
                     searchTerm = "",
                     tags = null,
                     untaggedOnly = false,
@@ -890,7 +890,7 @@ class PostsDataSourcePinboardApiTest {
 
                 // WHEN
                 val result = dataSource.getAllPosts(
-                    sortType = NewestFirst,
+                    sortType = ByDateAddedNewestFirst,
                     searchTerm = "",
                     tags = null,
                     untaggedOnly = false,
@@ -929,7 +929,7 @@ class PostsDataSourcePinboardApiTest {
 
                 // WHEN
                 val result = dataSource.getAllPosts(
-                    sortType = NewestFirst,
+                    sortType = ByDateAddedNewestFirst,
                     searchTerm = "",
                     tags = null,
                     untaggedOnly = false,
@@ -963,7 +963,7 @@ class PostsDataSourcePinboardApiTest {
 
                 // WHEN
                 val result = dataSource.getAllPosts(
-                    sortType = NewestFirst,
+                    sortType = ByDateAddedNewestFirst,
                     searchTerm = "",
                     tags = null,
                     untaggedOnly = false,
@@ -998,7 +998,7 @@ class PostsDataSourcePinboardApiTest {
 
                 // WHEN
                 val result = dataSource.getAllPosts(
-                    sortType = NewestFirst,
+                    sortType = ByDateAddedNewestFirst,
                     searchTerm = "",
                     tags = null,
                     untaggedOnly = false,
@@ -1034,7 +1034,7 @@ class PostsDataSourcePinboardApiTest {
 
                 // WHEN
                 val result = dataSource.getAllPosts(
-                    sortType = NewestFirst,
+                    sortType = ByDateAddedNewestFirst,
                     searchTerm = "",
                     tags = null,
                     untaggedOnly = false,
@@ -1071,7 +1071,7 @@ class PostsDataSourcePinboardApiTest {
 
                 // WHEN
                 val result = dataSource.getAllPosts(
-                    sortType = NewestFirst,
+                    sortType = ByDateAddedNewestFirst,
                     searchTerm = "",
                     tags = null,
                     untaggedOnly = false,
@@ -1503,7 +1503,7 @@ class PostsDataSourcePinboardApiTest {
 
             // WHEN
             val result = dataSource.getLocalData(
-                sortType = NewestFirst,
+                sortType = ByDateAddedNewestFirst,
                 searchTerm = mockUrlTitle,
                 tags = emptyList(),
                 untaggedOnly = false,
@@ -1530,7 +1530,7 @@ class PostsDataSourcePinboardApiTest {
         fun `WHEN tags is empty THEN tag1 tag2 and tag3 are sent as empty`() = runTest {
             // WHEN
             val result = dataSource.getLocalData(
-                sortType = NewestFirst,
+                sortType = ByDateAddedNewestFirst,
                 searchTerm = mockUrlTitle,
                 tags = emptyList(),
                 untaggedOnly = false,
@@ -1545,7 +1545,7 @@ class PostsDataSourcePinboardApiTest {
             // THEN
             coVerify {
                 mockDao.getAllPosts(
-                    sortType = NewestFirst.index,
+                    sortType = ByDateAddedNewestFirst.index,
                     term = PostsDao.preFormatTerm(mockUrlTitle),
                     tag1 = "",
                     tag2 = "",
@@ -1572,7 +1572,7 @@ class PostsDataSourcePinboardApiTest {
         fun `WHEN tags size is 1 THEN tag2 and tag3 are sent as empty`() = runTest {
             // WHEN
             val result = dataSource.getLocalData(
-                sortType = NewestFirst,
+                sortType = ByDateAddedNewestFirst,
                 searchTerm = mockUrlTitle,
                 tags = listOf(mockTag1),
                 untaggedOnly = false,
@@ -1587,7 +1587,7 @@ class PostsDataSourcePinboardApiTest {
             // THEN
             coVerify {
                 mockDao.getAllPosts(
-                    sortType = NewestFirst.index,
+                    sortType = ByDateAddedNewestFirst.index,
                     term = PostsDao.preFormatTerm(mockUrlTitle),
                     tag1 = PostsDao.preFormatTag(mockTag1.name),
                     tag2 = "",
@@ -1614,7 +1614,7 @@ class PostsDataSourcePinboardApiTest {
         fun `WHEN tags size is 2 THEN tag3 is sent as empty`() = runTest {
             // WHEN
             val result = dataSource.getLocalData(
-                sortType = NewestFirst,
+                sortType = ByDateAddedNewestFirst,
                 searchTerm = mockUrlTitle,
                 tags = listOf(mockTag1, mockTag2),
                 untaggedOnly = false,
@@ -1629,7 +1629,7 @@ class PostsDataSourcePinboardApiTest {
             // THEN
             coVerify {
                 mockDao.getAllPosts(
-                    sortType = NewestFirst.index,
+                    sortType = ByDateAddedNewestFirst.index,
                     term = PostsDao.preFormatTerm(mockUrlTitle),
                     tag1 = PostsDao.preFormatTag(mockTag1.name),
                     tag2 = PostsDao.preFormatTag(mockTag2.name),
@@ -1656,7 +1656,7 @@ class PostsDataSourcePinboardApiTest {
         fun `WHEN tags size is 3 THEN all tags are sent`() = runTest {
             // WHEN
             val result = dataSource.getLocalData(
-                sortType = NewestFirst,
+                sortType = ByDateAddedNewestFirst,
                 searchTerm = mockUrlTitle,
                 tags = listOf(mockTag1, mockTag2, mockTag3),
                 untaggedOnly = false,
@@ -1671,7 +1671,7 @@ class PostsDataSourcePinboardApiTest {
             // THEN
             coVerify {
                 mockDao.getAllPosts(
-                    sortType = NewestFirst.index,
+                    sortType = ByDateAddedNewestFirst.index,
                     term = PostsDao.preFormatTerm(mockUrlTitle),
                     tag1 = PostsDao.preFormatTag(mockTag1.name),
                     tag2 = PostsDao.preFormatTag(mockTag2.name),
@@ -1715,7 +1715,7 @@ class PostsDataSourcePinboardApiTest {
 
             // WHEN
             val result = dataSource.getLocalData(
-                sortType = NewestFirst,
+                sortType = ByDateAddedNewestFirst,
                 searchTerm = mockUrlTitle,
                 tags = emptyList(),
                 untaggedOnly = false,

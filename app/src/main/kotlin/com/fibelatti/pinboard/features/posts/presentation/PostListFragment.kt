@@ -25,13 +25,13 @@ import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AddPost
 import com.fibelatti.pinboard.features.appstate.All
-import com.fibelatti.pinboard.features.appstate.Alphabetical
-import com.fibelatti.pinboard.features.appstate.AlphabeticalReverse
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
+import com.fibelatti.pinboard.features.appstate.ByDateAddedOldestFirst
+import com.fibelatti.pinboard.features.appstate.ByTitleAlphabetical
+import com.fibelatti.pinboard.features.appstate.ByTitleAlphabeticalReverse
 import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.Loaded
-import com.fibelatti.pinboard.features.appstate.NewestFirst
-import com.fibelatti.pinboard.features.appstate.OldestFirst
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.Private
@@ -296,10 +296,10 @@ class PostListFragment @Inject constructor(
         val countString = resources.getQuantityString(R.plurals.posts_quantity, count, countFormatArg)
         return resources.getString(
             when (sortType) {
-                is NewestFirst -> R.string.posts_sorting_newest_first
-                is OldestFirst -> R.string.posts_sorting_oldest_first
-                is Alphabetical -> R.string.posts_sorting_alphabetical
-                is AlphabeticalReverse -> R.string.posts_sorting_alphabetical_reverse
+                is ByDateAddedNewestFirst -> R.string.posts_sorting_newest_first
+                is ByDateAddedOldestFirst -> R.string.posts_sorting_oldest_first
+                is ByTitleAlphabetical -> R.string.posts_sorting_alphabetical
+                is ByTitleAlphabeticalReverse -> R.string.posts_sorting_alphabetical_reverse
             },
             countString,
         )
@@ -310,17 +310,17 @@ class PostListFragment @Inject constructor(
             context = requireContext(),
             title = getString(R.string.menu_main_sorting),
             options = listOf(
-                NewestFirst,
-                OldestFirst,
-                Alphabetical,
-                AlphabeticalReverse,
+                ByDateAddedNewestFirst,
+                ByDateAddedOldestFirst,
+                ByTitleAlphabetical,
+                ByTitleAlphabeticalReverse,
             ),
             optionName = { option ->
                 when (option) {
-                    is NewestFirst -> getString(R.string.sorting_newest_first)
-                    is OldestFirst -> getString(R.string.sorting_oldest_first)
-                    is Alphabetical -> getString(R.string.sorting_alphabetical)
-                    is AlphabeticalReverse -> getString(R.string.sorting_alphabetical_reverse)
+                    is ByDateAddedNewestFirst -> getString(R.string.sorting_by_date_added_newest_first)
+                    is ByDateAddedOldestFirst -> getString(R.string.sorting_by_date_added_oldest_first)
+                    is ByTitleAlphabetical -> getString(R.string.sorting_by_title_alphabetical)
+                    is ByTitleAlphabeticalReverse -> getString(R.string.sorting_by_title_alphabetical_reverse)
                 }
             },
             onOptionSelected = { option ->

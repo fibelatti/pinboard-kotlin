@@ -3,7 +3,7 @@ package com.fibelatti.pinboard.features.posts.domain.usecase
 import com.fibelatti.core.functional.ObservableUseCaseWithParams
 import com.fibelatti.core.functional.Result
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_RECENT_QUANTITY
-import com.fibelatti.pinboard.features.appstate.NewestFirst
+import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
@@ -15,7 +15,7 @@ class GetRecentPosts @Inject constructor(
 ): ObservableUseCaseWithParams<GetPostParams, Result<PostListResult>> {
 
     override operator fun invoke(params: GetPostParams): Flow<Result<PostListResult>> = postsRepository.getAllPosts(
-        sortType = NewestFirst,
+        sortType = ByDateAddedNewestFirst,
         searchTerm = params.searchTerm,
         tags = (params.tags as? GetPostParams.Tags.Tagged)?.tags,
         untaggedOnly = false,

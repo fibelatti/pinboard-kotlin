@@ -83,7 +83,7 @@ class AppStateDataSource @Inject constructor(
         category = All,
         posts = null,
         showDescription = userRepository.showDescriptionInLists,
-        sortType = NewestFirst,
+        sortType = ByDateAddedNewestFirst,
         searchParameters = SearchParameters(),
         shouldLoad = ShouldLoadFirstPage,
         isConnected = connectivityInfoProvider.isConnected(),
