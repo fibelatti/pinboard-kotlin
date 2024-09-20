@@ -87,7 +87,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
     override suspend fun add(post: Post): Result<Post> {
         val resolvedPost = post.copy(
             id = post.id.ifNullOrBlank { UUID.randomUUID().toString() },
-            time = post.time.ifNullOrBlank { dateFormatter.nowAsTzFormat() },
+            dateAdded = post.dateAdded.ifNullOrBlank { dateFormatter.nowAsTzFormat() },
         )
 
         return if (connectivityInfoProvider.isConnected()) {
@@ -159,7 +159,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
             description = post.title,
             extended = post.description,
             hash = existingPost?.hash ?: post.id,
-            time = existingPost?.time ?: post.time,
+            time = existingPost?.time ?: post.dateAdded,
             shared = if (post.private == true) PinboardApiLiterals.NO else PinboardApiLiterals.YES,
             toread = if (post.readLater == true) PinboardApiLiterals.YES else PinboardApiLiterals.NO,
             tags = post.tags.orEmpty().joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name },

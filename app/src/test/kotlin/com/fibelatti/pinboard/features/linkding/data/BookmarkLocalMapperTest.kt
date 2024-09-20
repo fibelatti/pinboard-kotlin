@@ -5,7 +5,6 @@ import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.mockHash
 import com.fibelatti.pinboard.MockDataProvider.mockTags
 import com.fibelatti.pinboard.MockDataProvider.mockTagsResponse
-import com.fibelatti.pinboard.MockDataProvider.mockTime
 import com.fibelatti.pinboard.MockDataProvider.mockTitle
 import com.fibelatti.pinboard.MockDataProvider.mockUrlDescription
 import com.fibelatti.pinboard.MockDataProvider.mockUrlNotes
@@ -22,9 +21,12 @@ import org.junit.jupiter.api.Test
 
 class BookmarkLocalMapperTest {
 
+    private val dateAdded = "2019-01-10T08:20:10Z"
+    private val dateModified = "2019-03-10T08:20:10Z"
+
     private val mapper = BookmarkLocalMapper(
         dateFormatter = mockk {
-            every { tzFormatToDisplayFormat(any()) } answers { invocation.args[0] as String }
+            every { tzFormatToDisplayFormat(any()) } answers { firstArg() }
         },
     )
 
@@ -47,7 +49,8 @@ class BookmarkLocalMapperTest {
                 unread = unread,
                 shared = shared,
                 tagNames = mockTagsResponse,
-                dateModified = mockTime,
+                dateAdded = dateAdded,
+                dateModified = dateModified,
                 pendingSync = null,
             )
 
@@ -56,8 +59,8 @@ class BookmarkLocalMapperTest {
                 title = mockTitle,
                 description = mockUrlDescription,
                 id = mockHash,
-                time = mockTime,
-                formattedTime = mockTime,
+                dateAdded = dateAdded,
+                dateModified = dateModified,
                 private = !shared,
                 readLater = unread,
                 tags = mockTags,
@@ -96,8 +99,8 @@ class BookmarkLocalMapperTest {
                 title = mockTitle,
                 description = mockUrlDescription,
                 id = mockHash,
-                time = mockTime,
-                formattedTime = mockTime,
+                dateAdded = dateAdded,
+                dateModified = dateModified,
                 private = !shared,
                 readLater = unread,
                 tags = mockTags,
@@ -116,7 +119,8 @@ class BookmarkLocalMapperTest {
                 unread = unread,
                 shared = shared,
                 tagNames = mockTagsResponse,
-                dateModified = mockTime,
+                dateAdded = dateAdded,
+                dateModified = dateModified,
                 pendingSync = null,
             )
 

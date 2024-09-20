@@ -436,7 +436,7 @@ private fun BookmarkItem(
             }
 
             BookmarkFlags(
-                time = post.formattedTime,
+                time = post.displayDateAdded,
                 private = post.private,
                 readLater = post.readLater,
             )

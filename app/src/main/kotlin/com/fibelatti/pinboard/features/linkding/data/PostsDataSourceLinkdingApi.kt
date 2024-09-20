@@ -20,15 +20,15 @@ import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import java.util.UUID
+import javax.inject.Inject
+import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
-import java.util.UUID
-import javax.inject.Inject
-import kotlin.time.Duration.Companion.minutes
 
 class PostsDataSourceLinkdingApi @Inject constructor(
     private val linkdingApi: LinkdingApi,
@@ -52,7 +52,7 @@ class PostsDataSourceLinkdingApi @Inject constructor(
     override suspend fun add(post: Post): Result<Post> {
         val resolvedId = post.id.ifBlank { null }?.toIntOrNull()
         val resolvedPost = post.copy(
-            time = post.time.ifNullOrBlank { dateFormatter.nowAsTzFormat() },
+            dateAdded = post.dateAdded.ifNullOrBlank { dateFormatter.nowAsTzFormat() },
         )
 
         return if (connectivityInfoProvider.isConnected()) {

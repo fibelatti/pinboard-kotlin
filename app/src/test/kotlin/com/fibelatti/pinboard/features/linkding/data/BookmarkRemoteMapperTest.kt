@@ -2,7 +2,6 @@ package com.fibelatti.pinboard.features.linkding.data
 
 import com.fibelatti.pinboard.MockDataProvider.mockTags
 import com.fibelatti.pinboard.MockDataProvider.mockTagsString
-import com.fibelatti.pinboard.MockDataProvider.mockTime
 import com.fibelatti.pinboard.MockDataProvider.mockTitle
 import com.fibelatti.pinboard.MockDataProvider.mockUrlDescription
 import com.fibelatti.pinboard.MockDataProvider.mockUrlNotes
@@ -16,13 +15,16 @@ import org.junit.jupiter.api.Test
 
 class BookmarkRemoteMapperTest {
 
+    private val dateAddedWithMillis = "2019-01-10T08:20:10.123Z"
+    private val dateAdded = "2019-01-10T08:20:10Z"
+    private val dateModifiedWithMillis = "2019-03-10T08:20:10.123Z"
+    private val dateModified = "2019-03-10T08:20:10Z"
+
     private val mapper = BookmarkRemoteMapper(
         dateFormatter = mockk {
-            every { tzFormatToDisplayFormat(any()) } answers { invocation.args[0] as String }
+            every { tzFormatToDisplayFormat(any()) } answers { firstArg() }
         },
     )
-
-    private val time = "2019-01-10T08:20:10.123Z"
 
     @Test
     fun `should map all values`() {
@@ -40,7 +42,8 @@ class BookmarkRemoteMapperTest {
             unread = unread,
             shared = shared,
             tagNames = mockTagsString,
-            dateModified = time,
+            dateAdded = dateAddedWithMillis,
+            dateModified = dateModifiedWithMillis,
         )
 
         val expected = Post(
@@ -48,8 +51,8 @@ class BookmarkRemoteMapperTest {
             title = mockTitle,
             description = mockUrlDescription,
             id = "1",
-            time = mockTime,
-            formattedTime = mockTime,
+            dateAdded = dateAdded,
+            dateModified = dateModified,
             private = !shared,
             readLater = unread,
             tags = mockTags,
@@ -72,8 +75,8 @@ class BookmarkRemoteMapperTest {
             unread = null,
             shared = null,
             tagNames = null,
-            dateAdded = time,
-            dateModified = null,
+            dateAdded = dateAddedWithMillis,
+            dateModified = dateModifiedWithMillis,
         )
 
         val expected = Post(
@@ -81,8 +84,8 @@ class BookmarkRemoteMapperTest {
             title = "",
             description = "",
             id = "1",
-            time = mockTime,
-            formattedTime = mockTime,
+            dateAdded = dateAdded,
+            dateModified = dateModified,
             private = false,
             readLater = false,
             tags = null,

@@ -112,8 +112,8 @@ interface BookmarksDao {
             "and $WHERE_READ_LATER"
 
         private const val ORDER_BY_SUB_QUERY = "order by " +
-            "case when :sortType = 0 then dateModified end DESC, " +
-            "case when :sortType = 1 then dateModified end ASC," +
+            "case when :sortType = 0 then dateAdded end DESC, " +
+            "case when :sortType = 1 then dateAdded end ASC," +
             "case when :sortType = 2 then title end ASC," +
             "case when :sortType = 3 then title end DESC"
 

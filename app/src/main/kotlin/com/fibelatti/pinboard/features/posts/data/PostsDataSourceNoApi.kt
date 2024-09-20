@@ -42,7 +42,7 @@ class PostsDataSourceNoApi @Inject constructor(
             description = post.title,
             extended = post.description,
             hash = existingPost?.hash ?: post.id.ifEmpty { UUID.randomUUID().toString() },
-            time = existingPost?.time ?: post.time.ifEmpty { dateFormatter.nowAsTzFormat() },
+            time = existingPost?.time ?: post.dateAdded.ifEmpty { dateFormatter.nowAsTzFormat() },
             shared = if (post.private == true) AppConfig.PinboardApiLiterals.NO else AppConfig.PinboardApiLiterals.YES,
             toread = if (post.readLater == true) AppConfig.PinboardApiLiterals.YES else AppConfig.PinboardApiLiterals.NO,
             tags = post.tags?.joinToString(AppConfig.PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name }

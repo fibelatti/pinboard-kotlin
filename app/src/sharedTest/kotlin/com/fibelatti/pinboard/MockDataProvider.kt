@@ -120,7 +120,7 @@ object MockDataProvider {
         title = title,
         description = description,
         id = id,
-        time = time,
+        dateAdded = time,
         private = private,
         readLater = readLater,
         tags = tags,
@@ -153,6 +153,7 @@ object MockDataProvider {
         unread: Boolean? = false,
         shared: Boolean? = true,
         tagNames: String? = mockTagsResponse,
+        dateAdded: String = mockTime,
         dateModified: String = mockTime,
         pendingSync: PendingSyncDto? = null,
     ): BookmarkLocal = BookmarkLocal(
@@ -167,6 +168,7 @@ object MockDataProvider {
         unread = unread,
         shared = shared,
         tagNames = tagNames,
+        dateAdded = dateAdded,
         dateModified = dateModified,
         pendingSync = pendingSync,
     )

@@ -163,7 +163,7 @@ class PostsDataSourcePinboardApiTest {
                     readLater = null,
                     tags = mockTags,
                     id = "",
-                    time = "",
+                    dateAdded = "",
                 ),
             )
 
@@ -198,7 +198,7 @@ class PostsDataSourcePinboardApiTest {
                         readLater = null,
                         tags = mockTags,
                         id = "",
-                        time = "",
+                        dateAdded = "",
                     ),
                 )
 
@@ -239,7 +239,7 @@ class PostsDataSourcePinboardApiTest {
                             readLater = null,
                             tags = mockTags,
                             id = "",
-                            time = "",
+                            dateAdded = "",
                         ),
                     )
 
@@ -278,7 +278,7 @@ class PostsDataSourcePinboardApiTest {
                             readLater = null,
                             tags = mockTags,
                             id = "",
-                            time = "",
+                            dateAdded = "",
                         ),
                     )
 
@@ -316,7 +316,7 @@ class PostsDataSourcePinboardApiTest {
                             readLater = null,
                             tags = mockTags,
                             id = "",
-                            time = "",
+                            dateAdded = "",
                         ),
                     )
 
@@ -336,7 +336,7 @@ class PostsDataSourcePinboardApiTest {
                     title = mockUrlTitle,
                     description = "",
                     id = "",
-                    time = "",
+                    dateAdded = "",
                     private = null,
                     readLater = null,
                     tags = mockTags,
@@ -344,7 +344,7 @@ class PostsDataSourcePinboardApiTest {
 
                 val expectedPost = input.copy(
                     id = mockHash,
-                    time = mockTime,
+                    dateAdded = mockTime,
                 )
 
                 mockkStatic(UUID::class)
@@ -404,7 +404,7 @@ class PostsDataSourcePinboardApiTest {
                     readLater = null,
                     tags = inputTags,
                     id = "",
-                    time = "",
+                    dateAdded = "",
                 ),
             )
 
@@ -460,7 +460,7 @@ class PostsDataSourcePinboardApiTest {
                     readLater = testCases.readLater,
                     tags = mockTags,
                     id = "",
-                    time = "",
+                    dateAdded = "",
                 ),
             )
 
@@ -536,7 +536,7 @@ class PostsDataSourcePinboardApiTest {
                         readLater = readLater,
                         tags = mockTags,
                         id = "",
-                        time = "",
+                        dateAdded = "",
                     ),
                 )
 
@@ -563,7 +563,7 @@ class PostsDataSourcePinboardApiTest {
                         readLater = readLater,
                         tags = mockTags,
                         id = "",
-                        time = "",
+                        dateAdded = "",
                     ),
                 )
 
@@ -590,7 +590,7 @@ class PostsDataSourcePinboardApiTest {
                         readLater = readLater,
                         tags = mockTags,
                         id = "",
-                        time = "",
+                        dateAdded = "",
                     ),
                 )
 
@@ -615,7 +615,7 @@ class PostsDataSourcePinboardApiTest {
                         readLater = readLater,
                         tags = mockTags,
                         id = "",
-                        time = "",
+                        dateAdded = "",
                     ),
                 )
 

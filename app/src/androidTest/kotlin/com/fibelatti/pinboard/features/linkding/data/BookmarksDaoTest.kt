@@ -105,11 +105,11 @@ class BookmarksDaoTest : BaseDbTest() {
         unread = false,
     )
 
-    private val bookmarkFirst = createBookmarkLocal(id = randomHash(), title = "A title", dateModified = mockTime1)
-    private val bookmarkSecond = createBookmarkLocal(id = randomHash(), title = "B title", dateModified = mockTime2)
-    private val bookmarkThird = createBookmarkLocal(id = randomHash(), title = "C title", dateModified = mockTime3)
-    private val bookmarkFourth = createBookmarkLocal(id = randomHash(), title = "D title", dateModified = mockTime4)
-    private val bookmarkFifth = createBookmarkLocal(id = randomHash(), title = "E title", dateModified = mockTime5)
+    private val bookmarkFirst = createBookmarkLocal(id = randomHash(), title = "A title", dateAdded = mockTime1)
+    private val bookmarkSecond = createBookmarkLocal(id = randomHash(), title = "B title", dateAdded = mockTime2)
+    private val bookmarkThird = createBookmarkLocal(id = randomHash(), title = "C title", dateAdded = mockTime3)
+    private val bookmarkFourth = createBookmarkLocal(id = randomHash(), title = "D title", dateAdded = mockTime4)
+    private val bookmarkFifth = createBookmarkLocal(id = randomHash(), title = "E title", dateAdded = mockTime5)
     // endregion
 
     private val bookmarksDao get() = appDatabase.linkdingBookmarksDao()

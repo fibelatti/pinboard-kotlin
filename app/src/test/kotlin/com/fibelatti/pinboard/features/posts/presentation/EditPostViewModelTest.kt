@@ -195,7 +195,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                         readLater = true,
                         tags = mockTags,
                         id = "",
-                        time = "",
+                        dateAdded = "",
                     ),
                 )
             } returns Failure(InvalidUrlException())
@@ -240,7 +240,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                     readLater = true,
                     tags = mockTags,
                     id = "",
-                    time = "",
+                    dateAdded = "",
                 ),
             )
         } returns Failure(error)
@@ -287,7 +287,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                         readLater = true,
                         tags = mockTags,
                         id = "",
-                        time = "",
+                        dateAdded = "",
                     ),
                 )
             } returns Success(post)

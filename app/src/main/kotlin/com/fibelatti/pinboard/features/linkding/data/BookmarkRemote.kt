@@ -4,9 +4,9 @@ import com.fibelatti.core.functional.Mapper
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import javax.inject.Inject
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import javax.inject.Inject
 
 @Serializable
 data class PaginatedResponseRemote<T>(
@@ -52,7 +52,10 @@ class BookmarkRemoteMapper @Inject constructor(
 ) : Mapper<BookmarkRemote, Post> {
 
     override fun map(param: BookmarkRemote): Post = with(param) {
-        val time = (dateModified ?: dateAdded)
+        val dateAdded = this.dateAdded
+            ?.substringBeforeLast(".")?.plus("Z") // Drop the milliseconds
+            ?: dateFormatter.nowAsTzFormat()
+        val dateModified = this.dateModified
             ?.substringBeforeLast(".")?.plus("Z") // Drop the milliseconds
             ?: dateFormatter.nowAsTzFormat()
 
@@ -61,8 +64,10 @@ class BookmarkRemoteMapper @Inject constructor(
             title = title.orEmpty(),
             description = description.orEmpty(),
             id = requireNotNull(id?.toString()),
-            time = time,
-            formattedTime = dateFormatter.tzFormatToDisplayFormat(time),
+            dateAdded = dateAdded,
+            displayDateAdded = dateFormatter.tzFormatToDisplayFormat(dateAdded),
+            dateModified = dateModified,
+            displayDateModified = dateFormatter.tzFormatToDisplayFormat(dateModified),
             private = shared == false,
             readLater = unread == true,
             tags = tagNames?.sorted()?.map(::Tag),

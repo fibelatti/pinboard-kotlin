@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.linkding.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -29,6 +30,8 @@ data class BookmarkLocal(
     val unread: Boolean? = false,
     val shared: Boolean? = true,
     val tagNames: String? = null,
+    @ColumnInfo(defaultValue = "")
+    val dateAdded: String = "",
     val dateModified: String = "",
     val pendingSync: PendingSyncDto? = null,
 ) {
@@ -49,8 +52,10 @@ class BookmarkLocalMapper @Inject constructor(
             title = title,
             description = description,
             id = id,
-            time = dateModified,
-            formattedTime = dateFormatter.tzFormatToDisplayFormat(dateModified),
+            dateAdded = dateAdded,
+            displayDateAdded = dateFormatter.tzFormatToDisplayFormat(dateAdded),
+            dateModified = dateModified,
+            displayDateModified = dateFormatter.tzFormatToDisplayFormat(dateModified),
             private = shared == false,
             readLater = unread == true,
             tags = tagNames?.ifBlank { null }?.split(" ")?.sorted()?.map(::Tag),
@@ -80,7 +85,8 @@ class BookmarkLocalMapper @Inject constructor(
             unread = readLater,
             shared = private != true,
             tagNames = tags?.joinToString(separator = " ") { it.name },
-            dateModified = time,
+            dateAdded = dateAdded,
+            dateModified = dateModified,
             pendingSync = when (pendingSync) {
                 PendingSync.ADD -> PendingSyncDto.ADD
                 PendingSync.UPDATE -> PendingSyncDto.UPDATE
