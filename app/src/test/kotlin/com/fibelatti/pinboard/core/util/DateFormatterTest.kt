@@ -5,26 +5,25 @@ import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.spyk
-import io.mockk.verify
+import io.mockk.mockkObject
+import kotlinx.datetime.TimeZone
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.text.SimpleDateFormat
-import java.util.TimeZone
 
 internal class DateFormatterTest {
 
     private val testUserRepository = mockk<UserRepository>()
-    private val dateFormatter = spyk(DateFormatter(testUserRepository))
+    private val dateFormatter = DateFormatter(testUserRepository)
+
+    @BeforeEach
+    fun setup() {
+        mockkObject(TimeZone)
+        every { TimeZone.currentSystemDefault() } returns TimeZone.UTC
+    }
 
     @Test
     fun `WHEN tzFormatToDisplayFormat is called AND preferred date format is DayMonthYearWithTime THEN it is correctly returned`() {
         every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.DayMonthYearWithTime
-        every {
-            dateFormatter.getSimpleDateFormat(PreferredDateFormat.DayMonthYearWithTime.value, timeZone = null)
-        } returns dateFormatter.getSimpleDateFormat(
-            PreferredDateFormat.DayMonthYearWithTime.value,
-            timeZone = TimeZone.getTimeZone("UTC"),
-        )
 
         assertThat(dateFormatter.tzFormatToDisplayFormat("1991-08-20T11:00:00Z"))
             .isEqualTo("20/08/91, 11:00")
@@ -33,12 +32,6 @@ internal class DateFormatterTest {
     @Test
     fun `WHEN tzFormatToDisplayFormat is called AND preferred date format is MonthDayYearWithTime THEN it is correctly returned`() {
         every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.MonthDayYearWithTime
-        every {
-            dateFormatter.getSimpleDateFormat(PreferredDateFormat.MonthDayYearWithTime.value, timeZone = null)
-        } returns dateFormatter.getSimpleDateFormat(
-            PreferredDateFormat.MonthDayYearWithTime.value,
-            timeZone = TimeZone.getTimeZone("UTC"),
-        )
 
         assertThat(dateFormatter.tzFormatToDisplayFormat("1991-08-20T11:00:00Z"))
             .isEqualTo("08/20/91, 11:00")
@@ -47,12 +40,6 @@ internal class DateFormatterTest {
     @Test
     fun `WHEN notesFormatToDisplayFormat is called AND preferred date format is DayMonthYearWithTime THEN it is correctly returned`() {
         every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.DayMonthYearWithTime
-        every {
-            dateFormatter.getSimpleDateFormat(PreferredDateFormat.DayMonthYearWithTime.value, timeZone = null)
-        } returns dateFormatter.getSimpleDateFormat(
-            PreferredDateFormat.DayMonthYearWithTime.value,
-            timeZone = TimeZone.getTimeZone("UTC"),
-        )
 
         assertThat(dateFormatter.notesFormatToDisplayFormat("1991-08-20 11:00:00"))
             .isEqualTo("20/08/91, 11:00")
@@ -61,12 +48,6 @@ internal class DateFormatterTest {
     @Test
     fun `WHEN notesFormatToDisplayFormat is called AND preferred date format is MonthDayYearWithTime THEN it is correctly returned`() {
         every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.MonthDayYearWithTime
-        every {
-            dateFormatter.getSimpleDateFormat(PreferredDateFormat.MonthDayYearWithTime.value, timeZone = null)
-        } returns dateFormatter.getSimpleDateFormat(
-            PreferredDateFormat.MonthDayYearWithTime.value,
-            timeZone = TimeZone.getTimeZone("UTC"),
-        )
 
         assertThat(dateFormatter.notesFormatToDisplayFormat("1991-08-20 11:00:00"))
             .isEqualTo("08/20/91, 11:00")
@@ -80,11 +61,11 @@ internal class DateFormatterTest {
     }
 
     @Test
-    fun `getUtcFormat should call getSimpleDateFormat and the timezone should be UTC`() {
-        every { dateFormatter.getSimpleDateFormat(any(), any()) } returns SimpleDateFormat()
+    fun `WHEN displayFormatToMillis is called THEN millis is returned`() {
+        every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.DayMonthYearWithTime
 
-        dateFormatter.getUtcFormat("any")
+        val result = dateFormatter.displayFormatToMillis("20/08/91, 11:00")
 
-        verify { dateFormatter.getSimpleDateFormat("any", TimeZone.getTimeZone("UTC")) }
+        assertThat(result).isEqualTo(682_686_000_000)
     }
 }

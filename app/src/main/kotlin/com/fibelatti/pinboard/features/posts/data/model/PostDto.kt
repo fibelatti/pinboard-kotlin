@@ -51,7 +51,7 @@ class PostDtoMapper @Inject constructor(
             description = extended.orEmpty(),
             id = hash,
             time = time,
-            formattedTime = dateFormatter.tzFormatToDisplayFormat(time) ?: time,
+            formattedTime = dateFormatter.tzFormatToDisplayFormat(time),
             private = shared == PinboardApiLiterals.NO,
             readLater = toread == PinboardApiLiterals.YES,
             tags = if (tags.isBlank()) {

@@ -62,7 +62,7 @@ class BookmarkRemoteMapper @Inject constructor(
             description = description.orEmpty(),
             id = requireNotNull(id?.toString()),
             time = time,
-            formattedTime = dateFormatter.tzFormatToDisplayFormat(time) ?: time,
+            formattedTime = dateFormatter.tzFormatToDisplayFormat(time),
             private = shared == false,
             readLater = unread == true,
             tags = tagNames?.sorted()?.map(::Tag),
