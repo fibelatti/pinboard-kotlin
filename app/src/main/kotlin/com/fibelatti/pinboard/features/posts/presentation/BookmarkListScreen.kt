@@ -41,6 +41,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -395,12 +396,16 @@ private fun BookmarkItem(
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
             )
 
-            Text(
-                text = stringResource(id = R.string.posts_saved_on, post.formattedTime),
-                modifier = Modifier.padding(vertical = 4.dp),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodySmall,
-            )
+            if (post.url != post.displayTitle) {
+                Text(
+                    text = post.url,
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
 
             if (showDescription && post.displayDescription.isNotBlank()) {
                 TextWithBlockquote(
@@ -430,12 +435,11 @@ private fun BookmarkItem(
                 )
             }
 
-            if (post.private == true || post.readLater == true) {
-                BookmarkFlags(
-                    private = post.private,
-                    readLater = post.readLater,
-                )
-            }
+            BookmarkFlags(
+                time = post.formattedTime,
+                private = post.private,
+                readLater = post.readLater,
+            )
 
             if (!post.tags.isNullOrEmpty()) {
                 val tags = remember(post.tags) {
@@ -445,7 +449,6 @@ private fun BookmarkItem(
                 MultilineChipGroup(
                     items = tags,
                     onItemClick = { item -> onTagClicked(post.tags.first { tag -> tag.name == item.text }) },
-                    modifier = Modifier.padding(top = 8.dp),
                     itemTonalElevation = 16.dp,
                 )
             }
@@ -482,6 +485,7 @@ fun PendingSyncIndicator(
 
 @Composable
 private fun BookmarkFlags(
+    time: String,
     private: Boolean?,
     readLater: Boolean?,
     modifier: Modifier = Modifier,
@@ -491,6 +495,14 @@ private fun BookmarkFlags(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        Text(
+            text = time,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodySmall,
+        )
+
+        Spacer(modifier = Modifier.size(8.dp))
+
         if (private == true) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_private),

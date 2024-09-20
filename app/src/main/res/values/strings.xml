@@ -83,8 +83,6 @@
     <string name="posts_sorting_alphabetical">%s — A to Z</string>
     <string name="posts_sorting_alphabetical_reverse">%s — Z to A</string>
 
-    <string name="posts_saved_on">Saved on %s</string>
-    <string name="posts_last_modified_on">Last modified on %s</string>
     <string name="posts_share_title">Sharing URL</string>
     <string name="posts_open_with_file_viewer">Open in file viewer</string>
     <string name="posts_open_with_file_viewer_error">Failed to open this URL</string>

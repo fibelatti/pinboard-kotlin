@@ -25,9 +25,9 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.onEach
 import java.util.UUID
 import javax.inject.Inject
+import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
 class EditPostFragment @Inject constructor() : BaseFragment() {
@@ -190,13 +190,7 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
                 mainViewModel.updateState { currentState ->
                     currentState.copy(
                         title = MainState.TitleComponent.Visible(getString(R.string.posts_add_title)),
-                        subtitle = if (post.id.isNotEmpty() && post.formattedTime.isNotEmpty()) {
-                            MainState.TitleComponent.Visible(
-                                label = getString(R.string.posts_last_modified_on, post.formattedTime),
-                            )
-                        } else {
-                            MainState.TitleComponent.Gone
-                        },
+                        subtitle = MainState.TitleComponent.Gone,
                         navigation = MainState.NavigationComponent.Visible(id = ACTION_ID, icon = R.drawable.ic_close),
                         bottomAppBar = MainState.BottomAppBarComponent.Visible(
                             id = ACTION_ID,
