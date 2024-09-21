@@ -30,11 +30,13 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -96,15 +98,18 @@ fun BookmarkDetailsScreen(
 
     when {
         post.isFile() -> {
-            FileBookmark(
+            BookmarkPlaceholder(
                 title = post.displayTitle,
                 url = post.url,
-                onOpenInFileViewerClicked = onOpenInFileViewerClicked,
+                onButtonClicked = onOpenInFileViewerClicked,
+                icon = painterResource(id = R.drawable.ic_mobile),
+                description = stringResource(id = R.string.posts_open_with_file_viewer_description),
+                buttonText = stringResource(id = R.string.posts_open_with_file_viewer),
             )
         }
 
         !isConnected -> {
-            BookmarkError(
+            BookmarkPlaceholder(
                 title = post.displayTitle,
                 url = post.url,
                 onButtonClicked = onOpenInBrowserClicked,
@@ -113,7 +118,7 @@ fun BookmarkDetailsScreen(
         }
 
         hasError -> {
-            BookmarkError(
+            BookmarkPlaceholder(
                 title = post.displayTitle,
                 url = post.url,
                 onButtonClicked = onOpenInBrowserClicked,
@@ -199,56 +204,11 @@ fun BookmarkDetailsScreen(
 }
 
 @Composable
-private fun FileBookmark(
-    title: String,
-    url: String,
-    onOpenInFileViewerClicked: () -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = ExtendedTheme.colors.backgroundNoOverlay)
-            .padding(horizontal = 24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_file),
-            contentDescription = null,
-            modifier = Modifier.size(60.dp),
-            tint = MaterialTheme.colorScheme.primary,
-        )
-
-        Text(
-            text = title,
-            modifier = Modifier.padding(top = 16.dp),
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-        )
-
-        Text(
-            text = url,
-            modifier = Modifier.padding(top = 8.dp),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyMedium,
-        )
-
-        ElevatedButton(
-            onClick = onOpenInFileViewerClicked,
-            modifier = Modifier.padding(top = 24.dp),
-        ) {
-            Text(text = stringResource(id = R.string.posts_open_with_file_viewer))
-        }
-    }
-}
-
-@Composable
-private fun BookmarkError(
+private fun BookmarkPlaceholder(
     title: String,
     url: String,
     onButtonClicked: () -> Unit,
+    icon: Painter = painterResource(id = R.drawable.ic_browser),
     description: String = stringResource(id = R.string.posts_url_error),
     buttonText: String = stringResource(id = R.string.posts_open_in_browser),
 ) {
@@ -261,8 +221,8 @@ private fun BookmarkError(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_warning),
-            contentDescription = stringResource(id = R.string.cd_warning),
+            painter = icon,
+            contentDescription = null,
             modifier = Modifier.size(60.dp),
             tint = MaterialTheme.colorScheme.primary,
         )
@@ -272,6 +232,8 @@ private fun BookmarkError(
             modifier = Modifier.padding(top = 16.dp),
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 2,
             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
         )
 
@@ -280,6 +242,8 @@ private fun BookmarkError(
             modifier = Modifier.padding(top = 8.dp),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 2,
             style = MaterialTheme.typography.bodyMedium,
         )
 
@@ -304,10 +268,13 @@ private fun BookmarkError(
 @ThemePreviews
 private fun FileBookmarkPreview() {
     ExtendedTheme {
-        FileBookmark(
+        BookmarkPlaceholder(
             title = "Some bookmark",
             url = "https://www.bookmark.com",
-            onOpenInFileViewerClicked = {},
+            onButtonClicked = {},
+            icon = painterResource(id = R.drawable.ic_mobile),
+            description = stringResource(id = R.string.posts_open_with_file_viewer_description),
+            buttonText = stringResource(id = R.string.posts_open_with_file_viewer),
         )
     }
 }
@@ -316,7 +283,7 @@ private fun FileBookmarkPreview() {
 @ThemePreviews
 private fun BookmarkErrorPreview() {
     ExtendedTheme {
-        BookmarkError(
+        BookmarkPlaceholder(
             title = "Some bookmark",
             url = "https://www.bookmark.com",
             onButtonClicked = {},

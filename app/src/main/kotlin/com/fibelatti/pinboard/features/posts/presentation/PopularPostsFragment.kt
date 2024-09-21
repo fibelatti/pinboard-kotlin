@@ -111,7 +111,7 @@ private sealed class PopularPostQuickActions(
         override val post: Post,
     ) : PopularPostQuickActions(
         title = R.string.quick_actions_open_in_browser,
-        icon = R.drawable.ic_open_in_browser,
+        icon = R.drawable.ic_browser,
     )
 
     companion object {

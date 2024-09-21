@@ -518,6 +518,7 @@ private fun BookmarkFlags(
             Icon(
                 painter = painterResource(id = R.drawable.ic_private),
                 contentDescription = null,
+                modifier = Modifier.size(16.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
@@ -533,6 +534,7 @@ private fun BookmarkFlags(
             Icon(
                 painter = painterResource(id = R.drawable.ic_read_later),
                 contentDescription = null,
+                modifier = Modifier.size(16.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 

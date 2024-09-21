@@ -84,8 +84,8 @@
     <string name="posts_sorting_alphabetical_reverse">%s — Z to A</string>
 
     <string name="posts_share_title">Sharing URL</string>
-    <string name="posts_open_with_file_viewer">Open in file viewer</string>
-    <string name="posts_open_with_file_viewer_error">Failed to open this URL</string>
+    <string name="posts_open_with_file_viewer">Open file viewer</string>
+    <string name="posts_open_with_file_viewer_description">This bookmark cannot be viewed using the internal browser. Use your default file viewer instead.</string>
 
     <string name="posts_empty_title">No pins in this board</string>
     <string name="posts_empty_description">There are no bookmarks saved in the selected category</string>
@@ -114,8 +114,8 @@
     <string name="posts_item_read_later">Read later</string>
 
     <string name="posts_url_offline_error">Looks like you are offline. Please try again once connection is available</string>
-    <string name="posts_url_error">Unfortunately Pinkt cannot open this bookmark. Try opening it using your default browser</string>
-    <string name="posts_open_in_browser">Open in browser</string>
+    <string name="posts_url_error">This bookmark cannot be viewed using the internal browser. Use your default browser instead.</string>
+    <string name="posts_open_in_browser">Open external browser</string>
 
     <string name="posts_pending_add">Pending add</string>
     <string name="posts_pending_add_expanded">This bookmark will be added when network becomes available</string>
@@ -279,7 +279,6 @@
 
     <!-- Content Descriptions -->
     <string name="cd_navigate_back">Navigate back</string>
-    <string name="cd_warning">Warning</string>
     <string name="cd_share_receiver_image">Saving your bookmark</string>
     <string name="cd_expand_menu">Expand menu</string>
     <string name="cd_scroll_to_top">Scroll to top</string>

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerBasedShape
@@ -69,9 +70,9 @@ fun Chip(
                     painter = item.icon,
                     contentDescription = null,
                     modifier = Modifier
-                        .defaultMinSize(minHeight = ChipGroup.MinSize)
                         .clickable(interactionSource = interactionSource, indication = null) { onIconClick(item) }
-                        .padding(all = 8.dp),
+                        .padding(all = 8.dp)
+                        .size(20.dp),
                 )
             }
         }

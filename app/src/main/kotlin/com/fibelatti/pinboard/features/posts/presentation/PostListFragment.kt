@@ -410,14 +410,14 @@ private sealed class PostQuickActions(
         override val post: Post,
     ) : PostQuickActions(
         title = R.string.quick_actions_open_in_browser,
-        icon = R.drawable.ic_open_in_browser,
+        icon = R.drawable.ic_browser,
     )
 
     data class SubmitToWayback(
         override val post: Post,
     ) : PostQuickActions(
         title = R.string.quick_actions_submit_to_wayback,
-        icon = R.drawable.ic_share,
+        icon = R.drawable.ic_send,
     )
 
     data class SearchWayback(

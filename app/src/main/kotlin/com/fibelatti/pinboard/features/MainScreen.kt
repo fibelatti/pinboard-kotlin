@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -244,6 +245,7 @@ private fun MainBottomAppBar(
                             Icon(
                                 painter = painterResource(id = icon),
                                 contentDescription = null,
+                                modifier = Modifier.size(24.dp),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
@@ -313,6 +315,7 @@ private fun MenuItemsContent(
                         Icon(
                             painter = painterResource(id = menuItem.icon),
                             contentDescription = stringResource(id = menuItem.name),
+                            modifier = Modifier.size(24.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
@@ -350,6 +353,7 @@ private fun SidePanelBottomAppBar(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_chevron_left),
                         contentDescription = stringResource(id = R.string.cd_expand_menu),
+                        modifier = Modifier.size(24.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }

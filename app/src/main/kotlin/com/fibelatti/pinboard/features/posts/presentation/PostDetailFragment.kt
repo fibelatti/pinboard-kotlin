@@ -27,9 +27,9 @@ import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.onEach
 import java.util.UUID
 import javax.inject.Inject
+import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
 class PostDetailFragment @Inject constructor() : BaseFragment() {
@@ -82,13 +82,13 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
 
         try {
             startActivity(newIntent)
-        } catch (ignored: ActivityNotFoundException) {
-            requireView().showBanner(getString(R.string.posts_open_with_file_viewer_error))
+        } catch (_: ActivityNotFoundException) {
+            openUrlInExternalBrowser(post)
         }
     }
 
     private fun openUrlInExternalBrowser(post: Post) {
-        startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(post.url) })
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.url)))
     }
 
     private fun setupViewModels() {

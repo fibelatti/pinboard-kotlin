@@ -103,7 +103,7 @@ data class MainState(
 
         data object OpenInBrowser : MenuItemComponent(
             name = R.string.menu_link_open_in_browser,
-            icon = R.drawable.ic_open_in_browser,
+            icon = R.drawable.ic_browser,
         )
 
         data object SaveBookmark : MenuItemComponent(
