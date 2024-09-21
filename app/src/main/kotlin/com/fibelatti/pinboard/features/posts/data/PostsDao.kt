@@ -116,8 +116,8 @@ interface PostsDao {
         private const val ORDER_BY_SUB_QUERY = "order by " +
             "case when :sortType = 0 then time end DESC, " +
             "case when :sortType = 1 then time end ASC," +
-            "case when :sortType = 2 then description end ASC," +
-            "case when :sortType = 3 then description end DESC"
+            "case when :sortType = 4 then description end ASC," +
+            "case when :sortType = 5 then description end DESC"
 
         @JvmStatic
         fun preFormatTerm(term: String): String = term

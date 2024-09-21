@@ -547,7 +547,7 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getAllPosts(sortType = 2)
+        val result = postsDao.getAllPosts(sortType = 4)
 
         // THEN
         assertThat(result).isEqualTo(
@@ -574,7 +574,7 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getAllPosts(sortType = 3)
+        val result = postsDao.getAllPosts(sortType = 5)
 
         // THEN
         assertThat(result).isEqualTo(

@@ -14,6 +14,8 @@ import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppConfig.PINBOARD_USER_URL
+import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.applySecureFlag
@@ -28,6 +30,8 @@ import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
 import com.fibelatti.pinboard.features.appstate.ByDateAddedOldestFirst
+import com.fibelatti.pinboard.features.appstate.ByDateModifiedNewestFirst
+import com.fibelatti.pinboard.features.appstate.ByDateModifiedOldestFirst
 import com.fibelatti.pinboard.features.appstate.ByTitleAlphabetical
 import com.fibelatti.pinboard.features.appstate.ByTitleAlphabeticalReverse
 import com.fibelatti.pinboard.features.appstate.EditPost
@@ -58,6 +62,7 @@ import kotlinx.coroutines.flow.onEach
 @AndroidEntryPoint
 class PostListFragment @Inject constructor(
     private val userRepository: UserRepository,
+    private val appModeProvider: AppModeProvider,
 ) : BaseFragment() {
 
     private val appStateViewModel: AppStateViewModel by activityViewModels()
@@ -298,6 +303,8 @@ class PostListFragment @Inject constructor(
             when (sortType) {
                 is ByDateAddedNewestFirst -> R.string.posts_sorting_newest_first
                 is ByDateAddedOldestFirst -> R.string.posts_sorting_oldest_first
+                is ByDateModifiedNewestFirst -> R.string.posts_sorting_newest_first
+                is ByDateModifiedOldestFirst -> R.string.posts_sorting_oldest_first
                 is ByTitleAlphabetical -> R.string.posts_sorting_alphabetical
                 is ByTitleAlphabeticalReverse -> R.string.posts_sorting_alphabetical_reverse
             },
@@ -309,16 +316,24 @@ class PostListFragment @Inject constructor(
         SelectionDialog.show(
             context = requireContext(),
             title = getString(R.string.menu_main_sorting),
-            options = listOf(
-                ByDateAddedNewestFirst,
-                ByDateAddedOldestFirst,
-                ByTitleAlphabetical,
-                ByTitleAlphabeticalReverse,
-            ),
+            options = buildList {
+                add(ByDateAddedNewestFirst)
+                add(ByDateAddedOldestFirst)
+
+                if (AppMode.LINKDING == appModeProvider.appMode.value) {
+                    add(ByDateModifiedNewestFirst)
+                    add(ByDateModifiedOldestFirst)
+                }
+
+                add(ByTitleAlphabetical)
+                add(ByTitleAlphabeticalReverse)
+            },
             optionName = { option ->
                 when (option) {
                     is ByDateAddedNewestFirst -> getString(R.string.sorting_by_date_added_newest_first)
                     is ByDateAddedOldestFirst -> getString(R.string.sorting_by_date_added_oldest_first)
+                    is ByDateModifiedNewestFirst -> getString(R.string.sorting_by_date_modified_newest_first)
+                    is ByDateModifiedOldestFirst -> getString(R.string.sorting_by_date_modified_oldest_first)
                     is ByTitleAlphabetical -> getString(R.string.sorting_by_title_alphabetical)
                     is ByTitleAlphabeticalReverse -> getString(R.string.sorting_by_title_alphabetical_reverse)
                 }

@@ -148,6 +148,8 @@
     <!-- Sorting -->
     <string name="sorting_by_date_added_newest_first">By date added (Newest first)</string>
     <string name="sorting_by_date_added_oldest_first">By date added (Oldest first)</string>
+    <string name="sorting_by_date_modified_newest_first">By date modified (Newest first)</string>
+    <string name="sorting_by_date_modified_oldest_first">By date modified (Oldest first)</string>
     <string name="sorting_by_title_alphabetical">By title (A to Z)</string>
     <string name="sorting_by_title_alphabetical_reverse">By title (Z to A)</string>
 

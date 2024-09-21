@@ -59,6 +59,8 @@ import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.features.appstate.ByDateModifiedNewestFirst
+import com.fibelatti.pinboard.features.appstate.ByDateModifiedOldestFirst
 import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.GetNextPostPage
 import com.fibelatti.pinboard.features.appstate.Loaded
@@ -71,6 +73,7 @@ import com.fibelatti.pinboard.features.appstate.ShouldForceLoad
 import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
 import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
 import com.fibelatti.pinboard.features.appstate.SidePanelContent
+import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.appstate.ViewCategory
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
@@ -136,6 +139,7 @@ fun BookmarkListScreen(
             isLoading = (postListLoading || postDetailScreenState.isLoading) && !hasError,
             onScrollDirectionChanged = mainViewModel::setCurrentScrollDirection,
             onNextPageRequested = { appStateViewModel.runAction(GetNextPostPage) },
+            sortType = currentState.sortType,
             searchParameters = currentState.searchParameters,
             onActiveSearchClicked = { appStateViewModel.runAction(ViewSearch) },
             onClearClicked = { appStateViewModel.runAction(ClearSearch) },
@@ -167,12 +171,13 @@ fun BookmarkListScreen(
     isLoading: Boolean,
     onScrollDirectionChanged: (ScrollDirection) -> Unit,
     onNextPageRequested: () -> Unit,
+    sortType: SortType,
     searchParameters: SearchParameters,
     onActiveSearchClicked: () -> Unit,
     onClearClicked: () -> Unit,
     onSaveClicked: () -> Unit,
     onShareClicked: (SearchParameters) -> Unit,
-    onPullToRefresh: () -> Unit = {},
+    onPullToRefresh: () -> Unit,
     onPostClicked: (Post) -> Unit,
     onPostLongClicked: (Post) -> Unit,
     onTagClicked: (Tag) -> Unit,
@@ -264,6 +269,7 @@ fun BookmarkListScreen(
                     BookmarkItem(
                         appMode = appMode,
                         post = post,
+                        sortType = sortType,
                         onPostClicked = onPostClicked,
                         onPostLongClicked = onPostLongClicked,
                         showDescription = showPostDescription,
@@ -355,6 +361,7 @@ private fun ActiveSearch(
 private fun BookmarkItem(
     appMode: AppMode,
     post: Post,
+    sortType: SortType,
     onPostClicked: (Post) -> Unit,
     onPostLongClicked: (Post) -> Unit,
     showDescription: Boolean,
@@ -436,7 +443,11 @@ private fun BookmarkItem(
             }
 
             BookmarkFlags(
-                time = post.displayDateAdded,
+                time = if (sortType == ByDateModifiedNewestFirst || sortType == ByDateModifiedOldestFirst) {
+                    post.displayDateModified
+                } else {
+                    post.displayDateAdded
+                },
                 private = post.private,
                 readLater = post.readLater,
             )
@@ -551,6 +562,7 @@ private fun BookmarkListScreenPreview(
             isLoading = true,
             onScrollDirectionChanged = {},
             onNextPageRequested = {},
+            sortType = ByDateModifiedNewestFirst,
             searchParameters = SearchParameters(term = "bookmark"),
             onActiveSearchClicked = {},
             onClearClicked = {},
@@ -595,6 +607,7 @@ private fun BookmarkItemPreview(
             BookmarkItem(
                 appMode = AppMode.PINBOARD,
                 post = post,
+                sortType = ByDateModifiedNewestFirst,
                 onPostClicked = {},
                 onPostLongClicked = {},
                 showDescription = true,

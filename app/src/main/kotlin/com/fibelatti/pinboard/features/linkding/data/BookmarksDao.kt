@@ -114,8 +114,10 @@ interface BookmarksDao {
         private const val ORDER_BY_SUB_QUERY = "order by " +
             "case when :sortType = 0 then dateAdded end DESC, " +
             "case when :sortType = 1 then dateAdded end ASC," +
-            "case when :sortType = 2 then title end ASC," +
-            "case when :sortType = 3 then title end DESC"
+            "case when :sortType = 2 then dateModified end DESC, " +
+            "case when :sortType = 3 then dateModified end ASC," +
+            "case when :sortType = 4 then title end ASC," +
+            "case when :sortType = 5 then title end DESC"
 
         @JvmStatic
         fun preFormatTerm(term: String): String = term

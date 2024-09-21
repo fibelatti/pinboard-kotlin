@@ -579,7 +579,7 @@ class BookmarksDaoTest : BaseDbTest() {
         bookmarksDao.saveBookmarks(list)
 
         // WHEN
-        val result = bookmarksDao.getAllBookmarks(sortType = 2)
+        val result = bookmarksDao.getAllBookmarks(sortType = 4)
 
         // THEN
         assertThat(result).isEqualTo(
@@ -606,7 +606,7 @@ class BookmarksDaoTest : BaseDbTest() {
         bookmarksDao.saveBookmarks(list)
 
         // WHEN
-        val result = bookmarksDao.getAllBookmarks(sortType = 0)
+        val result = bookmarksDao.getAllBookmarks(sortType = 5)
 
         // THEN
         assertThat(result).isEqualTo(
