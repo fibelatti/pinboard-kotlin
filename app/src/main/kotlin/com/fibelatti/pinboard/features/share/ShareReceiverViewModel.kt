@@ -22,12 +22,11 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.GetUrlPreview
 import com.fibelatti.pinboard.features.posts.domain.usecase.UrlPreview
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class ShareReceiverViewModel @Inject constructor(
@@ -45,19 +44,16 @@ class ShareReceiverViewModel @Inject constructor(
     fun saveUrl(url: String, title: String?, skipEdit: Boolean = false) {
         launch {
             extractUrl(url).mapCatching { (extractedUrl, highlightedText) ->
-                val urlPreview = async {
-                    getUrlPreview(
-                        GetUrlPreview.Params(
-                            url = extractedUrl,
-                            title = title,
-                            highlightedText = highlightedText,
-                        ),
-                    )
-                }
-                val existingPost = async { postsRepository.getPost(id = "", url = extractedUrl) }
+                val preview = getUrlPreview(
+                    GetUrlPreview.Params(
+                        url = extractedUrl,
+                        title = title,
+                        highlightedText = highlightedText,
+                    ),
+                ).getOrThrow()
 
-                urlPreview.await().getOrThrow() to existingPost.await().getOrNull()
-            }.onSuccess { (urlPreview, existingPost) ->
+                val existingPost = postsRepository.getPost(id = "", url = preview.url).getOrNull()
+
                 when {
                     existingPost != null && skipEdit -> {
                         _screenState.emitLoaded(SharingResult.Saved(message = R.string.posts_existing_feedback))
@@ -69,10 +65,10 @@ class ShareReceiverViewModel @Inject constructor(
                     }
 
                     skipEdit || userRepository.editAfterSharing is EditAfterSharing.AfterSaving -> {
-                        addBookmark(urlPreview = urlPreview, skipEdit = skipEdit)
+                        addBookmark(urlPreview = preview, skipEdit = skipEdit)
                     }
 
-                    else -> editBookmark(urlPreview = urlPreview)
+                    else -> editBookmark(urlPreview = preview)
                 }
             }.onFailure(_screenState::emitError)
         }

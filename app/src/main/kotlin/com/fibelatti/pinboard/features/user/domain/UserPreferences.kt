@@ -17,6 +17,7 @@ data class UserPreferences(
     val preferredDateFormat: PreferredDateFormat,
     val preferredDetailsView: PreferredDetailsView,
     val alwaysUseSidePanel: Boolean,
+    val followRedirects: Boolean,
     val autoFillDescription: Boolean,
     val showDescriptionInLists: Boolean,
     val defaultPrivate: Boolean,

@@ -72,6 +72,10 @@ class UserPreferencesViewModel @Inject constructor(
         userRepository.markAsReadOnOpen = value
     }
 
+    fun saveFollowRedirects(value: Boolean) {
+        userRepository.followRedirects = value
+    }
+
     fun saveAutoFillDescription(value: Boolean) {
         userRepository.autoFillDescription = value
     }

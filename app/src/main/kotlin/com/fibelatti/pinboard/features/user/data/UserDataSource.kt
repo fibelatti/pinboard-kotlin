@@ -128,6 +128,13 @@ class UserDataSource @Inject constructor(
             updateCurrentPreferences()
         }
 
+    override var followRedirects: Boolean
+        get() = userSharedPreferences.followRedirects
+        set(value) {
+            userSharedPreferences.followRedirects = value
+            updateCurrentPreferences()
+        }
+
     override var autoFillDescription: Boolean
         get() = userSharedPreferences.autoFillDescription
         set(value) {
@@ -188,6 +195,7 @@ class UserDataSource @Inject constructor(
         preferredDateFormat = preferredDateFormat,
         preferredDetailsView = preferredDetailsView,
         alwaysUseSidePanel = alwaysUseSidePanel,
+        followRedirects = followRedirects,
         autoFillDescription = autoFillDescription,
         showDescriptionInLists = showDescriptionInLists,
         defaultPrivate = defaultPrivate ?: false,

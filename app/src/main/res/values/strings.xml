@@ -226,7 +226,7 @@
     <string name="user_preferences_appearance_light">Light theme</string>
     <string name="user_preferences_appearance_system_default">Follow system</string>
     <string name="user_preferences_dynamic_colors">Use dynamic colors</string>
-    <string name="user_preferences_dynamic_colors_caveat">Change the colors of the app based on your wallpaper</string>
+    <string name="user_preferences_dynamic_colors_caveat">Change the colors of the app, matching your device style</string>
     <string name="user_preferences_disable_screenshots">Disable screenshots and recording</string>
     <string name="user_preferences_disable_screenshots_caveat">Prevent app contents from being displayed on screenshots and screen recordings</string>
     <string name="user_preferences_date_format">Preferred date format</string>
@@ -241,8 +241,10 @@
     <string name="user_preferences_preferred_details_view_caveat">Long press list items when browsing bookmarks to access share and edit shortcuts</string>
     <string name="user_preferences_preferred_details_view_mark_as_read_on_open">Mark as read on open</string>
     <string name="user_preferences_preferred_details_view_mark_as_read_on_open_caveat">Automatically update the bookmark to remove the read later flag</string>
+    <string name="user_preferences_follow_redirects">Follow redirects</string>
+    <string name="user_preferences_follow_redirects_description">Automatically follow redirects when sharing a bookmark to the app, saving the final URL. Increases the loading time when saving a bookmark via the share action</string>
     <string name="user_preferences_description_auto_fill">Auto-fill title and description</string>
-    <string name="user_preferences_description_auto_fill_description">Automatically get the details from the page when sharing its URL to Pinkt. May increase the loading time when saving a bookmark via the share action</string>
+    <string name="user_preferences_description_auto_fill_description">Automatically get the page details when sharing a bookmark to the app. Increases the loading time when saving a bookmark via the share action</string>
     <string name="user_preferences_description_visible_in_lists">Show description in lists</string>
     <string name="user_preferences_description_visible_in_lists_description">Show the first 5 lines of the description when browsing bookmarks</string>
     <string name="user_preferences_always_use_side_panel">Use side panel when available</string>

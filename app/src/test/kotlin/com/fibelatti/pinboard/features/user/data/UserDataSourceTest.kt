@@ -33,6 +33,7 @@ internal class UserDataSourceTest {
         every { preferredDateFormat } returns ""
         every { preferredDetailsView } returns ""
         every { alwaysUseSidePanel } returns false
+        every { followRedirects } returns true
         every { autoFillDescription } returns false
         every { showDescriptionInLists } returns false
         every { defaultPrivate } returns null
@@ -51,6 +52,7 @@ internal class UserDataSourceTest {
         preferredDateFormat = PreferredDateFormat.DayMonthYearWithTime,
         preferredDetailsView = PreferredDetailsView.InAppBrowser(markAsReadOnOpen = false),
         alwaysUseSidePanel = false,
+        followRedirects = true,
         autoFillDescription = false,
         showDescriptionInLists = false,
         defaultPrivate = false,
@@ -465,6 +467,32 @@ internal class UserDataSourceTest {
 
                 // THEN
                 verify { mockUserSharedPreferences.markAsReadOnOpen = value }
+            }
+        }
+
+        @Nested
+        inner class FollowRedirects {
+
+            @Test
+            fun `WHEN followRedirects getter is called THEN UserSharedPreferences is returned`() {
+                // GIVEN
+                val value = randomBoolean()
+                every { mockUserSharedPreferences.followRedirects } returns value
+
+                // THEN
+                assertThat(userDataSource.followRedirects).isEqualTo(value)
+            }
+
+            @Test
+            fun `WHEN followRedirects setter is called THEN UserSharedPreferences is set`() = runTest {
+                // GIVEN
+                val value = randomBoolean()
+
+                // WHEN
+                userDataSource.followRedirects = value
+
+                // THEN
+                verify { mockUserSharedPreferences.followRedirects = value }
             }
         }
 

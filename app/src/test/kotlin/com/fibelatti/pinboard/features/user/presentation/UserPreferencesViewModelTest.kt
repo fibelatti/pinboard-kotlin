@@ -152,6 +152,18 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
     }
 
     @Test
+    fun `WHEN saveFollowRedirects is called THEN repository is updated`() {
+        // GIVEN
+        val value = randomBoolean()
+
+        // WHEN
+        userPreferencesViewModel.saveFollowRedirects(value)
+
+        // THEN
+        verify { mockUserRepository.followRedirects = value }
+    }
+
+    @Test
     fun `WHEN saveAutoFillDescription is called THEN repository is updated`() {
         // GIVEN
         val value = randomBoolean()

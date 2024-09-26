@@ -21,8 +21,8 @@ class GetUrlPreview @Inject constructor(
 ) : UseCaseWithParams<GetUrlPreview.Params, Result<UrlPreview>> {
 
     override suspend operator fun invoke(params: Params): Result<UrlPreview> = catching {
-        if (userRepository.autoFillDescription) {
-            fetchTitleAndDescription(params)
+        if (userRepository.autoFillDescription || userRepository.followRedirects) {
+            loadUrl(params)
         } else {
             createUrlPreview(params)
         }
@@ -36,7 +36,7 @@ class GetUrlPreview @Inject constructor(
         description = params.highlightedText,
     )
 
-    private suspend fun fetchTitleAndDescription(params: Params): UrlPreview {
+    private suspend fun loadUrl(params: Params): UrlPreview {
         val request = Request.Builder()
             .url(params.url)
             .apply {
@@ -50,18 +50,27 @@ class GetUrlPreview @Inject constructor(
             }
             .build()
 
-        val (url, document) = withContext(Dispatchers.IO) {
+        val previewUrl: String
+        val document: Document
+
+        withContext(Dispatchers.IO) {
             okHttpClient.newCall(request).execute().use { response ->
-                response.request.url.toString() to Jsoup.parse(requireNotNull(response.body).string())
+                previewUrl = if (userRepository.followRedirects) response.request.url.toString() else params.url
+                document = Jsoup.parse(requireNotNull(response.body).string())
             }
         }
 
-        val title = document.getMetaProperty(property = "og:title")
-            ?: document.title().ifBlank { params.title.ifNullOrBlank { url } }
-        val description = params.highlightedText
-            ?: document.getMetaProperty(property = "og:description")
+        val previewTitle = (document.getMetaProperty(property = "og:title") ?: document.title())
+            .takeIf { userRepository.autoFillDescription }
+            .ifNullOrBlank { params.title.ifNullOrBlank { previewUrl } }
+        val previewDescription = params.highlightedText
+            ?: document.getMetaProperty(property = "og:description").takeIf { userRepository.autoFillDescription }
 
-        return UrlPreview(url, title, description)
+        return UrlPreview(
+            url = previewUrl,
+            title = previewTitle,
+            description = previewDescription,
+        )
     }
 
     private fun Document.getMetaProperty(property: String): String? = select("meta[property=$property]")

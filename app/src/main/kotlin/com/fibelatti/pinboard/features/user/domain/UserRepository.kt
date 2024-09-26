@@ -36,6 +36,8 @@ interface UserRepository {
 
     var markAsReadOnOpen: Boolean
 
+    var followRedirects: Boolean
+
     var autoFillDescription: Boolean
 
     var showDescriptionInLists: Boolean

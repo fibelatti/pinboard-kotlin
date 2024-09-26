@@ -274,6 +274,26 @@ internal class UserSharedPreferencesTest {
     }
 
     @Test
+    fun `WHEN followRedirects getter is called THEN its value is returned`() {
+        // GIVEN
+        val value = randomBoolean()
+        every { mockSharedPreferences.get(KEY_FOLLOW_REDIRECTS, true) } returns value
+
+        // THEN
+        assertThat(userSharedPreferences.followRedirects).isEqualTo(value)
+    }
+
+    @Test
+    fun `WHEN followRedirects setter is called THEN KEY_FOLLOW_REDIRECTS is set`() {
+        // WHEN
+        val value = randomBoolean()
+        userSharedPreferences.followRedirects = value
+
+        // THEN
+        verify { mockEditor.putBoolean(KEY_FOLLOW_REDIRECTS, value) }
+    }
+
+    @Test
     fun `WHEN getDescriptionAutoFill is called THEN its value is returned`() {
         // GIVEN
         val value = randomBoolean()

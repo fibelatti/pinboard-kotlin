@@ -436,6 +436,7 @@ private fun BookmarkingPreferencesContent(
             appMode = appMode,
             userPreferences = userPreferences,
             onEditAfterSharingChange = userPreferencesViewModel::saveEditAfterSharing,
+            onFollowRedirectsChange = userPreferencesViewModel::saveFollowRedirects,
             onAutoFillDescriptionChange = userPreferencesViewModel::saveAutoFillDescription,
             onPrivateByDefaultChange = userPreferencesViewModel::saveDefaultPrivate,
             onReadLaterByDefaultChange = userPreferencesViewModel::saveDefaultReadLater,
@@ -473,6 +474,7 @@ private fun BookmarkingPreferencesContent(
     appMode: AppMode,
     userPreferences: UserPreferences,
     onEditAfterSharingChange: (EditAfterSharing) -> Unit,
+    onFollowRedirectsChange: (Boolean) -> Unit,
     onAutoFillDescriptionChange: (Boolean) -> Unit,
     onPrivateByDefaultChange: (Boolean) -> Unit,
     onReadLaterByDefaultChange: (Boolean) -> Unit,
@@ -519,6 +521,14 @@ private fun BookmarkingPreferencesContent(
             modifier = Modifier.padding(top = 8.dp),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        SettingToggle(
+            title = stringResource(id = R.string.user_preferences_follow_redirects),
+            description = stringResource(id = R.string.user_preferences_follow_redirects_description),
+            checked = userPreferences.followRedirects,
+            onCheckedChange = onFollowRedirectsChange,
+            modifier = Modifier.padding(top = 16.dp),
         )
 
         SettingToggle(
@@ -623,6 +633,7 @@ private fun BookmarkingPreferencesContentPreview(
             appMode = AppMode.PINBOARD,
             userPreferences = userPreferences,
             onEditAfterSharingChange = {},
+            onFollowRedirectsChange = {},
             onAutoFillDescriptionChange = {},
             onPrivateByDefaultChange = {},
             onReadLaterByDefaultChange = {},

@@ -39,6 +39,9 @@ const val KEY_ALWAYS_USE_SIDE_PANEL = "ALWAYS_USE_SIDE_PANEL"
 const val KEY_MARK_AS_READ_ON_OPEN = "MARK_AS_READ_ON_OPEN"
 
 @VisibleForTesting
+const val KEY_FOLLOW_REDIRECTS = "FOLLOW_REDIRECTS"
+
+@VisibleForTesting
 const val KEY_AUTO_FILL_DESCRIPTION = "AUTO_FILL_DESCRIPTION"
 
 @VisibleForTesting
@@ -111,6 +114,10 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
     var markAsReadOnOpen: Boolean
         get() = sharedPreferences.get(KEY_MARK_AS_READ_ON_OPEN, false)
         set(value) = sharedPreferences.put(KEY_MARK_AS_READ_ON_OPEN, value)
+
+    var followRedirects: Boolean
+        get() = sharedPreferences.get(KEY_FOLLOW_REDIRECTS, true)
+        set(value) = sharedPreferences.put(KEY_FOLLOW_REDIRECTS, value)
 
     var autoFillDescription: Boolean
         get() = sharedPreferences.get(KEY_AUTO_FILL_DESCRIPTION, false)

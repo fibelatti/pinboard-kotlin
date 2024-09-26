@@ -23,6 +23,7 @@ class UserPreferencesProvider : PreviewParameterProvider<UserPreferences> {
                 preferredDateFormat = PreferredDateFormat.YearMonthDayWithTime,
                 preferredDetailsView = PreferredDetailsView.Edit,
                 alwaysUseSidePanel = true,
+                followRedirects = true,
                 autoFillDescription = true,
                 showDescriptionInLists = true,
                 defaultPrivate = false,
