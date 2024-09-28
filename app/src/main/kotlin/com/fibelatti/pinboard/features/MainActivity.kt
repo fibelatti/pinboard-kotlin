@@ -21,13 +21,10 @@ import com.fibelatti.core.android.extension.setupForAccessibility
 import com.fibelatti.core.android.extension.viewBinding
 import com.fibelatti.core.android.platform.BaseIntentBuilder
 import com.fibelatti.core.android.platform.intentExtras
-import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.WindowSizeClass
 import com.fibelatti.pinboard.core.android.base.BaseActivity
-import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.android.widthWindowSizeClassReactiveView
-import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.showBanner
@@ -259,21 +256,6 @@ class MainActivity : BaseActivity() {
 
         TransitionManager.beginDelayedTransition(binding.layoutContent, transition)
         constraintSet.applyTo(binding.layoutContent)
-    }
-
-    override fun handleError(error: Throwable?, postAction: () -> Unit) {
-        error ?: return
-
-        if (BuildConfig.DEBUG) {
-            error.printStackTrace()
-        }
-
-        if (error.isServerException()) {
-            binding.root.showBanner(getString(R.string.server_error))
-            postAction()
-        } else {
-            sendErrorReport(error, postAction = postAction)
-        }
     }
 
     class Builder(context: Context) : BaseIntentBuilder(context, MainActivity::class.java) {

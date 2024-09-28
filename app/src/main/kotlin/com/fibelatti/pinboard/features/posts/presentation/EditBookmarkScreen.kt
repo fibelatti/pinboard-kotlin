@@ -49,7 +49,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
+import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -61,10 +63,11 @@ import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
 fun EditBookmarkScreen(
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
+    appStateViewModel: AppStateViewModel = hiltActivityViewModel(),
     editPostViewModel: EditPostViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     tagManagerViewModel: TagManagerViewModel = hiltViewModel(),
+    onEditErrorHandled: () -> Unit,
 ) {
     val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
     val addPostContent by appStateViewModel.addPostContent.collectAsStateWithLifecycle(initialValue = null)
@@ -105,6 +108,9 @@ fun EditBookmarkScreen(
         editPostViewModel.searchForTag(tagManagerState.currentQuery, tagManagerState.tags)
         editPostViewModel.updatePost { post -> post.copy(tags = tagManagerState.tags.ifEmpty { null }) }
     }
+
+    LaunchedErrorHandlerEffect(viewModel = editPostViewModel, postAction = onEditErrorHandled)
+    LaunchedErrorHandlerEffect(viewModel = postDetailViewModel)
 
     EditBookmarkScreen(
         appMode = appMode,

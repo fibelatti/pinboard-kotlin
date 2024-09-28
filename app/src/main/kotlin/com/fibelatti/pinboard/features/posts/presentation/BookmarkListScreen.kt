@@ -55,8 +55,10 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_PAGE_SIZE
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
+import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.android.composable.TextWithBlockquote
+import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.rememberScrollDirection
 import com.fibelatti.pinboard.core.extension.showBanner
@@ -94,8 +96,8 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun BookmarkListScreen(
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltViewModel(),
+    appStateViewModel: AppStateViewModel = hiltActivityViewModel(),
+    mainViewModel: MainViewModel = hiltActivityViewModel(),
     postListViewModel: PostListViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     onPostLongClicked: (Post) -> Unit,
@@ -111,7 +113,6 @@ fun BookmarkListScreen(
             newValue = content.find<PostListContent>() ?: return@Surface,
         )
 
-        val postListLoading = currentState.shouldLoad != Loaded
         val postDetailScreenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
 
         val postListError by postListViewModel.error.collectAsStateWithLifecycle()
@@ -134,11 +135,14 @@ fun BookmarkListScreen(
             if (shouldLoadContent) postListViewModel.loadContent(currentState)
         }
 
+        LaunchedErrorHandlerEffect(viewModel = postListViewModel)
+        LaunchedErrorHandlerEffect(viewModel = postDetailViewModel)
+
         BookmarkListScreen(
             appMode = appMode,
             category = currentState.category,
             posts = currentState.posts,
-            isLoading = (postListLoading || postDetailScreenState.isLoading) && !hasError,
+            isLoading = (currentState.shouldLoad != Loaded || postDetailScreenState.isLoading) && !hasError,
             onScrollDirectionChanged = mainViewModel::setCurrentScrollDirection,
             onNextPageRequested = { appStateViewModel.runAction(GetNextPostPage) },
             sortType = currentState.sortType,

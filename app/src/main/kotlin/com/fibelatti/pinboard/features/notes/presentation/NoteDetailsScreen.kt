@@ -23,9 +23,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fibelatti.core.android.extension.navigateBack
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
+import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
+import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
+import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
+import com.fibelatti.pinboard.features.MainBackNavigationEffect
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -37,11 +42,9 @@ import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun NoteDetailsScreen(
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltViewModel(),
+    appStateViewModel: AppStateViewModel = hiltActivityViewModel(),
+    mainViewModel: MainViewModel = hiltActivityViewModel(),
     noteDetailsViewModel: NoteDetailsViewModel = hiltViewModel(),
-    onBackPressed: () -> Unit,
-    onError: (Throwable?, () -> Unit) -> Unit,
 ) {
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
@@ -52,6 +55,7 @@ fun NoteDetailsScreen(
 
         val actionId = remember { UUID.randomUUID().toString() }
         val localLifecycleOwner = LocalLifecycleOwner.current
+        val localActivity = LocalAppCompatActivity.current
 
         LaunchedEffect(noteDetailContent) {
             mainViewModel.updateState { currentState ->
@@ -80,27 +84,19 @@ fun NoteDetailsScreen(
             }
         }
 
-        LaunchedEffect(Unit) {
-            mainViewModel.navigationClicks(actionId)
-                .onEach { onBackPressed() }
-                .launchInAndFlowWith(localLifecycleOwner)
-        }
+        MainBackNavigationEffect(actionId = actionId)
 
         LaunchedEffect(Unit) {
             mainViewModel.menuItemClicks(actionId)
                 .onEach { (menuItem, _) ->
                     if (menuItem is MainState.MenuItemComponent.CloseSidePanel) {
-                        onBackPressed()
+                        localActivity.navigateBack()
                     }
                 }
                 .launchInAndFlowWith(localLifecycleOwner)
         }
 
-        LaunchedEffect(Unit) {
-            noteDetailsViewModel.error
-                .onEach { throwable -> onError(throwable, noteDetailsViewModel::errorHandled) }
-                .launchInAndFlowWith(localLifecycleOwner)
-        }
+        LaunchedErrorHandlerEffect(viewModel = noteDetailsViewModel)
 
         CrossfadeLoadingLayout(
             data = noteDetailContent.note.rightOrNull(),

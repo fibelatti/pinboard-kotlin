@@ -43,15 +43,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.fibelatti.core.android.extension.findActivity
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
 import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
 import com.fibelatti.pinboard.core.android.composable.MainTitle
 import com.fibelatti.pinboard.core.extension.ScrollDirection
@@ -153,12 +152,12 @@ fun MainBottomAppBar(
             enter = slideInVertically(initialOffsetY = { it }),
             exit = slideOutVertically(targetOffsetY = { it }),
         ) {
-            val localContext = LocalContext.current
+            val localActivity = LocalAppCompatActivity.current
 
             MainBottomAppBar(
                 state = state,
                 onBottomNavClick = {
-                    localContext.findActivity()?.let(NavigationMenu::show)
+                    NavigationMenu.show(activity = localActivity)
                 },
                 onMenuItemClick = { menuItem, data ->
                     mainViewModel.menuItemClicked(id = state.bottomAppBar.id, menuItem = menuItem, data = data)

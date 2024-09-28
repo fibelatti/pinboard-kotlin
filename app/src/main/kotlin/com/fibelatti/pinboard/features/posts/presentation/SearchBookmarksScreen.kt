@@ -38,6 +38,8 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
+import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
@@ -63,11 +65,10 @@ import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun SearchBookmarksScreen(
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltViewModel(),
+    appStateViewModel: AppStateViewModel = hiltActivityViewModel(),
+    mainViewModel: MainViewModel = hiltActivityViewModel(),
     searchPostViewModel: SearchPostViewModel = hiltViewModel(),
     tagsViewModel: TagsViewModel = hiltViewModel(),
-    onError: (Throwable?, () -> Unit) -> Unit,
 ) {
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
@@ -155,11 +156,9 @@ fun SearchBookmarksScreen(
             mainViewModel.fabClicks(actionId)
                 .onEach { appStateViewModel.runAction(Search) }
                 .launchInAndFlowWith(localLifecycleOwner)
-
-            tagsViewModel.error
-                .onEach { throwable -> onError(throwable, tagsViewModel::errorHandled) }
-                .launchInAndFlowWith(localLifecycleOwner)
         }
+
+        LaunchedErrorHandlerEffect(viewModel = tagsViewModel)
 
         DisposableEffect(Unit) {
             onDispose {

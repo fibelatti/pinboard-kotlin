@@ -66,6 +66,7 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
                 editPostViewModel = editPostViewModel,
                 postDetailViewModel = postDetailViewModel,
                 tagManagerViewModel = tagManagerViewModel,
+                onEditErrorHandled = ::showFab,
             )
         }
 
@@ -178,12 +179,6 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
                 }
             }
             .launchInAndFlowWith(viewLifecycleOwner)
-        editPostViewModel.error
-            .onEach { throwable ->
-                handleError(throwable, editPostViewModel::errorHandled)
-                showFab()
-            }
-            .launchInAndFlowWith(viewLifecycleOwner)
 
         editPostViewModel.postState
             .onEach { post ->
@@ -218,9 +213,6 @@ class EditPostFragment @Inject constructor() : BaseFragment() {
                     postDetailViewModel.userNotified()
                 }
             }
-            .launchInAndFlowWith(viewLifecycleOwner)
-        postDetailViewModel.error
-            .onEach { throwable -> handleError(throwable, postDetailViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)
     }
 

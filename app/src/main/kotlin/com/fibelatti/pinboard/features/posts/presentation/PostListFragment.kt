@@ -126,7 +126,7 @@ class PostListFragment @Inject constructor(
                         text = post.url,
                     )
 
-                    is PostQuickActions.Share -> requireActivity().shareText(
+                    is PostQuickActions.Share -> requireContext().shareText(
                         title = R.string.posts_share_title,
                         text = option.post.url,
                     )
@@ -168,11 +168,11 @@ class PostListFragment @Inject constructor(
 
         when {
             searchParameters.term.isNotBlank() && searchParameters.tags.isEmpty() -> {
-                requireActivity().shareText(R.string.search_share_title, queryUrl)
+                requireContext().shareText(R.string.search_share_title, queryUrl)
             }
 
             searchParameters.term.isBlank() && searchParameters.tags.isNotEmpty() -> {
-                requireActivity().shareText(R.string.search_share_title, tagsUrl)
+                requireContext().shareText(R.string.search_share_title, tagsUrl)
             }
 
             else -> {
@@ -191,7 +191,7 @@ class PostListFragment @Inject constructor(
                             ShareSearchOption.QUERY -> queryUrl
                             ShareSearchOption.TAGS -> tagsUrl
                         }
-                        requireActivity().shareText(R.string.search_share_title, url)
+                        requireContext().shareText(R.string.search_share_title, url)
                     },
                 )
             }
@@ -260,10 +260,6 @@ class PostListFragment @Inject constructor(
             .onEach { appStateViewModel.runAction(AddPost) }
             .launchInAndFlowWith(viewLifecycleOwner)
 
-        postListViewModel.error
-            .onEach { throwable -> handleError(throwable, postListViewModel::errorHandled) }
-            .launchInAndFlowWith(viewLifecycleOwner)
-
         postDetailViewModel.screenState
             .onEach { state ->
                 when {
@@ -293,10 +289,6 @@ class PostListFragment @Inject constructor(
                     }
                 }
             }
-            .launchInAndFlowWith(viewLifecycleOwner)
-
-        postDetailViewModel.error
-            .onEach { throwable -> handleError(throwable, postDetailViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)
     }
 

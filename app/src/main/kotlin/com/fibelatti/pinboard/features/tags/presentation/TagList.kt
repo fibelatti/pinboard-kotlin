@@ -36,6 +36,7 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -49,8 +50,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -60,12 +63,17 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
+import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
+import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
+import com.fibelatti.pinboard.features.MainBackNavigationEffect
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -81,12 +89,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun TagListScreen(
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltViewModel(),
+    appStateViewModel: AppStateViewModel = hiltActivityViewModel(),
+    mainViewModel: MainViewModel = hiltActivityViewModel(),
     tagsViewModel: TagsViewModel = hiltViewModel(),
-    onBackPressed: () -> Unit,
-    onError: (Throwable?, () -> Unit) -> Unit,
-    onTagLongClicked: (Tag) -> Unit,
 ) {
     val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
     val state by tagsViewModel.state.collectAsStateWithLifecycle()
@@ -94,6 +99,8 @@ fun TagListScreen(
     val screenTitle = stringResource(id = R.string.tags_title)
     val actionId = remember { UUID.randomUUID().toString() }
     val localLifecycleOwner = LocalLifecycleOwner.current
+    val localContext = LocalContext.current
+    val localView = LocalView.current
 
     LaunchedEffect(Unit) {
         appStateViewModel.tagListContent
@@ -115,14 +122,13 @@ fun TagListScreen(
                 floatingActionButton = MainState.FabComponent.Gone,
             )
         }
+    }
 
-        mainViewModel.navigationClicks(actionId)
-            .onEach { onBackPressed() }
-            .launchInAndFlowWith(localLifecycleOwner)
+    MainBackNavigationEffect(actionId = actionId)
+    LaunchedErrorHandlerEffect(viewModel = tagsViewModel)
 
-        tagsViewModel.error
-            .onEach { throwable -> onError(throwable, tagsViewModel::errorHandled) }
-            .launchInAndFlowWith(localLifecycleOwner)
+    DisposableEffect(Unit) {
+        onDispose { localView.hideKeyboard() }
     }
 
     TagList(
@@ -144,7 +150,28 @@ fun TagListScreen(
         searchInput = state.currentQuery,
         onSearchInputChanged = tagsViewModel::searchTags,
         onTagClicked = { appStateViewModel.runAction(PostsForTag(it)) },
-        onTagLongClicked = { if (AppMode.PINBOARD == appMode) onTagLongClicked(it) },
+        onTagLongClicked = { tag ->
+            if (AppMode.PINBOARD == appMode) {
+                SelectionDialog.show(
+                    context = localContext,
+                    title = localContext.getString(R.string.quick_actions_title),
+                    options = TagQuickActions.allOptions(tag),
+                    optionName = { localContext.getString(it.title) },
+                    optionIcon = TagQuickActions::icon,
+                    onOptionSelected = { option ->
+                        when (option) {
+                            is TagQuickActions.Rename -> {
+                                RenameTagDialog.show(
+                                    context = localContext,
+                                    tag = option.tag,
+                                    onRename = tagsViewModel::renameTag,
+                                )
+                            }
+                        }
+                    },
+                )
+            }
+        },
         onPullToRefresh = { appStateViewModel.runAction(RefreshTags) },
     )
 }

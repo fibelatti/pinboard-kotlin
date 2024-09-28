@@ -33,8 +33,4 @@ abstract class BaseFragment : Fragment() {
     ): View = ComposeView(inflater.context).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
     }
-
-    open fun handleError(error: Throwable?, postAction: () -> Unit = {}) {
-        (activity as BaseActivity).handleError(error, postAction)
-    }
 }

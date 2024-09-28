@@ -53,8 +53,6 @@
     <string name="auth_token_description"><![CDATA[You can find your API token in the <a href="https://pinboard.in/settings/password">Pinboard Settings</a> page. It is composed by your username and an alphanumeric string (e.g. username:00F0D0FE123456789012)]]></string>
     <string name="auth_token_empty">Please enter your API Token.</string>
     <string name="auth_token_error">Login failed. Please double check your API Token</string>
-    <string name="auth_error_title">Login failed</string>
-    <string name="auth_error">This is likely a server error, double check your API Token or try again in a short while.\n\nYou can click Report to send me an email with the error details to help troubleshooting.</string>
     <string name="auth_logged_out_feedback">Unable to authenticate. Please verify the provided token.</string>
 
     <string name="auth_switch_to_pinboard">Switch to Pinboard</string>

@@ -191,7 +191,7 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
     }
 
     private fun shareBookmarkUrl(post: Post) {
-        requireActivity().shareText(R.string.posts_share_title, post.url)
+        requireContext().shareText(R.string.posts_share_title, post.url)
     }
 
     private fun setupPostDetailViewModel() {
@@ -225,10 +225,6 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
                 }
             }
             .launchInAndFlowWith(viewLifecycleOwner)
-
-        postDetailViewModel.error
-            .onEach { throwable -> handleError(throwable, postDetailViewModel::errorHandled) }
-            .launchInAndFlowWith(viewLifecycleOwner)
     }
 
     private fun setupPopularPostsViewModel() {
@@ -239,9 +235,6 @@ class PostDetailFragment @Inject constructor() : BaseFragment() {
                     popularPostsViewModel.userNotified()
                 }
             }
-            .launchInAndFlowWith(viewLifecycleOwner)
-        popularPostsViewModel.error
-            .onEach { throwable -> handleError(throwable, popularPostsViewModel::errorHandled) }
             .launchInAndFlowWith(viewLifecycleOwner)
     }
 

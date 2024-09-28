@@ -8,7 +8,7 @@ import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.ComposeBottomSheetDialog
-import com.fibelatti.pinboard.core.android.composable.ErrorReportEntryPoint
+import com.fibelatti.pinboard.core.extension.ErrorReportEntryPoint
 import com.fibelatti.pinboard.features.licenses.OssLicensesActivity
 import dagger.hilt.android.EntryPointAccessors
 

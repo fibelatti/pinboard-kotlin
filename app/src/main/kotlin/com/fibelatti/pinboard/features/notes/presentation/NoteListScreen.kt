@@ -36,13 +36,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
+import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LoadingContent
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
-import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
+import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
+import com.fibelatti.pinboard.features.MainBackNavigationEffect
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -56,15 +57,12 @@ import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import java.util.UUID
-import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun NoteListScreen(
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltViewModel(),
+    appStateViewModel: AppStateViewModel = hiltActivityViewModel(),
+    mainViewModel: MainViewModel = hiltActivityViewModel(),
     noteListViewModel: NoteListViewModel = hiltViewModel(),
-    onBackPressed: () -> Unit,
-    onError: (Throwable?, () -> Unit) -> Unit,
 ) {
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
@@ -81,7 +79,6 @@ fun NoteListScreen(
 
         val actionId = remember { UUID.randomUUID().toString() }
         val localContext = LocalContext.current
-        val localLifecycleOwner = LocalLifecycleOwner.current
 
         LaunchedEffect(content) {
             mainViewModel.updateState { mainViewModelState ->
@@ -111,15 +108,9 @@ fun NoteListScreen(
             }
         }
 
-        LaunchedEffect(Unit) {
-            mainViewModel.navigationClicks(actionId)
-                .onEach { onBackPressed() }
-                .launchInAndFlowWith(localLifecycleOwner)
+        MainBackNavigationEffect(actionId = actionId)
 
-            noteListViewModel.error
-                .onEach { throwable -> onError(throwable, noteListViewModel::errorHandled) }
-                .launchInAndFlowWith(localLifecycleOwner)
-        }
+        LaunchedErrorHandlerEffect(viewModel = noteListViewModel)
 
         if (noteListContent.shouldLoad) {
             LoadingContent()

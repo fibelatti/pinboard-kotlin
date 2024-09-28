@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.view.View
 import androidx.window.layout.WindowMetricsCalculator
-import com.fibelatti.core.android.extension.findActivity
+import com.fibelatti.core.android.extension.findOwner
 
 enum class WindowSizeClass {
 
@@ -46,7 +46,7 @@ fun Context.widthWindowSizeClassReactiveView(
     }
 
     private fun computeWidthWindowSizeClass() {
-        val activity = findActivity() ?: return
+        val activity: Activity = findOwner() ?: return
         val windowSizeClass = activity.computeWidthWindowSizeClass()
 
         body(windowSizeClass)

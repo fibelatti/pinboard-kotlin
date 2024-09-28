@@ -53,6 +53,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
+import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.ui.components.TextWithLinks
 import com.fibelatti.ui.preview.DevicePreviews
 import com.fibelatti.ui.preview.ThemePreviews
@@ -65,6 +66,8 @@ fun AuthScreen(
 ) {
     val screenState by authViewModel.screenState.collectAsStateWithLifecycle()
     val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
+
+    LaunchedErrorHandlerEffect(viewModel = authViewModel)
 
     AuthScreen(
         useLinkding = userPreferences.useLinkding,

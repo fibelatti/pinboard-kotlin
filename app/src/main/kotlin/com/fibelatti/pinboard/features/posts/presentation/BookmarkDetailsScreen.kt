@@ -41,6 +41,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
+import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.rememberScrollDirection
 import com.fibelatti.pinboard.features.MainViewModel
@@ -51,8 +53,8 @@ import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
 fun BookmarkDetailsScreen(
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltViewModel(),
+    appStateViewModel: AppStateViewModel = hiltActivityViewModel(),
+    mainViewModel: MainViewModel = hiltActivityViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
     onOpenInFileViewerClicked: (Post) -> Unit,
@@ -72,6 +74,9 @@ fun BookmarkDetailsScreen(
         val isLoading = postDetailsScreenState.isLoading || popularPostsScreenState.isLoading
 
         val isConnected = postDetailState?.isConnected ?: popularPostDetailState?.isConnected ?: false
+
+        LaunchedErrorHandlerEffect(viewModel = postDetailViewModel)
+        LaunchedErrorHandlerEffect(viewModel = popularPostsViewModel)
 
         BookmarkDetailsScreen(
             post = post,

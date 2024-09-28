@@ -31,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.Private
@@ -49,7 +50,7 @@ import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
 fun NavigationMenuScreen(
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
+    appStateViewModel: AppStateViewModel = hiltActivityViewModel(),
     authViewModel: AuthViewModel = hiltViewModel(),
     onSendFeedbackClicked: () -> Unit,
     onWriteReviewClicked: () -> Unit,
