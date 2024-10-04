@@ -31,6 +31,8 @@ buildscript {
     extra["jacocoEnabled"] = jacocoEnabled?.toBoolean() ?: false
 }
 
+val javaVersion = JavaVersion.VERSION_17
+
 allprojects {
     apply<SpotlessPlugin>()
 
@@ -74,8 +76,8 @@ subprojects {
 
         extensions.findByType(CommonExtension::class.java)?.apply {
             compileOptions {
-                sourceCompatibility(JavaVersion.VERSION_17)
-                targetCompatibility(JavaVersion.VERSION_17)
+                sourceCompatibility(javaVersion)
+                targetCompatibility(javaVersion)
             }
 
             testOptions {
@@ -112,9 +114,14 @@ subprojects {
             }
         }
 
+        tasks.withType<JavaCompile>().configureEach {
+            sourceCompatibility = javaVersion.toString()
+            targetCompatibility = javaVersion.toString()
+        }
+
         tasks.withType<KotlinCompile>().configureEach {
             compilerOptions {
-                jvmTarget.set(JvmTarget.JVM_17)
+                jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
                 freeCompilerArgs = buildList {
                     addAll(freeCompilerArgs.get())
                     add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")

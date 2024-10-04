@@ -18,8 +18,6 @@ android {
 
 kotlin {
     explicitApi()
-    jvmToolchain(17)
-
     androidTarget()
 
     sourceSets {
