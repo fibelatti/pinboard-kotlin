@@ -170,6 +170,7 @@ room {
 
 aboutLibraries {
     excludeFields = arrayOf("generated")
+    registerAndroidTasks = false
 }
 
 dependencies {
