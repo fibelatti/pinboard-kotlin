@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -226,10 +228,8 @@ dependencies {
     implementation(libs.hilt.work)
     implementation(libs.hilt.navigation.compose)
 
-    implementation(libs.okhttp)
-    implementation(libs.retrofit)
-    implementation(libs.converter.serialization)
-    implementation(libs.logging.interceptor)
+    implementation(libs.bundles.ktor.common)
+    implementation(libs.ktor.client.okhttp)
 
     implementation(libs.jsoup)
 

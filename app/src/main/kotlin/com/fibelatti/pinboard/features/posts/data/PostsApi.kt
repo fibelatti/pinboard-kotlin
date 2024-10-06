@@ -1,37 +1,61 @@
 package com.fibelatti.pinboard.features.posts.data
 
+import com.fibelatti.pinboard.core.di.RestApi
+import com.fibelatti.pinboard.core.di.RestApiProvider
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.GetPostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostRemoteDto
 import com.fibelatti.pinboard.features.posts.data.model.UpdateDto
-import retrofit2.http.GET
-import retrofit2.http.Query
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import javax.inject.Inject
 
-interface PostsApi {
+internal class PostsApi @Inject constructor(
+    @RestApi(RestApiProvider.PINBOARD) private val httpClient: HttpClient,
+) {
 
-    @GET("posts/update")
-    suspend fun update(): UpdateDto
+    suspend fun update(): UpdateDto = httpClient.get(urlString = "v1/posts/update").body()
 
-    @GET("posts/add")
     suspend fun add(
-        @Query("url") url: String,
-        @Query("description") title: String,
-        @Query("extended") description: String? = null,
-        @Query("shared") public: String? = null,
-        @Query("toread") readLater: String? = null,
-        @Query("tags", encoded = true) tags: String? = null,
-        @Query("replace") replace: String? = null,
-    ): GenericResponseDto
+        url: String,
+        title: String,
+        description: String? = null,
+        public: String? = null,
+        readLater: String? = null,
+        tags: String? = null,
+        replace: String? = null,
+    ): GenericResponseDto = httpClient.get(urlString = "v1/posts/add") {
+        url {
+            parameters.append(name = "url", value = url)
+            parameters.append(name = "description", value = title)
+            description?.let { parameters.append(name = "extended", value = description) }
+            public?.let { parameters.append(name = "shared", value = public) }
+            readLater?.let { parameters.append(name = "toread", value = readLater) }
+            tags?.let { parameters.append(name = "tags", value = tags) }
+            replace?.let { parameters.append(name = "replace", value = replace) }
+        }
+    }.body()
 
-    @GET("posts/delete")
-    suspend fun delete(@Query("url") url: String): GenericResponseDto
+    suspend fun delete(url: String): GenericResponseDto = httpClient.get(urlString = "v1/posts/delete") {
+        url {
+            parameters.append(name = "url", value = url)
+        }
+    }.body()
 
-    @GET("posts/get")
-    suspend fun getPost(@Query("url") url: String): GetPostDto
+    suspend fun getPost(url: String): GetPostDto = httpClient.get(urlString = "v1/posts/get") {
+        url {
+            parameters.append(name = "url", value = url)
+        }
+    }.body()
 
-    @GET("posts/all")
     suspend fun getAllPosts(
-        @Query("start") offset: Int? = null,
-        @Query("results") limit: Int? = null,
-    ): List<PostRemoteDto>
+        offset: Int? = null,
+        limit: Int? = null,
+    ): List<PostRemoteDto> = httpClient.get(urlString = "v1/posts/all") {
+        url {
+            offset?.let { parameters.append(name = "start", value = "$offset") }
+            limit?.let { parameters.append(name = "results", value = "$limit") }
+        }
+    }.body()
 }

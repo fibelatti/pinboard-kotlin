@@ -1,16 +1,24 @@
 package com.fibelatti.pinboard.core.di.modules
 
 import com.fibelatti.pinboard.BuildConfig
-import com.fibelatti.pinboard.core.di.UrlParser
+import com.fibelatti.pinboard.core.di.RestApi
+import com.fibelatti.pinboard.core.di.RestApiProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.ANDROID
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.http.ContentType
+import io.ktor.serialization.kotlinx.json.json
 import java.util.concurrent.TimeUnit
 import kotlinx.serialization.json.Json
 import okhttp3.ConnectionPool
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -24,24 +32,36 @@ object NetworkModule {
     }
 
     @Provides
-    fun baseOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
-        .connectTimeout(60, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS)
-        .connectionPool(ConnectionPool(0, 5, TimeUnit.MINUTES))
-        .build()
+    @RestApi(RestApiProvider.BASE)
+    fun baseHttpClient(json: Json): HttpClient = HttpClient(OkHttp) {
+        engine {
+            config {
+                connectionPool(
+                    ConnectionPool(
+                        maxIdleConnections = 0,
+                        keepAliveDuration = 5,
+                        timeUnit = TimeUnit.MINUTES,
+                    ),
+                )
 
-    @Provides
-    @UrlParser
-    fun urlParserOkHttpClient(
-        loggingInterceptor: HttpLoggingInterceptor,
-    ): OkHttpClient = OkHttpClient.Builder()
-        .followRedirects(true)
-        .followSslRedirects(true)
-        .apply { if (BuildConfig.DEBUG) addInterceptor(loggingInterceptor) }
-        .build()
+                connectTimeout(60, TimeUnit.SECONDS)
+                readTimeout(30, TimeUnit.SECONDS)
+                writeTimeout(30, TimeUnit.SECONDS)
 
-    @Provides
-    fun httpLoggingInterceptor(): HttpLoggingInterceptor = HttpLoggingInterceptor()
-        .apply { level = HttpLoggingInterceptor.Level.BODY }
+                followRedirects(true)
+                followSslRedirects(true)
+            }
+        }
+
+        install(ContentNegotiation) {
+            json(json, contentType = ContentType.Any)
+        }
+
+        if (BuildConfig.DEBUG) {
+            install(Logging) {
+                level = LogLevel.ALL
+                logger = Logger.ANDROID
+            }
+        }
+    }
 }

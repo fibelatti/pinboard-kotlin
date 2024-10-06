@@ -16,12 +16,12 @@ import com.fibelatti.pinboard.core.network.resultFromNetwork
 import com.fibelatti.pinboard.features.posts.data.PostsDao
 import com.fibelatti.pinboard.features.tags.domain.TagsRepository
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
 
-class TagsDataSource @Inject constructor(
+internal class TagsDataSource @Inject constructor(
     private val tagsApi: TagsApi,
     private val postsDao: PostsDao,
     private val connectivityInfoProvider: ConnectivityInfoProvider,

@@ -3,28 +3,26 @@ package com.fibelatti.pinboard.features.posts.domain.usecase
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.UseCase
 import com.fibelatti.core.functional.catching
-import com.fibelatti.pinboard.core.di.UrlParser
+import com.fibelatti.pinboard.core.di.RestApi
+import com.fibelatti.pinboard.core.di.RestApiProvider
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsText
 import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import org.jsoup.Jsoup
 
 class GetPopularPosts @Inject constructor(
-    @UrlParser private val okHttpClient: OkHttpClient,
+    @RestApi(RestApiProvider.BASE) private val httpClient: HttpClient,
 ) : UseCase<Result<List<Post>>> {
 
     override suspend operator fun invoke(): Result<List<Post>> = catching {
-        val request = Request.Builder().url("https://pinboard.in/popular/").build()
-
         val document = withContext(Dispatchers.IO) {
-            okHttpClient.newCall(request).execute().use { response ->
-                Jsoup.parse(requireNotNull(response.body).string())
-            }
+            Jsoup.parse(httpClient.get(urlString = "https://pinboard.in/popular/").bodyAsText())
         }
 
         document.select(".bookmark").mapNotNull { element ->

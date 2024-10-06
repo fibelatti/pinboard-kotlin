@@ -7,7 +7,7 @@ import com.fibelatti.pinboard.features.notes.domain.NotesRepository
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import javax.inject.Inject
 
-class NotesDataSource @Inject constructor(
+internal class NotesDataSource @Inject constructor(
     private val notesApi: NotesApi,
     private val noteDtoMapper: NoteDtoMapper,
 ) : NotesRepository {

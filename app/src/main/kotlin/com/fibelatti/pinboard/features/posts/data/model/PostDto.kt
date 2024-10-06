@@ -58,7 +58,7 @@ class PostDtoMapper @Inject constructor(
                 null
             } else {
                 tags.replaceHtmlChars()
-                    .split(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE)
+                    .split(PinboardApiLiterals.TAG_SEPARATOR)
                     .sorted()
                     .map(::Tag)
             },
@@ -90,7 +90,7 @@ class PostDtoMapper @Inject constructor(
             time = dateAdded,
             shared = if (private == true) PinboardApiLiterals.NO else PinboardApiLiterals.YES,
             toread = if (readLater == true) PinboardApiLiterals.YES else PinboardApiLiterals.NO,
-            tags = tags?.joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name }.orEmpty(),
+            tags = tags?.joinToString(PinboardApiLiterals.TAG_SEPARATOR) { it.name }.orEmpty(),
             pendingSync = when (pendingSync) {
                 PendingSync.ADD -> PendingSyncDto.ADD
                 PendingSync.UPDATE -> PendingSyncDto.UPDATE

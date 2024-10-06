@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.features.posts.data
 
 import com.fibelatti.core.functional.Result
-import com.fibelatti.pinboard.App
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.features.appstate.SortType
@@ -19,7 +18,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
 @Singleton
-class PostsDataSourceProxy @Inject constructor(
+internal class PostsDataSourceProxy @Inject constructor(
     private val postsDataSourcePinboardApi: Provider<PostsDataSourcePinboardApi>,
     private val postsDataSourceLinkdingApi: Provider<PostsDataSourceLinkdingApi>,
     private val postsDataSourceNoApi: Provider<PostsDataSourceNoApi>,

@@ -33,13 +33,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.core.functional.ScreenState
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.android.composable.ErrorReportDialog
 import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-import retrofit2.HttpException
-import java.net.HttpURLConnection
+import io.ktor.client.plugins.ResponseException
 
 @Composable
 fun ShareReceiverScreen(
@@ -120,15 +120,10 @@ fun ShareReceiverErrorDialog(
 
     if (!openDialog.value) return
 
-    val loginFailedCodes = listOf(
-        HttpURLConnection.HTTP_UNAUTHORIZED,
-        HttpURLConnection.HTTP_INTERNAL_ERROR,
-    )
-
     val errorMessage = when {
         throwable is InvalidUrlException -> R.string.validation_error_invalid_url_rationale
         throwable.isServerException() -> R.string.server_timeout_error
-        throwable is HttpException && throwable.code() in loginFailedCodes -> R.string.auth_logged_out_feedback
+        throwable is ResponseException && throwable.response.status.value in AppConfig.LOGIN_FAILED_CODES -> R.string.auth_logged_out_feedback
         else -> {
             ErrorReportDialog(throwable = throwable, postAction = action)
             return

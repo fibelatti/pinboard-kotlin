@@ -52,8 +52,7 @@ object MockDataProvider {
     val mockTagsString = listOf(mockTagString1, mockTagString2, mockTagString3, mockTagString4)
     val mockTags = mockTagsString.map(::Tag)
 
-    val mockTagsResponse = mockTagsString.joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE)
-    val mockTagsRequest = mockTagsString.joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST)
+    val mockTagsResponse = mockTagsString.joinToString(PinboardApiLiterals.TAG_SEPARATOR)
 
     const val mockTitle = "All"
 

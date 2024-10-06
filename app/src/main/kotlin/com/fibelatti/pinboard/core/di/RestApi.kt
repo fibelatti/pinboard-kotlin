@@ -8,6 +8,7 @@ import javax.inject.Qualifier
 annotation class RestApi(val restApi: RestApiProvider)
 
 enum class RestApiProvider {
+    BASE,
     PINBOARD,
     LINKDING,
 }

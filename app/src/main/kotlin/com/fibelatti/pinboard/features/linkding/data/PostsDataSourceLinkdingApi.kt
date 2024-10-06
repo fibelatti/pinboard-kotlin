@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 
-class PostsDataSourceLinkdingApi @Inject constructor(
+internal class PostsDataSourceLinkdingApi @Inject constructor(
     private val linkdingApi: LinkdingApi,
     private val linkdingDao: BookmarksDao,
     private val bookmarkRemoteMapper: BookmarkRemoteMapper,
@@ -119,7 +119,7 @@ class PostsDataSourceLinkdingApi @Inject constructor(
     }
 
     private suspend fun deleteBookmarkRemote(id: String): Result<Unit> = resultFromNetwork {
-        require(linkdingApi.deleteBookmark(id = id).isSuccessful)
+        require(linkdingApi.deleteBookmark(id = id))
     }.onSuccess {
         linkdingDao.deleteBookmark(id = id)
     }

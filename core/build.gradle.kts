@@ -25,6 +25,7 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin)
                 implementation(libs.coroutines.core)
+                implementation(libs.ktor.io)
             }
         }
 

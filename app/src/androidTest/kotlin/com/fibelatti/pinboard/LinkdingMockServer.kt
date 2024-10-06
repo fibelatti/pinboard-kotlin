@@ -1,14 +1,14 @@
 package com.fibelatti.pinboard
 
+import java.util.UUID
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
-import java.util.UUID
 
 object LinkdingMockServer {
 
-    val instance by lazy { MockWebServer() }
+    val instance: MockWebServer by lazy { MockWebServer() }
 
     fun setResponses(vararg responses: Triple<String, String, (RecordedRequest) -> MockResponse>) {
         instance.dispatcher = object : Dispatcher() {
@@ -30,29 +30,35 @@ object LinkdingMockServer {
         isEmpty: Boolean,
     ): Triple<String, String, (RecordedRequest) -> MockResponse> {
         return Triple("bookmarks", "GET") { request ->
-            MockResponse().setResponseCode(200).apply {
-                when {
-                    isEmpty -> setBody(TestData.emptyBookmarksResponse())
-                    request.requestUrl.toString().run { contains("limit=1") || contains("offset=0") } -> {
-                        setBody(TestData.bookmarksResponse())
-                    }
+            MockResponse()
+                .setResponseCode(200)
+                .setHeader("Content-Type", "application/json")
+                .apply {
+                    when {
+                        isEmpty -> setBody(TestData.emptyBookmarksResponse())
 
-                    else -> setBody(TestData.emptyBookmarksResponse())
+                        request.requestUrl.toString().run { contains("limit=1") || contains("offset=0") } -> {
+                            setBody(TestData.bookmarksResponse())
+                        }
+
+                        else -> setBody(TestData.emptyBookmarksResponse())
+                    }
                 }
-            }
         }
     }
 
     fun addBookmarkResponse(): Triple<String, String, (RecordedRequest) -> MockResponse> {
         return Triple("bookmarks", "POST") {
-            MockResponse().setResponseCode(200)
+            MockResponse()
+                .setResponseCode(200)
+                .setHeader("Content-Type", "application/json")
                 .setBody(TestData.addBookmarkResponse())
         }
     }
 
     object TestData {
 
-        val TOKEN = UUID.randomUUID().toString()
+        val TOKEN: String = UUID.randomUUID().toString()
 
         fun bookmarksResponse(): String = """
             {

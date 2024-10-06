@@ -20,7 +20,7 @@ import com.fibelatti.pinboard.MockDataProvider.mockTagString3
 import com.fibelatti.pinboard.MockDataProvider.mockTagStringHtml
 import com.fibelatti.pinboard.MockDataProvider.mockTagStringHtmlEscaped
 import com.fibelatti.pinboard.MockDataProvider.mockTags
-import com.fibelatti.pinboard.MockDataProvider.mockTagsRequest
+import com.fibelatti.pinboard.MockDataProvider.mockTagsResponse
 import com.fibelatti.pinboard.MockDataProvider.mockTime
 import com.fibelatti.pinboard.MockDataProvider.mockUrlDescription
 import com.fibelatti.pinboard.MockDataProvider.mockUrlTitle
@@ -148,7 +148,7 @@ class PostsDataSourcePinboardApiTest {
                     description = null,
                     public = null,
                     readLater = null,
-                    tags = mockTagsRequest,
+                    tags = mockTagsResponse,
                     replace = AppConfig.PinboardApiLiterals.YES,
                 )
             } throws Exception()
@@ -183,7 +183,7 @@ class PostsDataSourcePinboardApiTest {
                         description = null,
                         public = null,
                         readLater = null,
-                        tags = mockTagsRequest,
+                        tags = mockTagsResponse,
                         replace = AppConfig.PinboardApiLiterals.YES,
                     )
                 } returns createGenericResponse(ApiResultCodes.MISSING_URL)
@@ -222,7 +222,7 @@ class PostsDataSourcePinboardApiTest {
                             description = null,
                             public = null,
                             readLater = null,
-                            tags = mockTagsRequest,
+                            tags = mockTagsResponse,
                             replace = AppConfig.PinboardApiLiterals.YES,
                         )
                     } returns createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS)
@@ -259,7 +259,7 @@ class PostsDataSourcePinboardApiTest {
                             description = null,
                             public = null,
                             readLater = null,
-                            tags = mockTagsRequest,
+                            tags = mockTagsResponse,
                             replace = AppConfig.PinboardApiLiterals.YES,
                         )
                     } returns createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS)
@@ -298,7 +298,7 @@ class PostsDataSourcePinboardApiTest {
                             description = null,
                             public = null,
                             readLater = null,
-                            tags = mockTagsRequest,
+                            tags = mockTagsResponse,
                             replace = AppConfig.PinboardApiLiterals.YES,
                         )
                     } returns createGenericResponse(ApiResultCodes.ITEM_ALREADY_EXISTS)
@@ -360,7 +360,7 @@ class PostsDataSourcePinboardApiTest {
                         description = null,
                         public = null,
                         readLater = null,
-                        tags = mockTagsRequest,
+                        tags = mockTagsResponse,
                         replace = AppConfig.PinboardApiLiterals.YES,
                     )
                 } returns createGenericResponse(ApiResultCodes.DONE)
@@ -377,9 +377,9 @@ class PostsDataSourcePinboardApiTest {
             }
 
         @Test
-        fun `GIVEN the tags contain a plus sign THEN their are escaped before the request is sent`() = runTest {
+        fun `GIVEN the tags contain a plus sign THEN their are preserved as the request is sent`() = runTest {
             // GIVEN
-            val expectedTags = "C%2b%2b+Tag%2bTag"
+            val expectedTags = "C++ Tag+Tag"
             val inputTags = listOf(Tag(name = "C++"), Tag(name = "Tag+Tag"))
 
             coEvery {
@@ -445,7 +445,7 @@ class PostsDataSourcePinboardApiTest {
                     description = null,
                     public = expectedPublic,
                     readLater = expectedReadLater,
-                    tags = mockTagsRequest,
+                    tags = mockTagsResponse,
                     replace = expectedReplace,
                 )
             } returns createGenericResponse(ApiResultCodes.DONE)
@@ -472,7 +472,7 @@ class PostsDataSourcePinboardApiTest {
                     description = null,
                     public = expectedPublic,
                     readLater = expectedReadLater,
-                    tags = mockTagsRequest,
+                    tags = mockTagsResponse,
                     replace = expectedReplace,
                 )
             }

@@ -36,7 +36,7 @@ import dagger.multibindings.IntoMap
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class FeatureModule {
+internal abstract class FeatureModule {
 
     @Binds
     @IntoMap

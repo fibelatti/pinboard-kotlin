@@ -12,7 +12,7 @@ import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 
 @Singleton
-class TagsDataSourceProxy @Inject constructor(
+internal class TagsDataSourceProxy @Inject constructor(
     private val tagsDataSource: Provider<TagsDataSource>,
     private val tagsDataSourceLinkdingApi: Provider<TagsDataSourceLinkdingApi>,
     private val appModeProvider: AppModeProvider,

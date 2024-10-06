@@ -3,22 +3,17 @@ package com.fibelatti.pinboard.core.di.modules
 import com.fibelatti.pinboard.PinboardMockServer
 import com.fibelatti.pinboard.core.di.RestApi
 import com.fibelatti.pinboard.core.di.RestApiProvider
-import com.fibelatti.pinboard.core.network.ApiInterceptor
-import com.fibelatti.pinboard.core.network.UnauthorizedInterceptor
-import com.fibelatti.pinboard.features.notes.data.NotesApi
-import com.fibelatti.pinboard.features.posts.data.PostsApi
-import com.fibelatti.pinboard.features.tags.data.TagsApi
+import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
+import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
-import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.kotlinx.serialization.asConverterFactory
-import retrofit2.create
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.request.accept
+import io.ktor.http.ContentType
+import io.ktor.http.URLProtocol
 
 @Module
 @TestInstallIn(
@@ -29,34 +24,27 @@ object TestPinboardModule {
 
     @Provides
     @RestApi(RestApiProvider.PINBOARD)
-    fun okHttpClient(
-        okHttpClient: OkHttpClient,
-        apiInterceptor: ApiInterceptor,
-        unauthorizedInterceptor: UnauthorizedInterceptor,
-        loggingInterceptor: HttpLoggingInterceptor,
-    ): OkHttpClient = okHttpClient.newBuilder()
-        .addInterceptor(apiInterceptor)
-        .addInterceptor(unauthorizedInterceptor)
-        .addInterceptor(loggingInterceptor)
-        .build()
+    fun pinboardHttpClient(
+        @RestApi(RestApiProvider.BASE) httpClient: HttpClient,
+        userSharedPreferences: UserSharedPreferences,
+        unauthorizedPluginProvider: UnauthorizedPluginProvider,
+    ): HttpClient {
+        val mockServerUrl = PinboardMockServer.instance.url("/")
 
-    @Provides
-    @RestApi(RestApiProvider.PINBOARD)
-    fun retrofit(
-        @RestApi(RestApiProvider.PINBOARD) okHttpClient: OkHttpClient,
-        json: Json,
-    ): Retrofit = Retrofit.Builder()
-        .baseUrl(PinboardMockServer.instance.url("/"))
-        .client(okHttpClient)
-        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
-        .build()
+        return httpClient.config {
+            defaultRequest {
+                url {
+                    protocol = URLProtocol.HTTP
+                    host = mockServerUrl.host
+                    port = mockServerUrl.port
 
-    @Provides
-    fun postsApi(@RestApi(RestApiProvider.PINBOARD) retrofit: Retrofit): PostsApi = retrofit.create()
+                    parameters.append(name = "format", value = "json")
+                    parameters.append(name = "auth_token", value = userSharedPreferences.authToken)
+                }
+                accept(ContentType.Application.Json)
+            }
 
-    @Provides
-    fun tagsApi(@RestApi(RestApiProvider.PINBOARD) retrofit: Retrofit): TagsApi = retrofit.create()
-
-    @Provides
-    fun notesApi(@RestApi(RestApiProvider.PINBOARD) retrofit: Retrofit): NotesApi = retrofit.create()
+            install(unauthorizedPluginProvider.plugin)
+        }
+    }
 }

@@ -35,6 +35,9 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import io.ktor.client.plugins.ResponseException
+import java.util.UUID
+import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -42,11 +45,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withTimeout
-import retrofit2.HttpException
-import java.util.UUID
-import javax.inject.Inject
 
-class PostsDataSourcePinboardApi @Inject constructor(
+internal class PostsDataSourcePinboardApi @Inject constructor(
     private val userRepository: UserRepository,
     private val postsApi: PostsApi,
     private val postsDao: PostsDao,
@@ -69,8 +69,11 @@ class PostsDataSourcePinboardApi @Inject constructor(
     private fun <T> Result<T>.mapApiRequestFailure(
         endpoint: String,
     ): Result<T> = mapFailure { throwable ->
-        val mappedValue = if (throwable is HttpException) {
-            RuntimeException("Network call to `$endpoint` failed. HTTP Code ${throwable.code()}.", throwable)
+        val mappedValue = if (throwable is ResponseException) {
+            RuntimeException(
+                "Network call to `$endpoint` failed. HTTP Code ${throwable.response.status.value}.",
+                throwable,
+            )
         } else {
             throwable
         }
@@ -101,9 +104,9 @@ class PostsDataSourcePinboardApi @Inject constructor(
         val trimmedTitle = post.title.take(PinboardApiMaxLength.TEXT_TYPE.value)
         val publicLiteral = post.private?.let { if (it) PinboardApiLiterals.NO else PinboardApiLiterals.YES }
         val readLaterLiteral = post.readLater?.let { if (it) PinboardApiLiterals.YES else PinboardApiLiterals.NO }
-        val trimmedTags = post.tags.orEmpty().joinToString(PinboardApiLiterals.TAG_SEPARATOR_REQUEST) {
-            it.name.replace(oldValue = "+", newValue = "%2b")
-        }.take(PinboardApiMaxLength.TEXT_TYPE.value)
+        val trimmedTags = post.tags.orEmpty()
+            .joinToString(PinboardApiLiterals.TAG_SEPARATOR) { it.name }
+            .take(PinboardApiMaxLength.TEXT_TYPE.value)
         val replaceLiteral = PinboardApiLiterals.YES
 
         // The API abuses GET, this aims to avoid getting 414 errors
@@ -127,8 +130,8 @@ class PostsDataSourcePinboardApi @Inject constructor(
             val result = withTimeout(SERVER_DOWN_TIMEOUT_LONG) {
                 try {
                     add(PinboardApiMaxLength.URI.value - currentLength)
-                } catch (httpException: HttpException) {
-                    if (httpException.code() == HTTP_URI_TOO_LONG) {
+                } catch (httpException: ResponseException) {
+                    if (HTTP_URI_TOO_LONG == httpException.response.status.value) {
                         add(PinboardApiMaxLength.SAFE_URI.value - currentLength)
                     } else {
                         throw httpException
@@ -162,7 +165,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
             time = existingPost?.time ?: post.dateAdded,
             shared = if (post.private == true) PinboardApiLiterals.NO else PinboardApiLiterals.YES,
             toread = if (post.readLater == true) PinboardApiLiterals.YES else PinboardApiLiterals.NO,
-            tags = post.tags.orEmpty().joinToString(PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name },
+            tags = post.tags.orEmpty().joinToString(PinboardApiLiterals.TAG_SEPARATOR) { it.name },
             pendingSync = existingPost?.let { it.pendingSync ?: PendingSyncDto.UPDATE } ?: PendingSyncDto.ADD,
         )
 

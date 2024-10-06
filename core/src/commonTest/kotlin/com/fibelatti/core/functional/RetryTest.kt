@@ -6,10 +6,10 @@ import io.mockk.andThenJust
 import io.mockk.every
 import io.mockk.spyk
 import kotlinx.coroutines.test.runTest
+import kotlinx.io.IOException
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.io.IOException
 
 internal class RetryTest {
 

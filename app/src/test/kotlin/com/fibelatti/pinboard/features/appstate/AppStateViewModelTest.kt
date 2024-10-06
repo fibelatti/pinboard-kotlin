@@ -4,7 +4,7 @@ import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.allSealedSubclasses
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.AppModeProvider
-import com.fibelatti.pinboard.core.network.UnauthorizedInterceptor
+import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
 import com.fibelatti.pinboard.isEmpty
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coVerify
@@ -27,7 +27,7 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
     private val mockContent = mockk<Content>()
     private val contentFlow = MutableStateFlow(mockContent)
 
-    private val mockUnauthorizedInterceptor = mockk<UnauthorizedInterceptor> {
+    private val mockUnauthorizedPluginProvider = mockk<UnauthorizedPluginProvider> {
         every { unauthorized } returns emptyFlow()
     }
 
@@ -43,20 +43,20 @@ internal class AppStateViewModelTest : BaseViewModelTest() {
         AppStateViewModel(
             appStateRepository = mockAppStateRepository,
             appModeProvider = mockAppModeProvider,
-            unauthorizedInterceptor = mockUnauthorizedInterceptor,
+            unauthorizedPluginProvider = mockUnauthorizedPluginProvider,
         )
     }
 
     @Test
     fun `WHEN unauthorized emits THEN UserUnauthorized runs`() {
-        val mockUnauthorizedInterceptor = mockk<UnauthorizedInterceptor> {
+        val mockUnauthorizedPluginProvider = mockk<UnauthorizedPluginProvider> {
             every { unauthorized } returns flowOf(Unit)
         }
 
         AppStateViewModel(
             appStateRepository = mockAppStateRepository,
             appModeProvider = mockAppModeProvider,
-            unauthorizedInterceptor = mockUnauthorizedInterceptor,
+            unauthorizedPluginProvider = mockUnauthorizedPluginProvider,
         )
 
         coVerify {

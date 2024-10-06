@@ -7,7 +7,7 @@ import okhttp3.mockwebserver.RecordedRequest
 
 object PinboardMockServer {
 
-    val instance by lazy { MockWebServer() }
+    val instance: MockWebServer by lazy { MockWebServer() }
 
     fun setResponses(vararg responses: Pair<String, (RecordedRequest) -> MockResponse>) {
         instance.dispatcher = object : Dispatcher() {
@@ -26,7 +26,9 @@ object PinboardMockServer {
         updateTimestamp: String,
     ): Pair<String, (RecordedRequest) -> MockResponse> {
         return "/posts/update" to {
-            MockResponse().setResponseCode(200)
+            MockResponse()
+                .setResponseCode(200)
+                .setHeader("Content-Type", "application/json")
                 .setBody(TestData.updateResponse(timestamp = updateTimestamp))
         }
     }
@@ -35,26 +37,31 @@ object PinboardMockServer {
         isEmpty: Boolean,
     ): Pair<String, (RecordedRequest) -> MockResponse> {
         return "/posts/all" to { request ->
-            MockResponse().setResponseCode(200).apply {
-                when {
-                    isEmpty -> setBody(TestData.emptyBookmarksResponse())
-                    request.requestUrl.toString().contains("start=0") -> setBody(TestData.allBookmarksResponse())
-                    else -> setBody(TestData.emptyBookmarksResponse())
+            MockResponse()
+                .setResponseCode(200)
+                .setHeader("Content-Type", "application/json")
+                .apply {
+                    when {
+                        isEmpty -> setBody(TestData.emptyBookmarksResponse())
+                        request.requestUrl.toString().contains("start=0") -> setBody(TestData.allBookmarksResponse())
+                        else -> setBody(TestData.emptyBookmarksResponse())
+                    }
                 }
-            }
         }
     }
 
     fun addBookmarkResponse(): Pair<String, (RecordedRequest) -> MockResponse> {
         return "posts/add" to {
-            MockResponse().setResponseCode(200)
+            MockResponse()
+                .setResponseCode(200)
+                .setHeader("Content-Type", "application/json")
                 .setBody(TestData.genericResponseDone())
         }
     }
 
     object TestData {
 
-        const val TOKEN = "instrumented:1000"
+        const val TOKEN: String = "instrumented:1000"
 
         fun updateResponse(timestamp: String): String = """
             {

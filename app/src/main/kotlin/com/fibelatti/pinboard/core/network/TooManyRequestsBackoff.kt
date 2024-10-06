@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.core.network
 
+import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.delay
-import retrofit2.HttpException
 
 /**
  * Shorthand function to retry executing [block] automatically for [times] in case an [HttpException]
@@ -28,8 +28,8 @@ suspend fun <T> tooManyRequestsBackoff(
     repeat(times - 1) {
         try {
             return block()
-        } catch (httpException: HttpException) {
-            if (httpException.code() == 429) {
+        } catch (httpException: ResponseException) {
+            if (429 == httpException.response.status.value) {
                 delay(currentDelay)
                 currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
             } else {
