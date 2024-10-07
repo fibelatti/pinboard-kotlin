@@ -1,0 +1,12 @@
+Version 3.2.0 updates:
+
+* Send and search URLs via Wayback Machine using quick actions (#323)
+* New user preference for "follow redirects" when sharing bookmarks to the
+  app (#330)
+* Linkding — Sort by added or modified dates (#324)
+* Linkding — Fixed "mark as read" not working (#335)
+* Updated app icons and information displayed on bookmark lists
+
+Your feedback is always welcome — visit our project page to contribute!
+
+Thanks for using Pinkt!
