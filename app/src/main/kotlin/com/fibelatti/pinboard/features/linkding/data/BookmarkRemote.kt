@@ -51,13 +51,11 @@ class BookmarkRemoteMapper @Inject constructor(
     private val dateFormatter: DateFormatter,
 ) : Mapper<BookmarkRemote, Post> {
 
+    private val dateRegex = "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}).\\d+Z$".toRegex()
+
     override fun map(param: BookmarkRemote): Post = with(param) {
-        val dateAdded = this.dateAdded
-            ?.substringBeforeLast(".")?.plus("Z") // Drop the milliseconds
-            ?: dateFormatter.nowAsTzFormat()
-        val dateModified = this.dateModified
-            ?.substringBeforeLast(".")?.plus("Z") // Drop the milliseconds
-            ?: dateFormatter.nowAsTzFormat()
+        val dateAdded = dateWithoutMillis(input = this.dateAdded)
+        val dateModified = dateWithoutMillis(input = this.dateModified ?: this.dateAdded)
 
         Post(
             url = url,
@@ -76,5 +74,11 @@ class BookmarkRemoteMapper @Inject constructor(
             websiteDescription = websiteDescription,
             isArchived = isArchived,
         )
+    }
+
+    private fun dateWithoutMillis(input: String?): String {
+        return dateRegex.find(input.orEmpty())?.groupValues?.getOrNull(index = 1)
+            ?.plus("Z")
+            ?: dateFormatter.nowAsTzFormat()
     }
 }

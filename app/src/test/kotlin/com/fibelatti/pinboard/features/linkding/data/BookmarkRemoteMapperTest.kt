@@ -20,9 +20,12 @@ class BookmarkRemoteMapperTest {
     private val dateModifiedWithMillis = "2019-03-10T08:20:10.123Z"
     private val dateModified = "2019-03-10T08:20:10Z"
 
+    private val dateFallback = "2019-05-10T08:20:10Z"
+
     private val mapper = BookmarkRemoteMapper(
         dateFormatter = mockk {
             every { tzFormatToDisplayFormat(any()) } answers { firstArg() }
+            every { nowAsTzFormat() } returns dateFallback
         },
     )
 
@@ -75,8 +78,8 @@ class BookmarkRemoteMapperTest {
             unread = null,
             shared = null,
             tagNames = null,
-            dateAdded = dateAddedWithMillis,
-            dateModified = dateModifiedWithMillis,
+            dateAdded = "",
+            dateModified = null,
         )
 
         val expected = Post(
@@ -84,8 +87,8 @@ class BookmarkRemoteMapperTest {
             title = "",
             description = "",
             id = "1",
-            dateAdded = dateAdded,
-            dateModified = dateModified,
+            dateAdded = dateFallback,
+            dateModified = dateFallback,
             private = false,
             readLater = false,
             tags = null,

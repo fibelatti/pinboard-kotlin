@@ -53,6 +53,7 @@ class PostsDataSourceLinkdingApi @Inject constructor(
         val resolvedId = post.id.ifBlank { null }?.toIntOrNull()
         val resolvedPost = post.copy(
             dateAdded = post.dateAdded.ifNullOrBlank { dateFormatter.nowAsTzFormat() },
+            dateModified = dateFormatter.nowAsTzFormat(),
         )
 
         return if (connectivityInfoProvider.isConnected()) {
@@ -81,11 +82,10 @@ class PostsDataSourceLinkdingApi @Inject constructor(
             } else {
                 linkdingApi.updateBookmark(id = id.toString(), bookmarkRemote = bookmarkRemote)
             }
-        }.mapCatching(bookmarkRemoteMapper::map)
-            .onSuccess {
-                linkdingDao.deletePendingSyncBookmark(url = it.url)
-                linkdingDao.saveBookmarks(listOf(bookmarkLocalMapper.mapReverse(it)))
-            }
+        }.mapCatching(bookmarkRemoteMapper::map).onSuccess {
+            linkdingDao.deletePendingSyncBookmark(url = it.url)
+            linkdingDao.saveBookmarks(listOf(bookmarkLocalMapper.mapReverse(it)))
+        }
     }
 
     private suspend fun addBookmarkLocal(id: Int?, post: Post): Result<Post> = resultFrom {
@@ -101,7 +101,6 @@ class PostsDataSourceLinkdingApi @Inject constructor(
             unread = post.readLater == true,
             shared = post.private != true,
             tagNames = post.tags?.joinToString(separator = " ") { it.name },
-            dateModified = dateFormatter.nowAsTzFormat(),
             pendingSync = existingPost?.let { it.pendingSync ?: PendingSyncDto.UPDATE } ?: PendingSyncDto.ADD,
         )
 

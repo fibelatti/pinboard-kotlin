@@ -47,6 +47,9 @@ class BookmarkLocalMapper @Inject constructor(
 ) : TwoWayMapper<BookmarkLocal, Post> {
 
     override fun map(param: BookmarkLocal): Post = with(param) {
+        // `dateAdded` wasn't originally part of the model; it will be empty immediately after the DB migration
+        val dateAdded = this.dateAdded.ifEmpty { dateModified }
+
         Post(
             url = url,
             title = title,
