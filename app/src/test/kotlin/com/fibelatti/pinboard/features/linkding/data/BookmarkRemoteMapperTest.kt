@@ -15,17 +15,12 @@ import org.junit.jupiter.api.Test
 
 class BookmarkRemoteMapperTest {
 
-    private val dateAddedWithMillis = "2019-01-10T08:20:10.123Z"
-    private val dateAdded = "2019-01-10T08:20:10Z"
-    private val dateModifiedWithMillis = "2019-03-10T08:20:10.123Z"
-    private val dateModified = "2019-03-10T08:20:10Z"
-
-    private val dateFallback = "2019-05-10T08:20:10Z"
+    private val dateAdded = "2019-01-10T08:20:10.123Z"
+    private val dateModified = "2019-03-10T08:20:10.123Z"
 
     private val mapper = BookmarkRemoteMapper(
         dateFormatter = mockk {
             every { tzFormatToDisplayFormat(any()) } answers { firstArg() }
-            every { nowAsTzFormat() } returns dateFallback
         },
     )
 
@@ -45,8 +40,8 @@ class BookmarkRemoteMapperTest {
             unread = unread,
             shared = shared,
             tagNames = mockTagsString,
-            dateAdded = dateAddedWithMillis,
-            dateModified = dateModifiedWithMillis,
+            dateAdded = dateAdded,
+            dateModified = dateModified,
         )
 
         val expected = Post(
@@ -87,8 +82,8 @@ class BookmarkRemoteMapperTest {
             title = "",
             description = "",
             id = "1",
-            dateAdded = dateFallback,
-            dateModified = dateFallback,
+            dateAdded = "",
+            dateModified = "",
             private = false,
             readLater = false,
             tags = null,
