@@ -1,0 +1,8 @@
+Version 3.2.2 updates:
+
+* Linkding — Fixed an issue that would lead to an empty bookmark list and/or
+  wrong dates (#337)
+
+Your feedback is always welcome — visit our project page to contribute!
+
+Thanks for using Pinkt!
