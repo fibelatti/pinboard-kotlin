@@ -19,18 +19,22 @@ class DateFormatter @Inject constructor(
     private val userRepository: UserRepository,
 ) {
 
-    fun tzFormatToDisplayFormat(input: String): String {
+    fun tzFormatToDisplayFormat(input: String): String = try {
         val parsed: LocalDateTime = LocalDateTime.Format { byUnicodePattern(FORMAT_TZ) }.parse(input)
             .toInstant(TimeZone.UTC)
             .toLocalDateTime(TimeZone.currentSystemDefault())
-        return getLocalDateTimeFormat(userRepository.preferredDateFormat).format(parsed)
+        getLocalDateTimeFormat(userRepository.preferredDateFormat).format(parsed)
+    } catch (_: Exception) {
+        input
     }
 
-    fun notesFormatToDisplayFormat(input: String): String {
+    fun notesFormatToDisplayFormat(input: String): String = try {
         val parsed: LocalDateTime = LocalDateTime.Format { byUnicodePattern(FORMAT_NOTES) }.parse(input)
             .toInstant(TimeZone.UTC)
             .toLocalDateTime(TimeZone.currentSystemDefault())
-        return getLocalDateTimeFormat(userRepository.preferredDateFormat).format(parsed)
+        getLocalDateTimeFormat(userRepository.preferredDateFormat).format(parsed)
+    } catch (_: Exception) {
+        input
     }
 
     fun nowAsTzFormat(): String {
@@ -92,7 +96,7 @@ class DateFormatter @Inject constructor(
 
     private companion object {
 
-        const val FORMAT_TZ = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+        const val FORMAT_TZ = "yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]'Z'"
         const val FORMAT_NOTES = "yyyy-MM-dd HH:mm:ss"
     }
 }

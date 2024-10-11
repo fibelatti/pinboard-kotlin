@@ -30,6 +30,14 @@ internal class DateFormatterTest {
     }
 
     @Test
+    fun `WHEN tzFormatToDisplayFormat is called AND preferred date format is DayMonthYearWithTime THEN it is correctly returned - with millis`() {
+        every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.DayMonthYearWithTime
+
+        assertThat(dateFormatter.tzFormatToDisplayFormat("1991-08-20T11:00:00.123456Z"))
+            .isEqualTo("20/08/91, 11:00")
+    }
+
+    @Test
     fun `WHEN tzFormatToDisplayFormat is called AND preferred date format is MonthDayYearWithTime THEN it is correctly returned`() {
         every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.MonthDayYearWithTime
 
@@ -55,7 +63,7 @@ internal class DateFormatterTest {
 
     @Test
     fun `WHEN nowAsTzFormat is called THEN format should be correct`() {
-        val result = dateFormatter.nowAsTzFormat().matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$".toRegex())
+        val result = dateFormatter.nowAsTzFormat().matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{6}Z$".toRegex())
 
         assertThat(result).isTrue()
     }

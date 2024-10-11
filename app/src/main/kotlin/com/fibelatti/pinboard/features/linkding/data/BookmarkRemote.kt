@@ -23,6 +23,10 @@ data class BookmarkRemote(
     val title: String?,
     val description: String?,
     val notes: String?,
+    @SerialName(value = "date_added")
+    val dateAdded: String,
+    @SerialName(value = "date_modified")
+    val dateModified: String? = null,
     @SerialName(value = "website_title")
     val websiteTitle: String? = null,
     @SerialName(value = "website_description")
@@ -33,10 +37,6 @@ data class BookmarkRemote(
     val shared: Boolean? = true,
     @SerialName(value = "tag_names")
     val tagNames: List<String>? = null,
-    @SerialName(value = "date_added")
-    val dateAdded: String? = null,
-    @SerialName(value = "date_modified")
-    val dateModified: String? = null,
 )
 
 @Serializable
@@ -51,21 +51,16 @@ class BookmarkRemoteMapper @Inject constructor(
     private val dateFormatter: DateFormatter,
 ) : Mapper<BookmarkRemote, Post> {
 
-    private val dateRegex = "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}).\\d+Z$".toRegex()
-
     override fun map(param: BookmarkRemote): Post = with(param) {
-        val dateAdded = dateWithoutMillis(input = this.dateAdded)
-        val dateModified = dateWithoutMillis(input = this.dateModified ?: this.dateAdded)
-
         Post(
             url = url,
             title = title.orEmpty(),
             description = description.orEmpty(),
             id = requireNotNull(id?.toString()),
             dateAdded = dateAdded,
-            displayDateAdded = dateFormatter.tzFormatToDisplayFormat(dateAdded),
-            dateModified = dateModified,
-            displayDateModified = dateFormatter.tzFormatToDisplayFormat(dateModified),
+            displayDateAdded = dateFormatter.tzFormatToDisplayFormat(input = dateAdded),
+            dateModified = dateModified ?: dateAdded,
+            displayDateModified = dateFormatter.tzFormatToDisplayFormat(input = dateModified ?: dateAdded),
             private = shared == false,
             readLater = unread == true,
             tags = tagNames?.sorted()?.map(::Tag),
@@ -74,11 +69,5 @@ class BookmarkRemoteMapper @Inject constructor(
             websiteDescription = websiteDescription,
             isArchived = isArchived,
         )
-    }
-
-    private fun dateWithoutMillis(input: String?): String {
-        return dateRegex.find(input.orEmpty())?.groupValues?.getOrNull(index = 1)
-            ?.plus("Z")
-            ?: dateFormatter.nowAsTzFormat()
     }
 }

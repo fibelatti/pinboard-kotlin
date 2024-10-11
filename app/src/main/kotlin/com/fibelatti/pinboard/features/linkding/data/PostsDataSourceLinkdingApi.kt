@@ -70,6 +70,7 @@ class PostsDataSourceLinkdingApi @Inject constructor(
             title = post.title,
             description = post.description,
             notes = post.notes,
+            dateAdded = post.dateAdded,
             isArchived = post.isArchived,
             unread = post.readLater == true,
             shared = post.private != true,
@@ -317,6 +318,7 @@ class PostsDataSourceLinkdingApi @Inject constructor(
                 .sorted()
         } else {
             linkdingDao.getAllBookmarkTags()
+                .asSequence()
                 .flatMap { it.replaceHtmlChars().split(" ") }
                 .groupBy { it }
                 .map { (tag, postList) -> Tag(tag, postList.size) }
@@ -335,5 +337,6 @@ class PostsDataSourceLinkdingApi @Inject constructor(
 
     override suspend fun clearCache(): Result<Unit> = resultFrom {
         linkdingDao.deleteAllBookmarks()
+        lastGetAllTimeMillis = 0
     }
 }
