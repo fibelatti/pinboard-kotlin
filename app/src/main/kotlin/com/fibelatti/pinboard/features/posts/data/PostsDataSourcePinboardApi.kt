@@ -87,7 +87,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
     override suspend fun add(post: Post): Result<Post> {
         val resolvedPost = post.copy(
             id = post.id.ifNullOrBlank { UUID.randomUUID().toString() },
-            dateAdded = post.dateAdded.ifNullOrBlank { dateFormatter.nowAsTzFormat() },
+            dateAdded = post.dateAdded.ifNullOrBlank { dateFormatter.nowAsDataFormat() },
         )
 
         return if (connectivityInfoProvider.isConnected()) {
@@ -229,7 +229,7 @@ class PostsDataSourcePinboardApi @Inject constructor(
         emit(localData(false))
 
         val userLastUpdate = userRepository.lastUpdate.takeIf(String::isNotBlank)
-        val apiLastUpdate = update().getOrDefault(dateFormatter.nowAsTzFormat())
+        val apiLastUpdate = update().getOrDefault(dateFormatter.nowAsDataFormat())
 
         if (userLastUpdate != null && userLastUpdate == apiLastUpdate && !forceRefresh) {
             emit(localData(true))

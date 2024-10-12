@@ -15,7 +15,7 @@ class PostDtoMapperTest {
 
     private val mapper = PostDtoMapper(
         dateFormatter = mockk {
-            every { tzFormatToDisplayFormat(any()) } answers { invocation.args[0] as String }
+            every { dataFormatToDisplayFormat(any()) } answers { invocation.args[0] as String }
         },
     )
 

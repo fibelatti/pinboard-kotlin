@@ -26,7 +26,7 @@ class BookmarkLocalMapperTest {
 
     private val mapper = BookmarkLocalMapper(
         dateFormatter = mockk {
-            every { tzFormatToDisplayFormat(any()) } answers { firstArg() }
+            every { dataFormatToDisplayFormat(any()) } answers { firstArg() }
         },
     )
 

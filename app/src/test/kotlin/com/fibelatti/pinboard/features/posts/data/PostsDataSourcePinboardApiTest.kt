@@ -351,7 +351,7 @@ class PostsDataSourcePinboardApiTest {
                 every { UUID.randomUUID() } returns mockk {
                     every { this@mockk.toString() } returns mockHash
                 }
-                every { mockDateFormatter.nowAsTzFormat() } returns mockTime
+                every { mockDateFormatter.nowAsDataFormat() } returns mockTime
                 coEvery { mockApi.update() } returns UpdateDto(mockFutureTime)
                 coEvery {
                     mockApi.add(
@@ -523,7 +523,7 @@ class PostsDataSourcePinboardApiTest {
                 every { UUID.randomUUID() } returns mockk {
                     every { this@mockk.toString() } returns mockHash
                 }
-                every { mockDateFormatter.nowAsTzFormat() } returns mockTime
+                every { mockDateFormatter.nowAsDataFormat() } returns mockTime
                 every { mockPostDtoMapper.map(expectedPost) } returns createPost()
 
                 // WHEN
@@ -820,7 +820,7 @@ class PostsDataSourcePinboardApiTest {
             fun `WHEN update fails THEN nowAsTzFormat is used instead`() = runTest {
                 // GIVEN
                 coEvery { mockApi.update() } throws Exception()
-                every { mockDateFormatter.nowAsTzFormat() } returns mockTime
+                every { mockDateFormatter.nowAsDataFormat() } returns mockTime
 
                 // WHEN
                 val result = dataSource.getAllPosts(
@@ -839,7 +839,7 @@ class PostsDataSourcePinboardApiTest {
                 // THEN
                 assertThat(result.toList().map { it.getOrThrow() })
                     .isEqualTo(listOf(mockLocalData, mockUpToDateLocalData))
-                verify { mockDateFormatter.nowAsTzFormat() }
+                verify { mockDateFormatter.nowAsDataFormat() }
                 coVerify(exactly = 0) { mockApi.getAllPosts() }
                 coVerify(exactly = 0) { mockDao.deleteAllSyncedPosts() }
                 coVerify(exactly = 0) { mockDao.savePosts(any()) }

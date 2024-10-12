@@ -20,7 +20,7 @@ class BookmarkRemoteMapperTest {
 
     private val mapper = BookmarkRemoteMapper(
         dateFormatter = mockk {
-            every { tzFormatToDisplayFormat(any()) } answers { firstArg() }
+            every { dataFormatToDisplayFormat(any()) } answers { firstArg() }
         },
     )
 

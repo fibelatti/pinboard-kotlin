@@ -22,48 +22,48 @@ internal class DateFormatterTest {
     }
 
     @Test
-    fun `WHEN tzFormatToDisplayFormat is called AND preferred date format is DayMonthYearWithTime THEN it is correctly returned`() {
+    fun `WHEN dataFormatToDisplayFormat is called AND preferred date format is DayMonthYearWithTime THEN it is correctly returned`() {
         every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.DayMonthYearWithTime
 
-        assertThat(dateFormatter.tzFormatToDisplayFormat("1991-08-20T11:00:00Z"))
+        assertThat(dateFormatter.dataFormatToDisplayFormat("1991-08-20T11:00:00Z"))
             .isEqualTo("20/08/91, 11:00")
     }
 
     @Test
-    fun `WHEN tzFormatToDisplayFormat is called AND preferred date format is DayMonthYearWithTime THEN it is correctly returned - with millis`() {
+    fun `WHEN dataFormatToDisplayFormat is called AND preferred date format is DayMonthYearWithTime THEN it is correctly returned - with millis`() {
         every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.DayMonthYearWithTime
 
-        assertThat(dateFormatter.tzFormatToDisplayFormat("1991-08-20T11:00:00.123456Z"))
+        assertThat(dateFormatter.dataFormatToDisplayFormat("1991-08-20T11:00:00.123456Z"))
             .isEqualTo("20/08/91, 11:00")
     }
 
     @Test
-    fun `WHEN tzFormatToDisplayFormat is called AND preferred date format is MonthDayYearWithTime THEN it is correctly returned`() {
+    fun `WHEN dataFormatToDisplayFormat is called AND preferred date format is MonthDayYearWithTime THEN it is correctly returned`() {
         every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.MonthDayYearWithTime
 
-        assertThat(dateFormatter.tzFormatToDisplayFormat("1991-08-20T11:00:00Z"))
+        assertThat(dateFormatter.dataFormatToDisplayFormat("1991-08-20T11:00:00Z"))
             .isEqualTo("08/20/91, 11:00")
     }
 
     @Test
-    fun `WHEN notesFormatToDisplayFormat is called AND preferred date format is DayMonthYearWithTime THEN it is correctly returned`() {
+    fun `WHEN dataFormatToDisplayFormat is called AND preferred date format is DayMonthYearWithTime THEN it is correctly returned - notes`() {
         every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.DayMonthYearWithTime
 
-        assertThat(dateFormatter.notesFormatToDisplayFormat("1991-08-20 11:00:00"))
+        assertThat(dateFormatter.dataFormatToDisplayFormat("1991-08-20 11:00:00"))
             .isEqualTo("20/08/91, 11:00")
     }
 
     @Test
-    fun `WHEN notesFormatToDisplayFormat is called AND preferred date format is MonthDayYearWithTime THEN it is correctly returned`() {
+    fun `WHEN dataFormatToDisplayFormat is called AND preferred date format is MonthDayYearWithTime THEN it is correctly returned - notes`() {
         every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.MonthDayYearWithTime
 
-        assertThat(dateFormatter.notesFormatToDisplayFormat("1991-08-20 11:00:00"))
+        assertThat(dateFormatter.dataFormatToDisplayFormat("1991-08-20 11:00:00"))
             .isEqualTo("08/20/91, 11:00")
     }
 
     @Test
-    fun `WHEN nowAsTzFormat is called THEN format should be correct`() {
-        val result = dateFormatter.nowAsTzFormat().matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{6}Z$".toRegex())
+    fun `WHEN nowAsDataFormat is called THEN format should be correct`() {
+        val result = dateFormatter.nowAsDataFormat().matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{6}Z$".toRegex())
 
         assertThat(result).isTrue()
     }

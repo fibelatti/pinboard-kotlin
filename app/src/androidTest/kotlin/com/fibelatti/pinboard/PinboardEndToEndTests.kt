@@ -80,7 +80,7 @@ class PinboardEndToEndTests {
     fun userCanLoginAndFetchBookmarks() {
         // Arrange
         PinboardMockServer.setResponses(
-            PinboardMockServer.updateResponse(updateTimestamp = dateFormatter.nowAsTzFormat()),
+            PinboardMockServer.updateResponse(updateTimestamp = dateFormatter.nowAsDataFormat()),
             PinboardMockServer.allBookmarksResponse(isEmpty = false),
         )
 
@@ -112,7 +112,7 @@ class PinboardEndToEndTests {
     fun userCanLoginAndAddBookmarks() {
         // Arrange
         PinboardMockServer.setResponses(
-            PinboardMockServer.updateResponse(updateTimestamp = dateFormatter.nowAsTzFormat()),
+            PinboardMockServer.updateResponse(updateTimestamp = dateFormatter.nowAsDataFormat()),
             PinboardMockServer.allBookmarksResponse(isEmpty = true),
             PinboardMockServer.addBookmarkResponse(),
         )

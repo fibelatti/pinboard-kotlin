@@ -19,10 +19,10 @@ import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import java.util.UUID
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class PostsDataSourceNoApi @Inject constructor(
     private val postsDao: PostsDao,
@@ -30,7 +30,7 @@ class PostsDataSourceNoApi @Inject constructor(
     private val dateFormatter: DateFormatter,
 ) : PostsRepository {
 
-    override suspend fun update(): Result<String> = Success(dateFormatter.nowAsTzFormat())
+    override suspend fun update(): Result<String> = Success(dateFormatter.nowAsDataFormat())
 
     override suspend fun add(post: Post): Result<Post> {
         val existingPost = resultFrom {
@@ -42,7 +42,7 @@ class PostsDataSourceNoApi @Inject constructor(
             description = post.title,
             extended = post.description,
             hash = existingPost?.hash ?: post.id.ifEmpty { UUID.randomUUID().toString() },
-            time = existingPost?.time ?: post.dateAdded.ifEmpty { dateFormatter.nowAsTzFormat() },
+            time = existingPost?.time ?: post.dateAdded.ifEmpty { dateFormatter.nowAsDataFormat() },
             shared = if (post.private == true) AppConfig.PinboardApiLiterals.NO else AppConfig.PinboardApiLiterals.YES,
             toread = if (post.readLater == true) AppConfig.PinboardApiLiterals.YES else AppConfig.PinboardApiLiterals.NO,
             tags = post.tags?.joinToString(AppConfig.PinboardApiLiterals.TAG_SEPARATOR_RESPONSE) { it.name }

@@ -47,13 +47,13 @@ class PostsDataSourceLinkdingApi @Inject constructor(
      */
     override suspend fun update(): Result<String> = resultFromNetwork {
         linkdingApi.getBookmarks(limit = 1)
-    }.mapCatching { dateFormatter.nowAsTzFormat() }
+    }.mapCatching { dateFormatter.nowAsDataFormat() }
 
     override suspend fun add(post: Post): Result<Post> {
         val resolvedId = post.id.ifBlank { null }?.toIntOrNull()
         val resolvedPost = post.copy(
-            dateAdded = post.dateAdded.ifNullOrBlank { dateFormatter.nowAsTzFormat() },
-            dateModified = dateFormatter.nowAsTzFormat(),
+            dateAdded = post.dateAdded.ifNullOrBlank { dateFormatter.nowAsDataFormat() },
+            dateModified = dateFormatter.nowAsDataFormat(),
         )
 
         return if (connectivityInfoProvider.isConnected()) {

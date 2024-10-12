@@ -91,7 +91,7 @@ internal class NoteDtoMapperTest {
         val mockTitle = "Some title"
         val mockText = "Some text"
 
-        every { mockDateFormatter.notesFormatToDisplayFormat(inputDate) } returns outputDate
+        every { mockDateFormatter.dataFormatToDisplayFormat(inputDate) } returns outputDate
 
         // WHEN
         val result = mapper.map(
@@ -115,6 +115,6 @@ internal class NoteDtoMapperTest {
             ),
         )
 
-        verify(exactly = 2) { mockDateFormatter.notesFormatToDisplayFormat(inputDate) }
+        verify(exactly = 2) { mockDateFormatter.dataFormatToDisplayFormat(inputDate) }
     }
 }

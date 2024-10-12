@@ -19,8 +19,19 @@ class DateFormatter @Inject constructor(
     private val userRepository: UserRepository,
 ) {
 
-    fun tzFormatToDisplayFormat(input: String): String = try {
-        val parsed: LocalDateTime = LocalDateTime.Format { byUnicodePattern(FORMAT_TZ) }.parse(input)
+    /**
+     * Each server/resource uses a different format. Samples:
+     *
+     * - **Pinboard bookmark**: 2024-10-21T11:00:00Z
+     * - **Pinboard note**: 2024-10-21 11:00:00
+     * - **Linkding**: 2024-10-21T11:00:00.123456Z
+     */
+    private val dateTimeFormat = LocalDateTime.Format {
+        byUnicodePattern(pattern = "yyyy-MM-dd['T'][' ']HH:mm:ss[.SSSSSS]['Z']")
+    }
+
+    fun dataFormatToDisplayFormat(input: String): String = try {
+        val parsed: LocalDateTime = dateTimeFormat.parse(input)
             .toInstant(TimeZone.UTC)
             .toLocalDateTime(TimeZone.currentSystemDefault())
         getLocalDateTimeFormat(userRepository.preferredDateFormat).format(parsed)
@@ -28,19 +39,10 @@ class DateFormatter @Inject constructor(
         input
     }
 
-    fun notesFormatToDisplayFormat(input: String): String = try {
-        val parsed: LocalDateTime = LocalDateTime.Format { byUnicodePattern(FORMAT_NOTES) }.parse(input)
-            .toInstant(TimeZone.UTC)
-            .toLocalDateTime(TimeZone.currentSystemDefault())
-        getLocalDateTimeFormat(userRepository.preferredDateFormat).format(parsed)
-    } catch (_: Exception) {
-        input
-    }
-
-    fun nowAsTzFormat(): String {
+    fun nowAsDataFormat(): String {
         val nowInUtc = Clock.System.now().toLocalDateTime(TimeZone.UTC)
 
-        return LocalDateTime.Format { byUnicodePattern(FORMAT_TZ) }.format(nowInUtc)
+        return dateTimeFormat.format(nowInUtc).replace(" ", "")
     }
 
     fun displayFormatToMillis(input: String): Long {
@@ -86,17 +88,10 @@ class DateFormatter @Inject constructor(
                 }
             }
 
-            char(value = ',')
-            char(value = ' ')
+            chars(", ")
             hour(padding = Padding.ZERO)
             char(value = ':')
             minute(padding = Padding.ZERO)
         }
-    }
-
-    private companion object {
-
-        const val FORMAT_TZ = "yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]'Z'"
-        const val FORMAT_NOTES = "yyyy-MM-dd HH:mm:ss"
     }
 }
