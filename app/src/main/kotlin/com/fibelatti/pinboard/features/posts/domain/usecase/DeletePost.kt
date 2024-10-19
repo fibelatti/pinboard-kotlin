@@ -17,7 +17,7 @@ class DeletePost @Inject constructor(
     override suspend operator fun invoke(params: Post): Result<Unit> =
         validateUrl(params.url).map {
             withContext(NonCancellable) {
-                postsRepository.delete(id = params.id, url = params.url)
+                postsRepository.delete(post = params)
             }
         }
 }

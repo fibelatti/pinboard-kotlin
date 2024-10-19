@@ -4,6 +4,7 @@ import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.extension.ifNullOrBlank
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
+import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.getOrThrow
@@ -31,6 +32,7 @@ import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
 import com.fibelatti.pinboard.features.posts.data.model.PostRemoteDtoMapper
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
+import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -45,6 +47,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withTimeout
+import kotlinx.io.IOException
 
 internal class PostsDataSourcePinboardApi @Inject constructor(
     private val userRepository: UserRepository,
@@ -89,14 +92,14 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
 
     override suspend fun add(post: Post): Result<Post> {
         val resolvedPost = post.copy(
-            id = post.id.ifNullOrBlank { UUID.randomUUID().toString() },
+            id = post.id.ifBlank { UUID.randomUUID().toString() },
             dateAdded = post.dateAdded.ifNullOrBlank { dateFormatter.nowAsDataFormat() },
         )
 
         return if (connectivityInfoProvider.isConnected()) {
-            addPostRemote(resolvedPost)
+            addPostRemote(post = resolvedPost)
         } else {
-            addPostLocal(resolvedPost)
+            addPostLocal(post = resolvedPost)
         }
     }
 
@@ -126,8 +129,8 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
             )
         }
 
-        return resultFromNetwork {
-            val result = withTimeout(SERVER_DOWN_TIMEOUT_LONG) {
+        val networkResult = resultFromNetwork {
+            withTimeout(SERVER_DOWN_TIMEOUT_LONG) {
                 try {
                     add(PinboardApiMaxLength.URI.value - currentLength)
                 } catch (httpException: ResponseException) {
@@ -138,18 +141,33 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
                     }
                 }
             }
+        }
 
-            when (result.resultCode) {
-                ApiResultCodes.DONE.code -> {
-                    postsDao.deletePendingSyncPost(post.url)
+        return when (networkResult) {
+            is Success -> {
+                catching {
+                    when (networkResult.value.resultCode) {
+                        ApiResultCodes.DONE.code -> {
+                            postsDao.deletePendingSyncPost(post.url)
+                            savePosts(listOf(postDtoMapper.mapReverse(post)))
+                            post
+                        }
 
-                    savePosts(listOf(postDtoMapper.mapReverse(post)))
+                        ApiResultCodes.ITEM_ALREADY_EXISTS.code -> {
+                            getPost(id = "", url = post.url).getOrThrow()
+                        }
 
-                    return@resultFromNetwork post
+                        else -> throw ApiException(networkResult.value.resultCode)
+                    }
                 }
+            }
 
-                ApiResultCodes.ITEM_ALREADY_EXISTS.code -> getPost(id = "", url = post.url).getOrThrow()
-                else -> throw ApiException(result.resultCode)
+            is Failure -> {
+                if (networkResult.value is IOException) {
+                    addPostLocal(post = post)
+                } else {
+                    networkResult
+                }
             }
         }
     }
@@ -174,27 +192,43 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
         return@resultFrom postDtoMapper.map(newPost)
     }
 
-    override suspend fun delete(id: String, url: String): Result<Unit> = if (connectivityInfoProvider.isConnected()) {
-        deletePostRemote(url)
-    } else {
-        deletePostLocal(url)
-    }
-
-    private suspend fun deletePostRemote(url: String): Result<Unit> = resultFromNetwork {
-        postsApi.delete(url)
-    }.mapCatching { result ->
-        if (result.resultCode == ApiResultCodes.DONE.code) {
-            postsDao.deletePost(url)
+    override suspend fun delete(post: Post): Result<Unit> {
+        return if (connectivityInfoProvider.isConnected() && PendingSync.ADD != post.pendingSync) {
+            deletePostRemote(post = post)
         } else {
-            throw ApiException(result.resultCode)
+            deletePostLocal(post = post)
         }
     }
 
-    private suspend fun deletePostLocal(url: String): Result<Unit> = resultFrom {
-        val existingPost = postsDao.getPost(url)
-            ?: throw IllegalStateException("Can't delete post with url: $url. It doesn't exist locally.")
+    private suspend fun deletePostRemote(post: Post): Result<Unit> {
+        val networkResult = resultFromNetwork {
+            postsApi.delete(post.url)
+        }
 
-        postsDao.savePosts(listOf(existingPost.copy(pendingSync = PendingSyncDto.DELETE)))
+        return when (networkResult) {
+            is Success -> {
+                catching {
+                    if (networkResult.value.resultCode == ApiResultCodes.DONE.code) {
+                        postsDao.deletePost(post.url)
+                    } else {
+                        throw ApiException(networkResult.value.resultCode)
+                    }
+                }
+            }
+
+            is Failure -> deletePostLocal(post = post)
+        }
+    }
+
+    private suspend fun deletePostLocal(post: Post): Result<Unit> = resultFrom {
+        if (PendingSync.ADD == post.pendingSync) {
+            postsDao.deletePost(post.url)
+        } else {
+            val existingPost = postsDao.getPost(post.url)
+                ?: error("Can't delete post with url: ${post.url}. It doesn't exist locally.")
+
+            postsDao.savePosts(listOf(existingPost.copy(pendingSync = PendingSyncDto.DELETE)))
+        }
     }
 
     override fun getAllPosts(

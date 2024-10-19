@@ -46,17 +46,9 @@ internal class PostsDataSourceProxy @Inject constructor(
 
     override suspend fun update(): Result<String> = repository.update()
 
-    override suspend fun add(post: Post): Result<Post> = repository.add(
-        post = post,
-    )
+    override suspend fun add(post: Post): Result<Post> = repository.add(post = post)
 
-    override suspend fun delete(
-        id: String,
-        url: String,
-    ): Result<Unit> = repository.delete(
-        id = id,
-        url = url,
-    )
+    override suspend fun delete(post: Post): Result<Unit> = repository.delete(post = post)
 
     override fun getAllPosts(
         sortType: SortType,

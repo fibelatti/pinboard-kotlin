@@ -86,7 +86,10 @@ class PostsDataSourcePinboardApiTest {
     private val mockPostRemoteDto = mockk<PostRemoteDto>()
     private val mockListPostDto = listOf(mockPostDto)
     private val mockListPostRemoteDto = listOf(mockPostRemoteDto)
-    private val mockPost = mockk<Post>()
+    private val mockPost = mockk<Post> {
+        every { url } returns mockUrlValid
+        every { pendingSync } returns null
+    }
     private val mockListPost = listOf(mockPost)
 
     private val dataSource = spyk(
@@ -634,7 +637,7 @@ class PostsDataSourcePinboardApiTest {
             coEvery { mockApi.delete(mockUrlValid) } throws Exception()
 
             // WHEN
-            val result = dataSource.delete(id = "", url = mockUrlValid)
+            val result = dataSource.delete(mockPost)
 
             // THEN
             coVerify(exactly = 0) { mockDao.deletePost(mockUrlValid) }
@@ -650,7 +653,7 @@ class PostsDataSourcePinboardApiTest {
                 coEvery { mockApi.delete(mockUrlValid) } returns createGenericResponse(ApiResultCodes.MISSING_URL)
 
                 // WHEN
-                val result = dataSource.delete(id = "", url = mockUrlValid)
+                val result = dataSource.delete(mockPost)
 
                 // THEN
                 coVerify(exactly = 0) { mockDao.deletePost(mockUrlValid) }
@@ -668,7 +671,7 @@ class PostsDataSourcePinboardApiTest {
                 coEvery { mockDao.deletePost(mockUrlValid) } just Runs
 
                 // WHEN
-                val result = dataSource.delete(id = "", url = mockUrlValid)
+                val result = dataSource.delete(mockPost)
 
                 // THEN
                 coVerify { mockDao.deletePost(mockUrlValid) }
@@ -690,7 +693,7 @@ class PostsDataSourcePinboardApiTest {
                 coEvery { mockDao.getPost(mockUrlValid) } returns post
 
                 // WHEN
-                val result = dataSource.delete(id = "", url = mockUrlValid)
+                val result = dataSource.delete(mockPost)
 
                 // THEN
                 coVerify { mockDao.savePosts(listOf(post.copy(pendingSync = PendingSyncDto.DELETE))) }
@@ -706,7 +709,7 @@ class PostsDataSourcePinboardApiTest {
                 coEvery { mockDao.savePosts(any()) } throws Exception()
 
                 // WHEN
-                val result = dataSource.delete(id = "", url = mockUrlValid)
+                val result = dataSource.delete(mockPost)
 
                 // THEN
                 verify { mockApi wasNot Called }
@@ -719,7 +722,7 @@ class PostsDataSourcePinboardApiTest {
                 coEvery { mockDao.getPost(mockUrlValid) } returns null
 
                 // WHEN
-                val result = dataSource.delete(id = "", url = mockUrlValid)
+                val result = dataSource.delete(mockPost)
 
                 // THEN
                 verify { mockApi wasNot Called }

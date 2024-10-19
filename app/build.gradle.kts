@@ -202,6 +202,7 @@ dependencies {
     implementation(libs.window)
 
     implementation(libs.lifecycle.java8)
+    implementation(libs.lifecycle.process)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.runtime.compose)
 

@@ -55,8 +55,8 @@ class PostsDataSourceNoApi @Inject constructor(
         }
     }
 
-    override suspend fun delete(id: String, url: String): Result<Unit> = resultFrom {
-        postsDao.deletePost(url)
+    override suspend fun delete(post: Post): Result<Unit> = resultFrom {
+        postsDao.deletePost(url = post.url)
     }
 
     override fun getAllPosts(

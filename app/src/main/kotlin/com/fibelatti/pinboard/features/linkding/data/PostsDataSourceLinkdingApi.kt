@@ -2,11 +2,12 @@ package com.fibelatti.pinboard.features.linkding.data
 
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.extension.ifNullOrBlank
+import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
+import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.getOrDefault
 import com.fibelatti.core.functional.mapCatching
-import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
@@ -17,6 +18,7 @@ import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
+import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -29,6 +31,7 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import kotlinx.io.IOException
 
 internal class PostsDataSourceLinkdingApi @Inject constructor(
     private val linkdingApi: LinkdingApi,
@@ -50,22 +53,22 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
     }.mapCatching { dateFormatter.nowAsDataFormat() }
 
     override suspend fun add(post: Post): Result<Post> {
-        val resolvedId = post.id.ifBlank { null }?.toIntOrNull()
         val resolvedPost = post.copy(
             dateAdded = post.dateAdded.ifNullOrBlank { dateFormatter.nowAsDataFormat() },
             dateModified = dateFormatter.nowAsDataFormat(),
         )
 
         return if (connectivityInfoProvider.isConnected()) {
-            addBookmarkRemote(id = resolvedId, post = resolvedPost)
+            addBookmarkRemote(post = resolvedPost)
         } else {
-            addBookmarkLocal(id = resolvedId, post = resolvedPost)
+            addBookmarkLocal(post = resolvedPost)
         }
     }
 
-    private suspend fun addBookmarkRemote(id: Int?, post: Post): Result<Post> {
+    private suspend fun addBookmarkRemote(post: Post): Result<Post> {
+        val resolvedId = post.id.ifBlank { null }?.toIntOrNull()
         val bookmarkRemote = BookmarkRemote(
-            id = id,
+            id = resolvedId,
             url = post.url,
             title = post.title,
             description = post.description,
@@ -77,23 +80,41 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
             tagNames = post.tags?.map { it.name }.orEmpty(),
         )
 
-        return resultFromNetwork {
-            if (id == null) {
+        val networkResult = resultFromNetwork {
+            if (resolvedId == null) {
                 linkdingApi.createBookmark(bookmarkRemote = bookmarkRemote)
             } else {
-                linkdingApi.updateBookmark(id = id.toString(), bookmarkRemote = bookmarkRemote)
+                linkdingApi.updateBookmark(id = resolvedId.toString(), bookmarkRemote = bookmarkRemote)
             }
-        }.mapCatching(bookmarkRemoteMapper::map).onSuccess {
-            linkdingDao.deletePendingSyncBookmark(url = it.url)
-            linkdingDao.saveBookmarks(listOf(bookmarkLocalMapper.mapReverse(it)))
+        }
+
+        return when (networkResult) {
+            is Success -> {
+                catching {
+                    val bookmark = bookmarkRemoteMapper.map(networkResult.value)
+
+                    linkdingDao.deletePendingSyncBookmark(url = bookmark.url)
+                    linkdingDao.saveBookmarks(listOf(bookmarkLocalMapper.mapReverse(bookmark)))
+
+                    bookmark
+                }
+            }
+
+            is Failure -> {
+                if (networkResult.value is IOException) {
+                    addBookmarkLocal(post = post)
+                } else {
+                    networkResult
+                }
+            }
         }
     }
 
-    private suspend fun addBookmarkLocal(id: Int?, post: Post): Result<Post> = resultFrom {
-        val existingPost = linkdingDao.getBookmark(id = id?.toString().orEmpty(), url = post.url)
+    private suspend fun addBookmarkLocal(post: Post): Result<Post> = resultFrom {
+        val existingPost = linkdingDao.getBookmark(id = post.id, url = post.url)
 
         val newPost = BookmarkLocal(
-            id = UUID.randomUUID().toString(),
+            id = post.id.ifEmpty { UUID.randomUUID().toString() },
             url = existingPost?.url ?: post.url,
             title = post.title,
             description = post.description,
@@ -102,6 +123,8 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
             unread = post.readLater == true,
             shared = post.private != true,
             tagNames = post.tags?.joinToString(separator = " ") { it.name },
+            dateAdded = post.dateAdded,
+            dateModified = post.dateModified,
             pendingSync = existingPost?.let { it.pendingSync ?: PendingSyncDto.UPDATE } ?: PendingSyncDto.ADD,
         )
 
@@ -110,25 +133,34 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
         return@resultFrom bookmarkLocalMapper.map(newPost)
     }
 
-    override suspend fun delete(id: String, url: String): Result<Unit> {
-        return if (connectivityInfoProvider.isConnected()) {
-            deleteBookmarkRemote(id = id)
+    override suspend fun delete(post: Post): Result<Unit> {
+        return if (connectivityInfoProvider.isConnected() && PendingSync.ADD != post.pendingSync) {
+            deleteBookmarkRemote(post = post)
         } else {
-            deleteBookmarkLocal(id = id, url = url)
+            deleteBookmarkLocal(post = post)
         }
     }
 
-    private suspend fun deleteBookmarkRemote(id: String): Result<Unit> = resultFromNetwork {
-        require(linkdingApi.deleteBookmark(id = id))
-    }.onSuccess {
-        linkdingDao.deleteBookmark(id = id)
+    private suspend fun deleteBookmarkRemote(post: Post): Result<Unit> {
+        val networkResult = resultFromNetwork {
+            require(linkdingApi.deleteBookmark(id = post.id))
+        }
+
+        return when (networkResult) {
+            is Success -> catching { linkdingDao.deleteBookmark(id = post.id) }
+            is Failure -> deleteBookmarkLocal(post = post)
+        }
     }
 
-    private suspend fun deleteBookmarkLocal(id: String, url: String): Result<Unit> = resultFrom {
-        val existingPost = linkdingDao.getBookmark(id = id, url = url)
-            ?: throw IllegalStateException("Can't delete post with url: $url. It doesn't exist locally.")
+    private suspend fun deleteBookmarkLocal(post: Post): Result<Unit> = resultFrom {
+        if (PendingSync.ADD == post.pendingSync) {
+            linkdingDao.deleteBookmark(id = post.id)
+        } else {
+            val existingPost = linkdingDao.getBookmark(id = post.id, url = post.url)
+                ?: error("Can't delete post with url: ${post.url}. It doesn't exist locally.")
 
-        linkdingDao.saveBookmarks(listOf(existingPost.copy(pendingSync = PendingSyncDto.DELETE)))
+            linkdingDao.saveBookmarks(listOf(existingPost.copy(pendingSync = PendingSyncDto.DELETE)))
+        }
     }
 
     override fun getAllPosts(

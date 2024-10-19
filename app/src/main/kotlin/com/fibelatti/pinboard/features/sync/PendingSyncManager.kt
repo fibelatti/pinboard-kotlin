@@ -6,6 +6,9 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import androidx.core.content.getSystemService
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
@@ -34,15 +37,23 @@ class PendingSyncManager @Inject constructor(
         }
     }
 
-    fun enqueueWorkOnNetworkAvailable() {
+    private val processObserver = LifecycleEventObserver { _, event ->
+        if (Lifecycle.Event.ON_START == event) {
+            enqueueWork()
+        }
+    }
+
+    fun setupListeners() {
         val networkRequest = NetworkRequest.Builder()
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .build()
 
         connectivityManager?.registerNetworkCallback(networkRequest, networkCallback)
+
+        ProcessLifecycleOwner.get().lifecycle.addObserver(processObserver)
     }
 
-    fun enqueueWork() {
+    private fun enqueueWork() {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .setRequiresBatteryNotLow(true)

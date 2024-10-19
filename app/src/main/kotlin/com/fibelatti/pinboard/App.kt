@@ -64,7 +64,7 @@ class App : Application(), Configuration.Provider {
         )
 
         periodicSyncManager.enqueueWork()
-        pendingSyncManager.enqueueWorkOnNetworkAvailable()
+        pendingSyncManager.setupListeners()
     }
 
     private fun setupTheme() {

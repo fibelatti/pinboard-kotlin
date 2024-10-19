@@ -36,7 +36,7 @@ class PendingSyncWorker @AssistedInject constructor(
                 async {
                     when (post.pendingSync) {
                         PendingSync.ADD, PendingSync.UPDATE -> postsRepository.add(post = post)
-                        PendingSync.DELETE -> postsRepository.delete(id = post.id, url = post.url)
+                        PendingSync.DELETE -> postsRepository.delete(post = post)
                         null -> Success(Unit)
                     }
                 }

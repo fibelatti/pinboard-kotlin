@@ -101,27 +101,15 @@ internal class PostsDataSourceProxyTest {
         val (appMode, repository) = params
         val proxy = getProxy(appMode)
         val expectedResult = mockk<Result<Unit>>()
+        val post = mockk<Post>()
 
-        coEvery {
-            repository.delete(
-                id = stringArg,
-                url = stringArg,
-            )
-        } returns expectedResult
+        coEvery { repository.delete(post) } returns expectedResult
 
-        val result = proxy.delete(
-            id = stringArg,
-            url = stringArg,
-        )
+        val result = proxy.delete(post)
 
         assertThat(result).isEqualTo(expectedResult)
 
-        coVerify {
-            repository.delete(
-                id = stringArg,
-                url = stringArg,
-            )
-        }
+        coVerify { repository.delete(post) }
         verifyAllSources()
     }
 
