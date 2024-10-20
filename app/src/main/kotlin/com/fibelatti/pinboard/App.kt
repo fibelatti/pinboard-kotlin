@@ -3,8 +3,8 @@ package com.fibelatti.pinboard
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
+import android.os.StrictMode
 import android.view.WindowManager
-import android.webkit.WebView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
@@ -42,14 +42,40 @@ class App : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
 
-        setupTheme()
+        setupStrictMode()
+        setupThemeAndColors()
+        setupDisableScreenshots()
+        setupWorkers()
+    }
+
+    private fun setupStrictMode() {
+        if (!BuildConfig.DEBUG) return
+        StrictMode.setVmPolicy(
+            StrictMode.VmPolicy.Builder()
+                .detectAll()
+                .penaltyLog()
+                .build(),
+        )
+    }
+
+    private fun setupThemeAndColors() {
+        val mode = when (userRepository.appearance) {
+            Appearance.DarkTheme -> AppCompatDelegate.MODE_NIGHT_YES
+            Appearance.LightTheme -> AppCompatDelegate.MODE_NIGHT_NO
+            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
+
+        AppCompatDelegate.setDefaultNightMode(mode)
 
         val dynamicColorsOptions = DynamicColorsOptions.Builder()
             .setThemeOverlay(R.style.AppTheme_Overlay)
             .setPrecondition { _, _ -> userRepository.applyDynamicColors }
             .build()
-        DynamicColors.applyToActivitiesIfAvailable(this, dynamicColorsOptions)
 
+        DynamicColors.applyToActivitiesIfAvailable(this, dynamicColorsOptions)
+    }
+
+    private fun setupDisableScreenshots() {
         registerActivityLifecycleCallbacks(
             object : SimpleActivityLifecycleCallbacks() {
                 override fun onActivityCreated(p0: Activity, p1: Bundle?) {
@@ -62,30 +88,10 @@ class App : Application(), Configuration.Provider {
                 }
             },
         )
+    }
 
+    private fun setupWorkers() {
         periodicSyncManager.enqueueWork()
         pendingSyncManager.setupListeners()
-    }
-
-    private fun setupTheme() {
-        workaroundWebViewNightModeIssue()
-        val mode = when (userRepository.appearance) {
-            Appearance.DarkTheme -> AppCompatDelegate.MODE_NIGHT_YES
-            Appearance.LightTheme -> AppCompatDelegate.MODE_NIGHT_NO
-            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-        }
-        AppCompatDelegate.setDefaultNightMode(mode)
-    }
-
-    /**
-     * It turns out there is a strange bug where only the first time a WebView is created, it resets
-     * the UI mode. Instantiating a dummy one before calling [AppCompatDelegate.setDefaultNightMode]
-     * should be enough so WebViews can be used in the app without any issues.
-     */
-    private fun workaroundWebViewNightModeIssue() {
-        try {
-            WebView(this)
-        } catch (ignored: Exception) {
-        }
     }
 }

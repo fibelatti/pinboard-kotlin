@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.core.di.modules
 
+import android.net.TrafficStats
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.core.di.RestApi
 import com.fibelatti.pinboard.core.di.RestApiProvider
@@ -50,6 +51,11 @@ object NetworkModule {
 
                 followRedirects(true)
                 followSslRedirects(true)
+
+                addInterceptor { chain ->
+                    TrafficStats.setThreadStatsTag(Thread.currentThread().id.toInt())
+                    chain.proceed(chain.request())
+                }
             }
         }
 
