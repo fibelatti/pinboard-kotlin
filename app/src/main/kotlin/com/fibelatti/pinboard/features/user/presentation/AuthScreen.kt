@@ -16,11 +16,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -52,7 +55,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.ui.components.TextWithLinks
-import com.fibelatti.ui.foundation.topSystemBarsPaddingCompat
+import com.fibelatti.ui.preview.DevicePreviews
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -89,8 +92,9 @@ private fun AuthScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(color = ExtendedTheme.colors.backgroundNoOverlay)
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 32.dp)
-            .topSystemBarsPaddingCompat(),
+            .safeDrawingPadding(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -303,8 +307,10 @@ private fun AuthTokenHelp(
     }
 }
 
+// region Previews
 @Composable
 @ThemePreviews
+@DevicePreviews
 private fun AuthScreenPreview() {
     ExtendedTheme {
         AuthScreen(
@@ -321,6 +327,7 @@ private fun AuthScreenPreview() {
 
 @Composable
 @ThemePreviews
+@DevicePreviews
 private fun AuthScreenLinkdingPreview() {
     ExtendedTheme {
         AuthScreen(
@@ -337,6 +344,7 @@ private fun AuthScreenLinkdingPreview() {
 
 @Composable
 @ThemePreviews
+@DevicePreviews
 private fun AuthScreenLoadingPreview() {
     ExtendedTheme {
         AuthScreen(
@@ -353,6 +361,7 @@ private fun AuthScreenLoadingPreview() {
 
 @Composable
 @ThemePreviews
+@DevicePreviews
 private fun AuthScreenErrorPreview() {
     ExtendedTheme {
         AuthScreen(
@@ -366,3 +375,4 @@ private fun AuthScreenErrorPreview() {
         )
     }
 }
+// endregion Previews

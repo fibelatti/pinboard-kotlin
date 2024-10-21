@@ -2,11 +2,16 @@ package com.fibelatti.pinboard.features.notes.presentation
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,8 +53,6 @@ import com.fibelatti.pinboard.features.appstate.ViewNote
 import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
-import com.fibelatti.ui.foundation.asHorizontalPaddingDp
-import com.fibelatti.ui.foundation.navigationBarsCompat
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import java.util.UUID
@@ -163,16 +166,14 @@ private fun NoteListContent(
                 description = stringResource(id = R.string.notes_empty_description),
             )
         } else {
-            val (leftPadding, rightPadding) = WindowInsets.navigationBarsCompat
-                .asHorizontalPaddingDp(addStart = 16.dp, addEnd = 16.dp)
+            val windowInsets = WindowInsets.safeDrawing
+                .only(if (sidePanelVisible) WindowInsetsSides.Start else WindowInsetsSides.Horizontal)
+                .add(WindowInsets(left = 16.dp, right = 16.dp))
 
             SingleChoiceSegmentedButtonRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(
-                        start = leftPadding,
-                        end = if (sidePanelVisible) 16.dp else rightPadding,
-                    ),
+                    .windowInsetsPadding(windowInsets),
             ) {
                 NoteList.Sorting.entries.forEachIndexed { index, sorting ->
                     SegmentedButton(
@@ -204,17 +205,14 @@ private fun NoteListContent(
                 }
             }
 
-            val (listLeftPadding, listRightPadding) = WindowInsets.navigationBarsCompat.asHorizontalPaddingDp()
+            val listWindowInsets = WindowInsets.safeDrawing
+                .only(if (sidePanelVisible) WindowInsetsSides.Start else WindowInsetsSides.Horizontal)
+                .add(WindowInsets(top = 16.dp, bottom = 100.dp))
 
             PullRefreshLayout(
                 onPullToRefresh = onPullToRefresh,
                 listState = listState,
-                contentPadding = PaddingValues(
-                    start = listLeftPadding,
-                    top = 16.dp,
-                    end = if (sidePanelVisible) 0.dp else listRightPadding,
-                    bottom = 100.dp,
-                ),
+                contentPadding = listWindowInsets.asPaddingValues(),
             ) {
                 items(notes) { note ->
                     NoteListItem(

@@ -3,10 +3,7 @@ package com.fibelatti.pinboard.features
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
@@ -15,6 +12,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import androidx.fragment.app.commitNow
 import com.fibelatti.core.android.extension.createFragment
+import com.fibelatti.core.android.extension.doOnApplyWindowInsets
 import com.fibelatti.core.android.platform.fragmentArgs
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.extension.popTo
@@ -219,24 +217,17 @@ class FeatureFragments @Inject constructor(private val activity: FragmentActivit
 }
 
 @AndroidEntryPoint
-class ContainerFragment @Inject constructor() : Fragment() {
+class ContainerFragment @Inject constructor() : Fragment(R.layout.fragment_container) {
 
     var applyNavBarInsets: Boolean? by fragmentArgs()
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View = inflater.inflate(R.layout.fragment_container, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         if (applyNavBarInsets == true) {
-            ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
-                val navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-                v.updatePadding(right = navigationBars.right)
-                insets
+            view.doOnApplyWindowInsets { _, windowInsets, _, _ ->
+                val insets = WindowInsetsCompat.Type.navigationBars() or WindowInsetsCompat.Type.displayCutout()
+                view.updatePadding(right = windowInsets.getInsets(insets).right)
             }
         }
     }

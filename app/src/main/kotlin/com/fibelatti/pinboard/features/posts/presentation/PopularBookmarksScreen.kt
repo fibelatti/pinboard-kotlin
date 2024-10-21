@@ -3,11 +3,15 @@ package com.fibelatti.pinboard.features.posts.presentation
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -49,8 +53,6 @@ import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
-import com.fibelatti.ui.foundation.asHorizontalPaddingDp
-import com.fibelatti.ui.foundation.navigationBarsCompat
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import java.util.UUID
@@ -153,16 +155,13 @@ fun PopularBookmarksContent(
             description = stringResource(id = R.string.posts_empty_description),
         )
     } else {
-        val (listLeftPadding, listRightPadding) = WindowInsets.navigationBarsCompat.asHorizontalPaddingDp()
+        val windowInsets = WindowInsets.safeDrawing
+            .only(if (sidePanelVisible) WindowInsetsSides.Start else WindowInsetsSides.Horizontal)
+            .add(WindowInsets(top = 4.dp, bottom = 100.dp))
 
         PullRefreshLayout(
             onPullToRefresh = onPullToRefresh,
-            contentPadding = PaddingValues(
-                start = listLeftPadding,
-                top = 4.dp,
-                end = if (sidePanelVisible) 0.dp else listRightPadding,
-                bottom = 100.dp,
-            ),
+            contentPadding = windowInsets.asPaddingValues(),
         ) {
             items(posts) { bookmark ->
                 PopularBookmarkItem(

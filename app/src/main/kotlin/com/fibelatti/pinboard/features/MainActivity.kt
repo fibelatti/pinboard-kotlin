@@ -11,8 +11,11 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.Lifecycle
 import com.fibelatti.core.android.extension.animateChangingTransitions
+import com.fibelatti.core.android.extension.doOnApplyWindowInsets
 import com.fibelatti.core.android.extension.doOnInitializeAccessibilityNodeInfo
 import com.fibelatti.core.android.extension.setupForAccessibility
 import com.fibelatti.core.android.extension.viewBinding
@@ -50,8 +53,8 @@ import com.fibelatti.pinboard.features.appstate.SidePanelContent
 import com.fibelatti.pinboard.features.appstate.TagListContent
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
+import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
@@ -164,6 +167,11 @@ class MainActivity : BaseActivity() {
                 mainViewModel = mainViewModel,
                 appStateViewModel = appStateViewModel,
             )
+        }
+
+        binding.fragmentHostSidePanel.doOnApplyWindowInsets { view, windowInsets, _, _ ->
+            val insets = WindowInsetsCompat.Type.navigationBars() or WindowInsetsCompat.Type.displayCutout()
+            view.updatePadding(right = windowInsets.getInsets(insets).right)
         }
     }
 

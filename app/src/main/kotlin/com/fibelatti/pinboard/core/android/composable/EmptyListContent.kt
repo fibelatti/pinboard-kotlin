@@ -6,11 +6,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -25,7 +28,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.R
-import com.fibelatti.ui.foundation.navigationBarsCompat
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -41,13 +43,13 @@ fun EmptyListContent(
             .fillMaxWidth()
             .then(if (scrollable) Modifier.verticalScroll(rememberScrollState()) else Modifier),
     ) {
-        val paddingValues = WindowInsets.navigationBarsCompat
+        val windowInsets = WindowInsets.safeDrawing
+            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
             .add(WindowInsets(left = 24.dp, top = 16.dp, right = 24.dp, bottom = 100.dp))
-            .asPaddingValues()
 
         Box(
             modifier = Modifier
-                .padding(paddingValues)
+                .windowInsetsPadding(windowInsets)
                 .fillMaxWidth()
                 .height(200.dp)
                 .border(

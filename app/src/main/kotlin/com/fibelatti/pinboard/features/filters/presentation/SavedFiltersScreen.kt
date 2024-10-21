@@ -5,11 +5,14 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,7 +43,6 @@ import com.fibelatti.pinboard.features.appstate.ViewSavedFilter
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
-import com.fibelatti.ui.foundation.navigationBarsCompat
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import java.util.UUID
@@ -113,8 +115,9 @@ private fun SavedFiltersScreen(
     } else {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = WindowInsets(top = 16.dp, bottom = 100.dp)
-                .add(WindowInsets.navigationBarsCompat)
+            contentPadding = WindowInsets.safeDrawing
+                .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+                .add(WindowInsets(bottom = 100.dp))
                 .asPaddingValues(),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {

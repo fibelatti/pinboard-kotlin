@@ -11,11 +11,17 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -84,8 +90,6 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
-import com.fibelatti.ui.foundation.asHorizontalPaddingDp
-import com.fibelatti.ui.foundation.navigationBarsCompat
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.delay
@@ -187,8 +191,9 @@ fun BookmarkListScreen(
     Column(
         modifier = Modifier.fillMaxSize(),
     ) {
-        val (leftPadding, rightPadding) = WindowInsets.navigationBarsCompat
-            .asHorizontalPaddingDp(addStart = 16.dp, addEnd = 16.dp)
+        val windowInsets = WindowInsets.safeDrawing
+            .only(if (sidePanelVisible) WindowInsetsSides.Start else WindowInsetsSides.Horizontal)
+            .add(WindowInsets(left = 16.dp, right = 16.dp, bottom = 8.dp))
 
         AnimatedVisibility(visible = searchParameters.isActive()) {
             ActiveSearch(
@@ -197,11 +202,7 @@ fun BookmarkListScreen(
                 onClearClicked = onClearClicked,
                 onSaveClicked = onSaveClicked,
                 onShareClicked = { onShareClicked(searchParameters) },
-                modifier = Modifier.padding(
-                    start = leftPadding,
-                    end = if (sidePanelVisible) 16.dp else rightPadding,
-                    bottom = 8.dp,
-                ),
+                modifier = Modifier.windowInsetsPadding(windowInsets),
             )
         }
 
@@ -209,11 +210,7 @@ fun BookmarkListScreen(
             LinearProgressIndicator(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(
-                        start = leftPadding,
-                        end = if (sidePanelVisible) 16.dp else rightPadding,
-                        bottom = 8.dp,
-                    ),
+                    .windowInsetsPadding(windowInsets),
                 color = MaterialTheme.colorScheme.primary,
             )
         }
@@ -253,17 +250,14 @@ fun BookmarkListScreen(
                 listState.scrollToItem(index = 0)
             }
 
-            val (listLeftPadding, listRightPadding) = WindowInsets.navigationBarsCompat.asHorizontalPaddingDp()
+            val listWindowInsets = WindowInsets.safeDrawing
+                .only(if (sidePanelVisible) WindowInsetsSides.Start else WindowInsetsSides.Horizontal)
+                .add(WindowInsets(top = 4.dp, bottom = 100.dp))
 
             PullRefreshLayout(
                 onPullToRefresh = onPullToRefresh,
                 listState = listState,
-                contentPadding = PaddingValues(
-                    start = listLeftPadding,
-                    top = 4.dp,
-                    end = if (sidePanelVisible) 0.dp else listRightPadding,
-                    bottom = 100.dp,
-                ),
+                contentPadding = listWindowInsets.asPaddingValues(),
             ) {
                 items(posts.list) { post ->
                     BookmarkItem(

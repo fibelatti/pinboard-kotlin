@@ -17,9 +17,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -58,7 +65,6 @@ import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.RefreshPopular
 import com.fibelatti.pinboard.features.navigation.NavigationMenu
-import com.fibelatti.ui.foundation.navigationBarsPaddingCompat
 import com.fibelatti.ui.foundation.pxToDp
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -120,7 +126,11 @@ fun MainBottomAppBar(
                         0.dp
                     },
                 )
-                .navigationBarsPaddingCompat(),
+                .windowInsetsPadding(
+                    WindowInsets.navigationBars
+                        .add(WindowInsets.displayCutout)
+                        .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+                ),
             enter = slideInHorizontally(initialOffsetX = { it }),
             exit = slideOutHorizontally(targetOffsetX = { it }),
         ) {
@@ -234,7 +244,11 @@ private fun MainBottomAppBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(all = 16.dp)
-                    .navigationBarsPaddingCompat(),
+                    .windowInsetsPadding(
+                        WindowInsets.navigationBars
+                            .add(WindowInsets.displayCutout)
+                            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+                    ),
             ) {
                 AnimatedContent(
                     targetState = state.bottomAppBar.navigationIcon,
