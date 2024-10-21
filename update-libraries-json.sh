@@ -2,4 +2,4 @@
 
 set -e
 
-./gradlew app:exportLibraryDefinitions -PaboutLibraries.exportPath=src/main/res/raw/ -PaboutLibraries.exportVariant=release
+./gradlew app:exportLibraryDefinitions -PaboutLibraries.exportPath=src/main/res/raw/ -PaboutLibraries.exportVariant=pinboardapiRelease
