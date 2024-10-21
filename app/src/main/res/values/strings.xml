@@ -195,6 +195,8 @@
     <string name="quick_actions_title">Quick Actions</string>
     <string name="quick_actions_add_read_later">Add to Read Later</string>
     <string name="quick_actions_remove_read_later">Remove from Read Later</string>
+    <string name="quick_actions_copy_tags">Copy tags</string>
+    <string name="quick_actions_paste_tags">Paste tags</string>
     <string name="quick_actions_edit">Edit bookmark</string>
     <string name="quick_actions_delete">Delete bookmark</string>
     <string name="quick_actions_delete_filter">Delete filter</string>

@@ -12,13 +12,14 @@ import com.fibelatti.pinboard.features.appstate.PostSaved
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.DeletePost
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class PostDetailViewModel @Inject constructor(
@@ -59,30 +60,38 @@ class PostDetailViewModel @Inject constructor(
 
     fun toggleReadLater(post: Post) {
         launch {
-            _screenState.update { currentState ->
-                currentState.copy(isLoading = true)
-            }
-            addPost(
-                params = post.copy(
-                    readLater = !(post.readLater ?: false),
-                ),
-            ).onSuccess {
+            editPost(newPost = post.copy(readLater = !(post.readLater ?: false)))
+        }
+    }
+
+    fun addTags(post: Post, tags: List<Tag>) {
+        launch {
+            if (post.tags?.containsAll(tags) == true) return@launch
+
+            editPost(newPost = post.copy(tags = post.tags.orEmpty().plus(tags).distinct()))
+        }
+    }
+
+    private suspend fun editPost(newPost: Post) {
+        _screenState.update { currentState -> currentState.copy(isLoading = true) }
+        addPost(params = newPost)
+            .onSuccess { addedPost ->
                 _screenState.update { currentState ->
                     currentState.copy(
                         isLoading = false,
                         updated = Success(value = true),
                     )
                 }
-                appStateRepository.runDelayedAction(PostSaved(it))
-            }.onFailure {
+                appStateRepository.runDelayedAction(PostSaved(addedPost))
+            }
+            .onFailure { throwable ->
                 _screenState.update { currentState ->
                     currentState.copy(
                         isLoading = false,
-                        updated = Failure(it),
+                        updated = Failure(throwable),
                     )
                 }
             }
-        }
     }
 
     fun userNotified() {

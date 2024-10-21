@@ -50,6 +50,7 @@ import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.appstate.ViewCategory
 import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -69,6 +70,8 @@ class PostListFragment @Inject constructor(
     private val mainViewModel: MainViewModel by activityViewModels()
     private val postListViewModel: PostListViewModel by viewModels()
     private val postDetailViewModel: PostDetailViewModel by viewModels()
+
+    private var tagsClipboard: List<Tag> = emptyList()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -91,13 +94,22 @@ class PostListFragment @Inject constructor(
         SelectionDialog.show(
             context = requireContext(),
             title = getString(R.string.quick_actions_title),
-            options = PostQuickActions.allOptions(post),
+            options = PostQuickActions.allOptions(post, tagsClipboard),
             optionName = { option -> getString(option.title) },
             optionIcon = PostQuickActions::icon,
             onOptionSelected = { option ->
                 when (option) {
                     is PostQuickActions.ToggleReadLater -> postDetailViewModel.toggleReadLater(
                         post = option.post,
+                    )
+
+                    is PostQuickActions.CopyTags -> {
+                        tagsClipboard = option.tags
+                    }
+
+                    is PostQuickActions.PasteTags -> postDetailViewModel.addTags(
+                        post = option.post,
+                        tags = option.tags,
                     )
 
                     is PostQuickActions.Edit -> appStateViewModel.runAction(
@@ -371,6 +383,22 @@ private sealed class PostQuickActions(
         icon = R.drawable.ic_read_later,
     )
 
+    data class CopyTags(
+        override val post: Post,
+        val tags: List<Tag>,
+    ) : PostQuickActions(
+        title = R.string.quick_actions_copy_tags,
+        icon = R.drawable.ic_tag,
+    )
+
+    data class PasteTags(
+        override val post: Post,
+        val tags: List<Tag>,
+    ) : PostQuickActions(
+        title = R.string.quick_actions_paste_tags,
+        icon = R.drawable.ic_tag,
+    )
+
     data class Edit(
         override val post: Post,
     ) : PostQuickActions(
@@ -431,8 +459,18 @@ private sealed class PostQuickActions(
 
         fun allOptions(
             post: Post,
+            tagsClipboard: List<Tag> = emptyList(),
         ): List<PostQuickActions> = buildList {
             add(ToggleReadLater(post))
+
+            if (!post.tags.isNullOrEmpty()) {
+                add(CopyTags(post, post.tags))
+            }
+
+            if (tagsClipboard.isNotEmpty()) {
+                add(PasteTags(post, tagsClipboard))
+            }
+
             add(Edit(post))
             add(Delete(post))
             add(CopyUrl(post))
