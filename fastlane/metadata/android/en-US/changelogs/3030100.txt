@@ -1,0 +1,9 @@
+Version 3.3.1 updates:
+
+* New bookmark quick actions to copy and paste tags
+* Keep pending changes when the server cannot be reached
+* Revised edge-to-edge implementation
+
+Your feedback is always welcome — visit our project page to contribute!
+
+Thanks for using Pinkt!
