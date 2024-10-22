@@ -1,6 +1,10 @@
 # Built application files
 *.apk
+*.aab
 *.ap_
+
+# Keystore
+/keystore/
 
 # Gradle
 # ------
