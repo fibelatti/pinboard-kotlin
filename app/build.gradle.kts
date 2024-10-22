@@ -100,7 +100,7 @@ android {
             isShrinkResources = true
             isCrunchPngs = false
 
-            if (System.getenv("SIGN_BUILD") == "true") {
+            if (System.getenv("SIGN_BUILD").toBoolean()) {
                 signingConfig = signingConfigs.getByName("release")
             }
 

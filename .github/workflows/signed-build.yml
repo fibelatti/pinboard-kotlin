@@ -25,6 +25,7 @@ jobs:
       - name: Build
         run: ./gradlew app:assemblePinboardapiRelease
         env:
+          SIGN_BUILD: true
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
@@ -54,7 +55,7 @@ jobs:
       - name: Build
         run: ./gradlew app:bundlePinboardapiRelease
         env:
-          SIGN_BUILD: "true"
+          SIGN_BUILD: true
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
