@@ -11,14 +11,6 @@ plugins {
     alias(libs.plugins.about.libraries)
 }
 
-val jacocoEnabled: Boolean by project
-if (jacocoEnabled) {
-    println("Applying coverage-report.gradle")
-    apply {
-        from("coverage-report.gradle")
-    }
-}
-
 object AppInfo {
     const val APP_NAME = "Pinkt"
     const val APPLICATION_ID = "com.fibelatti.pinboard"
@@ -91,8 +83,6 @@ android {
         getByName("debug") {
             applicationIdSuffix = ".debug"
             isMinifyEnabled = false
-            enableUnitTestCoverage = jacocoEnabled
-            enableAndroidTestCoverage = jacocoEnabled
         }
 
         getByName("release") {

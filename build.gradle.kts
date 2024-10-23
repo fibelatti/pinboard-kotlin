@@ -26,9 +26,6 @@ buildscript {
     extra["compileSdkVersion"] = 34
     extra["targetSdkVersion"] = 34
     extra["minSdkVersion"] = 26
-
-    val jacocoEnabled: String? by project
-    extra["jacocoEnabled"] = jacocoEnabled?.toBoolean() ?: false
 }
 
 val javaVersion = JavaVersion.VERSION_17
