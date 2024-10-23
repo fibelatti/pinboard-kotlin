@@ -1,0 +1,7 @@
+Version 3.3.3 updates:
+
+* Linkding: Fixed some tags not appearing in the list
+
+Your feedback is always welcome — visit our project page to contribute!
+
+Thanks for using Pinkt!
