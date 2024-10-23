@@ -2,7 +2,13 @@ name: Feature Request
 description: Suggest a new feature or improvement
 title: "[Feature Request]: "
 labels: [ enhancement ]
+assignees:
+  - fibelatti
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this feature request, helping to make the app better for everyone.
   - type: textarea
     attributes:
       label: Describe your idea
@@ -13,6 +19,16 @@ body:
     attributes:
       label: Describe how you think it could work
       description: Try describing where and how you'd like to see your idea added to the app
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Service
+      description: Which service are you using?
+      multiple: true
+      options:
+        - Pinboard
+        - Linkding
     validations:
       required: true
   - type: textarea

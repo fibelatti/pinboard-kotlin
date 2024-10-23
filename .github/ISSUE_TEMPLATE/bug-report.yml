@@ -2,10 +2,16 @@ name: Bug Report
 description: Report something that's not working as expected
 title: "[Bug]: "
 labels: [ bug ]
+assignees:
+  - fibelatti
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report, helping to make the app better for everyone.
   - type: textarea
     attributes:
-      label: Describe the problem
+      label: What happened?
       description: |
         Describe what's happening to the best of your ability.
         You can also write reproduction steps if you're comfortable with it.
@@ -13,6 +19,16 @@ body:
         1. Click on...
         2. Choose...
         3. Observe that...
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Service
+      description: Which service are you using?
+      multiple: true
+      options:
+        - Pinboard
+        - Linkding
     validations:
       required: true
   - type: markdown
