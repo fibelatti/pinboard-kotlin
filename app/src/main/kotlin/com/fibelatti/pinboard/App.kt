@@ -50,8 +50,16 @@ class App : Application(), Configuration.Provider {
 
     private fun setupStrictMode() {
         if (!BuildConfig.DEBUG) return
+
         StrictMode.setVmPolicy(
             StrictMode.VmPolicy.Builder()
+                .detectAll()
+                .penaltyLog()
+                .build(),
+        )
+
+        StrictMode.setThreadPolicy(
+            StrictMode.ThreadPolicy.Builder()
                 .detectAll()
                 .penaltyLog()
                 .build(),
