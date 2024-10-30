@@ -37,7 +37,7 @@ fragment-ktx = { module = "androidx.fragment:fragment-ktx", version = "1.8.4" }
 transition-ktx = { module = "androidx.transition:transition-ktx", version = "1.5.1" }
 material = { module = "com.google.android.material:material", version = "1.12.0" }
 constraint-layout = { module = "androidx.constraintlayout:constraintlayout", version = "2.1.4" }
-constraint-layout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version = "1.0.1" }
+constraint-layout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version = "1.1.0" }
 lifecycle-java8 = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "lifecycle" }
 lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycle" }
 lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
