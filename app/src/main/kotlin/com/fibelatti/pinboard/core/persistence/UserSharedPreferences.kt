@@ -45,6 +45,9 @@ const val KEY_FOLLOW_REDIRECTS = "FOLLOW_REDIRECTS"
 const val KEY_AUTO_FILL_DESCRIPTION = "AUTO_FILL_DESCRIPTION"
 
 @VisibleForTesting
+const val KEY_USE_BLOCKQUOTE = "USE_BLOCKQUOTE"
+
+@VisibleForTesting
 const val KEY_SHOW_DESCRIPTION_IN_LISTS = "SHOW_DESCRIPTION_IN_LISTS"
 
 @VisibleForTesting
@@ -122,6 +125,10 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
     var autoFillDescription: Boolean
         get() = sharedPreferences.get(KEY_AUTO_FILL_DESCRIPTION, false)
         set(value) = sharedPreferences.put(KEY_AUTO_FILL_DESCRIPTION, value)
+
+    var useBlockquote: Boolean
+        get() = sharedPreferences.get(KEY_USE_BLOCKQUOTE, false)
+        set(value) = sharedPreferences.put(KEY_USE_BLOCKQUOTE, value)
 
     var showDescriptionInLists: Boolean
         get() = sharedPreferences.get(KEY_SHOW_DESCRIPTION_IN_LISTS, true)

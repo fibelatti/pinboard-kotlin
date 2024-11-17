@@ -142,6 +142,13 @@ class UserDataSource @Inject constructor(
             updateCurrentPreferences()
         }
 
+    override var useBlockquote: Boolean
+        get() = userSharedPreferences.useBlockquote
+        set(value) {
+            userSharedPreferences.useBlockquote = value
+            updateCurrentPreferences()
+        }
+
     override var showDescriptionInLists: Boolean
         get() = userSharedPreferences.showDescriptionInLists
         set(value) {
@@ -197,6 +204,7 @@ class UserDataSource @Inject constructor(
         alwaysUseSidePanel = alwaysUseSidePanel,
         followRedirects = followRedirects,
         autoFillDescription = autoFillDescription,
+        useBlockquote = useBlockquote,
         showDescriptionInLists = showDescriptionInLists,
         defaultPrivate = defaultPrivate ?: false,
         defaultReadLater = defaultReadLater ?: false,

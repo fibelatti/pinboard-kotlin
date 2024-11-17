@@ -80,6 +80,10 @@ class UserPreferencesViewModel @Inject constructor(
         userRepository.autoFillDescription = value
     }
 
+    fun saveUseBlockquote(value: Boolean) {
+        userRepository.useBlockquote = value
+    }
+
     fun saveShowDescriptionInLists(value: Boolean) {
         userRepository.showDescriptionInLists = value
     }

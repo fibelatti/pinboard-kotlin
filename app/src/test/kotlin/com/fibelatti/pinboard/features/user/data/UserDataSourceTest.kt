@@ -54,6 +54,7 @@ internal class UserDataSourceTest {
         alwaysUseSidePanel = false,
         followRedirects = true,
         autoFillDescription = false,
+        useBlockquote = false,
         showDescriptionInLists = false,
         defaultPrivate = false,
         defaultReadLater = false,

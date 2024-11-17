@@ -25,6 +25,7 @@ class UserPreferencesProvider : PreviewParameterProvider<UserPreferences> {
                 alwaysUseSidePanel = true,
                 followRedirects = true,
                 autoFillDescription = true,
+                useBlockquote = true,
                 showDescriptionInLists = true,
                 defaultPrivate = false,
                 defaultReadLater = false,

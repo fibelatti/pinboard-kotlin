@@ -79,7 +79,7 @@ fun UserPreferencesScreen(
             .windowInsetsPadding(
                 WindowInsets.safeDrawing
                     .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-                ),
+            ),
     ) {
         if (maxWidth < 600.dp) {
             Column(
@@ -443,6 +443,7 @@ private fun BookmarkingPreferencesContent(
             onEditAfterSharingChange = userPreferencesViewModel::saveEditAfterSharing,
             onFollowRedirectsChange = userPreferencesViewModel::saveFollowRedirects,
             onAutoFillDescriptionChange = userPreferencesViewModel::saveAutoFillDescription,
+            onUseBlockquoteChange = userPreferencesViewModel::saveUseBlockquote,
             onPrivateByDefaultChange = userPreferencesViewModel::saveDefaultPrivate,
             onReadLaterByDefaultChange = userPreferencesViewModel::saveDefaultReadLater,
         )
@@ -481,6 +482,7 @@ private fun BookmarkingPreferencesContent(
     onEditAfterSharingChange: (EditAfterSharing) -> Unit,
     onFollowRedirectsChange: (Boolean) -> Unit,
     onAutoFillDescriptionChange: (Boolean) -> Unit,
+    onUseBlockquoteChange: (Boolean) -> Unit,
     onPrivateByDefaultChange: (Boolean) -> Unit,
     onReadLaterByDefaultChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -543,6 +545,20 @@ private fun BookmarkingPreferencesContent(
             onCheckedChange = onAutoFillDescriptionChange,
             modifier = Modifier.padding(top = 16.dp),
         )
+
+        AnimatedVisibility(
+            visible = userPreferences.autoFillDescription,
+            enter = expandVertically(),
+            exit = shrinkVertically(),
+        ) {
+            SettingToggle(
+                title = stringResource(id = R.string.user_preferences_use_blockquote),
+                description = stringResource(id = R.string.user_preferences_use_blockquote_description),
+                checked = userPreferences.useBlockquote,
+                onCheckedChange = onUseBlockquoteChange,
+                modifier = Modifier.padding(top = 16.dp),
+            )
+        }
 
         if (AppMode.NO_API != appMode) {
             SettingToggle(
@@ -640,6 +656,7 @@ private fun BookmarkingPreferencesContentPreview(
             onEditAfterSharingChange = {},
             onFollowRedirectsChange = {},
             onAutoFillDescriptionChange = {},
+            onUseBlockquoteChange = {},
             onPrivateByDefaultChange = {},
             onReadLaterByDefaultChange = {},
         )

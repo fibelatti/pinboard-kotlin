@@ -79,7 +79,9 @@ class ShareReceiverViewModel @Inject constructor(
         val newPost = Post(
             url = finalUrl,
             title = title,
-            description = description?.let { "<blockquote>$it</blockquote>" }.orEmpty(),
+            description = description
+                ?.let { if (userRepository.useBlockquote) "<blockquote>$it</blockquote>" else it }
+                .orEmpty(),
             private = userRepository.defaultPrivate ?: false,
             readLater = userRepository.defaultReadLater ?: false,
             tags = userRepository.defaultTags,
@@ -96,7 +98,9 @@ class ShareReceiverViewModel @Inject constructor(
             params = Post(
                 url = finalUrl,
                 title = title,
-                description = description?.let { "<blockquote>$it</blockquote>" }.orEmpty(),
+                description = description
+                    ?.let { if (userRepository.useBlockquote) "<blockquote>$it</blockquote>" else it }
+                    .orEmpty(),
                 private = userRepository.defaultPrivate,
                 readLater = userRepository.defaultReadLater,
                 tags = userRepository.defaultTags,

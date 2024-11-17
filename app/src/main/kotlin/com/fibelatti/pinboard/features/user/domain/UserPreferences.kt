@@ -19,6 +19,7 @@ data class UserPreferences(
     val alwaysUseSidePanel: Boolean,
     val followRedirects: Boolean,
     val autoFillDescription: Boolean,
+    val useBlockquote: Boolean,
     val showDescriptionInLists: Boolean,
     val defaultPrivate: Boolean,
     val defaultReadLater: Boolean,

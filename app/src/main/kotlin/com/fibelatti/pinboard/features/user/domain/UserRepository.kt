@@ -40,6 +40,8 @@ interface UserRepository {
 
     var autoFillDescription: Boolean
 
+    var useBlockquote: Boolean
+
     var showDescriptionInLists: Boolean
 
     var defaultPrivate: Boolean?
