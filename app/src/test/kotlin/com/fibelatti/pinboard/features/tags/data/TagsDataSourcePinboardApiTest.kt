@@ -2,7 +2,6 @@ package com.fibelatti.pinboard.features.tags.data
 
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.features.posts.data.PostsDao
@@ -11,14 +10,13 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
-class TagsDataSourceTest {
+class TagsDataSourcePinboardApiTest {
 
     private val mockApi = mockk<TagsApi>()
     private val mockPostsDao = mockk<PostsDao> {
@@ -28,13 +26,10 @@ class TagsDataSourceTest {
         every { isConnected() } returns true
     }
 
-    private val dataSource = TagsDataSource(
+    private val dataSource = TagsDataSourcePinboardApi(
         tagsApi = mockApi,
         postsDao = mockPostsDao,
         connectivityInfoProvider = mockConnectivityInfoProvider,
-        appModeProvider = mockk {
-            every { appMode } returns MutableStateFlow(AppMode.PINBOARD)
-        },
     )
 
     @Nested
@@ -51,7 +46,7 @@ class TagsDataSourceTest {
             // THEN
             assertThat(result).hasSize(2)
             assertThat(result[0].getOrNull()).isEmpty()
-            assertThat(result[1].exceptionOrNull()).isInstanceOf(Exception::class.java)
+            assertThat(result[1].getOrNull()).isEmpty()
         }
 
         @Test
@@ -101,7 +96,7 @@ class TagsDataSourceTest {
 
             // THEN
             assertThat(result).hasSize(1)
-            assertThat(result.first().exceptionOrNull()).isInstanceOf(Exception::class.java)
+            assertThat(result.first().getOrNull()).isEmpty()
         }
 
         @Test

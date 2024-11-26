@@ -10,11 +10,14 @@ import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 @Singleton
 internal class TagsDataSourceProxy @Inject constructor(
-    private val tagsDataSource: Provider<TagsDataSource>,
+    private val tagsDataSourcePinboardApi: Provider<TagsDataSourcePinboardApi>,
     private val tagsDataSourceLinkdingApi: Provider<TagsDataSourceLinkdingApi>,
+    private val tagsDataSourceNoApi: Provider<TagsDataSourceNoApi>,
     private val appModeProvider: AppModeProvider,
 ) : TagsRepository {
 
@@ -22,14 +25,15 @@ internal class TagsDataSourceProxy @Inject constructor(
     private var currentRepository: TagsRepository? = null
 
     private val repository: TagsRepository
-        get() {
-            val appMode = appModeProvider.appMode.value
+        get() = runBlocking {
+            val appMode = appModeProvider.appMode.first { AppMode.UNSET != it }
 
-            return currentRepository?.takeIf { currentAppMode == appMode }
-                ?: if (AppMode.LINKDING == appModeProvider.appMode.value) {
-                    tagsDataSourceLinkdingApi.get()
-                } else {
-                    tagsDataSource.get()
+            currentRepository?.takeIf { currentAppMode == appMode }
+                ?: when (appMode) {
+                    AppMode.NO_API -> tagsDataSourceNoApi.get()
+                    AppMode.PINBOARD -> tagsDataSourcePinboardApi.get()
+                    AppMode.LINKDING -> tagsDataSourceLinkdingApi.get()
+                    AppMode.UNSET -> throw IllegalStateException()
                 }.also {
                     currentAppMode = appMode
                     currentRepository = it
