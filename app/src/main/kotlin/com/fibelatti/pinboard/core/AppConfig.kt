@@ -2,8 +2,6 @@ package com.fibelatti.pinboard.core
 
 object AppConfig {
 
-    const val MAIN_PACKAGE_NAME = "com.fibelatti.pinboard"
-
     const val API_ENCODING = "UTF-8"
 
     const val API_BASE_URL_LENGTH = 90
@@ -16,8 +14,6 @@ object AppConfig {
     const val DEFAULT_FILTER_MAX_TAGS = 3
 
     const val PINBOARD_USER_URL = "https://pinboard.in/u:"
-
-    const val PLAY_STORE_BASE_URL = "https://play.google.com/store/apps/details?id="
 
     val LOGIN_FAILED_CODES: List<Int> = listOf(401, 500)
 

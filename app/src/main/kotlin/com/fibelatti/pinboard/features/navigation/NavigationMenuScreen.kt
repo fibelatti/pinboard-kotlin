@@ -52,8 +52,10 @@ import com.fibelatti.ui.theme.ExtendedTheme
 fun NavigationMenuScreen(
     appStateViewModel: AppStateViewModel = hiltViewModel(),
     authViewModel: AuthViewModel = hiltViewModel(),
+    onSendFeedbackClicked: () -> Unit,
+    onWriteReviewClicked: () -> Unit,
     onShareClicked: () -> Unit,
-    onRateClicked: () -> Unit,
+    onPrivacyPolicyClicked: () -> Unit,
     onLicensesClicked: () -> Unit,
     onOptionSelected: () -> Unit,
 ) {
@@ -109,12 +111,20 @@ fun NavigationMenuScreen(
             authViewModel.logout()
             onOptionSelected()
         },
+        onSendFeedbackClicked = {
+            onSendFeedbackClicked()
+            onOptionSelected()
+        },
+        onWriteReviewClicked = {
+            onWriteReviewClicked()
+            onOptionSelected()
+        },
         onShareClicked = {
             onShareClicked()
             onOptionSelected()
         },
-        onRateClicked = {
-            onRateClicked()
+        onPrivacyPolicyClicked = {
+            onPrivacyPolicyClicked()
             onOptionSelected()
         },
         onLicensesClicked = {
@@ -139,8 +149,10 @@ private fun NavigationMenuScreen(
     onPopularClicked: () -> Unit,
     onPreferencesClicked: () -> Unit,
     onLogoutClicked: () -> Unit,
+    onSendFeedbackClicked: () -> Unit,
+    onWriteReviewClicked: () -> Unit,
     onShareClicked: () -> Unit,
-    onRateClicked: () -> Unit,
+    onPrivacyPolicyClicked: () -> Unit,
     onLicensesClicked: () -> Unit,
 ) {
     Column(
@@ -239,15 +251,31 @@ private fun NavigationMenuScreen(
         )
 
         MenuItem(
-            textRes = R.string.about_share,
-            onClick = onShareClicked,
+            textRes = R.string.about_send_feedback,
+            onClick = onSendFeedbackClicked,
             textStyle = MaterialTheme.typography.bodySmall,
+            iconRes = R.drawable.ic_feedback,
         )
 
         MenuItem(
             textRes = R.string.about_rate,
-            onClick = onRateClicked,
+            onClick = onWriteReviewClicked,
             textStyle = MaterialTheme.typography.bodySmall,
+            iconRes = R.drawable.ic_rate,
+        )
+
+        MenuItem(
+            textRes = R.string.about_share,
+            onClick = onShareClicked,
+            textStyle = MaterialTheme.typography.bodySmall,
+            iconRes = R.drawable.ic_share,
+        )
+
+        MenuItem(
+            textRes = R.string.about_privacy_policy,
+            onClick = onPrivacyPolicyClicked,
+            textStyle = MaterialTheme.typography.bodySmall,
+            iconRes = R.drawable.ic_privacy_policy,
         )
 
         AppVersionDetails(
@@ -340,8 +368,10 @@ private fun NavigationMenuScreenPreview() {
             onPopularClicked = {},
             onPreferencesClicked = {},
             onLogoutClicked = {},
+            onSendFeedbackClicked = {},
+            onWriteReviewClicked = {},
             onShareClicked = {},
-            onRateClicked = {},
+            onPrivacyPolicyClicked = {},
             onLicensesClicked = {},
         )
     }

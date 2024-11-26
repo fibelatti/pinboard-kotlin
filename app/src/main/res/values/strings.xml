@@ -265,8 +265,10 @@
     <string name="user_preferences_edit_after_sharing_description">Controls when the bookmark editor should be displayed after choosing the \"Save bookmark\" share action. To skip the editor, choose \"Quick save bookmark\" when sharing instead</string>
 
     <!-- About -->
-    <string name="about_share">Share Pinkt</string>
-    <string name="about_rate">Rate Pinkt on Google Play</string>
+    <string name="about_send_feedback">Send your feedback</string>
+    <string name="about_share">Share the app</string>
+    <string name="about_rate">Write a review</string>
+    <string name="about_privacy_policy">Privacy policy</string>
     <string name="about_developer">Developed with ❤ by Filipe Belatti</string>
     <string name="about_version">App version: %s</string>
     <string name="about_oss_licenses">OSS Licenses</string>

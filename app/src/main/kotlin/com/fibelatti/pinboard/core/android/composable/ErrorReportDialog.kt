@@ -4,6 +4,7 @@ package com.fibelatti.pinboard.core.android.composable
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.widget.Toast
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -17,9 +18,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import java.io.PrintWriter
 import java.io.StringWriter
 
@@ -67,17 +73,28 @@ fun ErrorReportDialog(
 
             Button(
                 onClick = {
+                    val entryPoint = EntryPointAccessors.fromApplication(
+                        context.applicationContext,
+                        ErrorReportEntryPoint::class.java,
+                    )
+                    val appModeProvider = entryPoint.appModeProvider()
+
                     val sw = StringWriter()
                     throwable.printStackTrace(PrintWriter(sw))
 
-                    val emailBody = "Hi, can you please look into this report?" +
-                        "\n\nMy app version is ${BuildConfig.VERSION_NAME}" +
-                        "\n\n$sw"
-                    val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
-                        data = Uri.parse("mailto:")
-                        putExtra(Intent.EXTRA_EMAIL, arrayOf("fibelatti+dev@gmail.com"))
-                        putExtra(Intent.EXTRA_SUBJECT, "Pinkt - Error Report")
-                        putExtra(Intent.EXTRA_TEXT, emailBody)
+                    val emailBody = StringBuilder().apply {
+                        appendLine("Android Version: ${Build.VERSION.RELEASE} (SDK ${Build.VERSION.SDK_INT})")
+                        appendLine("Current Service: ${appModeProvider.appMode.value}")
+                        appendLine("---")
+                        appendLine("This error just happened to me:")
+                        appendLine()
+                        append(sw.toString())
+                    }
+
+                    val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:")).apply {
+                        putExtra(Intent.EXTRA_EMAIL, arrayOf("appsupport@fibelatti.com"))
+                        putExtra(Intent.EXTRA_SUBJECT, "Pinkt (${BuildConfig.VERSION_NAME}) — Error Report")
+                        putExtra(Intent.EXTRA_TEXT, emailBody.toString())
                     }
 
                     context.startActivity(Intent.createChooser(emailIntent, chooserTitle))
@@ -98,6 +115,13 @@ fun ErrorReportDialog(
             Text(text = altMessage.ifEmpty { stringResource(R.string.error_report_rationale) })
         },
     )
+}
+
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface ErrorReportEntryPoint {
+
+    fun appModeProvider(): AppModeProvider
 }
 
 @Composable
