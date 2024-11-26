@@ -10,9 +10,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttpConfig
+import io.ktor.client.plugins.HttpResponseValidator
+import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.accept
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLProtocol
 import okhttp3.CipherSuite
 import okhttp3.ConnectionSpec
@@ -59,5 +62,15 @@ object PinboardModule {
         }
 
         install(unauthorizedPluginProvider.plugin)
+
+        HttpResponseValidator {
+            validateResponse { response ->
+                // Unfortunately nothing can be done if the server is acting up.
+                // A `ResponseException` is used when handling exceptions to notify users.
+                if (response.status == HttpStatusCode.InternalServerError) {
+                    throw ResponseException(response, "")
+                }
+            }
+        }
     }
 }
