@@ -1,0 +1,8 @@
+This version brings the following updates:
+
+* New setting to control the addition of <blockquote> when description
+  auto-fill is enabled
+* New menu items to send app feedback and view the privacy policy
+* New fallback strategy to load tags when the server is not available
+
+Feedback and suggestions are always welcome, thank you for using the app!
