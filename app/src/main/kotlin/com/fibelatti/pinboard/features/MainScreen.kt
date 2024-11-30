@@ -36,6 +36,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -112,6 +113,10 @@ fun MainBottomAppBar(
         val hideAllControls by remember { derivedStateOf { content is LoginContent } }
 
         var bottomAppBarHeight by remember { mutableIntStateOf(0) }
+
+        LaunchedEffect(content) {
+            mainViewModel.setCurrentScrollDirection(ScrollDirection.IDLE)
+        }
 
         AnimatedVisibility(
             visible = !hideAllControls &&
