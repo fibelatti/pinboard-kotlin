@@ -190,6 +190,10 @@
 
     <!-- Popular -->
     <string name="popular_title">Popular bookmarks</string>
+    <plurals name="popular_count">
+        <item quantity="one">Bookmarked 1 time</item>
+        <item quantity="other">Bookmarked %d times</item>
+    </plurals>
 
     <!-- Quick Actions -->
     <string name="quick_actions_title">Quick Actions</string>

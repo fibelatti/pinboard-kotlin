@@ -89,6 +89,6 @@ data class SetNote(val note: Note) : NoteAction()
 sealed class PopularAction : Action()
 
 data object RefreshPopular : PopularAction()
-data class SetPopularPosts(val posts: List<Post>) : PopularAction()
+data class SetPopularPosts(val posts: Map<Post, Int>) : PopularAction()
 // endregion PopularAction
 // endregion

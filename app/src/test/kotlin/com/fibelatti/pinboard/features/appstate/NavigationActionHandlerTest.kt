@@ -948,7 +948,7 @@ internal class NavigationActionHandlerTest {
             // THEN
             assertThat(result).isEqualTo(
                 PopularPostsContent(
-                    posts = emptyList(),
+                    posts = emptyMap(),
                     shouldLoad = mockBoolean,
                     isConnected = mockBoolean,
                     previousContent = mockCurrentContent,
@@ -974,7 +974,7 @@ internal class NavigationActionHandlerTest {
             // THEN
             assertThat(result).isEqualTo(
                 PopularPostsContent(
-                    posts = emptyList(),
+                    posts = emptyMap(),
                     shouldLoad = mockBoolean,
                     isConnected = mockBoolean,
                     previousContent = postListContent,

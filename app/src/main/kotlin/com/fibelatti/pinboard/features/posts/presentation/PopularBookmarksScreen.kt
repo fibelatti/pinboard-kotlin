@@ -29,8 +29,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -51,8 +53,6 @@ import com.fibelatti.pinboard.features.appstate.SidePanelContent
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.fibelatti.ui.components.ChipGroup
-import com.fibelatti.ui.components.MultilineChipGroup
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import java.util.UUID
@@ -142,7 +142,7 @@ fun PopularBookmarksScreen(
 
 @Composable
 fun PopularBookmarksContent(
-    posts: List<Post>,
+    posts: Map<Post, Int>,
     onPullToRefresh: () -> Unit = {},
     onBookmarkClicked: (Post) -> Unit = {},
     onBookmarkLongClicked: (Post) -> Unit = {},
@@ -163,9 +163,10 @@ fun PopularBookmarksContent(
             onPullToRefresh = onPullToRefresh,
             contentPadding = windowInsets.asPaddingValues(),
         ) {
-            items(posts) { bookmark ->
+            items(posts.keys.toList()) { bookmark ->
                 PopularBookmarkItem(
                     post = bookmark,
+                    count = posts.getOrDefault(bookmark, defaultValue = 1),
                     onPostClicked = onBookmarkClicked,
                     onPostLongClicked = onBookmarkLongClicked,
                 )
@@ -178,6 +179,7 @@ fun PopularBookmarksContent(
 @OptIn(ExperimentalFoundationApi::class)
 private fun PopularBookmarkItem(
     post: Post,
+    count: Int,
     onPostClicked: (Post) -> Unit,
     onPostLongClicked: (Post) -> Unit,
 ) {
@@ -206,17 +208,23 @@ private fun PopularBookmarkItem(
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
             )
 
-            if (post.tags != null) {
-                val items = remember(post.tags) {
-                    post.tags.map { tag -> ChipGroup.Item(text = tag.name) }
-                }
-                MultilineChipGroup(
-                    items = items,
-                    onItemClick = {},
-                    modifier = Modifier.padding(top = 8.dp),
-                    itemTonalElevation = 16.dp,
+            if (post.url != post.displayTitle) {
+                Text(
+                    text = post.url,
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodySmall,
                 )
             }
+
+            Text(
+                text = pluralStringResource(R.plurals.popular_count, count, count),
+                modifier = Modifier.padding(vertical = 4.dp),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodySmall,
+            )
         }
     }
 }
@@ -228,7 +236,7 @@ private fun PopularBookmarksContentPreview(
 ) {
     ExtendedTheme {
         PopularBookmarksContent(
-            posts = posts,
+            posts = posts.associateWith { 1 },
         )
     }
 }

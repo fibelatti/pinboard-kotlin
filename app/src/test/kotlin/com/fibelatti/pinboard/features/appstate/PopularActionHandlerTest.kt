@@ -84,7 +84,7 @@ internal class PopularActionHandlerTest {
             every { mockConnectivityInfoProvider.isConnected() } returns true
 
             // WHEN
-            val newPosts: List<Post> = mockk()
+            val newPosts: Map<Post, Int> = mockk()
             val result = popularActionHandler.runAction(SetPopularPosts(newPosts), initialContent)
 
             // THEN

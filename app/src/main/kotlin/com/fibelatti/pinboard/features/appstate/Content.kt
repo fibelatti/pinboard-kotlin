@@ -118,7 +118,7 @@ data class NoteDetailContent(
 ) : ContentWithHistory(), ConnectionAwareContent, SidePanelContent
 
 data class PopularPostsContent(
-    val posts: List<Post>,
+    val posts: Map<Post, Int>,
     val shouldLoad: Boolean,
     override val previousContent: PostListContent,
     override val isConnected: Boolean = true,

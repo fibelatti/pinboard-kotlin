@@ -62,7 +62,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
     @Test
     fun `WHEN getPosts succeeds THEN AppStateRepository should run SetPopularPosts`() = runTest {
         // GIVEN
-        val mockPosts = mockk<List<Post>>()
+        val mockPosts = mockk<Map<Post, Int>>()
         coEvery { mockGetPopularPosts() } returns Success(mockPosts)
 
         // WHEN

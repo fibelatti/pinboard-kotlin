@@ -228,7 +228,7 @@ class NavigationActionHandler @Inject constructor(
     private fun viewPopular(currentContent: Content): Content {
         val body = { postListContent: PostListContent ->
             PopularPostsContent(
-                posts = emptyList(),
+                posts = emptyMap(),
                 shouldLoad = connectivityInfoProvider.isConnected(),
                 previousContent = postListContent,
                 isConnected = connectivityInfoProvider.isConnected(),
