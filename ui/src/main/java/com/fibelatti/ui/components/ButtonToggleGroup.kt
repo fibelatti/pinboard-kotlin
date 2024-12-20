@@ -35,7 +35,7 @@ import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
-fun ColumnToggleButtonGroup(
+public fun ColumnToggleButtonGroup(
     items: List<ToggleButtonGroup.Item>,
     onButtonClick: (ToggleButtonGroup.Item) -> Unit,
     modifier: Modifier = Modifier,
@@ -87,7 +87,7 @@ fun ColumnToggleButtonGroup(
 }
 
 @Composable
-fun RowToggleButtonGroup(
+public fun RowToggleButtonGroup(
     items: List<ToggleButtonGroup.Item>,
     onButtonClick: (ToggleButtonGroup.Item) -> Unit,
     modifier: Modifier = Modifier,
@@ -291,7 +291,7 @@ private fun TextContent(
     )
 }
 
-object ToggleButtonGroup {
+public object ToggleButtonGroup {
 
     internal val BorderSize: Dp = 1.dp
     internal val ButtonHeight: Dp = 48.dp
@@ -299,14 +299,14 @@ object ToggleButtonGroup {
     internal val SquareCorner = CornerSize(0.dp)
 
     @Immutable
-    data class Item(
+    public data class Item(
         val id: String,
         val text: String,
         val icon: Painter = EmptyPainter,
     )
 
     @Immutable
-    data class Colors(
+    public data class Colors(
         val selectedButtonColor: Color,
         val unselectedButtonColor: Color,
         val selectedTextColor: Color,
@@ -316,7 +316,7 @@ object ToggleButtonGroup {
         val borderColor: Color,
     )
 
-    enum class IconPosition {
+    public enum class IconPosition {
         Start, Top, End, Bottom
     }
 
@@ -325,7 +325,7 @@ object ToggleButtonGroup {
     }
 
     @Composable
-    fun colors(
+    public fun colors(
         selectedButtonColor: Color = MaterialTheme.colorScheme.secondaryContainer,
         unselectedButtonColor: Color = MaterialTheme.colorScheme.background,
         selectedTextColor: Color = MaterialTheme.colorScheme.onSecondaryContainer,

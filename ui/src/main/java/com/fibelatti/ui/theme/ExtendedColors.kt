@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.Color
 
 // region Extended Colors
 @Immutable
-data class ExtendedColors(
+public data class ExtendedColors(
     val backgroundNoOverlay: Color,
     val statusBar: Color,
     val navigationBar: Color,

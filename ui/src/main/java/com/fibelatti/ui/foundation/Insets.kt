@@ -8,7 +8,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 
 @Composable
-fun PaddingValues.copy(
+public fun PaddingValues.copy(
     start: Dp? = null,
     top: Dp? = null,
     end: Dp? = null,

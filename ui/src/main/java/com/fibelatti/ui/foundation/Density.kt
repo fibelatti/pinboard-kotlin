@@ -7,7 +7,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 
 @Composable
-fun Dp.dpToPx() = with(LocalDensity.current) { this@dpToPx.toPx() }
+public fun Dp.dpToPx(): Float = with(LocalDensity.current) { this@dpToPx.toPx() }
 
 @Composable
-fun Int.pxToDp() = with(LocalDensity.current) { this@pxToDp.toDp() }
+public fun Int.pxToDp(): Dp = with(LocalDensity.current) { this@pxToDp.toDp() }

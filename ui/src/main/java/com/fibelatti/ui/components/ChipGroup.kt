@@ -33,7 +33,7 @@ import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
-fun Chip(
+public fun Chip(
     item: ChipGroup.Item,
     onClick: (ChipGroup.Item) -> Unit,
     modifier: Modifier = Modifier,
@@ -81,7 +81,7 @@ fun Chip(
 
 @Composable
 @OptIn(ExperimentalLayoutApi::class)
-fun MultilineChipGroup(
+public fun MultilineChipGroup(
     items: List<ChipGroup.Item>,
     onItemClick: (ChipGroup.Item) -> Unit,
     modifier: Modifier = Modifier,
@@ -112,7 +112,7 @@ fun MultilineChipGroup(
 }
 
 @Composable
-fun SingleLineChipGroup(
+public fun SingleLineChipGroup(
     items: List<ChipGroup.Item>,
     onItemClick: (ChipGroup.Item) -> Unit,
     modifier: Modifier = Modifier,
@@ -144,27 +144,27 @@ fun SingleLineChipGroup(
     }
 }
 
-object ChipGroup {
+public object ChipGroup {
 
     internal val MinSize: Dp = 40.dp
     internal val Spacing: Dp = 4.dp
     internal val TonalElevation: Dp = 2.dp
 
     @Immutable
-    data class Item(
+    public data class Item(
         val text: String,
         val icon: Painter = EmptyPainter,
         val isSelected: Boolean = false,
     )
 
     @Immutable
-    data class Colors(
+    public data class Colors(
         val selectedChipColor: Color,
         val unselectedChipColor: Color,
     )
 
     @Composable
-    fun colors(
+    public fun colors(
         selectedChipColor: Color = MaterialTheme.colorScheme.primaryContainer,
         unselectedChipColor: Color = MaterialTheme.colorScheme.secondaryContainer,
     ): Colors = Colors(

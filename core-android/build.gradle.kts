@@ -4,20 +4,7 @@ plugins {
 }
 
 android {
-    val compileSdkVersion: Int by project
-    val minSdkVersion: Int by project
-
     namespace = "com.fibelatti.core.android"
-
-    compileSdk = compileSdkVersion
-
-    defaultConfig {
-        minSdk = minSdkVersion
-    }
-}
-
-kotlin {
-    explicitApi()
 }
 
 dependencies {

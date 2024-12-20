@@ -6,6 +6,7 @@ import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import com.diffplug.gradle.spotless.SpotlessPlugin
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -28,7 +29,7 @@ buildscript {
     extra["minSdkVersion"] = 26
 }
 
-val javaVersion = JavaVersion.VERSION_17
+private val javaVersion = JavaVersion.VERSION_17
 
 allprojects {
     apply<SpotlessPlugin>()
@@ -71,7 +72,22 @@ subprojects {
             apply(plugin = libs.plugins.cache.fix.get().pluginId)
         }
 
+        extensions.findByType<KotlinProjectExtension>()?.apply {
+            if (!plugins.hasPlugin("com.android.application")) {
+                explicitApi()
+            }
+        }
+
         extensions.findByType(CommonExtension::class.java)?.apply {
+            val compileSdkVersion: Int by project
+            val minSdkVersion: Int by project
+
+            compileSdk = compileSdkVersion
+
+            defaultConfig {
+                minSdk = minSdkVersion
+            }
+
             compileOptions {
                 sourceCompatibility(javaVersion)
                 targetCompatibility(javaVersion)
@@ -102,7 +118,7 @@ subprojects {
         }
 
         extensions.findByType(ComposeCompilerGradlePluginExtension::class.java)?.apply {
-            stabilityConfigurationFile = rootProject.layout.projectDirectory.file("compose_compiler_config.conf")
+            stabilityConfigurationFiles.add(rootProject.layout.projectDirectory.file("compose_compiler_config.conf"))
 
             if (project.findProperty("composeCompilerReports") == "true") {
                 val destinationDir = project.layout.buildDirectory.dir("compose_compiler")

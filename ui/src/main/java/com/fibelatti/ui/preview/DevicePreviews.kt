@@ -31,4 +31,4 @@ import androidx.compose.ui.tooling.preview.Preview
     showBackground = true,
     device = Devices.PIXEL_TABLET,
 )
-annotation class DevicePreviews
+public annotation class DevicePreviews

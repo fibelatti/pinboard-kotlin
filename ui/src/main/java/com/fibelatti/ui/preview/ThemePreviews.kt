@@ -37,4 +37,4 @@ import androidx.compose.ui.tooling.preview.Wallpapers
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     wallpaper = Wallpapers.GREEN_DOMINATED_EXAMPLE,
 )
-annotation class ThemePreviews
+public annotation class ThemePreviews

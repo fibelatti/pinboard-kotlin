@@ -12,7 +12,7 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.platform.LocalContext
 
 @Composable
-fun ExtendedTheme(
+public fun ExtendedTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit,
@@ -40,9 +40,9 @@ fun ExtendedTheme(
     }
 }
 
-object ExtendedTheme {
+public object ExtendedTheme {
 
-    val colors: ExtendedColors
+    public val colors: ExtendedColors
         @Composable
         @ReadOnlyComposable
         get() = LocalExtendedColors.current

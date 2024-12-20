@@ -25,7 +25,7 @@ import com.fibelatti.ui.components.TextWithLinks.findLinks
 import java.util.regex.Pattern
 
 @Composable
-fun TextWithLinks(
+public fun TextWithLinks(
     text: String,
     modifier: Modifier = Modifier,
     pattern: Pattern = TextWithLinks.urlPattern,
@@ -52,7 +52,7 @@ fun TextWithLinks(
 }
 
 @Composable
-fun TextWithLinks(
+public fun TextWithLinks(
     text: Spanned,
     modifier: Modifier = Modifier,
     pattern: Pattern = TextWithLinks.urlPattern,
@@ -137,7 +137,7 @@ private fun AnnotatedString.Builder.addUrlStringAnnotation(
     )
 }
 
-object TextWithLinks {
+public object TextWithLinks {
 
     internal val urlPattern: Pattern = Pattern.compile(
         "(?:^|\\W)((ht|f)tp(s?)://|www\\.)" +
