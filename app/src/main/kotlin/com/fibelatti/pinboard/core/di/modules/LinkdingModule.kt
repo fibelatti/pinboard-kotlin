@@ -44,6 +44,8 @@ object LinkdingModule {
             accept(ContentType.Application.Json)
         }
 
+        expectSuccess = true
+
         install(unauthorizedPluginProvider.plugin)
     }
 }

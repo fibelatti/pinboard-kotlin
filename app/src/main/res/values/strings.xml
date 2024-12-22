@@ -130,7 +130,7 @@
 
     <!-- Validation -->
     <string name="validation_error_empty_url">The URL cannot be empty</string>
-    <string name="validation_error_invalid_url">The URL is invalid</string>
+    <string name="validation_error_invalid_url">The URL is not accepted by the service</string>
     <string name="validation_error_invalid_url_rationale">The URL could not be saved. Please verify that it is valid</string>
     <string name="validation_error_empty_title">The title cannot be empty</string>
 

@@ -15,6 +15,8 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.ktor.client.plugins.ClientRequestException
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -34,7 +36,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class EditPostViewModel @Inject constructor(
@@ -111,7 +112,7 @@ class EditPostViewModel @Inject constructor(
                         currentState.copy(isLoading = false)
                     }
                     when (error) {
-                        is InvalidUrlException -> {
+                        is InvalidUrlException, is ClientRequestException -> {
                             _screenState.update { currentState ->
                                 currentState.copy(
                                     invalidUrlError = resourceProvider.getString(R.string.validation_error_invalid_url),
