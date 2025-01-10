@@ -242,7 +242,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
             coEvery { mockPostsRepository.searchExistingPostTag(any(), any()) } returns Failure(Exception())
 
             // WHEN
-            userPreferencesViewModel.searchForTag(MockDataProvider.mockTagString1, mockk())
+            userPreferencesViewModel.searchForTag(MockDataProvider.SAMPLE_TAG_VALUE_1, mockk())
 
             // THEN
             assertThat(userPreferencesViewModel.suggestedTags.isEmpty()).isTrue()
@@ -252,17 +252,17 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
     fun `GIVEN getSuggestedTags will succeed WHEN searchForTag is called THEN suggestedTags should receive its response`() =
         runTest {
             // GIVEN
-            val result = listOf(MockDataProvider.mockTagString1, MockDataProvider.mockTagString2)
+            val result = listOf(MockDataProvider.SAMPLE_TAG_VALUE_1, MockDataProvider.SAMPLE_TAG_VALUE_2)
             coEvery {
                 mockPostsRepository.searchExistingPostTag(
-                    tag = MockDataProvider.mockTagString1,
+                    tag = MockDataProvider.SAMPLE_TAG_VALUE_1,
                     currentTags = emptyList(),
                 )
             } returns Success(result)
 
             // WHEN
             userPreferencesViewModel.searchForTag(
-                tag = MockDataProvider.mockTagString1,
+                tag = MockDataProvider.SAMPLE_TAG_VALUE_1,
                 currentTags = emptyList(),
             )
 

@@ -1,8 +1,8 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
 import com.fibelatti.core.functional.Success
-import com.fibelatti.pinboard.MockDataProvider.mockTags
-import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAGS
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_VALID
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_RECENT_QUANTITY
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
@@ -46,7 +46,7 @@ class GetRecentPostsTest {
     fun `GIVEN search term was set in the params WHEN getRecentPosts is called THEN repository is called with the expected params`() =
         runTest {
             // GIVEN
-            val params = GetPostParams(searchTerm = mockUrlValid)
+            val params = GetPostParams(searchTerm = SAMPLE_URL_VALID)
 
             // WHEN
             getRecentPosts(params)
@@ -55,7 +55,7 @@ class GetRecentPostsTest {
             verify {
                 mockPostsRepository.getAllPosts(
                     sortType = ByDateAddedNewestFirst,
-                    searchTerm = mockUrlValid,
+                    searchTerm = SAMPLE_URL_VALID,
                     tags = null,
                     untaggedOnly = false,
                     postVisibility = PostVisibility.None,
@@ -124,7 +124,7 @@ class GetRecentPostsTest {
     fun `GIVEN tagParams was Tagged WHEN getRecentPosts is called THEN repository is called with the expected params`() =
         runTest {
             // GIVEN
-            val params = GetPostParams(tags = GetPostParams.Tags.Tagged(mockTags))
+            val params = GetPostParams(tags = GetPostParams.Tags.Tagged(SAMPLE_TAGS))
 
             // WHEN
             getRecentPosts(params)
@@ -134,7 +134,7 @@ class GetRecentPostsTest {
                 mockPostsRepository.getAllPosts(
                     sortType = ByDateAddedNewestFirst,
                     searchTerm = "",
-                    tags = mockTags,
+                    tags = SAMPLE_TAGS,
                     untaggedOnly = false,
                     postVisibility = PostVisibility.None,
                     readLaterOnly = false,

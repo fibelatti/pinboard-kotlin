@@ -1,6 +1,6 @@
 package com.fibelatti.pinboard.features.notes.data.model
 
-import com.fibelatti.pinboard.MockDataProvider.mockNoteId
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_NOTE_ID
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.google.common.truth.Truth.assertThat
@@ -20,7 +20,7 @@ internal class NoteDtoMapperTest {
         // WHEN
         val result = mapper.map(
             NoteDto(
-                id = mockNoteId,
+                id = SAMPLE_NOTE_ID,
                 title = null,
                 createdAt = null,
                 updatedAt = null,
@@ -37,7 +37,7 @@ internal class NoteDtoMapperTest {
         // WHEN
         val result = mapper.map(
             NoteDto(
-                id = mockNoteId,
+                id = SAMPLE_NOTE_ID,
                 title = null,
                 createdAt = null,
                 updatedAt = null,
@@ -54,7 +54,7 @@ internal class NoteDtoMapperTest {
         // WHEN
         val result = mapper.map(
             NoteDto(
-                id = mockNoteId,
+                id = SAMPLE_NOTE_ID,
                 title = null,
                 createdAt = null,
                 updatedAt = null,
@@ -71,7 +71,7 @@ internal class NoteDtoMapperTest {
         // WHEN
         val result = mapper.map(
             NoteDto(
-                id = mockNoteId,
+                id = SAMPLE_NOTE_ID,
                 title = null,
                 createdAt = null,
                 updatedAt = null,
@@ -96,7 +96,7 @@ internal class NoteDtoMapperTest {
         // WHEN
         val result = mapper.map(
             NoteDto(
-                id = mockNoteId,
+                id = SAMPLE_NOTE_ID,
                 title = mockTitle,
                 createdAt = inputDate,
                 updatedAt = inputDate,
@@ -107,7 +107,7 @@ internal class NoteDtoMapperTest {
         // THEN
         assertThat(result).isEqualTo(
             Note(
-                id = mockNoteId,
+                id = SAMPLE_NOTE_ID,
                 title = mockTitle,
                 createdAt = outputDate,
                 updatedAt = outputDate,

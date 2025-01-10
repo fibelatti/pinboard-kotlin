@@ -4,9 +4,9 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.pinboard.MockDataProvider.mockApiToken
-import com.fibelatti.pinboard.MockDataProvider.mockInstanceUrl
-import com.fibelatti.pinboard.MockDataProvider.mockTime
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_API_TOKEN
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_DATE_TIME
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_INSTANCE_URL
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.UserLoggedIn
 import com.fibelatti.pinboard.features.appstate.UserLoggedOut
@@ -36,27 +36,27 @@ class LoginTest {
         coEvery { mockPostsRepository.update() } returns Failure(Exception())
 
         // WHEN
-        val result = login(Login.Params(authToken = mockApiToken))
+        val result = login(Login.Params(authToken = SAMPLE_API_TOKEN))
 
         // THEN
         assertThat(result.exceptionOrNull()).isInstanceOf(Exception::class.java)
-        coVerify { mockUserRepository.setAuthToken(mockApiToken) }
+        coVerify { mockUserRepository.setAuthToken(SAMPLE_API_TOKEN) }
         coVerify { mockAppStateRepository.runAction(UserLoggedOut) }
     }
 
     @Test
     fun `GIVEN repository call is successful WHEN Login is called THEN UserLoggedIn runs`() = runTest {
         // GIVEN
-        coEvery { mockPostsRepository.update() } returns Success(mockTime)
+        coEvery { mockPostsRepository.update() } returns Success(SAMPLE_DATE_TIME)
         coEvery { mockPostsRepository.clearCache() } returns Success(Unit)
 
         // WHEN
-        val result = login(Login.Params(authToken = mockApiToken, instanceUrl = mockInstanceUrl))
+        val result = login(Login.Params(authToken = SAMPLE_API_TOKEN, instanceUrl = SAMPLE_INSTANCE_URL))
 
         // THEN
         assertThat(result.getOrNull()).isEqualTo(Unit)
-        coVerify { mockUserRepository.setAuthToken(mockApiToken) }
-        coVerify { mockUserRepository.linkdingInstanceUrl = mockInstanceUrl }
+        coVerify { mockUserRepository.setAuthToken(SAMPLE_API_TOKEN) }
+        coVerify { mockUserRepository.linkdingInstanceUrl = SAMPLE_INSTANCE_URL }
         coVerify { mockPostsRepository.clearCache() }
         coVerify { mockAppStateRepository.runAction(UserLoggedIn) }
     }

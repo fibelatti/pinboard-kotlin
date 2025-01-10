@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.features.user.data
 
-import com.fibelatti.pinboard.MockDataProvider.mockApiToken
-import com.fibelatti.pinboard.MockDataProvider.mockTime
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_API_TOKEN
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_DATE_TIME
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
@@ -153,19 +153,19 @@ internal class UserDataSourceTest {
             @Test
             fun `WHEN getLastUpdate is called THEN UserSharedPreferences is returned`() {
                 // GIVEN
-                every { mockUserSharedPreferences.lastUpdate } returns mockTime
+                every { mockUserSharedPreferences.lastUpdate } returns SAMPLE_DATE_TIME
 
                 // THEN
-                assertThat(userDataSource.lastUpdate).isEqualTo(mockTime)
+                assertThat(userDataSource.lastUpdate).isEqualTo(SAMPLE_DATE_TIME)
             }
 
             @Test
             fun `WHEN setLastUpdate is called THEN UserSharedPreferences is set`() {
                 // WHEN
-                userDataSource.lastUpdate = mockTime
+                userDataSource.lastUpdate = SAMPLE_DATE_TIME
 
                 // THEN
-                verify { mockUserSharedPreferences.lastUpdate = mockTime }
+                verify { mockUserSharedPreferences.lastUpdate = SAMPLE_DATE_TIME }
             }
         }
 
@@ -679,7 +679,7 @@ internal class UserDataSourceTest {
 
             @Test
             fun `hasAuthToken returns true if the auth token is not empty`() {
-                every { mockUserSharedPreferences.authToken } returns mockApiToken
+                every { mockUserSharedPreferences.authToken } returns SAMPLE_API_TOKEN
 
                 assertThat(userDataSource.hasAuthToken()).isTrue()
             }

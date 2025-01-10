@@ -1,14 +1,14 @@
 package com.fibelatti.pinboard.features.linkding.data
 
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_HASH
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAGS
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAGS_RESPONSE
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_DESCRIPTION
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_NOTES
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_TITLE
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_VALID
 import com.fibelatti.pinboard.MockDataProvider.createBookmarkLocal
 import com.fibelatti.pinboard.MockDataProvider.createPost
-import com.fibelatti.pinboard.MockDataProvider.mockHash
-import com.fibelatti.pinboard.MockDataProvider.mockTags
-import com.fibelatti.pinboard.MockDataProvider.mockTagsResponse
-import com.fibelatti.pinboard.MockDataProvider.mockTitle
-import com.fibelatti.pinboard.MockDataProvider.mockUrlDescription
-import com.fibelatti.pinboard.MockDataProvider.mockUrlNotes
-import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -40,31 +40,31 @@ class BookmarkLocalMapperTest {
             val shared = randomBoolean()
 
             val input = BookmarkLocal(
-                id = mockHash,
-                url = mockUrlValid,
-                title = mockTitle,
-                description = mockUrlDescription,
-                notes = mockUrlNotes,
+                id = SAMPLE_HASH,
+                url = SAMPLE_URL_VALID,
+                title = SAMPLE_URL_TITLE,
+                description = SAMPLE_URL_DESCRIPTION,
+                notes = SAMPLE_URL_NOTES,
                 isArchived = archived,
                 unread = unread,
                 shared = shared,
-                tagNames = mockTagsResponse,
+                tagNames = SAMPLE_TAGS_RESPONSE,
                 dateAdded = dateAdded,
                 dateModified = dateModified,
                 pendingSync = null,
             )
 
             val expected = Post(
-                url = mockUrlValid,
-                title = mockTitle,
-                description = mockUrlDescription,
-                id = mockHash,
+                url = SAMPLE_URL_VALID,
+                title = SAMPLE_URL_TITLE,
+                description = SAMPLE_URL_DESCRIPTION,
+                id = SAMPLE_HASH,
                 dateAdded = dateAdded,
                 dateModified = dateModified,
                 private = !shared,
                 readLater = unread,
-                tags = mockTags,
-                notes = mockUrlNotes,
+                tags = SAMPLE_TAGS,
+                notes = SAMPLE_URL_NOTES,
                 isArchived = archived,
                 pendingSync = null,
             )
@@ -95,30 +95,30 @@ class BookmarkLocalMapperTest {
             val shared = randomBoolean()
 
             val input = Post(
-                url = mockUrlValid,
-                title = mockTitle,
-                description = mockUrlDescription,
-                id = mockHash,
+                url = SAMPLE_URL_VALID,
+                title = SAMPLE_URL_TITLE,
+                description = SAMPLE_URL_DESCRIPTION,
+                id = SAMPLE_HASH,
                 dateAdded = dateAdded,
                 dateModified = dateModified,
                 private = !shared,
                 readLater = unread,
-                tags = mockTags,
-                notes = mockUrlNotes,
+                tags = SAMPLE_TAGS,
+                notes = SAMPLE_URL_NOTES,
                 isArchived = archived,
                 pendingSync = null,
             )
 
             val expected = BookmarkLocal(
-                id = mockHash,
-                url = mockUrlValid,
-                title = mockTitle,
-                description = mockUrlDescription,
-                notes = mockUrlNotes,
+                id = SAMPLE_HASH,
+                url = SAMPLE_URL_VALID,
+                title = SAMPLE_URL_TITLE,
+                description = SAMPLE_URL_DESCRIPTION,
+                notes = SAMPLE_URL_NOTES,
                 isArchived = archived,
                 unread = unread,
                 shared = shared,
-                tagNames = mockTagsResponse,
+                tagNames = SAMPLE_TAGS_RESPONSE,
                 dateAdded = dateAdded,
                 dateModified = dateModified,
                 pendingSync = null,

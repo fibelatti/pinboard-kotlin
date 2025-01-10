@@ -3,8 +3,8 @@ package com.fibelatti.pinboard.core.persistence
 import android.content.SharedPreferences
 import com.fibelatti.core.android.extension.get
 import com.fibelatti.core.test.MockSharedPreferencesEditor
-import com.fibelatti.pinboard.MockDataProvider.mockApiToken
-import com.fibelatti.pinboard.MockDataProvider.mockTime
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_API_TOKEN
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_DATE_TIME
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
@@ -34,19 +34,19 @@ internal class UserSharedPreferencesTest {
     @Test
     fun `GIVEN KEY_AUTH_TOKEN has value WHEN getAuthToken is called THEN value is returned`() {
         // GIVEN
-        every { mockSharedPreferences.get(KEY_AUTH_TOKEN, "") } returns mockApiToken
+        every { mockSharedPreferences.get(KEY_AUTH_TOKEN, "") } returns SAMPLE_API_TOKEN
 
         // THEN
-        assertThat(userSharedPreferences.authToken).isEqualTo(mockApiToken)
+        assertThat(userSharedPreferences.authToken).isEqualTo(SAMPLE_API_TOKEN)
     }
 
     @Test
     fun `WHEN setAuthToken is called THEN KEY_AUTH_TOKEN is set`() {
         // WHEN
-        userSharedPreferences.authToken = mockApiToken
+        userSharedPreferences.authToken = SAMPLE_API_TOKEN
 
         // THEN
-        verify { mockEditor.putString(KEY_AUTH_TOKEN, mockApiToken) }
+        verify { mockEditor.putString(KEY_AUTH_TOKEN, SAMPLE_API_TOKEN) }
     }
 
     @Test
@@ -61,19 +61,19 @@ internal class UserSharedPreferencesTest {
     @Test
     fun `GIVEN KEY_LAST_UPDATE has value WHEN getLastUpdate is called THEN value is returned`() {
         // GIVEN
-        every { mockSharedPreferences.get(KEY_LAST_UPDATE, "") } returns mockTime
+        every { mockSharedPreferences.get(KEY_LAST_UPDATE, "") } returns SAMPLE_DATE_TIME
 
         // THEN
-        assertThat(userSharedPreferences.lastUpdate).isEqualTo(mockTime)
+        assertThat(userSharedPreferences.lastUpdate).isEqualTo(SAMPLE_DATE_TIME)
     }
 
     @Test
     fun `WHEN setLastUpdate is called THEN KEY_LAST_UPDATE is set`() {
         // WHEN
-        userSharedPreferences.lastUpdate = mockTime
+        userSharedPreferences.lastUpdate = SAMPLE_DATE_TIME
 
         // THEN
-        verify { mockEditor.putString(KEY_LAST_UPDATE, mockTime) }
+        verify { mockEditor.putString(KEY_LAST_UPDATE, SAMPLE_DATE_TIME) }
     }
 
     @Test

@@ -3,7 +3,7 @@ package com.fibelatti.pinboard.features.posts.presentation
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
-import com.fibelatti.pinboard.MockDataProvider.mockTags
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAGS
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.Loaded
@@ -107,7 +107,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     postListViewModel.getAll(
                         mockSortType,
                         mockSearchTerm,
-                        mockTags,
+                        SAMPLE_TAGS,
                         offset = expectedOffset,
                         forceRefresh = shouldLoad is ShouldForceLoad,
                     )
@@ -121,7 +121,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     postListViewModel.getAll(
                         mockSortType,
                         mockSearchTerm,
-                        mockTags,
+                        SAMPLE_TAGS,
                         offset = expectedOffset,
                         forceRefresh = shouldLoad is ShouldForceLoad,
                     )
@@ -139,7 +139,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     postListViewModel.getPublic(
                         mockSortType,
                         mockSearchTerm,
-                        mockTags,
+                        SAMPLE_TAGS,
                         offset = expectedOffset,
                     )
                 } returns Unit
@@ -152,7 +152,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     postListViewModel.getPublic(
                         mockSortType,
                         mockSearchTerm,
-                        mockTags,
+                        SAMPLE_TAGS,
                         offset = expectedOffset,
                     )
                 }
@@ -169,7 +169,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     postListViewModel.getPrivate(
                         mockSortType,
                         mockSearchTerm,
-                        mockTags,
+                        SAMPLE_TAGS,
                         offset = expectedOffset,
                     )
                 } returns Unit
@@ -182,7 +182,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     postListViewModel.getPrivate(
                         mockSortType,
                         mockSearchTerm,
-                        mockTags,
+                        SAMPLE_TAGS,
                         offset = expectedOffset,
                     )
                 }
@@ -199,7 +199,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     postListViewModel.getUnread(
                         mockSortType,
                         mockSearchTerm,
-                        mockTags,
+                        SAMPLE_TAGS,
                         offset = expectedOffset,
                     )
                 } returns Unit
@@ -212,7 +212,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     postListViewModel.getUnread(
                         mockSortType,
                         mockSearchTerm,
-                        mockTags,
+                        SAMPLE_TAGS,
                         offset = expectedOffset,
                     )
                 }
@@ -261,7 +261,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                 postListViewModel.getRecent(
                     mockSortType,
                     mockSearchTerm,
-                    mockTags,
+                    SAMPLE_TAGS,
                 )
             } returns Unit
 
@@ -269,7 +269,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
             postListViewModel.loadContent(createContent(Recent, ShouldLoadFirstPage))
 
             // THEN
-            verify { postListViewModel.getRecent(mockSortType, mockSearchTerm, mockTags) }
+            verify { postListViewModel.getRecent(mockSortType, mockSearchTerm, SAMPLE_TAGS) }
         }
 
         private fun createContent(category: ViewCategory, shouldLoad: ShouldLoad): PostListContent =
@@ -278,7 +278,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                 posts = null,
                 showDescription = false,
                 sortType = mockSortType,
-                searchParameters = SearchParameters(term = mockSearchTerm, tags = mockTags),
+                searchParameters = SearchParameters(term = mockSearchTerm, tags = SAMPLE_TAGS),
                 shouldLoad = shouldLoad,
             )
     }
@@ -288,14 +288,14 @@ internal class PostListViewModelTest : BaseViewModelTest() {
         val force = randomBoolean()
         every { postListViewModel.launchGetAll(any()) } returns Unit
 
-        postListViewModel.getAll(mockSortType, mockSearchTerm, mockTags, mockOffset, force)
+        postListViewModel.getAll(mockSortType, mockSearchTerm, SAMPLE_TAGS, mockOffset, force)
 
         verify {
             postListViewModel.launchGetAll(
                 GetPostParams(
                     mockSortType,
                     mockSearchTerm,
-                    GetPostParams.Tags.Tagged(mockTags),
+                    GetPostParams.Tags.Tagged(SAMPLE_TAGS),
                     offset = mockOffset,
                     forceRefresh = force,
                 ),
@@ -307,7 +307,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
     fun `GIVEN getRecentPosts will fail WHEN launchGetAll is called THEN repository won't run any actions`() = runTest {
         every { mockGetRecentPosts(any()) } returns flowOf(Failure(mockException))
 
-        postListViewModel.getRecent(mockSortType, mockSearchTerm, mockTags)
+        postListViewModel.getRecent(mockSortType, mockSearchTerm, SAMPLE_TAGS)
 
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
         assertThat(postListViewModel.error.first()).isEqualTo(mockException)
@@ -317,7 +317,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
     fun `GIVEN getRecentPosts will succeed WHEN launchGetAll is called THEN repository will run SetPosts`() = runTest {
         every { mockGetRecentPosts(any()) } returns flowOf(Success(mockResponse))
 
-        postListViewModel.getRecent(mockSortType, mockSearchTerm, mockTags)
+        postListViewModel.getRecent(mockSortType, mockSearchTerm, SAMPLE_TAGS)
 
         coVerify { mockAppStateRepository.runAction(SetPosts(mockResponse)) }
         assertThat(postListViewModel.error.isEmpty()).isTrue()
@@ -327,14 +327,14 @@ internal class PostListViewModelTest : BaseViewModelTest() {
     fun `WHEN getPublic is called THEN launchGetAll is called with the expected GetPostParams`() {
         every { postListViewModel.launchGetAll(any()) } returns Unit
 
-        postListViewModel.getPublic(mockSortType, mockSearchTerm, mockTags, mockOffset)
+        postListViewModel.getPublic(mockSortType, mockSearchTerm, SAMPLE_TAGS, mockOffset)
 
         verify {
             postListViewModel.launchGetAll(
                 GetPostParams(
                     mockSortType,
                     mockSearchTerm,
-                    GetPostParams.Tags.Tagged(mockTags),
+                    GetPostParams.Tags.Tagged(SAMPLE_TAGS),
                     PostVisibility.Public,
                     offset = mockOffset,
                 ),
@@ -346,14 +346,14 @@ internal class PostListViewModelTest : BaseViewModelTest() {
     fun `WHEN getPrivate is called THEN launchGetAll is called with the expected GetPostParams`() {
         every { postListViewModel.launchGetAll(any()) } returns Unit
 
-        postListViewModel.getPrivate(mockSortType, mockSearchTerm, mockTags, mockOffset)
+        postListViewModel.getPrivate(mockSortType, mockSearchTerm, SAMPLE_TAGS, mockOffset)
 
         verify {
             postListViewModel.launchGetAll(
                 GetPostParams(
                     mockSortType,
                     mockSearchTerm,
-                    GetPostParams.Tags.Tagged(mockTags),
+                    GetPostParams.Tags.Tagged(SAMPLE_TAGS),
                     PostVisibility.Private,
                     offset = mockOffset,
                 ),
@@ -365,14 +365,14 @@ internal class PostListViewModelTest : BaseViewModelTest() {
     fun `WHEN getUnread is called THEN launchGetAll is called with the expected GetPostParams`() {
         every { postListViewModel.launchGetAll(any()) } returns Unit
 
-        postListViewModel.getUnread(mockSortType, mockSearchTerm, mockTags, mockOffset)
+        postListViewModel.getUnread(mockSortType, mockSearchTerm, SAMPLE_TAGS, mockOffset)
 
         verify {
             postListViewModel.launchGetAll(
                 GetPostParams(
                     mockSortType,
                     mockSearchTerm,
-                    GetPostParams.Tags.Tagged(mockTags),
+                    GetPostParams.Tags.Tagged(SAMPLE_TAGS),
                     readLater = true,
                     offset = mockOffset,
                 ),

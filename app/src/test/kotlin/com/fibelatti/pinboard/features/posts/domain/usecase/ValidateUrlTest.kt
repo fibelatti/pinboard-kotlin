@@ -16,14 +16,14 @@ class ValidateUrlTest {
 
     fun validUrls(): List<String> = mutableListOf<String>().apply {
         ValidUrlScheme.ALL_SCHEMES.forEach {
-            add("$it://${MockDataProvider.mockUrlInvalid}")
+            add("$it://${MockDataProvider.SAMPLE_URL_INVALID}")
         }
         add("https://bit.ly")
         add("http://192.168.0.92/something")
     }
 
     fun invalidUrls(): List<String> = mutableListOf<String>().apply {
-        add(MockDataProvider.mockUrlInvalid)
+        add(MockDataProvider.SAMPLE_URL_INVALID)
         add("google")
         add("google com")
     }

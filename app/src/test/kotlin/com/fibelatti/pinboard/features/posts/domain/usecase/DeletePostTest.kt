@@ -5,7 +5,7 @@ import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.pinboard.MockDataProvider
-import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_VALID
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.InvalidRequestException
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
@@ -30,7 +30,7 @@ class DeletePostTest {
     @Test
     fun `GIVEN ValidateUrl fails WHEN AddPost is called THEN Failure is returned`() = runTest {
         // GIVEN
-        coEvery { mockValidateUrl(mockUrlValid) } returns Failure(InvalidRequestException())
+        coEvery { mockValidateUrl(SAMPLE_URL_VALID) } returns Failure(InvalidRequestException())
 
         // WHEN
         val result = deletePost(mockPost)
@@ -42,7 +42,7 @@ class DeletePostTest {
     @Test
     fun `GIVEN posts repository add fails WHEN AddPost is called THEN Failure is returned`() = runTest {
         // GIVEN
-        coEvery { mockValidateUrl(mockUrlValid) } returns Success(mockUrlValid)
+        coEvery { mockValidateUrl(SAMPLE_URL_VALID) } returns Success(SAMPLE_URL_VALID)
         coEvery { mockPostsRepository.delete(post = mockPost) } returns Failure(ApiException())
 
         // WHEN
@@ -55,7 +55,7 @@ class DeletePostTest {
     @Test
     fun `GIVEN posts repository add succeeds WHEN AddPost is called THEN Success is returned`() = runTest {
         // GIVEN
-        coEvery { mockValidateUrl(mockUrlValid) } returns Success(mockUrlValid)
+        coEvery { mockValidateUrl(SAMPLE_URL_VALID) } returns Success(SAMPLE_URL_VALID)
         coEvery { mockPostsRepository.delete(post = mockPost) } returns Success(Unit)
 
         // WHEN

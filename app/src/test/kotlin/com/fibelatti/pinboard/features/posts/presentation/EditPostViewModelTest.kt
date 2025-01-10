@@ -4,14 +4,14 @@ import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAGS
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAG_VALUE_1
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAG_VALUE_2
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_DESCRIPTION
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_INVALID
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_TITLE
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_VALID
 import com.fibelatti.pinboard.MockDataProvider.createPost
-import com.fibelatti.pinboard.MockDataProvider.mockTagString1
-import com.fibelatti.pinboard.MockDataProvider.mockTagString2
-import com.fibelatti.pinboard.MockDataProvider.mockTags
-import com.fibelatti.pinboard.MockDataProvider.mockUrlDescription
-import com.fibelatti.pinboard.MockDataProvider.mockUrlInvalid
-import com.fibelatti.pinboard.MockDataProvider.mockUrlTitle
-import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.collectIn
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
@@ -100,7 +100,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
             coEvery { mockPostsRepository.searchExistingPostTag(any(), any()) } returns Failure(Exception())
 
             // WHEN
-            editPostViewModel.searchForTag(mockTagString1, mockk())
+            editPostViewModel.searchForTag(SAMPLE_TAG_VALUE_1, mockk())
 
             // THEN
             assertThat(editPostViewModel.screenState.first()).isEqualTo(
@@ -112,13 +112,13 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
     fun `GIVEN getSuggestedTags will succeed WHEN searchForTag is called THEN suggestedTags should receive its response`() =
         runTest {
             // GIVEN
-            val result = listOf(mockTagString1, mockTagString2)
+            val result = listOf(SAMPLE_TAG_VALUE_1, SAMPLE_TAG_VALUE_2)
             coEvery {
-                mockPostsRepository.searchExistingPostTag(tag = mockTagString1, currentTags = emptyList())
+                mockPostsRepository.searchExistingPostTag(tag = SAMPLE_TAG_VALUE_1, currentTags = emptyList())
             } returns Success(result)
 
             // WHEN
-            editPostViewModel.searchForTag(tag = mockTagString1, currentTags = emptyList())
+            editPostViewModel.searchForTag(tag = SAMPLE_TAG_VALUE_1, currentTags = emptyList())
 
             // THEN
             assertThat(editPostViewModel.screenState.first()).isEqualTo(
@@ -132,11 +132,11 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         editPostViewModel.initializePost(
             Post(
                 url = "",
-                title = mockUrlTitle,
-                description = mockUrlDescription,
+                title = SAMPLE_URL_TITLE,
+                description = SAMPLE_URL_DESCRIPTION,
                 private = true,
                 readLater = true,
-                tags = mockTags,
+                tags = SAMPLE_TAGS,
             ),
         )
 
@@ -159,12 +159,12 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
             // GIVEN
             editPostViewModel.initializePost(
                 Post(
-                    url = mockUrlValid,
+                    url = SAMPLE_URL_VALID,
                     title = "",
-                    description = mockUrlDescription,
+                    description = SAMPLE_URL_DESCRIPTION,
                     private = true,
                     readLater = true,
-                    tags = mockTags,
+                    tags = SAMPLE_TAGS,
                 ),
             )
 
@@ -188,12 +188,12 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
             coEvery {
                 mockAddPost(
                     Post(
-                        url = mockUrlInvalid,
-                        title = mockUrlTitle,
-                        description = mockUrlDescription,
+                        url = SAMPLE_URL_INVALID,
+                        title = SAMPLE_URL_TITLE,
+                        description = SAMPLE_URL_DESCRIPTION,
                         private = true,
                         readLater = true,
-                        tags = mockTags,
+                        tags = SAMPLE_TAGS,
                         id = "",
                         dateAdded = "",
                     ),
@@ -202,12 +202,12 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
 
             editPostViewModel.initializePost(
                 Post(
-                    url = mockUrlInvalid,
-                    title = mockUrlTitle,
-                    description = mockUrlDescription,
+                    url = SAMPLE_URL_INVALID,
+                    title = SAMPLE_URL_TITLE,
+                    description = SAMPLE_URL_DESCRIPTION,
                     private = true,
                     readLater = true,
-                    tags = mockTags,
+                    tags = SAMPLE_TAGS,
                 ),
             )
 
@@ -233,12 +233,12 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         coEvery {
             mockAddPost(
                 Post(
-                    url = mockUrlValid,
-                    title = mockUrlTitle,
-                    description = mockUrlDescription,
+                    url = SAMPLE_URL_VALID,
+                    title = SAMPLE_URL_TITLE,
+                    description = SAMPLE_URL_DESCRIPTION,
                     private = true,
                     readLater = true,
-                    tags = mockTags,
+                    tags = SAMPLE_TAGS,
                     id = "",
                     dateAdded = "",
                 ),
@@ -247,12 +247,12 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
 
         editPostViewModel.initializePost(
             Post(
-                url = mockUrlValid,
-                title = mockUrlTitle,
-                description = mockUrlDescription,
+                url = SAMPLE_URL_VALID,
+                title = SAMPLE_URL_TITLE,
+                description = SAMPLE_URL_DESCRIPTION,
                 private = true,
                 readLater = true,
-                tags = mockTags,
+                tags = SAMPLE_TAGS,
             ),
         )
 
@@ -280,12 +280,12 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
             coEvery {
                 mockAddPost(
                     Post(
-                        url = mockUrlValid,
-                        title = mockUrlTitle,
-                        description = mockUrlDescription,
+                        url = SAMPLE_URL_VALID,
+                        title = SAMPLE_URL_TITLE,
+                        description = SAMPLE_URL_DESCRIPTION,
                         private = true,
                         readLater = true,
-                        tags = mockTags,
+                        tags = SAMPLE_TAGS,
                         id = "",
                         dateAdded = "",
                     ),
@@ -294,12 +294,12 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
 
             editPostViewModel.initializePost(
                 Post(
-                    url = mockUrlValid,
-                    title = mockUrlTitle,
-                    description = mockUrlDescription,
+                    url = SAMPLE_URL_VALID,
+                    title = SAMPLE_URL_TITLE,
+                    description = SAMPLE_URL_DESCRIPTION,
                     private = true,
                     readLater = true,
-                    tags = mockTags,
+                    tags = SAMPLE_TAGS,
                 ),
             )
 

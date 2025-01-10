@@ -3,7 +3,7 @@ package com.fibelatti.pinboard.features.notes.presentation
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
-import com.fibelatti.pinboard.MockDataProvider.mockNoteId
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_NOTE_ID
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.SetNote
 import com.fibelatti.pinboard.features.notes.domain.NotesRepository
@@ -34,7 +34,7 @@ internal class NoteDetailsViewModelTest : BaseViewModelTest() {
         coEvery { mockNotesRepository.getNote(any()) } returns Failure(error)
 
         // WHEN
-        noteDetailsViewModel.getNoteDetails(mockNoteId)
+        noteDetailsViewModel.getNoteDetails(SAMPLE_NOTE_ID)
 
         // THEN
         assertThat(noteDetailsViewModel.error.first()).isEqualTo(error)
@@ -45,10 +45,10 @@ internal class NoteDetailsViewModelTest : BaseViewModelTest() {
     fun `WHEN getAllNotes succeeds THEN AppStateRepository should run SetNotes`() = runTest {
         // GIVEN
         val mockNote = mockk<Note>()
-        coEvery { mockNotesRepository.getNote(mockNoteId) } returns Success(mockNote)
+        coEvery { mockNotesRepository.getNote(SAMPLE_NOTE_ID) } returns Success(mockNote)
 
         // WHEN
-        noteDetailsViewModel.getNoteDetails(mockNoteId)
+        noteDetailsViewModel.getNoteDetails(SAMPLE_NOTE_ID)
 
         // THEN
         coVerify { mockAppStateRepository.runAction(SetNote(mockNote)) }

@@ -1,11 +1,11 @@
 package com.fibelatti.pinboard.features.linkding.data
 
-import com.fibelatti.pinboard.MockDataProvider.mockTags
-import com.fibelatti.pinboard.MockDataProvider.mockTagsString
-import com.fibelatti.pinboard.MockDataProvider.mockTitle
-import com.fibelatti.pinboard.MockDataProvider.mockUrlDescription
-import com.fibelatti.pinboard.MockDataProvider.mockUrlNotes
-import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAGS
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAG_VALUES
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_DESCRIPTION
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_NOTES
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_TITLE
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_VALID
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
@@ -32,29 +32,29 @@ class BookmarkRemoteMapperTest {
 
         val input = BookmarkRemote(
             id = 1,
-            url = mockUrlValid,
-            title = mockTitle,
-            description = mockUrlDescription,
-            notes = mockUrlNotes,
+            url = SAMPLE_URL_VALID,
+            title = SAMPLE_URL_TITLE,
+            description = SAMPLE_URL_DESCRIPTION,
+            notes = SAMPLE_URL_NOTES,
             isArchived = archived,
             unread = unread,
             shared = shared,
-            tagNames = mockTagsString,
+            tagNames = SAMPLE_TAG_VALUES,
             dateAdded = dateAdded,
             dateModified = dateModified,
         )
 
         val expected = Post(
-            url = mockUrlValid,
-            title = mockTitle,
-            description = mockUrlDescription,
+            url = SAMPLE_URL_VALID,
+            title = SAMPLE_URL_TITLE,
+            description = SAMPLE_URL_DESCRIPTION,
             id = "1",
             dateAdded = dateAdded,
             dateModified = dateModified,
             private = !shared,
             readLater = unread,
-            tags = mockTags,
-            notes = mockUrlNotes,
+            tags = SAMPLE_TAGS,
+            notes = SAMPLE_URL_NOTES,
             isArchived = archived,
         )
 
@@ -65,7 +65,7 @@ class BookmarkRemoteMapperTest {
     fun `should use fallback values`() {
         val input = BookmarkRemote(
             id = 1,
-            url = mockUrlValid,
+            url = SAMPLE_URL_VALID,
             title = null,
             description = null,
             notes = null,
@@ -78,7 +78,7 @@ class BookmarkRemoteMapperTest {
         )
 
         val expected = Post(
-            url = mockUrlValid,
+            url = SAMPLE_URL_VALID,
             title = "",
             description = "",
             id = "1",

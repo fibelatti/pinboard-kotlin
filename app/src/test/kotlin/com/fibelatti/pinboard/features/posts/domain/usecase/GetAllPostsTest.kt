@@ -1,8 +1,8 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
 import com.fibelatti.core.functional.Success
-import com.fibelatti.pinboard.MockDataProvider.mockTags
-import com.fibelatti.pinboard.MockDataProvider.mockUrlValid
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAGS
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_VALID
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
 import com.fibelatti.pinboard.features.appstate.ByDateAddedOldestFirst
 import com.fibelatti.pinboard.features.appstate.ByTitleAlphabetical
@@ -93,7 +93,7 @@ class GetAllPostsTest {
     fun `GIVEN search term was set in the params WHEN getAllPosts is called THEN repository is called with the expected params`() =
         runTest {
             // GIVEN
-            val params = GetPostParams(searchTerm = mockUrlValid)
+            val params = GetPostParams(searchTerm = SAMPLE_URL_VALID)
 
             // WHEN
             getAllPosts(params)
@@ -102,7 +102,7 @@ class GetAllPostsTest {
             verify {
                 mockPostsRepository.getAllPosts(
                     sortType = ByDateAddedNewestFirst,
-                    searchTerm = mockUrlValid,
+                    searchTerm = SAMPLE_URL_VALID,
                     tags = null,
                     untaggedOnly = false,
                     postVisibility = PostVisibility.None,
@@ -171,7 +171,7 @@ class GetAllPostsTest {
     fun `GIVEN tagParams was Tagged WHEN getAllPosts is called THEN repository is called with the expected params`() =
         runTest {
             // GIVEN
-            val params = GetPostParams(tags = GetPostParams.Tags.Tagged(mockTags))
+            val params = GetPostParams(tags = GetPostParams.Tags.Tagged(SAMPLE_TAGS))
 
             // WHEN
             getAllPosts(params)
@@ -181,7 +181,7 @@ class GetAllPostsTest {
                 mockPostsRepository.getAllPosts(
                     sortType = any(),
                     searchTerm = any(),
-                    tags = mockTags,
+                    tags = SAMPLE_TAGS,
                     untaggedOnly = any(),
                     postVisibility = any(),
                     readLaterOnly = any(),
