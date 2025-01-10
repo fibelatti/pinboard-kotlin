@@ -115,12 +115,7 @@ android {
     sourceSets {
         forEach { sourceSet -> getByName(sourceSet.name).java.srcDirs("src/${sourceSet.name}/kotlin") }
 
-        getByName("test").java.srcDirs("src/sharedTest/kotlin")
-
-        getByName("androidTest") {
-            java.srcDirs("src/sharedTest/kotlin")
-            assets.srcDirs(files("$projectDir/schemas"))
-        }
+        getByName("androidTest").assets.srcDirs(files("$projectDir/schemas"))
     }
 
     packaging {
@@ -137,6 +132,10 @@ android {
 
     testOptions {
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
+    }
+
+    testFixtures {
+        enable = true
     }
 }
 
@@ -240,6 +239,10 @@ dependencies {
     debugImplementation(libs.leakcanary)
 
     // Test
+    testFixturesImplementation(libs.kotlin)
+    testFixturesImplementation(platform(libs.compose.bom))
+    testFixturesImplementation(libs.compose.runtime)
+
     testCompileOnly(libs.junit)
     testRuntimeOnly(libs.junit5.engine)
     testRuntimeOnly(libs.junit5.vintage)

@@ -27,6 +27,7 @@ write_common_properties() {
 
     # Android properties common to all build environments
     write_property "android.useAndroidX=true"
+    write_property "android.experimental.enableTestFixturesKotlinSupport=true"
 }
 
 write_macos_properties() {
