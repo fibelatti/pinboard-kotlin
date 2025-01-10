@@ -3,7 +3,7 @@ Pinkt
 
 [![Language](https://img.shields.io/badge/language-kotlin-brightgreen.svg)](https://www.github.com/fibelatti/pinboard-kotlin)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Android CI](https://github.com/fibelatti/pinboard-kotlin/workflows/Android%20CI/badge.svg)](https://github.com/fibelatti/pinboard-kotlin/actions?query=workflow%3A%22Android+CI%22)
+[![Android CI](https://github.com/fibelatti/pinboard-kotlin/workflows/Android%20CI/badge.svg)](https://github.com/fibelatti/pinboard-kotlin/actions?query=workflow%3A%22Android+CI%22+branch%3Amain)
 
 Pinkt is an unofficial, [FOSS](https://en.wikipedia.org/wiki/Free_and_open-source_software) Android client for [Pinboard](http://pinboard.in/) and [Linkding](https://github.com/sissbruecker/linkding).
 
