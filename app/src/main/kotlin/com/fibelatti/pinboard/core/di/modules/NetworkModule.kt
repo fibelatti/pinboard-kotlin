@@ -4,6 +4,7 @@ import android.net.TrafficStats
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.core.di.RestApi
 import com.fibelatti.pinboard.core.di.RestApiProvider
+import com.fibelatti.pinboard.core.network.PinboardResponseFixerPlugin
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -59,6 +60,7 @@ object NetworkModule {
             }
         }
 
+        install(PinboardResponseFixerPlugin)
         install(ContentNegotiation) {
             json(json, contentType = ContentType.Any)
         }
