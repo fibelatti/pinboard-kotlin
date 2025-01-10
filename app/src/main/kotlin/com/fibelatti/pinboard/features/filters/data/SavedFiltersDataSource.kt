@@ -2,9 +2,9 @@ package com.fibelatti.pinboard.features.filters.data
 
 import com.fibelatti.pinboard.features.filters.domain.SavedFiltersRepository
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
 class SavedFiltersDataSource @Inject constructor(
     private val savedFiltersDao: SavedFiltersDao,

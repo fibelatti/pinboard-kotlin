@@ -19,7 +19,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.mapLatest
 
 enum class ScrollDirection {
-    IDLE, UP, DOWN,
+    IDLE,
+    UP,
+    DOWN,
 }
 
 @Composable

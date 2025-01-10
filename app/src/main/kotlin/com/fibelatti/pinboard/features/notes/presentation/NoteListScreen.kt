@@ -271,7 +271,6 @@ object NoteList {
         ByDateUpdatedDesc(label = R.string.note_sorting_date_updated_desc),
         ByDateUpdatedAsc(label = R.string.note_sorting_date_updated_asc),
         AtoZ(label = R.string.note_sorting_a_to_z),
-        ;
     }
 }
 

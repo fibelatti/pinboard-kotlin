@@ -43,10 +43,17 @@ class PostsDataSourceNoApi @Inject constructor(
             extended = post.description,
             hash = existingPost?.hash ?: post.id.ifEmpty { UUID.randomUUID().toString() },
             time = existingPost?.time ?: post.dateAdded.ifEmpty { dateFormatter.nowAsDataFormat() },
-            shared = if (post.private == true) AppConfig.PinboardApiLiterals.NO else AppConfig.PinboardApiLiterals.YES,
-            toread = if (post.readLater == true) AppConfig.PinboardApiLiterals.YES else AppConfig.PinboardApiLiterals.NO,
-            tags = post.tags?.joinToString(AppConfig.PinboardApiLiterals.TAG_SEPARATOR) { it.name }
-                .orEmpty(),
+            shared = if (post.private == true) {
+                AppConfig.PinboardApiLiterals.NO
+            } else {
+                AppConfig.PinboardApiLiterals.YES
+            },
+            toread = if (post.readLater == true) {
+                AppConfig.PinboardApiLiterals.YES
+            } else {
+                AppConfig.PinboardApiLiterals.NO
+            },
+            tags = post.tags?.joinToString(AppConfig.PinboardApiLiterals.TAG_SEPARATOR) { it.name }.orEmpty(),
         )
 
         return resultFrom {

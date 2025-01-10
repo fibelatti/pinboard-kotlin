@@ -45,7 +45,6 @@ class AuthViewModel @Inject constructor(
             return
         }
 
-
         launch {
             _screenState.value = ScreenState(isLoading = true)
 

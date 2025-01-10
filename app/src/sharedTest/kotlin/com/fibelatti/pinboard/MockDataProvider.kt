@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:property-naming")
+
 package com.fibelatti.pinboard
 
 import com.fibelatti.pinboard.core.AppConfig

@@ -317,11 +317,16 @@ public object ToggleButtonGroup {
     )
 
     public enum class IconPosition {
-        Start, Top, End, Bottom
+        Start,
+        Top,
+        End,
+        Bottom,
     }
 
     internal enum class Mode {
-        TextOnly, IconOnly, TextAndIcon,
+        TextOnly,
+        IconOnly,
+        TextAndIcon,
     }
 
     @Composable

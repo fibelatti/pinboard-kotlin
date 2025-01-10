@@ -10,12 +10,12 @@ import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.ui.theme.ExtendedTheme
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import javax.inject.Inject
 
 @Composable
 fun AppTheme(

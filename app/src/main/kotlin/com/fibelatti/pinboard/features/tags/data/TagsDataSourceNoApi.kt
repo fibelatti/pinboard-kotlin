@@ -3,7 +3,6 @@ package com.fibelatti.pinboard.features.tags.data
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.Success
-import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onFailureReturn
 import com.fibelatti.core.functional.onSuccess

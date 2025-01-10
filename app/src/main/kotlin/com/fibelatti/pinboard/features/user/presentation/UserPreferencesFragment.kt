@@ -15,11 +15,11 @@ import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.UUID
+import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.util.UUID
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class UserPreferencesFragment @Inject constructor() : BaseFragment() {

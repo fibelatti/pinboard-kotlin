@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 
 class GetRecentPosts @Inject constructor(
     private val postsRepository: PostsRepository,
-): ObservableUseCaseWithParams<GetPostParams, Result<PostListResult>> {
+) : ObservableUseCaseWithParams<GetPostParams, Result<PostListResult>> {
 
     override operator fun invoke(params: GetPostParams): Flow<Result<PostListResult>> = postsRepository.getAllPosts(
         sortType = ByDateAddedNewestFirst,

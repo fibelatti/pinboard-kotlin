@@ -290,7 +290,8 @@ internal class UserDataSourceTest {
             @Test
             fun `GIVEN the shared preferences has DayMonthYearWithTime value WHEN the getter is called THEN DayMonthYearWithTime is returned`() {
                 // GIVEN
-                every { mockUserSharedPreferences.preferredDateFormat } returns PreferredDateFormat.DayMonthYearWithTime.value
+                every { mockUserSharedPreferences.preferredDateFormat } returns
+                    PreferredDateFormat.DayMonthYearWithTime.value
 
                 // THEN
                 assertThat(userDataSource.preferredDateFormat).isEqualTo(PreferredDateFormat.DayMonthYearWithTime)
@@ -299,7 +300,8 @@ internal class UserDataSourceTest {
             @Test
             fun `GIVEN the shared preferences has MonthDayYearWithTime value WHEN the getter is called THEN MonthDayYearWithTime is returned`() {
                 // GIVEN
-                every { mockUserSharedPreferences.preferredDateFormat } returns PreferredDateFormat.MonthDayYearWithTime.value
+                every { mockUserSharedPreferences.preferredDateFormat } returns
+                    PreferredDateFormat.MonthDayYearWithTime.value
 
                 // THEN
                 assertThat(userDataSource.preferredDateFormat).isEqualTo(PreferredDateFormat.MonthDayYearWithTime)
@@ -308,7 +310,8 @@ internal class UserDataSourceTest {
             @Test
             fun `GIVEN the shared preferences has ShortYearMonthDayWithTime value WHEN the getter is called THEN YearMonthDayWithTime is returned`() {
                 // GIVEN
-                every { mockUserSharedPreferences.preferredDateFormat } returns PreferredDateFormat.ShortYearMonthDayWithTime.value
+                every { mockUserSharedPreferences.preferredDateFormat } returns
+                    PreferredDateFormat.ShortYearMonthDayWithTime.value
 
                 // THEN
                 assertThat(userDataSource.preferredDateFormat).isEqualTo(PreferredDateFormat.ShortYearMonthDayWithTime)
@@ -317,7 +320,8 @@ internal class UserDataSourceTest {
             @Test
             fun `GIVEN the shared preferences has YearMonthDayWithTime value WHEN the getter is called THEN YearMonthDayWithTime is returned`() {
                 // GIVEN
-                every { mockUserSharedPreferences.preferredDateFormat } returns PreferredDateFormat.YearMonthDayWithTime.value
+                every { mockUserSharedPreferences.preferredDateFormat } returns
+                    PreferredDateFormat.YearMonthDayWithTime.value
 
                 // THEN
                 assertThat(userDataSource.preferredDateFormat).isEqualTo(PreferredDateFormat.YearMonthDayWithTime)

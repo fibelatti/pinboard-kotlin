@@ -99,7 +99,9 @@ class NavigationActionHandler @Inject constructor(
             }
 
             is PopularPostsContent -> {
-                if (preferredDetailsView is PreferredDetailsView.ExternalBrowser && !userRepository.alwaysUseSidePanel) {
+                if (preferredDetailsView is PreferredDetailsView.ExternalBrowser &&
+                    !userRepository.alwaysUseSidePanel
+                ) {
                     ExternalBrowserContent(action.post, previousContent = currentContent)
                 } else {
                     PopularPostDetailContent(

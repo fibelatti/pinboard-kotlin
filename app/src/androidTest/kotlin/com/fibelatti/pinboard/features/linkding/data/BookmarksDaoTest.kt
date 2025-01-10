@@ -1,6 +1,7 @@
+@file:Suppress("ktlint:standard:max-line-length")
+
 package com.fibelatti.pinboard.features.linkding.data
 
-import com.fibelatti.pinboard.tooling.BaseDbTest
 import com.fibelatti.pinboard.MockDataProvider.createBookmarkLocal
 import com.fibelatti.pinboard.MockDataProvider.mockHash
 import com.fibelatti.pinboard.MockDataProvider.mockTagString1
@@ -12,10 +13,11 @@ import com.fibelatti.pinboard.MockDataProvider.mockTime3
 import com.fibelatti.pinboard.MockDataProvider.mockTime4
 import com.fibelatti.pinboard.MockDataProvider.mockTime5
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
+import com.fibelatti.pinboard.tooling.BaseDbTest
 import com.google.common.truth.Truth.assertThat
+import java.util.UUID
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import java.util.UUID
 
 class BookmarksDaoTest : BaseDbTest() {
 

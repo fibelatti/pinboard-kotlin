@@ -81,7 +81,12 @@ class GetAllPostsTest {
             }
         }
 
-        fun testCases(): List<SortType> = listOf(ByDateAddedNewestFirst, ByDateAddedOldestFirst, ByTitleAlphabetical, ByTitleAlphabeticalReverse)
+        fun testCases(): List<SortType> = listOf(
+            ByDateAddedNewestFirst,
+            ByDateAddedOldestFirst,
+            ByTitleAlphabetical,
+            ByTitleAlphabeticalReverse,
+        )
     }
 
     @Test

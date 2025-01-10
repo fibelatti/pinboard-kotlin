@@ -131,7 +131,9 @@ public inline fun EditText.onActionOrKeyboardSubmit(
 
     setOnEditorActionListener { _, actionId, event ->
         val shouldHandle = actionId in handledActions ||
-            event != null && event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER
+            event != null &&
+            event.action == KeyEvent.ACTION_DOWN &&
+            event.keyCode == KeyEvent.KEYCODE_ENTER
 
         return@setOnEditorActionListener if (shouldHandle) {
             block()

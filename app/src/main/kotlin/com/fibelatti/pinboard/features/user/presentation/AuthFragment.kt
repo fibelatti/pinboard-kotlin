@@ -10,8 +10,8 @@ import com.fibelatti.pinboard.core.android.base.sendErrorReport
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
+import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
 class AuthFragment @Inject constructor() : BaseFragment() {

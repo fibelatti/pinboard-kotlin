@@ -792,7 +792,9 @@ internal class PostActionHandlerTest {
 
                 val expectedContent = currentContent.copy(
                     previousContent = currentContent.previousContent.copy(
-                        previousContent = currentContent.previousContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage),
+                        previousContent = currentContent.previousContent.previousContent.copy(
+                            shouldLoad = ShouldLoadFirstPage,
+                        ),
                     ),
                 )
 
@@ -824,7 +826,9 @@ internal class PostActionHandlerTest {
 
                 val expectedContent = currentContent.copy(
                     previousContent = currentContent.previousContent.copy(
-                        previousContent = currentContent.previousContent.previousContent.copy(shouldLoad = ShouldLoadFirstPage),
+                        previousContent = currentContent.previousContent.previousContent.copy(
+                            shouldLoad = ShouldLoadFirstPage,
+                        ),
                     ),
                 )
 

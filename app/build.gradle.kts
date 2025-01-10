@@ -12,6 +12,7 @@ plugins {
 }
 
 object AppInfo {
+
     const val APP_NAME = "Pinkt"
     const val APPLICATION_ID = "com.fibelatti.pinboard"
 
@@ -20,16 +21,14 @@ object AppInfo {
     private const val VERSION_PATCH = 0
     private const val VERSION_BUILD = 0
 
-    val versionCode: Int =
-        (VERSION_MAJOR * 1_000_000 + VERSION_MINOR * 10_000 + VERSION_PATCH * 100 + VERSION_BUILD)
-            .also { println("versionCode: $it") }
+    val versionCode: Int = (VERSION_MAJOR * 1_000_000 + VERSION_MINOR * 10_000 + VERSION_PATCH * 100 + VERSION_BUILD)
+        .also { println("versionCode: $it") }
 
     @Suppress("KotlinConstantConditions")
-    val versionName: String =
-        StringBuilder("$VERSION_MAJOR.$VERSION_MINOR")
-            .apply { if (VERSION_PATCH != 0) append(".$VERSION_PATCH") }
-            .toString()
-            .also { println("versionName: $it") }
+    val versionName: String = StringBuilder("$VERSION_MAJOR.$VERSION_MINOR")
+        .apply { if (VERSION_PATCH != 0) append(".$VERSION_PATCH") }
+        .toString()
+        .also { println("versionName: $it") }
 }
 
 android {

@@ -141,7 +141,10 @@ private fun AuthScreen(
                                 .padding(top = 16.dp),
                             label = { Text(text = stringResource(id = R.string.auth_linkding_instance_url)) },
                             isError = instanceUrlError != null,
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Uri),
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Next,
+                                keyboardType = KeyboardType.Uri,
+                            ),
                             keyboardActions = KeyboardActions { focusManager.moveFocus(FocusDirection.Next) },
                             singleLine = true,
                             maxLines = 1,

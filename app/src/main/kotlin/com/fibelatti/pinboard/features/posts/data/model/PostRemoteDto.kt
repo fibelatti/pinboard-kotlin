@@ -1,8 +1,8 @@
 package com.fibelatti.pinboard.features.posts.data.model
 
 import com.fibelatti.core.functional.Mapper
-import kotlinx.serialization.Serializable
 import javax.inject.Inject
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class PostRemoteDto(

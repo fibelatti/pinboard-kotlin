@@ -63,7 +63,9 @@ internal class DateFormatterTest {
 
     @Test
     fun `WHEN nowAsDataFormat is called THEN format should be correct`() {
-        val result = dateFormatter.nowAsDataFormat().matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{6}Z$".toRegex())
+        val result = dateFormatter.nowAsDataFormat().matches(
+            "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{6}Z$".toRegex(),
+        )
 
         assertThat(result).isTrue()
     }

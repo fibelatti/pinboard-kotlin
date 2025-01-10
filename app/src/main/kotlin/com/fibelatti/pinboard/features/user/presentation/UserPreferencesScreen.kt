@@ -385,7 +385,9 @@ private fun AppPreferencesContent(
         ) {
             SettingToggle(
                 title = stringResource(id = R.string.user_preferences_preferred_details_view_mark_as_read_on_open),
-                description = stringResource(id = R.string.user_preferences_preferred_details_view_mark_as_read_on_open_caveat),
+                description = stringResource(
+                    id = R.string.user_preferences_preferred_details_view_mark_as_read_on_open_caveat,
+                ),
                 checked = markAsReadOnOpen,
                 onCheckedChange = onMarkAsReadOnOpenChange,
                 modifier = Modifier.padding(top = 16.dp),

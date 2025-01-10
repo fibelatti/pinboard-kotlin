@@ -404,7 +404,6 @@ object TagList {
         MoreFirst(label = R.string.tags_sorting_more_first),
         LessFirst(label = R.string.tags_sorting_less_first),
         Search(label = R.string.tags_sorting_filter),
-        ;
     }
 }
 

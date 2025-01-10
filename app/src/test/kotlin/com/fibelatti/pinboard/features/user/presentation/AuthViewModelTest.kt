@@ -85,7 +85,6 @@ class AuthViewModelTest : BaseViewModelTest() {
                 )
             }
 
-
         @Test
         fun `GIVEN Login is successful WHEN login is called THEN nothing else happens`() = runTest {
             // GIVEN

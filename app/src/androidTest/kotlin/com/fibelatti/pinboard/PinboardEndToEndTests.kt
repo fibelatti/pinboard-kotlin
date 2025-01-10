@@ -16,11 +16,11 @@ import com.fibelatti.pinboard.features.posts.presentation.EditPostFragment
 import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import javax.inject.Inject
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import javax.inject.Inject
 
 @HiltAndroidTest
 @OptIn(ExperimentalTestApi::class)
@@ -86,7 +86,8 @@ class PinboardEndToEndTests {
 
         with(composeRule) {
             // Act
-            onNodeWithText(context.getString(R.string.auth_token_hint)).performTextInput(PinboardMockServer.TestData.TOKEN)
+            onNodeWithText(context.getString(R.string.auth_token_hint))
+                .performTextInput(PinboardMockServer.TestData.TOKEN)
             onNodeWithText(context.getString(R.string.auth_button)).performClick()
 
             // Assert
@@ -119,7 +120,8 @@ class PinboardEndToEndTests {
 
         with(composeRule) {
             // Login
-            onNodeWithText(context.getString(R.string.auth_token_hint)).performTextInput(PinboardMockServer.TestData.TOKEN)
+            onNodeWithText(context.getString(R.string.auth_token_hint))
+                .performTextInput(PinboardMockServer.TestData.TOKEN)
             onNodeWithText(context.getString(R.string.auth_button)).performClick()
             waitUntilAtLeastOneExists(
                 matcher = hasText(context.getString(R.string.posts_title_all)),
