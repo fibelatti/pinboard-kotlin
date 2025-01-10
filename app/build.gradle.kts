@@ -55,8 +55,6 @@ android {
 
         base.archivesName = "$applicationId-v$versionName-$versionCode"
 
-        resourceConfigurations.add("en")
-
         testInstrumentationRunner = "com.fibelatti.pinboard.tooling.HiltTestRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
 
@@ -156,6 +154,8 @@ androidComponents {
             variant.makeResValueKey("string", "app_name"),
             com.android.build.api.variant.ResValue(appName, null),
         )
+
+        variant.androidResources.localeFilters.add("en")
     }
 
     onVariants(selector().withBuildType("release")) { variant ->
