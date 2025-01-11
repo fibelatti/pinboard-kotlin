@@ -1,0 +1,8 @@
+This version brings the following updates:
+
+* UI: Fixes an issue where the bottom bar would remain hidden after scrolling
+* Pinboard: update the popular posts screen
+* Pinboard: handle the bad API response when editing a bookmark
+* Linkding: update handling when saving a bookmark fails
+
+Feedback and suggestions are always welcome, thank you for using the app!
