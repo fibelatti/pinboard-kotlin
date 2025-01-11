@@ -87,10 +87,6 @@ object PinboardMockServer {
 
         fun emptyBookmarksResponse(): String = "[]"
 
-        fun genericResponseDone(): String = """
-            {
-                "result_code": "done"
-            }
-        """.trimIndent()
+        fun genericResponseDone(): String = """{"result_code":"done"}"""
     }
 }

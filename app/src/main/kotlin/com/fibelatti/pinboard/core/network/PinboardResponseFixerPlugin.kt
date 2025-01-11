@@ -13,13 +13,13 @@ val PinboardResponseFixerPlugin = createClientPlugin("PinboardResponseFixer") {
     val regex = "\"result_code\":\"(.*)\"".toRegex()
 
     transformResponseBody { _, content, requestedType ->
-        if (requestedType.type == GenericResponseDto::class) {
-            content.readUTF8Line()
-                ?.let(regex::find)
-                ?.groupValues?.get(1)
-                ?.let(::GenericResponseDto)
-        } else {
-            content
+        if (requestedType.type != GenericResponseDto::class) {
+            return@transformResponseBody null
         }
+
+        content.readUTF8Line()
+            ?.let(regex::find)
+            ?.groupValues?.get(1)
+            ?.let(::GenericResponseDto)
     }
 }
