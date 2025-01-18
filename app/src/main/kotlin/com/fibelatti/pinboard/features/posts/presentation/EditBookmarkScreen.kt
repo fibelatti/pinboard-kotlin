@@ -37,7 +37,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
@@ -48,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -345,14 +345,12 @@ private fun BookmarkBasicDetails(
         var titleField by remember {
             mutableStateOf(TextFieldValue(text = title, selection = TextRange(title.length)))
         }
-        val titleMaxLength = integerResource(id = R.integer.api_max_title_length)
         OutlinedTextField(
             value = titleField,
             onValueChange = { newValue ->
-                if (newValue.text.length <= titleMaxLength) {
-                    titleField = newValue
-                    onTitleChanged(newValue.text)
-                }
+                val coerced = newValue.copy(text = newValue.text.take(AppConfig.PinboardApiMaxLength.TEXT_TYPE.value))
+                titleField = coerced
+                onTitleChanged(coerced.text)
             },
             modifier = Modifier
                 .fillMaxWidth()

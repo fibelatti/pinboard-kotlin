@@ -5,6 +5,7 @@ import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.UseCaseWithParams
 import com.fibelatti.core.functional.catching
 import com.fibelatti.core.functional.onFailureReturn
+import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.di.RestApi
 import com.fibelatti.pinboard.core.di.RestApiProvider
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -36,7 +37,7 @@ class GetUrlPreview @Inject constructor(
 
     private fun createUrlPreview(params: Params): UrlPreview = UrlPreview(
         url = params.url,
-        title = params.title.ifNullOrBlank { params.url },
+        title = params.title.ifNullOrBlank { params.url }.take(AppConfig.PinboardApiMaxLength.TEXT_TYPE.value),
         description = params.highlightedText,
     )
 
@@ -60,7 +61,7 @@ class GetUrlPreview @Inject constructor(
 
         return UrlPreview(
             url = previewUrl,
-            title = previewTitle,
+            title = previewTitle.take(AppConfig.PinboardApiMaxLength.TEXT_TYPE.value),
             description = previewDescription,
         )
     }

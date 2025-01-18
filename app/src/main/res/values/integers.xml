@@ -2,6 +2,4 @@
 <resources>
     <integer name="anim_time_default">300</integer>
     <integer name="anim_time_long">500</integer>
-
-    <integer name="api_max_title_length">255</integer>
 </resources>
