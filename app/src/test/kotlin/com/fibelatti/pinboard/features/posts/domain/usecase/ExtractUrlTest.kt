@@ -5,7 +5,10 @@ import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.exceptionOrNull
 import com.fibelatti.core.functional.getOrNull
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.google.common.truth.Truth.assertThat
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -15,7 +18,14 @@ import org.junit.jupiter.params.provider.MethodSource
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class ExtractUrlTest {
 
-    private val extractUrl = ExtractUrl()
+    private val userRepository: UserRepository = mockk {
+        every { removeUtmParameters } returns false
+        every { removedUrlParameters } returns emptySet()
+    }
+
+    private val extractUrl = ExtractUrl(
+        userRepository = userRepository,
+    )
 
     @Test
     fun `WHEN extractUrl is called with a highlighted text THEN a valid url and the text should be returned`() =
