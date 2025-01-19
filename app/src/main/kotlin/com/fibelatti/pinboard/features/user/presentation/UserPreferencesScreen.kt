@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.user.presentation
 
 import android.os.Build
+import android.view.KeyEvent
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedVisibility
@@ -9,8 +10,10 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -25,24 +28,35 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
@@ -51,6 +65,7 @@ import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
+import com.fibelatti.pinboard.core.extension.fillWidthOfParent
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
@@ -61,6 +76,8 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagManager
 import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
+import com.fibelatti.ui.components.ChipGroup
+import com.fibelatti.ui.components.SingleLineChipGroup
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.launch
@@ -491,6 +508,8 @@ private fun BookmarkingPreferencesContent(
             userPreferences = userPreferences,
             onEditAfterSharingChange = userPreferencesViewModel::saveEditAfterSharing,
             onFollowRedirectsChange = userPreferencesViewModel::saveFollowRedirects,
+            onRemoveUtmParametersChange = userPreferencesViewModel::saveRemoveUtmParameters,
+            onRemovedUrlParametersChange = userPreferencesViewModel::saveRemovedUrlParameters,
             onAutoFillDescriptionChange = userPreferencesViewModel::saveAutoFillDescription,
             onUseBlockquoteChange = userPreferencesViewModel::saveUseBlockquote,
             onPrivateByDefaultChange = userPreferencesViewModel::saveDefaultPrivate,
@@ -530,6 +549,8 @@ private fun BookmarkingPreferencesContent(
     userPreferences: UserPreferences,
     onEditAfterSharingChange: (EditAfterSharing) -> Unit,
     onFollowRedirectsChange: (Boolean) -> Unit,
+    onRemoveUtmParametersChange: (Boolean) -> Unit,
+    onRemovedUrlParametersChange: (Set<String>) -> Unit,
     onAutoFillDescriptionChange: (Boolean) -> Unit,
     onUseBlockquoteChange: (Boolean) -> Unit,
     onPrivateByDefaultChange: (Boolean) -> Unit,
@@ -587,6 +608,16 @@ private fun BookmarkingPreferencesContent(
             modifier = Modifier.padding(top = 16.dp),
         )
 
+        RemoveUrlParametersSetting(
+            removeUtmParameters = userPreferences.removeUtmParameters,
+            onRemoveUtmParametersChange = onRemoveUtmParametersChange,
+            removedParameters = userPreferences.removedUrlParameters,
+            onRemovedParametersChange = onRemovedUrlParametersChange,
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .fillWidthOfParent(parentPaddingStart = 16.dp, parentPaddingEnd = 16.dp),
+        )
+
         SettingToggle(
             title = stringResource(id = R.string.user_preferences_description_auto_fill),
             description = stringResource(id = R.string.user_preferences_description_auto_fill_description),
@@ -625,6 +656,99 @@ private fun BookmarkingPreferencesContent(
             checked = userPreferences.defaultReadLater,
             onCheckedChange = onReadLaterByDefaultChange,
             modifier = Modifier.padding(top = 16.dp),
+        )
+    }
+}
+
+@Composable
+private fun RemoveUrlParametersSetting(
+    removeUtmParameters: Boolean,
+    onRemoveUtmParametersChange: (Boolean) -> Unit,
+    removedParameters: Set<String>,
+    onRemovedParametersChange: (Set<String>) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+    ) {
+        SettingToggle(
+            title = stringResource(R.string.user_preferences_remove_utm_parameters),
+            description = stringResource(R.string.user_preferences_remove_utm_parameters_description),
+            checked = removeUtmParameters,
+            onCheckedChange = onRemoveUtmParametersChange,
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
+
+        Text(
+            text = stringResource(R.string.user_preferences_remove_url_parameters),
+            modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp),
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+
+        Text(
+            text = stringResource(R.string.user_preferences_remove_url_parameters_description),
+            modifier = Modifier.padding(start = 16.dp, top = 4.dp, end = 16.dp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodySmall,
+        )
+
+        var inputValue by remember { mutableStateOf("") }
+        val submitValueAction by rememberUpdatedState {
+            if (inputValue.isNotBlank()) {
+                onRemovedParametersChange(removedParameters + inputValue)
+            }
+            inputValue = ""
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, top = 8.dp, end = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            OutlinedTextField(
+                value = inputValue,
+                onValueChange = { newValue -> inputValue = newValue },
+                modifier = Modifier
+                    .weight(1f)
+                    .onKeyEvent { keyEvent ->
+                        if (keyEvent.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
+                            submitValueAction()
+                            return@onKeyEvent true
+                        }
+                        false
+                    },
+                textStyle = MaterialTheme.typography.bodyMedium,
+                label = { Text(text = stringResource(R.string.user_preferences_remove_url_parameters_hint)) },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                keyboardActions = KeyboardActions { submitValueAction() },
+                singleLine = true,
+                maxLines = 1,
+            )
+
+            FilledTonalButton(
+                onClick = submitValueAction,
+            ) {
+                Text(text = stringResource(R.string.hint_add))
+            }
+        }
+
+        val closeIcon = painterResource(id = R.drawable.ic_close)
+        SingleLineChipGroup(
+            items = remember(removedParameters) {
+                removedParameters.map { parameter -> ChipGroup.Item(text = parameter, icon = closeIcon) }
+            },
+            onItemClick = { item -> onRemovedParametersChange(removedParameters - item.text) },
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .fillMaxWidth(),
+            itemTextStyle = MaterialTheme.typography.labelSmall.copy(
+                fontSize = 12.sp,
+                fontFamily = FontFamily.SansSerif,
+            ),
+            contentPadding = PaddingValues(horizontal = 16.dp),
         )
     }
 }
@@ -719,6 +843,8 @@ private fun BookmarkingPreferencesContentPreview(
             userPreferences = userPreferences,
             onEditAfterSharingChange = {},
             onFollowRedirectsChange = {},
+            onRemoveUtmParametersChange = {},
+            onRemovedUrlParametersChange = {},
             onAutoFillDescriptionChange = {},
             onUseBlockquoteChange = {},
             onPrivateByDefaultChange = {},

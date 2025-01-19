@@ -80,6 +80,14 @@ class UserPreferencesViewModel @Inject constructor(
         userRepository.followRedirects = value
     }
 
+    fun saveRemoveUtmParameters(value: Boolean) {
+        userRepository.removeUtmParameters = value
+    }
+
+    fun saveRemovedUrlParameters(parameters: Set<String>) {
+        userRepository.removedUrlParameters = parameters
+    }
+
     fun saveAutoFillDescription(value: Boolean) {
         userRepository.autoFillDescription = value
     }

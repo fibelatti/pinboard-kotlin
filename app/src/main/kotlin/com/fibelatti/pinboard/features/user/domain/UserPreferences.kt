@@ -19,6 +19,8 @@ data class UserPreferences(
     val preferredDetailsView: PreferredDetailsView,
     val alwaysUseSidePanel: Boolean,
     val followRedirects: Boolean,
+    val removeUtmParameters: Boolean,
+    val removedUrlParameters: Set<String>,
     val autoFillDescription: Boolean,
     val useBlockquote: Boolean,
     val showDescriptionInLists: Boolean,

@@ -142,6 +142,20 @@ class UserDataSource @Inject constructor(
             updateCurrentPreferences()
         }
 
+    override var removeUtmParameters: Boolean
+        get() = userSharedPreferences.removeUtmParameters
+        set(value) {
+            userSharedPreferences.removeUtmParameters = value
+            updateCurrentPreferences()
+        }
+
+    override var removedUrlParameters: Set<String>
+        get() = userSharedPreferences.removedUrlParameters.toSortedSet()
+        set(value) {
+            userSharedPreferences.removedUrlParameters = value
+            updateCurrentPreferences()
+        }
+
     override var autoFillDescription: Boolean
         get() = userSharedPreferences.autoFillDescription
         set(value) {
@@ -211,6 +225,8 @@ class UserDataSource @Inject constructor(
         preferredDetailsView = preferredDetailsView,
         alwaysUseSidePanel = alwaysUseSidePanel,
         followRedirects = followRedirects,
+        removeUtmParameters = removeUtmParameters,
+        removedUrlParameters = removedUrlParameters,
         autoFillDescription = autoFillDescription,
         useBlockquote = useBlockquote,
         showDescriptionInLists = showDescriptionInLists,

@@ -40,6 +40,10 @@ interface UserRepository {
 
     var followRedirects: Boolean
 
+    var removeUtmParameters: Boolean
+
+    var removedUrlParameters: Set<String>
+
     var autoFillDescription: Boolean
 
     var useBlockquote: Boolean

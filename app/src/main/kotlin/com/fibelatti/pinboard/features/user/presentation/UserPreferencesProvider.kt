@@ -25,6 +25,8 @@ class UserPreferencesProvider : PreviewParameterProvider<UserPreferences> {
                 preferredDetailsView = PreferredDetailsView.Edit,
                 alwaysUseSidePanel = true,
                 followRedirects = true,
+                removeUtmParameters = true,
+                removedUrlParameters = emptySet(),
                 autoFillDescription = true,
                 useBlockquote = true,
                 showDescriptionInLists = true,

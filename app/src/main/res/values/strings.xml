@@ -7,6 +7,7 @@
     <string name="hint_save">Save</string>
     <string name="hint_help">Help</string>
     <string name="hint_mark_as_read">Mark as read</string>
+    <string name="hint_add">Add</string>
 
     <string name="alert_confirm_deletion">Are you sure you want to delete this bookmark?</string>
     <string name="alert_confirm_unsaved_changes">You have unsaved changes that will be lost, continue without saving?</string>
@@ -257,6 +258,13 @@
     <string name="user_preferences_preferred_details_view_mark_as_read_on_open_caveat">Automatically update the bookmark to remove the read later flag</string>
     <string name="user_preferences_follow_redirects">Follow redirects</string>
     <string name="user_preferences_follow_redirects_description">Automatically follow redirects when sharing a bookmark to the app, saving the final URL. Increases the loading time when saving a bookmark via the share action</string>
+
+    <string name="user_preferences_remove_utm_parameters">Remove UTM parameters</string>
+    <string name="user_preferences_remove_utm_parameters_description">Remove tracking parameters from URLs shared to the app before saving them</string>
+    <string name="user_preferences_remove_url_parameters">Remove URL parameters</string>
+    <string name="user_preferences_remove_url_parameters_description">Remove the specified parameters from URLs shared to the app before saving them</string>
+    <string name="user_preferences_remove_url_parameters_hint">Parameter name</string>
+
     <string name="user_preferences_description_auto_fill">Auto-fill title and description</string>
     <string name="user_preferences_description_auto_fill_description">Automatically get the page details when sharing a bookmark to the app. Increases the loading time when saving a bookmark via the share action</string>
     <string name="user_preferences_use_blockquote">Use blockquote</string>

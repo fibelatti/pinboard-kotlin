@@ -65,6 +65,12 @@ const val KEY_NEW_EDIT_AFTER_SHARING = "NEW_EDIT_AFTER_SHARING"
 
 @VisibleForTesting
 const val KEY_DEFAULT_TAGS = "DEFAULT_TAGS"
+
+@VisibleForTesting
+const val KEY_REMOVE_UTM_PARAMETERS = "REMOVE_UTM_PARAMETERS"
+
+@VisibleForTesting
+const val KEY_REMOVED_URL_PARAMETERS = "REMOVED_URL_PARAMETERS"
 // endregion
 
 @Singleton
@@ -170,4 +176,12 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
         get() = sharedPreferences.get(KEY_DEFAULT_TAGS, "")
             .takeIf { it.isNotBlank() }?.split(",").orEmpty()
         set(value) = sharedPreferences.put(KEY_DEFAULT_TAGS, value.joinToString(separator = ","))
+
+    var removeUtmParameters: Boolean
+        get() = sharedPreferences.get(KEY_REMOVE_UTM_PARAMETERS, false)
+        set(value) = sharedPreferences.put(KEY_REMOVE_UTM_PARAMETERS, value)
+
+    var removedUrlParameters: Set<String>
+        get() = sharedPreferences.getStringSet(KEY_REMOVED_URL_PARAMETERS, null) ?: emptySet()
+        set(value) = sharedPreferences.edit { putStringSet(KEY_REMOVED_URL_PARAMETERS, value) }
 }

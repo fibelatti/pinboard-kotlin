@@ -54,6 +54,8 @@ internal class UserDataSourceTest {
         preferredDetailsView = PreferredDetailsView.InAppBrowser(markAsReadOnOpen = false),
         alwaysUseSidePanel = false,
         followRedirects = true,
+        removeUtmParameters = false,
+        removedUrlParameters = emptySet(),
         autoFillDescription = false,
         useBlockquote = false,
         showDescriptionInLists = false,
