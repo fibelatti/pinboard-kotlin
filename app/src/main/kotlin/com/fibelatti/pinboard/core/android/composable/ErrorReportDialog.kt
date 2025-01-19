@@ -88,7 +88,7 @@ fun ErrorReportDialog(
                         appendLine("---")
                         appendLine("This error just happened to me:")
                         appendLine()
-                        append(sw.toString().replace(regex = "&auth_token=.*[^&]".toRegex(), replacement = ""))
+                        append(sw.toString().replace(regex = "&?auth_token=[^&]*".toRegex(), replacement = ""))
                     }
 
                     val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:")).apply {
