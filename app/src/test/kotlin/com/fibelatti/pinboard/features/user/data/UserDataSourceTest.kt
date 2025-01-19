@@ -50,6 +50,7 @@ internal class UserDataSourceTest {
         applyDynamicColors = false,
         disableScreenshots = false,
         preferredDateFormat = PreferredDateFormat.DayMonthYearWithTime,
+        hiddenPostQuickOptions = emptySet(),
         preferredDetailsView = PreferredDetailsView.InAppBrowser(markAsReadOnOpen = false),
         alwaysUseSidePanel = false,
         followRedirects = true,

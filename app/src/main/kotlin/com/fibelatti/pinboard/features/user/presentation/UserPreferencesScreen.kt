@@ -54,7 +54,10 @@ import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
+import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.posts.presentation.PostQuickActions
 import com.fibelatti.pinboard.features.sync.PeriodicSync
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagManager
 import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
@@ -155,6 +158,7 @@ private fun AppPreferencesContent(
         },
         onDateFormatChange = userPreferencesViewModel::savePreferredDateFormat,
         onPeriodicSyncChange = userPreferencesViewModel::savePeriodicSync,
+        onHiddenOptionsChange = userPreferencesViewModel::saveHiddenPostQuickOptions,
         onPreferredViewChange = userPreferencesViewModel::savePreferredDetailsView,
         onAlwaysUseSidePanelChange = userPreferencesViewModel::saveAlwaysUseSidePanel,
         onMarkAsReadOnOpenChange = userPreferencesViewModel::saveMarkAsReadOnOpen,
@@ -172,6 +176,7 @@ private fun AppPreferencesContent(
     onDisableScreenshotsChange: (Boolean) -> Unit,
     onDateFormatChange: (PreferredDateFormat) -> Unit,
     onPeriodicSyncChange: (PeriodicSync) -> Unit,
+    onHiddenOptionsChange: (Set<String>) -> Unit,
     onPreferredViewChange: (PreferredDetailsView) -> Unit,
     onAlwaysUseSidePanelChange: (Boolean) -> Unit,
     onMarkAsReadOnOpenChange: (Boolean) -> Unit,
@@ -327,6 +332,48 @@ private fun AppPreferencesContent(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+
+        Text(
+            text = stringResource(R.string.user_preferences_bookmark_quick_options),
+            modifier = Modifier.padding(top = 16.dp),
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+
+        Text(
+            text = stringResource(R.string.user_preferences_bookmark_quick_actions_description),
+            modifier = Modifier.padding(top = 8.dp),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        val localContext = LocalContext.current
+        PreferenceButton(
+            buttonText = stringResource(R.string.user_preferences_customize),
+            onClick = {
+                val samplePost = Post.EMPTY.copy(
+                    description = "sample_description",
+                    tags = listOf(Tag(name = "sample_tags")),
+                )
+                val allOptions = PostQuickActions.allOptions(samplePost)
+                    .associateWith { option -> option.serializedName in userPreferences.hiddenPostQuickOptions }
+
+                SelectionDialog.showCustomizationDialog(
+                    context = localContext,
+                    title = localContext.getString(R.string.user_preferences_bookmark_quick_options),
+                    options = allOptions,
+                    optionName = { option -> localContext.getString(option.title) },
+                    optionIcon = PostQuickActions::icon,
+                    onConfirm = { options ->
+                        val hiddenOptions = options.filterValues { hidden -> hidden }.keys
+                            .map { it.serializedName }
+                            .toSet()
+
+                        onHiddenOptionsChange(hiddenOptions)
+                    },
+                )
+            },
+        )
 
         Text(
             text = stringResource(id = R.string.user_preferences_preferred_details_view),
@@ -583,31 +630,19 @@ private fun BookmarkingPreferencesContent(
 }
 
 @Composable
-private fun <T> PreferenceSelectionButton(
-    currentSelection: T,
-    buttonText: (T) -> Int,
-    @StringRes title: Int,
-    options: () -> List<T>,
-    onOptionSelected: (T) -> Unit,
+private fun PreferenceButton(
+    buttonText: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    val localContext = LocalContext.current
-
     FilledTonalButton(
-        onClick = {
-            SelectionDialog.show(
-                context = localContext,
-                title = localContext.getString(title),
-                options = options(),
-                optionName = { option -> localContext.getString(buttonText(option)) },
-                onOptionSelected = onOptionSelected,
-            )
-        },
-        modifier = Modifier
+        onClick = onClick,
+        modifier = modifier
             .fillMaxWidth()
             .padding(top = 4.dp),
     ) {
         Text(
-            text = stringResource(buttonText(currentSelection)),
+            text = buttonText,
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium,
@@ -621,6 +656,32 @@ private fun <T> PreferenceSelectionButton(
             modifier = Modifier.size(16.dp),
         )
     }
+}
+
+@Composable
+private fun <T> PreferenceSelectionButton(
+    currentSelection: T,
+    buttonText: (T) -> Int,
+    @StringRes title: Int,
+    options: () -> List<T>,
+    onOptionSelected: (T) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val localContext = LocalContext.current
+
+    PreferenceButton(
+        buttonText = stringResource(buttonText(currentSelection)),
+        onClick = {
+            SelectionDialog.show(
+                context = localContext,
+                title = localContext.getString(title),
+                options = options(),
+                optionName = { option -> localContext.getString(buttonText(option)) },
+                onOptionSelected = onOptionSelected,
+            )
+        },
+        modifier = modifier,
+    )
 }
 
 // region Previews
@@ -637,6 +698,7 @@ private fun AppPreferencesContentPreview(
             onDynamicColorChange = {},
             onDisableScreenshotsChange = {},
             onDateFormatChange = {},
+            onHiddenOptionsChange = {},
             onPeriodicSyncChange = {},
             onPreferredViewChange = {},
             onAlwaysUseSidePanelChange = {},

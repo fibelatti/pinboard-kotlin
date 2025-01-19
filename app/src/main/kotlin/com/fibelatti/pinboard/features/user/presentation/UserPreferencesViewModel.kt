@@ -60,6 +60,10 @@ class UserPreferencesViewModel @Inject constructor(
         userRepository.preferredDateFormat = preferredDateFormat
     }
 
+    fun saveHiddenPostQuickOptions(hiddenPostQuickOptions: Set<String>) {
+        userRepository.hiddenPostQuickOptions = hiddenPostQuickOptions
+    }
+
     fun savePreferredDetailsView(preferredDetailsView: PreferredDetailsView) {
         userRepository.preferredDetailsView = preferredDetailsView
     }

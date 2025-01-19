@@ -27,4 +27,9 @@ data class Post(
         get() = title.ifEmpty { websiteTitle ?: "" }
     val displayDescription: String
         get() = description.ifEmpty { websiteDescription ?: "" }
+
+    companion object {
+
+        val EMPTY = Post(url = "", title = "", description = "")
+    }
 }

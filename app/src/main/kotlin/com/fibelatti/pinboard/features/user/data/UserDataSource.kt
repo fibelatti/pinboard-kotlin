@@ -98,6 +98,13 @@ class UserDataSource @Inject constructor(
             updateCurrentPreferences()
         }
 
+    override var hiddenPostQuickOptions: Set<String>
+        get() = userSharedPreferences.hiddenPostQuickOptions
+        set(value) {
+            userSharedPreferences.hiddenPostQuickOptions = value
+            updateCurrentPreferences()
+        }
+
     override var preferredDetailsView: PreferredDetailsView
         get() {
             val inAppBrowser = PreferredDetailsView.InAppBrowser(markAsReadOnOpen)
@@ -200,6 +207,7 @@ class UserDataSource @Inject constructor(
         applyDynamicColors = applyDynamicColors,
         disableScreenshots = disableScreenshots,
         preferredDateFormat = preferredDateFormat,
+        hiddenPostQuickOptions = hiddenPostQuickOptions,
         preferredDetailsView = preferredDetailsView,
         alwaysUseSidePanel = alwaysUseSidePanel,
         followRedirects = followRedirects,

@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.core.persistence
 
 import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
+import androidx.core.content.edit
 import com.fibelatti.core.android.extension.get
 import com.fibelatti.core.android.extension.put
 import javax.inject.Inject
@@ -28,6 +29,9 @@ const val KEY_DISABLE_SCREENSHOTS = "DISABLE_SCREENSHOTS"
 
 @VisibleForTesting
 const val KEY_PREFERRED_DATE_FORMAT = "PREFERRED_DATE_FORMAT"
+
+@VisibleForTesting
+const val KEY_HIDDEN_POST_QUICK_OPTIONS = "HIDDEN_POST_QUICK_OPTIONS"
 
 @VisibleForTesting
 const val KEY_PREFERRED_DETAILS_VIEW = "PREFERRED_DETAILS_VIEW"
@@ -105,6 +109,10 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
     var preferredDateFormat: String
         get() = sharedPreferences.get(KEY_PREFERRED_DATE_FORMAT, "")
         set(value) = sharedPreferences.put(KEY_PREFERRED_DATE_FORMAT, value)
+
+    var hiddenPostQuickOptions: Set<String>
+        get() = sharedPreferences.getStringSet(KEY_HIDDEN_POST_QUICK_OPTIONS, null) ?: emptySet()
+        set(value) = sharedPreferences.edit { putStringSet(KEY_HIDDEN_POST_QUICK_OPTIONS, value) }
 
     var preferredDetailsView: String
         get() = sharedPreferences.get(KEY_PREFERRED_DETAILS_VIEW, "")

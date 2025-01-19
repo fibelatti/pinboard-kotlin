@@ -4,8 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.fibelatti.core.android.extension.shareText
@@ -91,10 +89,13 @@ class PostListFragment @Inject constructor(
     }
 
     private fun showQuickActionsDialog(post: Post) {
+        val allOptions = PostQuickActions.allOptions(post = post, tagsClipboard = tagsClipboard)
+            .associateWith { option -> option.serializedName in userRepository.hiddenPostQuickOptions }
+
         SelectionDialog.show(
             context = requireContext(),
             title = getString(R.string.quick_actions_title),
-            options = PostQuickActions.allOptions(post, tagsClipboard),
+            options = allOptions,
             optionName = { option -> getString(option.title) },
             optionIcon = PostQuickActions::icon,
             onOptionSelected = { option ->
@@ -362,127 +363,5 @@ class PostListFragment @Inject constructor(
         val TAG: String = "PostListFragment"
 
         val ACTION_ID = UUID.randomUUID().toString()
-    }
-}
-
-private sealed class PostQuickActions(
-    @StringRes val title: Int,
-    @DrawableRes val icon: Int,
-) {
-
-    abstract val post: Post
-
-    data class ToggleReadLater(
-        override val post: Post,
-    ) : PostQuickActions(
-        title = if (post.readLater == true) {
-            R.string.quick_actions_remove_read_later
-        } else {
-            R.string.quick_actions_add_read_later
-        },
-        icon = R.drawable.ic_read_later,
-    )
-
-    data class CopyTags(
-        override val post: Post,
-        val tags: List<Tag>,
-    ) : PostQuickActions(
-        title = R.string.quick_actions_copy_tags,
-        icon = R.drawable.ic_tag,
-    )
-
-    data class PasteTags(
-        override val post: Post,
-        val tags: List<Tag>,
-    ) : PostQuickActions(
-        title = R.string.quick_actions_paste_tags,
-        icon = R.drawable.ic_tag,
-    )
-
-    data class Edit(
-        override val post: Post,
-    ) : PostQuickActions(
-        title = R.string.quick_actions_edit,
-        icon = R.drawable.ic_edit,
-    )
-
-    data class Delete(
-        override val post: Post,
-    ) : PostQuickActions(
-        title = R.string.quick_actions_delete,
-        icon = R.drawable.ic_delete,
-    )
-
-    data class CopyUrl(
-        override val post: Post,
-    ) : PostQuickActions(
-        title = R.string.quick_actions_copy_url,
-        icon = R.drawable.ic_copy,
-    )
-
-    data class Share(
-        override val post: Post,
-    ) : PostQuickActions(
-        title = R.string.quick_actions_share,
-        icon = R.drawable.ic_share,
-    )
-
-    data class ExpandDescription(
-        override val post: Post,
-    ) : PostQuickActions(
-        title = R.string.quick_actions_expand_description,
-        icon = R.drawable.ic_expand,
-    )
-
-    data class OpenBrowser(
-        override val post: Post,
-    ) : PostQuickActions(
-        title = R.string.quick_actions_open_in_browser,
-        icon = R.drawable.ic_browser,
-    )
-
-    data class SubmitToWayback(
-        override val post: Post,
-    ) : PostQuickActions(
-        title = R.string.quick_actions_submit_to_wayback,
-        icon = R.drawable.ic_send,
-    )
-
-    data class SearchWayback(
-        override val post: Post,
-    ) : PostQuickActions(
-        title = R.string.quick_actions_search_wayback,
-        icon = R.drawable.ic_search,
-    )
-
-    companion object {
-
-        fun allOptions(
-            post: Post,
-            tagsClipboard: List<Tag> = emptyList(),
-        ): List<PostQuickActions> = buildList {
-            add(ToggleReadLater(post))
-
-            if (!post.tags.isNullOrEmpty()) {
-                add(CopyTags(post, post.tags))
-            }
-
-            if (tagsClipboard.isNotEmpty()) {
-                add(PasteTags(post, tagsClipboard))
-            }
-
-            add(Edit(post))
-            add(Delete(post))
-            add(CopyUrl(post))
-            add(Share(post))
-            add(SubmitToWayback(post))
-            add(SearchWayback(post))
-
-            if (post.displayDescription.isNotBlank()) {
-                add(ExpandDescription(post))
-            }
-
-            add(OpenBrowser(post))
-        }
     }
 }

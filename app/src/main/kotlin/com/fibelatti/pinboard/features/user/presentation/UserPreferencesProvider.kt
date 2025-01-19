@@ -21,6 +21,7 @@ class UserPreferencesProvider : PreviewParameterProvider<UserPreferences> {
                 applyDynamicColors = true,
                 disableScreenshots = true,
                 preferredDateFormat = PreferredDateFormat.YearMonthDayWithTime,
+                hiddenPostQuickOptions = emptySet(),
                 preferredDetailsView = PreferredDetailsView.Edit,
                 alwaysUseSidePanel = true,
                 followRedirects = true,

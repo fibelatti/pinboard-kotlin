@@ -15,6 +15,7 @@ data class UserPreferences(
     val applyDynamicColors: Boolean,
     val disableScreenshots: Boolean,
     val preferredDateFormat: PreferredDateFormat,
+    val hiddenPostQuickOptions: Set<String>,
     val preferredDetailsView: PreferredDetailsView,
     val alwaysUseSidePanel: Boolean,
     val followRedirects: Boolean,

@@ -30,6 +30,8 @@ interface UserRepository {
 
     var preferredDateFormat: PreferredDateFormat
 
+    var hiddenPostQuickOptions: Set<String>
+
     var preferredDetailsView: PreferredDetailsView
 
     var alwaysUseSidePanel: Boolean

@@ -213,6 +213,14 @@
     <string name="quick_actions_submit_to_wayback">Send to Wayback Machine</string>
     <string name="quick_actions_search_wayback">Search Wayback Machine</string>
 
+    <string name="quick_actions_more_options">More options</string>
+
+    <string name="quick_actions_customization_hidden_options_title">Hidden options</string>
+    <string name="quick_actions_customization_hidden_options_instruction">Click on each option to toggle its visibility</string>
+    <string name="quick_actions_customization_hidden_options_description">These are available by clicking on \"More options\" when viewing the quick actions menu</string>
+
+    <string name="quick_actions_customization_save_changes">Save changes</string>
+
     <!-- User Preferences -->
     <string name="user_preferences_title">Preferences</string>
 
@@ -267,6 +275,10 @@
     <string name="user_preferences_edit_after_sharing_before_saving">Before saving</string>
     <string name="user_preferences_edit_after_sharing_after_saving">After saving</string>
     <string name="user_preferences_edit_after_sharing_description">Controls when the bookmark editor should be displayed after choosing the \"Save bookmark\" share action. To skip the editor, choose \"Quick save bookmark\" when sharing instead</string>
+    <string name="user_preferences_bookmark_quick_options">Bookmark quick actions</string>
+    <string name="user_preferences_bookmark_quick_actions_description">Customize which options are immediately visible when opening the quick actions menu</string>
+
+    <string name="user_preferences_customize">Customize</string>
 
     <!-- About -->
     <string name="about_send_feedback">Send your feedback</string>
