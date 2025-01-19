@@ -1,0 +1,7 @@
+This version brings the following updates:
+
+* New setting to customize the bookmark quick actions menu
+* New setting to automatically remove specified URL parameters before saving
+* Fix an issue that would sometimes prevent editing the bookmark title
+
+Feedback and suggestions are always welcome, thank you for using the app!
