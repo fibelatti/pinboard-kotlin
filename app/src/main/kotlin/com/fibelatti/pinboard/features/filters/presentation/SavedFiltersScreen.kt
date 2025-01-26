@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -152,25 +151,25 @@ private fun SavedFilterItem(
                     onLongClicked(savedFilter)
                 },
             ),
-        shape = RoundedCornerShape(6.dp),
-        tonalElevation = 1.dp,
+        shape = MaterialTheme.shapes.small,
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
         Column(
-            modifier = Modifier.padding(all = 8.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             if (savedFilter.searchTerm.isNotBlank()) {
                 Text(
                     text = stringResource(id = R.string.saved_filters_item_keywords),
                     modifier = Modifier.fillMaxWidth(),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.labelMedium,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
 
                 Text(
                     text = savedFilter.searchTerm,
-                    modifier = Modifier.padding(top = 4.dp),
                     color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.titleMedium,
                 )
             }
 
@@ -179,9 +178,9 @@ private fun SavedFilterItem(
                     text = stringResource(id = R.string.saved_filters_item_tags),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp),
+                        .padding(top = 4.dp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.labelMedium,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
 
                 val tags = remember(savedFilter.tags) {
@@ -191,7 +190,7 @@ private fun SavedFilterItem(
                 MultilineChipGroup(
                     items = tags,
                     onItemClick = {},
-                    modifier = Modifier.padding(top = 8.dp),
+                    modifier = Modifier.padding(top = 4.dp),
                     itemTonalElevation = 16.dp,
                 )
             }

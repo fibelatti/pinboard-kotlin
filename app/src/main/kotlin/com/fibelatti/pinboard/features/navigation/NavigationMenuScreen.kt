@@ -23,7 +23,6 @@ import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -253,28 +252,24 @@ private fun NavigationMenuScreen(
         MenuItem(
             textRes = R.string.about_send_feedback,
             onClick = onSendFeedbackClicked,
-            textStyle = MaterialTheme.typography.bodySmall,
             iconRes = R.drawable.ic_feedback,
         )
 
         MenuItem(
             textRes = R.string.about_rate,
             onClick = onWriteReviewClicked,
-            textStyle = MaterialTheme.typography.bodySmall,
             iconRes = R.drawable.ic_rate,
         )
 
         MenuItem(
             textRes = R.string.about_share,
             onClick = onShareClicked,
-            textStyle = MaterialTheme.typography.bodySmall,
             iconRes = R.drawable.ic_share,
         )
 
         MenuItem(
             textRes = R.string.about_privacy_policy,
             onClick = onPrivacyPolicyClicked,
-            textStyle = MaterialTheme.typography.bodySmall,
             iconRes = R.drawable.ic_privacy_policy,
         )
 
@@ -323,7 +318,6 @@ private fun MenuItem(
     @StringRes textRes: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
     @DrawableRes iconRes: Int? = null,
 ) {
     TextButton(
@@ -346,7 +340,6 @@ private fun MenuItem(
             text = stringResource(id = textRes),
             modifier = Modifier.weight(1f),
             color = MaterialTheme.colorScheme.onSurface,
-            style = textStyle,
         )
     }
 }

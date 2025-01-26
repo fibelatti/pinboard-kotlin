@@ -10,7 +10,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
 import androidx.core.text.toSpannable
@@ -23,7 +22,7 @@ fun TextWithBlockquote(
     text: String,
     modifier: Modifier = Modifier,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
-    textSize: TextUnit = 14.sp,
+    textSize: TextUnit = MaterialTheme.typography.bodyMedium.fontSize,
     maxLines: Int = Int.MAX_VALUE,
     blockquoteBackgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant,
     blockquoteStripeColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,

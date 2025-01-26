@@ -12,7 +12,6 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -109,7 +107,7 @@ private fun AuthScreen(
 
         Surface(
             modifier = Modifier.sizeIn(maxWidth = 600.dp),
-            shape = RoundedCornerShape(8.dp),
+            shape = MaterialTheme.shapes.small,
             color = MaterialTheme.colorScheme.surfaceVariant,
             shadowElevation = 2.dp,
         ) {
@@ -161,52 +159,47 @@ private fun AuthScreen(
                     }
                 }
 
-                Row(
+                var authTokenVisible by remember { mutableStateOf(false) }
+
+                OutlinedTextField(
+                    value = authToken,
+                    onValueChange = { authToken = it },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.Bottom,
-                ) {
-                    var authTokenVisible by remember { mutableStateOf(false) }
-
-                    OutlinedTextField(
-                        value = authToken,
-                        onValueChange = { authToken = it },
-                        modifier = Modifier.weight(1f),
-                        visualTransformation = if (authTokenVisible) {
-                            VisualTransformation.None
-                        } else {
-                            PasswordVisualTransformation()
-                        },
-                        label = { Text(text = stringResource(id = R.string.auth_token_hint)) },
-                        isError = apiTokenError != null,
-                        keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Go,
-                            keyboardType = KeyboardType.Password,
-                        ),
-                        keyboardActions = KeyboardActions { onAuthRequested(authToken, instanceUrl) },
-                        singleLine = true,
-                        maxLines = 1,
-                    )
-
-                    IconButton(
-                        onClick = { authTokenVisible = !authTokenVisible },
-                    ) {
-                        AnimatedContent(
-                            targetState = authTokenVisible,
-                            label = "AuthTokenIconVisibility",
-                        ) { visible ->
-                            Icon(
-                                painter = painterResource(
-                                    id = if (visible) R.drawable.ic_eye else R.drawable.ic_eye_slash,
-                                ),
-                                contentDescription = null,
-                                modifier = Modifier.size(30.dp),
-                            )
+                    visualTransformation = if (authTokenVisible) {
+                        VisualTransformation.None
+                    } else {
+                        PasswordVisualTransformation()
+                    },
+                    label = { Text(text = stringResource(id = R.string.auth_token_hint)) },
+                    trailingIcon = {
+                        IconButton(
+                            onClick = { authTokenVisible = !authTokenVisible },
+                        ) {
+                            AnimatedContent(
+                                targetState = authTokenVisible,
+                                label = "AuthTokenIconVisibility",
+                            ) { visible ->
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (visible) R.drawable.ic_eye else R.drawable.ic_eye_slash,
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(30.dp),
+                                )
+                            }
                         }
-                    }
-                }
+                    },
+                    isError = apiTokenError != null,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Go,
+                        keyboardType = KeyboardType.Password,
+                    ),
+                    keyboardActions = KeyboardActions { onAuthRequested(authToken, instanceUrl) },
+                    singleLine = true,
+                    maxLines = 1,
+                )
 
                 if (apiTokenError != null) {
                     Text(
@@ -293,7 +286,7 @@ private fun AuthTokenHelp(
                     modifier = Modifier.padding(top = 8.dp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     linkColor = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
         } else {

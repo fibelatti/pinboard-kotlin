@@ -10,23 +10,14 @@ import androidx.compose.ui.graphics.Color
 @Immutable
 public data class ExtendedColors(
     val backgroundNoOverlay: Color,
-    val statusBar: Color,
-    val navigationBar: Color,
-    val icon: Color,
 )
 
 internal val ExtendedLightColorScheme = ExtendedColors(
     backgroundNoOverlay = Color(0xFFFFFFFF),
-    statusBar = Color(0xFFC2C2C2),
-    navigationBar = Color(0xFF9E9E9E),
-    icon = Color(0xFF424242),
 )
 
 internal val ExtendedDarkColorScheme = ExtendedColors(
     backgroundNoOverlay = Color(0xFF000000),
-    statusBar = Color(0x00000000),
-    navigationBar = Color(0xFF000000),
-    icon = Color(0xFFF5F5F5),
 )
 
 internal val LocalExtendedColors = staticCompositionLocalOf { ExtendedLightColorScheme }

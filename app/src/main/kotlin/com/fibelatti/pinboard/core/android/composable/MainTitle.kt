@@ -70,7 +70,10 @@ fun MainTitle(
         Column(
             modifier = Modifier
                 .weight(1F)
-                .heightIn(min = 56.dp),
+                .heightIn(min = 56.dp)
+                .padding(
+                    start = if (navigation is MainState.NavigationComponent.Visible) 0.dp else 16.dp,
+                ),
             verticalArrangement = Arrangement.Center,
         ) {
             AnimatedVisibility(
@@ -79,11 +82,10 @@ fun MainTitle(
                 val label = (title as? MainState.TitleComponent.Visible)?.label ?: ""
                 Text(
                     text = label,
-                    modifier = Modifier.padding(start = 16.dp),
                     color = MaterialTheme.colorScheme.onSurface,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.headlineSmall,
                 )
             }
 
@@ -94,7 +96,6 @@ fun MainTitle(
 
                 Text(
                     text = label,
-                    modifier = Modifier.padding(start = 16.dp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
@@ -114,11 +115,9 @@ fun MainTitle(
             FilledTonalButton(
                 onClick = { onActionButtonClicked(data) },
                 modifier = Modifier.padding(horizontal = 8.dp),
+                shape = MaterialTheme.shapes.small,
             ) {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.bodySmall,
-                )
+                Text(text = label)
             }
         }
     }

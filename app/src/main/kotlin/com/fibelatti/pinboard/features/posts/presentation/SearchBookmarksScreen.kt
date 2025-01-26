@@ -251,7 +251,7 @@ fun SearchBookmarksScreen(
                             .padding(horizontal = 16.dp, vertical = 8.dp),
                         color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleSmall,
+                        style = MaterialTheme.typography.titleMedium,
                     )
 
                     SingleLineChipGroup(
@@ -282,7 +282,7 @@ fun SearchBookmarksScreen(
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.titleMedium,
             )
         },
         items = availableTags,

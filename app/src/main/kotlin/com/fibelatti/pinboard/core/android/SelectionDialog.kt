@@ -300,6 +300,7 @@ private fun <T> SelectionItem(
     FilledTonalButton(
         onClick = { onClick(option) },
         modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.small,
     ) {
         Text(
             text = optionName(option),

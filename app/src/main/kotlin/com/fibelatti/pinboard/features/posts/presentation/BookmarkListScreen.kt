@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -50,7 +49,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
@@ -290,7 +288,7 @@ private fun ActiveSearch(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         val minHeight = 36.dp
-        val shape = RoundedCornerShape(size = 8.dp)
+        val shape = MaterialTheme.shapes.small
         val padding = PaddingValues(horizontal = 8.dp)
 
         FilledTonalButton(
@@ -374,11 +372,12 @@ private fun BookmarkItem(
                     onPostLongClicked(post)
                 },
             ),
-        shape = RoundedCornerShape(6.dp),
-        tonalElevation = 1.dp,
+        shape = MaterialTheme.shapes.small,
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
         Column(
-            modifier = Modifier.padding(all = 8.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             if (post.pendingSync != null) {
                 PendingSyncIndicator(
@@ -394,45 +393,16 @@ private fun BookmarkItem(
                 text = post.displayTitle,
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.titleMedium,
             )
 
             if (post.url != post.displayTitle) {
                 Text(
                     text = post.url,
-                    modifier = Modifier.padding(vertical = 4.dp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
                     style = MaterialTheme.typography.bodySmall,
-                )
-            }
-
-            if (showDescription && post.displayDescription.isNotBlank()) {
-                TextWithBlockquote(
-                    text = post.displayDescription,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    textColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textSize = 14.sp,
-                    maxLines = 5,
-                    clickableLinks = false,
-                )
-            }
-
-            if (AppMode.LINKDING == appMode && !post.notes.isNullOrBlank()) {
-                HorizontalDivider(color = MaterialTheme.colorScheme.onSurface)
-
-                TextWithBlockquote(
-                    text = post.notes,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    textColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textSize = 14.sp,
-                    maxLines = 5,
-                    clickableLinks = false,
                 )
             }
 
@@ -446,6 +416,35 @@ private fun BookmarkItem(
                 readLater = post.readLater,
             )
 
+            if (showDescription && post.displayDescription.isNotBlank()) {
+                TextWithBlockquote(
+                    text = post.displayDescription,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp),
+                    textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 5,
+                    clickableLinks = false,
+                )
+            }
+
+            if (AppMode.LINKDING == appMode && !post.notes.isNullOrBlank()) {
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+
+                TextWithBlockquote(
+                    text = post.notes,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp),
+                    textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 5,
+                    clickableLinks = false,
+                )
+            }
+
             if (!post.tags.isNullOrEmpty()) {
                 val tags = remember(post.tags) {
                     post.tags.map { tag -> ChipGroup.Item(text = tag.name) }
@@ -454,6 +453,7 @@ private fun BookmarkItem(
                 MultilineChipGroup(
                     items = tags,
                     onItemClick = { item -> onTagClicked(post.tags.first { tag -> tag.name == item.text }) },
+                    modifier = Modifier.padding(top = 8.dp),
                     itemTonalElevation = 16.dp,
                 )
             }
@@ -467,16 +467,14 @@ fun PendingSyncIndicator(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_sync),
             contentDescription = null,
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier.size(12.dp),
             tint = MaterialTheme.colorScheme.primary,
         )
 
@@ -496,14 +494,14 @@ private fun BookmarkFlags(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier.padding(vertical = 8.dp),
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = time,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
         )
 
         Spacer(modifier = Modifier.size(8.dp))
@@ -512,7 +510,7 @@ private fun BookmarkFlags(
             Icon(
                 painter = painterResource(id = R.drawable.ic_private),
                 contentDescription = null,
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(12.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
@@ -520,7 +518,7 @@ private fun BookmarkFlags(
                 text = stringResource(id = R.string.posts_item_private),
                 modifier = Modifier.padding(end = 8.dp),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
             )
         }
 
@@ -528,14 +526,14 @@ private fun BookmarkFlags(
             Icon(
                 painter = painterResource(id = R.drawable.ic_read_later),
                 contentDescription = null,
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(12.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             Text(
                 text = stringResource(id = R.string.posts_item_read_later),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
             )
         }
     }
@@ -570,7 +568,7 @@ private fun BookmarkListScreenPreview(
             showPostDescription = true,
             onTagClicked = {},
             sidePanelVisible = false,
-            appMode = AppMode.PINBOARD,
+            appMode = AppMode.LINKDING,
         )
     }
 }
@@ -585,7 +583,7 @@ private fun ActiveSearchPreview() {
                 onClearClicked = {},
                 onSaveClicked = {},
                 onShareClicked = {},
-                appMode = AppMode.PINBOARD,
+                appMode = AppMode.LINKDING,
             )
         }
     }
@@ -601,7 +599,7 @@ private fun BookmarkItemPreview(
             modifier = Modifier.background(ExtendedTheme.colors.backgroundNoOverlay),
         ) {
             BookmarkItem(
-                appMode = AppMode.PINBOARD,
+                appMode = AppMode.LINKDING,
                 post = post,
                 sortType = ByDateModifiedNewestFirst,
                 onPostClicked = {},

@@ -19,10 +19,9 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.fibelatti.pinboard.R
@@ -45,6 +44,7 @@ fun TagManager(
     onRemoveCurrentTagClicked: (Tag) -> Unit,
     modifier: Modifier = Modifier,
     onSearchTagInputFocusChanged: (hasFocus: Boolean) -> Unit = {},
+    horizontalPadding: Dp = 16.dp,
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -66,8 +66,6 @@ fun TagManager(
             clCurrentTagsTitle,
             clCurrentTags,
         ) = createRefs()
-
-        val horizontalPadding = 16.dp
 
         OutlinedTextField(
             value = searchTagInput,
@@ -113,10 +111,10 @@ fun TagManager(
                 start.linkTo(clAddTagInput.end, margin = 8.dp)
                 end.linkTo(parent.end, margin = horizontalPadding)
             },
+            shape = MaterialTheme.shapes.small,
         ) {
             Text(
                 text = stringResource(id = R.string.posts_add_tags_add),
-                fontSize = 14.sp,
             )
         }
 
@@ -133,10 +131,6 @@ fun TagManager(
                         end.linkTo(parent.end)
                     }
                     .fillMaxWidth(),
-                itemTextStyle = MaterialTheme.typography.labelSmall.copy(
-                    fontSize = 12.sp,
-                    fontFamily = FontFamily.SansSerif,
-                ),
                 contentPadding = PaddingValues(horizontal = horizontalPadding),
             )
 
@@ -182,9 +176,6 @@ fun TagManager(
             },
             itemTonalElevation = 16.dp,
             onItemIconClick = { item -> onRemoveCurrentTagClicked(currentTags.first { it.name == item.text }) },
-            itemTextStyle = MaterialTheme.typography.labelMedium.copy(
-                fontFamily = FontFamily.SansSerif,
-            ),
         )
     }
 }

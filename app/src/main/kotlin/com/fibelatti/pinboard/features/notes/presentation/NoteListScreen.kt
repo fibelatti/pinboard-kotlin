@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.notes.presentation
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -33,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -184,13 +184,13 @@ private fun NoteListContent(
                         },
                         shape = when (index) {
                             0 -> RoundedCornerShape(
-                                topStart = 16.dp,
-                                bottomStart = 16.dp,
+                                topStart = 8.dp,
+                                bottomStart = 8.dp,
                             )
 
                             NoteList.Sorting.entries.size - 1 -> RoundedCornerShape(
-                                topEnd = 16.dp,
-                                bottomEnd = 16.dp,
+                                topEnd = 8.dp,
+                                bottomEnd = 8.dp,
                             )
 
                             else -> RoundedCornerShape(0.dp)
@@ -235,20 +235,21 @@ private fun NoteListItem(
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
             .clickable { onNoteClicked(note) },
-        shape = RoundedCornerShape(6.dp),
-        tonalElevation = 1.dp,
+        shape = MaterialTheme.shapes.small,
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
         Column(
-            modifier = Modifier.padding(all = 8.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text(
                 text = note.title,
                 color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.titleMedium,
             )
+
             Text(
                 text = stringResource(id = R.string.notes_saved_at, note.createdAt),
-                modifier = Modifier.padding(top = 4.dp),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyMedium,
             )
@@ -256,7 +257,6 @@ private fun NoteListItem(
             if (note.updatedAt != note.createdAt) {
                 Text(
                     text = stringResource(id = R.string.notes_updated_at, note.updatedAt),
-                    modifier = Modifier.padding(top = 4.dp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodyMedium,
                 )

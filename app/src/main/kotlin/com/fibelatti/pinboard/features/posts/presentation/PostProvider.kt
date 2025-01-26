@@ -67,6 +67,7 @@ class PostListProvider(val size: Int) : PreviewParameterProvider<List<Post>> {
             private = random.nextBoolean(),
             readLater = random.nextBoolean(),
             tags = LOREM_IPSUM_SOURCE.split(" ").take(value).map { Tag(name = it) },
+            notes = LOREM_IPSUM_SOURCE,
             pendingSync = when {
                 value % 2 == 0 -> PendingSync.ADD
                 value % 3 == 0 -> PendingSync.UPDATE

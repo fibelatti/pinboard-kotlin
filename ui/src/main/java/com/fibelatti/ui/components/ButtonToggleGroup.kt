@@ -47,7 +47,7 @@ public fun ColumnToggleButtonGroup(
     borderSize: Dp = ToggleButtonGroup.BorderSize,
     border: BorderStroke = BorderStroke(borderSize, colors.borderColor),
     buttonHeight: Dp = ToggleButtonGroup.ButtonHeight,
-    textStyle: TextStyle = MaterialTheme.typography.labelMedium,
+    textStyle: TextStyle = MaterialTheme.typography.labelLarge,
     iconPosition: ToggleButtonGroup.IconPosition = ToggleButtonGroup.IconPosition.Start,
 ) {
     Column(modifier = modifier) {

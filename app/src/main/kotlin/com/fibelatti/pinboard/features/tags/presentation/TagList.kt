@@ -56,7 +56,6 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -169,10 +168,6 @@ fun TagList(
     Column(
         modifier = modifier.fillMaxSize(),
     ) {
-        val windowInsets = WindowInsets.safeDrawing
-            .add(WindowInsets(left = 16.dp, right = 16.dp))
-            .only(WindowInsetsSides.Horizontal)
-
         AnimatedVisibility(
             visible = isLoading,
             enter = fadeIn() + expandVertically(),
@@ -181,7 +176,11 @@ fun TagList(
             LinearProgressIndicator(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .windowInsetsPadding(windowInsets),
+                    .windowInsetsPadding(
+                        WindowInsets.safeDrawing
+                            .add(WindowInsets(left = 16.dp, right = 16.dp))
+                            .only(WindowInsetsSides.Horizontal),
+                    ),
                 color = MaterialTheme.colorScheme.primary,
             )
         }
@@ -294,13 +293,13 @@ private fun TagListSortingControls(
                     },
                     shape = when (index) {
                         0 -> RoundedCornerShape(
-                            topStart = 16.dp,
-                            bottomStart = 16.dp,
+                            topStart = 8.dp,
+                            bottomStart = 8.dp,
                         )
 
                         TagList.Sorting.entries.size - 1 -> RoundedCornerShape(
-                            topEnd = 16.dp,
-                            bottomEnd = 16.dp,
+                            topEnd = 8.dp,
+                            bottomEnd = 8.dp,
                         )
 
                         else -> RoundedCornerShape(0.dp)
@@ -363,7 +362,7 @@ private fun TagListItem(
             color = MaterialTheme.colorScheme.secondary,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+            style = MaterialTheme.typography.titleMedium,
         )
         Text(
             text = pluralStringResource(R.plurals.posts_quantity, item.posts, item.posts),
@@ -371,7 +370,7 @@ private fun TagListItem(
             color = MaterialTheme.colorScheme.onBackground,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium,
         )
     }
 }
@@ -386,7 +385,7 @@ private fun ScrollToTopButton(
             .padding(all = 16.dp)
             .background(
                 color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
-                shape = RoundedCornerShape(16.dp),
+                shape = MaterialTheme.shapes.large,
             ),
     ) {
         Icon(

@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.fibelatti.ui.R
@@ -41,7 +42,7 @@ public fun Chip(
     shape: CornerBasedShape = MaterialTheme.shapes.small,
     tonalElevation: Dp = ChipGroup.TonalElevation,
     colors: ChipGroup.Colors = ChipGroup.colors(),
-    textStyle: TextStyle = MaterialTheme.typography.labelLarge,
+    textStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.SansSerif),
 ) {
     Surface(
         modifier = modifier.defaultMinSize(minHeight = ChipGroup.MinSize),
@@ -89,7 +90,7 @@ public fun MultilineChipGroup(
     itemShape: CornerBasedShape = MaterialTheme.shapes.small,
     itemTonalElevation: Dp = ChipGroup.TonalElevation,
     itemColors: ChipGroup.Colors = ChipGroup.colors(),
-    itemTextStyle: TextStyle = MaterialTheme.typography.labelMedium,
+    itemTextStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.SansSerif),
     spacing: Dp = ChipGroup.Spacing,
 ) {
     FlowRow(
@@ -120,7 +121,7 @@ public fun SingleLineChipGroup(
     itemShape: CornerBasedShape = MaterialTheme.shapes.small,
     itemTonalElevation: Dp = ChipGroup.TonalElevation,
     itemColors: ChipGroup.Colors = ChipGroup.colors(),
-    itemTextStyle: TextStyle = MaterialTheme.typography.labelMedium,
+    itemTextStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.SansSerif),
     spacing: Dp = ChipGroup.Spacing,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {

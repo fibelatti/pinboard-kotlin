@@ -34,7 +34,6 @@ public fun ExtendedTheme(
     ) {
         MaterialTheme(
             colorScheme = colorScheme,
-            typography = ExtendedTypography,
             content = content,
         )
     }

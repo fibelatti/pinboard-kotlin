@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -50,7 +49,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -322,8 +320,7 @@ private fun MenuItemsContent(
                     ) {
                         Text(
                             text = stringResource(id = menuItem.name),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.onSurface,
                         )
                     }
                 } else {
@@ -335,7 +332,7 @@ private fun MenuItemsContent(
                             painter = painterResource(id = menuItem.icon),
                             contentDescription = stringResource(id = menuItem.name),
                             modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            tint = MaterialTheme.colorScheme.onSurface,
                         )
                     }
                 }
@@ -359,8 +356,8 @@ private fun SidePanelBottomAppBar(
             modifier = Modifier
                 .padding(all = 16.dp)
                 .background(
-                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
-                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.75f),
+                    shape = MaterialTheme.shapes.large,
                 )
                 .padding(all = 8.dp)
                 .animateContentSize(),
@@ -373,7 +370,7 @@ private fun SidePanelBottomAppBar(
                         painter = painterResource(id = R.drawable.ic_chevron_left),
                         contentDescription = stringResource(id = R.string.cd_expand_menu),
                         modifier = Modifier.size(24.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        tint = MaterialTheme.colorScheme.onSurface,
                     )
                 }
             } else {

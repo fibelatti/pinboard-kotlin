@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.notes.presentation
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,7 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
@@ -120,16 +120,16 @@ private fun NoteContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(start = 16.dp, end = 16.dp, bottom = 100.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Text(
             text = note.title,
             color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+            style = MaterialTheme.typography.titleLarge,
         )
 
         Text(
             text = stringResource(id = R.string.notes_saved_at, note.createdAt),
-            modifier = Modifier.padding(top = 4.dp),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.bodyMedium,
         )
@@ -137,7 +137,6 @@ private fun NoteContent(
         if (note.updatedAt != note.createdAt) {
             Text(
                 text = stringResource(id = R.string.notes_updated_at, note.updatedAt),
-                modifier = Modifier.padding(top = 4.dp),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyMedium,
             )
@@ -150,7 +149,6 @@ private fun NoteContent(
 
         Text(
             text = note.text,
-            modifier = Modifier.padding(top = 4.dp),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.bodyMedium,
         )

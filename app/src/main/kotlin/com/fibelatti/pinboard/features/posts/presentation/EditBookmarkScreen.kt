@@ -244,7 +244,7 @@ private fun BookmarkContent(
                     PendingSync.UPDATE -> stringResource(id = R.string.posts_pending_update_expanded)
                     PendingSync.DELETE -> stringResource(id = R.string.posts_pending_delete_expanded)
                 },
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             )
         }
 
@@ -423,8 +423,8 @@ private fun BookmarkFlags(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, top = 8.dp, end = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+            .padding(start = 16.dp, top = 4.dp, end = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         if (AppMode.NO_API != appMode) {
             SettingToggle(
