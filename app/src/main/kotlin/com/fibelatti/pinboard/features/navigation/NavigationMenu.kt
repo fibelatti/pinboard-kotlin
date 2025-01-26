@@ -15,7 +15,7 @@ import dagger.hilt.android.EntryPointAccessors
 object NavigationMenu {
 
     private const val APP_URL = "https://play.google.com/store/apps/details?id=com.fibelatti.pinboard"
-    private const val PRIVACY_POLICY_URL = "https://fibelatti.github.io/pinboard-kotlin/"
+    private const val PRIVACY_POLICY_URL = "https://fibelatti.com/privacy-policy/pinkt"
 
     fun show(activity: AppCompatActivity) {
         ComposeBottomSheetDialog(activity) {
