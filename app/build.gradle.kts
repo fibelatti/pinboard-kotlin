@@ -100,18 +100,6 @@ android {
         }
     }
 
-    flavorDimensions.add("api")
-    productFlavors {
-        create("pinboardapi") {
-            dimension = "api"
-        }
-
-        create("noapi") {
-            dimension = "api"
-            applicationIdSuffix = ".noapi"
-        }
-    }
-
     sourceSets {
         forEach { sourceSet -> getByName(sourceSet.name).java.srcDirs("src/${sourceSet.name}/kotlin") }
 
@@ -144,7 +132,6 @@ androidComponents {
         val appName =
             StringBuilder().apply {
                 append(AppInfo.APP_NAME)
-                if (variant.name.contains("noapi", ignoreCase = true)) append(" NoApi")
                 if (variant.name.contains("debug", ignoreCase = true)) append(" Dev")
             }.toString()
 

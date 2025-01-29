@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.core
 
-import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.core.di.AppDispatchers
 import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -25,12 +24,11 @@ class AppModeProvider @Inject constructor(
     ) { preferences, authToken -> getValue(preferences.useLinkding, authToken) }
         .stateIn(scope, sharingStarted, getValue())
 
-    @Suppress("KotlinConstantConditions")
     private fun getValue(
         useLinkding: Boolean = userRepository.useLinkding,
         authToken: String = userRepository.authToken.value,
     ): AppMode = when {
-        BuildConfig.FLAVOR == "noapi" || authToken == "app_review_mode" -> AppMode.NO_API
+        authToken == "app_review_mode" -> AppMode.NO_API
         authToken.isBlank() -> AppMode.UNSET
         useLinkding -> AppMode.LINKDING
         else -> AppMode.PINBOARD
