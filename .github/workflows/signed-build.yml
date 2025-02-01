@@ -23,7 +23,7 @@ jobs:
           echo "${{ secrets.KEYSTORE }}" | base64 -d > ${{ github.workspace }}/keystore/release.jks
 
       - name: Build
-        run: ./gradlew app:assemblePinboardapiRelease
+        run: ./gradlew app:assembleRelease
         env:
           SIGN_BUILD: true
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
@@ -35,7 +35,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: signed-apk
-          path: app/build/outputs/apk/pinboardapi/release/*.apk
+          path: app/build/outputs/apk/release/*.apk
 
   build-signed-aab:
     name: Build Signed AAB
@@ -53,7 +53,7 @@ jobs:
           echo "${{ secrets.KEYSTORE }}" | base64 -d > ${{ github.workspace }}/keystore/release.jks
 
       - name: Build
-        run: ./gradlew app:bundlePinboardapiRelease
+        run: ./gradlew app:bundleRelease
         env:
           SIGN_BUILD: true
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
@@ -65,4 +65,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: signed-aab
-          path: app/build/outputs/bundle/pinboardapiRelease/*.aab
+          path: app/build/outputs/bundle/release/*.aab

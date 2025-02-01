@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- User Preferences -->
-    <string name="user_preferences_default_read_later_description">If checked, links shared to Pinkt will be saved as read later</string>
-</resources>
