@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.core.android.composable
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -10,7 +11,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -69,7 +72,6 @@ fun MainTitle(
 
         Column(
             modifier = Modifier
-                .weight(1F)
                 .heightIn(min = 56.dp)
                 .padding(
                     start = if (navigation is MainState.NavigationComponent.Visible) 0.dp else 16.dp,
@@ -104,6 +106,12 @@ fun MainTitle(
             }
         }
 
+        Spacer(
+            modifier = Modifier
+                .weight(1f)
+                .animateContentSize(),
+        )
+
         AnimatedVisibility(
             visible = actionButton is MainState.ActionButtonComponent.Visible,
             enter = fadeIn() + scaleIn(),
@@ -114,8 +122,9 @@ fun MainTitle(
 
             FilledTonalButton(
                 onClick = { onActionButtonClicked(data) },
-                modifier = Modifier.padding(horizontal = 8.dp),
+                modifier = Modifier.padding(start = 8.dp, end = 16.dp),
                 shape = MaterialTheme.shapes.small,
+                contentPadding = PaddingValues(horizontal = 8.dp),
             ) {
                 Text(text = label)
             }
