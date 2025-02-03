@@ -353,7 +353,7 @@ private fun openUrlInFileViewer(context: Context, post: Post) {
     }
 }
 
-private fun openUrlInExternalBrowser(context: Context, post: Post) {
+fun openUrlInExternalBrowser(context: Context, post: Post) {
     context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.url)))
 }
 // endregion Service functions
