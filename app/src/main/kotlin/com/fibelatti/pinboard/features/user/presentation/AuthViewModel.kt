@@ -69,7 +69,7 @@ class AuthViewModel @Inject constructor(
                         error.isServerException() -> {
                             _screenState.update { currentState ->
                                 currentState.copy(
-                                    apiTokenError = resourceProvider.getString(R.string.server_timeout_error),
+                                    apiTokenError = resourceProvider.getString(R.string.server_error),
                                 )
                             }
                         }

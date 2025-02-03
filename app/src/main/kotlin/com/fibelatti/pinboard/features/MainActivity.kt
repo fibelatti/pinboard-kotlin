@@ -269,7 +269,7 @@ class MainActivity : BaseActivity() {
         }
 
         if (error.isServerException()) {
-            binding.root.showBanner(getString(R.string.server_timeout_error))
+            binding.root.showBanner(getString(R.string.server_error))
             postAction()
         } else {
             sendErrorReport(error, postAction = postAction)

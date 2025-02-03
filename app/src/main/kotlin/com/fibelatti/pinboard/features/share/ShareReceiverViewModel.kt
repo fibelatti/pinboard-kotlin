@@ -11,6 +11,7 @@ import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
+import com.fibelatti.pinboard.core.network.MissingAuthTokenException
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.EditPostFromShare
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
@@ -43,6 +44,11 @@ class ShareReceiverViewModel @Inject constructor(
 
     fun saveUrl(url: String, title: String?, skipEdit: Boolean = false) {
         launch {
+            if (!userRepository.hasAuthToken()) {
+                _screenState.emitError(MissingAuthTokenException())
+                return@launch
+            }
+
             extractUrl(url).mapCatching { (extractedUrl, highlightedText) ->
                 val preview = getUrlPreview(
                     GetUrlPreview.Params(

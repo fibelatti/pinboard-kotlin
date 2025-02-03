@@ -37,7 +37,7 @@ abstract class BaseActivity : AppCompatActivity() {
         }
 
         if (error.isServerException()) {
-            Toast.makeText(this, R.string.server_timeout_error, Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.server_error, Toast.LENGTH_LONG).show()
             postAction()
         } else {
             sendErrorReport(error, postAction = postAction)

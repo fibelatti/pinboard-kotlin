@@ -41,7 +41,7 @@ fun ErrorReport(
     }
 
     if (throwable.isServerException()) {
-        Toast.makeText(LocalContext.current, R.string.server_timeout_error, Toast.LENGTH_LONG).show()
+        Toast.makeText(LocalContext.current, R.string.server_error, Toast.LENGTH_LONG).show()
         postAction()
     } else {
         ErrorReportDialog(throwable, modifier, altMessage, postAction)

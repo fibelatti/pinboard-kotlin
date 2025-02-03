@@ -1,5 +1,7 @@
 package com.fibelatti.pinboard.core.network
 
-class ApiException(resultCode: String? = null) : Throwable(message = resultCode)
+class MissingAuthTokenException : IllegalStateException()
 
-class InvalidRequestException : Throwable()
+class ApiException(resultCode: String? = null) : RuntimeException(resultCode)
+
+class InvalidRequestException : RuntimeException()

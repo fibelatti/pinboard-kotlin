@@ -59,7 +59,9 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     private val mockPostsRepository = mockk<PostsRepository> {
         coEvery { getPost(id = any(), url = any()) } returns Failure(InvalidRequestException())
     }
-    private val mockUserRepository = mockk<UserRepository>()
+    private val mockUserRepository = mockk<UserRepository> {
+        every { hasAuthToken() } returns true
+    }
     private val mockAppStateRepository = mockk<AppStateRepository>(relaxUnitFun = true)
 
     private val post = mockk<Post>()
