@@ -246,16 +246,19 @@ fun BookmarkListScreen(
     }
 }
 
+object BookmarkListScreen {
+
+    val ACTION_ID = UUID.randomUUID().toString()
+}
+
 // region ViewModel setup
 @Composable
 private fun LaunchedViewModelEffects(
     postListViewModel: PostListViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
 ) {
-    val actionId = remember { UUID.randomUUID().toString() }
-
-    LaunchedAppStateViewModelEffect(actionId = actionId)
-    LaunchedMainViewModelEffect(actionId = actionId)
+    LaunchedAppStateViewModelEffect(actionId = BookmarkListScreen.ACTION_ID)
+    LaunchedMainViewModelEffect(actionId = BookmarkListScreen.ACTION_ID)
     LaunchedPostDetailViewModelEffect()
 
     LaunchedErrorHandlerEffect(viewModel = postListViewModel)

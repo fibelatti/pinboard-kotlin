@@ -164,6 +164,11 @@ fun EditBookmarkScreen(
     )
 }
 
+object EditBookmarkScreen {
+
+    val ACTION_ID = UUID.randomUUID().toString()
+}
+
 // region ViewModel setup
 @Composable
 private fun LaunchedViewModelEffects(
@@ -172,7 +177,6 @@ private fun LaunchedViewModelEffects(
     editPostViewModel: EditPostViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
 ) {
-    val actionId = remember { UUID.randomUUID().toString() }
     val localContext = LocalContext.current
     val localView = LocalView.current
 
@@ -183,7 +187,7 @@ private fun LaunchedViewModelEffects(
                     currentState.copy(
                         actionButton = MainState.ActionButtonComponent.Visible(
                             label = localContext.getString(R.string.hint_save),
-                            id = actionId,
+                            id = EditBookmarkScreen.ACTION_ID,
                         ),
                     )
                 }
@@ -195,11 +199,11 @@ private fun LaunchedViewModelEffects(
         }
     }
 
-    LaunchedMainViewModelEffect(actionId = actionId)
-    LaunchedEditPostViewModelEffect(actionId = actionId)
+    LaunchedMainViewModelEffect(actionId = EditBookmarkScreen.ACTION_ID)
+    LaunchedEditPostViewModelEffect(actionId = EditBookmarkScreen.ACTION_ID)
     LaunchedPostDetailViewModelEffect()
 
-    MainBackNavigationEffect(actionId = actionId)
+    MainBackNavigationEffect(actionId = EditBookmarkScreen.ACTION_ID)
     BackHandler {
         if (editPostViewModel.hasPendingChanges()) {
             MaterialAlertDialogBuilder(localContext).apply {
@@ -218,7 +222,7 @@ private fun LaunchedViewModelEffects(
             mainViewModel.updateState { currentState ->
                 currentState.copy(
                     floatingActionButton = MainState.FabComponent.Visible(
-                        id = actionId,
+                        id = EditBookmarkScreen.ACTION_ID,
                         icon = R.drawable.ic_done,
                     ),
                 )
@@ -231,7 +235,7 @@ private fun LaunchedViewModelEffects(
         onDispose {
             mainViewModel.updateState { currentState ->
                 currentState.copy(
-                    actionButton = if (currentState.actionButton.id == actionId) {
+                    actionButton = if (currentState.actionButton.id == EditBookmarkScreen.ACTION_ID) {
                         MainState.ActionButtonComponent.Gone
                     } else {
                         currentState.actionButton
