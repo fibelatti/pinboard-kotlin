@@ -1,0 +1,7 @@
+This version brings the following updates:
+
+* Revised typography throughout the app, slightly increasing font sizes
+* Revised settings screen, with better visual cues for each setting
+* Fixed share action behavior when there's no logged in account
+
+Feedback and suggestions are always welcome, thank you for using the app!
