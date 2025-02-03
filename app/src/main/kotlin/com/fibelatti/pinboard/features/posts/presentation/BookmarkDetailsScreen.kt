@@ -330,7 +330,7 @@ private fun LaunchedPopularPostsViewModelEffect(
 // endregion ViewModel setup
 
 // region Service functions
-private fun showDeleteConfirmationDialog(context: Context, onConfirm: () -> Unit) {
+fun showDeleteConfirmationDialog(context: Context, onConfirm: () -> Unit) {
     MaterialAlertDialogBuilder(context).apply {
         setMessage(R.string.alert_confirm_deletion)
         setPositiveButton(R.string.hint_yes) { _, _ -> onConfirm() }
