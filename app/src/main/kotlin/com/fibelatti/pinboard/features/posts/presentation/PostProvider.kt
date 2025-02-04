@@ -77,3 +77,29 @@ class PostListProvider(val size: Int) : PreviewParameterProvider<List<Post>> {
         )
     }
 }
+
+class ScreenshotTestPostListProvider(val size: Int) : PreviewParameterProvider<List<Post>> {
+
+    constructor() : this(10)
+
+    override val values: Sequence<List<Post>>
+        get() = sequenceOf(List(size, ::generatePost))
+
+    private fun generatePost(index: Int): Post {
+        return Post(
+            url = "https://post-$index.com",
+            title = "Post #$index",
+            description = LOREM_IPSUM_SOURCE,
+            private = index % 2 == 0,
+            readLater = index % 2 == 0,
+            tags = LOREM_IPSUM_SOURCE.split(" ").take(index + 1).map { Tag(name = it) },
+            notes = LOREM_IPSUM_SOURCE,
+            pendingSync = when {
+                index % 2 == 0 -> PendingSync.ADD
+                index % 3 == 0 -> PendingSync.UPDATE
+                index % 5 == 0 -> PendingSync.DELETE
+                else -> null
+            },
+        )
+    }
+}

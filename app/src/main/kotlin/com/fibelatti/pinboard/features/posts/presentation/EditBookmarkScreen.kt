@@ -142,7 +142,7 @@ fun EditBookmarkScreen(
 }
 
 @Composable
-private fun EditBookmarkScreen(
+fun EditBookmarkScreen(
     appMode: AppMode,
     post: Post,
     isLoading: Boolean,

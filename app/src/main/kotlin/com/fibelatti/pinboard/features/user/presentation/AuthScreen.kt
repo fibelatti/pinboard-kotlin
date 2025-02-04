@@ -78,7 +78,7 @@ fun AuthScreen(
 }
 
 @Composable
-private fun AuthScreen(
+fun AuthScreen(
     useLinkding: Boolean,
     linkdingInstanceUrl: String,
     onUseLinkdingChanged: (Boolean) -> Unit,
