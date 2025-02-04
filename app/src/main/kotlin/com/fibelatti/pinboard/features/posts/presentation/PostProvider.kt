@@ -89,11 +89,11 @@ class ScreenshotTestPostListProvider(val size: Int) : PreviewParameterProvider<L
         return Post(
             url = "https://post-$index.com",
             title = "Post #$index",
-            description = LOREM_IPSUM_SOURCE,
+            description = LOREM_IPSUM_SOURCE.take(200),
             private = index % 2 == 0,
             readLater = index % 2 == 0,
             tags = LOREM_IPSUM_SOURCE.split(" ").take(index + 1).map { Tag(name = it) },
-            notes = LOREM_IPSUM_SOURCE,
+            notes = LOREM_IPSUM_SOURCE.take(100),
             pendingSync = when {
                 index % 2 == 0 -> PendingSync.ADD
                 index % 3 == 0 -> PendingSync.UPDATE
