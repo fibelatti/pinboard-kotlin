@@ -36,11 +36,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
-import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
@@ -61,6 +61,7 @@ import com.fibelatti.ui.components.SingleLineChipGroup
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import java.util.UUID
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @Composable
@@ -128,12 +129,13 @@ fun SearchBookmarksScreen(
         }
 
         val localView = LocalView.current
-        val localLifecycleOwner = LocalLifecycleOwner.current
+        val localLifecycle = LocalLifecycleOwner.current.lifecycle
 
         LaunchedEffect(Unit) {
             mainViewModel.navigationClicks(actionId)
                 .onEach { appStateViewModel.runAction(Search) }
-                .launchInAndFlowWith(localLifecycleOwner)
+                .flowWithLifecycle(localLifecycle)
+                .launchIn(this)
 
             mainViewModel.menuItemClicks(actionId)
                 .onEach { (menuItem, data) ->
@@ -150,11 +152,13 @@ fun SearchBookmarksScreen(
                         else -> Unit
                     }
                 }
-                .launchInAndFlowWith(localLifecycleOwner)
+                .flowWithLifecycle(localLifecycle)
+                .launchIn(this)
 
             mainViewModel.fabClicks(actionId)
                 .onEach { appStateViewModel.runAction(Search) }
-                .launchInAndFlowWith(localLifecycleOwner)
+                .flowWithLifecycle(localLifecycle)
+                .launchIn(this)
         }
 
         LaunchedErrorHandlerEffect(viewModel = tagsViewModel)

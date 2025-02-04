@@ -61,7 +61,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.pinboard.R
@@ -72,7 +71,6 @@ import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
-import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.features.MainBackNavigationEffect
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
@@ -84,7 +82,6 @@ import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import java.util.UUID
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @Composable
@@ -95,24 +92,24 @@ fun TagListScreen(
 ) {
     val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
     val state by tagsViewModel.state.collectAsStateWithLifecycle()
+    val tagListContent by appStateViewModel.tagListContent.collectAsStateWithLifecycle(null)
 
     val screenTitle = stringResource(id = R.string.tags_title)
     val actionId = remember { UUID.randomUUID().toString() }
-    val localLifecycleOwner = LocalLifecycleOwner.current
     val localContext = LocalContext.current
     val localView = LocalView.current
 
-    LaunchedEffect(Unit) {
-        appStateViewModel.tagListContent
-            .onEach { content ->
-                if (content.shouldLoad) {
-                    tagsViewModel.getAll(TagsViewModel.Source.MENU)
-                } else {
-                    tagsViewModel.sortTags(content.tags)
-                }
-            }
-            .launchInAndFlowWith(localLifecycleOwner)
+    LaunchedEffect(tagListContent) {
+        val current = tagListContent ?: return@LaunchedEffect
 
+        if (current.shouldLoad) {
+            tagsViewModel.getAll(TagsViewModel.Source.MENU)
+        } else {
+            tagsViewModel.sortTags(current.tags)
+        }
+    }
+
+    LaunchedEffect(Unit) {
         mainViewModel.updateState { currentState ->
             currentState.copy(
                 title = MainState.TitleComponent.Visible(screenTitle),

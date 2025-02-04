@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
@@ -74,7 +75,6 @@ import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.copyToClipboard
-import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.rememberScrollDirection
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
@@ -128,6 +128,7 @@ import java.util.UUID
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @Composable
@@ -271,7 +272,7 @@ private fun LaunchedAppStateViewModelEffect(
     actionId: String,
 ) {
     val localContext = LocalContext.current
-    val localLifecycleOwner = LocalLifecycleOwner.current
+    val localLifecycle = LocalLifecycleOwner.current.lifecycle
 
     LaunchedEffect(Unit) {
         appStateViewModel.content
@@ -310,7 +311,8 @@ private fun LaunchedAppStateViewModelEffect(
                     )
                 }
             }
-            .launchInAndFlowWith(localLifecycleOwner)
+            .flowWithLifecycle(localLifecycle)
+            .launchIn(this)
     }
 }
 
@@ -323,7 +325,7 @@ private fun LaunchedMainViewModelEffect(
     val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
 
     val localContext = LocalContext.current
-    val localLifecycleOwner = LocalLifecycleOwner.current
+    val localLifecycle = LocalLifecycleOwner.current.lifecycle
 
     LaunchedEffect(Unit) {
         mainViewModel.menuItemClicks(actionId)
@@ -349,10 +351,12 @@ private fun LaunchedMainViewModelEffect(
                     else -> Unit
                 }
             }
-            .launchInAndFlowWith(localLifecycleOwner)
+            .flowWithLifecycle(localLifecycle)
+            .launchIn(this)
         mainViewModel.fabClicks(actionId)
             .onEach { appStateViewModel.runAction(AddPost) }
-            .launchInAndFlowWith(localLifecycleOwner)
+            .flowWithLifecycle(localLifecycle)
+            .launchIn(this)
     }
 }
 
@@ -361,41 +365,39 @@ private fun LaunchedPostDetailViewModelEffect(
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltActivityViewModel(),
 ) {
+    val screenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
+
     val localContext = LocalContext.current
     val localView = LocalView.current
-    val localLifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(Unit) {
-        postDetailViewModel.screenState
-            .onEach { state ->
-                when {
-                    state.deleted is Success<Boolean> && state.deleted.value -> {
-                        localView.showBanner(R.string.posts_deleted_feedback)
-                        postDetailViewModel.userNotified()
-                    }
+    LaunchedEffect(screenState) {
+        val current = screenState
+        when {
+            current.deleted is Success<Boolean> && current.deleted.value -> {
+                localView.showBanner(R.string.posts_deleted_feedback)
+                postDetailViewModel.userNotified()
+            }
 
-                    state.deleted is Failure -> {
-                        MaterialAlertDialogBuilder(localContext).apply {
-                            setMessage(R.string.posts_deleted_error)
-                            setPositiveButton(R.string.hint_ok) { dialog, _ -> dialog?.dismiss() }
-                        }.applySecureFlag().show()
-                    }
+            current.deleted is Failure -> {
+                MaterialAlertDialogBuilder(localContext).apply {
+                    setMessage(R.string.posts_deleted_error)
+                    setPositiveButton(R.string.hint_ok) { dialog, _ -> dialog?.dismiss() }
+                }.applySecureFlag().show()
+            }
 
-                    state.updated is Success<Boolean> && state.updated.value -> {
-                        localView.showBanner(R.string.posts_marked_as_read_feedback)
-                        postDetailViewModel.userNotified()
-                        mainViewModel.updateState { currentState ->
-                            currentState.copy(actionButton = MainState.ActionButtonComponent.Gone)
-                        }
-                    }
-
-                    state.updated is Failure -> {
-                        localView.showBanner(R.string.posts_marked_as_read_error)
-                        postDetailViewModel.userNotified()
-                    }
+            current.updated is Success<Boolean> && current.updated.value -> {
+                localView.showBanner(R.string.posts_marked_as_read_feedback)
+                postDetailViewModel.userNotified()
+                mainViewModel.updateState { currentState ->
+                    currentState.copy(actionButton = MainState.ActionButtonComponent.Gone)
                 }
             }
-            .launchInAndFlowWith(localLifecycleOwner)
+
+            current.updated is Failure -> {
+                localView.showBanner(R.string.posts_marked_as_read_error)
+                postDetailViewModel.userNotified()
+            }
+        }
     }
 }
 // endregion ViewModel setup

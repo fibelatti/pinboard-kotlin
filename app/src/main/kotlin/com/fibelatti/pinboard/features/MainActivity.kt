@@ -14,6 +14,8 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.android.extension.animateChangingTransitions
 import com.fibelatti.core.android.extension.doOnApplyWindowInsets
 import com.fibelatti.core.android.extension.doOnInitializeAccessibilityNodeInfo
@@ -25,7 +27,6 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.WindowSizeClass
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.android.widthWindowSizeClassReactiveView
-import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.databinding.ActivityMainBinding
@@ -51,6 +52,7 @@ import com.fibelatti.pinboard.features.appstate.TagListContent
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
@@ -186,7 +188,8 @@ class MainActivity : BaseActivity() {
     private fun setupViewModel() {
         appStateViewModel.content
             .onEach(::handleContent)
-            .launchInAndFlowWith(this, minActiveState = Lifecycle.State.RESUMED)
+            .flowWithLifecycle(lifecycle = lifecycle, minActiveState = Lifecycle.State.RESUMED)
+            .launchIn(lifecycleScope)
     }
 
     private fun handleContent(content: Content) {

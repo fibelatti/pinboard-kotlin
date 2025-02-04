@@ -6,16 +6,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.core.extension.isServerException
-import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.core.extension.showErrorReportDialog
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun LaunchedErrorHandlerEffect(
@@ -24,28 +21,26 @@ fun LaunchedErrorHandlerEffect(
 ) {
     val localView = LocalView.current
     val localContext = LocalContext.current
-    val localLifecycleOwner = LocalLifecycleOwner.current
 
     val composedAction by rememberUpdatedState {
         viewModel.errorHandled()
         postAction()
     }
 
-    LaunchedEffect(viewModel) {
-        viewModel.error
-            .filterNotNull()
-            .onEach { throwable ->
-                if (BuildConfig.DEBUG) {
-                    throwable.printStackTrace()
-                }
+    val error by viewModel.error.collectAsStateWithLifecycle()
 
-                if (throwable.isServerException()) {
-                    localView.showBanner(message = localContext.getString(R.string.server_error))
-                    composedAction()
-                } else {
-                    localContext.showErrorReportDialog(throwable = throwable, postAction = composedAction)
-                }
-            }
-            .launchInAndFlowWith(localLifecycleOwner)
+    LaunchedEffect(error) {
+        val current = error ?: return@LaunchedEffect
+
+        if (BuildConfig.DEBUG) {
+            current.printStackTrace()
+        }
+
+        if (current.isServerException()) {
+            localView.showBanner(messageRes = R.string.server_error)
+            composedAction()
+        } else {
+            localContext.showErrorReportDialog(throwable = current, postAction = composedAction)
+        }
     }
 }

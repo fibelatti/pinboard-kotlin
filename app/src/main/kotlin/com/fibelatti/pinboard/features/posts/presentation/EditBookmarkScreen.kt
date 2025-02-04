@@ -52,6 +52,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import com.fibelatti.core.android.extension.doOnApplyWindowInsets
 import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.core.functional.Success
@@ -62,7 +63,6 @@ import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
 import com.fibelatti.pinboard.core.extension.applySecureFlag
-import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainBackNavigationEffect
 import com.fibelatti.pinboard.features.MainState
@@ -78,6 +78,7 @@ import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.util.UUID
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @Composable
@@ -257,7 +258,7 @@ private fun LaunchedMainViewModelEffect(
 ) {
     val localContext = LocalContext.current
     val localView = LocalView.current
-    val localLifecycleOwner = LocalLifecycleOwner.current
+    val localLifecycle = LocalLifecycleOwner.current.lifecycle
 
     LaunchedEffect(Unit) {
         mainViewModel.actionButtonClicks(actionId)
@@ -265,7 +266,8 @@ private fun LaunchedMainViewModelEffect(
                 localView.hideKeyboard()
                 editPostViewModel.saveLink()
             }
-            .launchInAndFlowWith(localLifecycleOwner)
+            .flowWithLifecycle(localLifecycle)
+            .launchIn(this)
         mainViewModel.menuItemClicks(actionId)
             .onEach { (menuItem, post) ->
                 if (post !is Post) return@onEach
@@ -279,13 +281,15 @@ private fun LaunchedMainViewModelEffect(
                     else -> Unit
                 }
             }
-            .launchInAndFlowWith(localLifecycleOwner)
+            .flowWithLifecycle(localLifecycle)
+            .launchIn(this)
         mainViewModel.fabClicks(actionId)
             .onEach {
                 localView.hideKeyboard()
                 editPostViewModel.saveLink()
             }
-            .launchInAndFlowWith(localLifecycleOwner)
+            .flowWithLifecycle(localLifecycle)
+            .launchIn(this)
     }
 }
 
@@ -296,44 +300,44 @@ private fun LaunchedEditPostViewModelEffect(
     tagManagerViewModel: TagManagerViewModel = hiltViewModel(),
     actionId: String,
 ) {
+    val screenState by editPostViewModel.screenState.collectAsStateWithLifecycle()
+
     val localContext = LocalContext.current
     val localView = LocalView.current
-    val localLifecycleOwner = LocalLifecycleOwner.current
+    val localLifecycle = LocalLifecycleOwner.current.lifecycle
 
-    LaunchedEffect(Unit) {
-        editPostViewModel.screenState
-            .onEach { state ->
-                tagManagerViewModel.setSuggestedTags(state.suggestedTags)
+    LaunchedEffect(screenState) {
+        tagManagerViewModel.setSuggestedTags(screenState.suggestedTags)
 
-                when {
-                    state.saved -> {
-                        localView.showBanner(R.string.posts_saved_feedback)
-                        editPostViewModel.userNotified()
-                    }
+        when {
+            screenState.saved -> {
+                localView.showBanner(R.string.posts_saved_feedback)
+                editPostViewModel.userNotified()
+            }
 
-                    state.invalidUrlError.isNotEmpty() || state.invalidTitleError.isNotEmpty() -> {
-                        mainViewModel.updateState { currentState ->
-                            currentState.copy(
-                                floatingActionButton = MainState.FabComponent.Visible(
-                                    id = actionId,
-                                    icon = R.drawable.ic_done,
-                                ),
-                            )
-                        }
-                    }
-
-                    state.isLoading -> {
-                        mainViewModel.updateState { currentState ->
-                            currentState.copy(
-                                actionButton = MainState.ActionButtonComponent.Gone,
-                                floatingActionButton = MainState.FabComponent.Gone,
-                            )
-                        }
-                    }
+            screenState.invalidUrlError.isNotEmpty() || screenState.invalidTitleError.isNotEmpty() -> {
+                mainViewModel.updateState { currentState ->
+                    currentState.copy(
+                        floatingActionButton = MainState.FabComponent.Visible(
+                            id = actionId,
+                            icon = R.drawable.ic_done,
+                        ),
+                    )
                 }
             }
-            .launchInAndFlowWith(localLifecycleOwner)
 
+            screenState.isLoading -> {
+                mainViewModel.updateState { currentState ->
+                    currentState.copy(
+                        actionButton = MainState.ActionButtonComponent.Gone,
+                        floatingActionButton = MainState.FabComponent.Gone,
+                    )
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
         editPostViewModel.postState
             .onEach { post ->
                 mainViewModel.updateState { currentState ->
@@ -356,7 +360,8 @@ private fun LaunchedEditPostViewModelEffect(
                     )
                 }
             }
-            .launchInAndFlowWith(localLifecycleOwner)
+            .flowWithLifecycle(localLifecycle)
+            .launchIn(this)
     }
 }
 
@@ -364,18 +369,16 @@ private fun LaunchedEditPostViewModelEffect(
 private fun LaunchedPostDetailViewModelEffect(
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
 ) {
-    val localView = LocalView.current
-    val localLifecycleOwner = LocalLifecycleOwner.current
+    val screenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        postDetailViewModel.screenState
-            .onEach { state ->
-                if (state.deleted is Success<Boolean> && state.deleted.value) {
-                    localView.showBanner(R.string.posts_deleted_feedback)
-                    postDetailViewModel.userNotified()
-                }
-            }
-            .launchInAndFlowWith(localLifecycleOwner)
+    val localView = LocalView.current
+
+    LaunchedEffect(screenState) {
+        val current = screenState
+        if (current.deleted is Success<Boolean> && current.deleted.value) {
+            localView.showBanner(R.string.posts_deleted_feedback)
+            postDetailViewModel.userNotified()
+        }
     }
 }
 // endregion ViewModel setup
