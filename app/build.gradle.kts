@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.compose.screenshot)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.room)
@@ -125,6 +126,8 @@ android {
     testFixtures {
         enable = true
     }
+
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
 }
 
 androidComponents {
@@ -255,6 +258,8 @@ dependencies {
     kspAndroidTest(libs.hilt.android.compiler)
 
     androidTestImplementation(libs.mockwebserver)
+
+    screenshotTestImplementation(libs.compose.ui.tooling)
 }
 
 /**
