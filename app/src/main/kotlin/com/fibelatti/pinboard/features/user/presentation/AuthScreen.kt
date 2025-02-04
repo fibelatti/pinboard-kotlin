@@ -52,6 +52,7 @@ import androidx.core.text.HtmlCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
 import com.fibelatti.ui.components.TextWithLinks
 import com.fibelatti.ui.preview.DevicePreviews
 import com.fibelatti.ui.preview.ThemePreviews
@@ -290,15 +291,11 @@ private fun AuthTokenHelp(
                 )
             }
         } else {
-            IconButton(
+            LongClickIconButton(
+                painter = painterResource(id = R.drawable.ic_help),
+                description = stringResource(id = R.string.hint_help),
                 onClick = { helpVisible = true },
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_help),
-                    contentDescription = stringResource(id = R.string.hint_help),
-                    tint = MaterialTheme.colorScheme.secondary,
-                )
-            }
+            )
         }
     }
 }

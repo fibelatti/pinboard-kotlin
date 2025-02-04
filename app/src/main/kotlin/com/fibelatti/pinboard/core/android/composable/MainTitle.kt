@@ -6,7 +6,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,7 +22,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -60,13 +58,12 @@ fun MainTitle(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AnimatedVisibility(visible = navigation is MainState.NavigationComponent.Visible) {
-            IconButton(onClick = onNavigationClicked) {
-                if (navigation is MainState.NavigationComponent.Visible) {
-                    Image(
-                        painter = painterResource(id = navigation.icon),
-                        contentDescription = stringResource(id = R.string.cd_navigate_back),
-                    )
-                }
+            if (navigation is MainState.NavigationComponent.Visible) {
+                LongClickIconButton(
+                    painter = painterResource(id = navigation.icon),
+                    description = stringResource(id = R.string.cd_navigate_back),
+                    onClick = onNavigationClicked,
+                )
             }
         }
 

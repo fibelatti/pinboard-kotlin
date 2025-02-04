@@ -25,11 +25,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -54,6 +52,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.core.android.extension.findActivity
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
 import com.fibelatti.pinboard.core.android.composable.MainTitle
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -258,14 +257,11 @@ private fun MainBottomAppBar(
                     label = "MainBottomAppBar_NavIcon",
                 ) { icon ->
                     if (icon != null) {
-                        IconButton(onClick = onBottomNavClick) {
-                            Icon(
-                                painter = painterResource(id = icon),
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
+                        LongClickIconButton(
+                            painter = painterResource(id = icon),
+                            description = stringResource(R.string.cd_menu),
+                            onClick = onBottomNavClick,
+                        )
                     }
                 }
 
@@ -324,17 +320,12 @@ private fun MenuItemsContent(
                         )
                     }
                 } else {
-                    IconButton(
+                    LongClickIconButton(
+                        painter = painterResource(id = menuItem.icon),
+                        description = stringResource(id = menuItem.name),
                         onClick = { onMenuItemClick(menuItem, data) },
                         modifier = Modifier.animateEnterExit(enter = fadeIn(), exit = fadeOut()),
-                    ) {
-                        Icon(
-                            painter = painterResource(id = menuItem.icon),
-                            contentDescription = stringResource(id = menuItem.name),
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
+                    )
                 }
             }
         }
@@ -363,16 +354,11 @@ private fun SidePanelBottomAppBar(
                 .animateContentSize(),
         ) {
             if (collapsed) {
-                IconButton(
+                LongClickIconButton(
+                    painter = painterResource(id = R.drawable.ic_chevron_left),
+                    description = stringResource(id = R.string.cd_expand_menu),
                     onClick = { collapsed = false },
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_chevron_left),
-                        contentDescription = stringResource(id = R.string.cd_expand_menu),
-                        modifier = Modifier.size(24.dp),
-                        tint = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
+                )
             } else {
                 MenuItemsContent(
                     menuItems = state.sidePanelAppBar.menuItems,

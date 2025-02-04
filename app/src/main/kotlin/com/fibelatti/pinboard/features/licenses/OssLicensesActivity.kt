@@ -13,15 +13,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.AppTheme
+import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
 import com.fibelatti.ui.foundation.copy
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.ui.compose.LibrariesContainer
@@ -71,13 +71,11 @@ class OssLicensesActivity : AppCompatActivity() {
                             .background(color = MaterialTheme.colorScheme.background)
                             .fillMaxWidth(),
                     ) {
-                        IconButton(onClick = { finish() }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_back_arrow),
-                                contentDescription = "",
-                                tint = MaterialTheme.colorScheme.primary,
-                            )
-                        }
+                        LongClickIconButton(
+                            painter = painterResource(id = R.drawable.ic_back_arrow),
+                            description = stringResource(id = R.string.cd_navigate_back),
+                            onClick = { finish() },
+                        )
                     }
                 }
             },

@@ -29,8 +29,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -65,6 +63,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
+import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
 import com.fibelatti.pinboard.features.MainState
@@ -379,7 +378,9 @@ private fun TagListItem(
 private fun ScrollToTopButton(
     onClick: () -> Unit,
 ) {
-    IconButton(
+    LongClickIconButton(
+        painter = painterResource(id = R.drawable.ic_chevron_top),
+        description = stringResource(id = R.string.cd_scroll_to_top),
         onClick = onClick,
         modifier = Modifier
             .padding(all = 16.dp)
@@ -387,12 +388,7 @@ private fun ScrollToTopButton(
                 color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
                 shape = MaterialTheme.shapes.large,
             ),
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_chevron_top),
-            contentDescription = stringResource(id = R.string.cd_scroll_to_top),
-        )
-    }
+    )
 }
 
 object TagList {
