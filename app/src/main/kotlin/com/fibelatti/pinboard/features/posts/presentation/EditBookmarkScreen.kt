@@ -307,7 +307,7 @@ private fun LaunchedEditPostViewModelEffect(
 
                 when {
                     state.saved -> {
-                        localView.showBanner(localContext.getString(R.string.posts_saved_feedback))
+                        localView.showBanner(R.string.posts_saved_feedback)
                         editPostViewModel.userNotified()
                     }
 
@@ -364,7 +364,6 @@ private fun LaunchedEditPostViewModelEffect(
 private fun LaunchedPostDetailViewModelEffect(
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
 ) {
-    val localContext = LocalContext.current
     val localView = LocalView.current
     val localLifecycleOwner = LocalLifecycleOwner.current
 
@@ -372,7 +371,7 @@ private fun LaunchedPostDetailViewModelEffect(
         postDetailViewModel.screenState
             .onEach { state ->
                 if (state.deleted is Success<Boolean> && state.deleted.value) {
-                    localView.showBanner(localContext.getString(R.string.posts_deleted_feedback))
+                    localView.showBanner(R.string.posts_deleted_feedback)
                     postDetailViewModel.userNotified()
                 }
             }

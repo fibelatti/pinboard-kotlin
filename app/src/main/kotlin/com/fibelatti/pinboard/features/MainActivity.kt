@@ -210,7 +210,7 @@ class MainActivity : BaseActivity() {
         when (content) {
             is LoginContent -> {
                 if (content.isUnauthorized) {
-                    binding.root.showBanner(message = getString(R.string.auth_logged_out_feedback))
+                    binding.root.showBanner(messageRes = R.string.auth_logged_out_feedback)
                 }
                 featureFragments.showLogin()
             }

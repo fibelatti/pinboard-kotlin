@@ -8,6 +8,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -52,6 +53,10 @@ fun View.smoothScrollY(scrollBy: Int) {
         .apply { interpolator = AccelerateDecelerateInterpolator() }
         .setDuration(resources.getInteger(R.integer.anim_time_long).toLong())
         .start()
+}
+
+fun View.showBanner(@StringRes messageRes: Int) {
+    showBanner(message = resources.getString(messageRes))
 }
 
 fun View.showBanner(message: String) {

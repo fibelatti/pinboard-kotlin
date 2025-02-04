@@ -129,7 +129,6 @@ fun SearchBookmarksScreen(
 
         val localView = LocalView.current
         val localLifecycleOwner = LocalLifecycleOwner.current
-        val savedFeedback = stringResource(id = R.string.saved_filters_saved_feedback)
 
         LaunchedEffect(Unit) {
             mainViewModel.navigationClicks(actionId)
@@ -145,7 +144,7 @@ fun SearchBookmarksScreen(
 
                         is MainState.MenuItemComponent.SaveSearch -> {
                             (data as? SavedFilter)?.let(searchPostViewModel::saveFilter)
-                            localView.showBanner(savedFeedback)
+                            localView.showBanner(R.string.saved_filters_saved_feedback)
                         }
 
                         else -> Unit

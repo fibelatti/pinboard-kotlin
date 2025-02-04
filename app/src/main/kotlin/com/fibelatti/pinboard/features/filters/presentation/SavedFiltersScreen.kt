@@ -101,7 +101,7 @@ fun SavedFiltersScreen(
                         when (option) {
                             is SavedFiltersQuickActions.Delete -> {
                                 savedFiltersViewModel.deleteSavedFilter(savedFilter)
-                                localView.showBanner(localContext.getString(R.string.saved_filters_deleted_feedback))
+                                localView.showBanner(R.string.saved_filters_deleted_feedback)
                             }
                         }
                     },

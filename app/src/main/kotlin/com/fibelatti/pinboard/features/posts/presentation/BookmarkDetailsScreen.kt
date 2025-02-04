@@ -279,7 +279,7 @@ private fun LaunchedPostDetailViewModelEffect(
             .onEach { state ->
                 when {
                     state.deleted is Success<Boolean> && state.deleted.value -> {
-                        localView.showBanner(localContext.getString(R.string.posts_deleted_feedback))
+                        localView.showBanner(R.string.posts_deleted_feedback)
                         postDetailViewModel.userNotified()
                     }
 
@@ -291,7 +291,7 @@ private fun LaunchedPostDetailViewModelEffect(
                     }
 
                     state.updated is Success<Boolean> && state.updated.value -> {
-                        localView.showBanner(localContext.getString(R.string.posts_marked_as_read_feedback))
+                        localView.showBanner(R.string.posts_marked_as_read_feedback)
                         postDetailViewModel.userNotified()
                         mainViewModel.updateState { currentState ->
                             currentState.copy(actionButton = MainState.ActionButtonComponent.Gone)
@@ -299,7 +299,7 @@ private fun LaunchedPostDetailViewModelEffect(
                     }
 
                     state.updated is Failure -> {
-                        localView.showBanner(localContext.getString(R.string.posts_marked_as_read_error))
+                        localView.showBanner(R.string.posts_marked_as_read_error)
                         postDetailViewModel.userNotified()
                     }
                 }
@@ -312,7 +312,6 @@ private fun LaunchedPostDetailViewModelEffect(
 private fun LaunchedPopularPostsViewModelEffect(
     popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
 ) {
-    val localContext = LocalContext.current
     val localView = LocalView.current
     val localLifecycleOwner = LocalLifecycleOwner.current
 
@@ -320,7 +319,7 @@ private fun LaunchedPopularPostsViewModelEffect(
         popularPostsViewModel.screenState
             .onEach { state ->
                 state.savedMessage?.let { messageRes ->
-                    localView.showBanner(localContext.getString(messageRes))
+                    localView.showBanner(messageRes)
                     popularPostsViewModel.userNotified()
                 }
             }

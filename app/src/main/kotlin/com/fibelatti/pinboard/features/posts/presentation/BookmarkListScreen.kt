@@ -168,7 +168,6 @@ fun BookmarkListScreen(
 
         val localContext = LocalContext.current
         val localView = LocalView.current
-        val savedFeedback = stringResource(id = R.string.saved_filters_saved_feedback)
 
         LaunchedEffect(shouldLoadContent, currentState) {
             if (shouldLoadContent) postListViewModel.loadContent(currentState)
@@ -194,7 +193,7 @@ fun BookmarkListScreen(
                         tags = currentState.searchParameters.tags,
                     ),
                 )
-                localView.showBanner(savedFeedback)
+                localView.showBanner(R.string.saved_filters_saved_feedback)
             },
             onShareClicked = { searchParameters ->
                 val entryPoint = EntryPointAccessors.fromApplication<DialogEntryPoint>(localContext.applicationContext)
@@ -371,7 +370,7 @@ private fun LaunchedPostDetailViewModelEffect(
             .onEach { state ->
                 when {
                     state.deleted is Success<Boolean> && state.deleted.value -> {
-                        localView.showBanner(localContext.getString(R.string.posts_deleted_feedback))
+                        localView.showBanner(R.string.posts_deleted_feedback)
                         postDetailViewModel.userNotified()
                     }
 
@@ -383,7 +382,7 @@ private fun LaunchedPostDetailViewModelEffect(
                     }
 
                     state.updated is Success<Boolean> && state.updated.value -> {
-                        localView.showBanner(localContext.getString(R.string.posts_marked_as_read_feedback))
+                        localView.showBanner(R.string.posts_marked_as_read_feedback)
                         postDetailViewModel.userNotified()
                         mainViewModel.updateState { currentState ->
                             currentState.copy(actionButton = MainState.ActionButtonComponent.Gone)
@@ -391,7 +390,7 @@ private fun LaunchedPostDetailViewModelEffect(
                     }
 
                     state.updated is Failure -> {
-                        localView.showBanner(localContext.getString(R.string.posts_marked_as_read_error))
+                        localView.showBanner(R.string.posts_marked_as_read_error)
                         postDetailViewModel.userNotified()
                     }
                 }

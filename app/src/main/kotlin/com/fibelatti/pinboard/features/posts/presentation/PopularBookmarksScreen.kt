@@ -104,7 +104,7 @@ fun PopularBookmarksScreen(
 
         LaunchedEffect(popularPostsScreenState.savedMessage) {
             popularPostsScreenState.savedMessage?.let { messageRes ->
-                localView.showBanner(localContext.getString(messageRes))
+                localView.showBanner(messageRes)
                 popularPostsViewModel.userNotified()
             }
         }
