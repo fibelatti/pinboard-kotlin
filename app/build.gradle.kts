@@ -121,6 +121,10 @@ android {
 
     testOptions {
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
+
+        screenshotTests {
+            imageDifferenceThreshold = 0.001f // 0.1%
+        }
     }
 
     testFixtures {
