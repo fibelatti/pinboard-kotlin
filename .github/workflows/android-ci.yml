@@ -52,6 +52,26 @@ jobs:
       - name: Run tests
         run: ./gradlew test
 
+  compose_preview_tests:
+    name: Compose Preview Tests
+    runs-on: macos-latest
+    steps:
+      - name: Project Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Android Build
+        uses: ./.github/actions/setup-android-build
+
+      - name: Run Tests
+        run: ./gradlew validateDebugScreenshotTest --stacktrace
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenshot-tests
+          path: app/build/reports/screenshotTest
+
   instrumented_tests:
     name: Instrumented Tests
     runs-on: ubuntu-latest
