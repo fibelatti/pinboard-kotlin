@@ -1,0 +1,6 @@
+This version brings the following updates:
+
+* Fixed line breaks not being rendered correctly when viewing a bookmark's
+  description or note
+
+Feedback and suggestions are always welcome, thank you for using the app!
