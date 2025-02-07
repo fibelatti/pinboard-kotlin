@@ -43,15 +43,18 @@ fun TextWithBlockquote(
     }
 
     val formattedText = remember(text) {
-        HtmlCompat.fromHtml(text, HtmlCompat.FROM_HTML_MODE_COMPACT).toSpannable().apply {
-            CustomQuoteSpan.replaceQuoteSpans(
-                spannable = this,
-                backgroundColor = rgbBlockquoteBackgroundColor,
-                stripeColor = rgbBlockquoteStripeColor,
-                stripeWidth = stripeWidth,
-                gap = gap,
-            )
-        }.let(trimTrailingWhitespace)
+        HtmlCompat.fromHtml(text.replace(oldValue = "\n", newValue = "<br />"), HtmlCompat.FROM_HTML_MODE_COMPACT)
+            .toSpannable()
+            .apply {
+                CustomQuoteSpan.replaceQuoteSpans(
+                    spannable = this,
+                    backgroundColor = rgbBlockquoteBackgroundColor,
+                    stripeColor = rgbBlockquoteStripeColor,
+                    stripeWidth = stripeWidth,
+                    gap = gap,
+                )
+            }
+            .let(trimTrailingWhitespace)
     }
 
     AndroidView(
