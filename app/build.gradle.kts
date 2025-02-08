@@ -256,3 +256,12 @@ dependencies {
 
     androidTestImplementation(libs.mockwebserver)
 }
+
+/**
+ * Prints the current version code. Used for GitHub releases.
+ */
+val printReleaseVersionCode by tasks.registering {
+    doLast {
+        println(AppInfo.versionCode)
+    }
+}
