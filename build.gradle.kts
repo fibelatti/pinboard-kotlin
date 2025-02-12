@@ -29,7 +29,7 @@ buildscript {
     extra["minSdkVersion"] = 26
 }
 
-private val javaVersion = JavaVersion.VERSION_17
+private val javaVersion = JavaVersion.VERSION_21
 
 allprojects {
     apply<SpotlessPlugin>()
