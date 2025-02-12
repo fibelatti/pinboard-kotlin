@@ -157,7 +157,5 @@ subprojects {
                 }
             }
         }
-
-        tasks.findByName("preBuild")?.dependsOn("spotlessCheck")
     }
 }
