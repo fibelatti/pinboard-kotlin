@@ -20,10 +20,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.R
@@ -31,6 +35,7 @@ import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
+@OptIn(ExperimentalComposeUiApi::class)
 fun EmptyListContent(
     icon: Painter = painterResource(id = R.drawable.ic_pin),
     title: String = stringResource(id = R.string.posts_empty_title),
@@ -40,7 +45,8 @@ fun EmptyListContent(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .then(if (scrollable) Modifier.verticalScroll(rememberScrollState()) else Modifier),
+            .then(if (scrollable) Modifier.verticalScroll(rememberScrollState()) else Modifier)
+            .semantics { testTagsAsResourceId = true },
     ) {
         val windowInsets = WindowInsets.safeDrawing
             .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
@@ -56,7 +62,8 @@ fun EmptyListContent(
                     color = MaterialTheme.colorScheme.onSurface,
                     shape = MaterialTheme.shapes.small,
                 )
-                .padding(16.dp),
+                .padding(16.dp)
+                .testTag(tag = "emptyListContent"),
             contentAlignment = Alignment.TopCenter,
         ) {
             Column(

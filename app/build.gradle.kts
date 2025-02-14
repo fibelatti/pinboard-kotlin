@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.room)
     alias(libs.plugins.about.libraries)
+    alias(libs.plugins.baselineprofile)
 }
 
 object AppInfo {
@@ -32,12 +33,10 @@ object AppInfo {
 }
 
 android {
-    val compileSdkVersion: Int by project
     val targetSdkVersion: Int by project
     val minSdkVersion: Int by project
 
     namespace = "com.fibelatti.pinboard"
-    compileSdk = compileSdkVersion
 
     buildFeatures {
         buildConfig = true
@@ -222,6 +221,9 @@ dependencies {
     implementation(libs.jsoup)
 
     implementation(libs.about.libraries)
+
+    implementation(libs.profileinstaller)
+    "baselineProfile"(projects.baselineprofile)
 
     debugImplementation(libs.leakcanary)
 

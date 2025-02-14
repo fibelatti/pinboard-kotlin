@@ -38,11 +38,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -78,6 +82,7 @@ fun AuthScreen(
 }
 
 @Composable
+@OptIn(ExperimentalComposeUiApi::class)
 private fun AuthScreen(
     useLinkding: Boolean,
     linkdingInstanceUrl: String,
@@ -93,7 +98,8 @@ private fun AuthScreen(
             .background(color = ExtendedTheme.colors.backgroundNoOverlay)
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 32.dp)
-            .safeDrawingPadding(),
+            .safeDrawingPadding()
+            .semantics { testTagsAsResourceId = true },
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -167,7 +173,8 @@ private fun AuthScreen(
                     onValueChange = { authToken = it },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 16.dp),
+                        .padding(top = 16.dp)
+                        .testTag(tag = "authTextField"),
                     visualTransformation = if (authTokenVisible) {
                         VisualTransformation.None
                     } else {
@@ -226,6 +233,7 @@ private fun AuthScreen(
                     } else {
                         Button(
                             onClick = { onAuthRequested(authToken, instanceUrl) },
+                            modifier = Modifier.testTag(tag = "authButton"),
                         ) {
                             Text(text = stringResource(id = R.string.auth_button))
                         }

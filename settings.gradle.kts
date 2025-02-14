@@ -9,6 +9,7 @@ include(":app")
 include(":core")
 include(":core-android")
 include(":ui")
+include(":baselineprofile")
 
 pluginManagement {
     repositories {
