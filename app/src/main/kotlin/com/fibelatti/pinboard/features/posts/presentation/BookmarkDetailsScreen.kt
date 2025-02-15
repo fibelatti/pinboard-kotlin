@@ -363,7 +363,7 @@ fun BookmarkDetailsScreen(
     onOpenInBrowserClicked: () -> Unit,
     onScrollDirectionChanged: (ScrollDirection) -> Unit,
 ) {
-    var hasError by remember { mutableStateOf(false) }
+    var webViewLoadFailed by remember { mutableStateOf(false) }
 
     when {
         post.isFile() -> {
@@ -386,7 +386,7 @@ fun BookmarkDetailsScreen(
             )
         }
 
-        hasError -> {
+        webViewLoadFailed -> {
             BookmarkPlaceholder(
                 title = post.displayTitle,
                 url = post.url,
@@ -398,7 +398,7 @@ fun BookmarkDetailsScreen(
             Box(
                 modifier = Modifier.fillMaxSize(),
             ) {
-                var initialWebViewLoading by remember { mutableStateOf(true) }
+                var webViewLoading by remember { mutableStateOf(true) }
 
                 val localContext = LocalContext.current
                 val webView: WebView = remember(localContext) {
@@ -406,10 +406,8 @@ fun BookmarkDetailsScreen(
                         webViewClient = object : WebViewClient() {
 
                             override fun onPageFinished(view: WebView?, url: String?) {
-                                if (initialWebViewLoading) {
-                                    initialWebViewLoading = false
-                                    hasError = false
-                                }
+                                webViewLoading = false
+                                webViewLoadFailed = false
                             }
 
                             override fun onReceivedError(
@@ -417,7 +415,7 @@ fun BookmarkDetailsScreen(
                                 request: WebResourceRequest?,
                                 error: WebResourceError?,
                             ) {
-                                hasError = true
+                                webViewLoadFailed = true
                             }
                         }
                     }
@@ -430,6 +428,11 @@ fun BookmarkDetailsScreen(
                     currentOnScrollDirectionChanged(nestedScrollDirection)
                 }
 
+                LaunchedEffect(post.id) {
+                    webView.loadUrl(post.url)
+                    webViewLoading = true
+                }
+
                 DisposableEffect(webView) {
                     onDispose {
                         webView.stopLoading()
@@ -438,18 +441,14 @@ fun BookmarkDetailsScreen(
                 }
 
                 AndroidView(
-                    factory = {
-                        webView.apply {
-                            if (url != post.url) loadUrl(post.url)
-                        }
-                    },
+                    factory = { webView },
                     modifier = Modifier
                         .fillMaxSize()
                         .background(color = ExtendedTheme.colors.backgroundNoOverlay),
                 )
 
                 AnimatedVisibility(
-                    visible = isLoading || initialWebViewLoading,
+                    visible = isLoading || webViewLoading,
                     enter = fadeIn(),
                     exit = fadeOut(),
                 ) {
