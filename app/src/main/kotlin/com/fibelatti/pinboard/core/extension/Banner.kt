@@ -1,10 +1,8 @@
 package com.fibelatti.pinboard.core.extension
 
-import android.animation.ObjectAnimator
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
@@ -22,38 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
-import com.fibelatti.core.android.extension.getContentView
-import com.fibelatti.pinboard.R
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-import com.google.android.material.bottomappbar.BottomAppBar
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-
-fun BottomAppBar.show() {
-    animate()
-        .translationY(0f)
-        .setDuration(resources.getInteger(R.integer.anim_time_default).toLong())
-        .start()
-}
-
-fun FloatingActionButton.blink(onHidden: () -> Unit = {}) {
-    hide(
-        object : FloatingActionButton.OnVisibilityChangedListener() {
-            override fun onHidden(fab: FloatingActionButton?) {
-                super.onHidden(fab)
-                onHidden()
-                show()
-            }
-        },
-    )
-}
-
-fun View.smoothScrollY(scrollBy: Int) {
-    ObjectAnimator.ofInt(this, "scrollY", scrollBy)
-        .apply { interpolator = AccelerateDecelerateInterpolator() }
-        .setDuration(resources.getInteger(R.integer.anim_time_long).toLong())
-        .start()
-}
 
 fun View.showBanner(@StringRes messageRes: Int) {
     showBanner(message = resources.getString(messageRes))
@@ -92,6 +60,15 @@ fun View.showBanner(message: String) {
                 .start()
         }
         .start()
+}
+
+private fun View.getContentView(): ViewGroup {
+    var parent = parent as View
+    while (parent.id != android.R.id.content) {
+        parent = parent.parent as View
+    }
+
+    return parent as ViewGroup
 }
 
 @Composable
