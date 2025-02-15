@@ -23,7 +23,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +42,7 @@ import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LoadingContent
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
+import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.features.MainBackNavigationEffect
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
@@ -71,11 +71,6 @@ fun NoteListScreen(
         val noteListContent by rememberUpdatedState(
             newValue = content.find<NoteListContent>() ?: return@Surface,
         )
-
-        val multiPanelEnabled by mainViewModel.state.collectAsStateWithLifecycle()
-        val sidePanelVisible by remember {
-            derivedStateOf { content is SidePanelContent && multiPanelEnabled.multiPanelEnabled }
-        }
 
         val actionId = remember { UUID.randomUUID().toString() }
         val localContext = LocalContext.current
@@ -128,7 +123,7 @@ fun NoteListScreen(
                 },
                 onPullToRefresh = { appStateViewModel.runAction(RefreshNotes) },
                 onNoteClicked = { note -> appStateViewModel.runAction(ViewNote(note.id)) },
-                sidePanelVisible = sidePanelVisible,
+                sidePanelVisible = content is SidePanelContent && isMultiPanelAvailable(),
             )
         }
     }

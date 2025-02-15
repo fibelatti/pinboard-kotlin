@@ -30,6 +30,7 @@ import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
 import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
+import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.features.MainBackNavigationEffect
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
@@ -54,13 +55,15 @@ fun NoteDetailsScreen(
         val noteDetailContent by rememberUpdatedState(newValue = appState ?: return@Surface)
         val isLoading = noteDetailContent.note.isLeft
 
+        val isMultiPanelAvailable = isMultiPanelAvailable()
+
         val actionId = remember { UUID.randomUUID().toString() }
         val localActivity = LocalAppCompatActivity.current
         val localLifecycle = LocalLifecycleOwner.current.lifecycle
 
-        LaunchedEffect(noteDetailContent) {
+        LaunchedEffect(noteDetailContent, isMultiPanelAvailable) {
             mainViewModel.updateState { currentState ->
-                if (currentState.multiPanelEnabled) {
+                if (isMultiPanelAvailable) {
                     currentState.copy(
                         sidePanelAppBar = MainState.SidePanelAppBarComponent.Visible(
                             id = actionId,

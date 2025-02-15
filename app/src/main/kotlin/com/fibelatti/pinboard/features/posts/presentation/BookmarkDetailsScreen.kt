@@ -56,6 +56,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
 import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
+import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.rememberScrollDirection
@@ -153,9 +154,10 @@ private fun LaunchedAppStateViewModelEffect(
     actionId: String,
 ) {
     val content by appStateViewModel.content.collectAsStateWithLifecycle()
+    val isSidePanelAvailable = isMultiPanelAvailable()
     val localContext = LocalContext.current
 
-    LaunchedEffect(content) {
+    LaunchedEffect(content, isSidePanelAvailable) {
         val (post, menuItems) = when (val current = content) {
             is PostDetailContent -> current.post to listOf(
                 MainState.MenuItemComponent.DeleteBookmark,
@@ -182,7 +184,7 @@ private fun LaunchedAppStateViewModelEffect(
                 MainState.ActionButtonComponent.Gone
             }
 
-            if (currentState.multiPanelEnabled) {
+            if (isSidePanelAvailable) {
                 currentState.copy(
                     actionButton = actionButtonState,
                     sidePanelAppBar = MainState.SidePanelAppBarComponent.Visible(

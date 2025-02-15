@@ -9,14 +9,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.core.android.platform.BaseIntentBuilder
 import com.fibelatti.core.android.platform.intentExtras
-import com.fibelatti.pinboard.core.android.WindowSizeClass
+import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ContentWithHistory
@@ -29,7 +27,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainComposeActivity : AppCompatActivity() {
 
     private val appStateViewModel: AppStateViewModel by viewModels()
-    private val mainViewModel: MainViewModel by viewModels()
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
 
@@ -45,26 +42,17 @@ class MainComposeActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         setThemedContent {
-            val mainState by mainViewModel.state.collectAsStateWithLifecycle()
             val content by appStateViewModel.content.collectAsStateWithLifecycle(
                 minActiveState = Lifecycle.State.RESUMED,
             )
-            val showSidePanel by remember {
-                derivedStateOf {
-                    content is SidePanelContent && mainState.multiPanelEnabled
-                }
-            }
 
             LaunchedEffect(content) {
                 onBackPressedCallback.isEnabled = (content as? ContentWithHistory)?.previousContent !is ExternalContent
-                mainViewModel.updateState { currentState ->
-                    currentState.copy(multiPanelContent = content is SidePanelContent)
-                }
             }
 
             MainScreen(
                 content = content,
-                showSidePanel = showSidePanel,
+                showSidePanel = content is SidePanelContent && isMultiPanelAvailable(),
                 onExternalBrowserContent = { ebc ->
                     startActivity(
                         Intent(Intent.ACTION_VIEW).apply {
@@ -78,11 +66,6 @@ class MainComposeActivity : AppCompatActivity() {
                 onExternalContent = {
                     appStateViewModel.reset()
                     finish()
-                },
-                onWindowSizeClassChange = { windowSizeClass ->
-                    mainViewModel.updateState { currentState ->
-                        currentState.copy(multiPanelEnabled = windowSizeClass != WindowSizeClass.COMPACT)
-                    }
                 },
             )
         }

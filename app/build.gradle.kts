@@ -179,6 +179,7 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.core.ktx)
     implementation(libs.activity.compose)
+    implementation(libs.adaptive.android)
     implementation(libs.material)
     implementation(libs.constraint.layout.compose)
 

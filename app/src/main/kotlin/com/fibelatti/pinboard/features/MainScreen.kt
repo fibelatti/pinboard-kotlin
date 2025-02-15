@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features
 
-import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -18,7 +17,6 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -47,7 +45,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,12 +56,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.layout.WindowMetricsCalculator
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.android.WindowSizeClass
 import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
 import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
 import com.fibelatti.pinboard.core.android.composable.MainTitle
+import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.appstate.AddPostContent
@@ -85,6 +81,7 @@ import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.RefreshPopular
 import com.fibelatti.pinboard.features.appstate.SavedFiltersContent
 import com.fibelatti.pinboard.features.appstate.SearchContent
+import com.fibelatti.pinboard.features.appstate.SidePanelContent
 import com.fibelatti.pinboard.features.appstate.TagListContent
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
 import com.fibelatti.pinboard.features.filters.presentation.SavedFiltersScreen
@@ -109,31 +106,11 @@ fun MainScreen(
     showSidePanel: Boolean,
     onExternalBrowserContent: (ExternalBrowserContent) -> Unit,
     onExternalContent: () -> Unit,
-    onWindowSizeClassChange: (WindowSizeClass) -> Unit,
 ) {
-    BoxWithConstraints(
+    Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter,
     ) {
-        val maxWidth = maxWidth
-        val localActivity = LocalActivity.current
-        val windowSizeClassCallback by rememberUpdatedState(onWindowSizeClassChange)
-
-        LaunchedEffect(maxWidth) {
-            localActivity ?: return@LaunchedEffect
-
-            val metrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(localActivity)
-            val widthDp = metrics.bounds.width() / localActivity.resources.displayMetrics.density
-
-            val windowSizeClass = when {
-                widthDp < WindowSizeClass.MEDIUM_MIN_WIDTH -> WindowSizeClass.COMPACT
-                widthDp < WindowSizeClass.EXPANDED_MIN_WIDTH -> WindowSizeClass.MEDIUM
-                else -> WindowSizeClass.EXPANDED
-            }
-
-            windowSizeClassCallback(windowSizeClass)
-        }
-
         Column(modifier = Modifier.fillMaxSize()) {
             MainTopAppBar(modifier = Modifier.fillMaxWidth())
 
@@ -286,8 +263,8 @@ fun MainBottomAppBar(
 
         AnimatedVisibility(
             visible = !hideAllControls &&
-                state.multiPanelEnabled &&
-                state.multiPanelContent &&
+                content is SidePanelContent &&
+                isMultiPanelAvailable() &&
                 state.sidePanelAppBar is MainState.SidePanelAppBarComponent.Visible,
             modifier = Modifier
                 .padding(

@@ -19,7 +19,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -42,6 +41,7 @@ import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
+import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainBackNavigationEffect
 import com.fibelatti.pinboard.features.MainState
@@ -73,18 +73,15 @@ fun PopularBookmarksScreen(
 
         val popularPostsScreenState by popularPostsViewModel.screenState.collectAsStateWithLifecycle()
 
-        val multiPanelEnabled by mainViewModel.state.collectAsStateWithLifecycle()
-        val sidePanelVisible by remember {
-            derivedStateOf { content is SidePanelContent && multiPanelEnabled.multiPanelEnabled }
-        }
+        val isMultiPanelAvailable = isMultiPanelAvailable()
 
         val actionId = remember { UUID.randomUUID().toString() }
 
         val localContext = LocalContext.current
         val localView = LocalView.current
 
-        LaunchedEffect(content) {
-            if (!(content is PopularPostsContent || sidePanelVisible)) return@LaunchedEffect
+        LaunchedEffect(content, isMultiPanelAvailable) {
+            if (!(content is PopularPostsContent || isMultiPanelAvailable)) return@LaunchedEffect
             mainViewModel.updateState { currentState ->
                 currentState.copy(
                     title = MainState.TitleComponent.Visible(localContext.getString(R.string.popular_title)),
@@ -128,7 +125,7 @@ fun PopularBookmarksScreen(
                         onSave = popularPostsViewModel::saveLink,
                     )
                 },
-                sidePanelVisible = sidePanelVisible,
+                sidePanelVisible = content is SidePanelContent && isMultiPanelAvailable,
             )
         }
     }

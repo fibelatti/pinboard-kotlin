@@ -72,6 +72,7 @@ import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.android.composable.TextWithBlockquote
 import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
+import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.copyToClipboard
@@ -126,8 +127,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.EntryPointAccessors
 import java.util.UUID
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -158,11 +157,6 @@ fun BookmarkListScreen(
         val shouldLoadContent = currentState.shouldLoad is ShouldLoadFirstPage ||
             currentState.shouldLoad is ShouldForceLoad ||
             currentState.shouldLoad is ShouldLoadNextPage
-
-        val multiPanelEnabled by mainViewModel.state.collectAsStateWithLifecycle()
-        val sidePanelVisible by remember {
-            derivedStateOf { content is SidePanelContent && multiPanelEnabled.multiPanelEnabled }
-        }
 
         val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
         val tagsClipboard = remember { mutableListOf<Tag>() }
@@ -241,7 +235,7 @@ fun BookmarkListScreen(
             },
             onTagClicked = { post -> appStateViewModel.runAction(PostsForTag(post)) },
             showPostDescription = currentState.showDescription,
-            sidePanelVisible = sidePanelVisible,
+            sidePanelVisible = content is SidePanelContent && isMultiPanelAvailable(),
         )
     }
 }
@@ -271,48 +265,49 @@ private fun LaunchedAppStateViewModelEffect(
     mainViewModel: MainViewModel = hiltActivityViewModel(),
     actionId: String,
 ) {
+    val content by appStateViewModel.content.collectAsStateWithLifecycle()
+    val isMultiPanelAvailable = isMultiPanelAvailable()
+    val postListContent by remember {
+        derivedStateOf {
+            when (val current = content) {
+                is PostListContent -> current
+                is PostDetailContent -> current.previousContent.takeIf { isMultiPanelAvailable }
+                else -> null
+            }
+        }
+    }
+
     val localContext = LocalContext.current
-    val localLifecycle = LocalLifecycleOwner.current.lifecycle
 
-    LaunchedEffect(Unit) {
-        appStateViewModel.content
-            .combine(mainViewModel.state) { content, mainState ->
-                when (content) {
-                    is PostListContent -> content
-                    is PostDetailContent -> content.previousContent.takeIf { mainState.multiPanelEnabled }
-                    else -> null
-                }
-            }
-            .filterNotNull()
-            .onEach { content ->
-                mainViewModel.updateState { currentState ->
-                    currentState.copy(
-                        title = MainState.TitleComponent.Visible(getCategoryTitle(localContext, content.category)),
-                        subtitle = when {
-                            content.posts == null && content.shouldLoad is Loaded -> MainState.TitleComponent.Gone
-                            else -> MainState.TitleComponent.Visible(
-                                buildPostCountSubTitle(localContext, content.totalCount, content.sortType),
-                            )
-                        },
-                        navigation = MainState.NavigationComponent.Gone,
-                        bottomAppBar = MainState.BottomAppBarComponent.Visible(
-                            id = actionId,
-                            menuItems = buildList {
-                                add(MainState.MenuItemComponent.SearchBookmarks)
-                                add(MainState.MenuItemComponent.SortBookmarks)
+    LaunchedEffect(postListContent) {
+        val current = postListContent ?: return@LaunchedEffect
 
-                                if (content.category == All && content.canForceSync) {
-                                    add(MainState.MenuItemComponent.SyncBookmarks)
-                                }
-                            },
-                            navigationIcon = R.drawable.ic_menu,
-                        ),
-                        floatingActionButton = MainState.FabComponent.Visible(actionId, R.drawable.ic_pin),
+        mainViewModel.updateState { currentState ->
+            currentState.copy(
+                title = MainState.TitleComponent.Visible(getCategoryTitle(localContext, current.category)),
+                subtitle = if (current.posts == null && current.shouldLoad is Loaded) {
+                    MainState.TitleComponent.Gone
+                } else {
+                    MainState.TitleComponent.Visible(
+                        label = buildPostCountSubTitle(localContext, current.totalCount, current.sortType),
                     )
-                }
-            }
-            .flowWithLifecycle(localLifecycle)
-            .launchIn(this)
+                },
+                navigation = MainState.NavigationComponent.Gone,
+                bottomAppBar = MainState.BottomAppBarComponent.Visible(
+                    id = actionId,
+                    menuItems = buildList {
+                        add(MainState.MenuItemComponent.SearchBookmarks)
+                        add(MainState.MenuItemComponent.SortBookmarks)
+
+                        if (current.category == All && current.canForceSync) {
+                            add(MainState.MenuItemComponent.SyncBookmarks)
+                        }
+                    },
+                    navigationIcon = R.drawable.ic_menu,
+                ),
+                floatingActionButton = MainState.FabComponent.Visible(actionId, R.drawable.ic_pin),
+            )
+        }
     }
 }
 

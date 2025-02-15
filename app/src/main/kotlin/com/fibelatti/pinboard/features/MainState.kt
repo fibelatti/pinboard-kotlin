@@ -12,8 +12,6 @@ data class MainState(
     val actionButton: ActionButtonComponent = ActionButtonComponent.Gone,
     val bottomAppBar: BottomAppBarComponent = BottomAppBarComponent.Gone,
     val floatingActionButton: FabComponent = FabComponent.Gone,
-    val multiPanelEnabled: Boolean = false,
-    val multiPanelContent: Boolean = false,
     val sidePanelAppBar: SidePanelAppBarComponent = SidePanelAppBarComponent.Gone,
 ) {
 
