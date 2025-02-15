@@ -31,14 +31,9 @@ coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-androi
 
 appcompat = { module = "androidx.appcompat:appcompat", version = "1.7.0" }
 core-ktx = { module = "androidx.core:core-ktx", version = "1.15.0" }
-activity = { module = "androidx.activity:activity", version.ref = "activity" }
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity" }
-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version = "1.8.6" }
-transition-ktx = { module = "androidx.transition:transition-ktx", version = "1.5.1" }
 material = { module = "com.google.android.material:material", version = "1.12.0" }
-constraint-layout = { module = "androidx.constraintlayout:constraintlayout", version = "2.2.0" }
 constraint-layout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version = "1.1.0" }
-lifecycle-java8 = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "lifecycle" }
 lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycle" }
 lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
@@ -46,7 +41,6 @@ room-runtime = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version = "2.10.0" }
 browser = { module = "androidx.browser:browser", version = "1.8.0" }
-window = { module = "androidx.window:window", version = "1.3.0" }
 
 compose-bom = { module = "androidx.compose:compose-bom", version = "2025.02.00" }
 compose-runtime = { module = "androidx.compose.runtime:runtime" }
