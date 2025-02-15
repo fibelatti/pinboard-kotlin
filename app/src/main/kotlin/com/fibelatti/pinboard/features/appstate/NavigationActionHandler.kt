@@ -74,12 +74,12 @@ class NavigationActionHandler @Inject constructor(
                     )
                 }
 
-                when {
-                    userRepository.alwaysUseSidePanel || preferredDetailsView is PreferredDetailsView.InAppBrowser -> {
+                when (preferredDetailsView) {
+                    is PreferredDetailsView.InAppBrowser -> {
                         default()
                     }
 
-                    preferredDetailsView is PreferredDetailsView.ExternalBrowser -> {
+                    is PreferredDetailsView.ExternalBrowser -> {
                         val shouldLoad: ShouldLoad = markAsRead(action.post)
                         ExternalBrowserContent(
                             action.post,
@@ -87,7 +87,7 @@ class NavigationActionHandler @Inject constructor(
                         )
                     }
 
-                    preferredDetailsView is PreferredDetailsView.Edit -> {
+                    is PreferredDetailsView.Edit -> {
                         EditPostContent(
                             post = action.post,
                             previousContent = currentContent,
@@ -99,9 +99,7 @@ class NavigationActionHandler @Inject constructor(
             }
 
             is PopularPostsContent -> {
-                if (preferredDetailsView is PreferredDetailsView.ExternalBrowser &&
-                    !userRepository.alwaysUseSidePanel
-                ) {
+                if (preferredDetailsView is PreferredDetailsView.ExternalBrowser) {
                     ExternalBrowserContent(action.post, previousContent = currentContent)
                 } else {
                     PopularPostDetailContent(

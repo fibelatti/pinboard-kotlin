@@ -23,7 +23,6 @@ class UserPreferencesProvider : PreviewParameterProvider<UserPreferences> {
                 preferredDateFormat = PreferredDateFormat.YearMonthDayWithTime,
                 hiddenPostQuickOptions = emptySet(),
                 preferredDetailsView = PreferredDetailsView.Edit,
-                alwaysUseSidePanel = true,
                 followRedirects = true,
                 removeUtmParameters = true,
                 removedUrlParameters = emptySet(),

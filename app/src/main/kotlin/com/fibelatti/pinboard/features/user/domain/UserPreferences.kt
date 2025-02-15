@@ -17,7 +17,6 @@ data class UserPreferences(
     val preferredDateFormat: PreferredDateFormat,
     val hiddenPostQuickOptions: Set<String>,
     val preferredDetailsView: PreferredDetailsView,
-    val alwaysUseSidePanel: Boolean,
     val followRedirects: Boolean,
     val removeUtmParameters: Boolean,
     val removedUrlParameters: Set<String>,

@@ -198,29 +198,6 @@ internal class NavigationActionHandlerTest {
         }
 
         @Test
-        fun `WHEN currentContent is PostListContent and alwaysUseSidePanel is true THEN it takes precedence over the PreferredDetailsView`() =
-            runTest {
-                // GIVEN
-                every { mockUserRepository.alwaysUseSidePanel } returns true
-                every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.ExternalBrowser(
-                    markAsReadOnOpen = markAsReadOnOpen,
-                )
-
-                // WHEN
-                val result = navigationActionHandler.runAction(ViewPost(createPost()), postListContent)
-
-                // THEN
-                coVerify { navigationActionHandler.markAsRead(any()) }
-                assertThat(result).isEqualTo(
-                    PostDetailContent(
-                        post = createPost(),
-                        isConnected = isConnected,
-                        previousContent = postListContent.copy(shouldLoad = mockShouldLoad),
-                    ),
-                )
-            }
-
-        @Test
         fun `WHEN currentContent is PostListContent and PreferredDetailsView is InAppBrowser THEN PostDetailContent is returned`() =
             runTest {
                 // GIVEN
@@ -277,29 +254,6 @@ internal class NavigationActionHandlerTest {
                     EditPostContent(
                         post = createPost(),
                         previousContent = postListContent,
-                    ),
-                )
-            }
-
-        @Test
-        fun `WHEN currentContent is PopularPostsContent and alwaysUseSidePanel is true THEN it takes precedence over the PreferredDetailsView`() =
-            runTest {
-                // GIVEN
-                every { mockUserRepository.alwaysUseSidePanel } returns true
-                every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.ExternalBrowser(
-                    markAsReadOnOpen = markAsReadOnOpen,
-                )
-                val mockPopularPostsContent = mockk<PopularPostsContent>()
-
-                // WHEN
-                val result = navigationActionHandler.runAction(ViewPost(createPost()), mockPopularPostsContent)
-
-                // THEN
-                assertThat(result).isEqualTo(
-                    PopularPostDetailContent(
-                        post = createPost(),
-                        isConnected = isConnected,
-                        previousContent = mockPopularPostsContent,
                     ),
                 )
             }

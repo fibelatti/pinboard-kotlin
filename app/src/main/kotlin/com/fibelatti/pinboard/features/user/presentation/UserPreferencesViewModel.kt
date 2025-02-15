@@ -68,10 +68,6 @@ class UserPreferencesViewModel @Inject constructor(
         userRepository.preferredDetailsView = preferredDetailsView
     }
 
-    fun saveAlwaysUseSidePanel(value: Boolean) {
-        userRepository.alwaysUseSidePanel = value
-    }
-
     fun saveMarkAsReadOnOpen(value: Boolean) {
         userRepository.markAsReadOnOpen = value
     }

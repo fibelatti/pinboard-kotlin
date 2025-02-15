@@ -32,7 +32,6 @@ internal class UserDataSourceTest {
         every { applyDynamicColors } returns false
         every { preferredDateFormat } returns ""
         every { preferredDetailsView } returns ""
-        every { alwaysUseSidePanel } returns false
         every { followRedirects } returns true
         every { autoFillDescription } returns false
         every { showDescriptionInLists } returns false
@@ -52,7 +51,6 @@ internal class UserDataSourceTest {
         preferredDateFormat = PreferredDateFormat.DayMonthYearWithTime,
         hiddenPostQuickOptions = emptySet(),
         preferredDetailsView = PreferredDetailsView.InAppBrowser(markAsReadOnOpen = false),
-        alwaysUseSidePanel = false,
         followRedirects = true,
         removeUtmParameters = false,
         removedUrlParameters = emptySet(),
@@ -423,32 +421,6 @@ internal class UserDataSourceTest {
 
                 // THEN
                 verify { mockUserSharedPreferences.preferredDetailsView = "random-value" }
-            }
-        }
-
-        @Nested
-        inner class AlwaysUseSidePanel {
-
-            @Test
-            fun `WHEN alwaysUseSidePanel is called THEN UserSharedPreferences is returned`() {
-                // GIVEN
-                val value = randomBoolean()
-                every { mockUserSharedPreferences.alwaysUseSidePanel } returns value
-
-                // THEN
-                assertThat(userDataSource.alwaysUseSidePanel).isEqualTo(value)
-            }
-
-            @Test
-            fun `WHEN alwaysUseSidePanel is called THEN UserSharedPreferences is set`() {
-                // GIVEN
-                val value = randomBoolean()
-
-                // WHEN
-                userDataSource.alwaysUseSidePanel = value
-
-                // THEN
-                verify { mockUserSharedPreferences.alwaysUseSidePanel = value }
             }
         }
 

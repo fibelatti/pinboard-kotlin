@@ -218,7 +218,6 @@ private fun AppPreferencesContent(
         onPeriodicSyncChange = userPreferencesViewModel::savePeriodicSync,
         onHiddenOptionsChange = userPreferencesViewModel::saveHiddenPostQuickOptions,
         onPreferredViewChange = userPreferencesViewModel::savePreferredDetailsView,
-        onAlwaysUseSidePanelChange = userPreferencesViewModel::saveAlwaysUseSidePanel,
         onMarkAsReadOnOpenChange = userPreferencesViewModel::saveMarkAsReadOnOpen,
         onShowDescriptionInListsChange = userPreferencesViewModel::saveShowDescriptionInLists,
         modifier = modifier,
@@ -236,7 +235,6 @@ private fun AppPreferencesContent(
     onPeriodicSyncChange: (PeriodicSync) -> Unit,
     onHiddenOptionsChange: (Set<String>) -> Unit,
     onPreferredViewChange: (PreferredDetailsView) -> Unit,
-    onAlwaysUseSidePanelChange: (Boolean) -> Unit,
     onMarkAsReadOnOpenChange: (Boolean) -> Unit,
     onShowDescriptionInListsChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -477,13 +475,6 @@ private fun AppPreferencesContent(
                 onCheckedChange = onMarkAsReadOnOpenChange,
             )
         }
-
-        SettingToggle(
-            title = stringResource(id = R.string.user_preferences_always_use_side_panel),
-            description = stringResource(id = R.string.user_preferences_always_use_side_panel_description),
-            checked = userPreferences.alwaysUseSidePanel,
-            onCheckedChange = onAlwaysUseSidePanelChange,
-        )
 
         SettingToggle(
             title = stringResource(id = R.string.user_preferences_description_visible_in_lists),
@@ -859,7 +850,6 @@ private fun AppPreferencesContentPreview(
             onHiddenOptionsChange = {},
             onPeriodicSyncChange = {},
             onPreferredViewChange = {},
-            onAlwaysUseSidePanelChange = {},
             onMarkAsReadOnOpenChange = {},
             onShowDescriptionInListsChange = {},
             modifier = Modifier.safeDrawingPadding(),
