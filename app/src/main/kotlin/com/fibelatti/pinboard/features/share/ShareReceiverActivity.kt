@@ -6,7 +6,7 @@ import androidx.activity.viewModels
 import androidx.core.app.ShareCompat
 import com.fibelatti.pinboard.core.android.base.BaseActivity
 import com.fibelatti.pinboard.core.extension.setThemedContent
-import com.fibelatti.pinboard.features.MainActivity
+import com.fibelatti.pinboard.features.MainComposeActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,7 +21,7 @@ open class ShareReceiverActivity : BaseActivity() {
         setThemedContent {
             ShareReceiverScreen(
                 onEdit = {
-                    startActivity(MainActivity.Builder(this).build())
+                    startActivity(MainComposeActivity.Builder(this).build())
                     finish()
                 },
                 onSaved = { finish() },

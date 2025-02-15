@@ -11,7 +11,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import com.fibelatti.core.android.extension.clear
 import com.fibelatti.pinboard.core.util.DateFormatter
-import com.fibelatti.pinboard.features.MainActivity
+import com.fibelatti.pinboard.features.MainComposeActivity
 import com.fibelatti.pinboard.features.posts.presentation.BookmarkListScreen
 import com.fibelatti.pinboard.features.posts.presentation.EditBookmarkScreen
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -30,7 +30,7 @@ class PinboardEndToEndTests {
     val hiltRule = HiltAndroidRule(this)
 
     @get:Rule(order = 1)
-    val composeRule = createAndroidComposeRule<MainActivity>()
+    val composeRule = createAndroidComposeRule<MainComposeActivity>()
 
     @Inject
     lateinit var dateFormatter: DateFormatter
