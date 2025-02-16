@@ -3,9 +3,7 @@ package com.fibelatti.pinboard.features
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -99,11 +97,11 @@ import com.fibelatti.pinboard.features.user.presentation.UserPreferencesScreen
 import com.fibelatti.ui.foundation.pxToDp
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
+import kotlin.reflect.KClass
 
 @Composable
 fun MainScreen(
     content: Content,
-    showSidePanel: Boolean,
     onExternalBrowserContent: (ExternalBrowserContent) -> Unit,
     onExternalContent: () -> Unit,
 ) {
@@ -119,28 +117,25 @@ fun MainScreen(
                     .fillMaxWidth()
                     .weight(1f),
             ) {
-                val mainPanelFraction by animateFloatAsState(
-                    targetValue = if (showSidePanel) .45f else 1f,
-                    animationSpec = spring(stiffness = Spring.StiffnessLow),
-                )
+                val multiPanelAvailable = content is SidePanelContent && isMultiPanelAvailable()
 
                 MainScreenContent(
                     content = content,
-                    showSidePanel = showSidePanel,
+                    multiPanelAvailable = multiPanelAvailable,
                     onExternalBrowserContent = onExternalBrowserContent,
                     onExternalContent = onExternalContent,
-                    modifier = Modifier.fillMaxWidth(fraction = mainPanelFraction),
+                    modifier = Modifier.fillMaxWidth(fraction = if (multiPanelAvailable) .45f else 1f),
                 )
 
-                if (mainPanelFraction != 1f) {
+                if (multiPanelAvailable) {
                     Spacer(modifier = Modifier.width(8.dp))
 
                     SidePanelContent(
-                        content = content,
+                        contentClass = content::class,
                         modifier = Modifier
                             .fillMaxWidth()
                             .windowInsetsPadding(
-                                WindowInsets.navigationBars
+                                insets = WindowInsets.navigationBars
                                     .union(WindowInsets.displayCutout)
                                     .only(WindowInsetsSides.End),
                             ),
@@ -156,56 +151,55 @@ fun MainScreen(
 @Composable
 private fun MainScreenContent(
     content: Content,
-    showSidePanel: Boolean,
+    multiPanelAvailable: Boolean,
     onExternalBrowserContent: (ExternalBrowserContent) -> Unit,
     onExternalContent: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
+    val localView = LocalView.current
+
+    LaunchedEffect(content::class) {
+        if (content is LoginContent && content.isUnauthorized) {
+            localView.showBanner(messageRes = R.string.auth_logged_out_feedback)
+        }
+    }
+
+    AnimatedContent(
+        targetState = content::class,
         modifier = modifier.fillMaxSize(),
-    ) {
-        when (content) {
-            is LoginContent -> {
-                AuthScreen()
-
-                val localView = LocalView.current
-                LaunchedEffect(content.isUnauthorized) {
-                    if (content.isUnauthorized) {
-                        localView.showBanner(messageRes = R.string.auth_logged_out_feedback)
-                    }
-                }
-            }
-
-            is PostListContent -> BookmarkListScreen()
-            is PostDetailContent -> if (showSidePanel) BookmarkListScreen() else BookmarkDetailsScreen()
-            is SearchContent -> SearchBookmarksScreen()
-            is AddPostContent -> EditBookmarkScreen()
-            is EditPostContent -> EditBookmarkScreen()
-            is TagListContent -> TagListScreen()
-            is SavedFiltersContent -> SavedFiltersScreen()
-            is NoteListContent -> NoteListScreen()
-            is NoteDetailContent -> if (showSidePanel) NoteListScreen() else NoteDetailsScreen()
-            is PopularPostsContent -> PopularBookmarksScreen()
-            is PopularPostDetailContent -> BookmarkDetailsScreen()
-            is UserPreferencesContent -> UserPreferencesScreen()
-            is ExternalBrowserContent -> onExternalBrowserContent(content)
-            is ExternalContent -> onExternalContent()
+        transitionSpec = { fadeIn(tween()) togetherWith fadeOut(tween()) },
+    ) { targetState ->
+        when (targetState) {
+            LoginContent::class -> AuthScreen()
+            PostListContent::class -> BookmarkListScreen()
+            PostDetailContent::class -> if (multiPanelAvailable) BookmarkListScreen() else BookmarkDetailsScreen()
+            SearchContent::class -> SearchBookmarksScreen()
+            AddPostContent::class -> EditBookmarkScreen()
+            EditPostContent::class -> EditBookmarkScreen()
+            TagListContent::class -> TagListScreen()
+            SavedFiltersContent::class -> SavedFiltersScreen()
+            NoteListContent::class -> NoteListScreen()
+            NoteDetailContent::class -> if (multiPanelAvailable) NoteListScreen() else NoteDetailsScreen()
+            PopularPostsContent::class -> PopularBookmarksScreen()
+            PopularPostDetailContent::class -> BookmarkDetailsScreen()
+            UserPreferencesContent::class -> UserPreferencesScreen()
+            ExternalBrowserContent::class -> (content as ExternalBrowserContent).let(onExternalBrowserContent)
+            ExternalContent::class -> onExternalContent()
         }
     }
 }
 
 @Composable
 private fun SidePanelContent(
-    content: Content,
+    contentClass: KClass<out Content>,
     modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
     ) {
-        when (content) {
-            is PostDetailContent -> BookmarkDetailsScreen()
-            is NoteDetailContent -> NoteDetailsScreen()
-            else -> Unit
+        when (contentClass) {
+            PostDetailContent::class -> BookmarkDetailsScreen()
+            NoteDetailContent::class -> NoteDetailsScreen()
         }
     }
 }

@@ -9,18 +9,17 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.Lifecycle
+import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.core.android.platform.BaseIntentBuilder
 import com.fibelatti.core.android.platform.intentExtras
-import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ContentWithHistory
 import com.fibelatti.pinboard.features.appstate.ExternalContent
 import com.fibelatti.pinboard.features.appstate.NavigateBack
-import com.fibelatti.pinboard.features.appstate.SidePanelContent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -39,36 +38,37 @@ class MainComposeActivity : AppCompatActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        onBackPressedDispatcher.addCallback(owner = this, onBackPressedCallback = onBackPressedCallback)
 
-        setThemedContent {
-            val content by appStateViewModel.content.collectAsStateWithLifecycle(
-                minActiveState = Lifecycle.State.RESUMED,
-            )
+        setContent()
+    }
 
-            LaunchedEffect(content) {
-                onBackPressedCallback.isEnabled = (content as? ContentWithHistory)?.previousContent !is ExternalContent
-            }
-
-            MainScreen(
-                content = content,
-                showSidePanel = content is SidePanelContent && isMultiPanelAvailable(),
-                onExternalBrowserContent = { ebc ->
-                    startActivity(
-                        Intent(Intent.ACTION_VIEW).apply {
-                            data = Uri.parse(ebc.post.url)
-                            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                        },
-                    )
-
-                    appStateViewModel.runAction(NavigateBack)
-                },
-                onExternalContent = {
-                    appStateViewModel.reset()
-                    finish()
-                },
-            )
+    private fun setContent() = setThemedContent {
+        val content by appStateViewModel.content.collectAsStateWithLifecycle()
+        val previousContent by remember {
+            derivedStateOf { (content as? ContentWithHistory)?.previousContent }
         }
+
+        LaunchedEffect(previousContent) {
+            onBackPressedCallback.isEnabled = previousContent !is ExternalContent
+        }
+
+        MainScreen(
+            content = content,
+            onExternalBrowserContent = { browserContent ->
+                startActivity(
+                    Intent(Intent.ACTION_VIEW, Uri.parse(browserContent.post.url)).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    },
+                )
+
+                appStateViewModel.runAction(NavigateBack)
+            },
+            onExternalContent = {
+                appStateViewModel.reset()
+                finish()
+            },
+        )
     }
 
     override fun onDestroy() {
@@ -86,7 +86,7 @@ class MainComposeActivity : AppCompatActivity() {
         }
     }
 
-    companion object {
+    private companion object {
 
         var Intent.fromBuilder by intentExtras(default = false)
     }
