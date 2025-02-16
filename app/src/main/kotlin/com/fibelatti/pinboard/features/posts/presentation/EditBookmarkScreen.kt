@@ -64,7 +64,6 @@ import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.showBanner
-import com.fibelatti.pinboard.features.MainBackNavigationEffect
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -204,7 +203,6 @@ private fun LaunchedViewModelEffects(
     LaunchedEditPostViewModelEffect(actionId = EditBookmarkScreen.ACTION_ID)
     LaunchedPostDetailViewModelEffect()
 
-    MainBackNavigationEffect(actionId = EditBookmarkScreen.ACTION_ID)
     BackHandler {
         if (editPostViewModel.hasPendingChanges()) {
             MaterialAlertDialogBuilder(localContext).apply {
@@ -344,7 +342,7 @@ private fun LaunchedEditPostViewModelEffect(
                     currentState.copy(
                         title = MainState.TitleComponent.Visible(localContext.getString(R.string.posts_add_title)),
                         subtitle = MainState.TitleComponent.Gone,
-                        navigation = MainState.NavigationComponent.Visible(id = actionId, icon = R.drawable.ic_close),
+                        navigation = MainState.NavigationComponent.Visible(icon = R.drawable.ic_close),
                         bottomAppBar = MainState.BottomAppBarComponent.Visible(
                             id = actionId,
                             menuItems = buildList {

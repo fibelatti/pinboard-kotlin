@@ -39,7 +39,6 @@ import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
 import com.fibelatti.pinboard.core.extension.showBanner
-import com.fibelatti.pinboard.features.MainBackNavigationEffect
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -74,14 +73,12 @@ fun SavedFiltersScreen(
                 currentState.copy(
                     title = MainState.TitleComponent.Visible(title),
                     subtitle = MainState.TitleComponent.Gone,
-                    navigation = MainState.NavigationComponent.Visible(actionId),
+                    navigation = MainState.NavigationComponent.Visible(),
                     bottomAppBar = MainState.BottomAppBarComponent.Gone,
                     floatingActionButton = MainState.FabComponent.Gone,
                 )
             }
         }
-
-        MainBackNavigationEffect(actionId = actionId)
 
         LaunchedErrorHandlerEffect(viewModel = savedFiltersViewModel)
 

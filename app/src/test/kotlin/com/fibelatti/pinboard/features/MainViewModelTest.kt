@@ -26,17 +26,6 @@ internal class MainViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `navigationClicks emits only values with matching ids`() = runUnconfinedTest {
-        val values = viewModel.navigationClicks("id").collectIn(this)
-
-        viewModel.navigationClicked(id = "id")
-        viewModel.navigationClicked(id = "another-id")
-        viewModel.navigationClicked(id = "id")
-
-        assertThat(values).containsExactly("id", "id")
-    }
-
-    @Test
     fun `actionButtonClicked emits only values with matching ids`() = runUnconfinedTest {
         val data: Any = mockk()
 

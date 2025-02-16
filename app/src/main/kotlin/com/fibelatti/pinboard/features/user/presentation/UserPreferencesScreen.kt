@@ -72,7 +72,6 @@ import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
 import com.fibelatti.pinboard.core.extension.fillWidthOfParent
-import com.fibelatti.pinboard.features.MainBackNavigationEffect
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -118,14 +117,12 @@ fun UserPreferencesScreen(
             currentState.copy(
                 title = MainState.TitleComponent.Visible(title),
                 subtitle = MainState.TitleComponent.Gone,
-                navigation = MainState.NavigationComponent.Visible(actionId),
+                navigation = MainState.NavigationComponent.Visible(),
                 bottomAppBar = MainState.BottomAppBarComponent.Gone,
                 floatingActionButton = MainState.FabComponent.Gone,
             )
         }
     }
-
-    MainBackNavigationEffect(actionId = actionId)
 
     DisposableEffect(Unit) {
         onDispose { localView.hideKeyboard() }

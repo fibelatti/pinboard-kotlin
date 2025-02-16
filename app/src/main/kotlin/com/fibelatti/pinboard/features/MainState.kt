@@ -23,17 +23,9 @@ data class MainState(
 
     sealed class NavigationComponent {
 
-        abstract val id: String
+        data object Gone : NavigationComponent()
 
-        data object Gone : NavigationComponent() {
-
-            override val id: String = UUID.randomUUID().toString()
-        }
-
-        data class Visible(
-            override val id: String,
-            @DrawableRes val icon: Int = R.drawable.ic_back_arrow,
-        ) : NavigationComponent()
+        data class Visible(@DrawableRes val icon: Int = R.drawable.ic_back_arrow) : NavigationComponent()
     }
 
     sealed class ActionButtonComponent {

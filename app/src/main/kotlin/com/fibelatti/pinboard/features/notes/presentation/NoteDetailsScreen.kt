@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.notes.presentation
 
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,14 +25,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
-import com.fibelatti.core.android.extension.navigateBack
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
-import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
 import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
 import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
-import com.fibelatti.pinboard.features.MainBackNavigationEffect
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -58,8 +56,8 @@ fun NoteDetailsScreen(
         val isMultiPanelAvailable = isMultiPanelAvailable()
 
         val actionId = remember { UUID.randomUUID().toString() }
-        val localActivity = LocalAppCompatActivity.current
         val localLifecycle = LocalLifecycleOwner.current.lifecycle
+        val localOnBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
         LaunchedEffect(noteDetailContent, isMultiPanelAvailable) {
             mainViewModel.updateState { currentState ->
@@ -74,7 +72,7 @@ fun NoteDetailsScreen(
                     currentState.copy(
                         title = MainState.TitleComponent.Gone,
                         subtitle = MainState.TitleComponent.Gone,
-                        navigation = MainState.NavigationComponent.Visible(actionId),
+                        navigation = MainState.NavigationComponent.Visible(),
                         bottomAppBar = MainState.BottomAppBarComponent.Gone,
                         floatingActionButton = MainState.FabComponent.Gone,
                     )
@@ -88,13 +86,11 @@ fun NoteDetailsScreen(
             }
         }
 
-        MainBackNavigationEffect(actionId = actionId)
-
         LaunchedEffect(Unit) {
             mainViewModel.menuItemClicks(actionId)
                 .onEach { (menuItem, _) ->
                     if (menuItem is MainState.MenuItemComponent.CloseSidePanel) {
-                        localActivity.navigateBack()
+                        localOnBackPressedDispatcher?.onBackPressed()
                     }
                 }
                 .flowWithLifecycle(localLifecycle)

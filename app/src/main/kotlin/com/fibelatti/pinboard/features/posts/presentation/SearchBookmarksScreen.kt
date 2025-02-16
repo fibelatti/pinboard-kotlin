@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -99,7 +100,7 @@ fun SearchBookmarksScreen(
                     } else {
                         MainState.TitleComponent.Gone
                     },
-                    navigation = MainState.NavigationComponent.Visible(actionId),
+                    navigation = MainState.NavigationComponent.Visible(),
                     bottomAppBar = MainState.BottomAppBarComponent.Visible(
                         id = actionId,
                         menuItems = if (isActive) {
@@ -131,12 +132,11 @@ fun SearchBookmarksScreen(
         val localView = LocalView.current
         val localLifecycle = LocalLifecycleOwner.current.lifecycle
 
-        LaunchedEffect(Unit) {
-            mainViewModel.navigationClicks(actionId)
-                .onEach { appStateViewModel.runAction(Search) }
-                .flowWithLifecycle(localLifecycle)
-                .launchIn(this)
+        BackHandler {
+            appStateViewModel.runAction(Search)
+        }
 
+        LaunchedEffect(Unit) {
             mainViewModel.menuItemClicks(actionId)
                 .onEach { (menuItem, data) ->
                     when (menuItem) {

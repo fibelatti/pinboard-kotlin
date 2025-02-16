@@ -9,6 +9,7 @@ import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -48,20 +49,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
-import com.fibelatti.core.android.extension.navigateBack
 import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
-import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
 import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
 import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.rememberScrollDirection
 import com.fibelatti.pinboard.core.extension.showBanner
-import com.fibelatti.pinboard.features.MainBackNavigationEffect
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -126,8 +124,6 @@ private fun LaunchedViewModelEffects(
     LaunchedMainViewModelEffect(actionId = actionId)
     LaunchedPostDetailViewModelEffect()
     LaunchedPopularPostsViewModelEffect()
-
-    MainBackNavigationEffect(actionId = actionId)
 
     LaunchedErrorHandlerEffect(viewModel = postDetailViewModel)
     LaunchedErrorHandlerEffect(viewModel = popularPostsViewModel)
@@ -201,7 +197,7 @@ private fun LaunchedAppStateViewModelEffect(
                 currentState.copy(
                     title = MainState.TitleComponent.Gone,
                     subtitle = MainState.TitleComponent.Gone,
-                    navigation = MainState.NavigationComponent.Visible(actionId),
+                    navigation = MainState.NavigationComponent.Visible(),
                     actionButton = actionButtonState,
                     bottomAppBar = MainState.BottomAppBarComponent.Visible(
                         id = actionId,
@@ -229,8 +225,8 @@ private fun LaunchedMainViewModelEffect(
     actionId: String,
 ) {
     val localContext = LocalContext.current
-    val localActivity = LocalAppCompatActivity.current
     val localLifecycle = LocalLifecycleOwner.current.lifecycle
+    val localOnBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
     LaunchedEffect(Unit) {
         mainViewModel.actionButtonClicks(actionId)
@@ -252,7 +248,7 @@ private fun LaunchedMainViewModelEffect(
                     is MainState.MenuItemComponent.EditBookmark -> appStateViewModel.runAction(EditPost(post))
                     is MainState.MenuItemComponent.SaveBookmark -> popularPostsViewModel.saveLink(post)
                     is MainState.MenuItemComponent.OpenInBrowser -> openUrlInExternalBrowser(localContext, post)
-                    is MainState.MenuItemComponent.CloseSidePanel -> localActivity.navigateBack()
+                    is MainState.MenuItemComponent.CloseSidePanel -> localOnBackPressedDispatcher?.onBackPressed()
                     else -> Unit
                 }
             }

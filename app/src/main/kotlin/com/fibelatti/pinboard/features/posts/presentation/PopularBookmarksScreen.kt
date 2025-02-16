@@ -43,7 +43,6 @@ import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
 import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.core.extension.showBanner
-import com.fibelatti.pinboard.features.MainBackNavigationEffect
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -86,7 +85,7 @@ fun PopularBookmarksScreen(
                 currentState.copy(
                     title = MainState.TitleComponent.Visible(localContext.getString(R.string.popular_title)),
                     subtitle = MainState.TitleComponent.Gone,
-                    navigation = MainState.NavigationComponent.Visible(actionId),
+                    navigation = MainState.NavigationComponent.Visible(),
                     bottomAppBar = MainState.BottomAppBarComponent.Gone,
                     floatingActionButton = MainState.FabComponent.Gone,
                 )
@@ -106,7 +105,6 @@ fun PopularBookmarksScreen(
             }
         }
 
-        MainBackNavigationEffect(actionId = actionId)
         LaunchedErrorHandlerEffect(viewModel = popularPostsViewModel)
 
         CrossfadeLoadingLayout(

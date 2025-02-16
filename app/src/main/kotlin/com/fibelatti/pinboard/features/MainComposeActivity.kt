@@ -4,11 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import androidx.activity.OnBackPressedCallback
+import androidx.activity.compose.BackHandler
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -27,18 +26,9 @@ class MainComposeActivity : AppCompatActivity() {
 
     private val appStateViewModel: AppStateViewModel by viewModels()
 
-    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
-
-        override fun handleOnBackPressed() {
-            appStateViewModel.runAction(NavigateBack)
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-
-        onBackPressedDispatcher.addCallback(owner = this, onBackPressedCallback = onBackPressedCallback)
 
         setContent()
     }
@@ -49,8 +39,8 @@ class MainComposeActivity : AppCompatActivity() {
             derivedStateOf { (content as? ContentWithHistory)?.previousContent }
         }
 
-        LaunchedEffect(previousContent) {
-            onBackPressedCallback.isEnabled = previousContent !is ExternalContent
+        BackHandler(enabled = previousContent !is ExternalContent) {
+            appStateViewModel.runAction(NavigateBack)
         }
 
         MainScreen(

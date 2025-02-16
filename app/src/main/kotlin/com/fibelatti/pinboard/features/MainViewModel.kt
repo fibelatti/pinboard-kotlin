@@ -23,7 +23,6 @@ class MainViewModel @Inject constructor() : BaseViewModel() {
     private val _currentScrollDirection: MutableStateFlow<ScrollDirection> = MutableStateFlow(ScrollDirection.IDLE)
     val currentScrollDirection: StateFlow<ScrollDirection> = _currentScrollDirection.asStateFlow()
 
-    private val navigationClicks = MutableSharedFlow<String>()
     private val actionButtonClicks = MutableSharedFlow<Pair<String, Any?>>()
     private val menuItemClicks = MutableSharedFlow<Triple<String, MainState.MenuItemComponent, Any?>>()
     private val fabClicks = MutableSharedFlow<Pair<String, Any?>>()
@@ -35,15 +34,6 @@ class MainViewModel @Inject constructor() : BaseViewModel() {
     fun setCurrentScrollDirection(value: ScrollDirection) {
         _currentScrollDirection.value = value
     }
-
-    fun navigationClicked(id: String) {
-        launch {
-            navigationClicks.emit(id)
-        }
-    }
-
-    fun navigationClicks(id: String): Flow<String> = navigationClicks
-        .filter { eventId -> eventId == id }
 
     fun actionButtonClicked(id: String, data: Any? = null) {
         launch {

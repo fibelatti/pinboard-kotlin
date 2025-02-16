@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features
 
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -212,10 +213,11 @@ fun MainTopAppBar(
 ) {
     val state by mainViewModel.state.collectAsStateWithLifecycle()
     val content by appStateViewModel.content.collectAsStateWithLifecycle()
+    val localOnBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
     MainTopAppBar(
         state = state,
-        onNavigationClick = { mainViewModel.navigationClicked(state.navigation.id) },
+        onNavigationClick = { localOnBackPressedDispatcher?.onBackPressed() },
         onActionButtonClick = { data -> mainViewModel.actionButtonClicked(state.actionButton.id, data) },
         isOffline = content.let { it is ConnectionAwareContent && !it.isConnected },
         showRetryButton = content is PostListContent || content is PopularPostsContent,
@@ -521,7 +523,7 @@ private fun MainTopAppBarPreview() {
                 MainState(
                     title = MainState.TitleComponent.Visible(label = "Sample title"),
                     subtitle = MainState.TitleComponent.Visible(label = "Sample subtitle"),
-                    navigation = MainState.NavigationComponent.Visible(id = ""),
+                    navigation = MainState.NavigationComponent.Visible(),
                     actionButton = MainState.ActionButtonComponent.Visible(id = "", label = "Action"),
                     bottomAppBar = MainState.BottomAppBarComponent.Visible(
                         id = "",
@@ -553,7 +555,7 @@ private fun MainBottomAppBarPreview() {
                     MainState(
                         title = MainState.TitleComponent.Visible(label = "Sample title"),
                         subtitle = MainState.TitleComponent.Visible(label = "Sample subtitle"),
-                        navigation = MainState.NavigationComponent.Visible(id = ""),
+                        navigation = MainState.NavigationComponent.Visible(),
                         actionButton = MainState.ActionButtonComponent.Visible(id = "", label = "Action"),
                         bottomAppBar = MainState.BottomAppBarComponent.Visible(
                             id = "",
