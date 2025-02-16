@@ -41,7 +41,6 @@ import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LoadingContent
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
-import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
 import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
@@ -59,8 +58,8 @@ import java.util.UUID
 
 @Composable
 fun NoteListScreen(
-    appStateViewModel: AppStateViewModel = hiltActivityViewModel(),
-    mainViewModel: MainViewModel = hiltActivityViewModel(),
+    appStateViewModel: AppStateViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     noteListViewModel: NoteListViewModel = hiltViewModel(),
 ) {
     Surface(

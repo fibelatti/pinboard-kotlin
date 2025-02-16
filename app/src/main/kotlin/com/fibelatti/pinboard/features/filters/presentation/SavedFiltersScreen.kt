@@ -37,7 +37,6 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
-import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
@@ -52,8 +51,8 @@ import java.util.UUID
 
 @Composable
 fun SavedFiltersScreen(
-    appStateViewModel: AppStateViewModel = hiltActivityViewModel(),
-    mainViewModel: MainViewModel = hiltActivityViewModel(),
+    appStateViewModel: AppStateViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     savedFiltersViewModel: SavedFiltersViewModel = hiltViewModel(),
 ) {
     Surface(

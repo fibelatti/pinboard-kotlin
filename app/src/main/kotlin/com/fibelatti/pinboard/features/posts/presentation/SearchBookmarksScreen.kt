@@ -41,7 +41,6 @@ import androidx.lifecycle.flowWithLifecycle
 import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
-import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
@@ -67,8 +66,8 @@ import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun SearchBookmarksScreen(
-    appStateViewModel: AppStateViewModel = hiltActivityViewModel(),
-    mainViewModel: MainViewModel = hiltActivityViewModel(),
+    appStateViewModel: AppStateViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     searchPostViewModel: SearchPostViewModel = hiltViewModel(),
     tagsViewModel: TagsViewModel = hiltViewModel(),
 ) {

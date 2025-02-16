@@ -71,7 +71,6 @@ import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.android.composable.TextWithBlockquote
-import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
 import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.applySecureFlag
@@ -132,8 +131,8 @@ import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun BookmarkListScreen(
-    appStateViewModel: AppStateViewModel = hiltActivityViewModel(),
-    mainViewModel: MainViewModel = hiltActivityViewModel(),
+    appStateViewModel: AppStateViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     postListViewModel: PostListViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     userPreferencesViewModel: UserPreferencesViewModel = hiltViewModel(),
@@ -261,8 +260,8 @@ private fun LaunchedViewModelEffects(
 
 @Composable
 private fun LaunchedAppStateViewModelEffect(
-    appStateViewModel: AppStateViewModel = hiltActivityViewModel(),
-    mainViewModel: MainViewModel = hiltActivityViewModel(),
+    appStateViewModel: AppStateViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     actionId: String,
 ) {
     val content by appStateViewModel.content.collectAsStateWithLifecycle()
@@ -313,8 +312,8 @@ private fun LaunchedAppStateViewModelEffect(
 
 @Composable
 private fun LaunchedMainViewModelEffect(
-    mainViewModel: MainViewModel = hiltActivityViewModel(),
-    appStateViewModel: AppStateViewModel = hiltActivityViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
+    appStateViewModel: AppStateViewModel = hiltViewModel(),
     actionId: String,
 ) {
     val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
@@ -358,7 +357,7 @@ private fun LaunchedMainViewModelEffect(
 @Composable
 private fun LaunchedPostDetailViewModelEffect(
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltActivityViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
 ) {
     val screenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
 

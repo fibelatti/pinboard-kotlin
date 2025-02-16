@@ -61,7 +61,6 @@ import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
-import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
@@ -82,7 +81,7 @@ import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun EditBookmarkScreen(
-    appStateViewModel: AppStateViewModel = hiltActivityViewModel(),
+    appStateViewModel: AppStateViewModel = hiltViewModel(),
     editPostViewModel: EditPostViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     tagManagerViewModel: TagManagerViewModel = hiltViewModel(),
@@ -172,8 +171,8 @@ object EditBookmarkScreen {
 // region ViewModel setup
 @Composable
 private fun LaunchedViewModelEffects(
-    appStateViewModel: AppStateViewModel = hiltActivityViewModel(),
-    mainViewModel: MainViewModel = hiltActivityViewModel(),
+    appStateViewModel: AppStateViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     editPostViewModel: EditPostViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
 ) {
@@ -249,7 +248,7 @@ private fun LaunchedViewModelEffects(
 
 @Composable
 private fun LaunchedMainViewModelEffect(
-    mainViewModel: MainViewModel = hiltActivityViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     editPostViewModel: EditPostViewModel = hiltViewModel(),
     actionId: String,
@@ -293,7 +292,7 @@ private fun LaunchedMainViewModelEffect(
 
 @Composable
 private fun LaunchedEditPostViewModelEffect(
-    mainViewModel: MainViewModel = hiltActivityViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     editPostViewModel: EditPostViewModel = hiltViewModel(),
     tagManagerViewModel: TagManagerViewModel = hiltViewModel(),
     actionId: String,

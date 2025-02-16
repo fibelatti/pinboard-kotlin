@@ -54,7 +54,6 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
-import com.fibelatti.pinboard.core.android.composable.hiltActivityViewModel
 import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.applySecureFlag
@@ -76,8 +75,8 @@ import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun BookmarkDetailsScreen(
-    appStateViewModel: AppStateViewModel = hiltActivityViewModel(),
-    mainViewModel: MainViewModel = hiltActivityViewModel(),
+    appStateViewModel: AppStateViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
 ) {
@@ -114,7 +113,7 @@ fun BookmarkDetailsScreen(
 // region ViewModel setup
 @Composable
 private fun LaunchedViewModelEffects(
-    mainViewModel: MainViewModel = hiltActivityViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
 ) {
@@ -145,8 +144,8 @@ private fun LaunchedViewModelEffects(
 
 @Composable
 private fun LaunchedAppStateViewModelEffect(
-    appStateViewModel: AppStateViewModel = hiltActivityViewModel(),
-    mainViewModel: MainViewModel = hiltActivityViewModel(),
+    appStateViewModel: AppStateViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     actionId: String,
 ) {
     val content by appStateViewModel.content.collectAsStateWithLifecycle()
@@ -218,8 +217,8 @@ private fun LaunchedAppStateViewModelEffect(
 
 @Composable
 private fun LaunchedMainViewModelEffect(
-    mainViewModel: MainViewModel = hiltActivityViewModel(),
-    appStateViewModel: AppStateViewModel = hiltActivityViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
+    appStateViewModel: AppStateViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
     actionId: String,
@@ -266,7 +265,7 @@ private fun LaunchedMainViewModelEffect(
 @Composable
 private fun LaunchedPostDetailViewModelEffect(
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltActivityViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
 ) {
     val screenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
 
