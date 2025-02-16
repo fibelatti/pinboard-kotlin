@@ -139,7 +139,7 @@ private fun MainTitlePreview() {
             MainTitle(
                 title = MainState.TitleComponent.Visible("Title"),
                 subtitle = MainState.TitleComponent.Gone,
-                navigation = MainState.NavigationComponent.Visible(id = "id"),
+                navigation = MainState.NavigationComponent.Visible(),
                 onNavigationClicked = {},
                 actionButton = MainState.ActionButtonComponent.Visible(id = "id", label = "Action"),
                 onActionButtonClicked = {},
@@ -157,7 +157,7 @@ private fun MainTitleWithSubtitlePreview() {
             MainTitle(
                 title = MainState.TitleComponent.Visible("Title"),
                 subtitle = MainState.TitleComponent.Visible("Subtitle"),
-                navigation = MainState.NavigationComponent.Visible(id = "id"),
+                navigation = MainState.NavigationComponent.Visible(),
                 onNavigationClicked = {},
                 actionButton = MainState.ActionButtonComponent.Visible(id = "id", label = "Action"),
                 onActionButtonClicked = {},

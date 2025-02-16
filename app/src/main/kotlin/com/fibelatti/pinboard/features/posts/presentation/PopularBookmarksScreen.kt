@@ -19,7 +19,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -35,13 +34,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
+import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
-import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
+import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
@@ -55,16 +54,12 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import java.util.UUID
-import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun PopularBookmarksScreen(
     appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
-    onBackPressed: () -> Unit,
-    onError: (Throwable?, () -> Unit) -> Unit,
-    onBookmarkLongClicked: (Post) -> Unit = {},
 ) {
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
@@ -76,24 +71,20 @@ fun PopularBookmarksScreen(
 
         val popularPostsScreenState by popularPostsViewModel.screenState.collectAsStateWithLifecycle()
 
-        val multiPanelEnabled by mainViewModel.state.collectAsStateWithLifecycle()
-        val sidePanelVisible by remember {
-            derivedStateOf { content is SidePanelContent && multiPanelEnabled.multiPanelEnabled }
-        }
+        val isMultiPanelAvailable = isMultiPanelAvailable()
 
         val actionId = remember { UUID.randomUUID().toString() }
 
         val localContext = LocalContext.current
         val localView = LocalView.current
-        val localLifecycleOwner = LocalLifecycleOwner.current
 
-        LaunchedEffect(content) {
-            if (!(content is PopularPostsContent || sidePanelVisible)) return@LaunchedEffect
+        LaunchedEffect(content, isMultiPanelAvailable) {
+            if (!(content is PopularPostsContent || isMultiPanelAvailable)) return@LaunchedEffect
             mainViewModel.updateState { currentState ->
                 currentState.copy(
                     title = MainState.TitleComponent.Visible(localContext.getString(R.string.popular_title)),
                     subtitle = MainState.TitleComponent.Gone,
-                    navigation = MainState.NavigationComponent.Visible(actionId),
+                    navigation = MainState.NavigationComponent.Visible(),
                     bottomAppBar = MainState.BottomAppBarComponent.Gone,
                     floatingActionButton = MainState.FabComponent.Gone,
                 )
@@ -108,20 +99,12 @@ fun PopularBookmarksScreen(
 
         LaunchedEffect(popularPostsScreenState.savedMessage) {
             popularPostsScreenState.savedMessage?.let { messageRes ->
-                localView.showBanner(localContext.getString(messageRes))
+                localView.showBanner(messageRes)
                 popularPostsViewModel.userNotified()
             }
         }
 
-        LaunchedEffect(Unit) {
-            mainViewModel.navigationClicks(actionId)
-                .onEach { onBackPressed() }
-                .launchInAndFlowWith(localLifecycleOwner)
-
-            popularPostsViewModel.error
-                .onEach { throwable -> onError(throwable, popularPostsViewModel::errorHandled) }
-                .launchInAndFlowWith(localLifecycleOwner)
-        }
+        LaunchedErrorHandlerEffect(viewModel = popularPostsViewModel)
 
         CrossfadeLoadingLayout(
             data = popularPostsContent.posts
@@ -132,8 +115,14 @@ fun PopularBookmarksScreen(
                 posts = posts,
                 onPullToRefresh = { appStateViewModel.runAction(RefreshPopular) },
                 onBookmarkClicked = { appStateViewModel.runAction(ViewPost(it)) },
-                onBookmarkLongClicked = onBookmarkLongClicked,
-                sidePanelVisible = sidePanelVisible,
+                onBookmarkLongClicked = { post ->
+                    PopularPostsQuickActionsDialog.show(
+                        context = localContext,
+                        post = post,
+                        onSave = popularPostsViewModel::saveLink,
+                    )
+                },
+                sidePanelVisible = content is SidePanelContent && isMultiPanelAvailable,
             )
         }
     }

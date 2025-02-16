@@ -11,9 +11,9 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import com.fibelatti.core.android.extension.clear
 import com.fibelatti.pinboard.core.util.DateFormatter
-import com.fibelatti.pinboard.features.MainActivity
-import com.fibelatti.pinboard.features.posts.presentation.EditPostFragment
-import com.fibelatti.pinboard.features.posts.presentation.PostListFragment
+import com.fibelatti.pinboard.features.MainComposeActivity
+import com.fibelatti.pinboard.features.posts.presentation.BookmarkListScreen
+import com.fibelatti.pinboard.features.posts.presentation.EditBookmarkScreen
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import javax.inject.Inject
@@ -30,7 +30,7 @@ class PinboardEndToEndTests {
     val hiltRule = HiltAndroidRule(this)
 
     @get:Rule(order = 1)
-    val composeRule = createAndroidComposeRule<MainActivity>()
+    val composeRule = createAndroidComposeRule<MainComposeActivity>()
 
     @Inject
     lateinit var dateFormatter: DateFormatter
@@ -129,7 +129,7 @@ class PinboardEndToEndTests {
             )
 
             // Navigate to add bookmark screen
-            onNodeWithTag(testTag = "fab-${PostListFragment.ACTION_ID}").performClick()
+            onNodeWithTag(testTag = "fab-${BookmarkListScreen.ACTION_ID}").performClick()
             waitUntilAtLeastOneExists(
                 hasText(context.getString(R.string.posts_add_title)),
                 timeoutMillis = DEFAULT_TIMEOUT,
@@ -156,7 +156,7 @@ class PinboardEndToEndTests {
                 .performClick()
 
             // Save
-            onNodeWithTag(testTag = "fab-${EditPostFragment.ACTION_ID}")
+            onNodeWithTag(testTag = "fab-${EditBookmarkScreen.ACTION_ID}")
                 .performClick()
 
             // Assert

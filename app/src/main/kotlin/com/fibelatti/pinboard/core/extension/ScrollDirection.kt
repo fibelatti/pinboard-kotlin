@@ -4,7 +4,7 @@ import android.view.View
 import android.view.ViewTreeObserver
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -68,24 +68,23 @@ fun LazyListState.rememberScrollDirection(autoResetTime: Long = 2_000): State<Sc
 fun View.rememberScrollDirection(): State<ScrollDirection> {
     var nestedScrollDirection by remember { mutableStateOf(ScrollDirection.IDLE) }
 
-    LaunchedEffect(this) {
-        val scrollChangeListener = object : ViewTreeObserver.OnScrollChangedListener {
-            private var lastScrollY = 0
+    val scrollChangeListener = object : ViewTreeObserver.OnScrollChangedListener {
+        private var lastScrollY = 0
 
-            override fun onScrollChanged() {
-                if (abs(scrollY - lastScrollY) < 100) return
+        override fun onScrollChanged() {
+            if (abs(scrollY - lastScrollY) < 100) return
 
-                nestedScrollDirection = if (scrollY > lastScrollY) {
-                    ScrollDirection.DOWN
-                } else {
-                    ScrollDirection.UP
-                }
-
-                lastScrollY = scrollY
-            }
+            nestedScrollDirection = (if (scrollY > lastScrollY) ScrollDirection.DOWN else ScrollDirection.UP)
+            lastScrollY = scrollY
         }
+    }
 
+    DisposableEffect(this) {
         viewTreeObserver.addOnScrollChangedListener(scrollChangeListener)
+
+        onDispose {
+            viewTreeObserver.removeOnScrollChangedListener(scrollChangeListener)
+        }
     }
 
     return remember(this) {

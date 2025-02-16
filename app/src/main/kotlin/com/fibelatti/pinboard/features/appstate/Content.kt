@@ -6,6 +6,7 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlin.reflect.KClass
 
+// region Markers
 sealed class Content
 
 sealed class ContentWithHistory : Content() {
@@ -23,7 +24,9 @@ interface ConnectionAwareContent {
  * on foldable phones and tablets.
  */
 interface SidePanelContent
+// endregion Markers
 
+// region App Content
 data class LoginContent(
     val isUnauthorized: Boolean = false,
 ) : ContentWithHistory() {
@@ -50,15 +53,6 @@ data class PostListContent(
         get() = posts?.list?.size ?: 0
     val currentList: List<Post>
         get() = posts?.list ?: emptyList()
-}
-
-inline fun <reified T : Content> Content.find(): T? = find(T::class)
-
-@Suppress("UNCHECKED_CAST")
-fun <T : Content> Content.find(type: KClass<T>): T? = when {
-    type.isInstance(this) -> this as? T
-    this !is ContentWithHistory -> null
-    else -> previousContent.find(type)
 }
 
 data class PostDetailContent(
@@ -139,3 +133,15 @@ data class UserPreferencesContent(
  * the user can return to the origin of the deeplink.
  */
 data object ExternalContent : Content()
+// endregion App Content
+
+// region Content Helpers
+inline fun <reified T : Content> Content.find(): T? = find(T::class)
+
+@Suppress("UNCHECKED_CAST")
+fun <T : Content> Content.find(type: KClass<T>): T? = when {
+    type.isInstance(this) -> this as? T
+    this !is ContentWithHistory -> null
+    else -> previousContent.find(type)
+}
+// endregion Content Helpers

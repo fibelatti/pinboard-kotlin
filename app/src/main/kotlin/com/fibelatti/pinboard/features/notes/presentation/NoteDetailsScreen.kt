@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.notes.presentation
 
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,9 +24,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
-import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
+import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
+import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -33,6 +36,7 @@ import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import java.util.UUID
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @Composable
@@ -40,8 +44,6 @@ fun NoteDetailsScreen(
     appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     noteDetailsViewModel: NoteDetailsViewModel = hiltViewModel(),
-    onBackPressed: () -> Unit,
-    onError: (Throwable?, () -> Unit) -> Unit,
 ) {
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
@@ -50,12 +52,15 @@ fun NoteDetailsScreen(
         val noteDetailContent by rememberUpdatedState(newValue = appState ?: return@Surface)
         val isLoading = noteDetailContent.note.isLeft
 
-        val actionId = remember { UUID.randomUUID().toString() }
-        val localLifecycleOwner = LocalLifecycleOwner.current
+        val isMultiPanelAvailable = isMultiPanelAvailable()
 
-        LaunchedEffect(noteDetailContent) {
+        val actionId = remember { UUID.randomUUID().toString() }
+        val localLifecycle = LocalLifecycleOwner.current.lifecycle
+        val localOnBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+
+        LaunchedEffect(noteDetailContent, isMultiPanelAvailable) {
             mainViewModel.updateState { currentState ->
-                if (currentState.multiPanelEnabled) {
+                if (isMultiPanelAvailable) {
                     currentState.copy(
                         sidePanelAppBar = MainState.SidePanelAppBarComponent.Visible(
                             id = actionId,
@@ -66,7 +71,7 @@ fun NoteDetailsScreen(
                     currentState.copy(
                         title = MainState.TitleComponent.Gone,
                         subtitle = MainState.TitleComponent.Gone,
-                        navigation = MainState.NavigationComponent.Visible(actionId),
+                        navigation = MainState.NavigationComponent.Visible(),
                         bottomAppBar = MainState.BottomAppBarComponent.Gone,
                         floatingActionButton = MainState.FabComponent.Gone,
                     )
@@ -81,26 +86,17 @@ fun NoteDetailsScreen(
         }
 
         LaunchedEffect(Unit) {
-            mainViewModel.navigationClicks(actionId)
-                .onEach { onBackPressed() }
-                .launchInAndFlowWith(localLifecycleOwner)
-        }
-
-        LaunchedEffect(Unit) {
             mainViewModel.menuItemClicks(actionId)
                 .onEach { (menuItem, _) ->
                     if (menuItem is MainState.MenuItemComponent.CloseSidePanel) {
-                        onBackPressed()
+                        localOnBackPressedDispatcher?.onBackPressed()
                     }
                 }
-                .launchInAndFlowWith(localLifecycleOwner)
+                .flowWithLifecycle(localLifecycle)
+                .launchIn(this)
         }
 
-        LaunchedEffect(Unit) {
-            noteDetailsViewModel.error
-                .onEach { throwable -> onError(throwable, noteDetailsViewModel::errorHandled) }
-                .launchInAndFlowWith(localLifecycleOwner)
-        }
+        LaunchedErrorHandlerEffect(viewModel = noteDetailsViewModel)
 
         CrossfadeLoadingLayout(
             data = noteDetailContent.note.rightOrNull(),

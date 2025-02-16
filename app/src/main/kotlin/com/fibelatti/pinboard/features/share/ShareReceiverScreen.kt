@@ -17,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -34,8 +35,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.core.functional.ScreenState
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
-import com.fibelatti.pinboard.core.android.composable.ErrorReportDialog
 import com.fibelatti.pinboard.core.extension.isServerException
+import com.fibelatti.pinboard.core.extension.showErrorReportDialog
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -128,7 +129,14 @@ fun ShareReceiverErrorDialog(
         }
 
         else -> {
-            ErrorReportDialog(throwable = throwable, postAction = action)
+            val localContext = LocalContext.current
+            LaunchedEffect(throwable) {
+                localContext.showErrorReportDialog(
+                    throwable = throwable,
+                    postAction = action,
+                )
+            }
+
             return
         }
     }

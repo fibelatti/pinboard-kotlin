@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.user.presentation
 
 import android.os.Build
 import android.view.KeyEvent
+import androidx.activity.compose.LocalActivity
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedVisibility
@@ -39,6 +40,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +52,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -57,8 +60,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.Appearance
@@ -66,6 +71,8 @@ import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.core.extension.fillWidthOfParent
+import com.fibelatti.pinboard.features.MainState
+import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
@@ -80,15 +87,45 @@ import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
+import java.util.UUID
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun UserPreferencesScreen(
     appStateViewModel: AppStateViewModel = hiltViewModel(),
-    onDynamicColorChange: () -> Unit,
-    onDisableScreenshotsChange: () -> Unit,
+    mainViewModel: MainViewModel = hiltViewModel(),
 ) {
     val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
+
+    val title = stringResource(R.string.user_preferences_title)
+    val actionId = remember { UUID.randomUUID().toString() }
+    val localActivity = LocalActivity.current
+    val localView = LocalView.current
+
+    val scope = rememberCoroutineScope()
+    val restartActivity: () -> Unit by rememberUpdatedState {
+        scope.launch {
+            delay(300L) // Wait until the switch is done animating
+            localActivity?.let(ActivityCompat::recreate)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        mainViewModel.updateState { currentState ->
+            currentState.copy(
+                title = MainState.TitleComponent.Visible(title),
+                subtitle = MainState.TitleComponent.Gone,
+                navigation = MainState.NavigationComponent.Visible(),
+                bottomAppBar = MainState.BottomAppBarComponent.Gone,
+                floatingActionButton = MainState.FabComponent.Gone,
+            )
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose { localView.hideKeyboard() }
+    }
 
     BoxWithConstraints(
         modifier = Modifier
@@ -107,8 +144,8 @@ fun UserPreferencesScreen(
             ) {
                 AppPreferencesContent(
                     appMode = appMode,
-                    onDynamicColorChange = onDynamicColorChange,
-                    onDisableScreenshotsChange = onDisableScreenshotsChange,
+                    onDynamicColorChange = restartActivity,
+                    onDisableScreenshotsChange = restartActivity,
                 )
 
                 BookmarkingPreferencesContent(
@@ -124,8 +161,8 @@ fun UserPreferencesScreen(
 
                 AppPreferencesContent(
                     appMode = appMode,
-                    onDynamicColorChange = onDynamicColorChange,
-                    onDisableScreenshotsChange = onDisableScreenshotsChange,
+                    onDynamicColorChange = restartActivity,
+                    onDisableScreenshotsChange = restartActivity,
                     modifier = Modifier.requiredWidth(childWidth),
                 )
 
@@ -177,7 +214,6 @@ private fun AppPreferencesContent(
         onPeriodicSyncChange = userPreferencesViewModel::savePeriodicSync,
         onHiddenOptionsChange = userPreferencesViewModel::saveHiddenPostQuickOptions,
         onPreferredViewChange = userPreferencesViewModel::savePreferredDetailsView,
-        onAlwaysUseSidePanelChange = userPreferencesViewModel::saveAlwaysUseSidePanel,
         onMarkAsReadOnOpenChange = userPreferencesViewModel::saveMarkAsReadOnOpen,
         onShowDescriptionInListsChange = userPreferencesViewModel::saveShowDescriptionInLists,
         modifier = modifier,
@@ -195,7 +231,6 @@ private fun AppPreferencesContent(
     onPeriodicSyncChange: (PeriodicSync) -> Unit,
     onHiddenOptionsChange: (Set<String>) -> Unit,
     onPreferredViewChange: (PreferredDetailsView) -> Unit,
-    onAlwaysUseSidePanelChange: (Boolean) -> Unit,
     onMarkAsReadOnOpenChange: (Boolean) -> Unit,
     onShowDescriptionInListsChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -436,13 +471,6 @@ private fun AppPreferencesContent(
                 onCheckedChange = onMarkAsReadOnOpenChange,
             )
         }
-
-        SettingToggle(
-            title = stringResource(id = R.string.user_preferences_always_use_side_panel),
-            description = stringResource(id = R.string.user_preferences_always_use_side_panel_description),
-            checked = userPreferences.alwaysUseSidePanel,
-            onCheckedChange = onAlwaysUseSidePanelChange,
-        )
 
         SettingToggle(
             title = stringResource(id = R.string.user_preferences_description_visible_in_lists),
@@ -818,7 +846,6 @@ private fun AppPreferencesContentPreview(
             onHiddenOptionsChange = {},
             onPeriodicSyncChange = {},
             onPreferredViewChange = {},
-            onAlwaysUseSidePanelChange = {},
             onMarkAsReadOnOpenChange = {},
             onShowDescriptionInListsChange = {},
             modifier = Modifier.safeDrawingPadding(),

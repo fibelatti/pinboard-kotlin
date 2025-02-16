@@ -4,32 +4,8 @@ package com.fibelatti.core.android.extension
 
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ScrollView
-import androidx.core.view.NestedScrollingParent
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.children
-import androidx.recyclerview.widget.RecyclerView
-
-/**
- * Helper function to search for a scrolling view to which window insets should be applied.
- *
- * It looks for a direct child of the provided view of type [ScrollView], [NestedScrollingParent] or
- * [RecyclerView]. If no direct child of the listed types is found the function will keep searching
- * using the last child of type [ViewGroup] as the new starting point.
- *
- * The provided view is returned in case no view was found.
- *
- * @param rootView the root [View] to start the search
- *
- * @return the [View] to which insets must be applied
- */
-public fun getViewToApplyInsets(rootView: View): View? = when (rootView) {
-    is ScrollView, is NestedScrollingParent -> (rootView as? ViewGroup)?.children?.lastOrNull()
-    is RecyclerView -> rootView
-    is ViewGroup -> rootView.children.lastOrNull()?.let(::getViewToApplyInsets)
-    else -> null
-}
 
 /**
  * Helper function to manage callbacks of [View.setOnApplyWindowInsetsListener].

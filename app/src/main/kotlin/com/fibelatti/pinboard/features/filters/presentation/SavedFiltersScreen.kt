@@ -24,17 +24,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
-import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
+import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
+import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -45,16 +48,12 @@ import com.fibelatti.ui.components.MultilineChipGroup
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import java.util.UUID
-import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun SavedFiltersScreen(
     appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     savedFiltersViewModel: SavedFiltersViewModel = hiltViewModel(),
-    onBackPressed: () -> Unit,
-    onError: (Throwable?, () -> Unit) -> Unit,
-    onSavedFilterLongClicked: (SavedFilter) -> Unit,
 ) {
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
@@ -63,7 +62,8 @@ fun SavedFiltersScreen(
         val savedFilters by savedFiltersViewModel.state.collectAsStateWithLifecycle()
 
         val actionId = remember { UUID.randomUUID().toString() }
-        val localLifecycleOwner = LocalLifecycleOwner.current
+        val localContext = LocalContext.current
+        val localView = LocalView.current
 
         val title = stringResource(id = R.string.saved_filters_title)
 
@@ -72,29 +72,37 @@ fun SavedFiltersScreen(
                 currentState.copy(
                     title = MainState.TitleComponent.Visible(title),
                     subtitle = MainState.TitleComponent.Gone,
-                    navigation = MainState.NavigationComponent.Visible(actionId),
+                    navigation = MainState.NavigationComponent.Visible(),
                     bottomAppBar = MainState.BottomAppBarComponent.Gone,
                     floatingActionButton = MainState.FabComponent.Gone,
                 )
             }
         }
 
-        LaunchedEffect(Unit) {
-            mainViewModel.navigationClicks(actionId)
-                .onEach { onBackPressed() }
-                .launchInAndFlowWith(localLifecycleOwner)
-
-            savedFiltersViewModel.error
-                .onEach { throwable -> onError(throwable, savedFiltersViewModel::errorHandled) }
-                .launchInAndFlowWith(localLifecycleOwner)
-        }
+        LaunchedErrorHandlerEffect(viewModel = savedFiltersViewModel)
 
         SavedFiltersScreen(
             savedFilters = savedFilters,
             onSavedFilterClicked = { savedFilter ->
                 appStateViewModel.runAction(ViewSavedFilter(savedFilter = savedFilter))
             },
-            onSavedFilterLongClicked = onSavedFilterLongClicked,
+            onSavedFilterLongClicked = { savedFilter ->
+                SelectionDialog.show(
+                    context = localContext,
+                    title = localContext.getString(R.string.quick_actions_title),
+                    options = SavedFiltersQuickActions.allOptions(savedFilter),
+                    optionName = { localContext.getString(it.title) },
+                    optionIcon = SavedFiltersQuickActions::icon,
+                    onOptionSelected = { option ->
+                        when (option) {
+                            is SavedFiltersQuickActions.Delete -> {
+                                savedFiltersViewModel.deleteSavedFilter(savedFilter)
+                                localView.showBanner(R.string.saved_filters_deleted_feedback)
+                            }
+                        }
+                    },
+                )
+            },
         )
     }
 }

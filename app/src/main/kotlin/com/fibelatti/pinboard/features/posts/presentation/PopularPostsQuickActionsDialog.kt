@@ -1,81 +1,49 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
-import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import com.fibelatti.core.android.extension.navigateBack
 import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.SelectionDialog
-import com.fibelatti.pinboard.core.android.base.BaseFragment
 import com.fibelatti.pinboard.core.extension.copyToClipboard
-import com.fibelatti.pinboard.core.extension.setThemedContent
-import com.fibelatti.pinboard.features.MainViewModel
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
-@AndroidEntryPoint
-class PopularPostsFragment @Inject constructor() : BaseFragment() {
+object PopularPostsQuickActionsDialog {
 
-    private val appStateViewModel: AppStateViewModel by activityViewModels()
-    private val mainViewModel: MainViewModel by activityViewModels()
-    private val popularPostsViewModel: PopularPostsViewModel by viewModels()
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        setThemedContent {
-            PopularBookmarksScreen(
-                appStateViewModel = appStateViewModel,
-                mainViewModel = mainViewModel,
-                popularPostsViewModel = popularPostsViewModel,
-                onBackPressed = { navigateBack() },
-                onError = ::handleError,
-                onBookmarkLongClicked = ::showQuickActionsDialogs,
-            )
-        }
-    }
-
-    private fun showQuickActionsDialogs(post: Post) {
+    fun show(
+        context: Context,
+        post: Post,
+        onSave: (Post) -> Unit,
+    ) {
         SelectionDialog.show(
-            context = requireContext(),
-            title = getString(R.string.quick_actions_title),
+            context = context,
+            title = context.getString(R.string.quick_actions_title),
             options = PopularPostQuickActions.allOptions(post),
-            optionName = { option -> getString(option.title) },
+            optionName = { option -> context.getString(option.title) },
             optionIcon = PopularPostQuickActions::icon,
             onOptionSelected = { option ->
                 when (option) {
-                    is PopularPostQuickActions.Save -> popularPostsViewModel.saveLink(option.post)
+                    is PopularPostQuickActions.Save -> onSave(option.post)
 
-                    is PopularPostQuickActions.CopyUrl -> requireContext().copyToClipboard(
+                    is PopularPostQuickActions.CopyUrl -> context.copyToClipboard(
                         label = post.displayTitle,
                         text = post.url,
                     )
 
-                    is PopularPostQuickActions.Share -> requireActivity().shareText(
+                    is PopularPostQuickActions.Share -> context.shareText(
                         R.string.posts_share_title,
                         option.post.url,
                     )
 
-                    is PopularPostQuickActions.OpenBrowser -> startActivity(
+                    is PopularPostQuickActions.OpenBrowser -> context.startActivity(
                         Intent(Intent.ACTION_VIEW, Uri.parse(option.post.url)),
                     )
                 }
             },
         )
-    }
-
-    companion object {
-
-        @JvmStatic
-        val TAG: String = "PopularPostsFragment"
     }
 }
 

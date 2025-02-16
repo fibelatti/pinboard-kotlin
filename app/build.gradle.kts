@@ -42,7 +42,6 @@ android {
     buildFeatures {
         buildConfig = true
         compose = true
-        viewBinding = true
     }
 
     defaultConfig {
@@ -179,16 +178,11 @@ dependencies {
     // Android
     implementation(libs.appcompat)
     implementation(libs.core.ktx)
-    implementation(libs.activity)
     implementation(libs.activity.compose)
-    implementation(libs.fragment.ktx)
-    implementation(libs.transition.ktx)
+    implementation(libs.adaptive.android)
     implementation(libs.material)
-    implementation(libs.constraint.layout)
     implementation(libs.constraint.layout.compose)
-    implementation(libs.window)
 
-    implementation(libs.lifecycle.java8)
     implementation(libs.lifecycle.process)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.runtime.compose)

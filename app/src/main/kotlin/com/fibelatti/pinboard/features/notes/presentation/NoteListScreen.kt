@@ -23,7 +23,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -36,13 +35,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
+import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LoadingContent
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
-import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
+import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
@@ -56,15 +55,12 @@ import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import java.util.UUID
-import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun NoteListScreen(
     appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     noteListViewModel: NoteListViewModel = hiltViewModel(),
-    onBackPressed: () -> Unit,
-    onError: (Throwable?, () -> Unit) -> Unit,
 ) {
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
@@ -74,14 +70,8 @@ fun NoteListScreen(
             newValue = content.find<NoteListContent>() ?: return@Surface,
         )
 
-        val multiPanelEnabled by mainViewModel.state.collectAsStateWithLifecycle()
-        val sidePanelVisible by remember {
-            derivedStateOf { content is SidePanelContent && multiPanelEnabled.multiPanelEnabled }
-        }
-
         val actionId = remember { UUID.randomUUID().toString() }
         val localContext = LocalContext.current
-        val localLifecycleOwner = LocalLifecycleOwner.current
 
         LaunchedEffect(content) {
             mainViewModel.updateState { mainViewModelState ->
@@ -98,7 +88,7 @@ fun NoteListScreen(
                             ),
                         )
                     },
-                    navigation = MainState.NavigationComponent.Visible(actionId),
+                    navigation = MainState.NavigationComponent.Visible(),
                     bottomAppBar = MainState.BottomAppBarComponent.Gone,
                     floatingActionButton = MainState.FabComponent.Gone,
                 )
@@ -111,15 +101,7 @@ fun NoteListScreen(
             }
         }
 
-        LaunchedEffect(Unit) {
-            mainViewModel.navigationClicks(actionId)
-                .onEach { onBackPressed() }
-                .launchInAndFlowWith(localLifecycleOwner)
-
-            noteListViewModel.error
-                .onEach { throwable -> onError(throwable, noteListViewModel::errorHandled) }
-                .launchInAndFlowWith(localLifecycleOwner)
-        }
+        LaunchedErrorHandlerEffect(viewModel = noteListViewModel)
 
         if (noteListContent.shouldLoad) {
             LoadingContent()
@@ -137,7 +119,7 @@ fun NoteListScreen(
                 },
                 onPullToRefresh = { appStateViewModel.runAction(RefreshNotes) },
                 onNoteClicked = { note -> appStateViewModel.runAction(ViewNote(note.id)) },
-                sidePanelVisible = sidePanelVisible,
+                sidePanelVisible = content is SidePanelContent && isMultiPanelAvailable(),
             )
         }
     }

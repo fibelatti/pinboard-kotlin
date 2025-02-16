@@ -128,18 +128,6 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `WHEN saveAlwaysUseSidePanel is called THEN repository is updated`() {
-        // GIVEN
-        val value = randomBoolean()
-
-        // WHEN
-        userPreferencesViewModel.saveAlwaysUseSidePanel(value)
-
-        // THEN
-        verify { mockUserRepository.alwaysUseSidePanel = value }
-    }
-
-    @Test
     fun `WHEN saveMarkAsReadOnOpen is called THEN repository is updated`() {
         // GIVEN
         val value = randomBoolean()

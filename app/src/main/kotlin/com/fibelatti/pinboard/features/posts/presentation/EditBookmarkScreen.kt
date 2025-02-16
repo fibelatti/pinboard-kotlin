@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,7 +38,9 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
@@ -44,13 +48,25 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowInsetsCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
+import com.fibelatti.core.android.extension.doOnApplyWindowInsets
+import com.fibelatti.core.android.extension.hideKeyboard
+import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
+import com.fibelatti.pinboard.core.extension.applySecureFlag
+import com.fibelatti.pinboard.core.extension.showBanner
+import com.fibelatti.pinboard.features.MainState
+import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -58,6 +74,10 @@ import com.fibelatti.pinboard.features.tags.presentation.TagManager
 import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import java.util.UUID
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun EditBookmarkScreen(
@@ -106,6 +126,8 @@ fun EditBookmarkScreen(
         editPostViewModel.updatePost { post -> post.copy(tags = tagManagerState.tags.ifEmpty { null }) }
     }
 
+    LaunchedViewModelEffects()
+
     EditBookmarkScreen(
         appMode = appMode,
         post = currentState,
@@ -141,6 +163,224 @@ fun EditBookmarkScreen(
     )
 }
 
+object EditBookmarkScreen {
+
+    val ACTION_ID = UUID.randomUUID().toString()
+}
+
+// region ViewModel setup
+@Composable
+private fun LaunchedViewModelEffects(
+    appStateViewModel: AppStateViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
+    editPostViewModel: EditPostViewModel = hiltViewModel(),
+    postDetailViewModel: PostDetailViewModel = hiltViewModel(),
+) {
+    val localContext = LocalContext.current
+    val localView = LocalView.current
+
+    LaunchedEffect(Unit) {
+        localView.doOnApplyWindowInsets { _, insets, _, _ ->
+            if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
+                mainViewModel.updateState { currentState ->
+                    currentState.copy(
+                        actionButton = MainState.ActionButtonComponent.Visible(
+                            label = localContext.getString(R.string.hint_save),
+                            id = EditBookmarkScreen.ACTION_ID,
+                        ),
+                    )
+                }
+            } else {
+                mainViewModel.updateState { currentState ->
+                    currentState.copy(actionButton = MainState.ActionButtonComponent.Gone)
+                }
+            }
+        }
+    }
+
+    LaunchedMainViewModelEffect(actionId = EditBookmarkScreen.ACTION_ID)
+    LaunchedEditPostViewModelEffect(actionId = EditBookmarkScreen.ACTION_ID)
+    LaunchedPostDetailViewModelEffect()
+
+    BackHandler {
+        if (editPostViewModel.hasPendingChanges()) {
+            MaterialAlertDialogBuilder(localContext).apply {
+                setMessage(R.string.alert_confirm_unsaved_changes)
+                setPositiveButton(R.string.hint_yes) { _, _ -> appStateViewModel.runAction(NavigateBack) }
+                setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
+            }.applySecureFlag().show()
+        } else {
+            appStateViewModel.runAction(NavigateBack)
+        }
+    }
+
+    LaunchedErrorHandlerEffect(
+        viewModel = editPostViewModel,
+        postAction = {
+            mainViewModel.updateState { currentState ->
+                currentState.copy(
+                    floatingActionButton = MainState.FabComponent.Visible(
+                        id = EditBookmarkScreen.ACTION_ID,
+                        icon = R.drawable.ic_done,
+                    ),
+                )
+            }
+        },
+    )
+    LaunchedErrorHandlerEffect(viewModel = postDetailViewModel)
+
+    DisposableEffect(Unit) {
+        onDispose {
+            mainViewModel.updateState { currentState ->
+                currentState.copy(
+                    actionButton = if (currentState.actionButton.id == EditBookmarkScreen.ACTION_ID) {
+                        MainState.ActionButtonComponent.Gone
+                    } else {
+                        currentState.actionButton
+                    },
+                )
+            }
+
+            localView.hideKeyboard()
+        }
+    }
+}
+
+@Composable
+private fun LaunchedMainViewModelEffect(
+    mainViewModel: MainViewModel = hiltViewModel(),
+    postDetailViewModel: PostDetailViewModel = hiltViewModel(),
+    editPostViewModel: EditPostViewModel = hiltViewModel(),
+    actionId: String,
+) {
+    val localContext = LocalContext.current
+    val localView = LocalView.current
+    val localLifecycle = LocalLifecycleOwner.current.lifecycle
+
+    LaunchedEffect(Unit) {
+        mainViewModel.actionButtonClicks(actionId)
+            .onEach {
+                localView.hideKeyboard()
+                editPostViewModel.saveLink()
+            }
+            .flowWithLifecycle(localLifecycle)
+            .launchIn(this)
+        mainViewModel.menuItemClicks(actionId)
+            .onEach { (menuItem, post) ->
+                if (post !is Post) return@onEach
+                when (menuItem) {
+                    is MainState.MenuItemComponent.DeleteBookmark -> showDeleteConfirmationDialog(localContext) {
+                        postDetailViewModel.deletePost(post)
+                    }
+
+                    is MainState.MenuItemComponent.OpenInBrowser -> openUrlInExternalBrowser(localContext, post)
+
+                    else -> Unit
+                }
+            }
+            .flowWithLifecycle(localLifecycle)
+            .launchIn(this)
+        mainViewModel.fabClicks(actionId)
+            .onEach {
+                localView.hideKeyboard()
+                editPostViewModel.saveLink()
+            }
+            .flowWithLifecycle(localLifecycle)
+            .launchIn(this)
+    }
+}
+
+@Composable
+private fun LaunchedEditPostViewModelEffect(
+    mainViewModel: MainViewModel = hiltViewModel(),
+    editPostViewModel: EditPostViewModel = hiltViewModel(),
+    tagManagerViewModel: TagManagerViewModel = hiltViewModel(),
+    actionId: String,
+) {
+    val screenState by editPostViewModel.screenState.collectAsStateWithLifecycle()
+
+    val localContext = LocalContext.current
+    val localView = LocalView.current
+    val localLifecycle = LocalLifecycleOwner.current.lifecycle
+
+    LaunchedEffect(screenState) {
+        tagManagerViewModel.setSuggestedTags(screenState.suggestedTags)
+
+        when {
+            screenState.saved -> {
+                localView.showBanner(R.string.posts_saved_feedback)
+                editPostViewModel.userNotified()
+            }
+
+            screenState.invalidUrlError.isNotEmpty() || screenState.invalidTitleError.isNotEmpty() -> {
+                mainViewModel.updateState { currentState ->
+                    currentState.copy(
+                        floatingActionButton = MainState.FabComponent.Visible(
+                            id = actionId,
+                            icon = R.drawable.ic_done,
+                        ),
+                    )
+                }
+            }
+
+            screenState.isLoading -> {
+                mainViewModel.updateState { currentState ->
+                    currentState.copy(
+                        actionButton = MainState.ActionButtonComponent.Gone,
+                        floatingActionButton = MainState.FabComponent.Gone,
+                    )
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        editPostViewModel.postState
+            .onEach { post ->
+                mainViewModel.updateState { currentState ->
+                    currentState.copy(
+                        title = MainState.TitleComponent.Visible(localContext.getString(R.string.posts_add_title)),
+                        subtitle = MainState.TitleComponent.Gone,
+                        navigation = MainState.NavigationComponent.Visible(icon = R.drawable.ic_close),
+                        bottomAppBar = MainState.BottomAppBarComponent.Visible(
+                            id = actionId,
+                            menuItems = buildList {
+                                if (post.id.isNotEmpty()) {
+                                    add(MainState.MenuItemComponent.DeleteBookmark)
+                                    add(MainState.MenuItemComponent.OpenInBrowser)
+                                }
+                            },
+                            navigationIcon = null,
+                            data = post,
+                        ),
+                        floatingActionButton = MainState.FabComponent.Visible(actionId, R.drawable.ic_done),
+                    )
+                }
+            }
+            .flowWithLifecycle(localLifecycle)
+            .launchIn(this)
+    }
+}
+
+@Composable
+private fun LaunchedPostDetailViewModelEffect(
+    postDetailViewModel: PostDetailViewModel = hiltViewModel(),
+) {
+    val screenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
+
+    val localView = LocalView.current
+
+    LaunchedEffect(screenState) {
+        val current = screenState
+        if (current.deleted is Success<Boolean> && current.deleted.value) {
+            localView.showBanner(R.string.posts_deleted_feedback)
+            postDetailViewModel.userNotified()
+        }
+    }
+}
+// endregion ViewModel setup
+
+// region Content
 @Composable
 private fun EditBookmarkScreen(
     appMode: AppMode,
@@ -445,7 +685,9 @@ private fun BookmarkFlags(
         )
     }
 }
+// endregion Content
 
+// region Previews
 @Composable
 @ThemePreviews
 private fun EditBookmarkScreenPreview(
@@ -475,3 +717,4 @@ private fun EditBookmarkScreenPreview(
         )
     }
 }
+// endregion Previews

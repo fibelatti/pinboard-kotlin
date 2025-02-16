@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -36,9 +37,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.extension.launchInAndFlowWith
+import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
@@ -59,6 +61,7 @@ import com.fibelatti.ui.components.SingleLineChipGroup
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import java.util.UUID
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @Composable
@@ -67,7 +70,6 @@ fun SearchBookmarksScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
     searchPostViewModel: SearchPostViewModel = hiltViewModel(),
     tagsViewModel: TagsViewModel = hiltViewModel(),
-    onError: (Throwable?, () -> Unit) -> Unit,
 ) {
     Surface(
         color = ExtendedTheme.colors.backgroundNoOverlay,
@@ -97,7 +99,7 @@ fun SearchBookmarksScreen(
                     } else {
                         MainState.TitleComponent.Gone
                     },
-                    navigation = MainState.NavigationComponent.Visible(actionId),
+                    navigation = MainState.NavigationComponent.Visible(),
                     bottomAppBar = MainState.BottomAppBarComponent.Visible(
                         id = actionId,
                         menuItems = if (isActive) {
@@ -127,14 +129,13 @@ fun SearchBookmarksScreen(
         }
 
         val localView = LocalView.current
-        val localLifecycleOwner = LocalLifecycleOwner.current
-        val savedFeedback = stringResource(id = R.string.saved_filters_saved_feedback)
+        val localLifecycle = LocalLifecycleOwner.current.lifecycle
+
+        BackHandler {
+            appStateViewModel.runAction(Search)
+        }
 
         LaunchedEffect(Unit) {
-            mainViewModel.navigationClicks(actionId)
-                .onEach { appStateViewModel.runAction(Search) }
-                .launchInAndFlowWith(localLifecycleOwner)
-
             mainViewModel.menuItemClicks(actionId)
                 .onEach { (menuItem, data) ->
                     when (menuItem) {
@@ -144,22 +145,22 @@ fun SearchBookmarksScreen(
 
                         is MainState.MenuItemComponent.SaveSearch -> {
                             (data as? SavedFilter)?.let(searchPostViewModel::saveFilter)
-                            localView.showBanner(savedFeedback)
+                            localView.showBanner(R.string.saved_filters_saved_feedback)
                         }
 
                         else -> Unit
                     }
                 }
-                .launchInAndFlowWith(localLifecycleOwner)
+                .flowWithLifecycle(localLifecycle)
+                .launchIn(this)
 
             mainViewModel.fabClicks(actionId)
                 .onEach { appStateViewModel.runAction(Search) }
-                .launchInAndFlowWith(localLifecycleOwner)
-
-            tagsViewModel.error
-                .onEach { throwable -> onError(throwable, tagsViewModel::errorHandled) }
-                .launchInAndFlowWith(localLifecycleOwner)
+                .flowWithLifecycle(localLifecycle)
+                .launchIn(this)
         }
+
+        LaunchedErrorHandlerEffect(viewModel = tagsViewModel)
 
         DisposableEffect(Unit) {
             onDispose {
