@@ -182,7 +182,7 @@ private fun MainScreenContent(
             NoteListContent::class -> NoteListScreen()
             NoteDetailContent::class -> if (multiPanelAvailable) NoteListScreen() else NoteDetailsScreen()
             PopularPostsContent::class -> PopularBookmarksScreen()
-            PopularPostDetailContent::class -> BookmarkDetailsScreen()
+            PopularPostDetailContent::class -> if (multiPanelAvailable) PopularBookmarksScreen() else BookmarkDetailsScreen()
             UserPreferencesContent::class -> UserPreferencesScreen()
             ExternalBrowserContent::class -> (content as ExternalBrowserContent).let(onExternalBrowserContent)
             ExternalContent::class -> onExternalContent()
@@ -199,7 +199,7 @@ private fun SidePanelContent(
         modifier = modifier.fillMaxSize(),
     ) {
         when (contentClass) {
-            PostDetailContent::class -> BookmarkDetailsScreen()
+            PostDetailContent::class, PopularPostDetailContent::class -> BookmarkDetailsScreen()
             NoteDetailContent::class -> NoteDetailsScreen()
         }
     }
