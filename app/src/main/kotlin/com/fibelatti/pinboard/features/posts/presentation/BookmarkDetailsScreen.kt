@@ -75,12 +75,14 @@ import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun BookmarkDetailsScreen(
+    modifier: Modifier = Modifier,
     appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
 ) {
     Surface(
+        modifier = modifier,
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
         val postDetailState by appStateViewModel.postDetailContent.collectAsStateWithLifecycle(null)
@@ -124,8 +126,11 @@ private fun LaunchedViewModelEffects(
     LaunchedPostDetailViewModelEffect()
     LaunchedPopularPostsViewModelEffect()
 
-    LaunchedErrorHandlerEffect(viewModel = postDetailViewModel)
-    LaunchedErrorHandlerEffect(viewModel = popularPostsViewModel)
+    val detailError by postDetailViewModel.error.collectAsStateWithLifecycle()
+    LaunchedErrorHandlerEffect(error = detailError, handler = postDetailViewModel::errorHandled)
+
+    val popularError by popularPostsViewModel.error.collectAsStateWithLifecycle()
+    LaunchedErrorHandlerEffect(error = popularError, handler = popularPostsViewModel::errorHandled)
 
     DisposableEffect(Unit) {
         onDispose {
@@ -144,9 +149,9 @@ private fun LaunchedViewModelEffects(
 
 @Composable
 private fun LaunchedAppStateViewModelEffect(
+    actionId: String,
     appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
-    actionId: String,
 ) {
     val content by appStateViewModel.content.collectAsStateWithLifecycle()
     val isSidePanelAvailable = isMultiPanelAvailable()
@@ -217,11 +222,11 @@ private fun LaunchedAppStateViewModelEffect(
 
 @Composable
 private fun LaunchedMainViewModelEffect(
+    actionId: String,
     mainViewModel: MainViewModel = hiltViewModel(),
     appStateViewModel: AppStateViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
-    actionId: String,
 ) {
     val localContext = LocalContext.current
     val localLifecycle = LocalLifecycleOwner.current.lifecycle
@@ -357,6 +362,7 @@ fun BookmarkDetailsScreen(
     onOpenInFileViewerClicked: () -> Unit,
     onOpenInBrowserClicked: () -> Unit,
     onScrollDirectionChanged: (ScrollDirection) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var webViewLoadFailed by remember { mutableStateOf(false) }
 
@@ -369,6 +375,7 @@ fun BookmarkDetailsScreen(
                 icon = painterResource(id = R.drawable.ic_mobile),
                 description = stringResource(id = R.string.posts_open_with_file_viewer_description),
                 buttonText = stringResource(id = R.string.posts_open_with_file_viewer),
+                modifier = modifier,
             )
         }
 
@@ -378,6 +385,7 @@ fun BookmarkDetailsScreen(
                 url = post.url,
                 onButtonClicked = onOpenInBrowserClicked,
                 description = stringResource(id = R.string.posts_url_offline_error),
+                modifier = modifier,
             )
         }
 
@@ -386,12 +394,13 @@ fun BookmarkDetailsScreen(
                 title = post.displayTitle,
                 url = post.url,
                 onButtonClicked = onOpenInBrowserClicked,
+                modifier = modifier,
             )
         }
 
         else -> {
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = modifier.fillMaxSize(),
             ) {
                 var webViewLoading by remember { mutableStateOf(true) }
 
@@ -416,7 +425,7 @@ fun BookmarkDetailsScreen(
                     }
                 }
 
-                val nestedScrollDirection by webView.rememberScrollDirection()
+                val nestedScrollDirection by rememberScrollDirection(webView)
                 val currentOnScrollDirectionChanged by rememberUpdatedState(onScrollDirectionChanged)
 
                 LaunchedEffect(nestedScrollDirection) {
@@ -471,12 +480,13 @@ private fun BookmarkPlaceholder(
     title: String,
     url: String,
     onButtonClicked: () -> Unit,
+    modifier: Modifier = Modifier,
     icon: Painter = painterResource(id = R.drawable.ic_browser),
     description: String = stringResource(id = R.string.posts_url_error),
     buttonText: String = stringResource(id = R.string.posts_open_in_browser),
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(color = ExtendedTheme.colors.backgroundNoOverlay)
             .padding(horizontal = 24.dp),

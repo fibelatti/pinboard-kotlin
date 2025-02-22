@@ -47,21 +47,21 @@ import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-import java.util.UUID
 
 @Composable
 fun SavedFiltersScreen(
+    modifier: Modifier = Modifier,
     appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     savedFiltersViewModel: SavedFiltersViewModel = hiltViewModel(),
 ) {
     Surface(
+        modifier = modifier,
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
         val content by appStateViewModel.content.collectAsStateWithLifecycle()
         val savedFilters by savedFiltersViewModel.state.collectAsStateWithLifecycle()
 
-        val actionId = remember { UUID.randomUUID().toString() }
         val localContext = LocalContext.current
         val localView = LocalView.current
 
@@ -79,7 +79,8 @@ fun SavedFiltersScreen(
             }
         }
 
-        LaunchedErrorHandlerEffect(viewModel = savedFiltersViewModel)
+        val error by savedFiltersViewModel.error.collectAsStateWithLifecycle()
+        LaunchedErrorHandlerEffect(error = error, handler = savedFiltersViewModel::errorHandled)
 
         SavedFiltersScreen(
             savedFilters = savedFilters,

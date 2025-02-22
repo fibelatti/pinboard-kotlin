@@ -79,11 +79,11 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-import java.util.UUID
 import kotlinx.coroutines.launch
 
 @Composable
 fun TagListScreen(
+    modifier: Modifier = Modifier,
     appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     tagsViewModel: TagsViewModel = hiltViewModel(),
@@ -93,7 +93,6 @@ fun TagListScreen(
     val tagListContent by appStateViewModel.tagListContent.collectAsStateWithLifecycle(null)
 
     val screenTitle = stringResource(id = R.string.tags_title)
-    val actionId = remember { UUID.randomUUID().toString() }
     val localContext = LocalContext.current
     val localView = LocalView.current
 
@@ -119,7 +118,8 @@ fun TagListScreen(
         }
     }
 
-    LaunchedErrorHandlerEffect(viewModel = tagsViewModel)
+    val error by tagsViewModel.error.collectAsStateWithLifecycle()
+    LaunchedErrorHandlerEffect(error = error, handler = tagsViewModel::errorHandled)
 
     DisposableEffect(Unit) {
         onDispose { localView.hideKeyboard() }
@@ -129,7 +129,7 @@ fun TagListScreen(
         header = {},
         items = state.filteredTags,
         isLoading = state.isLoading,
-        modifier = Modifier.background(color = ExtendedTheme.colors.backgroundNoOverlay),
+        modifier = modifier.background(color = ExtendedTheme.colors.backgroundNoOverlay),
         onSortOptionClicked = { sorting ->
             tagsViewModel.sortTags(
                 sorting = when (sorting) {

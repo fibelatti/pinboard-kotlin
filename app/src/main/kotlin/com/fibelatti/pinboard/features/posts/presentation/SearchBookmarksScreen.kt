@@ -66,12 +66,14 @@ import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun SearchBookmarksScreen(
+    modifier: Modifier = Modifier,
     appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     searchPostViewModel: SearchPostViewModel = hiltViewModel(),
     tagsViewModel: TagsViewModel = hiltViewModel(),
 ) {
     Surface(
+        modifier = modifier,
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
         val appState by appStateViewModel.searchContent.collectAsStateWithLifecycle(initialValue = null)
@@ -160,7 +162,8 @@ fun SearchBookmarksScreen(
                 .launchIn(this)
         }
 
-        LaunchedErrorHandlerEffect(viewModel = tagsViewModel)
+        val error by tagsViewModel.error.collectAsStateWithLifecycle()
+        LaunchedErrorHandlerEffect(error = error, handler = tagsViewModel::errorHandled)
 
         DisposableEffect(Unit) {
             onDispose {
@@ -197,6 +200,7 @@ fun SearchBookmarksScreen(
 
 @Composable
 fun SearchBookmarksScreen(
+    modifier: Modifier = Modifier,
     searchTerm: String = "",
     onSearchTermChanged: (String) -> Unit = {},
     onKeyboardSearch: () -> Unit = {},
@@ -288,6 +292,7 @@ fun SearchBookmarksScreen(
         },
         items = availableTags,
         isLoading = isLoadingTags,
+        modifier = modifier,
         onSortOptionClicked = onTagsSortOptionClicked,
         searchInput = tagsSearchTerm,
         onSearchInputChanged = onTagsSearchInputChanged,

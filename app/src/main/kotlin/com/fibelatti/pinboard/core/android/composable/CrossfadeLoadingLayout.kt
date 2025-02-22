@@ -39,11 +39,12 @@ fun <T : Any?> CrossfadeLoadingLayout(
 
 @Composable
 fun LoadingContent(
+    modifier: Modifier = Modifier,
     progressIndicatorSize: Dp = 40.dp,
     progressIndicatorColor: Color = MaterialTheme.colorScheme.primary,
 ) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
         CircularProgressIndicator(

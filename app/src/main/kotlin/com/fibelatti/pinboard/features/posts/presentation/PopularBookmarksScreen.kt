@@ -20,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -53,15 +52,16 @@ import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-import java.util.UUID
 
 @Composable
 fun PopularBookmarksScreen(
+    modifier: Modifier = Modifier,
     appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
 ) {
     Surface(
+        modifier = modifier,
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
         val content by appStateViewModel.content.collectAsStateWithLifecycle()
@@ -72,8 +72,6 @@ fun PopularBookmarksScreen(
         val popularPostsScreenState by popularPostsViewModel.screenState.collectAsStateWithLifecycle()
 
         val isMultiPanelAvailable = isMultiPanelAvailable()
-
-        val actionId = remember { UUID.randomUUID().toString() }
 
         val localContext = LocalContext.current
         val localView = LocalView.current
@@ -104,7 +102,8 @@ fun PopularBookmarksScreen(
             }
         }
 
-        LaunchedErrorHandlerEffect(viewModel = popularPostsViewModel)
+        val error by popularPostsViewModel.error.collectAsStateWithLifecycle()
+        LaunchedErrorHandlerEffect(error = error, handler = popularPostsViewModel::errorHandled)
 
         CrossfadeLoadingLayout(
             data = popularPostsContent.posts

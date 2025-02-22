@@ -41,11 +41,13 @@ import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun NoteDetailsScreen(
+    modifier: Modifier = Modifier,
     appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     noteDetailsViewModel: NoteDetailsViewModel = hiltViewModel(),
 ) {
     Surface(
+        modifier = modifier,
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
         val appState by appStateViewModel.noteDetailContent.collectAsStateWithLifecycle(initialValue = null)
@@ -96,7 +98,8 @@ fun NoteDetailsScreen(
                 .launchIn(this)
         }
 
-        LaunchedErrorHandlerEffect(viewModel = noteDetailsViewModel)
+        val error by noteDetailsViewModel.error.collectAsStateWithLifecycle()
+        LaunchedErrorHandlerEffect(error = error, handler = noteDetailsViewModel::errorHandled)
 
         CrossfadeLoadingLayout(
             data = noteDetailContent.note.rightOrNull(),

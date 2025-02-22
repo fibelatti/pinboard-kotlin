@@ -45,9 +45,10 @@ fun MainTitle(
     onNavigationClicked: () -> Unit,
     actionButton: MainState.ActionButtonComponent,
     onActionButtonClicked: (data: Any?) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .background(color = ExtendedTheme.colors.backgroundNoOverlay)
             .fillMaxWidth()
             .windowInsetsPadding(

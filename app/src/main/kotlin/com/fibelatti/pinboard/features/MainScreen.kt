@@ -105,9 +105,10 @@ fun MainScreen(
     content: Content,
     onExternalBrowserContent: (ExternalBrowserContent) -> Unit,
     onExternalContent: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter,
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -207,9 +208,9 @@ private fun SidePanelContent(
 
 @Composable
 fun MainTopAppBar(
+    modifier: Modifier = Modifier,
     mainViewModel: MainViewModel = hiltViewModel(),
     appStateViewModel: AppStateViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier,
 ) {
     val state by mainViewModel.state.collectAsStateWithLifecycle()
     val content by appStateViewModel.content.collectAsStateWithLifecycle()
@@ -237,9 +238,9 @@ fun MainTopAppBar(
 
 @Composable
 fun MainBottomAppBar(
+    modifier: Modifier = Modifier,
     mainViewModel: MainViewModel = hiltViewModel(),
     appStateViewModel: AppStateViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier.fillMaxWidth(),

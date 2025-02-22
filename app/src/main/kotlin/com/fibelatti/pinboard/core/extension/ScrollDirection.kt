@@ -5,8 +5,8 @@ import android.view.ViewTreeObserver
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import kotlin.math.abs
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.mapLatest
 
 enum class ScrollDirection {
@@ -26,15 +27,18 @@ enum class ScrollDirection {
 
 @Composable
 fun LazyListState.rememberScrollDirection(autoResetTime: Long = 2_000): State<ScrollDirection> {
+    var isScrolling by remember { mutableStateOf(isScrollInProgress) }
     var previousIndex by remember(this) { mutableIntStateOf(firstVisibleItemIndex) }
     var previousScrollOffset by remember(this) { mutableIntStateOf(firstVisibleItemScrollOffset) }
 
-    val isScrolling by snapshotFlow { isScrollInProgress }
-        .mapLatest { scrolling ->
-            if (!scrolling) delay(autoResetTime)
-            scrolling
-        }
-        .collectAsState(isScrollInProgress)
+    LaunchedEffect(Unit) {
+        snapshotFlow { isScrollInProgress }
+            .mapLatest { scrolling ->
+                if (!scrolling) delay(autoResetTime)
+                scrolling
+            }
+            .collectLatest { isScrolling = it }
+    }
 
     return remember(this) {
         derivedStateOf {
@@ -65,29 +69,29 @@ fun LazyListState.rememberScrollDirection(autoResetTime: Long = 2_000): State<Sc
 }
 
 @Composable
-fun View.rememberScrollDirection(): State<ScrollDirection> {
+fun rememberScrollDirection(view: View): State<ScrollDirection> {
     var nestedScrollDirection by remember { mutableStateOf(ScrollDirection.IDLE) }
 
     val scrollChangeListener = object : ViewTreeObserver.OnScrollChangedListener {
         private var lastScrollY = 0
 
         override fun onScrollChanged() {
-            if (abs(scrollY - lastScrollY) < 100) return
+            if (abs(view.scrollY - lastScrollY) < 100) return
 
-            nestedScrollDirection = (if (scrollY > lastScrollY) ScrollDirection.DOWN else ScrollDirection.UP)
-            lastScrollY = scrollY
+            nestedScrollDirection = (if (view.scrollY > lastScrollY) ScrollDirection.DOWN else ScrollDirection.UP)
+            lastScrollY = view.scrollY
         }
     }
 
-    DisposableEffect(this) {
-        viewTreeObserver.addOnScrollChangedListener(scrollChangeListener)
+    DisposableEffect(view) {
+        view.viewTreeObserver.addOnScrollChangedListener(scrollChangeListener)
 
         onDispose {
-            viewTreeObserver.removeOnScrollChangedListener(scrollChangeListener)
+            view.viewTreeObserver.removeOnScrollChangedListener(scrollChangeListener)
         }
     }
 
-    return remember(this) {
+    return remember(view) {
         derivedStateOf { nestedScrollDirection }
     }
 }

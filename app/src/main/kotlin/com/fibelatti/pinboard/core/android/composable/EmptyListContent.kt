@@ -32,13 +32,14 @@ import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
 fun EmptyListContent(
+    modifier: Modifier = Modifier,
     icon: Painter = painterResource(id = R.drawable.ic_pin),
     title: String = stringResource(id = R.string.posts_empty_title),
     description: String = stringResource(id = R.string.posts_empty_description),
     scrollable: Boolean = true,
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .then(if (scrollable) Modifier.verticalScroll(rememberScrollState()) else Modifier),
     ) {

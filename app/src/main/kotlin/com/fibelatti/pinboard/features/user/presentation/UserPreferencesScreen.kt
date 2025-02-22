@@ -87,19 +87,18 @@ import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-import java.util.UUID
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun UserPreferencesScreen(
+    modifier: Modifier = Modifier,
     appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
 ) {
     val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
 
     val title = stringResource(R.string.user_preferences_title)
-    val actionId = remember { UUID.randomUUID().toString() }
     val localActivity = LocalActivity.current
     val localView = LocalView.current
 
@@ -128,7 +127,7 @@ fun UserPreferencesScreen(
     }
 
     BoxWithConstraints(
-        modifier = Modifier
+        modifier = modifier
             .background(color = ExtendedTheme.colors.backgroundNoOverlay)
             .fillMaxSize()
             .verticalScroll(rememberScrollState())

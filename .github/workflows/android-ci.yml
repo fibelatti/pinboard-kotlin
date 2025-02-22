@@ -82,3 +82,16 @@ jobs:
           -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect"
           -Pandroid.experimental.androidTest.numManagedDeviceShards=1
           -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Project checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Android build
+        uses: ./.github/actions/setup-android-build
+
+      - name: Build
+        run: ./gradlew lint

@@ -47,6 +47,7 @@ fun ShareReceiverScreen(
     onEdit: () -> Unit,
     onSaved: () -> Unit,
     errorDialogAction: () -> Unit,
+    modifier: Modifier = Modifier,
     shareReceiverViewModel: ShareReceiverViewModel = hiltViewModel(),
 ) {
     val state by shareReceiverViewModel.screenState.collectAsStateWithLifecycle()
@@ -75,12 +76,18 @@ fun ShareReceiverScreen(
         )
     }
 
-    ShareReceiverScreen(icon = icon)
+    ShareReceiverScreen(
+        icon = icon,
+        modifier = modifier,
+    )
 }
 
 @Composable
-fun ShareReceiverScreen(icon: Painter) {
-    Box(modifier = Modifier.fillMaxSize()) {
+fun ShareReceiverScreen(
+    icon: Painter,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier.fillMaxSize()) {
         AnimatedContent(
             targetState = icon,
             modifier = Modifier

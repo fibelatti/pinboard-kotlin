@@ -131,6 +131,7 @@ import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun BookmarkListScreen(
+    modifier: Modifier = Modifier,
     appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     postListViewModel: PostListViewModel = hiltViewModel(),
@@ -138,6 +139,7 @@ fun BookmarkListScreen(
     userPreferencesViewModel: UserPreferencesViewModel = hiltViewModel(),
 ) {
     Surface(
+        modifier = modifier,
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
         val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
@@ -254,15 +256,18 @@ private fun LaunchedViewModelEffects(
     LaunchedMainViewModelEffect(actionId = BookmarkListScreen.ACTION_ID)
     LaunchedPostDetailViewModelEffect()
 
-    LaunchedErrorHandlerEffect(viewModel = postListViewModel)
-    LaunchedErrorHandlerEffect(viewModel = postDetailViewModel)
+    val listError by postListViewModel.error.collectAsStateWithLifecycle()
+    LaunchedErrorHandlerEffect(error = listError, handler = postListViewModel::errorHandled)
+
+    val detailError by postDetailViewModel.error.collectAsStateWithLifecycle()
+    LaunchedErrorHandlerEffect(error = detailError, handler = postDetailViewModel::errorHandled)
 }
 
 @Composable
 private fun LaunchedAppStateViewModelEffect(
+    actionId: String,
     appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
-    actionId: String,
 ) {
     val content by appStateViewModel.content.collectAsStateWithLifecycle()
     val isMultiPanelAvailable = isMultiPanelAvailable()
@@ -312,9 +317,9 @@ private fun LaunchedAppStateViewModelEffect(
 
 @Composable
 private fun LaunchedMainViewModelEffect(
+    actionId: String,
     mainViewModel: MainViewModel = hiltViewModel(),
     appStateViewModel: AppStateViewModel = hiltViewModel(),
-    actionId: String,
 ) {
     val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
 
@@ -588,9 +593,10 @@ fun BookmarkListScreen(
     onTagClicked: (Tag) -> Unit,
     showPostDescription: Boolean,
     sidePanelVisible: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
     ) {
         val windowInsets = WindowInsets.safeDrawing
             .only(if (sidePanelVisible) WindowInsetsSides.Start else WindowInsetsSides.Horizontal)

@@ -49,14 +49,15 @@ import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
 fun NavigationMenuScreen(
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
-    authViewModel: AuthViewModel = hiltViewModel(),
     onSendFeedbackClicked: () -> Unit,
     onWriteReviewClicked: () -> Unit,
     onShareClicked: () -> Unit,
     onPrivacyPolicyClicked: () -> Unit,
     onLicensesClicked: () -> Unit,
     onOptionSelected: () -> Unit,
+    modifier: Modifier = Modifier,
+    appStateViewModel: AppStateViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel = hiltViewModel(),
 ) {
     val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
 
@@ -130,12 +131,13 @@ fun NavigationMenuScreen(
             onLicensesClicked()
             onOptionSelected()
         },
+        modifier = modifier,
     )
 }
 
 @Composable
 private fun NavigationMenuScreen(
-    appMode: AppMode = AppMode.PINBOARD,
+    appMode: AppMode,
     onAllClicked: () -> Unit,
     onRecentClicked: () -> Unit,
     onPublicClicked: () -> Unit,
@@ -153,9 +155,10 @@ private fun NavigationMenuScreen(
     onShareClicked: () -> Unit,
     onPrivacyPolicyClicked: () -> Unit,
     onLicensesClicked: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .nestedScroll(rememberNestedScrollInteropConnection())
             .verticalScroll(rememberScrollState())
@@ -349,6 +352,7 @@ private fun MenuItem(
 private fun NavigationMenuScreenPreview() {
     ExtendedTheme {
         NavigationMenuScreen(
+            appMode = AppMode.PINBOARD,
             onAllClicked = {},
             onRecentClicked = {},
             onPublicClicked = {},

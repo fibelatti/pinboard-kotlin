@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -54,15 +53,16 @@ import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-import java.util.UUID
 
 @Composable
 fun NoteListScreen(
+    modifier: Modifier = Modifier,
     appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     noteListViewModel: NoteListViewModel = hiltViewModel(),
 ) {
     Surface(
+        modifier = modifier,
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
         val content by appStateViewModel.content.collectAsStateWithLifecycle()
@@ -70,7 +70,6 @@ fun NoteListScreen(
             newValue = content.find<NoteListContent>() ?: return@Surface,
         )
 
-        val actionId = remember { UUID.randomUUID().toString() }
         val localContext = LocalContext.current
 
         LaunchedEffect(content) {
@@ -101,7 +100,8 @@ fun NoteListScreen(
             }
         }
 
-        LaunchedErrorHandlerEffect(viewModel = noteListViewModel)
+        val error by noteListViewModel.error.collectAsStateWithLifecycle()
+        LaunchedErrorHandlerEffect(error = error, handler = noteListViewModel::errorHandled)
 
         if (noteListContent.shouldLoad) {
             LoadingContent()

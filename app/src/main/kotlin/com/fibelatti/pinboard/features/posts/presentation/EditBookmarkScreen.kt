@@ -214,8 +214,10 @@ private fun LaunchedViewModelEffects(
         }
     }
 
+    val editError by editPostViewModel.error.collectAsStateWithLifecycle()
     LaunchedErrorHandlerEffect(
-        viewModel = editPostViewModel,
+        error = editError,
+        handler = editPostViewModel::errorHandled,
         postAction = {
             mainViewModel.updateState { currentState ->
                 currentState.copy(
@@ -227,7 +229,9 @@ private fun LaunchedViewModelEffects(
             }
         },
     )
-    LaunchedErrorHandlerEffect(viewModel = postDetailViewModel)
+
+    val detailError by postDetailViewModel.error.collectAsStateWithLifecycle()
+    LaunchedErrorHandlerEffect(error = detailError, handler = postDetailViewModel::errorHandled)
 
     DisposableEffect(Unit) {
         onDispose {
@@ -248,10 +252,10 @@ private fun LaunchedViewModelEffects(
 
 @Composable
 private fun LaunchedMainViewModelEffect(
+    actionId: String,
     mainViewModel: MainViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     editPostViewModel: EditPostViewModel = hiltViewModel(),
-    actionId: String,
 ) {
     val localContext = LocalContext.current
     val localView = LocalView.current
@@ -292,10 +296,10 @@ private fun LaunchedMainViewModelEffect(
 
 @Composable
 private fun LaunchedEditPostViewModelEffect(
+    actionId: String,
     mainViewModel: MainViewModel = hiltViewModel(),
     editPostViewModel: EditPostViewModel = hiltViewModel(),
     tagManagerViewModel: TagManagerViewModel = hiltViewModel(),
-    actionId: String,
 ) {
     val screenState by editPostViewModel.screenState.collectAsStateWithLifecycle()
 

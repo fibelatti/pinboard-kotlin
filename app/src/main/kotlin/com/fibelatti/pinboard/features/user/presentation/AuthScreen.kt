@@ -67,7 +67,8 @@ fun AuthScreen(
     val screenState by authViewModel.screenState.collectAsStateWithLifecycle()
     val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
 
-    LaunchedErrorHandlerEffect(viewModel = authViewModel)
+    val error by authViewModel.error.collectAsStateWithLifecycle()
+    LaunchedErrorHandlerEffect(error = error, handler = authViewModel::errorHandled)
 
     AuthScreen(
         useLinkding = userPreferences.useLinkding,
