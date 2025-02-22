@@ -183,7 +183,12 @@ private fun MainScreenContent(
             NoteListContent::class -> NoteListScreen()
             NoteDetailContent::class -> if (multiPanelAvailable) NoteListScreen() else NoteDetailsScreen()
             PopularPostsContent::class -> PopularBookmarksScreen()
-            PopularPostDetailContent::class -> if (multiPanelAvailable) PopularBookmarksScreen() else BookmarkDetailsScreen()
+            PopularPostDetailContent::class -> if (multiPanelAvailable) {
+                PopularBookmarksScreen()
+            } else {
+                BookmarkDetailsScreen()
+            }
+
             UserPreferencesContent::class -> UserPreferencesScreen()
             ExternalBrowserContent::class -> (content as ExternalBrowserContent).let(onExternalBrowserContent)
             ExternalContent::class -> onExternalContent()
