@@ -38,8 +38,6 @@ class PinboardEndToEndTests {
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
-    private val context get() = composeRule.activity
-
     @Before
     fun setup() {
         hiltRule.inject()
@@ -53,6 +51,8 @@ class PinboardEndToEndTests {
 
     @Test
     fun loginScreenIsVisibleWhenFirstLaunchingTheApp() {
+        val context = composeRule.activity
+
         with(composeRule) {
             // Assert
             onNodeWithText(context.getString(R.string.auth_title_pinboard)).assertIsDisplayed()
@@ -61,6 +61,8 @@ class PinboardEndToEndTests {
 
     @Test
     fun userCanLaunchAppReviewMode() {
+        val context = composeRule.activity
+
         with(composeRule) {
             // Act
             onNodeWithText(context.getString(R.string.auth_token_hint)).performTextInput("app_review_mode")
@@ -78,6 +80,8 @@ class PinboardEndToEndTests {
 
     @Test
     fun userCanLoginAndFetchBookmarks() {
+        val context = composeRule.activity
+
         // Arrange
         PinboardMockServer.setResponses(
             PinboardMockServer.updateResponse(updateTimestamp = dateFormatter.nowAsDataFormat()),
@@ -111,6 +115,8 @@ class PinboardEndToEndTests {
 
     @Test
     fun userCanLoginAndAddBookmarks() {
+        val context = composeRule.activity
+
         // Arrange
         PinboardMockServer.setResponses(
             PinboardMockServer.updateResponse(updateTimestamp = dateFormatter.nowAsDataFormat()),

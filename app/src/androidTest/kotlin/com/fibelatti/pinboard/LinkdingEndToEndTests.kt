@@ -34,8 +34,6 @@ class LinkdingEndToEndTests {
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
-    private val context get() = composeRule.activity
-
     @Before
     fun setup() {
         hiltRule.inject()
@@ -49,6 +47,8 @@ class LinkdingEndToEndTests {
 
     @Test
     fun loginScreenIsVisibleWhenFirstLaunchingTheApp() {
+        val context = composeRule.activity
+
         with(composeRule) {
             // Act
             onNodeWithText(context.getString(R.string.auth_switch_to_linkding)).performClick()
@@ -60,6 +60,8 @@ class LinkdingEndToEndTests {
 
     @Test
     fun userCanLoginAndFetchBookmarks() {
+        val context = composeRule.activity
+
         // Arrange
         LinkdingMockServer.setResponses(
             LinkdingMockServer.allBookmarksResponse(isEmpty = false),
@@ -97,6 +99,8 @@ class LinkdingEndToEndTests {
 
     @Test
     fun userCanLoginAndAddBookmarks() {
+        val context = composeRule.activity
+
         // Arrange
         LinkdingMockServer.setResponses(
             LinkdingMockServer.allBookmarksResponse(isEmpty = true),
