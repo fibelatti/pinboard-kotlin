@@ -21,6 +21,7 @@ kotlin {
                 runtimeOnly(libs.junit5.vintage)
                 implementation(libs.junit5.api)
                 implementation(libs.junit5.params)
+                implementation(libs.junit.launcher)
 
                 implementation(libs.truth)
                 implementation(libs.mockk)
