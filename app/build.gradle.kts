@@ -229,6 +229,7 @@ dependencies {
     testRuntimeOnly(libs.junit5.vintage)
     testImplementation(libs.junit5.api)
     testImplementation(libs.junit5.params)
+    testImplementation(libs.junit.launcher)
 
     testImplementation(libs.truth)
     testImplementation(libs.mockk)
