@@ -158,37 +158,41 @@ private fun MainScreenContent(
     onExternalContent: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val mainPanelContent = remember(content::class) {
+        when {
+            multiPanelAvailable && content::class == PostDetailContent::class -> PostListContent::class
+            multiPanelAvailable && content::class == NoteDetailContent::class -> NoteListContent::class
+            multiPanelAvailable && content::class == PopularPostDetailContent::class -> PopularPostsContent::class
+            else -> content::class
+        }
+    }
+
     val localView = LocalView.current
 
-    LaunchedEffect(content::class) {
+    LaunchedEffect(mainPanelContent) {
         if (content is LoginContent && content.isUnauthorized) {
             localView.showBanner(messageRes = R.string.auth_logged_out_feedback)
         }
     }
 
     AnimatedContent(
-        targetState = content::class,
+        targetState = mainPanelContent,
         modifier = modifier.fillMaxSize(),
         transitionSpec = { fadeIn(tween()) togetherWith fadeOut(tween()) },
     ) { targetState ->
         when (targetState) {
             LoginContent::class -> AuthScreen()
             PostListContent::class -> BookmarkListScreen()
-            PostDetailContent::class -> if (multiPanelAvailable) BookmarkListScreen() else BookmarkDetailsScreen()
+            PostDetailContent::class -> BookmarkDetailsScreen()
             SearchContent::class -> SearchBookmarksScreen()
             AddPostContent::class -> EditBookmarkScreen()
             EditPostContent::class -> EditBookmarkScreen()
             TagListContent::class -> TagListScreen()
             SavedFiltersContent::class -> SavedFiltersScreen()
             NoteListContent::class -> NoteListScreen()
-            NoteDetailContent::class -> if (multiPanelAvailable) NoteListScreen() else NoteDetailsScreen()
+            NoteDetailContent::class -> NoteDetailsScreen()
             PopularPostsContent::class -> PopularBookmarksScreen()
-            PopularPostDetailContent::class -> if (multiPanelAvailable) {
-                PopularBookmarksScreen()
-            } else {
-                BookmarkDetailsScreen()
-            }
-
+            PopularPostDetailContent::class -> BookmarkDetailsScreen()
             UserPreferencesContent::class -> UserPreferencesScreen()
             ExternalBrowserContent::class -> (content as ExternalBrowserContent).let(onExternalBrowserContent)
             ExternalContent::class -> onExternalContent()
