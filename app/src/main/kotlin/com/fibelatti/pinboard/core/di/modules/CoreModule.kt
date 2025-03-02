@@ -6,6 +6,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -17,11 +18,23 @@ object CoreModule {
 
     @Provides
     @Scope(AppDispatchers.IO)
-    fun ioScope(): CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    fun ioDispatcher(): CoroutineDispatcher = Dispatchers.IO
 
     @Provides
     @Scope(AppDispatchers.DEFAULT)
-    fun defaultScope(): CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    fun defaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
+
+    @Provides
+    @Scope(AppDispatchers.IO)
+    fun ioScope(
+        @Scope(AppDispatchers.IO) dispatcher: CoroutineDispatcher,
+    ): CoroutineScope = CoroutineScope(dispatcher + SupervisorJob())
+
+    @Provides
+    @Scope(AppDispatchers.DEFAULT)
+    fun defaultScope(
+        @Scope(AppDispatchers.DEFAULT) dispatcher: CoroutineDispatcher,
+    ): CoroutineScope = CoroutineScope(dispatcher + SupervisorJob())
 
     @Provides
     fun sharingStarted(): SharingStarted = SharingStarted.Eagerly
