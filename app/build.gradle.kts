@@ -235,6 +235,7 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.arch.core.testing)
+    testImplementation(libs.turbine)
 
     androidTestImplementation(libs.runner)
     androidTestUtil(libs.orchestrator)
