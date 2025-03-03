@@ -5,9 +5,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface AppStateRepository {
 
-    val content: StateFlow<Content>
-
-    suspend fun reset()
+    val appState: StateFlow<AppState>
 
     suspend fun runAction(action: Action)
 

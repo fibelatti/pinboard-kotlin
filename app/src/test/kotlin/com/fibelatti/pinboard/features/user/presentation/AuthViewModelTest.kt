@@ -11,7 +11,6 @@ import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.UserLoggedOut
 import com.fibelatti.pinboard.features.user.domain.Login
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import com.fibelatti.pinboard.isEmpty
 import com.google.common.truth.Truth.assertThat
 import io.ktor.client.plugins.ResponseException
 import io.ktor.client.statement.HttpResponse
@@ -22,6 +21,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -36,9 +36,10 @@ class AuthViewModelTest : BaseViewModelTest() {
     private val mockResourceProvider = mockk<ResourceProvider>()
 
     private val viewModel = AuthViewModel(
-        loginUseCase = mockLogin,
+        scope = TestScope(dispatcher),
         appStateRepository = mockAppStateRepository,
         userRepository = mockUserRepository,
+        loginUseCase = mockLogin,
         resourceProvider = mockResourceProvider,
     )
 
@@ -113,7 +114,7 @@ class AuthViewModelTest : BaseViewModelTest() {
                 )
             }
 
-            assertThat(viewModel.error.isEmpty()).isTrue()
+            assertThat(viewModel.error.first()).isNull()
             assertThat(viewModel.screenState.first()).isEqualTo(
                 AuthViewModel.ScreenState(isLoading = true),
             )
@@ -157,7 +158,7 @@ class AuthViewModelTest : BaseViewModelTest() {
                     )
                 }
 
-                assertThat(viewModel.error.isEmpty()).isTrue()
+                assertThat(viewModel.error.first()).isNull()
                 assertThat(viewModel.screenState.first()).isEqualTo(
                     AuthViewModel.ScreenState(apiTokenError = "R.string.auth_token_error"),
                 )
@@ -201,7 +202,7 @@ class AuthViewModelTest : BaseViewModelTest() {
                     )
                 }
 
-                assertThat(viewModel.error.isEmpty()).isTrue()
+                assertThat(viewModel.error.first()).isNull()
                 assertThat(viewModel.screenState.first()).isEqualTo(
                     AuthViewModel.ScreenState(apiTokenError = "R.string.auth_token_error"),
                 )

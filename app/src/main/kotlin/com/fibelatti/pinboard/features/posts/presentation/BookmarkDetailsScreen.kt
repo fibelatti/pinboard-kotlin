@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,14 +55,12 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
-import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.rememberScrollDirection
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
@@ -76,7 +75,6 @@ import kotlinx.coroutines.flow.onEach
 @Composable
 fun BookmarkDetailsScreen(
     modifier: Modifier = Modifier,
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
@@ -85,17 +83,28 @@ fun BookmarkDetailsScreen(
         modifier = modifier,
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val postDetailState by appStateViewModel.postDetailContent.collectAsStateWithLifecycle(null)
-        val popularPostDetailState by appStateViewModel.popularPostDetailContent.collectAsStateWithLifecycle(null)
+        val appState by mainViewModel.appState.collectAsStateWithLifecycle()
+
         val post by rememberUpdatedState(
-            newValue = postDetailState?.post ?: popularPostDetailState?.post ?: return@Surface,
+            newValue = when (val current = appState.content) {
+                is PostDetailContent -> current.post
+                is PopularPostDetailContent -> current.post
+                else -> return@Surface
+            },
+        )
+        val isConnected by rememberUpdatedState(
+            newValue = when (val current = appState.content) {
+                is PostDetailContent -> current.isConnected
+                is PopularPostDetailContent -> current.isConnected
+                else -> false
+            },
         )
 
         val postDetailsScreenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
         val popularPostsScreenState by popularPostsViewModel.screenState.collectAsStateWithLifecycle()
-        val isLoading = postDetailsScreenState.isLoading || popularPostsScreenState.isLoading
-
-        val isConnected = postDetailState?.isConnected ?: popularPostDetailState?.isConnected ?: false
+        val isLoading by remember {
+            derivedStateOf { postDetailsScreenState.isLoading || popularPostsScreenState.isLoading }
+        }
 
         val localContext = LocalContext.current
 
@@ -121,7 +130,6 @@ private fun LaunchedViewModelEffects(
 ) {
     val actionId = remember { UUID.randomUUID().toString() }
 
-    LaunchedAppStateViewModelEffect(actionId = actionId)
     LaunchedMainViewModelEffect(actionId = actionId)
     LaunchedPostDetailViewModelEffect()
     LaunchedPopularPostsViewModelEffect()
@@ -148,17 +156,20 @@ private fun LaunchedViewModelEffects(
 }
 
 @Composable
-private fun LaunchedAppStateViewModelEffect(
+private fun LaunchedMainViewModelEffect(
     actionId: String,
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
+    postDetailViewModel: PostDetailViewModel = hiltViewModel(),
+    popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
 ) {
-    val content by appStateViewModel.content.collectAsStateWithLifecycle()
-    val isSidePanelAvailable = isMultiPanelAvailable()
-    val localContext = LocalContext.current
+    val appState by mainViewModel.appState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(content, isSidePanelAvailable) {
-        val (post, menuItems) = when (val current = content) {
+    val localContext = LocalContext.current
+    val localLifecycle = LocalLifecycleOwner.current.lifecycle
+    val localOnBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+
+    LaunchedEffect(appState.content, appState.multiPanelAvailable) {
+        val (post, menuItems) = when (val current = appState.content) {
             is PostDetailContent -> current.post to listOf(
                 MainState.MenuItemComponent.DeleteBookmark,
                 MainState.MenuItemComponent.EditBookmark,
@@ -184,7 +195,7 @@ private fun LaunchedAppStateViewModelEffect(
                 MainState.ActionButtonComponent.Gone
             }
 
-            if (isSidePanelAvailable) {
+            if (appState.multiPanelAvailable) {
                 currentState.copy(
                     actionButton = actionButtonState,
                     sidePanelAppBar = MainState.SidePanelAppBarComponent.Visible(
@@ -218,19 +229,6 @@ private fun LaunchedAppStateViewModelEffect(
             }
         }
     }
-}
-
-@Composable
-private fun LaunchedMainViewModelEffect(
-    actionId: String,
-    mainViewModel: MainViewModel = hiltViewModel(),
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
-    postDetailViewModel: PostDetailViewModel = hiltViewModel(),
-    popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
-) {
-    val localContext = LocalContext.current
-    val localLifecycle = LocalLifecycleOwner.current.lifecycle
-    val localOnBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
     LaunchedEffect(Unit) {
         mainViewModel.actionButtonClicks(actionId)
@@ -249,7 +247,7 @@ private fun LaunchedMainViewModelEffect(
                         postDetailViewModel.deletePost(post)
                     }
 
-                    is MainState.MenuItemComponent.EditBookmark -> appStateViewModel.runAction(EditPost(post))
+                    is MainState.MenuItemComponent.EditBookmark -> mainViewModel.runAction(EditPost(post))
                     is MainState.MenuItemComponent.SaveBookmark -> popularPostsViewModel.saveLink(post)
                     is MainState.MenuItemComponent.OpenInBrowser -> openUrlInExternalBrowser(localContext, post)
                     is MainState.MenuItemComponent.CloseSidePanel -> localOnBackPressedDispatcher?.onBackPressed()

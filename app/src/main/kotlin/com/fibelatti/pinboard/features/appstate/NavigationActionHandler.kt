@@ -242,7 +242,10 @@ class NavigationActionHandler @Inject constructor(
 
     private fun viewPreferences(currentContent: Content): Content {
         val body = { postListContent: PostListContent ->
-            UserPreferencesContent(previousContent = postListContent)
+            UserPreferencesContent(
+                userPreferences = userRepository.currentPreferences.value,
+                previousContent = postListContent,
+            )
         }
 
         return currentContent

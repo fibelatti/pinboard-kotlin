@@ -7,6 +7,7 @@ import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.PostSaved
 import com.fibelatti.pinboard.features.appstate.SetPopularPosts
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
@@ -17,34 +18,44 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.GetPopularPosts
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
 class PopularPostsViewModel @Inject constructor(
-    private val appStateRepository: AppStateRepository,
+    scope: CoroutineScope,
+    appStateRepository: AppStateRepository,
     private val userRepository: UserRepository,
     private val postsRepository: PostsRepository,
     private val getPopularPosts: GetPopularPosts,
     private val addPost: AddPost,
-) : BaseViewModel() {
+) : BaseViewModel(scope, appStateRepository) {
 
     private val _screenState = MutableStateFlow(ScreenState())
     val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
 
-    fun getPosts() {
-        launch {
-            getPopularPosts()
-                .onSuccess { appStateRepository.runAction(SetPopularPosts(it)) }
-                .onFailure(::handleError)
+    init {
+        scope.launch {
+            filteredContent<PopularPostsContent>()
+                .filter { it.shouldLoad }
+                .collectLatest { getPosts() }
         }
     }
 
+    private suspend fun getPosts() {
+        getPopularPosts()
+            .onSuccess { runAction(SetPopularPosts(it)) }
+            .onFailure(::handleError)
+    }
+
     fun saveLink(post: Post) {
-        launch {
+        scope.launch {
             _screenState.update { currentState -> currentState.copy(isLoading = true) }
 
             val existingPost = postsRepository.getPost(id = post.id, url = post.url).getOrNull()
@@ -63,13 +74,13 @@ class PopularPostsViewModel @Inject constructor(
                         )
                     }
 
-                    appStateRepository.runDelayedAction(PostSaved(existingPost))
+                    runDelayedAction(PostSaved(existingPost))
                 }
 
                 userRepository.editAfterSharing is EditAfterSharing.BeforeSaving -> {
                     _screenState.update { currentState -> currentState.copy(isLoading = false) }
 
-                    appStateRepository.runDelayedAction(PostSaved(newPost))
+                    runDelayedAction(PostSaved(newPost))
                 }
 
                 else -> addBookmark(post = newPost)
@@ -87,7 +98,7 @@ class PopularPostsViewModel @Inject constructor(
                     )
                 }
 
-                appStateRepository.runDelayedAction(PostSaved(it))
+                runDelayedAction(PostSaved(it))
             }
             .onFailure { error ->
                 _screenState.update { currentState ->

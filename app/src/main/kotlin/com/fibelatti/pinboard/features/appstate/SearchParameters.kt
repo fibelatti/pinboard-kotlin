@@ -8,5 +8,6 @@ data class SearchParameters(
     val term: String = "",
     val tags: List<Tag> = listOf(),
 ) {
-    fun isActive(): Boolean = term.isNotEmpty() or tags.isNotEmpty()
+
+    fun isActive(): Boolean = term.isNotEmpty() || tags.isNotEmpty()
 }

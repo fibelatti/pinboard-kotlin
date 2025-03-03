@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.extension.ScrollDirection
 import java.util.UUID
 
 data class MainState(
@@ -13,6 +14,7 @@ data class MainState(
     val bottomAppBar: BottomAppBarComponent = BottomAppBarComponent.Gone,
     val floatingActionButton: FabComponent = FabComponent.Gone,
     val sidePanelAppBar: SidePanelAppBarComponent = SidePanelAppBarComponent.Gone,
+    val scrollDirection: ScrollDirection = ScrollDirection.IDLE,
 ) {
 
     sealed class TitleComponent {

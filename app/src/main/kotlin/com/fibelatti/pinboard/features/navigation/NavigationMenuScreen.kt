@@ -31,8 +31,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.All
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.Private
 import com.fibelatti.pinboard.features.appstate.Public
 import com.fibelatti.pinboard.features.appstate.Recent
@@ -56,55 +56,55 @@ fun NavigationMenuScreen(
     onLicensesClicked: () -> Unit,
     onOptionSelected: () -> Unit,
     modifier: Modifier = Modifier,
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     authViewModel: AuthViewModel = hiltViewModel(),
 ) {
-    val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
+    val state by mainViewModel.appState.collectAsStateWithLifecycle()
 
     NavigationMenuScreen(
-        appMode = appMode,
+        appMode = state.appMode,
         onAllClicked = {
-            appStateViewModel.runAction(All)
+            mainViewModel.runAction(All)
             onOptionSelected()
         },
         onRecentClicked = {
-            appStateViewModel.runAction(Recent)
+            mainViewModel.runAction(Recent)
             onOptionSelected()
         },
         onPublicClicked = {
-            appStateViewModel.runAction(Public)
+            mainViewModel.runAction(Public)
             onOptionSelected()
         },
         onPrivateClicked = {
-            appStateViewModel.runAction(Private)
+            mainViewModel.runAction(Private)
             onOptionSelected()
         },
         onReadLaterClicked = {
-            appStateViewModel.runAction(Unread)
+            mainViewModel.runAction(Unread)
             onOptionSelected()
         },
         onUntaggedClicked = {
-            appStateViewModel.runAction(Untagged)
+            mainViewModel.runAction(Untagged)
             onOptionSelected()
         },
         onSavedFiltersClicked = {
-            appStateViewModel.runAction(ViewSavedFilters)
+            mainViewModel.runAction(ViewSavedFilters)
             onOptionSelected()
         },
         onTagsClicked = {
-            appStateViewModel.runAction(ViewTags)
+            mainViewModel.runAction(ViewTags)
             onOptionSelected()
         },
         onNotesClicked = {
-            appStateViewModel.runAction(ViewNotes)
+            mainViewModel.runAction(ViewNotes)
             onOptionSelected()
         },
         onPopularClicked = {
-            appStateViewModel.runAction(ViewPopular)
+            mainViewModel.runAction(ViewPopular)
             onOptionSelected()
         },
         onPreferencesClicked = {
-            appStateViewModel.runAction(ViewPreferences)
+            mainViewModel.runAction(ViewPreferences)
             onOptionSelected()
         },
         onLogoutClicked = {

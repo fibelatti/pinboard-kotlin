@@ -65,13 +65,12 @@ import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.tags.domain.TagManagerState
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagManager
-import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -81,55 +80,22 @@ import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun EditBookmarkScreen(
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     editPostViewModel: EditPostViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
-    tagManagerViewModel: TagManagerViewModel = hiltViewModel(),
 ) {
-    val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
-    val addPostContent by appStateViewModel.addPostContent.collectAsStateWithLifecycle(initialValue = null)
-    val editPostContent by appStateViewModel.editPostContent.collectAsStateWithLifecycle(initialValue = null)
-
-    LaunchedEffect(addPostContent) {
-        addPostContent?.let {
-            val emptyPost = Post(
-                url = "",
-                title = "",
-                description = "",
-                private = it.defaultPrivate,
-                readLater = it.defaultReadLater,
-                tags = it.defaultTags.ifEmpty { null },
-            )
-
-            editPostViewModel.initializePost(emptyPost)
-            tagManagerViewModel.initializeTags(it.defaultTags)
-        }
-    }
-
-    LaunchedEffect(editPostContent) {
-        editPostContent?.let {
-            editPostViewModel.initializePost(it.post)
-            tagManagerViewModel.initializeTags(it.post.tags.orEmpty())
-        }
-    }
-
+    val appState by mainViewModel.appState.collectAsStateWithLifecycle()
     val postState by editPostViewModel.postState.collectAsStateWithLifecycle(initialValue = null)
     val currentState by rememberUpdatedState(newValue = postState ?: return)
 
     val editPostScreenState by editPostViewModel.screenState.collectAsStateWithLifecycle()
     val postDetailScreenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
-
-    val tagManagerState by tagManagerViewModel.state.collectAsStateWithLifecycle()
-
-    LaunchedEffect(tagManagerState) {
-        editPostViewModel.searchForTag(tagManagerState.currentQuery, tagManagerState.tags)
-        editPostViewModel.updatePost { post -> post.copy(tags = tagManagerState.tags.ifEmpty { null }) }
-    }
+    val tagManagerState by editPostViewModel.tagManagerState.collectAsStateWithLifecycle(TagManagerState())
 
     LaunchedViewModelEffects()
 
     EditBookmarkScreen(
-        appMode = appMode,
+        appMode = appState.appMode,
         post = currentState,
         isLoading = editPostScreenState.isLoading || postDetailScreenState.isLoading,
         onUrlChanged = { newValue ->
@@ -153,13 +119,13 @@ fun EditBookmarkScreen(
             editPostViewModel.updatePost { post -> post.copy(readLater = newValue) }
         },
         searchTagInput = tagManagerState.currentQuery,
-        onSearchTagInputChanged = tagManagerViewModel::setQuery,
-        onAddTagClicked = tagManagerViewModel::addTag,
+        onSearchTagInputChanged = editPostViewModel::setTagSearchQuery,
+        onAddTagClicked = editPostViewModel::addTag,
         suggestedTags = tagManagerState.suggestedTags,
-        onSuggestedTagClicked = tagManagerViewModel::addTag,
+        onSuggestedTagClicked = editPostViewModel::addTag,
         currentTagsTitle = stringResource(id = tagManagerState.displayTitle),
         currentTags = tagManagerState.tags,
-        onRemoveCurrentTagClicked = tagManagerViewModel::removeTag,
+        onRemoveCurrentTagClicked = editPostViewModel::removeTag,
     )
 }
 
@@ -171,13 +137,24 @@ object EditBookmarkScreen {
 // region ViewModel setup
 @Composable
 private fun LaunchedViewModelEffects(
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     editPostViewModel: EditPostViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
 ) {
     val localContext = LocalContext.current
     val localView = LocalView.current
+
+    BackHandler {
+        if (editPostViewModel.hasPendingChanges()) {
+            MaterialAlertDialogBuilder(localContext).apply {
+                setMessage(R.string.alert_confirm_unsaved_changes)
+                setPositiveButton(R.string.hint_yes) { _, _ -> mainViewModel.runAction(NavigateBack) }
+                setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
+            }.applySecureFlag().show()
+        } else {
+            mainViewModel.runAction(NavigateBack)
+        }
+    }
 
     LaunchedEffect(Unit) {
         localView.doOnApplyWindowInsets { _, insets, _, _ ->
@@ -201,18 +178,6 @@ private fun LaunchedViewModelEffects(
     LaunchedMainViewModelEffect(actionId = EditBookmarkScreen.ACTION_ID)
     LaunchedEditPostViewModelEffect(actionId = EditBookmarkScreen.ACTION_ID)
     LaunchedPostDetailViewModelEffect()
-
-    BackHandler {
-        if (editPostViewModel.hasPendingChanges()) {
-            MaterialAlertDialogBuilder(localContext).apply {
-                setMessage(R.string.alert_confirm_unsaved_changes)
-                setPositiveButton(R.string.hint_yes) { _, _ -> appStateViewModel.runAction(NavigateBack) }
-                setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
-            }.applySecureFlag().show()
-        } else {
-            appStateViewModel.runAction(NavigateBack)
-        }
-    }
 
     val editError by editPostViewModel.error.collectAsStateWithLifecycle()
     LaunchedErrorHandlerEffect(
@@ -299,7 +264,6 @@ private fun LaunchedEditPostViewModelEffect(
     actionId: String,
     mainViewModel: MainViewModel = hiltViewModel(),
     editPostViewModel: EditPostViewModel = hiltViewModel(),
-    tagManagerViewModel: TagManagerViewModel = hiltViewModel(),
 ) {
     val screenState by editPostViewModel.screenState.collectAsStateWithLifecycle()
 
@@ -308,8 +272,6 @@ private fun LaunchedEditPostViewModelEffect(
     val localLifecycle = LocalLifecycleOwner.current.lifecycle
 
     LaunchedEffect(screenState) {
-        tagManagerViewModel.setSuggestedTags(screenState.suggestedTags)
-
         when {
             screenState.saved -> {
                 localView.showBanner(R.string.posts_saved_feedback)

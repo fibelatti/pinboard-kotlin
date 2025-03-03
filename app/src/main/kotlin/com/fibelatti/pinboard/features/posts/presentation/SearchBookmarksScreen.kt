@@ -45,7 +45,6 @@ import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AddSearchTag
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.RefreshSearchTags
 import com.fibelatti.pinboard.features.appstate.RemoveSearchTag
@@ -67,7 +66,6 @@ import kotlinx.coroutines.flow.onEach
 @Composable
 fun SearchBookmarksScreen(
     modifier: Modifier = Modifier,
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     searchPostViewModel: SearchPostViewModel = hiltViewModel(),
     tagsViewModel: TagsViewModel = hiltViewModel(),
@@ -76,8 +74,8 @@ fun SearchBookmarksScreen(
         modifier = modifier,
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val appState by appStateViewModel.searchContent.collectAsStateWithLifecycle(initialValue = null)
-        val searchContent by rememberUpdatedState(newValue = appState ?: return@Surface)
+        val searchContent by searchPostViewModel.searchContent.collectAsStateWithLifecycle(null)
+        val currentContent by rememberUpdatedState(newValue = searchContent ?: return@Surface)
 
         val tagsState by tagsViewModel.state.collectAsStateWithLifecycle()
 
@@ -86,12 +84,12 @@ fun SearchBookmarksScreen(
         val queryResultSize by searchPostViewModel.queryResultSize.collectAsStateWithLifecycle()
         val activeSearchLabel = stringResource(id = R.string.search_result_size, queryResultSize)
 
-        LaunchedEffect(searchContent, queryResultSize) {
-            val isActive = searchContent.searchParameters.isActive()
+        BackHandler {
+            mainViewModel.runAction(Search)
+        }
 
-            if (isActive) {
-                searchPostViewModel.searchParametersChanged(searchContent.searchParameters)
-            }
+        LaunchedEffect(currentContent, activeSearchLabel) {
+            val isActive = currentContent.searchParameters.isActive()
 
             mainViewModel.updateState { mainState ->
                 mainState.copy(
@@ -113,8 +111,8 @@ fun SearchBookmarksScreen(
                             emptyList()
                         },
                         data = SavedFilter(
-                            searchTerm = searchContent.searchParameters.term,
-                            tags = searchContent.searchParameters.tags,
+                            searchTerm = currentContent.searchParameters.term,
+                            tags = currentContent.searchParameters.tags,
                         ),
                     ),
                     floatingActionButton = MainState.FabComponent.Visible(actionId, R.drawable.ic_search),
@@ -122,27 +120,15 @@ fun SearchBookmarksScreen(
             }
         }
 
-        LaunchedEffect(searchContent.shouldLoadTags, searchContent.availableTags) {
-            if (searchContent.shouldLoadTags) {
-                tagsViewModel.getAll(TagsViewModel.Source.SEARCH)
-            } else {
-                tagsViewModel.sortTags(searchContent.availableTags)
-            }
-        }
-
         val localView = LocalView.current
         val localLifecycle = LocalLifecycleOwner.current.lifecycle
-
-        BackHandler {
-            appStateViewModel.runAction(Search)
-        }
 
         LaunchedEffect(Unit) {
             mainViewModel.menuItemClicks(actionId)
                 .onEach { (menuItem, data) ->
                     when (menuItem) {
                         is MainState.MenuItemComponent.ClearSearch -> {
-                            appStateViewModel.runAction(ClearSearch)
+                            mainViewModel.runAction(ClearSearch)
                         }
 
                         is MainState.MenuItemComponent.SaveSearch -> {
@@ -157,7 +143,7 @@ fun SearchBookmarksScreen(
                 .launchIn(this)
 
             mainViewModel.fabClicks(actionId)
-                .onEach { appStateViewModel.runAction(Search) }
+                .onEach { mainViewModel.runAction(Search) }
                 .flowWithLifecycle(localLifecycle)
                 .launchIn(this)
         }
@@ -172,11 +158,11 @@ fun SearchBookmarksScreen(
         }
 
         SearchBookmarksScreen(
-            searchTerm = searchContent.searchParameters.term,
-            onSearchTermChanged = { newValue -> appStateViewModel.runAction(SetTerm(newValue)) },
-            onKeyboardSearch = { appStateViewModel.runAction(Search) },
-            selectedTags = searchContent.searchParameters.tags,
-            onSelectedTagRemoved = { tag -> appStateViewModel.runAction(RemoveSearchTag(tag)) },
+            searchTerm = currentContent.searchParameters.term,
+            onSearchTermChanged = { newValue -> mainViewModel.runAction(SetTerm(newValue)) },
+            onKeyboardSearch = { mainViewModel.runAction(Search) },
+            selectedTags = currentContent.searchParameters.tags,
+            onSelectedTagRemoved = { tag -> mainViewModel.runAction(RemoveSearchTag(tag)) },
             availableTags = tagsState.filteredTags,
             isLoadingTags = tagsState.isLoading,
             onTagsSortOptionClicked = { sorting ->
@@ -192,8 +178,8 @@ fun SearchBookmarksScreen(
             },
             tagsSearchTerm = tagsState.currentQuery,
             onTagsSearchInputChanged = tagsViewModel::searchTags,
-            onAvailableTagClicked = { tag -> appStateViewModel.runAction(AddSearchTag(tag)) },
-            onTagsPullToRefresh = { appStateViewModel.runAction(RefreshSearchTags) },
+            onAvailableTagClicked = { tag -> mainViewModel.runAction(AddSearchTag(tag)) },
+            onTagsPullToRefresh = { mainViewModel.runAction(RefreshSearchTags) },
         )
     }
 }
@@ -301,6 +287,7 @@ fun SearchBookmarksScreen(
     )
 }
 
+// region Previews
 @Composable
 @ThemePreviews
 private fun DefaultSearchBookmarksScreenPreview() {
@@ -319,3 +306,4 @@ private fun ActiveSearchBookmarksScreenPreview() {
         )
     }
 }
+// endregion Previews

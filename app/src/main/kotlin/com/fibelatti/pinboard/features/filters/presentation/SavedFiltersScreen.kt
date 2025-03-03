@@ -40,7 +40,6 @@ import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ViewSavedFilter
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.ui.components.ChipGroup
@@ -51,7 +50,6 @@ import com.fibelatti.ui.theme.ExtendedTheme
 @Composable
 fun SavedFiltersScreen(
     modifier: Modifier = Modifier,
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     savedFiltersViewModel: SavedFiltersViewModel = hiltViewModel(),
 ) {
@@ -59,7 +57,6 @@ fun SavedFiltersScreen(
         modifier = modifier,
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val content by appStateViewModel.content.collectAsStateWithLifecycle()
         val savedFilters by savedFiltersViewModel.state.collectAsStateWithLifecycle()
 
         val localContext = LocalContext.current
@@ -67,7 +64,7 @@ fun SavedFiltersScreen(
 
         val title = stringResource(id = R.string.saved_filters_title)
 
-        LaunchedEffect(content) {
+        LaunchedEffect(Unit) {
             mainViewModel.updateState { currentState ->
                 currentState.copy(
                     title = MainState.TitleComponent.Visible(title),
@@ -85,7 +82,7 @@ fun SavedFiltersScreen(
         SavedFiltersScreen(
             savedFilters = savedFilters,
             onSavedFilterClicked = { savedFilter ->
-                appStateViewModel.runAction(ViewSavedFilter(savedFilter = savedFilter))
+                mainViewModel.runAction(ViewSavedFilter(savedFilter = savedFilter))
             },
             onSavedFilterLongClicked = { savedFilter ->
                 SelectionDialog.show(

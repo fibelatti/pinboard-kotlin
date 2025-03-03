@@ -13,21 +13,15 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class GetRecentPostsTest {
 
     private val mockResponse = mockk<PostListResult>()
 
-    private val mockPostsRepository = mockk<PostsRepository>(relaxed = true)
-
-    private val getRecentPosts = GetRecentPosts(mockPostsRepository)
-
-    @BeforeEach
-    fun setup() {
+    private val mockPostsRepository = mockk<PostsRepository> {
         every {
-            mockPostsRepository.getAllPosts(
+            getAllPosts(
                 sortType = any(),
                 searchTerm = any(),
                 tags = any(),
@@ -37,10 +31,14 @@ class GetRecentPostsTest {
                 countLimit = any(),
                 pageLimit = any(),
                 pageOffset = any(),
-                forceRefresh = false,
+                forceRefresh = any(),
             )
         } returns flowOf(Success(mockResponse))
     }
+
+    private val getRecentPosts = GetRecentPosts(
+        postsRepository = mockPostsRepository,
+    )
 
     @Test
     fun `GIVEN search term was set in the params WHEN getRecentPosts is called THEN repository is called with the expected params`() =

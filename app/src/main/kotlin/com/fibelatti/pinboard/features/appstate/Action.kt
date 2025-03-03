@@ -6,8 +6,14 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 
-// region Action
 sealed class Action
+
+// region App
+sealed class AppAction : Action()
+
+data class MultiPanelAvailabilityChanged(val available: Boolean) : AppAction()
+data object Reset : AppAction()
+// endregion App
 
 // region AuthAction
 sealed class AuthAction : Action()
@@ -31,7 +37,6 @@ data object ViewNotes : NavigationAction()
 data class ViewNote(val id: String) : NavigationAction()
 data object ViewPopular : NavigationAction()
 data object ViewPreferences : NavigationAction()
-// endregion NavigationAction
 
 // region ViewCategory
 data object All : ViewCategory()
@@ -41,6 +46,7 @@ data object Private : ViewCategory()
 data object Unread : ViewCategory()
 data object Untagged : ViewCategory()
 // endregion ViewCategory
+// endregion NavigationAction
 
 // region PostAction
 sealed class PostAction : Action()
@@ -91,4 +97,3 @@ sealed class PopularAction : Action()
 data object RefreshPopular : PopularAction()
 data class SetPopularPosts(val posts: Map<Post, Int>) : PopularAction()
 // endregion PopularAction
-// endregion

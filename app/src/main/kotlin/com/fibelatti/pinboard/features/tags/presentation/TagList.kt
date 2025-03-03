@@ -72,7 +72,6 @@ import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.RefreshTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -84,27 +83,15 @@ import kotlinx.coroutines.launch
 @Composable
 fun TagListScreen(
     modifier: Modifier = Modifier,
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     tagsViewModel: TagsViewModel = hiltViewModel(),
 ) {
-    val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
-    val state by tagsViewModel.state.collectAsStateWithLifecycle()
-    val tagListContent by appStateViewModel.tagListContent.collectAsStateWithLifecycle(null)
+    val appState by mainViewModel.appState.collectAsStateWithLifecycle()
+    val tagsState by tagsViewModel.state.collectAsStateWithLifecycle()
 
     val screenTitle = stringResource(id = R.string.tags_title)
     val localContext = LocalContext.current
     val localView = LocalView.current
-
-    LaunchedEffect(tagListContent) {
-        val current = tagListContent ?: return@LaunchedEffect
-
-        if (current.shouldLoad) {
-            tagsViewModel.getAll(TagsViewModel.Source.MENU)
-        } else {
-            tagsViewModel.sortTags(current.tags)
-        }
-    }
 
     LaunchedEffect(Unit) {
         mainViewModel.updateState { currentState ->
@@ -127,8 +114,8 @@ fun TagListScreen(
 
     TagList(
         header = {},
-        items = state.filteredTags,
-        isLoading = state.isLoading,
+        items = tagsState.filteredTags,
+        isLoading = tagsState.isLoading,
         modifier = modifier.background(color = ExtendedTheme.colors.backgroundNoOverlay),
         onSortOptionClicked = { sorting ->
             tagsViewModel.sortTags(
@@ -141,11 +128,11 @@ fun TagListScreen(
                 searchQuery = "",
             )
         },
-        searchInput = state.currentQuery,
+        searchInput = tagsState.currentQuery,
         onSearchInputChanged = tagsViewModel::searchTags,
-        onTagClicked = { appStateViewModel.runAction(PostsForTag(it)) },
+        onTagClicked = { mainViewModel.runAction(PostsForTag(it)) },
         onTagLongClicked = { tag ->
-            if (AppMode.PINBOARD == appMode) {
+            if (AppMode.PINBOARD == appState.appMode) {
                 SelectionDialog.show(
                     context = localContext,
                     title = localContext.getString(R.string.quick_actions_title),
@@ -166,7 +153,7 @@ fun TagListScreen(
                 )
             }
         },
-        onPullToRefresh = { appStateViewModel.runAction(RefreshTags) },
+        onPullToRefresh = { mainViewModel.runAction(RefreshTags) },
     )
 }
 

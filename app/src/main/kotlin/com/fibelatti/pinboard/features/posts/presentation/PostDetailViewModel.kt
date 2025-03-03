@@ -15,6 +15,7 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.DeletePost
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,16 +24,17 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class PostDetailViewModel @Inject constructor(
-    private val appStateRepository: AppStateRepository,
+    scope: CoroutineScope,
+    appStateRepository: AppStateRepository,
     private val deletePost: DeletePost,
     private val addPost: AddPost,
-) : BaseViewModel() {
+) : BaseViewModel(scope, appStateRepository) {
 
     private val _screenState = MutableStateFlow(ScreenState())
     val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
 
     fun deletePost(post: Post) {
-        launch {
+        scope.launch {
             _screenState.update { currentState ->
                 currentState.copy(isLoading = true)
             }
@@ -45,7 +47,7 @@ class PostDetailViewModel @Inject constructor(
                             deleted = Success(value = true),
                         )
                     }
-                    appStateRepository.runDelayedAction(PostDeleted)
+                    runDelayedAction(PostDeleted)
                 }
                 .onFailure {
                     _screenState.update { currentState ->
@@ -59,13 +61,13 @@ class PostDetailViewModel @Inject constructor(
     }
 
     fun toggleReadLater(post: Post) {
-        launch {
+        scope.launch {
             editPost(newPost = post.copy(readLater = !(post.readLater ?: false)))
         }
     }
 
     fun addTags(post: Post, tags: List<Tag>) {
-        launch {
+        scope.launch {
             if (post.tags?.containsAll(tags) == true) return@launch
 
             editPost(newPost = post.copy(tags = post.tags.orEmpty().plus(tags).distinct()))
@@ -82,7 +84,7 @@ class PostDetailViewModel @Inject constructor(
                         updated = Success(value = true),
                     )
                 }
-                appStateRepository.runDelayedAction(PostSaved(addedPost))
+                runDelayedAction(PostSaved(addedPost))
             }
             .onFailure { throwable ->
                 _screenState.update { currentState ->

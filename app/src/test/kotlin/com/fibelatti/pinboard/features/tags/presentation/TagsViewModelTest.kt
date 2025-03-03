@@ -4,35 +4,122 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAGS
+import com.fibelatti.pinboard.MockDataProvider.createAppState
+import com.fibelatti.pinboard.MockDataProvider.createPostListContent
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.appstate.SearchContent
+import com.fibelatti.pinboard.features.appstate.SearchParameters
 import com.fibelatti.pinboard.features.appstate.SetSearchTags
 import com.fibelatti.pinboard.features.appstate.SetTags
+import com.fibelatti.pinboard.features.appstate.TagListContent
 import com.fibelatti.pinboard.features.tags.domain.TagsRepository
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
-import com.fibelatti.pinboard.isEmpty
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coJustRun
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
 internal class TagsViewModelTest : BaseViewModelTest() {
 
-    private val mockTagsRepository = mockk<TagsRepository>()
+    private val appStateFlow = MutableStateFlow(createAppState())
     private val mockAppStateRepository = mockk<AppStateRepository> {
+        every { appState } returns appStateFlow
         coJustRun { runAction(any()) }
     }
 
+    private val mockTagsRepository = mockk<TagsRepository>()
+
     private val tagsViewModel = TagsViewModel(
-        mockTagsRepository,
-        mockAppStateRepository,
+        scope = TestScope(dispatcher),
+        appStateRepository = mockAppStateRepository,
+        tagsRepository = mockTagsRepository,
     )
+
+    @Test
+    fun `WHEN TagListContent is emitted AND shouldLoad is true THEN getAll is called`() = runTest {
+        // GIVEN
+        every { mockTagsRepository.getAllTags() } returns flowOf(Success(SAMPLE_TAGS))
+
+        // WHEN
+        appStateFlow.value = createAppState(
+            content = TagListContent(
+                tags = emptyList(),
+                shouldLoad = true,
+                previousContent = createPostListContent(),
+            ),
+        )
+
+        // THEN
+        coVerify { mockAppStateRepository.runAction(SetTags(SAMPLE_TAGS)) }
+    }
+
+    @Test
+    fun `WHEN TagListContent is emitted AND shouldLoad is false THEN tags are sorted`() = runTest {
+        // WHEN
+        appStateFlow.value = createAppState(
+            content = TagListContent(
+                tags = SAMPLE_TAGS.shuffled(),
+                shouldLoad = false,
+                previousContent = createPostListContent(),
+            ),
+        )
+
+        // THEN
+        assertThat(tagsViewModel.state.first()).isEqualTo(
+            TagsViewModel.State(
+                allTags = SAMPLE_TAGS,
+                isLoading = false,
+            ),
+        )
+    }
+
+    @Test
+    fun `WHEN SearchContent is emitted AND shouldLoad is true THEN getAll is called`() = runTest {
+        // GIVEN
+        every { mockTagsRepository.getAllTags() } returns flowOf(Success(SAMPLE_TAGS))
+
+        // WHEN
+        appStateFlow.value = createAppState(
+            content = SearchContent(
+                searchParameters = SearchParameters(),
+                shouldLoadTags = true,
+                previousContent = createPostListContent(),
+            ),
+        )
+
+        // THEN
+        coVerify { mockAppStateRepository.runAction(SetSearchTags(SAMPLE_TAGS)) }
+    }
+
+    @Test
+    fun `WHEN SearchContent is emitted AND shouldLoad is false THEN tags are sorted`() = runTest {
+        // WHEN
+        appStateFlow.value = createAppState(
+            content = SearchContent(
+                searchParameters = SearchParameters(),
+                availableTags = SAMPLE_TAGS.shuffled(),
+                shouldLoadTags = false,
+                previousContent = createPostListContent(),
+            ),
+        )
+
+        // THEN
+        assertThat(tagsViewModel.state.first()).isEqualTo(
+            TagsViewModel.State(
+                allTags = SAMPLE_TAGS,
+                isLoading = false,
+            ),
+        )
+    }
 
     @Test
     fun `WHEN getAllTags fails THEN error should receive a value`() = runTest {
@@ -163,7 +250,7 @@ internal class TagsViewModelTest : BaseViewModelTest() {
 
         // THEN
         assertThat(tagsViewModel.state.first().isLoading).isFalse()
-        assertThat(tagsViewModel.error.isEmpty()).isTrue()
+        assertThat(tagsViewModel.error.first()).isNull()
         coVerify { mockAppStateRepository.runAction(SetTags(tags = tags, shouldReloadPosts = true)) }
     }
 

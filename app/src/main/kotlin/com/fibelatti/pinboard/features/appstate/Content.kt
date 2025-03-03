@@ -4,6 +4,7 @@ import com.fibelatti.core.functional.Either
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import kotlin.reflect.KClass
 
 // region Markers
@@ -20,8 +21,8 @@ interface ConnectionAwareContent {
 }
 
 /**
- * Marker interface to identify a [Content] that can be opened on a side panel
- * on foldable phones and tablets.
+ * Marker interface to identify a [Content] that can be displayed on a side panel if the screen
+ * width allows it (e.g. landscape mode, foldables and tablets).
  */
 interface SidePanelContent
 // endregion Markers
@@ -125,6 +126,7 @@ data class PopularPostDetailContent(
 ) : ContentWithHistory(), ConnectionAwareContent, SidePanelContent
 
 data class UserPreferencesContent(
+    val userPreferences: UserPreferences,
     override val previousContent: PostListContent,
 ) : ContentWithHistory()
 

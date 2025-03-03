@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import androidx.annotation.VisibleForTesting
-import androidx.lifecycle.viewModelScope
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
@@ -19,6 +18,7 @@ import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
+import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.filters.domain.SavedFiltersRepository
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
@@ -28,22 +28,40 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @HiltViewModel
 class PostListViewModel @Inject constructor(
+    scope: CoroutineScope,
+    appStateRepository: AppStateRepository,
+    private val savedFiltersRepository: SavedFiltersRepository,
     private val getAllPosts: GetAllPosts,
     private val getRecentPosts: GetRecentPosts,
-    private val appStateRepository: AppStateRepository,
-    private val savedFiltersRepository: SavedFiltersRepository,
-) : BaseViewModel() {
+) : BaseViewModel(scope, appStateRepository) {
 
+    init {
+        scope.launch {
+            appStateRepository.appState
+                .mapNotNull { appState -> appState.content.find<PostListContent>() }
+                .collectLatest { content ->
+                    val shouldLoadContent = content.shouldLoad is ShouldLoadFirstPage ||
+                        content.shouldLoad is ShouldForceLoad ||
+                        content.shouldLoad is ShouldLoadNextPage
+
+                    if (shouldLoadContent) {
+                        loadContent(content)
+                    }
+                }
+        }
+    }
+
+    @VisibleForTesting
     fun loadContent(content: PostListContent) {
-        coroutineContext.cancelChildren()
-
         val offset = when (content.shouldLoad) {
             is ShouldLoadFirstPage, ShouldForceLoad -> 0
             is ShouldLoadNextPage -> content.shouldLoad.offset
@@ -60,18 +78,23 @@ class PostListViewModel @Inject constructor(
                     forceRefresh = content.shouldLoad is ShouldForceLoad,
                 )
             }
+
             is Recent -> {
                 getRecent(content.sortType, content.searchParameters.term, content.searchParameters.tags)
             }
+
             is Public -> {
                 getPublic(content.sortType, content.searchParameters.term, content.searchParameters.tags, offset)
             }
+
             is Private -> {
                 getPrivate(content.sortType, content.searchParameters.term, content.searchParameters.tags, offset)
             }
+
             is Unread -> {
                 getUnread(content.sortType, content.searchParameters.term, content.searchParameters.tags, offset)
             }
+
             is Untagged -> {
                 getUntagged(content.sortType, content.searchParameters.term, offset)
             }
@@ -102,10 +125,10 @@ class PostListViewModel @Inject constructor(
         val params = GetPostParams(sorting, searchTerm, GetPostParams.Tags.Tagged(tags))
         getRecentPosts(params)
             .onEach { result ->
-                result.onSuccess { appStateRepository.runAction(SetPosts(it)) }
+                result.onSuccess { runAction(SetPosts(it)) }
                     .onFailure(::handleError)
             }
-            .launchIn(viewModelScope)
+            .launchIn(scope)
     }
 
     @VisibleForTesting
@@ -165,14 +188,14 @@ class PostListViewModel @Inject constructor(
             .onEach { result ->
                 result.onSuccess { postListResult ->
                     val action = if (params.offset == 0) SetPosts(postListResult) else SetNextPostPage(postListResult)
-                    appStateRepository.runAction(action)
+                    runAction(action)
                 }.onFailure(::handleError)
             }
-            .launchIn(viewModelScope)
+            .launchIn(scope)
     }
 
     fun saveFilter(savedFilter: SavedFilter) {
-        launch {
+        scope.launch {
             savedFiltersRepository.saveFilter(savedFilter)
         }
     }

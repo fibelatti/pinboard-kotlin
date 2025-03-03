@@ -1,9 +1,9 @@
 package com.fibelatti.pinboard.features.navigation
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
@@ -24,7 +24,7 @@ object NavigationMenu {
                     sendFeedback(activity)
                 },
                 onWriteReviewClicked = {
-                    activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(APP_URL)))
+                    activity.startActivity(Intent(Intent.ACTION_VIEW, APP_URL.toUri()))
                 },
                 onShareClicked = {
                     activity.shareText(
@@ -33,7 +33,7 @@ object NavigationMenu {
                     )
                 },
                 onPrivacyPolicyClicked = {
-                    activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(PRIVACY_POLICY_URL)))
+                    activity.startActivity(Intent(Intent.ACTION_VIEW, PRIVACY_POLICY_URL.toUri()))
                 },
                 onLicensesClicked = {
                     activity.startActivity(Intent(activity, OssLicensesActivity::class.java))
@@ -57,7 +57,7 @@ object NavigationMenu {
             appendLine()
         }
 
-        val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:")).apply {
+        val emailIntent = Intent(Intent.ACTION_SENDTO, "mailto:".toUri()).apply {
             putExtra(Intent.EXTRA_EMAIL, arrayOf("appsupport@fibelatti.com"))
             putExtra(
                 Intent.EXTRA_SUBJECT,

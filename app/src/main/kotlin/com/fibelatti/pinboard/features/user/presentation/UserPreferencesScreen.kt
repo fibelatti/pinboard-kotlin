@@ -73,15 +73,14 @@ import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.core.extension.fillWidthOfParent
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.presentation.PostQuickActions
 import com.fibelatti.pinboard.features.sync.PeriodicSync
+import com.fibelatti.pinboard.features.tags.domain.TagManagerState
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagManager
-import com.fibelatti.pinboard.features.tags.presentation.TagManagerViewModel
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
@@ -93,10 +92,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun UserPreferencesScreen(
     modifier: Modifier = Modifier,
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
 ) {
-    val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
+    val appState by mainViewModel.appState.collectAsStateWithLifecycle()
 
     val title = stringResource(R.string.user_preferences_title)
     val localActivity = LocalActivity.current
@@ -142,13 +140,13 @@ fun UserPreferencesScreen(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 AppPreferencesContent(
-                    appMode = appMode,
+                    appMode = appState.appMode,
                     onDynamicColorChange = restartActivity,
                     onDisableScreenshotsChange = restartActivity,
                 )
 
                 BookmarkingPreferencesContent(
-                    appMode = appMode,
+                    appMode = appState.appMode,
                     modifier = Modifier.padding(top = 32.dp),
                 )
             }
@@ -159,14 +157,14 @@ fun UserPreferencesScreen(
                 val childWidth = this@BoxWithConstraints.maxWidth / 2
 
                 AppPreferencesContent(
-                    appMode = appMode,
+                    appMode = appState.appMode,
                     onDynamicColorChange = restartActivity,
                     onDisableScreenshotsChange = restartActivity,
                     modifier = Modifier.requiredWidth(childWidth),
                 )
 
                 BookmarkingPreferencesContent(
-                    appMode = appMode,
+                    appMode = appState.appMode,
                     modifier = Modifier.requiredWidth(childWidth),
                 )
             }
@@ -485,24 +483,9 @@ private fun BookmarkingPreferencesContent(
     appMode: AppMode,
     modifier: Modifier = Modifier,
     userPreferencesViewModel: UserPreferencesViewModel = hiltViewModel(),
-    tagManagerViewModel: TagManagerViewModel = hiltViewModel(),
 ) {
     val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
-    val suggestedTags by userPreferencesViewModel.suggestedTags.collectAsStateWithLifecycle(emptyList())
-    val tagState by tagManagerViewModel.state.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) {
-        tagManagerViewModel.initializeTags(userPreferences.defaultTags)
-    }
-
-    LaunchedEffect(suggestedTags) {
-        tagManagerViewModel.setSuggestedTags(suggestedTags)
-    }
-
-    LaunchedEffect(tagState) {
-        userPreferencesViewModel.saveDefaultTags(tagState.tags)
-        userPreferencesViewModel.searchForTag(tagState.currentQuery, tagState.tags)
-    }
+    val tagState by userPreferencesViewModel.tagManagerState.collectAsStateWithLifecycle(TagManagerState())
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -536,13 +519,13 @@ private fun BookmarkingPreferencesContent(
 
             TagManager(
                 searchTagInput = tagState.currentQuery,
-                onSearchTagInputChanged = tagManagerViewModel::setQuery,
-                onAddTagClicked = tagManagerViewModel::addTag,
+                onSearchTagInputChanged = userPreferencesViewModel::setTagSearchQuery,
+                onAddTagClicked = userPreferencesViewModel::addTag,
                 suggestedTags = tagState.suggestedTags,
-                onSuggestedTagClicked = tagManagerViewModel::addTag,
+                onSuggestedTagClicked = userPreferencesViewModel::addTag,
                 currentTagsTitle = stringResource(id = tagState.displayTitle),
                 currentTags = tagState.tags,
-                onRemoveCurrentTagClicked = tagManagerViewModel::removeTag,
+                onRemoveCurrentTagClicked = userPreferencesViewModel::removeTag,
                 modifier = Modifier.fillWidthOfParent(parentPaddingStart = 8.dp, parentPaddingEnd = 8.dp),
                 horizontalPadding = 8.dp,
             )

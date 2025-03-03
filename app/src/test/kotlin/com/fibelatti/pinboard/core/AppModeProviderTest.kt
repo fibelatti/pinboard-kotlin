@@ -1,20 +1,17 @@
 package com.fibelatti.pinboard.core
 
-import com.fibelatti.pinboard.BuildConfig
-import com.fibelatti.pinboard.collectIn
+import app.cash.turbine.test
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class AppModeProviderTest {
@@ -30,13 +27,8 @@ class AppModeProviderTest {
         )
     }
 
-    @BeforeEach
-    fun setup() {
-        mockkStatic(BuildConfig::class)
-    }
-
     @Test
-    fun `app mode emits the expected values`() = runTest(dispatcher) {
+    fun `app mode emits the expected values`() = runTest {
         val preferencesFlow = MutableStateFlow(mockk<UserPreferences> { every { useLinkding } returns false })
         val authTokenFlow = MutableStateFlow("")
 
@@ -44,23 +36,21 @@ class AppModeProviderTest {
         every { mockUserRepository.authToken } returns authTokenFlow
         every { mockUserRepository.useLinkding } returns false
 
-        val values = appModeProvider.appMode.collectIn(this)
+        appModeProvider.appMode.test {
+            assertThat(awaitItem()).isEqualTo(AppMode.UNSET)
 
-        authTokenFlow.value = "app_review_mode"
+            authTokenFlow.value = "app_review_mode"
+            assertThat(awaitItem()).isEqualTo(AppMode.NO_API)
 
-        preferencesFlow.value = mockk<UserPreferences> { every { useLinkding } returns true }
-        authTokenFlow.value = "token"
+            preferencesFlow.value = mockk<UserPreferences> { every { useLinkding } returns true }
+            authTokenFlow.value = "token"
+            assertThat(awaitItem()).isEqualTo(AppMode.LINKDING)
 
-        preferencesFlow.value = mockk<UserPreferences> { every { useLinkding } returns false }
+            preferencesFlow.value = mockk<UserPreferences> { every { useLinkding } returns false }
+            assertThat(awaitItem()).isEqualTo(AppMode.PINBOARD)
+        }
 
         verify(exactly = 2) { mockUserRepository.authToken }
         verify(exactly = 1) { mockUserRepository.useLinkding }
-
-        assertThat(values).containsExactly(
-            AppMode.UNSET,
-            AppMode.NO_API,
-            AppMode.LINKDING,
-            AppMode.PINBOARD,
-        )
     }
 }

@@ -22,7 +22,7 @@ class AppModeProvider @Inject constructor(
         userRepository.currentPreferences,
         userRepository.authToken,
     ) { preferences, authToken -> getValue(preferences.useLinkding, authToken) }
-        .stateIn(scope, sharingStarted, getValue())
+        .stateIn(scope = scope, started = sharingStarted, initialValue = getValue())
 
     private fun getValue(
         useLinkding: Boolean = userRepository.useLinkding,

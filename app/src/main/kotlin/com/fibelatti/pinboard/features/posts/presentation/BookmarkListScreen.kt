@@ -71,7 +71,6 @@ import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.android.composable.TextWithBlockquote
-import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.copyToClipboard
@@ -81,7 +80,6 @@ import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AddPost
 import com.fibelatti.pinboard.features.appstate.All
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
 import com.fibelatti.pinboard.features.appstate.ByDateAddedOldestFirst
 import com.fibelatti.pinboard.features.appstate.ByDateModifiedNewestFirst
@@ -102,10 +100,6 @@ import com.fibelatti.pinboard.features.appstate.Recent
 import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.SearchParameters
 import com.fibelatti.pinboard.features.appstate.SetSorting
-import com.fibelatti.pinboard.features.appstate.ShouldForceLoad
-import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
-import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
-import com.fibelatti.pinboard.features.appstate.SidePanelContent
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
@@ -132,7 +126,6 @@ import kotlinx.coroutines.flow.onEach
 @Composable
 fun BookmarkListScreen(
     modifier: Modifier = Modifier,
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     postListViewModel: PostListViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
@@ -142,22 +135,21 @@ fun BookmarkListScreen(
         modifier = modifier,
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
-        val content by appStateViewModel.content.collectAsStateWithLifecycle()
+        val appState by mainViewModel.appState.collectAsStateWithLifecycle()
 
-        val currentState by rememberUpdatedState(
-            newValue = content.find<PostListContent>() ?: return@Surface,
+        val postListContent by rememberUpdatedState(
+            newValue = appState.content.find<PostListContent>() ?: return@Surface,
         )
-
         val postDetailScreenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
 
         val postListError by postListViewModel.error.collectAsStateWithLifecycle()
         val postDetailError by postDetailViewModel.error.collectAsStateWithLifecycle()
-        val hasError = postListError != null || postDetailError != null
-
-        val shouldLoadContent = currentState.shouldLoad is ShouldLoadFirstPage ||
-            currentState.shouldLoad is ShouldForceLoad ||
-            currentState.shouldLoad is ShouldLoadNextPage
+        val hasError by remember {
+            derivedStateOf { postListError != null || postDetailError != null }
+        }
+        val isLoading by remember {
+            derivedStateOf { (postListContent.shouldLoad != Loaded || postDetailScreenState.isLoading) && !hasError }
+        }
 
         val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
         val tagsClipboard = remember { mutableListOf<Tag>() }
@@ -165,28 +157,27 @@ fun BookmarkListScreen(
         val localContext = LocalContext.current
         val localView = LocalView.current
 
-        LaunchedEffect(shouldLoadContent, currentState) {
-            if (shouldLoadContent) postListViewModel.loadContent(currentState)
-        }
-
-        LaunchedViewModelEffects()
+        LaunchedMainViewModelEffect(actionId = BookmarkListScreen.ACTION_ID)
+        LaunchedPostDetailViewModelEffect()
+        LaunchedErrorHandlerEffect(error = postListError, handler = postListViewModel::errorHandled)
+        LaunchedErrorHandlerEffect(error = postDetailError, handler = postDetailViewModel::errorHandled)
 
         BookmarkListScreen(
-            appMode = appMode,
-            category = currentState.category,
-            posts = currentState.posts,
-            isLoading = (currentState.shouldLoad != Loaded || postDetailScreenState.isLoading) && !hasError,
+            appMode = appState.appMode,
+            category = postListContent.category,
+            posts = postListContent.posts,
+            isLoading = isLoading,
             onScrollDirectionChanged = mainViewModel::setCurrentScrollDirection,
-            onNextPageRequested = { appStateViewModel.runAction(GetNextPostPage) },
-            sortType = currentState.sortType,
-            searchParameters = currentState.searchParameters,
-            onActiveSearchClicked = { appStateViewModel.runAction(ViewSearch) },
-            onClearClicked = { appStateViewModel.runAction(ClearSearch) },
+            onNextPageRequested = { mainViewModel.runAction(GetNextPostPage) },
+            sortType = postListContent.sortType,
+            searchParameters = postListContent.searchParameters,
+            onActiveSearchClicked = { mainViewModel.runAction(ViewSearch) },
+            onClearClicked = { mainViewModel.runAction(ClearSearch) },
             onSaveClicked = {
                 postListViewModel.saveFilter(
                     SavedFilter(
-                        searchTerm = currentState.searchParameters.term,
-                        tags = currentState.searchParameters.tags,
+                        searchTerm = postListContent.searchParameters.term,
+                        tags = postListContent.searchParameters.tags,
                     ),
                 )
                 localView.showBanner(R.string.saved_filters_saved_feedback)
@@ -199,8 +190,8 @@ fun BookmarkListScreen(
                     searchParameters = searchParameters,
                 )
             },
-            onPullToRefresh = { appStateViewModel.runAction(Refresh()) },
-            onPostClicked = { post -> appStateViewModel.runAction(ViewPost(post)) },
+            onPullToRefresh = { mainViewModel.runAction(Refresh()) },
+            onPostClicked = { post -> mainViewModel.runAction(ViewPost(post)) },
             onPostLongClicked = { post ->
                 showQuickActionsDialog(
                     context = localContext,
@@ -218,7 +209,7 @@ fun BookmarkListScreen(
                         postDetailViewModel.addTags(post = post, tags = tags)
                     },
                     onEdit = {
-                        appStateViewModel.runAction(action = EditPost(post))
+                        mainViewModel.runAction(action = EditPost(post))
                     },
                     onDelete = {
                         showDeleteConfirmationDialog(context = localContext) {
@@ -228,15 +219,15 @@ fun BookmarkListScreen(
                     onExpandDescription = {
                         PostDescriptionDialog.showPostDescriptionDialog(
                             context = localContext,
-                            appMode = appMode,
+                            appMode = appState.appMode,
                             post = post,
                         )
                     },
                 )
             },
-            onTagClicked = { post -> appStateViewModel.runAction(PostsForTag(post)) },
-            showPostDescription = currentState.showDescription,
-            sidePanelVisible = content is SidePanelContent && isMultiPanelAvailable(),
+            onTagClicked = { post -> mainViewModel.runAction(PostsForTag(post)) },
+            showPostDescription = postListContent.showDescription,
+            sidePanelVisible = appState.sidePanelVisible,
         )
     }
 }
@@ -248,40 +239,23 @@ object BookmarkListScreen {
 
 // region ViewModel setup
 @Composable
-private fun LaunchedViewModelEffects(
-    postListViewModel: PostListViewModel = hiltViewModel(),
-    postDetailViewModel: PostDetailViewModel = hiltViewModel(),
-) {
-    LaunchedAppStateViewModelEffect(actionId = BookmarkListScreen.ACTION_ID)
-    LaunchedMainViewModelEffect(actionId = BookmarkListScreen.ACTION_ID)
-    LaunchedPostDetailViewModelEffect()
-
-    val listError by postListViewModel.error.collectAsStateWithLifecycle()
-    LaunchedErrorHandlerEffect(error = listError, handler = postListViewModel::errorHandled)
-
-    val detailError by postDetailViewModel.error.collectAsStateWithLifecycle()
-    LaunchedErrorHandlerEffect(error = detailError, handler = postDetailViewModel::errorHandled)
-}
-
-@Composable
-private fun LaunchedAppStateViewModelEffect(
+private fun LaunchedMainViewModelEffect(
     actionId: String,
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
 ) {
-    val content by appStateViewModel.content.collectAsStateWithLifecycle()
-    val isMultiPanelAvailable = isMultiPanelAvailable()
+    val appState by mainViewModel.appState.collectAsStateWithLifecycle()
     val postListContent by remember {
         derivedStateOf {
-            when (val current = content) {
+            when (val current = appState.content) {
                 is PostListContent -> current
-                is PostDetailContent -> current.previousContent.takeIf { isMultiPanelAvailable }
+                is PostDetailContent -> current.previousContent.takeIf { appState.sidePanelVisible }
                 else -> null
             }
         }
     }
 
     val localContext = LocalContext.current
+    val localLifecycle = LocalLifecycleOwner.current.lifecycle
 
     LaunchedEffect(postListContent) {
         val current = postListContent ?: return@LaunchedEffect
@@ -313,38 +287,26 @@ private fun LaunchedAppStateViewModelEffect(
             )
         }
     }
-}
-
-@Composable
-private fun LaunchedMainViewModelEffect(
-    actionId: String,
-    mainViewModel: MainViewModel = hiltViewModel(),
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
-) {
-    val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
-
-    val localContext = LocalContext.current
-    val localLifecycle = LocalLifecycleOwner.current.lifecycle
 
     LaunchedEffect(Unit) {
         mainViewModel.menuItemClicks(actionId)
             .onEach { (menuItem, _) ->
                 when (menuItem) {
                     is MainState.MenuItemComponent.SearchBookmarks -> {
-                        appStateViewModel.runAction(ViewSearch)
+                        mainViewModel.runAction(ViewSearch)
                     }
 
                     is MainState.MenuItemComponent.SortBookmarks -> {
                         showSortingSelector(
                             context = localContext,
-                            appMode = appMode,
+                            appMode = appState.appMode,
                         ) { option ->
-                            appStateViewModel.runAction(SetSorting(option))
+                            mainViewModel.runAction(SetSorting(option))
                         }
                     }
 
                     is MainState.MenuItemComponent.SyncBookmarks -> {
-                        appStateViewModel.runAction(Refresh(force = true))
+                        mainViewModel.runAction(Refresh(force = true))
                     }
 
                     else -> Unit
@@ -353,7 +315,7 @@ private fun LaunchedMainViewModelEffect(
             .flowWithLifecycle(localLifecycle)
             .launchIn(this)
         mainViewModel.fabClicks(actionId)
-            .onEach { appStateViewModel.runAction(AddPost) }
+            .onEach { mainViewModel.runAction(AddPost) }
             .flowWithLifecycle(localLifecycle)
             .launchIn(this)
     }
@@ -666,7 +628,7 @@ fun BookmarkListScreen(
                 listState = listState,
                 contentPadding = listWindowInsets.asPaddingValues(),
             ) {
-                items(posts.list) { post ->
+                items(posts.list, key = { it.id }) { post ->
                     BookmarkItem(
                         appMode = appMode,
                         post = post,

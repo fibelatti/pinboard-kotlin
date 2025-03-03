@@ -5,95 +5,98 @@ import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
-import com.fibelatti.pinboard.core.di.AppDispatchers
-import com.fibelatti.pinboard.core.di.Scope
+import com.fibelatti.pinboard.features.appstate.AddPostContent
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.PostSaved
-import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
-import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import com.fibelatti.pinboard.features.tags.domain.TagManagerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.plugins.ClientRequestException
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 
 @HiltViewModel
 class EditPostViewModel @Inject constructor(
-    private val appStateRepository: AppStateRepository,
-    private val postsRepository: PostsRepository,
+    scope: CoroutineScope,
+    dispatchers: CoroutineDispatcher,
+    sharingStarted: SharingStarted,
+    appStateRepository: AppStateRepository,
+    private val tagManagerRepository: TagManagerRepository,
     private val addPost: AddPost,
     private val resourceProvider: ResourceProvider,
-    @Scope(AppDispatchers.DEFAULT) scope: CoroutineScope,
-    sharingStarted: SharingStarted,
-) : BaseViewModel() {
+) : BaseViewModel(scope, appStateRepository), TagManagerRepository by tagManagerRepository {
 
-    private var searchJob: Job? = null
+    // Initial `post` state when the screen is first opened
+    private val initialPostState: StateFlow<Post?> = appStateRepository.appState
+        .map { appState ->
+            when (appState.content) {
+                is AddPostContent -> {
+                    Post(
+                        url = "",
+                        title = "",
+                        description = "",
+                        private = appState.content.defaultPrivate,
+                        readLater = appState.content.defaultReadLater,
+                        tags = appState.content.defaultTags.ifEmpty { null },
+                    )
+                }
 
-    // Source of all changes to the screen state, takes null to enable it being initialized with initializePost
-    private val interactions: Channel<(Post?) -> Post> = Channel()
-    private val _postState: StateFlow<IndexedValue<Post>?> = interactions.receiveAsFlow()
-        .scan(initial = null) { post: Post?, interaction -> interaction(post) }
-        .filterNotNull() // interactions never return null but the scan return type is inferred by the initial value
-        .distinctUntilChanged() // ignore interactions that result in no changes
-        .withIndex() // add an index to easily figure out if the value has changed
-        .flowOn(Dispatchers.Main.immediate) // to avoid sync issues with compose TextField state
-        .stateIn(
-            scope = scope,
-            started = sharingStarted,
-            initialValue = null,
-        )
-    val postState: Flow<Post> get() = _postState.filterNotNull().map { it.value }
+                is EditPostContent -> appState.content.post
+
+                else -> null
+            }
+        }
+        .flowOn(dispatchers)
+        .stateIn(scope = scope, started = sharingStarted, initialValue = null)
+
+    // Source of all changes to the screen state, only takes null from `initialPostState`
+    private val interactions: MutableSharedFlow<(Post?) -> Post> = MutableSharedFlow()
+
+    private val _postState: StateFlow<Post?> = initialPostState
+        .flatMapLatest { post -> interactions.scan(initial = post) { current, interaction -> interaction(current) } }
+        .flowOn(dispatchers) // to avoid sync issues with compose TextField state
+        .stateIn(scope = scope, started = sharingStarted, initialValue = null)
+    val postState: Flow<Post> get() = _postState.filterNotNull()
 
     private val _screenState = MutableStateFlow(ScreenState())
     val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
 
-    fun initializePost(post: Post) {
-        if (_postState.value != null) return
-        interactions.trySend { post }
-    }
-
-    fun updatePost(body: (Post) -> Post) {
-        _postState.value ?: return
-        interactions.trySend { current -> body(requireNotNull(current)) }
-    }
-
-    fun searchForTag(tag: String, currentTags: List<Tag>) {
-        if (searchJob?.isActive == true) searchJob?.cancel()
-
-        searchJob = launch {
-            postsRepository.searchExistingPostTag(
-                tag = tag,
-                currentTags = currentTags,
-            ).onSuccess { suggestedTags ->
-                _screenState.update { currentState ->
-                    currentState.copy(suggestedTags = suggestedTags)
-                }
+    init {
+        scope.launch {
+            tagManagerState.collectLatest { tagState ->
+                updatePost { post -> post.copy(tags = tagState.tags.ifEmpty { null }) }
             }
         }
     }
 
+    fun updatePost(body: (Post) -> Post) {
+        _postState.value ?: return
+        scope.launch {
+            interactions.emit { current -> body(requireNotNull(current)) }
+        }
+    }
+
     fun saveLink() {
-        launch {
+        scope.launch {
             val params = validateData() ?: return@launch
 
             _screenState.update { currentState ->
@@ -105,7 +108,7 @@ class EditPostViewModel @Inject constructor(
                     _screenState.update { currentState ->
                         currentState.copy(saved = true)
                     }
-                    appStateRepository.runDelayedAction(PostSaved(it))
+                    runDelayedAction(PostSaved(it))
                 }
                 .onFailure { error ->
                     _screenState.update { currentState ->
@@ -132,7 +135,7 @@ class EditPostViewModel @Inject constructor(
         }
     }
 
-    fun hasPendingChanges(): Boolean = _postState.value.let { it?.index != null && it.index != 0 }
+    fun hasPendingChanges(): Boolean = _postState.value != initialPostState.value
 
     private fun validateData(): Post? {
         _screenState.update { currentState ->
@@ -142,7 +145,7 @@ class EditPostViewModel @Inject constructor(
             )
         }
 
-        val post = _postState.value?.value ?: return null
+        val post = _postState.value ?: return null
 
         when {
             post.url.isBlank() -> {
@@ -169,7 +172,6 @@ class EditPostViewModel @Inject constructor(
 
     data class ScreenState(
         val isLoading: Boolean = false,
-        val suggestedTags: List<String> = emptyList(),
         val invalidUrlError: String = "",
         val invalidTitleError: String = "",
         val saved: Boolean = false,
