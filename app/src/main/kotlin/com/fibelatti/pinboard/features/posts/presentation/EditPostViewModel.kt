@@ -28,7 +28,10 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -81,6 +84,10 @@ class EditPostViewModel @Inject constructor(
     val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
 
     init {
+        merge(filteredContent<AddPostContent>(), filteredContent<EditPostContent>())
+            .onEach { _screenState.update { ScreenState() } }
+            .launchIn(scope)
+
         scope.launch {
             tagManagerState.collectLatest { tagState ->
                 updatePost { post -> post.copy(tags = tagState.tags.ifEmpty { null }) }

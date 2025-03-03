@@ -6,6 +6,7 @@ import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_API_TOKEN
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_INSTANCE_URL
+import com.fibelatti.pinboard.MockDataProvider.createAppState
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.UserLoggedOut
@@ -16,10 +17,12 @@ import io.ktor.client.plugins.ResponseException
 import io.ktor.client.statement.HttpResponse
 import io.mockk.Called
 import io.mockk.coEvery
+import io.mockk.coJustRun
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -29,7 +32,12 @@ import org.junit.jupiter.api.Test
 class AuthViewModelTest : BaseViewModelTest() {
 
     private val mockLogin = mockk<Login>()
-    private val mockAppStateRepository = mockk<AppStateRepository>(relaxUnitFun = true)
+
+    private val appStateFlow = MutableStateFlow(createAppState())
+    private val mockAppStateRepository = mockk<AppStateRepository> {
+        every { appState } returns appStateFlow
+        coJustRun { runAction(any()) }
+    }
     private val mockUserRepository = mockk<UserRepository> {
         every { useLinkding } returns false
     }

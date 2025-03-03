@@ -33,8 +33,8 @@ class TagsViewModel @Inject constructor(
     private val tagsRepository: TagsRepository,
 ) : BaseViewModel(scope, appStateRepository) {
 
-    val state: StateFlow<State> get() = _state.asStateFlow()
     private val _state = MutableStateFlow(State())
+    val state: StateFlow<State> get() = _state.asStateFlow()
 
     init {
         appStateRepository.appState
