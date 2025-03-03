@@ -26,27 +26,27 @@ class TagManagerDataSource @Inject constructor(
     postsRepository: PostsRepository,
 ) : TagManagerRepository {
 
-    private val _state: MutableStateFlow<TagManagerState?> = MutableStateFlow(null)
-    override val tagManagerState: Flow<TagManagerState> = _state.filterNotNull()
+    private val _tagManagerState: MutableStateFlow<TagManagerState?> = MutableStateFlow(null)
+    override val tagManagerState: Flow<TagManagerState> = _tagManagerState.filterNotNull()
 
     init {
         scope.launch {
             appStateRepository.appState.collectLatest { appState ->
                 when (appState.content) {
                     is AddPostContent -> {
-                        _state.update { TagManagerState(tags = appState.content.defaultTags) }
+                        _tagManagerState.update { TagManagerState(tags = appState.content.defaultTags) }
                     }
 
                     is EditPostContent -> {
-                        _state.update { TagManagerState(tags = appState.content.post.tags.orEmpty()) }
+                        _tagManagerState.update { TagManagerState(tags = appState.content.post.tags.orEmpty()) }
                     }
 
                     is UserPreferencesContent -> {
-                        _state.update { TagManagerState(tags = appState.content.userPreferences.defaultTags) }
+                        _tagManagerState.update { TagManagerState(tags = appState.content.userPreferences.defaultTags) }
                     }
 
                     else -> {
-                        _state.update { null }
+                        _tagManagerState.update { null }
                     }
                 }
             }
@@ -58,20 +58,20 @@ class TagManagerDataSource @Inject constructor(
                     .getOrNull()
                     ?.takeUnless { suggestedStags -> suggestedStags == state.suggestedTags }
                     ?.let { suggestedStags ->
-                        _state.update { current -> current?.copy(suggestedTags = suggestedStags) }
+                        _tagManagerState.update { current -> current?.copy(suggestedTags = suggestedStags) }
                     }
             }
         }
     }
 
     override fun addTag(value: String, index: Int) {
-        val currentTags = _state.value?.tags.orEmpty().map { it.name }
+        val currentTags = _tagManagerState.value?.tags.orEmpty().map { it.name }
         val newTags = value.trim()
             .split(" ")
             .filterNot { it in currentTags }
             .map(::Tag)
 
-        _state.update { current ->
+        _tagManagerState.update { current ->
             current?.copy(
                 tags = current.tags.toMutableList().apply { addAll(index, newTags) },
                 currentQuery = "",
@@ -80,10 +80,10 @@ class TagManagerDataSource @Inject constructor(
     }
 
     override fun removeTag(tag: Tag) {
-        _state.update { current -> current?.copy(tags = current.tags.minus(tag)) }
+        _tagManagerState.update { current -> current?.copy(tags = current.tags.minus(tag)) }
     }
 
     override fun setTagSearchQuery(value: String) {
-        _state.update { current -> current?.copy(currentQuery = value) }
+        _tagManagerState.update { current -> current?.copy(currentQuery = value) }
     }
 }
