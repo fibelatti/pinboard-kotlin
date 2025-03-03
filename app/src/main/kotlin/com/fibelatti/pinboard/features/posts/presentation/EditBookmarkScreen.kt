@@ -65,6 +65,7 @@ import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
+import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -74,7 +75,6 @@ import com.fibelatti.pinboard.features.tags.presentation.TagManager
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import java.util.UUID
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -129,11 +129,6 @@ fun EditBookmarkScreen(
     )
 }
 
-object EditBookmarkScreen {
-
-    val ACTION_ID = UUID.randomUUID().toString()
-}
-
 // region ViewModel setup
 @Composable
 private fun LaunchedViewModelEffects(
@@ -162,8 +157,8 @@ private fun LaunchedViewModelEffects(
                 mainViewModel.updateState { currentState ->
                     currentState.copy(
                         actionButton = MainState.ActionButtonComponent.Visible(
+                            contentType = EditPostContent::class,
                             label = localContext.getString(R.string.hint_save),
-                            id = EditBookmarkScreen.ACTION_ID,
                         ),
                     )
                 }
@@ -175,8 +170,8 @@ private fun LaunchedViewModelEffects(
         }
     }
 
-    LaunchedMainViewModelEffect(actionId = EditBookmarkScreen.ACTION_ID)
-    LaunchedEditPostViewModelEffect(actionId = EditBookmarkScreen.ACTION_ID)
+    LaunchedMainViewModelEffect()
+    LaunchedEditPostViewModelEffect()
     LaunchedPostDetailViewModelEffect()
 
     val editError by editPostViewModel.error.collectAsStateWithLifecycle()
@@ -187,7 +182,7 @@ private fun LaunchedViewModelEffects(
             mainViewModel.updateState { currentState ->
                 currentState.copy(
                     floatingActionButton = MainState.FabComponent.Visible(
-                        id = EditBookmarkScreen.ACTION_ID,
+                        contentType = EditPostContent::class,
                         icon = R.drawable.ic_done,
                     ),
                 )
@@ -202,7 +197,7 @@ private fun LaunchedViewModelEffects(
         onDispose {
             mainViewModel.updateState { currentState ->
                 currentState.copy(
-                    actionButton = if (currentState.actionButton.id == EditBookmarkScreen.ACTION_ID) {
+                    actionButton = if (currentState.actionButton.contentType == EditPostContent::class) {
                         MainState.ActionButtonComponent.Gone
                     } else {
                         currentState.actionButton
@@ -217,7 +212,6 @@ private fun LaunchedViewModelEffects(
 
 @Composable
 private fun LaunchedMainViewModelEffect(
-    actionId: String,
     mainViewModel: MainViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     editPostViewModel: EditPostViewModel = hiltViewModel(),
@@ -227,14 +221,14 @@ private fun LaunchedMainViewModelEffect(
     val localLifecycle = LocalLifecycleOwner.current.lifecycle
 
     LaunchedEffect(Unit) {
-        mainViewModel.actionButtonClicks(actionId)
+        mainViewModel.actionButtonClicks(contentType = EditPostContent::class)
             .onEach {
                 localView.hideKeyboard()
                 editPostViewModel.saveLink()
             }
             .flowWithLifecycle(localLifecycle)
             .launchIn(this)
-        mainViewModel.menuItemClicks(actionId)
+        mainViewModel.menuItemClicks(contentType = EditPostContent::class)
             .onEach { (menuItem, post) ->
                 if (post !is Post) return@onEach
                 when (menuItem) {
@@ -249,7 +243,7 @@ private fun LaunchedMainViewModelEffect(
             }
             .flowWithLifecycle(localLifecycle)
             .launchIn(this)
-        mainViewModel.fabClicks(actionId)
+        mainViewModel.fabClicks(contentType = EditPostContent::class)
             .onEach {
                 localView.hideKeyboard()
                 editPostViewModel.saveLink()
@@ -261,7 +255,6 @@ private fun LaunchedMainViewModelEffect(
 
 @Composable
 private fun LaunchedEditPostViewModelEffect(
-    actionId: String,
     mainViewModel: MainViewModel = hiltViewModel(),
     editPostViewModel: EditPostViewModel = hiltViewModel(),
 ) {
@@ -282,7 +275,7 @@ private fun LaunchedEditPostViewModelEffect(
                 mainViewModel.updateState { currentState ->
                     currentState.copy(
                         floatingActionButton = MainState.FabComponent.Visible(
-                            id = actionId,
+                            contentType = EditPostContent::class,
                             icon = R.drawable.ic_done,
                         ),
                     )
@@ -309,7 +302,7 @@ private fun LaunchedEditPostViewModelEffect(
                         subtitle = MainState.TitleComponent.Gone,
                         navigation = MainState.NavigationComponent.Visible(icon = R.drawable.ic_close),
                         bottomAppBar = MainState.BottomAppBarComponent.Visible(
-                            id = actionId,
+                            contentType = EditPostContent::class,
                             menuItems = buildList {
                                 if (post.id.isNotEmpty()) {
                                     add(MainState.MenuItemComponent.DeleteBookmark)
@@ -319,7 +312,10 @@ private fun LaunchedEditPostViewModelEffect(
                             navigationIcon = null,
                             data = post,
                         ),
-                        floatingActionButton = MainState.FabComponent.Visible(actionId, R.drawable.ic_done),
+                        floatingActionButton = MainState.FabComponent.Visible(
+                            contentType = EditPostContent::class,
+                            icon = R.drawable.ic_done,
+                        ),
                     )
                 }
             }

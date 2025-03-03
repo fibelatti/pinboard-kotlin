@@ -6,6 +6,8 @@ import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.MultiPanelAvailabilityChanged
 import com.fibelatti.pinboard.features.appstate.NavigateBack
+import com.fibelatti.pinboard.features.appstate.PostDetailContent
+import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.Reset
 import com.fibelatti.pinboard.randomBoolean
 import com.fibelatti.pinboard.receivedItems
@@ -92,12 +94,12 @@ internal class MainViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `actionButtonClicked emits only values with matching ids`() = runTest {
-        viewModel.actionButtonClicks("id").test {
+        viewModel.actionButtonClicks(contentType = PostListContent::class).test {
             val data: Any = mockk()
 
-            viewModel.actionButtonClicked(id = "id", data = data)
-            viewModel.actionButtonClicked(id = "another-id", data = data)
-            viewModel.actionButtonClicked(id = "id", data = null)
+            viewModel.actionButtonClicked(contentType = PostListContent::class, data = data)
+            viewModel.actionButtonClicked(contentType = PostDetailContent::class, data = data)
+            viewModel.actionButtonClicked(contentType = PostListContent::class, data = null)
 
             assertThat(receivedItems()).containsExactly(data, null)
         }
@@ -105,16 +107,20 @@ internal class MainViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `menuItemClicks emits only values with matching ids`() = runTest {
-        viewModel.menuItemClicks("id").test {
+        viewModel.menuItemClicks(contentType = PostListContent::class).test {
             val data: Any = mockk()
 
             val menuItemComponent1 = mockk<MainState.MenuItemComponent>()
             val menuItemComponent2 = mockk<MainState.MenuItemComponent>()
             val menuItemComponent3 = mockk<MainState.MenuItemComponent>()
 
-            viewModel.menuItemClicked(id = "id", menuItem = menuItemComponent1, data = data)
-            viewModel.menuItemClicked(id = "another-id", menuItem = menuItemComponent2, data = data)
-            viewModel.menuItemClicked(id = "id", menuItem = menuItemComponent3, data = null)
+            viewModel.menuItemClicked(contentType = PostListContent::class, menuItem = menuItemComponent1, data = data)
+            viewModel.menuItemClicked(
+                contentType = PostDetailContent::class,
+                menuItem = menuItemComponent2,
+                data = data,
+            )
+            viewModel.menuItemClicked(contentType = PostListContent::class, menuItem = menuItemComponent3, data = null)
 
             assertThat(receivedItems()).containsExactly(
                 menuItemComponent1 to data,
@@ -125,12 +131,12 @@ internal class MainViewModelTest : BaseViewModelTest() {
 
     @Test
     fun `fabClicks emits only values with matching ids`() = runTest {
-        viewModel.fabClicks("id").test {
+        viewModel.fabClicks(contentType = PostListContent::class).test {
             val data: Any = mockk()
 
-            viewModel.fabClicked(id = "id", data = data)
-            viewModel.fabClicked(id = "another-id", data = data)
-            viewModel.fabClicked(id = "id", data = null)
+            viewModel.fabClicked(contentType = PostListContent::class, data = data)
+            viewModel.fabClicked(contentType = PostDetailContent::class, data = data)
+            viewModel.fabClicked(contentType = PostListContent::class, data = null)
 
             assertThat(receivedItems()).containsExactly(data, null)
         }

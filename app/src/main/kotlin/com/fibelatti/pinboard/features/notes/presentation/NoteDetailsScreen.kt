@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -30,10 +29,10 @@ import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
+import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-import java.util.UUID
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -51,7 +50,6 @@ fun NoteDetailsScreen(
         val noteDetailContent by noteDetailsViewModel.noteDetailContent.collectAsStateWithLifecycle(null)
         val current by rememberUpdatedState(newValue = noteDetailContent ?: return@Surface)
 
-        val actionId = remember { UUID.randomUUID().toString() }
         val localLifecycle = LocalLifecycleOwner.current.lifecycle
         val localOnBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
@@ -60,7 +58,7 @@ fun NoteDetailsScreen(
                 if (appState.multiPanelAvailable) {
                     currentState.copy(
                         sidePanelAppBar = MainState.SidePanelAppBarComponent.Visible(
-                            id = actionId,
+                            contentType = NoteDetailContent::class,
                             menuItems = listOf(MainState.MenuItemComponent.CloseSidePanel),
                         ),
                     )
@@ -77,7 +75,7 @@ fun NoteDetailsScreen(
         }
 
         LaunchedEffect(Unit) {
-            mainViewModel.menuItemClicks(actionId)
+            mainViewModel.menuItemClicks(contentType = NoteDetailContent::class)
                 .onEach { (menuItem, _) ->
                     if (menuItem is MainState.MenuItemComponent.CloseSidePanel) {
                         localOnBackPressedDispatcher?.onBackPressed()

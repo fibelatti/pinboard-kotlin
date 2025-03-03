@@ -68,7 +68,6 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import java.util.UUID
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -128,9 +127,7 @@ private fun LaunchedViewModelEffects(
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
 ) {
-    val actionId = remember { UUID.randomUUID().toString() }
-
-    LaunchedMainViewModelEffect(actionId = actionId)
+    LaunchedMainViewModelEffect()
     LaunchedPostDetailViewModelEffect()
     LaunchedPopularPostsViewModelEffect()
 
@@ -144,7 +141,7 @@ private fun LaunchedViewModelEffects(
         onDispose {
             mainViewModel.updateState { currentState ->
                 currentState.copy(
-                    actionButton = if (currentState.actionButton.id == actionId) {
+                    actionButton = if (currentState.actionButton.contentType == PostDetailContent::class) {
                         MainState.ActionButtonComponent.Gone
                     } else {
                         currentState.actionButton
@@ -157,7 +154,6 @@ private fun LaunchedViewModelEffects(
 
 @Composable
 private fun LaunchedMainViewModelEffect(
-    actionId: String,
     mainViewModel: MainViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
@@ -187,7 +183,7 @@ private fun LaunchedMainViewModelEffect(
         mainViewModel.updateState { currentState ->
             val actionButtonState = if (post.readLater == true && !post.isFile()) {
                 MainState.ActionButtonComponent.Visible(
-                    id = actionId,
+                    contentType = PostDetailContent::class,
                     label = localContext.getString(R.string.hint_mark_as_read),
                     data = post,
                 )
@@ -199,7 +195,7 @@ private fun LaunchedMainViewModelEffect(
                 currentState.copy(
                     actionButton = actionButtonState,
                     sidePanelAppBar = MainState.SidePanelAppBarComponent.Visible(
-                        id = actionId,
+                        contentType = PostDetailContent::class,
                         menuItems = listOf(
                             MainState.MenuItemComponent.ShareBookmark,
                             *menuItems.toTypedArray(),
@@ -215,13 +211,13 @@ private fun LaunchedMainViewModelEffect(
                     navigation = MainState.NavigationComponent.Visible(),
                     actionButton = actionButtonState,
                     bottomAppBar = MainState.BottomAppBarComponent.Visible(
-                        id = actionId,
+                        contentType = PostDetailContent::class,
                         menuItems = menuItems,
                         navigationIcon = null,
                         data = post,
                     ),
                     floatingActionButton = MainState.FabComponent.Visible(
-                        id = actionId,
+                        contentType = PostDetailContent::class,
                         icon = R.drawable.ic_share,
                         data = post,
                     ),
@@ -231,11 +227,11 @@ private fun LaunchedMainViewModelEffect(
     }
 
     LaunchedEffect(Unit) {
-        mainViewModel.actionButtonClicks(actionId)
+        mainViewModel.actionButtonClicks(contentType = PostDetailContent::class)
             .onEach { data: Any? -> (data as? Post)?.let(postDetailViewModel::toggleReadLater) }
             .flowWithLifecycle(localLifecycle)
             .launchIn(this)
-        mainViewModel.menuItemClicks(actionId)
+        mainViewModel.menuItemClicks(contentType = PostDetailContent::class)
             .onEach { (menuItem, post) ->
                 if (post !is Post) return@onEach
                 when (menuItem) {
@@ -256,7 +252,7 @@ private fun LaunchedMainViewModelEffect(
             }
             .flowWithLifecycle(localLifecycle)
             .launchIn(this)
-        mainViewModel.fabClicks(actionId)
+        mainViewModel.fabClicks(contentType = PostDetailContent::class)
             .onEach { data: Any? ->
                 (data as? Post)?.let { localContext.shareText(R.string.posts_share_title, data.url) }
             }

@@ -151,7 +151,7 @@ fun MainScreen(
             localOnBackPressedDispatcher?.onBackPressed()
         },
         onActionButtonClick = { data ->
-            mainViewModel.actionButtonClicked(state.actionButton.id, data)
+            mainViewModel.actionButtonClicked(state.actionButton.contentType, data)
         },
         onOfflineRetryClick = retryClick@{
             val action = when (appState.content) {
@@ -166,13 +166,21 @@ fun MainScreen(
             NavigationMenu.show(activity = localActivity)
         },
         onMenuItemClick = { menuItem, data ->
-            mainViewModel.menuItemClicked(id = state.bottomAppBar.id, menuItem = menuItem, data = data)
+            mainViewModel.menuItemClicked(
+                contentType = state.bottomAppBar.contentType,
+                menuItem = menuItem,
+                data = data,
+            )
         },
         onSideMenuItemClick = { menuItem, data ->
-            mainViewModel.menuItemClicked(id = state.sidePanelAppBar.id, menuItem = menuItem, data = data)
+            mainViewModel.menuItemClicked(
+                contentType = state.sidePanelAppBar.contentType,
+                menuItem = menuItem,
+                data = data,
+            )
         },
         onFabClick = { data ->
-            mainViewModel.fabClicked(id = state.floatingActionButton.id, data = data)
+            mainViewModel.fabClicked(contentType = state.floatingActionButton.contentType, data = data)
         },
         modifier = modifier,
     )
@@ -487,7 +495,7 @@ private fun BottomAppBar(
             if (floatingActionButton is MainState.FabComponent.Visible) {
                 FloatingActionButton(
                     onClick = { onFabClick(floatingActionButton.data) },
-                    modifier = Modifier.testTag("fab-${floatingActionButton.id}"),
+                    modifier = Modifier.testTag("fab-${floatingActionButton.contentType.simpleName}"),
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                 ) {
@@ -591,13 +599,19 @@ private fun MainTopAppBarPreview() {
                     title = MainState.TitleComponent.Visible(label = "Sample title"),
                     subtitle = MainState.TitleComponent.Visible(label = "Sample subtitle"),
                     navigation = MainState.NavigationComponent.Visible(),
-                    actionButton = MainState.ActionButtonComponent.Visible(id = "", label = "Action"),
+                    actionButton = MainState.ActionButtonComponent.Visible(
+                        contentType = Content::class,
+                        label = "Action",
+                    ),
                     bottomAppBar = MainState.BottomAppBarComponent.Visible(
-                        id = "",
+                        contentType = Content::class,
                         menuItems = listOf(MainState.MenuItemComponent.SearchBookmarks),
                         navigationIcon = R.drawable.ic_menu,
                     ),
-                    floatingActionButton = MainState.FabComponent.Visible(id = "", icon = R.drawable.ic_pin),
+                    floatingActionButton = MainState.FabComponent.Visible(
+                        contentType = Content::class,
+                        icon = R.drawable.ic_pin,
+                    ),
                 )
             },
             onNavigationClick = {},
@@ -618,11 +632,14 @@ private fun BottomAppBarPreview() {
         ) {
             BottomAppBar(
                 bottomAppBar = MainState.BottomAppBarComponent.Visible(
-                    id = "",
+                    contentType = Content::class,
                     menuItems = listOf(MainState.MenuItemComponent.SearchBookmarks),
                     navigationIcon = R.drawable.ic_menu,
                 ),
-                floatingActionButton = MainState.FabComponent.Visible(id = "", icon = R.drawable.ic_pin),
+                floatingActionButton = MainState.FabComponent.Visible(
+                    contentType = Content::class,
+                    icon = R.drawable.ic_pin,
+                ),
                 onBottomNavClick = {},
                 onMenuItemClick = { _, _ -> },
                 onFabClick = {},

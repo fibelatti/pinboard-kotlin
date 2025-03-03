@@ -118,7 +118,6 @@ import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.EntryPointAccessors
-import java.util.UUID
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -157,7 +156,7 @@ fun BookmarkListScreen(
         val localContext = LocalContext.current
         val localView = LocalView.current
 
-        LaunchedMainViewModelEffect(actionId = BookmarkListScreen.ACTION_ID)
+        LaunchedMainViewModelEffect()
         LaunchedPostDetailViewModelEffect()
         LaunchedErrorHandlerEffect(error = postListError, handler = postListViewModel::errorHandled)
         LaunchedErrorHandlerEffect(error = postDetailError, handler = postDetailViewModel::errorHandled)
@@ -232,15 +231,9 @@ fun BookmarkListScreen(
     }
 }
 
-object BookmarkListScreen {
-
-    val ACTION_ID = UUID.randomUUID().toString()
-}
-
 // region ViewModel setup
 @Composable
 private fun LaunchedMainViewModelEffect(
-    actionId: String,
     mainViewModel: MainViewModel = hiltViewModel(),
 ) {
     val appState by mainViewModel.appState.collectAsStateWithLifecycle()
@@ -272,7 +265,7 @@ private fun LaunchedMainViewModelEffect(
                 },
                 navigation = MainState.NavigationComponent.Gone,
                 bottomAppBar = MainState.BottomAppBarComponent.Visible(
-                    id = actionId,
+                    contentType = PostListContent::class,
                     menuItems = buildList {
                         add(MainState.MenuItemComponent.SearchBookmarks)
                         add(MainState.MenuItemComponent.SortBookmarks)
@@ -283,13 +276,16 @@ private fun LaunchedMainViewModelEffect(
                     },
                     navigationIcon = R.drawable.ic_menu,
                 ),
-                floatingActionButton = MainState.FabComponent.Visible(actionId, R.drawable.ic_pin),
+                floatingActionButton = MainState.FabComponent.Visible(
+                    contentType = PostListContent::class,
+                    icon = R.drawable.ic_pin,
+                ),
             )
         }
     }
 
     LaunchedEffect(Unit) {
-        mainViewModel.menuItemClicks(actionId)
+        mainViewModel.menuItemClicks(contentType = PostListContent::class)
             .onEach { (menuItem, _) ->
                 when (menuItem) {
                     is MainState.MenuItemComponent.SearchBookmarks -> {
@@ -314,7 +310,7 @@ private fun LaunchedMainViewModelEffect(
             }
             .flowWithLifecycle(localLifecycle)
             .launchIn(this)
-        mainViewModel.fabClicks(actionId)
+        mainViewModel.fabClicks(contentType = PostListContent::class)
             .onEach { mainViewModel.runAction(AddPost) }
             .flowWithLifecycle(localLifecycle)
             .launchIn(this)

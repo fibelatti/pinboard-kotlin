@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.MainState
+import com.fibelatti.pinboard.features.appstate.Content
 import com.fibelatti.ui.preview.DevicePreviews
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -142,7 +143,7 @@ private fun MainTitlePreview() {
                 subtitle = MainState.TitleComponent.Gone,
                 navigation = MainState.NavigationComponent.Visible(),
                 onNavigationClicked = {},
-                actionButton = MainState.ActionButtonComponent.Visible(id = "id", label = "Action"),
+                actionButton = MainState.ActionButtonComponent.Visible(contentType = Content::class, label = "Action"),
                 onActionButtonClicked = {},
             )
         }
@@ -160,7 +161,7 @@ private fun MainTitleWithSubtitlePreview() {
                 subtitle = MainState.TitleComponent.Visible("Subtitle"),
                 navigation = MainState.NavigationComponent.Visible(),
                 onNavigationClicked = {},
-                actionButton = MainState.ActionButtonComponent.Visible(id = "id", label = "Action"),
+                actionButton = MainState.ActionButtonComponent.Visible(contentType = Content::class, label = "Action"),
                 onActionButtonClicked = {},
             )
         }

@@ -33,9 +33,9 @@ class MainViewModel @Inject constructor(
         .scan(initial = MainState()) { state, reducer -> reducer(state) }
         .stateIn(scope = scope, started = sharingStarted, initialValue = MainState())
 
-    private val actionButtonClicks = MutableSharedFlow<Pair<String, Any?>>()
-    private val menuItemClicks = MutableSharedFlow<Triple<String, MainState.MenuItemComponent, Any?>>()
-    private val fabClicks = MutableSharedFlow<Pair<String, Any?>>()
+    private val actionButtonClicks = MutableSharedFlow<Pair<ContentType, Any?>>()
+    private val menuItemClicks = MutableSharedFlow<Triple<ContentType, MainState.MenuItemComponent, Any?>>()
+    private val fabClicks = MutableSharedFlow<Pair<ContentType, Any?>>()
 
     fun updateState(body: (MainState) -> MainState) {
         scope.launch(Dispatchers.Main.immediate) {
@@ -61,33 +61,33 @@ class MainViewModel @Inject constructor(
         runAction(Reset)
     }
 
-    fun actionButtonClicked(id: String, data: Any? = null) {
+    fun actionButtonClicked(contentType: ContentType, data: Any? = null) {
         scope.launch {
-            actionButtonClicks.emit(id to data)
+            actionButtonClicks.emit(contentType to data)
         }
     }
 
-    fun actionButtonClicks(id: String): Flow<Any?> = actionButtonClicks
-        .filter { (eventId, _) -> eventId == id }
+    fun actionButtonClicks(contentType: ContentType): Flow<Any?> = actionButtonClicks
+        .filter { (type, _) -> type == contentType }
         .map { (_, data) -> data }
 
-    fun menuItemClicked(id: String, menuItem: MainState.MenuItemComponent, data: Any? = null) {
+    fun menuItemClicked(contentType: ContentType, menuItem: MainState.MenuItemComponent, data: Any? = null) {
         scope.launch {
-            menuItemClicks.emit(Triple(id, menuItem, data))
+            menuItemClicks.emit(Triple(contentType, menuItem, data))
         }
     }
 
-    fun menuItemClicks(id: String): Flow<Pair<MainState.MenuItemComponent, Any?>> = menuItemClicks
-        .filter { (eventId, _, _) -> eventId == id }
+    fun menuItemClicks(contentType: ContentType): Flow<Pair<MainState.MenuItemComponent, Any?>> = menuItemClicks
+        .filter { (type, _, _) -> type == contentType }
         .map { (_, menuItem, data) -> menuItem to data }
 
-    fun fabClicked(id: String, data: Any? = null) {
+    fun fabClicked(contentType: ContentType, data: Any? = null) {
         scope.launch {
-            fabClicks.emit(id to data)
+            fabClicks.emit(contentType to data)
         }
     }
 
-    fun fabClicks(id: String): Flow<Any?> = fabClicks
-        .filter { (eventId, _) -> eventId == id }
+    fun fabClicks(contentType: ContentType): Flow<Any?> = fabClicks
+        .filter { (type, _) -> type == contentType }
         .map { (_, data) -> data }
 }

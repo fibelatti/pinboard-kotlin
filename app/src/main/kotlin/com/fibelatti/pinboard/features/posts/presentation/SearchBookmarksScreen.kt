@@ -49,6 +49,7 @@ import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.RefreshSearchTags
 import com.fibelatti.pinboard.features.appstate.RemoveSearchTag
 import com.fibelatti.pinboard.features.appstate.Search
+import com.fibelatti.pinboard.features.appstate.SearchContent
 import com.fibelatti.pinboard.features.appstate.SetTerm
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -59,7 +60,6 @@ import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-import java.util.UUID
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -80,7 +80,6 @@ fun SearchBookmarksScreen(
         val tagsState by tagsViewModel.state.collectAsStateWithLifecycle()
 
         val title = stringResource(id = R.string.search_title)
-        val actionId = remember { UUID.randomUUID().toString() }
         val queryResultSize by searchPostViewModel.queryResultSize.collectAsStateWithLifecycle()
         val activeSearchLabel = stringResource(id = R.string.search_result_size, queryResultSize)
 
@@ -101,7 +100,7 @@ fun SearchBookmarksScreen(
                     },
                     navigation = MainState.NavigationComponent.Visible(),
                     bottomAppBar = MainState.BottomAppBarComponent.Visible(
-                        id = actionId,
+                        contentType = SearchContent::class,
                         menuItems = if (isActive) {
                             listOf(
                                 MainState.MenuItemComponent.ClearSearch,
@@ -115,7 +114,10 @@ fun SearchBookmarksScreen(
                             tags = currentContent.searchParameters.tags,
                         ),
                     ),
-                    floatingActionButton = MainState.FabComponent.Visible(actionId, R.drawable.ic_search),
+                    floatingActionButton = MainState.FabComponent.Visible(
+                        contentType = SearchContent::class,
+                        icon = R.drawable.ic_search,
+                    ),
                 )
             }
         }
@@ -124,7 +126,7 @@ fun SearchBookmarksScreen(
         val localLifecycle = LocalLifecycleOwner.current.lifecycle
 
         LaunchedEffect(Unit) {
-            mainViewModel.menuItemClicks(actionId)
+            mainViewModel.menuItemClicks(contentType = SearchContent::class)
                 .onEach { (menuItem, data) ->
                     when (menuItem) {
                         is MainState.MenuItemComponent.ClearSearch -> {
@@ -142,7 +144,7 @@ fun SearchBookmarksScreen(
                 .flowWithLifecycle(localLifecycle)
                 .launchIn(this)
 
-            mainViewModel.fabClicks(actionId)
+            mainViewModel.fabClicks(contentType = SearchContent::class)
                 .onEach { mainViewModel.runAction(Search) }
                 .flowWithLifecycle(localLifecycle)
                 .launchIn(this)
