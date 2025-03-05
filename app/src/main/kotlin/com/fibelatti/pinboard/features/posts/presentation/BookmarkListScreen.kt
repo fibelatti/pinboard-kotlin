@@ -2,7 +2,6 @@ package com.fibelatti.pinboard.features.posts.presentation
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -53,6 +52,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -448,15 +448,15 @@ private fun showQuickActionsDialog(
                 is PostQuickActions.ExpandDescription -> onExpandDescription()
 
                 is PostQuickActions.OpenBrowser -> startActivity(
-                    Intent(Intent.ACTION_VIEW, Uri.parse(post.url)),
+                    Intent(Intent.ACTION_VIEW, post.url.toUri()),
                 )
 
                 is PostQuickActions.SubmitToWayback -> startActivity(
-                    Intent(Intent.ACTION_VIEW, Uri.parse("https://web.archive.org/save/${post.url}")),
+                    Intent(Intent.ACTION_VIEW, "https://web.archive.org/save/${post.url}".toUri()),
                 )
 
                 is PostQuickActions.SearchWayback -> startActivity(
-                    Intent(Intent.ACTION_VIEW, Uri.parse("https://web.archive.org/web/*/${post.url}")),
+                    Intent(Intent.ACTION_VIEW, "https://web.archive.org/web/*/${post.url}".toUri()),
                 )
             }
         },

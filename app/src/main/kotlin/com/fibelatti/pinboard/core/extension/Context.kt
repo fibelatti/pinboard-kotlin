@@ -4,10 +4,10 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.widget.Toast
 import androidx.core.content.getSystemService
+import androidx.core.net.toUri
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppModeProvider
@@ -59,7 +59,7 @@ fun Context.showErrorReportDialog(
                 append(sw.toString().replace(regex = "&?auth_token=[^&]*".toRegex(), replacement = ""))
             }
 
-            val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:")).apply {
+            val emailIntent = Intent(Intent.ACTION_SENDTO, "mailto:".toUri()).apply {
                 putExtra(Intent.EXTRA_EMAIL, arrayOf("appsupport@fibelatti.com"))
                 putExtra(Intent.EXTRA_SUBJECT, "Pinkt (${BuildConfig.VERSION_NAME}) — Error Report")
                 putExtra(Intent.EXTRA_TEXT, emailBody.toString())

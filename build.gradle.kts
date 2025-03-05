@@ -122,7 +122,7 @@ subprojects {
                 }
 
                 managedDevices {
-                    devices {
+                    allDevices {
                         maybeCreate<com.android.build.api.dsl.ManagedVirtualDevice>("pixel8api34").apply {
                             device = "Pixel 8"
                             apiLevel = 34

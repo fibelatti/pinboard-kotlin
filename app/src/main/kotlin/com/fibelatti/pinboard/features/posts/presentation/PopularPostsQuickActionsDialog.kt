@@ -2,9 +2,9 @@ package com.fibelatti.pinboard.features.posts.presentation
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.core.net.toUri
 import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.SelectionDialog
@@ -39,7 +39,7 @@ object PopularPostsQuickActionsDialog {
                     )
 
                     is PopularPostQuickActions.OpenBrowser -> context.startActivity(
-                        Intent(Intent.ACTION_VIEW, Uri.parse(option.post.url)),
+                        Intent(Intent.ACTION_VIEW, option.post.url.toUri()),
                     )
                 }
             },

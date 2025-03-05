@@ -2,7 +2,6 @@ package com.fibelatti.pinboard.features
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.BackHandler
 import androidx.activity.enableEdgeToEdge
@@ -11,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.core.android.platform.BaseIntentBuilder
 import com.fibelatti.core.android.platform.intentExtras
@@ -47,9 +47,8 @@ class MainComposeActivity : AppCompatActivity() {
             content = content,
             onExternalBrowserContent = { browserContent ->
                 startActivity(
-                    Intent(Intent.ACTION_VIEW, Uri.parse(browserContent.post.url)).apply {
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    },
+                    Intent(Intent.ACTION_VIEW, browserContent.post.url.toUri())
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
                 )
 
                 appStateViewModel.runAction(NavigateBack)
