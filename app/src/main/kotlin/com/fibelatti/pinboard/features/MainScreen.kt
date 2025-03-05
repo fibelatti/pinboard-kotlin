@@ -158,7 +158,7 @@ private fun MainScreenContent(
     onExternalContent: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val mainPanelContent = remember(content::class) {
+    val mainPanelContent = remember(content::class, sidePanelVisible) {
         when {
             multiPanelAvailable && content::class == PostDetailContent::class -> PostListContent::class
             multiPanelAvailable && content::class == NoteDetailContent::class -> NoteListContent::class
