@@ -37,7 +37,6 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -70,8 +69,6 @@ import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
-import com.fibelatti.pinboard.features.MainState
-import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.RefreshTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -83,27 +80,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun TagListScreen(
     modifier: Modifier = Modifier,
-    mainViewModel: MainViewModel = hiltViewModel(),
     tagsViewModel: TagsViewModel = hiltViewModel(),
 ) {
-    val appState by mainViewModel.appState.collectAsStateWithLifecycle()
+    val appState by tagsViewModel.appState.collectAsStateWithLifecycle()
     val tagsState by tagsViewModel.state.collectAsStateWithLifecycle()
 
-    val screenTitle = stringResource(id = R.string.tags_title)
     val localContext = LocalContext.current
     val localView = LocalView.current
-
-    LaunchedEffect(Unit) {
-        mainViewModel.updateState { currentState ->
-            currentState.copy(
-                title = MainState.TitleComponent.Visible(screenTitle),
-                subtitle = MainState.TitleComponent.Gone,
-                navigation = MainState.NavigationComponent.Visible(),
-                bottomAppBar = MainState.BottomAppBarComponent.Gone,
-                floatingActionButton = MainState.FabComponent.Gone,
-            )
-        }
-    }
 
     val error by tagsViewModel.error.collectAsStateWithLifecycle()
     LaunchedErrorHandlerEffect(error = error, handler = tagsViewModel::errorHandled)
@@ -130,7 +113,7 @@ fun TagListScreen(
         },
         searchInput = tagsState.currentQuery,
         onSearchInputChanged = tagsViewModel::searchTags,
-        onTagClicked = { mainViewModel.runAction(PostsForTag(it)) },
+        onTagClicked = { tagsViewModel.runAction(PostsForTag(it)) },
         onTagLongClicked = { tag ->
             if (AppMode.PINBOARD == appState.appMode) {
                 SelectionDialog.show(
@@ -153,7 +136,7 @@ fun TagListScreen(
                 )
             }
         },
-        onPullToRefresh = { mainViewModel.runAction(RefreshTags) },
+        onPullToRefresh = { tagsViewModel.runAction(RefreshTags) },
     )
 }
 

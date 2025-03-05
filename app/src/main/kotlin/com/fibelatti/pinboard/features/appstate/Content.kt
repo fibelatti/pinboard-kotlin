@@ -69,6 +69,7 @@ data class ExternalBrowserContent(
 
 data class SearchContent(
     val searchParameters: SearchParameters,
+    val queryResultSize: Int = 0,
     val availableTags: List<Tag> = emptyList(),
     val allTags: List<Tag> = emptyList(),
     val shouldLoadTags: Boolean = true,

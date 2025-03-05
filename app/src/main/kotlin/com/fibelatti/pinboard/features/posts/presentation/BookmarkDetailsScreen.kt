@@ -158,73 +158,9 @@ private fun LaunchedMainViewModelEffect(
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
 ) {
-    val appState by mainViewModel.appState.collectAsStateWithLifecycle()
-
     val localContext = LocalContext.current
     val localLifecycle = LocalLifecycleOwner.current.lifecycle
     val localOnBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-
-    LaunchedEffect(appState.content, appState.multiPanelAvailable) {
-        val (post, menuItems) = when (val current = appState.content) {
-            is PostDetailContent -> current.post to listOf(
-                MainState.MenuItemComponent.DeleteBookmark,
-                MainState.MenuItemComponent.EditBookmark,
-                MainState.MenuItemComponent.OpenInBrowser,
-            )
-
-            is PopularPostDetailContent -> current.post to listOf(
-                MainState.MenuItemComponent.SaveBookmark,
-                MainState.MenuItemComponent.OpenInBrowser,
-            )
-
-            else -> return@LaunchedEffect
-        }
-
-        mainViewModel.updateState { currentState ->
-            val actionButtonState = if (post.readLater == true && !post.isFile()) {
-                MainState.ActionButtonComponent.Visible(
-                    contentType = PostDetailContent::class,
-                    label = localContext.getString(R.string.hint_mark_as_read),
-                    data = post,
-                )
-            } else {
-                MainState.ActionButtonComponent.Gone
-            }
-
-            if (appState.multiPanelAvailable) {
-                currentState.copy(
-                    actionButton = actionButtonState,
-                    sidePanelAppBar = MainState.SidePanelAppBarComponent.Visible(
-                        contentType = PostDetailContent::class,
-                        menuItems = listOf(
-                            MainState.MenuItemComponent.ShareBookmark,
-                            *menuItems.toTypedArray(),
-                            MainState.MenuItemComponent.CloseSidePanel,
-                        ),
-                        data = post,
-                    ),
-                )
-            } else {
-                currentState.copy(
-                    title = MainState.TitleComponent.Gone,
-                    subtitle = MainState.TitleComponent.Gone,
-                    navigation = MainState.NavigationComponent.Visible(),
-                    actionButton = actionButtonState,
-                    bottomAppBar = MainState.BottomAppBarComponent.Visible(
-                        contentType = PostDetailContent::class,
-                        menuItems = menuItems,
-                        navigationIcon = null,
-                        data = post,
-                    ),
-                    floatingActionButton = MainState.FabComponent.Visible(
-                        contentType = PostDetailContent::class,
-                        icon = R.drawable.ic_share,
-                        data = post,
-                    ),
-                )
-            }
-        }
-    }
 
     LaunchedEffect(Unit) {
         mainViewModel.actionButtonClicks(contentType = PostDetailContent::class)

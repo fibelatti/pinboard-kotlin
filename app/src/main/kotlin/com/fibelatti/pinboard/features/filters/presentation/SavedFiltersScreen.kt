@@ -19,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -38,8 +37,6 @@ import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.extension.showBanner
-import com.fibelatti.pinboard.features.MainState
-import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.ViewSavedFilter
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.ui.components.ChipGroup
@@ -50,7 +47,6 @@ import com.fibelatti.ui.theme.ExtendedTheme
 @Composable
 fun SavedFiltersScreen(
     modifier: Modifier = Modifier,
-    mainViewModel: MainViewModel = hiltViewModel(),
     savedFiltersViewModel: SavedFiltersViewModel = hiltViewModel(),
 ) {
     Surface(
@@ -62,27 +58,13 @@ fun SavedFiltersScreen(
         val localContext = LocalContext.current
         val localView = LocalView.current
 
-        val title = stringResource(id = R.string.saved_filters_title)
-
-        LaunchedEffect(Unit) {
-            mainViewModel.updateState { currentState ->
-                currentState.copy(
-                    title = MainState.TitleComponent.Visible(title),
-                    subtitle = MainState.TitleComponent.Gone,
-                    navigation = MainState.NavigationComponent.Visible(),
-                    bottomAppBar = MainState.BottomAppBarComponent.Gone,
-                    floatingActionButton = MainState.FabComponent.Gone,
-                )
-            }
-        }
-
         val error by savedFiltersViewModel.error.collectAsStateWithLifecycle()
         LaunchedErrorHandlerEffect(error = error, handler = savedFiltersViewModel::errorHandled)
 
         SavedFiltersScreen(
             savedFilters = savedFilters,
             onSavedFilterClicked = { savedFilter ->
-                mainViewModel.runAction(ViewSavedFilter(savedFilter = savedFilter))
+                savedFiltersViewModel.runAction(ViewSavedFilter(savedFilter = savedFilter))
             },
             onSavedFilterLongClicked = { savedFilter ->
                 SelectionDialog.show(

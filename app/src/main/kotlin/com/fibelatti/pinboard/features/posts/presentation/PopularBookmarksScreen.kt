@@ -40,8 +40,6 @@ import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.extension.showBanner
-import com.fibelatti.pinboard.features.MainState
-import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.RefreshPopular
 import com.fibelatti.pinboard.features.appstate.ViewPost
@@ -53,14 +51,13 @@ import com.fibelatti.ui.theme.ExtendedTheme
 @Composable
 fun PopularBookmarksScreen(
     modifier: Modifier = Modifier,
-    mainViewModel: MainViewModel = hiltViewModel(),
     popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
 ) {
     Surface(
         modifier = modifier,
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val appState by mainViewModel.appState.collectAsStateWithLifecycle()
+        val appState by popularPostsViewModel.appState.collectAsStateWithLifecycle()
         val popularPostsContent by rememberUpdatedState(
             newValue = appState.content.find<PopularPostsContent>() ?: return@Surface,
         )
@@ -69,19 +66,6 @@ fun PopularBookmarksScreen(
 
         val localContext = LocalContext.current
         val localView = LocalView.current
-
-        LaunchedEffect(appState.content, appState.multiPanelAvailable) {
-            if (!(appState.content is PopularPostsContent || appState.multiPanelAvailable)) return@LaunchedEffect
-            mainViewModel.updateState { currentState ->
-                currentState.copy(
-                    title = MainState.TitleComponent.Visible(localContext.getString(R.string.popular_title)),
-                    subtitle = MainState.TitleComponent.Gone,
-                    navigation = MainState.NavigationComponent.Visible(),
-                    bottomAppBar = MainState.BottomAppBarComponent.Gone,
-                    floatingActionButton = MainState.FabComponent.Gone,
-                )
-            }
-        }
 
         LaunchedEffect(screenState.savedMessage) {
             screenState.savedMessage?.let { messageRes ->
@@ -99,8 +83,8 @@ fun PopularBookmarksScreen(
         ) { posts ->
             PopularBookmarksContent(
                 posts = posts,
-                onPullToRefresh = { mainViewModel.runAction(RefreshPopular) },
-                onBookmarkClicked = { mainViewModel.runAction(ViewPost(it)) },
+                onPullToRefresh = { popularPostsViewModel.runAction(RefreshPopular) },
+                onBookmarkClicked = { popularPostsViewModel.runAction(ViewPost(it)) },
                 onBookmarkLongClicked = { post ->
                     PopularPostsQuickActionsDialog.show(
                         context = localContext,

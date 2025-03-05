@@ -3,9 +3,11 @@ package com.fibelatti.pinboard.features
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.appstate.Content
 import com.fibelatti.pinboard.features.appstate.MultiPanelAvailabilityChanged
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.appstate.Reset
+import com.fibelatti.pinboard.features.main.reducer.MainStateReducer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -15,7 +17,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -25,6 +29,7 @@ class MainViewModel @Inject constructor(
     scope: CoroutineScope,
     sharingStarted: SharingStarted,
     appStateRepository: AppStateRepository,
+    mainStateReducers: Map<Class<out Content>, @JvmSuppressWildcards MainStateReducer>,
 ) : BaseViewModel(scope, appStateRepository) {
 
     private val reducer: MutableSharedFlow<suspend (MainState) -> MainState> = MutableSharedFlow()
@@ -36,6 +41,16 @@ class MainViewModel @Inject constructor(
     private val actionButtonClicks = MutableSharedFlow<Pair<ContentType, Any?>>()
     private val menuItemClicks = MutableSharedFlow<Triple<ContentType, MainState.MenuItemComponent, Any?>>()
     private val fabClicks = MutableSharedFlow<Pair<ContentType, Any?>>()
+
+    init {
+        appStateRepository.appState
+            .onEach { appState ->
+                mainStateReducers[appState.content::class.java]?.let { mainStateReducer: MainStateReducer ->
+                    reducer.emit { current: MainState -> mainStateReducer(current, appState) }
+                }
+            }
+            .launchIn(scope)
+    }
 
     fun updateState(body: (MainState) -> MainState) {
         scope.launch(Dispatchers.Main.immediate) {

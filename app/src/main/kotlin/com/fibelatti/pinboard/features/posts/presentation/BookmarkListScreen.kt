@@ -61,7 +61,6 @@ import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_PAGE_SIZE
 import com.fibelatti.pinboard.core.AppConfig.PINBOARD_USER_URL
 import com.fibelatti.pinboard.core.AppMode
@@ -90,19 +89,13 @@ import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.GetNextPostPage
 import com.fibelatti.pinboard.features.appstate.Loaded
-import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostList
 import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.PostsForTag
-import com.fibelatti.pinboard.features.appstate.Private
-import com.fibelatti.pinboard.features.appstate.Public
-import com.fibelatti.pinboard.features.appstate.Recent
 import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.SearchParameters
 import com.fibelatti.pinboard.features.appstate.SetSorting
 import com.fibelatti.pinboard.features.appstate.SortType
-import com.fibelatti.pinboard.features.appstate.Unread
-import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.appstate.ViewCategory
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
@@ -237,52 +230,8 @@ private fun LaunchedMainViewModelEffect(
     mainViewModel: MainViewModel = hiltViewModel(),
 ) {
     val appState by mainViewModel.appState.collectAsStateWithLifecycle()
-    val postListContent by remember {
-        derivedStateOf {
-            when (val current = appState.content) {
-                is PostListContent -> current
-                is PostDetailContent -> current.previousContent.takeIf { appState.sidePanelVisible }
-                else -> null
-            }
-        }
-    }
-
     val localContext = LocalContext.current
     val localLifecycle = LocalLifecycleOwner.current.lifecycle
-
-    LaunchedEffect(postListContent) {
-        val current = postListContent ?: return@LaunchedEffect
-
-        mainViewModel.updateState { currentState ->
-            currentState.copy(
-                title = MainState.TitleComponent.Visible(getCategoryTitle(localContext, current.category)),
-                subtitle = if (current.posts == null && current.shouldLoad is Loaded) {
-                    MainState.TitleComponent.Gone
-                } else {
-                    MainState.TitleComponent.Visible(
-                        label = buildPostCountSubTitle(localContext, current.totalCount, current.sortType),
-                    )
-                },
-                navigation = MainState.NavigationComponent.Gone,
-                bottomAppBar = MainState.BottomAppBarComponent.Visible(
-                    contentType = PostListContent::class,
-                    menuItems = buildList {
-                        add(MainState.MenuItemComponent.SearchBookmarks)
-                        add(MainState.MenuItemComponent.SortBookmarks)
-
-                        if (current.category == All && current.canForceSync) {
-                            add(MainState.MenuItemComponent.SyncBookmarks)
-                        }
-                    },
-                    navigationIcon = R.drawable.ic_menu,
-                ),
-                floatingActionButton = MainState.FabComponent.Visible(
-                    contentType = PostListContent::class,
-                    icon = R.drawable.ic_pin,
-                ),
-            )
-        }
-    }
 
     LaunchedEffect(Unit) {
         mainViewModel.menuItemClicks(contentType = PostListContent::class)
@@ -320,7 +269,6 @@ private fun LaunchedMainViewModelEffect(
 @Composable
 private fun LaunchedPostDetailViewModelEffect(
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltViewModel(),
 ) {
     val screenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
 
@@ -345,9 +293,6 @@ private fun LaunchedPostDetailViewModelEffect(
             current.updated is Success<Boolean> && current.updated.value -> {
                 localView.showBanner(R.string.posts_marked_as_read_feedback)
                 postDetailViewModel.userNotified()
-                mainViewModel.updateState { currentState ->
-                    currentState.copy(actionButton = MainState.ActionButtonComponent.Gone)
-                }
             }
 
             current.updated is Failure -> {
@@ -459,40 +404,6 @@ private fun shareFilteredResults(
             )
         }
     }
-}
-
-private fun getCategoryTitle(
-    context: Context,
-    category: ViewCategory,
-): String = with(context) {
-    return when (category) {
-        All -> getString(R.string.posts_title_all)
-        Recent -> getString(R.string.posts_title_recent)
-        Public -> getString(R.string.posts_title_public)
-        Private -> getString(R.string.posts_title_private)
-        Unread -> getString(R.string.posts_title_unread)
-        Untagged -> getString(R.string.posts_title_untagged)
-    }
-}
-
-private fun buildPostCountSubTitle(
-    context: Context,
-    count: Int,
-    sortType: SortType,
-): String = with(context) {
-    val countFormatArg = if (count % AppConfig.API_PAGE_SIZE == 0) "$count+" else "$count"
-    val countString = resources.getQuantityString(R.plurals.posts_quantity, count, countFormatArg)
-    return resources.getString(
-        when (sortType) {
-            is ByDateAddedNewestFirst -> R.string.posts_sorting_newest_first
-            is ByDateAddedOldestFirst -> R.string.posts_sorting_oldest_first
-            is ByDateModifiedNewestFirst -> R.string.posts_sorting_newest_first
-            is ByDateModifiedOldestFirst -> R.string.posts_sorting_oldest_first
-            is ByTitleAlphabetical -> R.string.posts_sorting_alphabetical
-            is ByTitleAlphabeticalReverse -> R.string.posts_sorting_alphabetical_reverse
-        },
-        countString,
-    )
 }
 
 private fun showSortingSelector(

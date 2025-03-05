@@ -29,7 +29,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -40,7 +39,6 @@ import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LoadingContent
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
-import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.NoteListContent
 import com.fibelatti.pinboard.features.appstate.RefreshNotes
@@ -65,29 +63,6 @@ fun NoteListScreen(
         val noteListContent by rememberUpdatedState(
             newValue = appState.content.find<NoteListContent>() ?: return@Surface,
         )
-        val localContext = LocalContext.current
-
-        LaunchedEffect(appState.content) {
-            mainViewModel.updateState { mainViewModelState ->
-                mainViewModelState.copy(
-                    title = MainState.TitleComponent.Visible(localContext.getString(R.string.notes_title)),
-                    subtitle = when {
-                        noteListContent.shouldLoad -> MainState.TitleComponent.Gone
-                        noteListContent.notes.isEmpty() -> MainState.TitleComponent.Gone
-                        else -> MainState.TitleComponent.Visible(
-                            localContext.resources.getQuantityString(
-                                R.plurals.notes_quantity,
-                                noteListContent.notes.size,
-                                noteListContent.notes.size,
-                            ),
-                        )
-                    },
-                    navigation = MainState.NavigationComponent.Visible(),
-                    bottomAppBar = MainState.BottomAppBarComponent.Gone,
-                    floatingActionButton = MainState.FabComponent.Gone,
-                )
-            }
-        }
 
         val error by noteListViewModel.error.collectAsStateWithLifecycle()
         LaunchedErrorHandlerEffect(error = error, handler = noteListViewModel::errorHandled)

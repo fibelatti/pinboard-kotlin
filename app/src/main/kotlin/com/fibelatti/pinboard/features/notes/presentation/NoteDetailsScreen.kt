@@ -46,33 +46,11 @@ fun NoteDetailsScreen(
         modifier = modifier,
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val appState by mainViewModel.appState.collectAsStateWithLifecycle()
         val noteDetailContent by noteDetailsViewModel.noteDetailContent.collectAsStateWithLifecycle(null)
         val current by rememberUpdatedState(newValue = noteDetailContent ?: return@Surface)
 
         val localLifecycle = LocalLifecycleOwner.current.lifecycle
         val localOnBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-
-        LaunchedEffect(noteDetailContent, appState.multiPanelAvailable) {
-            mainViewModel.updateState { currentState ->
-                if (appState.multiPanelAvailable) {
-                    currentState.copy(
-                        sidePanelAppBar = MainState.SidePanelAppBarComponent.Visible(
-                            contentType = NoteDetailContent::class,
-                            menuItems = listOf(MainState.MenuItemComponent.CloseSidePanel),
-                        ),
-                    )
-                } else {
-                    currentState.copy(
-                        title = MainState.TitleComponent.Gone,
-                        subtitle = MainState.TitleComponent.Gone,
-                        navigation = MainState.NavigationComponent.Visible(),
-                        bottomAppBar = MainState.BottomAppBarComponent.Gone,
-                        floatingActionButton = MainState.FabComponent.Gone,
-                    )
-                }
-            }
-        }
 
         LaunchedEffect(Unit) {
             mainViewModel.menuItemClicks(contentType = NoteDetailContent::class)

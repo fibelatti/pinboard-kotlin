@@ -259,10 +259,7 @@ private fun LaunchedEditPostViewModelEffect(
     editPostViewModel: EditPostViewModel = hiltViewModel(),
 ) {
     val screenState by editPostViewModel.screenState.collectAsStateWithLifecycle()
-
-    val localContext = LocalContext.current
     val localView = LocalView.current
-    val localLifecycle = LocalLifecycleOwner.current.lifecycle
 
     LaunchedEffect(screenState) {
         when {
@@ -291,36 +288,6 @@ private fun LaunchedEditPostViewModelEffect(
                 }
             }
         }
-    }
-
-    LaunchedEffect(Unit) {
-        editPostViewModel.postState
-            .onEach { post ->
-                mainViewModel.updateState { currentState ->
-                    currentState.copy(
-                        title = MainState.TitleComponent.Visible(localContext.getString(R.string.posts_add_title)),
-                        subtitle = MainState.TitleComponent.Gone,
-                        navigation = MainState.NavigationComponent.Visible(icon = R.drawable.ic_close),
-                        bottomAppBar = MainState.BottomAppBarComponent.Visible(
-                            contentType = EditPostContent::class,
-                            menuItems = buildList {
-                                if (post.id.isNotEmpty()) {
-                                    add(MainState.MenuItemComponent.DeleteBookmark)
-                                    add(MainState.MenuItemComponent.OpenInBrowser)
-                                }
-                            },
-                            navigationIcon = null,
-                            data = post,
-                        ),
-                        floatingActionButton = MainState.FabComponent.Visible(
-                            contentType = EditPostContent::class,
-                            icon = R.drawable.ic_done,
-                        ),
-                    )
-                }
-            }
-            .flowWithLifecycle(localLifecycle)
-            .launchIn(this)
     }
 }
 

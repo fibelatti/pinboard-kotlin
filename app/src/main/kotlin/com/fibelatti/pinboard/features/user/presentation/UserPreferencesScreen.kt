@@ -41,7 +41,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -71,7 +70,6 @@ import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.core.extension.fillWidthOfParent
-import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
@@ -96,7 +94,6 @@ fun UserPreferencesScreen(
 ) {
     val appState by mainViewModel.appState.collectAsStateWithLifecycle()
 
-    val title = stringResource(R.string.user_preferences_title)
     val localActivity = LocalActivity.current
     val localView = LocalView.current
 
@@ -105,18 +102,6 @@ fun UserPreferencesScreen(
         scope.launch {
             delay(300L) // Wait until the switch is done animating
             localActivity?.let(ActivityCompat::recreate)
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        mainViewModel.updateState { currentState ->
-            currentState.copy(
-                title = MainState.TitleComponent.Visible(title),
-                subtitle = MainState.TitleComponent.Gone,
-                navigation = MainState.NavigationComponent.Visible(),
-                bottomAppBar = MainState.BottomAppBarComponent.Gone,
-                floatingActionButton = MainState.FabComponent.Gone,
-            )
         }
     }
 
