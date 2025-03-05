@@ -39,7 +39,6 @@ import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LoadingContent
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
-import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.NoteListContent
 import com.fibelatti.pinboard.features.appstate.RefreshNotes
 import com.fibelatti.pinboard.features.appstate.ViewNote
@@ -52,14 +51,13 @@ import com.fibelatti.ui.theme.ExtendedTheme
 @Composable
 fun NoteListScreen(
     modifier: Modifier = Modifier,
-    mainViewModel: MainViewModel = hiltViewModel(),
     noteListViewModel: NoteListViewModel = hiltViewModel(),
 ) {
     Surface(
         modifier = modifier,
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val appState by mainViewModel.appState.collectAsStateWithLifecycle()
+        val appState by noteListViewModel.appState.collectAsStateWithLifecycle()
         val noteListContent by rememberUpdatedState(
             newValue = appState.content.find<NoteListContent>() ?: return@Surface,
         )
@@ -81,8 +79,8 @@ fun NoteListScreen(
 
                     noteListViewModel.sort(noteListContent.notes, sorting)
                 },
-                onPullToRefresh = { mainViewModel.runAction(RefreshNotes) },
-                onNoteClicked = { note -> mainViewModel.runAction(ViewNote(note.id)) },
+                onPullToRefresh = { noteListViewModel.runAction(RefreshNotes) },
+                onNoteClicked = { note -> noteListViewModel.runAction(ViewNote(note.id)) },
                 sidePanelVisible = appState.sidePanelVisible,
             )
         }

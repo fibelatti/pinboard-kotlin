@@ -70,7 +70,6 @@ import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.core.extension.fillWidthOfParent
-import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -90,9 +89,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun UserPreferencesScreen(
     modifier: Modifier = Modifier,
-    mainViewModel: MainViewModel = hiltViewModel(),
+    userPreferencesViewModel: UserPreferencesViewModel = hiltViewModel(),
 ) {
-    val appState by mainViewModel.appState.collectAsStateWithLifecycle()
+    val appState by userPreferencesViewModel.appState.collectAsStateWithLifecycle()
 
     val localActivity = LocalActivity.current
     val localView = LocalView.current
