@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.core.android
 
 import android.graphics.Rect
-import android.net.Uri
 import android.text.Spannable
 import android.text.Spanned
 import android.text.method.TransformationMethod
@@ -11,6 +10,7 @@ import android.widget.TextView
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import com.fibelatti.pinboard.R
 
 class CustomTabsURLSpan(url: String) : URLSpan(url) {
@@ -28,7 +28,7 @@ class CustomTabsURLSpan(url: String) : URLSpan(url) {
                     .build(),
             )
             .build()
-            .launchUrl(widget.context, Uri.parse(url))
+            .launchUrl(widget.context, url.toUri())
     }
 }
 

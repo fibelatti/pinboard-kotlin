@@ -105,6 +105,7 @@ subprojects {
             }
 
             compileOptions {
+                isCoreLibraryDesugaringEnabled = true
                 sourceCompatibility(javaVersion)
                 targetCompatibility(javaVersion)
             }
@@ -122,7 +123,7 @@ subprojects {
                 }
 
                 managedDevices {
-                    devices {
+                    allDevices {
                         maybeCreate<com.android.build.api.dsl.ManagedVirtualDevice>("pixel8api34").apply {
                             device = "Pixel 8"
                             apiLevel = 34
@@ -130,6 +131,10 @@ subprojects {
                         }
                     }
                 }
+            }
+
+            dependencies {
+                "coreLibraryDesugaring"(libs.core.library.desugaring)
             }
         }
 

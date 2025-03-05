@@ -3,7 +3,6 @@ package com.fibelatti.pinboard.features.posts.presentation
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.webkit.MimeTypeMap
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
@@ -46,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -331,7 +331,7 @@ private fun openUrlInFileViewer(context: Context, post: Post) {
     val mimeType = MimeTypeMap.getSingleton()
         .getMimeTypeFromExtension(post.url.substringAfterLast("."))
     val newIntent = Intent(Intent.ACTION_VIEW).apply {
-        setDataAndType(Uri.parse(post.url), mimeType)
+        setDataAndType(post.url.toUri(), mimeType)
         flags = Intent.FLAG_ACTIVITY_NEW_TASK
     }
 
@@ -343,7 +343,7 @@ private fun openUrlInFileViewer(context: Context, post: Post) {
 }
 
 fun openUrlInExternalBrowser(context: Context, post: Post) {
-    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(post.url)))
+    context.startActivity(Intent(Intent.ACTION_VIEW, post.url.toUri()))
 }
 // endregion Service functions
 

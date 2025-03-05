@@ -124,6 +124,10 @@ android {
     testFixtures {
         enable = true
     }
+
+    lint {
+        warningsAsErrors = true
+    }
 }
 
 androidComponents {

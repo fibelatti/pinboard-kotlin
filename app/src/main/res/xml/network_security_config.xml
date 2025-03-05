@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<network-security-config>
+<network-security-config xmlns:tools="http://schemas.android.com/tools">
     <!-- Linkding instance might be local, so cleartext is needed -->
-    <base-config cleartextTrafficPermitted="true" />
+    <base-config
+        tools:ignore="InsecureBaseConfiguration"
+        cleartextTrafficPermitted="true" />
 
     <!-- Pinboard is always remote, so no cleartext -->
     <domain-config cleartextTrafficPermitted="false">

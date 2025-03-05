@@ -3,9 +3,10 @@ Pinkt
 
 [![Language](https://img.shields.io/badge/language-kotlin-brightgreen.svg)](https://www.github.com/fibelatti/pinboard-kotlin)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Android CI](https://github.com/fibelatti/pinboard-kotlin/workflows/Android%20CI/badge.svg)](https://github.com/fibelatti/pinboard-kotlin/actions?query=workflow%3A%22Android+CI%22+branch%3Amain)
+[![Android CI](https://github.com/fibelatti/pinboard-kotlin/actions/workflows/android-ci.yml/badge.svg?branch=main)](https://github.com/fibelatti/pinboard-kotlin/actions?query=workflow%3A%22Android+CI%22+branch%3Amain)
 
-Pinkt is an unofficial, [FOSS](https://en.wikipedia.org/wiki/Free_and_open-source_software) Android client for [Pinboard](http://pinboard.in/) and [Linkding](https://github.com/sissbruecker/linkding).
+Pinkt is an unofficial, [FOSS](https://en.wikipedia.org/wiki/Free_and_open-source_software) Android client
+for [Pinboard](http://pinboard.in/) and [Linkding](https://github.com/sissbruecker/linkding).
 
 * Pinboard is a fast, no-nonsense bookmarking site for people who value privacy and speed.
 * Linkding is a self-hosted bookmark manager that is designed be to be minimal, fast, and easy to set up using Docker.
@@ -17,13 +18,15 @@ Downloads
 <a href='https://apt.izzysoft.de/fdroid/index/apk/com.fibelatti.pinboard'><img alt='Get it on IzzyOnDroid' src='https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png' width='150' /></a>
 <a href="https://github.com/fibelatti/pinboard-kotlin/releases/latest"><img alt="Get it on GitHub" src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png" width="150"></a>
 
->[!Note]
+> [!Note]
 >
 > Downloads from Google Play are verified by Google Play Protect.
 >
-> Downloads from IzzyOnDroid are verified by [Reproducible Builds](https://android.izzysoft.de/articles/named/iod-rbs-mirrors-clients?lang=en).
+> Downloads from IzzyOnDroid are verified
+> by [Reproducible Builds](https://android.izzysoft.de/articles/named/iod-rbs-mirrors-clients?lang=en).
 >
-> Downloads from GitHub can be verified with third-party tools such as [AppVerifier](https://github.com/soupslurpr/AppVerifier) using the following SHA-256 digest:
+> Downloads from GitHub can be verified with third-party tools such
+> as [AppVerifier](https://github.com/soupslurpr/AppVerifier) using the following SHA-256 digest:
 >
 > 9E:B9:92:5B:95:8F:C0:C4:EB:FB:99:FD:C5:1E:85:56:02:D0:42:E2:30:AF:91:71:6E:EC:B6:58:AE:04:19:89
 
@@ -56,8 +59,12 @@ About the project
 
 Pinkt is a playground to study modern Android development.
 
-Here you will find a codebase that encourages the usage of a stateful single source of truth, using Kotlin Coroutines + Kotlin Flows as foundation for a pragmatic unidirectional dataflow implementation. These are some of the topics you can expect to see:
-- Clean & beautiful UI built with Jetpack Compose and Google's [material design three](https://m3.material.io/) guidelines, with support for Material You theming
+Here you will find a codebase that encourages the usage of a stateful single source of truth, using Kotlin Coroutines +
+Kotlin Flows as foundation for a pragmatic unidirectional dataflow implementation. These are some of the topics you can
+expect to see:
+
+- Clean & beautiful UI built with Jetpack Compose and Google's [material design three](https://m3.material.io/)
+  guidelines, with support for Material You theming
 - Android Jetpack Libraries, including WorkManager and Room (with FTS)
 - Kotlin, Coroutines and Flows
 - DI using Hilt
@@ -66,7 +73,8 @@ Here you will find a codebase that encourages the usage of a stateful single sou
 Contributing
 --------
 
-Anyone is welcome to submit bug reports, feature requests and improvement ideas. Submit yours using the [provided templates](https://github.com/fibelatti/pinboard-kotlin/issues/new/choose).
+Anyone is welcome to submit bug reports, feature requests and improvement ideas. Submit yours using
+the [provided templates](https://github.com/fibelatti/pinboard-kotlin/issues/new/choose).
 
 License
 --------
