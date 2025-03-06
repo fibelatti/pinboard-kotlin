@@ -80,7 +80,7 @@ jobs:
       - name: Run instrumented tests
         run: ./gradlew pixel8api34DebugAndroidTest
           -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect"
-          -Pandroid.experimental.androidTest.numManagedDeviceShards=1
+          -Pandroid.experimental.androidTest.numManagedDeviceShards=2
           -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1
 
   lint:
