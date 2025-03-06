@@ -474,7 +474,9 @@ private fun BookmarkBasicDetails(
     ) {
         val focusManager = LocalFocusManager.current
         val (frUrl, frTitle, frDescription, frNotes) = FocusRequester.createRefs()
-        var focusedField by rememberSaveable { mutableStateOf(FocusedField.NONE) }
+        var focusedField by rememberSaveable {
+            mutableStateOf(if (url.isEmpty()) FocusedField.URL else FocusedField.NONE)
+        }
 
         LaunchedEffect(Unit) {
             when (focusedField) {

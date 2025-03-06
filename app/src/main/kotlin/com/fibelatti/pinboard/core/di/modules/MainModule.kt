@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.core.di.modules
 
 import com.fibelatti.pinboard.core.di.mapkeys.MainReducerKey
+import com.fibelatti.pinboard.features.appstate.AddPostContent
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.pinboard.features.appstate.NoteListContent
@@ -45,8 +46,13 @@ abstract class MainModule {
 
     @Binds
     @IntoMap
+    @MainReducerKey(AddPostContent::class)
+    abstract fun addBookmarkReducer(impl: BookmarkEditorReducer): MainStateReducer
+
+    @Binds
+    @IntoMap
     @MainReducerKey(EditPostContent::class)
-    abstract fun bookmarkEditorReducer(impl: BookmarkEditorReducer): MainStateReducer
+    abstract fun editBookmarkReducer(impl: BookmarkEditorReducer): MainStateReducer
 
     @Binds
     @IntoMap
