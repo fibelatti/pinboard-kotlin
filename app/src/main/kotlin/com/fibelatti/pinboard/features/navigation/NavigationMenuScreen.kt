@@ -31,7 +31,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
-import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.Private
 import com.fibelatti.pinboard.features.appstate.Public
@@ -43,6 +42,7 @@ import com.fibelatti.pinboard.features.appstate.ViewPopular
 import com.fibelatti.pinboard.features.appstate.ViewPreferences
 import com.fibelatti.pinboard.features.appstate.ViewSavedFilters
 import com.fibelatti.pinboard.features.appstate.ViewTags
+import com.fibelatti.pinboard.features.main.MainViewModel
 import com.fibelatti.pinboard.features.user.presentation.AuthViewModel
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme

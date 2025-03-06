@@ -32,8 +32,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.appstate.Content
+import com.fibelatti.pinboard.features.main.MainState
 import com.fibelatti.ui.preview.DevicePreviews
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme

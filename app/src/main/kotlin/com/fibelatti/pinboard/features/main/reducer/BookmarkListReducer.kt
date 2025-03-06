@@ -3,7 +3,6 @@ package com.fibelatti.pinboard.features.main.reducer
 import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
-import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppState
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
@@ -22,6 +21,7 @@ import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.appstate.ViewCategory
 import com.fibelatti.pinboard.features.appstate.find
+import com.fibelatti.pinboard.features.main.MainState
 import javax.inject.Inject
 
 class BookmarkListReducer @Inject constructor(

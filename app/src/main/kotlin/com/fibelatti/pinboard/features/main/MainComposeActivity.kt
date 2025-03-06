@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features
+package com.fibelatti.pinboard.features.main
 
 import android.content.Context
 import android.content.Intent

@@ -59,11 +59,11 @@ import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.rememberScrollDirection
 import com.fibelatti.pinboard.core.extension.showBanner
-import com.fibelatti.pinboard.features.MainState
-import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
+import com.fibelatti.pinboard.features.main.MainState
+import com.fibelatti.pinboard.features.main.MainViewModel
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme

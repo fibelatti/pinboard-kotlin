@@ -2,12 +2,12 @@ package com.fibelatti.pinboard.features.main.reducer
 
 import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.appstate.AppState
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.appstate.find
+import com.fibelatti.pinboard.features.main.MainState
 import com.fibelatti.pinboard.features.posts.presentation.isFile
 import javax.inject.Inject
 

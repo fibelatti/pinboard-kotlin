@@ -63,10 +63,10 @@ import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.showBanner
-import com.fibelatti.pinboard.features.MainState
-import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.NavigateBack
+import com.fibelatti.pinboard.features.main.MainState
+import com.fibelatti.pinboard.features.main.MainViewModel
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.TagManagerState

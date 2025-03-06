@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features
+package com.fibelatti.pinboard.features.main
 
 import app.cash.turbine.test
 import com.fibelatti.pinboard.BaseViewModelTest

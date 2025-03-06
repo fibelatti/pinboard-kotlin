@@ -11,9 +11,9 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import com.fibelatti.core.android.extension.clear
 import com.fibelatti.pinboard.core.util.DateFormatter
-import com.fibelatti.pinboard.features.MainComposeActivity
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.PostListContent
+import com.fibelatti.pinboard.features.main.MainComposeActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import javax.inject.Inject

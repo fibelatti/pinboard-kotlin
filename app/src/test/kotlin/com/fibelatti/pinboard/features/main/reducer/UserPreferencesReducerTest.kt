@@ -2,7 +2,7 @@ package com.fibelatti.pinboard.features.main.reducer
 
 import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.features.MainState
+import com.fibelatti.pinboard.features.main.MainState
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk

@@ -2,9 +2,9 @@ package com.fibelatti.pinboard.features.main.reducer
 
 import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.appstate.AppState
 import com.fibelatti.pinboard.features.appstate.NoteListContent
+import com.fibelatti.pinboard.features.main.MainState
 import javax.inject.Inject
 
 class NoteListReducer @Inject constructor(

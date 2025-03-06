@@ -27,9 +27,9 @@ import androidx.lifecycle.flowWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
-import com.fibelatti.pinboard.features.MainState
-import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.NoteDetailContent
+import com.fibelatti.pinboard.features.main.MainState
+import com.fibelatti.pinboard.features.main.MainViewModel
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme

@@ -1,6 +1,6 @@
 package com.fibelatti.pinboard.core.di.mapkeys
 
-import com.fibelatti.pinboard.features.ContentType
+import com.fibelatti.pinboard.features.main.ContentType
 import dagger.MapKey
 
 @MapKey

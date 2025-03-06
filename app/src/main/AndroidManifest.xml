@@ -18,7 +18,7 @@
         tools:targetApi="tiramisu">
 
         <activity
-            android:name=".features.MainComposeActivity"
+            android:name=".features.main.MainComposeActivity"
             android:exported="true"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
 

@@ -75,8 +75,6 @@ import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.copyToClipboard
 import com.fibelatti.pinboard.core.extension.rememberScrollDirection
 import com.fibelatti.pinboard.core.extension.showBanner
-import com.fibelatti.pinboard.features.MainState
-import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AddPost
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
@@ -101,6 +99,8 @@ import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
+import com.fibelatti.pinboard.features.main.MainState
+import com.fibelatti.pinboard.features.main.MainViewModel
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag

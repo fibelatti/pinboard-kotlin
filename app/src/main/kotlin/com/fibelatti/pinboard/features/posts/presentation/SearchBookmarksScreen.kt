@@ -42,8 +42,6 @@ import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.extension.showBanner
-import com.fibelatti.pinboard.features.MainState
-import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AddSearchTag
 import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.RefreshSearchTags
@@ -52,6 +50,8 @@ import com.fibelatti.pinboard.features.appstate.Search
 import com.fibelatti.pinboard.features.appstate.SearchContent
 import com.fibelatti.pinboard.features.appstate.SetTerm
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
+import com.fibelatti.pinboard.features.main.MainState
+import com.fibelatti.pinboard.features.main.MainViewModel
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
 import com.fibelatti.pinboard.features.tags.presentation.TagList

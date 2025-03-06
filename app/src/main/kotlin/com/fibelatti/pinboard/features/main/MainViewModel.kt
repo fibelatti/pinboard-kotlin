@@ -1,4 +1,4 @@
-package com.fibelatti.pinboard.features
+package com.fibelatti.pinboard.features.main
 
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.core.extension.ScrollDirection

@@ -6,7 +6,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ShareCompat
 import com.fibelatti.pinboard.core.extension.setThemedContent
-import com.fibelatti.pinboard.features.MainComposeActivity
+import com.fibelatti.pinboard.features.main.MainComposeActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
