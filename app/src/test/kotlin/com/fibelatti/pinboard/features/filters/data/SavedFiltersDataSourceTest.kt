@@ -1,8 +1,8 @@
 package com.fibelatti.pinboard.features.filters.data
 
-import com.fibelatti.pinboard.collectIn
+import app.cash.turbine.test
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
-import com.fibelatti.pinboard.runUnconfinedTest
+import com.fibelatti.pinboard.receivedItems
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coJustRun
 import io.mockk.coVerify
@@ -23,7 +23,7 @@ class SavedFiltersDataSourceTest {
     )
 
     @Test
-    fun `getSavedFilters maps and emit values from the dao`() = runUnconfinedTest {
+    fun `getSavedFilters maps and emit values from the dao`() = runTest {
         val dto = listOf(mockk<SavedFilterDto>())
         val output = listOf(mockk<SavedFilter>())
         val source = flowOf(dto)
@@ -31,9 +31,9 @@ class SavedFiltersDataSourceTest {
         every { savedFiltersDtoMapper.mapList(dto) } returns output
         every { savedFiltersDao.getSavedFilters() } returns source
 
-        val result = dataSource.getSavedFilters().collectIn(this)
-
-        assertThat(result).containsExactly(output)
+        dataSource.getSavedFilters().test {
+            assertThat(receivedItems()).containsExactly(output)
+        }
     }
 
     @Test

@@ -2,7 +2,19 @@ package com.fibelatti.pinboard
 
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
+import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.network.ApiResultCodes
+import com.fibelatti.pinboard.features.appstate.All
+import com.fibelatti.pinboard.features.appstate.AppState
+import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
+import com.fibelatti.pinboard.features.appstate.Content
+import com.fibelatti.pinboard.features.appstate.LoginContent
+import com.fibelatti.pinboard.features.appstate.PostListContent
+import com.fibelatti.pinboard.features.appstate.SearchParameters
+import com.fibelatti.pinboard.features.appstate.ShouldLoad
+import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
+import com.fibelatti.pinboard.features.appstate.SortType
+import com.fibelatti.pinboard.features.appstate.ViewCategory
 import com.fibelatti.pinboard.features.linkding.data.BookmarkLocal
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import com.fibelatti.pinboard.features.posts.data.model.GetPostDto
@@ -56,6 +68,37 @@ object MockDataProvider {
     // endregion
 
     // region Data classes
+    fun createAppState(
+        appMode: AppMode = AppMode.PINBOARD,
+        content: Content = createPostListContent(),
+        multiPanelAvailable: Boolean = false,
+    ): AppState = AppState(
+        appMode = appMode,
+        content = content,
+        multiPanelAvailable = multiPanelAvailable,
+    )
+
+    fun createPostListContent(
+        category: ViewCategory = All,
+        shouldLoad: ShouldLoad = ShouldLoadFirstPage,
+        sortType: SortType = ByDateAddedNewestFirst,
+        searchParameters: SearchParameters = SearchParameters(),
+    ): PostListContent = PostListContent(
+        category = category,
+        posts = null,
+        showDescription = false,
+        sortType = sortType,
+        searchParameters = searchParameters,
+        shouldLoad = shouldLoad,
+        isConnected = false,
+    )
+
+    fun createLoginContent(
+        isUnauthorized: Boolean = false,
+    ): LoginContent = LoginContent(
+        isUnauthorized = isUnauthorized,
+    )
+
     fun createGenericResponse(responseCode: ApiResultCodes): GenericResponseDto = GenericResponseDto(responseCode.code)
 
     fun createPostDto(

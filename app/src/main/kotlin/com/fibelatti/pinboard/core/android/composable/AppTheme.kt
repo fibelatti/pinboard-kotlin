@@ -5,8 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.fibelatti.pinboard.core.di.AppDispatchers
-import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.ui.theme.ExtendedTheme
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,11 +28,11 @@ fun AppTheme(
 @HiltViewModel
 class AppThemeViewModel @Inject constructor(
     userRepository: UserRepository,
-    @Scope(AppDispatchers.DEFAULT) scope: CoroutineScope,
+    scope: CoroutineScope,
     sharingStarted: SharingStarted,
 ) : ViewModel() {
 
     val applyDynamicColors: StateFlow<Boolean> = userRepository.currentPreferences
         .map { it.applyDynamicColors }
-        .stateIn(scope, sharingStarted, userRepository.applyDynamicColors)
+        .stateIn(scope = scope, started = sharingStarted, initialValue = userRepository.applyDynamicColors)
 }

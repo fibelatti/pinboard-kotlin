@@ -42,6 +42,10 @@ public class AppResourceProvider(context: Context) : ResourceProvider {
 
     override fun getString(resId: Int, vararg formatArgs: Any): String = context.getString(resId, *formatArgs)
 
+    override fun getQuantityString(resId: Int, quantity: Int, vararg formatArgs: Any): String {
+        return context.resources.getQuantityString(resId, quantity, *formatArgs)
+    }
+
     override fun getJsonFromAssets(fileName: String): String? {
         return try {
             InputStreamReader(context.assets.open(fileName)).use { reader ->

@@ -39,14 +39,9 @@ import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
-import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.core.extension.showBanner
-import com.fibelatti.pinboard.features.MainState
-import com.fibelatti.pinboard.features.MainViewModel
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.RefreshPopular
-import com.fibelatti.pinboard.features.appstate.SidePanelContent
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -56,47 +51,24 @@ import com.fibelatti.ui.theme.ExtendedTheme
 @Composable
 fun PopularBookmarksScreen(
     modifier: Modifier = Modifier,
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltViewModel(),
     popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
 ) {
     Surface(
         modifier = modifier,
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val content by appStateViewModel.content.collectAsStateWithLifecycle()
+        val appState by popularPostsViewModel.appState.collectAsStateWithLifecycle()
         val popularPostsContent by rememberUpdatedState(
-            newValue = content.find<PopularPostsContent>() ?: return@Surface,
+            newValue = appState.content.find<PopularPostsContent>() ?: return@Surface,
         )
 
-        val popularPostsScreenState by popularPostsViewModel.screenState.collectAsStateWithLifecycle()
-
-        val isMultiPanelAvailable = isMultiPanelAvailable()
+        val screenState by popularPostsViewModel.screenState.collectAsStateWithLifecycle()
 
         val localContext = LocalContext.current
         val localView = LocalView.current
 
-        LaunchedEffect(content, isMultiPanelAvailable) {
-            if (!(content is PopularPostsContent || isMultiPanelAvailable)) return@LaunchedEffect
-            mainViewModel.updateState { currentState ->
-                currentState.copy(
-                    title = MainState.TitleComponent.Visible(localContext.getString(R.string.popular_title)),
-                    subtitle = MainState.TitleComponent.Gone,
-                    navigation = MainState.NavigationComponent.Visible(),
-                    bottomAppBar = MainState.BottomAppBarComponent.Gone,
-                    floatingActionButton = MainState.FabComponent.Gone,
-                )
-            }
-        }
-
-        LaunchedEffect(popularPostsContent.shouldLoad) {
-            if (popularPostsContent.shouldLoad) {
-                popularPostsViewModel.getPosts()
-            }
-        }
-
-        LaunchedEffect(popularPostsScreenState.savedMessage) {
-            popularPostsScreenState.savedMessage?.let { messageRes ->
+        LaunchedEffect(screenState.savedMessage) {
+            screenState.savedMessage?.let { messageRes ->
                 localView.showBanner(messageRes)
                 popularPostsViewModel.userNotified()
             }
@@ -106,14 +78,13 @@ fun PopularBookmarksScreen(
         LaunchedErrorHandlerEffect(error = error, handler = popularPostsViewModel::errorHandled)
 
         CrossfadeLoadingLayout(
-            data = popularPostsContent.posts
-                .takeUnless { popularPostsContent.shouldLoad || popularPostsScreenState.isLoading },
+            data = popularPostsContent.posts.takeUnless { popularPostsContent.shouldLoad || screenState.isLoading },
             modifier = Modifier.fillMaxSize(),
         ) { posts ->
             PopularBookmarksContent(
                 posts = posts,
-                onPullToRefresh = { appStateViewModel.runAction(RefreshPopular) },
-                onBookmarkClicked = { appStateViewModel.runAction(ViewPost(it)) },
+                onPullToRefresh = { popularPostsViewModel.runAction(RefreshPopular) },
+                onBookmarkClicked = { popularPostsViewModel.runAction(ViewPost(it)) },
                 onBookmarkLongClicked = { post ->
                     PopularPostsQuickActionsDialog.show(
                         context = localContext,
@@ -121,7 +92,7 @@ fun PopularBookmarksScreen(
                         onSave = popularPostsViewModel::saveLink,
                     )
                 },
-                sidePanelVisible = content is SidePanelContent && isMultiPanelAvailable,
+                sidePanelVisible = appState.sidePanelVisible,
             )
         }
     }

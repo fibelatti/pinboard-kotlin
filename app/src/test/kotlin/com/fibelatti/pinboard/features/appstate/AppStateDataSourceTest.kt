@@ -1,22 +1,31 @@
 package com.fibelatti.pinboard.features.appstate
 
+import app.cash.turbine.test
+import com.fibelatti.pinboard.MockDataProvider.createAppState
+import com.fibelatti.pinboard.MockDataProvider.createLoginContent
+import com.fibelatti.pinboard.MockDataProvider.createPostListContent
 import com.fibelatti.pinboard.allSealedSubclasses
-import com.fibelatti.pinboard.collectIn
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import com.fibelatti.pinboard.runUnconfinedTest
+import com.fibelatti.pinboard.randomBoolean
+import com.fibelatti.pinboard.receivedItems
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
+import io.mockk.coJustRun
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkClass
 import io.mockk.verify
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -29,8 +38,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
 internal class AppStateDataSourceTest {
-
-    private val mockUserRepository = mockk<UserRepository>(relaxed = true)
 
     private val mockNavigationActionHandler = mockk<NavigationActionHandler>()
     private val mockPostActionHandler = mockk<PostActionHandler>()
@@ -48,60 +55,103 @@ internal class AppStateDataSourceTest {
         PopularAction::class.java to mockPopularActionHandler,
     )
 
-    private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider>()
+    private val mockUserRepository = mockk<UserRepository> {
+        every { hasAuthToken() } returns true
+        every { showDescriptionInLists } returns false
+        coJustRun { clearAuthToken() }
+    }
+
+    private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider> {
+        every { isConnected() } returns false
+    }
 
     private val appModeFlow: MutableStateFlow<AppMode> = MutableStateFlow(AppMode.PINBOARD)
     private val mockkAppModeProvider = mockk<AppModeProvider> {
         every { appMode } returns appModeFlow
     }
 
+    private val unauthorizedFlow = MutableSharedFlow<Unit>()
+    private val mockUnauthorizedPluginProvider = mockk<UnauthorizedPluginProvider> {
+        every { unauthorized } returns unauthorizedFlow
+    }
+
+    private val dispatcher = UnconfinedTestDispatcher()
+
     private val appStateDataSource by lazy {
         AppStateDataSource(
-            userRepository = mockUserRepository,
+            scope = TestScope(dispatcher),
+            dispatcher = Dispatchers.Unconfined,
+            sharingStarted = SharingStarted.Lazily,
             actionHandlers = handlers,
+            userRepository = mockUserRepository,
             connectivityInfoProvider = mockConnectivityInfoProvider,
             appModeProvider = mockkAppModeProvider,
-            scope = TestScope(UnconfinedTestDispatcher()),
-            sharingStarted = SharingStarted.WhileSubscribed(),
+            unauthorizedPluginProvider = mockUnauthorizedPluginProvider,
         )
     }
 
-    private val expectedLoginInitialValue = LoginContent()
+    private val expectedInitialLoginContent = createLoginContent()
 
-    private val expectedInitialValue = PostListContent(
-        category = All,
-        posts = null,
-        showDescription = false,
-        sortType = ByDateAddedNewestFirst,
-        searchParameters = SearchParameters(),
-        shouldLoad = ShouldLoadFirstPage,
-        isConnected = false,
-    )
+    private val expectedInitialContent = createPostListContent()
 
-    private val expectedPostActionValue = expectedInitialValue.copy(
-        category = Recent,
-    )
+    private val expectedInitialState = createAppState()
+
+    private val expectedPostActionValue = createPostListContent(category = Recent)
 
     @Test
-    fun `AppStateDataSource initial value should be set`() = runTest {
-        every { mockUserRepository.hasAuthToken() } returns true
-        every { mockConnectivityInfoProvider.isConnected() } returns false
+    fun `app state should have the initial value set`() = runTest {
+        assertThat(appStateDataSource.appState.first()).isEqualTo(expectedInitialState)
+    }
 
-        assertThat(appStateDataSource.content.first()).isEqualTo(expectedInitialValue)
+    @Test
+    fun `app mode changes should update the state`() = runTest {
+        appStateDataSource.appState.test {
+            skipItems(1)
+
+            appModeFlow.value = AppMode.LINKDING
+
+            assertThat(awaitItem()).isEqualTo(expectedInitialState.copy(appMode = AppMode.LINKDING))
+        }
+    }
+
+    @Test
+    fun `WHEN unauthorized emits THEN UserUnauthorized runs`() = runTest {
+        appStateDataSource.appState.test {
+            skipItems(1)
+
+            unauthorizedFlow.emit(Unit)
+
+            assertThat(awaitItem()).isEqualTo(expectedInitialState.copy(content = LoginContent(isUnauthorized = true)))
+        }
+
+        coVerify {
+            mockUserRepository.clearAuthToken()
+        }
+    }
+
+    @Test
+    fun `WHEN multi panel availability changed THEN the app state should be updated`() = runTest {
+        appStateDataSource.appState.test {
+            val value = randomBoolean()
+
+            appStateDataSource.runAction(MultiPanelAvailabilityChanged(available = value))
+
+            assertThat(expectMostRecentItem()).isEqualTo(expectedInitialState.copy(multiPanelAvailable = value))
+        }
     }
 
     @Test
     fun `reset should set currentContent to the initial value`() = runTest {
         // GIVEN
-        every { mockUserRepository.hasAuthToken() } returns true
-        every { mockConnectivityInfoProvider.isConnected() } returns false
         appStateDataSource.runAction(mockk<NavigationAction>())
 
-        // WHEN
-        appStateDataSource.reset()
+        appStateDataSource.appState.test {
+            // WHEN
+            appStateDataSource.runAction(Reset)
 
-        // THEN
-        assertThat(appStateDataSource.content.first()).isEqualTo(expectedInitialValue)
+            // THEN
+            assertThat(awaitItem()).isEqualTo(expectedInitialState)
+        }
     }
 
     @Nested
@@ -109,9 +159,7 @@ internal class AppStateDataSourceTest {
     inner class RunActionTests {
 
         @BeforeEach
-        fun setup() = runTest {
-            every { mockUserRepository.hasAuthToken() } returns true
-            every { mockConnectivityInfoProvider.isConnected() } returns false
+        fun setup() {
             coEvery { mockNavigationActionHandler.runAction(any(), any()) } returns expectedPostActionValue
             coEvery { mockPostActionHandler.runAction(any(), any()) } returns expectedPostActionValue
             coEvery { mockSearchActionHandler.runAction(any(), any()) } returns expectedPostActionValue
@@ -124,78 +172,109 @@ internal class AppStateDataSourceTest {
         @MethodSource("testCases")
         fun `WHEN runAction is called THEN expected action handler is called`(
             testCase: Pair<Action, ExpectedHandler>,
-        ) = runUnconfinedTest {
-            // GIVEN
-            val (action, expectedHandler) = testCase
-            val result = appStateDataSource.content.collectIn(this)
+        ) = runTest {
+            val appStateDataSource = AppStateDataSource(
+                scope = TestScope(dispatcher),
+                dispatcher = Dispatchers.Unconfined,
+                sharingStarted = SharingStarted.Lazily,
+                actionHandlers = handlers,
+                userRepository = mockUserRepository,
+                connectivityInfoProvider = mockConnectivityInfoProvider,
+                appModeProvider = mockkAppModeProvider,
+                unauthorizedPluginProvider = mockUnauthorizedPluginProvider,
+            )
 
-            // WHEN
-            appStateDataSource.runAction(action)
+            appStateDataSource.appState.test {
+                // GIVEN
+                val (action, expectedHandler) = testCase
 
-            assertThat(result).isNotEmpty()
+                // WHEN
+                appStateDataSource.runAction(action)
 
-            // THEN
-            when (expectedHandler) {
-                ExpectedHandler.NONE -> {
-                    when (action) {
-                        is UserLoggedIn -> {
-                            assertThat(result.last()).isEqualTo(expectedInitialValue)
+                // THEN
+                val state = expectMostRecentItem()
+
+                when (expectedHandler) {
+                    ExpectedHandler.NONE -> {
+                        when (action) {
+                            is MultiPanelAvailabilityChanged -> {
+                                assertThat(state).isEqualTo(
+                                    expectedInitialState.copy(multiPanelAvailable = action.available),
+                                )
+                            }
+
+                            is Reset -> {
+                                assertThat(state).isEqualTo(expectedInitialState)
+                            }
+
+                            is UserLoggedIn -> {
+                                assertThat(state).isEqualTo(expectedInitialState)
+                            }
+
+                            is UserLoggedOut -> {
+                                assertThat(state).isEqualTo(
+                                    expectedInitialState.copy(content = expectedInitialLoginContent),
+                                )
+                                verify { mockUserRepository.clearAuthToken() }
+                            }
+
+                            is UserUnauthorized -> {
+                                assertThat(state).isEqualTo(
+                                    expectedInitialState.copy(content = LoginContent(isUnauthorized = true)),
+                                )
+                                verify { mockUserRepository.clearAuthToken() }
+                            }
+
+                            else -> fail { "Action should be assigned to a handler" }
                         }
-
-                        is UserLoggedOut -> {
-                            assertThat(result.last()).isEqualTo(expectedLoginInitialValue)
-                            verify { mockUserRepository.clearAuthToken() }
-                        }
-
-                        is UserUnauthorized -> {
-                            assertThat(result.last()).isEqualTo(LoginContent(isUnauthorized = true))
-                            verify { mockUserRepository.clearAuthToken() }
-                        }
-
-                        else -> fail { "Action should be assigned to a handler" }
                     }
-                }
 
-                ExpectedHandler.NAVIGATION -> {
-                    assertThat(result.last()).isEqualTo(expectedPostActionValue)
-                    require(action is NavigationAction)
-                    coVerify { mockNavigationActionHandler.runAction(action, expectedInitialValue) }
-                }
+                    ExpectedHandler.NAVIGATION -> {
+                        assertThat(state).isEqualTo(expectedInitialState.copy(content = expectedPostActionValue))
+                        require(action is NavigationAction)
+                        coVerify { mockNavigationActionHandler.runAction(action, expectedInitialContent) }
+                    }
 
-                ExpectedHandler.POST -> {
-                    assertThat(result.last()).isEqualTo(expectedPostActionValue)
-                    require(action is PostAction)
-                    coVerify { mockPostActionHandler.runAction(action, expectedInitialValue) }
-                }
+                    ExpectedHandler.POST -> {
+                        assertThat(state).isEqualTo(expectedInitialState.copy(content = expectedPostActionValue))
+                        require(action is PostAction)
+                        coVerify { mockPostActionHandler.runAction(action, expectedInitialContent) }
+                    }
 
-                ExpectedHandler.SEARCH -> {
-                    assertThat(result.last()).isEqualTo(expectedPostActionValue)
-                    require(action is SearchAction)
-                    coVerify { mockSearchActionHandler.runAction(action, expectedInitialValue) }
-                }
+                    ExpectedHandler.SEARCH -> {
+                        assertThat(state).isEqualTo(expectedInitialState.copy(content = expectedPostActionValue))
+                        require(action is SearchAction)
+                        coVerify { mockSearchActionHandler.runAction(action, expectedInitialContent) }
+                    }
 
-                ExpectedHandler.TAG -> {
-                    assertThat(result.last()).isEqualTo(expectedPostActionValue)
-                    require(action is TagAction)
-                    coVerify { mockTagActionHandler.runAction(action, expectedInitialValue) }
-                }
+                    ExpectedHandler.TAG -> {
+                        assertThat(state).isEqualTo(expectedInitialState.copy(content = expectedPostActionValue))
+                        require(action is TagAction)
+                        coVerify { mockTagActionHandler.runAction(action, expectedInitialContent) }
+                    }
 
-                ExpectedHandler.NOTE -> {
-                    assertThat(result.last()).isEqualTo(expectedPostActionValue)
-                    require(action is NoteAction)
-                    coVerify { mockNoteActionHandler.runAction(action, expectedInitialValue) }
-                }
+                    ExpectedHandler.NOTE -> {
+                        assertThat(state).isEqualTo(expectedInitialState.copy(content = expectedPostActionValue))
+                        require(action is NoteAction)
+                        coVerify { mockNoteActionHandler.runAction(action, expectedInitialContent) }
+                    }
 
-                ExpectedHandler.POPULAR -> {
-                    assertThat(result.last()).isEqualTo(expectedPostActionValue)
-                    require(action is PopularAction)
-                    coVerify { mockPopularActionHandler.runAction(action, expectedInitialValue) }
+                    ExpectedHandler.POPULAR -> {
+                        assertThat(state).isEqualTo(expectedInitialState.copy(content = expectedPostActionValue))
+                        require(action is PopularAction)
+                        coVerify { mockPopularActionHandler.runAction(action, expectedInitialContent) }
+                    }
                 }
             }
         }
 
-        fun testCases(): List<Pair<Action, ExpectedHandler>> = Action::class.allSealedSubclasses.map {
-            when (it.objectInstance ?: mockkClass(it)) {
+        fun testCases(): List<Pair<Action, ExpectedHandler>> = Action::class.allSealedSubclasses.map { subclass ->
+            when (subclass.objectInstance ?: mockkClass(subclass)) {
+                // App
+                is MultiPanelAvailabilityChanged -> MultiPanelAvailabilityChanged(randomBoolean()) to
+                    ExpectedHandler.NONE
+                is Reset -> Reset to ExpectedHandler.NONE
+
                 // Auth
                 is UserLoggedIn -> UserLoggedIn to ExpectedHandler.NONE
                 is UserLoggedOut -> UserLoggedOut to ExpectedHandler.NONE
@@ -236,6 +315,7 @@ internal class AppStateDataSourceTest {
                 is SetSearchTags -> mockk<SetSearchTags>() to ExpectedHandler.SEARCH
                 is AddSearchTag -> mockk<AddSearchTag>() to ExpectedHandler.SEARCH
                 is RemoveSearchTag -> mockk<RemoveSearchTag>() to ExpectedHandler.SEARCH
+                is SetResultSize -> mockk<SetResultSize>() to ExpectedHandler.SEARCH
                 is Search -> mockk<Search>() to ExpectedHandler.SEARCH
                 is ClearSearch -> ClearSearch to ExpectedHandler.SEARCH
                 is ViewSavedFilter -> mockk<ViewSavedFilter>() to ExpectedHandler.SEARCH
@@ -265,16 +345,16 @@ internal class AppStateDataSourceTest {
             // GIVEN
             val mockAction = mockk<NavigationAction>()
             coEvery {
-                mockNavigationActionHandler.runAction(mockAction, expectedInitialValue)
-            } returns expectedInitialValue
+                mockNavigationActionHandler.runAction(mockAction, expectedInitialContent)
+            } returns expectedInitialContent
 
-            val result = appStateDataSource.content.collectIn(this)
+            appStateDataSource.appState.map { it.content }.test {
+                // WHEN
+                appStateDataSource.runAction(mockAction)
 
-            // WHEN
-            appStateDataSource.runAction(mockAction)
-
-            // THEN
-            assertThat(result).hasSize(0)
+                // THEN
+                assertThat(receivedItems()).containsExactly(expectedInitialContent)
+            }
         }
 
         @Test
@@ -282,16 +362,16 @@ internal class AppStateDataSourceTest {
             // GIVEN
             val mockAction = mockk<PostAction>()
             coEvery {
-                mockPostActionHandler.runAction(mockAction, expectedInitialValue)
-            } returns expectedInitialValue
+                mockPostActionHandler.runAction(mockAction, expectedInitialContent)
+            } returns expectedInitialContent
 
-            val result = appStateDataSource.content.collectIn(this)
+            appStateDataSource.appState.map { it.content }.test {
+                // WHEN
+                appStateDataSource.runAction(mockAction)
 
-            // WHEN
-            appStateDataSource.runAction(mockAction)
-
-            // THEN
-            assertThat(result).hasSize(0)
+                // THEN
+                assertThat(receivedItems()).containsExactly(expectedInitialContent)
+            }
         }
 
         @Test
@@ -299,16 +379,16 @@ internal class AppStateDataSourceTest {
             // GIVEN
             val mockAction = mockk<SearchAction>()
             coEvery {
-                mockSearchActionHandler.runAction(mockAction, expectedInitialValue)
-            } returns expectedInitialValue
+                mockSearchActionHandler.runAction(mockAction, expectedInitialContent)
+            } returns expectedInitialContent
 
-            val result = appStateDataSource.content.collectIn(this)
+            appStateDataSource.appState.map { it.content }.test {
+                // WHEN
+                appStateDataSource.runAction(mockAction)
 
-            // WHEN
-            appStateDataSource.runAction(mockAction)
-
-            // THEN
-            assertThat(result).hasSize(0)
+                // THEN
+                assertThat(receivedItems()).containsExactly(expectedInitialContent)
+            }
         }
 
         @Test
@@ -316,16 +396,16 @@ internal class AppStateDataSourceTest {
             // GIVEN
             val mockAction = mockk<TagAction>()
             coEvery {
-                mockTagActionHandler.runAction(mockAction, expectedInitialValue)
-            } returns expectedInitialValue
+                mockTagActionHandler.runAction(mockAction, expectedInitialContent)
+            } returns expectedInitialContent
 
-            val result = appStateDataSource.content.collectIn(this)
+            appStateDataSource.appState.map { it.content }.test {
+                // WHEN
+                appStateDataSource.runAction(mockAction)
 
-            // WHEN
-            appStateDataSource.runAction(mockAction)
-
-            // THEN
-            assertThat(result).hasSize(0)
+                // THEN
+                assertThat(receivedItems()).containsExactly(expectedInitialContent)
+            }
         }
 
         @Test
@@ -333,16 +413,16 @@ internal class AppStateDataSourceTest {
             // GIVEN
             val mockAction = mockk<NoteAction>()
             coEvery {
-                mockNoteActionHandler.runAction(mockAction, expectedInitialValue)
-            } returns expectedInitialValue
+                mockNoteActionHandler.runAction(mockAction, expectedInitialContent)
+            } returns expectedInitialContent
 
-            val result = appStateDataSource.content.collectIn(this)
+            appStateDataSource.appState.map { it.content }.test {
+                // WHEN
+                appStateDataSource.runAction(mockAction)
 
-            // WHEN
-            appStateDataSource.runAction(mockAction)
-
-            // THEN
-            assertThat(result).hasSize(0)
+                // THEN
+                assertThat(receivedItems()).containsExactly(expectedInitialContent)
+            }
         }
 
         @Test
@@ -350,16 +430,16 @@ internal class AppStateDataSourceTest {
             // GIVEN
             val mockAction = mockk<PopularAction>()
             coEvery {
-                mockPopularActionHandler.runAction(mockAction, expectedInitialValue)
-            } returns expectedInitialValue
+                mockPopularActionHandler.runAction(mockAction, expectedInitialContent)
+            } returns expectedInitialContent
 
-            val result = appStateDataSource.content.collectIn(this)
+            appStateDataSource.appState.map { it.content }.test {
+                // WHEN
+                appStateDataSource.runAction(mockAction)
 
-            // WHEN
-            appStateDataSource.runAction(mockAction)
-
-            // THEN
-            assertThat(result).hasSize(0)
+                // THEN
+                assertThat(receivedItems()).containsExactly(expectedInitialContent)
+            }
         }
     }
 
@@ -368,16 +448,15 @@ internal class AppStateDataSourceTest {
         runTest {
             every { mockUserRepository.hasAuthToken() } returns false
 
-            assertThat(appStateDataSource.content.first()).isEqualTo(expectedLoginInitialValue)
+            assertThat(appStateDataSource.appState.first().content).isEqualTo(expectedInitialLoginContent)
         }
 
     @Test
     fun `GIVEN hasAuthToken is true WHEN getInitialContent is called THEN expected initial content is returned`() =
         runTest {
             every { mockUserRepository.hasAuthToken() } returns true
-            every { mockConnectivityInfoProvider.isConnected() } returns false
 
-            assertThat(appStateDataSource.content.first()).isEqualTo(expectedInitialValue)
+            assertThat(appStateDataSource.appState.first().content).isEqualTo(expectedInitialContent)
         }
 
     @Test
@@ -386,9 +465,8 @@ internal class AppStateDataSourceTest {
             appModeFlow.value = AppMode.NO_API
 
             every { mockUserRepository.hasAuthToken() } returns false
-            every { mockConnectivityInfoProvider.isConnected() } returns false
 
-            assertThat(appStateDataSource.content.first()).isEqualTo(expectedInitialValue)
+            assertThat(appStateDataSource.appState.first().content).isEqualTo(expectedInitialContent)
         }
 
     internal enum class ExpectedHandler {

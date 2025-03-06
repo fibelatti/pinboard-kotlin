@@ -9,7 +9,9 @@ import com.fibelatti.pinboard.features.notes.data.NotesDataSource
 import com.fibelatti.pinboard.features.notes.domain.NotesRepository
 import com.fibelatti.pinboard.features.posts.data.PostsDataSourceProxy
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
+import com.fibelatti.pinboard.features.tags.data.TagManagerDataSource
 import com.fibelatti.pinboard.features.tags.data.TagsDataSourceProxy
+import com.fibelatti.pinboard.features.tags.domain.TagManagerRepository
 import com.fibelatti.pinboard.features.tags.domain.TagsRepository
 import com.fibelatti.pinboard.features.user.data.UserDataSource
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -28,6 +30,9 @@ internal abstract class FeatureModule {
 
     @Binds
     abstract fun tagsRepository(impl: TagsDataSourceProxy): TagsRepository
+
+    @Binds
+    abstract fun tagManagerRepository(impl: TagManagerDataSource): TagManagerRepository
 
     @Binds
     abstract fun savedFiltersRepository(impl: SavedFiltersDataSource): SavedFiltersRepository

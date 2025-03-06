@@ -61,7 +61,6 @@ import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_PAGE_SIZE
 import com.fibelatti.pinboard.core.AppConfig.PINBOARD_USER_URL
 import com.fibelatti.pinboard.core.AppMode
@@ -71,7 +70,6 @@ import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.android.composable.TextWithBlockquote
-import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.copyToClipboard
@@ -81,7 +79,6 @@ import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AddPost
 import com.fibelatti.pinboard.features.appstate.All
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
 import com.fibelatti.pinboard.features.appstate.ByDateAddedOldestFirst
 import com.fibelatti.pinboard.features.appstate.ByDateModifiedNewestFirst
@@ -92,23 +89,13 @@ import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.GetNextPostPage
 import com.fibelatti.pinboard.features.appstate.Loaded
-import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostList
 import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.PostsForTag
-import com.fibelatti.pinboard.features.appstate.Private
-import com.fibelatti.pinboard.features.appstate.Public
-import com.fibelatti.pinboard.features.appstate.Recent
 import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.SearchParameters
 import com.fibelatti.pinboard.features.appstate.SetSorting
-import com.fibelatti.pinboard.features.appstate.ShouldForceLoad
-import com.fibelatti.pinboard.features.appstate.ShouldLoadFirstPage
-import com.fibelatti.pinboard.features.appstate.ShouldLoadNextPage
-import com.fibelatti.pinboard.features.appstate.SidePanelContent
 import com.fibelatti.pinboard.features.appstate.SortType
-import com.fibelatti.pinboard.features.appstate.Unread
-import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.appstate.ViewCategory
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
@@ -124,7 +111,6 @@ import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.EntryPointAccessors
-import java.util.UUID
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -132,7 +118,6 @@ import kotlinx.coroutines.flow.onEach
 @Composable
 fun BookmarkListScreen(
     modifier: Modifier = Modifier,
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     postListViewModel: PostListViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
@@ -142,22 +127,21 @@ fun BookmarkListScreen(
         modifier = modifier,
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
-        val content by appStateViewModel.content.collectAsStateWithLifecycle()
+        val appState by mainViewModel.appState.collectAsStateWithLifecycle()
 
-        val currentState by rememberUpdatedState(
-            newValue = content.find<PostListContent>() ?: return@Surface,
+        val postListContent by rememberUpdatedState(
+            newValue = appState.content.find<PostListContent>() ?: return@Surface,
         )
-
         val postDetailScreenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
 
         val postListError by postListViewModel.error.collectAsStateWithLifecycle()
         val postDetailError by postDetailViewModel.error.collectAsStateWithLifecycle()
-        val hasError = postListError != null || postDetailError != null
-
-        val shouldLoadContent = currentState.shouldLoad is ShouldLoadFirstPage ||
-            currentState.shouldLoad is ShouldForceLoad ||
-            currentState.shouldLoad is ShouldLoadNextPage
+        val hasError by remember {
+            derivedStateOf { postListError != null || postDetailError != null }
+        }
+        val isLoading by remember {
+            derivedStateOf { (postListContent.shouldLoad != Loaded || postDetailScreenState.isLoading) && !hasError }
+        }
 
         val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
         val tagsClipboard = remember { mutableListOf<Tag>() }
@@ -165,28 +149,27 @@ fun BookmarkListScreen(
         val localContext = LocalContext.current
         val localView = LocalView.current
 
-        LaunchedEffect(shouldLoadContent, currentState) {
-            if (shouldLoadContent) postListViewModel.loadContent(currentState)
-        }
-
-        LaunchedViewModelEffects()
+        LaunchedMainViewModelEffect()
+        LaunchedPostDetailViewModelEffect()
+        LaunchedErrorHandlerEffect(error = postListError, handler = postListViewModel::errorHandled)
+        LaunchedErrorHandlerEffect(error = postDetailError, handler = postDetailViewModel::errorHandled)
 
         BookmarkListScreen(
-            appMode = appMode,
-            category = currentState.category,
-            posts = currentState.posts,
-            isLoading = (currentState.shouldLoad != Loaded || postDetailScreenState.isLoading) && !hasError,
+            appMode = appState.appMode,
+            category = postListContent.category,
+            posts = postListContent.posts,
+            isLoading = isLoading,
             onScrollDirectionChanged = mainViewModel::setCurrentScrollDirection,
-            onNextPageRequested = { appStateViewModel.runAction(GetNextPostPage) },
-            sortType = currentState.sortType,
-            searchParameters = currentState.searchParameters,
-            onActiveSearchClicked = { appStateViewModel.runAction(ViewSearch) },
-            onClearClicked = { appStateViewModel.runAction(ClearSearch) },
+            onNextPageRequested = { mainViewModel.runAction(GetNextPostPage) },
+            sortType = postListContent.sortType,
+            searchParameters = postListContent.searchParameters,
+            onActiveSearchClicked = { mainViewModel.runAction(ViewSearch) },
+            onClearClicked = { mainViewModel.runAction(ClearSearch) },
             onSaveClicked = {
                 postListViewModel.saveFilter(
                     SavedFilter(
-                        searchTerm = currentState.searchParameters.term,
-                        tags = currentState.searchParameters.tags,
+                        searchTerm = postListContent.searchParameters.term,
+                        tags = postListContent.searchParameters.tags,
                     ),
                 )
                 localView.showBanner(R.string.saved_filters_saved_feedback)
@@ -199,8 +182,8 @@ fun BookmarkListScreen(
                     searchParameters = searchParameters,
                 )
             },
-            onPullToRefresh = { appStateViewModel.runAction(Refresh()) },
-            onPostClicked = { post -> appStateViewModel.runAction(ViewPost(post)) },
+            onPullToRefresh = { mainViewModel.runAction(Refresh()) },
+            onPostClicked = { post -> mainViewModel.runAction(ViewPost(post)) },
             onPostLongClicked = { post ->
                 showQuickActionsDialog(
                     context = localContext,
@@ -218,7 +201,7 @@ fun BookmarkListScreen(
                         postDetailViewModel.addTags(post = post, tags = tags)
                     },
                     onEdit = {
-                        appStateViewModel.runAction(action = EditPost(post))
+                        mainViewModel.runAction(action = EditPost(post))
                     },
                     onDelete = {
                         showDeleteConfirmationDialog(context = localContext) {
@@ -228,123 +211,47 @@ fun BookmarkListScreen(
                     onExpandDescription = {
                         PostDescriptionDialog.showPostDescriptionDialog(
                             context = localContext,
-                            appMode = appMode,
+                            appMode = appState.appMode,
                             post = post,
                         )
                     },
                 )
             },
-            onTagClicked = { post -> appStateViewModel.runAction(PostsForTag(post)) },
-            showPostDescription = currentState.showDescription,
-            sidePanelVisible = content is SidePanelContent && isMultiPanelAvailable(),
+            onTagClicked = { post -> mainViewModel.runAction(PostsForTag(post)) },
+            showPostDescription = postListContent.showDescription,
+            sidePanelVisible = appState.sidePanelVisible,
         )
     }
 }
 
-object BookmarkListScreen {
-
-    val ACTION_ID = UUID.randomUUID().toString()
-}
-
 // region ViewModel setup
 @Composable
-private fun LaunchedViewModelEffects(
-    postListViewModel: PostListViewModel = hiltViewModel(),
-    postDetailViewModel: PostDetailViewModel = hiltViewModel(),
-) {
-    LaunchedAppStateViewModelEffect(actionId = BookmarkListScreen.ACTION_ID)
-    LaunchedMainViewModelEffect(actionId = BookmarkListScreen.ACTION_ID)
-    LaunchedPostDetailViewModelEffect()
-
-    val listError by postListViewModel.error.collectAsStateWithLifecycle()
-    LaunchedErrorHandlerEffect(error = listError, handler = postListViewModel::errorHandled)
-
-    val detailError by postDetailViewModel.error.collectAsStateWithLifecycle()
-    LaunchedErrorHandlerEffect(error = detailError, handler = postDetailViewModel::errorHandled)
-}
-
-@Composable
-private fun LaunchedAppStateViewModelEffect(
-    actionId: String,
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltViewModel(),
-) {
-    val content by appStateViewModel.content.collectAsStateWithLifecycle()
-    val isMultiPanelAvailable = isMultiPanelAvailable()
-    val postListContent by remember {
-        derivedStateOf {
-            when (val current = content) {
-                is PostListContent -> current
-                is PostDetailContent -> current.previousContent.takeIf { isMultiPanelAvailable }
-                else -> null
-            }
-        }
-    }
-
-    val localContext = LocalContext.current
-
-    LaunchedEffect(postListContent) {
-        val current = postListContent ?: return@LaunchedEffect
-
-        mainViewModel.updateState { currentState ->
-            currentState.copy(
-                title = MainState.TitleComponent.Visible(getCategoryTitle(localContext, current.category)),
-                subtitle = if (current.posts == null && current.shouldLoad is Loaded) {
-                    MainState.TitleComponent.Gone
-                } else {
-                    MainState.TitleComponent.Visible(
-                        label = buildPostCountSubTitle(localContext, current.totalCount, current.sortType),
-                    )
-                },
-                navigation = MainState.NavigationComponent.Gone,
-                bottomAppBar = MainState.BottomAppBarComponent.Visible(
-                    id = actionId,
-                    menuItems = buildList {
-                        add(MainState.MenuItemComponent.SearchBookmarks)
-                        add(MainState.MenuItemComponent.SortBookmarks)
-
-                        if (current.category == All && current.canForceSync) {
-                            add(MainState.MenuItemComponent.SyncBookmarks)
-                        }
-                    },
-                    navigationIcon = R.drawable.ic_menu,
-                ),
-                floatingActionButton = MainState.FabComponent.Visible(actionId, R.drawable.ic_pin),
-            )
-        }
-    }
-}
-
-@Composable
 private fun LaunchedMainViewModelEffect(
-    actionId: String,
     mainViewModel: MainViewModel = hiltViewModel(),
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
 ) {
-    val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
-
+    val appState by mainViewModel.appState.collectAsStateWithLifecycle()
     val localContext = LocalContext.current
     val localLifecycle = LocalLifecycleOwner.current.lifecycle
 
     LaunchedEffect(Unit) {
-        mainViewModel.menuItemClicks(actionId)
+        mainViewModel.menuItemClicks(contentType = PostListContent::class)
             .onEach { (menuItem, _) ->
                 when (menuItem) {
                     is MainState.MenuItemComponent.SearchBookmarks -> {
-                        appStateViewModel.runAction(ViewSearch)
+                        mainViewModel.runAction(ViewSearch)
                     }
 
                     is MainState.MenuItemComponent.SortBookmarks -> {
                         showSortingSelector(
                             context = localContext,
-                            appMode = appMode,
+                            appMode = appState.appMode,
                         ) { option ->
-                            appStateViewModel.runAction(SetSorting(option))
+                            mainViewModel.runAction(SetSorting(option))
                         }
                     }
 
                     is MainState.MenuItemComponent.SyncBookmarks -> {
-                        appStateViewModel.runAction(Refresh(force = true))
+                        mainViewModel.runAction(Refresh(force = true))
                     }
 
                     else -> Unit
@@ -352,8 +259,8 @@ private fun LaunchedMainViewModelEffect(
             }
             .flowWithLifecycle(localLifecycle)
             .launchIn(this)
-        mainViewModel.fabClicks(actionId)
-            .onEach { appStateViewModel.runAction(AddPost) }
+        mainViewModel.fabClicks(contentType = PostListContent::class)
+            .onEach { mainViewModel.runAction(AddPost) }
             .flowWithLifecycle(localLifecycle)
             .launchIn(this)
     }
@@ -362,7 +269,6 @@ private fun LaunchedMainViewModelEffect(
 @Composable
 private fun LaunchedPostDetailViewModelEffect(
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltViewModel(),
 ) {
     val screenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
 
@@ -387,9 +293,6 @@ private fun LaunchedPostDetailViewModelEffect(
             current.updated is Success<Boolean> && current.updated.value -> {
                 localView.showBanner(R.string.posts_marked_as_read_feedback)
                 postDetailViewModel.userNotified()
-                mainViewModel.updateState { currentState ->
-                    currentState.copy(actionButton = MainState.ActionButtonComponent.Gone)
-                }
             }
 
             current.updated is Failure -> {
@@ -501,40 +404,6 @@ private fun shareFilteredResults(
             )
         }
     }
-}
-
-private fun getCategoryTitle(
-    context: Context,
-    category: ViewCategory,
-): String = with(context) {
-    return when (category) {
-        All -> getString(R.string.posts_title_all)
-        Recent -> getString(R.string.posts_title_recent)
-        Public -> getString(R.string.posts_title_public)
-        Private -> getString(R.string.posts_title_private)
-        Unread -> getString(R.string.posts_title_unread)
-        Untagged -> getString(R.string.posts_title_untagged)
-    }
-}
-
-private fun buildPostCountSubTitle(
-    context: Context,
-    count: Int,
-    sortType: SortType,
-): String = with(context) {
-    val countFormatArg = if (count % AppConfig.API_PAGE_SIZE == 0) "$count+" else "$count"
-    val countString = resources.getQuantityString(R.plurals.posts_quantity, count, countFormatArg)
-    return resources.getString(
-        when (sortType) {
-            is ByDateAddedNewestFirst -> R.string.posts_sorting_newest_first
-            is ByDateAddedOldestFirst -> R.string.posts_sorting_oldest_first
-            is ByDateModifiedNewestFirst -> R.string.posts_sorting_newest_first
-            is ByDateModifiedOldestFirst -> R.string.posts_sorting_oldest_first
-            is ByTitleAlphabetical -> R.string.posts_sorting_alphabetical
-            is ByTitleAlphabeticalReverse -> R.string.posts_sorting_alphabetical_reverse
-        },
-        countString,
-    )
 }
 
 private fun showSortingSelector(
@@ -666,7 +535,7 @@ fun BookmarkListScreen(
                 listState = listState,
                 contentPadding = listWindowInsets.asPaddingValues(),
             ) {
-                items(posts.list) { post ->
+                items(posts.list, key = { it.id }) { post ->
                     BookmarkItem(
                         appMode = appMode,
                         post = post,

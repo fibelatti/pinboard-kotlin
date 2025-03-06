@@ -5,31 +5,42 @@ import com.fibelatti.core.functional.onFailure
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.appstate.NoteListContent
 import com.fibelatti.pinboard.features.appstate.SetNotes
 import com.fibelatti.pinboard.features.notes.domain.NotesRepository
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 @HiltViewModel
 class NoteListViewModel @Inject constructor(
+    scope: CoroutineScope,
+    appStateRepository: AppStateRepository,
     private val notesRepository: NotesRepository,
-    private val appStateRepository: AppStateRepository,
     private val dateFormatter: DateFormatter,
-) : BaseViewModel() {
+) : BaseViewModel(scope, appStateRepository) {
 
-    fun getAllNotes() {
-        launch {
-            notesRepository.getAllNotes()
-                .mapCatching { appStateRepository.runAction(SetNotes(it)) }
-                .onFailure(::handleError)
+    init {
+        scope.launch {
+            filteredContent<NoteListContent>()
+                .filter { it.shouldLoad }
+                .collectLatest { getAllNotes() }
         }
     }
 
+    private suspend fun getAllNotes() {
+        notesRepository.getAllNotes()
+            .mapCatching { runAction(SetNotes(it)) }
+            .onFailure(::handleError)
+    }
+
     fun sort(notes: List<Note>, sorting: NoteSorting) {
-        launch {
+        scope.launch {
             val updatedNotes = when (sorting) {
                 NoteSorting.ByDateUpdatedDesc -> {
                     notes.sortedByDescending { dateFormatter.displayFormatToMillis(it.updatedAt) }
@@ -41,7 +52,7 @@ class NoteListViewModel @Inject constructor(
 
                 NoteSorting.AtoZ -> notes.sortedBy(Note::title)
             }
-            appStateRepository.runAction(SetNotes(updatedNotes))
+            runAction(SetNotes(updatedNotes))
         }
     }
 }

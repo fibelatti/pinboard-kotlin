@@ -29,7 +29,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -40,13 +39,8 @@ import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LoadingContent
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
-import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
-import com.fibelatti.pinboard.features.MainState
-import com.fibelatti.pinboard.features.MainViewModel
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.NoteListContent
 import com.fibelatti.pinboard.features.appstate.RefreshNotes
-import com.fibelatti.pinboard.features.appstate.SidePanelContent
 import com.fibelatti.pinboard.features.appstate.ViewNote
 import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.notes.domain.model.Note
@@ -57,48 +51,16 @@ import com.fibelatti.ui.theme.ExtendedTheme
 @Composable
 fun NoteListScreen(
     modifier: Modifier = Modifier,
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltViewModel(),
     noteListViewModel: NoteListViewModel = hiltViewModel(),
 ) {
     Surface(
         modifier = modifier,
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val content by appStateViewModel.content.collectAsStateWithLifecycle()
+        val appState by noteListViewModel.appState.collectAsStateWithLifecycle()
         val noteListContent by rememberUpdatedState(
-            newValue = content.find<NoteListContent>() ?: return@Surface,
+            newValue = appState.content.find<NoteListContent>() ?: return@Surface,
         )
-
-        val localContext = LocalContext.current
-
-        LaunchedEffect(content) {
-            mainViewModel.updateState { mainViewModelState ->
-                mainViewModelState.copy(
-                    title = MainState.TitleComponent.Visible(localContext.getString(R.string.notes_title)),
-                    subtitle = when {
-                        noteListContent.shouldLoad -> MainState.TitleComponent.Gone
-                        noteListContent.notes.isEmpty() -> MainState.TitleComponent.Gone
-                        else -> MainState.TitleComponent.Visible(
-                            localContext.resources.getQuantityString(
-                                R.plurals.notes_quantity,
-                                noteListContent.notes.size,
-                                noteListContent.notes.size,
-                            ),
-                        )
-                    },
-                    navigation = MainState.NavigationComponent.Visible(),
-                    bottomAppBar = MainState.BottomAppBarComponent.Gone,
-                    floatingActionButton = MainState.FabComponent.Gone,
-                )
-            }
-        }
-
-        LaunchedEffect(noteListContent.shouldLoad) {
-            if (noteListContent.shouldLoad) {
-                noteListViewModel.getAllNotes()
-            }
-        }
 
         val error by noteListViewModel.error.collectAsStateWithLifecycle()
         LaunchedErrorHandlerEffect(error = error, handler = noteListViewModel::errorHandled)
@@ -117,9 +79,9 @@ fun NoteListScreen(
 
                     noteListViewModel.sort(noteListContent.notes, sorting)
                 },
-                onPullToRefresh = { appStateViewModel.runAction(RefreshNotes) },
-                onNoteClicked = { note -> appStateViewModel.runAction(ViewNote(note.id)) },
-                sidePanelVisible = content is SidePanelContent && isMultiPanelAvailable(),
+                onPullToRefresh = { noteListViewModel.runAction(RefreshNotes) },
+                onNoteClicked = { note -> noteListViewModel.runAction(ViewNote(note.id)) },
+                sidePanelVisible = appState.sidePanelVisible,
             )
         }
     }

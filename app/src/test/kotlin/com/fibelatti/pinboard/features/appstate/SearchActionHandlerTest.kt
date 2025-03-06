@@ -277,6 +277,44 @@ internal class SearchActionHandlerTest {
     }
 
     @Nested
+    inner class SetResultSizeTests {
+
+        @Test
+        fun `WHEN currentContent is not SearchContent THEN same content is returned`() = runTest {
+            // GIVEN
+            val content = mockk<PostDetailContent>()
+
+            // WHEN
+            val result = searchActionHandler.runAction(mockk<SetResultSize>(), content)
+
+            // THEN
+            assertThat(result).isEqualTo(content)
+        }
+
+        @Test
+        fun `WHEN currentContent is SearchContent THEN an updated SearchContent is returned`() = runTest {
+            // GIVEN
+            val mockPreviousContent = mockk<PostListContent>()
+            val initialContent = SearchContent(
+                searchParameters = SearchParameters(term = SAMPLE_URL_VALID, tags = listOf(SAMPLE_TAG_1)),
+                previousContent = mockPreviousContent,
+            )
+
+            // WHEN
+            val result = searchActionHandler.runAction(SetResultSize(13), initialContent)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                SearchContent(
+                    searchParameters = SearchParameters(term = SAMPLE_URL_VALID, tags = listOf(SAMPLE_TAG_1)),
+                    queryResultSize = 13,
+                    previousContent = mockPreviousContent,
+                ),
+            )
+        }
+    }
+
+    @Nested
     inner class SearchTests {
 
         @Test

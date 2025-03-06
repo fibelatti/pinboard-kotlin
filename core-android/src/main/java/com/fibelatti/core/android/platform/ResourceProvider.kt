@@ -1,5 +1,6 @@
 package com.fibelatti.core.android.platform
 
+import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 
 /**
@@ -26,6 +27,17 @@ public interface ResourceProvider {
      * @return the resolved [String]
      */
     public fun getString(@StringRes resId: Int, vararg formatArgs: Any): String
+
+    /**
+     * Interface to retrieve a plural string resource.
+     *
+     * @param resId the resource id to get
+     * @param quantity the quantity of the string
+     * @param formatArgs the arguments of the string resource
+     *
+     * @return the resolved [String]
+     */
+    public fun getQuantityString(@PluralsRes resId: Int, quantity: Int, vararg formatArgs: Any): String
 
     /**
      * Interface to retrieve a json assert as a string.

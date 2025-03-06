@@ -12,6 +12,7 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
             is SetSearchTags -> setSearchTags(action, currentContent)
             is AddSearchTag -> addSearchTag(action, currentContent)
             is RemoveSearchTag -> removeSearchTag(action, currentContent)
+            is SetResultSize -> setResultSize(action, currentContent)
             is Search -> search(currentContent)
             is ClearSearch -> clearSearch(currentContent)
             is ViewSavedFilter -> viewSavedFilter(action, currentContent)
@@ -69,6 +70,12 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
                 searchParameters = newSearchParameters,
                 availableTags = searchContent.allTags.filterNot { it in newSearchParameters.tags },
             )
+        }
+    }
+
+    private fun setResultSize(action: SetResultSize, currentContent: Content): Content {
+        return currentContent.reduce<SearchContent> { searchContent ->
+            searchContent.copy(queryResultSize = action.resultSize)
         }
     }
 

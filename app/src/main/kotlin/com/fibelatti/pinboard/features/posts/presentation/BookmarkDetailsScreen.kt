@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,14 +55,12 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
-import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.rememberScrollDirection
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
@@ -69,14 +68,12 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import java.util.UUID
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun BookmarkDetailsScreen(
     modifier: Modifier = Modifier,
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
@@ -85,17 +82,28 @@ fun BookmarkDetailsScreen(
         modifier = modifier,
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val postDetailState by appStateViewModel.postDetailContent.collectAsStateWithLifecycle(null)
-        val popularPostDetailState by appStateViewModel.popularPostDetailContent.collectAsStateWithLifecycle(null)
+        val appState by mainViewModel.appState.collectAsStateWithLifecycle()
+
         val post by rememberUpdatedState(
-            newValue = postDetailState?.post ?: popularPostDetailState?.post ?: return@Surface,
+            newValue = when (val current = appState.content) {
+                is PostDetailContent -> current.post
+                is PopularPostDetailContent -> current.post
+                else -> return@Surface
+            },
+        )
+        val isConnected by rememberUpdatedState(
+            newValue = when (val current = appState.content) {
+                is PostDetailContent -> current.isConnected
+                is PopularPostDetailContent -> current.isConnected
+                else -> false
+            },
         )
 
         val postDetailsScreenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
         val popularPostsScreenState by popularPostsViewModel.screenState.collectAsStateWithLifecycle()
-        val isLoading = postDetailsScreenState.isLoading || popularPostsScreenState.isLoading
-
-        val isConnected = postDetailState?.isConnected ?: popularPostDetailState?.isConnected ?: false
+        val isLoading by remember {
+            derivedStateOf { postDetailsScreenState.isLoading || popularPostsScreenState.isLoading }
+        }
 
         val localContext = LocalContext.current
 
@@ -119,10 +127,7 @@ private fun LaunchedViewModelEffects(
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
 ) {
-    val actionId = remember { UUID.randomUUID().toString() }
-
-    LaunchedAppStateViewModelEffect(actionId = actionId)
-    LaunchedMainViewModelEffect(actionId = actionId)
+    LaunchedMainViewModelEffect()
     LaunchedPostDetailViewModelEffect()
     LaunchedPopularPostsViewModelEffect()
 
@@ -136,7 +141,7 @@ private fun LaunchedViewModelEffects(
         onDispose {
             mainViewModel.updateState { currentState ->
                 currentState.copy(
-                    actionButton = if (currentState.actionButton.id == actionId) {
+                    actionButton = if (currentState.actionButton.contentType == PostDetailContent::class) {
                         MainState.ActionButtonComponent.Gone
                     } else {
                         currentState.actionButton
@@ -148,83 +153,8 @@ private fun LaunchedViewModelEffects(
 }
 
 @Composable
-private fun LaunchedAppStateViewModelEffect(
-    actionId: String,
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltViewModel(),
-) {
-    val content by appStateViewModel.content.collectAsStateWithLifecycle()
-    val isSidePanelAvailable = isMultiPanelAvailable()
-    val localContext = LocalContext.current
-
-    LaunchedEffect(content, isSidePanelAvailable) {
-        val (post, menuItems) = when (val current = content) {
-            is PostDetailContent -> current.post to listOf(
-                MainState.MenuItemComponent.DeleteBookmark,
-                MainState.MenuItemComponent.EditBookmark,
-                MainState.MenuItemComponent.OpenInBrowser,
-            )
-
-            is PopularPostDetailContent -> current.post to listOf(
-                MainState.MenuItemComponent.SaveBookmark,
-                MainState.MenuItemComponent.OpenInBrowser,
-            )
-
-            else -> return@LaunchedEffect
-        }
-
-        mainViewModel.updateState { currentState ->
-            val actionButtonState = if (post.readLater == true && !post.isFile()) {
-                MainState.ActionButtonComponent.Visible(
-                    id = actionId,
-                    label = localContext.getString(R.string.hint_mark_as_read),
-                    data = post,
-                )
-            } else {
-                MainState.ActionButtonComponent.Gone
-            }
-
-            if (isSidePanelAvailable) {
-                currentState.copy(
-                    actionButton = actionButtonState,
-                    sidePanelAppBar = MainState.SidePanelAppBarComponent.Visible(
-                        id = actionId,
-                        menuItems = listOf(
-                            MainState.MenuItemComponent.ShareBookmark,
-                            *menuItems.toTypedArray(),
-                            MainState.MenuItemComponent.CloseSidePanel,
-                        ),
-                        data = post,
-                    ),
-                )
-            } else {
-                currentState.copy(
-                    title = MainState.TitleComponent.Gone,
-                    subtitle = MainState.TitleComponent.Gone,
-                    navigation = MainState.NavigationComponent.Visible(),
-                    actionButton = actionButtonState,
-                    bottomAppBar = MainState.BottomAppBarComponent.Visible(
-                        id = actionId,
-                        menuItems = menuItems,
-                        navigationIcon = null,
-                        data = post,
-                    ),
-                    floatingActionButton = MainState.FabComponent.Visible(
-                        id = actionId,
-                        icon = R.drawable.ic_share,
-                        data = post,
-                    ),
-                )
-            }
-        }
-    }
-}
-
-@Composable
 private fun LaunchedMainViewModelEffect(
-    actionId: String,
     mainViewModel: MainViewModel = hiltViewModel(),
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
 ) {
@@ -233,11 +163,11 @@ private fun LaunchedMainViewModelEffect(
     val localOnBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
     LaunchedEffect(Unit) {
-        mainViewModel.actionButtonClicks(actionId)
+        mainViewModel.actionButtonClicks(contentType = PostDetailContent::class)
             .onEach { data: Any? -> (data as? Post)?.let(postDetailViewModel::toggleReadLater) }
             .flowWithLifecycle(localLifecycle)
             .launchIn(this)
-        mainViewModel.menuItemClicks(actionId)
+        mainViewModel.menuItemClicks(contentType = PostDetailContent::class)
             .onEach { (menuItem, post) ->
                 if (post !is Post) return@onEach
                 when (menuItem) {
@@ -249,7 +179,7 @@ private fun LaunchedMainViewModelEffect(
                         postDetailViewModel.deletePost(post)
                     }
 
-                    is MainState.MenuItemComponent.EditBookmark -> appStateViewModel.runAction(EditPost(post))
+                    is MainState.MenuItemComponent.EditBookmark -> mainViewModel.runAction(EditPost(post))
                     is MainState.MenuItemComponent.SaveBookmark -> popularPostsViewModel.saveLink(post)
                     is MainState.MenuItemComponent.OpenInBrowser -> openUrlInExternalBrowser(localContext, post)
                     is MainState.MenuItemComponent.CloseSidePanel -> localOnBackPressedDispatcher?.onBackPressed()
@@ -258,7 +188,7 @@ private fun LaunchedMainViewModelEffect(
             }
             .flowWithLifecycle(localLifecycle)
             .launchIn(this)
-        mainViewModel.fabClicks(actionId)
+        mainViewModel.fabClicks(contentType = PostDetailContent::class)
             .onEach { data: Any? ->
                 (data as? Post)?.let { localContext.shareText(R.string.posts_share_title, data.url) }
             }

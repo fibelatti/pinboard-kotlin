@@ -45,11 +45,11 @@ import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
 import com.fibelatti.pinboard.features.appstate.AddSearchTag
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.RefreshSearchTags
 import com.fibelatti.pinboard.features.appstate.RemoveSearchTag
 import com.fibelatti.pinboard.features.appstate.Search
+import com.fibelatti.pinboard.features.appstate.SearchContent
 import com.fibelatti.pinboard.features.appstate.SetTerm
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -60,14 +60,12 @@ import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-import java.util.UUID
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun SearchBookmarksScreen(
     modifier: Modifier = Modifier,
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     searchPostViewModel: SearchPostViewModel = hiltViewModel(),
     tagsViewModel: TagsViewModel = hiltViewModel(),
@@ -76,73 +74,24 @@ fun SearchBookmarksScreen(
         modifier = modifier,
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val appState by appStateViewModel.searchContent.collectAsStateWithLifecycle(initialValue = null)
-        val searchContent by rememberUpdatedState(newValue = appState ?: return@Surface)
+        val searchContent by searchPostViewModel.searchContent.collectAsStateWithLifecycle(null)
+        val currentContent by rememberUpdatedState(newValue = searchContent ?: return@Surface)
 
         val tagsState by tagsViewModel.state.collectAsStateWithLifecycle()
 
-        val title = stringResource(id = R.string.search_title)
-        val actionId = remember { UUID.randomUUID().toString() }
-        val queryResultSize by searchPostViewModel.queryResultSize.collectAsStateWithLifecycle()
-        val activeSearchLabel = stringResource(id = R.string.search_result_size, queryResultSize)
-
-        LaunchedEffect(searchContent, queryResultSize) {
-            val isActive = searchContent.searchParameters.isActive()
-
-            if (isActive) {
-                searchPostViewModel.searchParametersChanged(searchContent.searchParameters)
-            }
-
-            mainViewModel.updateState { mainState ->
-                mainState.copy(
-                    title = MainState.TitleComponent.Visible(title),
-                    subtitle = if (isActive) {
-                        MainState.TitleComponent.Visible(label = activeSearchLabel)
-                    } else {
-                        MainState.TitleComponent.Gone
-                    },
-                    navigation = MainState.NavigationComponent.Visible(),
-                    bottomAppBar = MainState.BottomAppBarComponent.Visible(
-                        id = actionId,
-                        menuItems = if (isActive) {
-                            listOf(
-                                MainState.MenuItemComponent.ClearSearch,
-                                MainState.MenuItemComponent.SaveSearch,
-                            )
-                        } else {
-                            emptyList()
-                        },
-                        data = SavedFilter(
-                            searchTerm = searchContent.searchParameters.term,
-                            tags = searchContent.searchParameters.tags,
-                        ),
-                    ),
-                    floatingActionButton = MainState.FabComponent.Visible(actionId, R.drawable.ic_search),
-                )
-            }
-        }
-
-        LaunchedEffect(searchContent.shouldLoadTags, searchContent.availableTags) {
-            if (searchContent.shouldLoadTags) {
-                tagsViewModel.getAll(TagsViewModel.Source.SEARCH)
-            } else {
-                tagsViewModel.sortTags(searchContent.availableTags)
-            }
+        BackHandler {
+            searchPostViewModel.runAction(Search)
         }
 
         val localView = LocalView.current
         val localLifecycle = LocalLifecycleOwner.current.lifecycle
 
-        BackHandler {
-            appStateViewModel.runAction(Search)
-        }
-
         LaunchedEffect(Unit) {
-            mainViewModel.menuItemClicks(actionId)
+            mainViewModel.menuItemClicks(contentType = SearchContent::class)
                 .onEach { (menuItem, data) ->
                     when (menuItem) {
                         is MainState.MenuItemComponent.ClearSearch -> {
-                            appStateViewModel.runAction(ClearSearch)
+                            mainViewModel.runAction(ClearSearch)
                         }
 
                         is MainState.MenuItemComponent.SaveSearch -> {
@@ -156,8 +105,8 @@ fun SearchBookmarksScreen(
                 .flowWithLifecycle(localLifecycle)
                 .launchIn(this)
 
-            mainViewModel.fabClicks(actionId)
-                .onEach { appStateViewModel.runAction(Search) }
+            mainViewModel.fabClicks(contentType = SearchContent::class)
+                .onEach { mainViewModel.runAction(Search) }
                 .flowWithLifecycle(localLifecycle)
                 .launchIn(this)
         }
@@ -172,11 +121,11 @@ fun SearchBookmarksScreen(
         }
 
         SearchBookmarksScreen(
-            searchTerm = searchContent.searchParameters.term,
-            onSearchTermChanged = { newValue -> appStateViewModel.runAction(SetTerm(newValue)) },
-            onKeyboardSearch = { appStateViewModel.runAction(Search) },
-            selectedTags = searchContent.searchParameters.tags,
-            onSelectedTagRemoved = { tag -> appStateViewModel.runAction(RemoveSearchTag(tag)) },
+            searchTerm = currentContent.searchParameters.term,
+            onSearchTermChanged = { newValue -> searchPostViewModel.runAction(SetTerm(newValue)) },
+            onKeyboardSearch = { searchPostViewModel.runAction(Search) },
+            selectedTags = currentContent.searchParameters.tags,
+            onSelectedTagRemoved = { tag -> searchPostViewModel.runAction(RemoveSearchTag(tag)) },
             availableTags = tagsState.filteredTags,
             isLoadingTags = tagsState.isLoading,
             onTagsSortOptionClicked = { sorting ->
@@ -192,8 +141,8 @@ fun SearchBookmarksScreen(
             },
             tagsSearchTerm = tagsState.currentQuery,
             onTagsSearchInputChanged = tagsViewModel::searchTags,
-            onAvailableTagClicked = { tag -> appStateViewModel.runAction(AddSearchTag(tag)) },
-            onTagsPullToRefresh = { appStateViewModel.runAction(RefreshSearchTags) },
+            onAvailableTagClicked = { tag -> searchPostViewModel.runAction(AddSearchTag(tag)) },
+            onTagsPullToRefresh = { searchPostViewModel.runAction(RefreshSearchTags) },
         )
     }
 }
@@ -301,6 +250,7 @@ fun SearchBookmarksScreen(
     )
 }
 
+// region Previews
 @Composable
 @ThemePreviews
 private fun DefaultSearchBookmarksScreenPreview() {
@@ -319,3 +269,4 @@ private fun ActiveSearchBookmarksScreenPreview() {
         )
     }
 }
+// endregion Previews

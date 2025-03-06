@@ -1,44 +1,49 @@
 package com.fibelatti.pinboard.features.user.presentation
 
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
-import com.fibelatti.pinboard.MockDataProvider
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAGS
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
+import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
-import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.sync.PeriodicSyncManager
-import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import com.fibelatti.pinboard.features.tags.domain.TagManagerRepository
+import com.fibelatti.pinboard.features.tags.domain.TagManagerState
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import com.fibelatti.pinboard.isEmpty
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
-import io.mockk.coEvery
 import io.mockk.every
-import io.mockk.just
+import io.mockk.justRun
 import io.mockk.mockk
-import io.mockk.runs
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
 internal class UserPreferencesViewModelTest : BaseViewModelTest() {
 
+    private val mockAppStateRepository = mockk<AppStateRepository>()
+
+    private val tagManagerStateFlow = MutableStateFlow(TagManagerState())
+    private val mockTagManagerRepository = mockk<TagManagerRepository> {
+        every { tagManagerState } returns tagManagerStateFlow
+    }
+
     private val mockUserRepository = mockk<UserRepository>(relaxed = true)
-    private val mockPostsRepository = mockk<PostsRepository>()
     private val mockPeriodicSyncManager = mockk<PeriodicSyncManager> {
-        every { enqueueWork(any()) } just runs
+        justRun { enqueueWork(any()) }
     }
 
     private val userPreferencesViewModel = UserPreferencesViewModel(
+        scope = TestScope(dispatcher),
+        appStateRepository = mockAppStateRepository,
         userRepository = mockUserRepository,
-        postsRepository = mockPostsRepository,
+        tagManagerRepository = mockTagManagerRepository,
         periodicSyncManager = mockPeriodicSyncManager,
     )
 
@@ -50,6 +55,13 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
 
         // THEN
         assertThat(userPreferencesViewModel.currentPreferences.first()).isEqualTo(preferences)
+    }
+
+    @Test
+    fun `tag manager emissions should save default tags`() = runTest {
+        tagManagerStateFlow.value = TagManagerState(tags = SAMPLE_TAGS)
+
+        verify { mockUserRepository.defaultTags = SAMPLE_TAGS }
     }
 
     @Test
@@ -210,51 +222,4 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         // THEN
         verify { mockUserRepository.defaultReadLater = value }
     }
-
-    @Test
-    fun `WHEN saveDefaultTags is called THEN repository is updated`() {
-        // GIVEN
-        val value = mockk<List<Tag>>()
-
-        // WHEN
-        userPreferencesViewModel.saveDefaultTags(value)
-
-        // THEN
-        verify { mockUserRepository.defaultTags = value }
-    }
-
-    @Test
-    fun `GIVEN getSuggestedTags will fail WHEN searchForTag is called THEN suggestedTags should never receive values`() =
-        runTest {
-            // GIVEN
-            coEvery { mockPostsRepository.searchExistingPostTag(any(), any()) } returns Failure(Exception())
-
-            // WHEN
-            userPreferencesViewModel.searchForTag(MockDataProvider.SAMPLE_TAG_VALUE_1, mockk())
-
-            // THEN
-            assertThat(userPreferencesViewModel.suggestedTags.isEmpty()).isTrue()
-        }
-
-    @Test
-    fun `GIVEN getSuggestedTags will succeed WHEN searchForTag is called THEN suggestedTags should receive its response`() =
-        runTest {
-            // GIVEN
-            val result = listOf(MockDataProvider.SAMPLE_TAG_VALUE_1, MockDataProvider.SAMPLE_TAG_VALUE_2)
-            coEvery {
-                mockPostsRepository.searchExistingPostTag(
-                    tag = MockDataProvider.SAMPLE_TAG_VALUE_1,
-                    currentTags = emptyList(),
-                )
-            } returns Success(result)
-
-            // WHEN
-            userPreferencesViewModel.searchForTag(
-                tag = MockDataProvider.SAMPLE_TAG_VALUE_1,
-                currentTags = emptyList(),
-            )
-
-            // THEN
-            assertThat(userPreferencesViewModel.suggestedTags.first()).isEqualTo(result)
-        }
 }

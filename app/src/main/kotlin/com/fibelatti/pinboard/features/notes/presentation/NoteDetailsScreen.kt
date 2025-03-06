@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -28,21 +27,18 @@ import androidx.lifecycle.flowWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
-import com.fibelatti.pinboard.core.android.isMultiPanelAvailable
 import com.fibelatti.pinboard.features.MainState
 import com.fibelatti.pinboard.features.MainViewModel
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
+import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-import java.util.UUID
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun NoteDetailsScreen(
     modifier: Modifier = Modifier,
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel(),
     noteDetailsViewModel: NoteDetailsViewModel = hiltViewModel(),
 ) {
@@ -50,45 +46,14 @@ fun NoteDetailsScreen(
         modifier = modifier,
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val appState by appStateViewModel.noteDetailContent.collectAsStateWithLifecycle(initialValue = null)
-        val noteDetailContent by rememberUpdatedState(newValue = appState ?: return@Surface)
-        val isLoading = noteDetailContent.note.isLeft
+        val noteDetailContent by noteDetailsViewModel.noteDetailContent.collectAsStateWithLifecycle(null)
+        val current by rememberUpdatedState(newValue = noteDetailContent ?: return@Surface)
 
-        val isMultiPanelAvailable = isMultiPanelAvailable()
-
-        val actionId = remember { UUID.randomUUID().toString() }
         val localLifecycle = LocalLifecycleOwner.current.lifecycle
         val localOnBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
-        LaunchedEffect(noteDetailContent, isMultiPanelAvailable) {
-            mainViewModel.updateState { currentState ->
-                if (isMultiPanelAvailable) {
-                    currentState.copy(
-                        sidePanelAppBar = MainState.SidePanelAppBarComponent.Visible(
-                            id = actionId,
-                            menuItems = listOf(MainState.MenuItemComponent.CloseSidePanel),
-                        ),
-                    )
-                } else {
-                    currentState.copy(
-                        title = MainState.TitleComponent.Gone,
-                        subtitle = MainState.TitleComponent.Gone,
-                        navigation = MainState.NavigationComponent.Visible(),
-                        bottomAppBar = MainState.BottomAppBarComponent.Gone,
-                        floatingActionButton = MainState.FabComponent.Gone,
-                    )
-                }
-            }
-        }
-
-        LaunchedEffect(isLoading, noteDetailContent) {
-            if (isLoading) {
-                noteDetailsViewModel.getNoteDetails(noteDetailContent.id)
-            }
-        }
-
         LaunchedEffect(Unit) {
-            mainViewModel.menuItemClicks(actionId)
+            mainViewModel.menuItemClicks(contentType = NoteDetailContent::class)
                 .onEach { (menuItem, _) ->
                     if (menuItem is MainState.MenuItemComponent.CloseSidePanel) {
                         localOnBackPressedDispatcher?.onBackPressed()
@@ -102,10 +67,10 @@ fun NoteDetailsScreen(
         LaunchedErrorHandlerEffect(error = error, handler = noteDetailsViewModel::errorHandled)
 
         CrossfadeLoadingLayout(
-            data = noteDetailContent.note.rightOrNull(),
+            data = current.note.rightOrNull(),
             modifier = Modifier.fillMaxSize(),
-        ) {
-            NoteContent(note = it)
+        ) { note ->
+            NoteContent(note = note)
         }
     }
 }

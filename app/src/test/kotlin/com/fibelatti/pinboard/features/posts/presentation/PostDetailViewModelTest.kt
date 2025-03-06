@@ -10,12 +10,13 @@ import com.fibelatti.pinboard.features.appstate.PostSaved
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
 import com.fibelatti.pinboard.features.posts.domain.usecase.DeletePost
 import com.fibelatti.pinboard.randomBoolean
-import com.fibelatti.pinboard.runUnconfinedTest
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
 internal class PostDetailViewModelTest : BaseViewModelTest() {
@@ -27,13 +28,14 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
     private val mockPost = createPost()
 
     private val postDetailViewModel = PostDetailViewModel(
-        mockAppStateRepository,
-        mockDeletePost,
-        mockAddPost,
+        scope = TestScope(dispatcher),
+        appStateRepository = mockAppStateRepository,
+        deletePost = mockDeletePost,
+        addPost = mockAddPost,
     )
 
     @Test
-    fun `WHEN deletePost fails THEN deleteError should receive a value`() = runUnconfinedTest {
+    fun `WHEN deletePost fails THEN deleteError should receive a value`() = runTest {
         // GIVEN
         val error = Exception()
         coEvery { mockDeletePost(mockPost) } returns Failure(error)
@@ -53,7 +55,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `WHEN deletePost succeeds THEN appStateRepository should run PostDeleted`() = runUnconfinedTest {
+    fun `WHEN deletePost succeeds THEN appStateRepository should run PostDeleted`() = runTest {
         // GIVEN
         coEvery { mockDeletePost(mockPost) } returns Success(Unit)
 
@@ -72,7 +74,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `WHEN toggleReadLater fails THEN updateError should receive a value`() = runUnconfinedTest {
+    fun `WHEN toggleReadLater fails THEN updateError should receive a value`() = runTest {
         // GIVEN
         val error = Exception()
         coEvery { mockAddPost(any()) } returns Failure(error)
@@ -92,7 +94,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `WHEN toggleReadLater succeeds THEN appStateRepository should run PostSaved`() = runUnconfinedTest {
+    fun `WHEN toggleReadLater succeeds THEN appStateRepository should run PostSaved`() = runTest {
         // GIVEN
         val randomBoolean = randomBoolean()
         val post = createPost(readLater = randomBoolean)

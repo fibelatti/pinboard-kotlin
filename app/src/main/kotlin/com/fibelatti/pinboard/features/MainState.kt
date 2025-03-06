@@ -3,7 +3,9 @@ package com.fibelatti.pinboard.features
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.fibelatti.pinboard.R
-import java.util.UUID
+import com.fibelatti.pinboard.core.extension.ScrollDirection
+import com.fibelatti.pinboard.features.appstate.Content
+import kotlin.reflect.KClass
 
 data class MainState(
     val title: TitleComponent = TitleComponent.Gone,
@@ -13,6 +15,7 @@ data class MainState(
     val bottomAppBar: BottomAppBarComponent = BottomAppBarComponent.Gone,
     val floatingActionButton: FabComponent = FabComponent.Gone,
     val sidePanelAppBar: SidePanelAppBarComponent = SidePanelAppBarComponent.Gone,
+    val scrollDirection: ScrollDirection = ScrollDirection.IDLE,
 ) {
 
     sealed class TitleComponent {
@@ -30,15 +33,15 @@ data class MainState(
 
     sealed class ActionButtonComponent {
 
-        abstract val id: String
+        abstract val contentType: ContentType
 
         data object Gone : ActionButtonComponent() {
 
-            override val id: String = UUID.randomUUID().toString()
+            override val contentType: ContentType = Content::class
         }
 
         data class Visible(
-            override val id: String,
+            override val contentType: ContentType,
             val label: String,
             val data: Any? = null,
         ) : ActionButtonComponent()
@@ -46,15 +49,15 @@ data class MainState(
 
     sealed class BottomAppBarComponent {
 
-        abstract val id: String
+        abstract val contentType: ContentType
 
         data object Gone : BottomAppBarComponent() {
 
-            override val id: String = UUID.randomUUID().toString()
+            override val contentType: ContentType = Content::class
         }
 
         data class Visible(
-            override val id: String,
+            override val contentType: ContentType,
             val menuItems: List<MenuItemComponent>,
             @DrawableRes val navigationIcon: Int? = null,
             val data: Any? = null,
@@ -124,15 +127,15 @@ data class MainState(
 
     sealed class FabComponent {
 
-        abstract val id: String
+        abstract val contentType: ContentType
 
         data object Gone : FabComponent() {
 
-            override val id: String = UUID.randomUUID().toString()
+            override val contentType: ContentType = Content::class
         }
 
         data class Visible(
-            override val id: String,
+            override val contentType: ContentType,
             @DrawableRes val icon: Int,
             val data: Any? = null,
         ) : FabComponent()
@@ -140,17 +143,19 @@ data class MainState(
 
     sealed class SidePanelAppBarComponent {
 
-        abstract val id: String
+        abstract val contentType: ContentType
 
         data object Gone : SidePanelAppBarComponent() {
 
-            override val id: String = UUID.randomUUID().toString()
+            override val contentType: ContentType = Content::class
         }
 
         data class Visible(
-            override val id: String,
+            override val contentType: ContentType,
             val menuItems: List<MenuItemComponent>,
             val data: Any? = null,
         ) : SidePanelAppBarComponent()
     }
 }
+
+typealias ContentType = KClass<out Content>

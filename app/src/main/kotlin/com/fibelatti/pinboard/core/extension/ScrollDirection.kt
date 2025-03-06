@@ -12,8 +12,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import java.lang.ref.WeakReference
 import kotlin.math.abs
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -70,28 +72,29 @@ fun LazyListState.rememberScrollDirection(autoResetTime: Long = 2_000): State<Sc
 
 @Composable
 fun rememberScrollDirection(view: View): State<ScrollDirection> {
-    var nestedScrollDirection by remember { mutableStateOf(ScrollDirection.IDLE) }
+    var nestedScrollDirection by remember(view) { mutableStateOf(ScrollDirection.IDLE) }
+    val viewRef by rememberUpdatedState(WeakReference(view))
 
     val scrollChangeListener = object : ViewTreeObserver.OnScrollChangedListener {
         private var lastScrollY = 0
 
         override fun onScrollChanged() {
-            if (abs(view.scrollY - lastScrollY) < 100) return
+            viewRef.get()?.run {
+                if (abs(scrollY - lastScrollY) < 100) return
 
-            nestedScrollDirection = (if (view.scrollY > lastScrollY) ScrollDirection.DOWN else ScrollDirection.UP)
-            lastScrollY = view.scrollY
+                nestedScrollDirection = (if (scrollY > lastScrollY) ScrollDirection.DOWN else ScrollDirection.UP)
+                lastScrollY = scrollY
+            }
         }
     }
 
     DisposableEffect(view) {
-        view.viewTreeObserver.addOnScrollChangedListener(scrollChangeListener)
+        viewRef.get()?.viewTreeObserver?.addOnScrollChangedListener(scrollChangeListener)
 
         onDispose {
-            view.viewTreeObserver.removeOnScrollChangedListener(scrollChangeListener)
+            viewRef.get()?.viewTreeObserver?.removeOnScrollChangedListener(scrollChangeListener)
         }
     }
 
-    return remember(view) {
-        derivedStateOf { nestedScrollDirection }
-    }
+    return remember { derivedStateOf { nestedScrollDirection } }
 }

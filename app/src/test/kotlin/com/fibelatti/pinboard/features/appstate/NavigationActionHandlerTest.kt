@@ -7,6 +7,7 @@ import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
@@ -18,6 +19,7 @@ import io.mockk.mockk
 import io.mockk.mockkClass
 import io.mockk.spyk
 import io.mockk.verify
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -956,12 +958,17 @@ internal class NavigationActionHandlerTest {
 
         @Test
         fun `WHEN currentContent is PostListContent THEN UserPreferencesContent is returned`() = runTest {
+            // GIVEN
+            val currentPreferences = mockk<UserPreferences>()
+            every { mockUserRepository.currentPreferences } returns MutableStateFlow(currentPreferences)
+
             // WHEN
             val result = navigationActionHandler.runAction(ViewPreferences, postListContent)
 
             // THEN
             assertThat(result).isEqualTo(
                 UserPreferencesContent(
+                    userPreferences = currentPreferences,
                     previousContent = postListContent,
                 ),
             )
@@ -973,12 +980,17 @@ internal class NavigationActionHandlerTest {
                 every { previousContent } returns postListContent
             }
 
+            // GIVEN
+            val currentPreferences = mockk<UserPreferences>()
+            every { mockUserRepository.currentPreferences } returns MutableStateFlow(currentPreferences)
+
             // WHEN
             val result = navigationActionHandler.runAction(ViewPreferences, content)
 
             // THEN
             assertThat(result).isEqualTo(
                 UserPreferencesContent(
+                    userPreferences = currentPreferences,
                     previousContent = postListContent,
                 ),
             )

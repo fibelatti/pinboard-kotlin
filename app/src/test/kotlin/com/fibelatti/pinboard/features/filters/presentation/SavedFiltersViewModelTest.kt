@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.features.filters.presentation
 
+import app.cash.turbine.test
 import com.fibelatti.pinboard.BaseViewModelTest
-import com.fibelatti.pinboard.collectIn
 import com.fibelatti.pinboard.features.filters.domain.SavedFiltersRepository
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.google.common.truth.Truth.assertThat
@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
@@ -24,17 +23,17 @@ class SavedFiltersViewModelTest : BaseViewModelTest() {
         every { getSavedFilters() } returns emptyFlow()
     }
 
-    private val dispatcher = UnconfinedTestDispatcher()
     private val savedFiltersViewModel by lazy {
         SavedFiltersViewModel(
-            savedFiltersRepository = savedFiltersRepository,
             scope = TestScope(dispatcher),
-            sharingStarted = SharingStarted.Eagerly,
+            sharingStarted = SharingStarted.Lazily,
+            appStateRepository = mockk(),
+            savedFiltersRepository = savedFiltersRepository,
         )
     }
 
     @Test
-    fun `state emits the repository values`() = runTest(dispatcher) {
+    fun `state emits the repository values`() = runTest {
         val firstValue = listOf(mockk<SavedFilter>())
         val secondValue = listOf(mockk<SavedFilter>())
 
@@ -44,9 +43,10 @@ class SavedFiltersViewModelTest : BaseViewModelTest() {
             emit(secondValue)
         }
 
-        val result = savedFiltersViewModel.state.collectIn(scope = this, advanceUntilIdle = true)
-
-        assertThat(result).containsExactly(firstValue, secondValue)
+        savedFiltersViewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(firstValue)
+            assertThat(awaitItem()).isEqualTo(secondValue)
+        }
     }
 
     @Test

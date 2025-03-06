@@ -24,6 +24,7 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.UrlPreview
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,19 +32,20 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class ShareReceiverViewModel @Inject constructor(
+    scope: CoroutineScope,
+    appStateRepository: AppStateRepository,
     private val extractUrl: ExtractUrl,
     private val getUrlPreview: GetUrlPreview,
     private val addPost: AddPost,
     private val postsRepository: PostsRepository,
     private val userRepository: UserRepository,
-    private val appStateRepository: AppStateRepository,
-) : BaseViewModel() {
+) : BaseViewModel(scope, appStateRepository) {
 
     val screenState: StateFlow<ScreenState<SharingResult>> get() = _screenState.asStateFlow()
     private val _screenState = MutableStateFlow<ScreenState<SharingResult>>(ScreenState.Loading.FromEmpty)
 
     fun saveUrl(url: String, title: String?, skipEdit: Boolean = false) {
-        launch {
+        scope.launch {
             if (!userRepository.hasAuthToken()) {
                 _screenState.emitError(MissingAuthTokenException())
                 return@launch
@@ -67,7 +69,7 @@ class ShareReceiverViewModel @Inject constructor(
 
                     existingPost != null -> {
                         _screenState.emitLoaded(SharingResult.Edit(message = R.string.posts_existing_feedback))
-                        appStateRepository.runAction(EditPostFromShare(existingPost))
+                        runAction(EditPostFromShare(existingPost))
                     }
 
                     skipEdit || userRepository.editAfterSharing is EditAfterSharing.AfterSaving -> {
@@ -94,7 +96,7 @@ class ShareReceiverViewModel @Inject constructor(
         )
 
         _screenState.emitLoaded(SharingResult.Edit())
-        appStateRepository.runAction(EditPostFromShare(newPost))
+        runAction(EditPostFromShare(newPost))
     }
 
     private suspend fun addBookmark(urlPreview: UrlPreview, skipEdit: Boolean) {
@@ -116,7 +118,7 @@ class ShareReceiverViewModel @Inject constructor(
                 _screenState.emitLoaded(SharingResult.Saved())
             } else {
                 _screenState.emitLoaded(SharingResult.Edit(message = R.string.posts_saved_feedback))
-                appStateRepository.runAction(EditPostFromShare(it))
+                runAction(EditPostFromShare(it))
             }
         }.onFailure(_screenState::emitError)
     }

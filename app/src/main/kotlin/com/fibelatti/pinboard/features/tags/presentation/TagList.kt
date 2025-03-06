@@ -37,7 +37,6 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -70,9 +69,6 @@ import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
-import com.fibelatti.pinboard.features.MainState
-import com.fibelatti.pinboard.features.MainViewModel
-import com.fibelatti.pinboard.features.appstate.AppStateViewModel
 import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.RefreshTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -84,39 +80,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun TagListScreen(
     modifier: Modifier = Modifier,
-    appStateViewModel: AppStateViewModel = hiltViewModel(),
-    mainViewModel: MainViewModel = hiltViewModel(),
     tagsViewModel: TagsViewModel = hiltViewModel(),
 ) {
-    val appMode by appStateViewModel.appMode.collectAsStateWithLifecycle()
-    val state by tagsViewModel.state.collectAsStateWithLifecycle()
-    val tagListContent by appStateViewModel.tagListContent.collectAsStateWithLifecycle(null)
+    val appState by tagsViewModel.appState.collectAsStateWithLifecycle()
+    val tagsState by tagsViewModel.state.collectAsStateWithLifecycle()
 
-    val screenTitle = stringResource(id = R.string.tags_title)
     val localContext = LocalContext.current
     val localView = LocalView.current
-
-    LaunchedEffect(tagListContent) {
-        val current = tagListContent ?: return@LaunchedEffect
-
-        if (current.shouldLoad) {
-            tagsViewModel.getAll(TagsViewModel.Source.MENU)
-        } else {
-            tagsViewModel.sortTags(current.tags)
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        mainViewModel.updateState { currentState ->
-            currentState.copy(
-                title = MainState.TitleComponent.Visible(screenTitle),
-                subtitle = MainState.TitleComponent.Gone,
-                navigation = MainState.NavigationComponent.Visible(),
-                bottomAppBar = MainState.BottomAppBarComponent.Gone,
-                floatingActionButton = MainState.FabComponent.Gone,
-            )
-        }
-    }
 
     val error by tagsViewModel.error.collectAsStateWithLifecycle()
     LaunchedErrorHandlerEffect(error = error, handler = tagsViewModel::errorHandled)
@@ -127,8 +97,8 @@ fun TagListScreen(
 
     TagList(
         header = {},
-        items = state.filteredTags,
-        isLoading = state.isLoading,
+        items = tagsState.filteredTags,
+        isLoading = tagsState.isLoading,
         modifier = modifier.background(color = ExtendedTheme.colors.backgroundNoOverlay),
         onSortOptionClicked = { sorting ->
             tagsViewModel.sortTags(
@@ -141,11 +111,11 @@ fun TagListScreen(
                 searchQuery = "",
             )
         },
-        searchInput = state.currentQuery,
+        searchInput = tagsState.currentQuery,
         onSearchInputChanged = tagsViewModel::searchTags,
-        onTagClicked = { appStateViewModel.runAction(PostsForTag(it)) },
+        onTagClicked = { tagsViewModel.runAction(PostsForTag(it)) },
         onTagLongClicked = { tag ->
-            if (AppMode.PINBOARD == appMode) {
+            if (AppMode.PINBOARD == appState.appMode) {
                 SelectionDialog.show(
                     context = localContext,
                     title = localContext.getString(R.string.quick_actions_title),
@@ -166,7 +136,7 @@ fun TagListScreen(
                 )
             }
         },
-        onPullToRefresh = { appStateViewModel.runAction(RefreshTags) },
+        onPullToRefresh = { tagsViewModel.runAction(RefreshTags) },
     )
 }
 
