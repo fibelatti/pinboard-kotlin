@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<network-security-config xmlns:tools="http://schemas.android.com/tools">
-    <!-- Linkding instance might be local, so cleartext is needed -->
-    <base-config
-        tools:ignore="InsecureBaseConfiguration"
-        cleartextTrafficPermitted="true" />
+<network-security-config xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="InsecureBaseConfiguration,AcceptsUserCertificates">
+
+    <!-- Linkding instance might be local and self-signed, so cleartext and user certificates are needed -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
 
     <!-- Pinboard is always remote, so no cleartext -->
     <domain-config cleartextTrafficPermitted="false">
         <domain includeSubdomains="true">api.pinboard.in</domain>
+
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
     </domain-config>
 </network-security-config>
