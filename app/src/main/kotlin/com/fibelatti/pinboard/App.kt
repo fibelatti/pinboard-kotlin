@@ -17,6 +17,7 @@ import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
+import timber.log.Timber
 
 @HiltAndroidApp
 class App : Application(), Configuration.Provider {
@@ -42,14 +43,16 @@ class App : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
 
-        setupStrictMode()
+        setupDebugMode()
         setupThemeAndColors()
         setupDisableScreenshots()
         setupWorkers()
     }
 
-    private fun setupStrictMode() {
+    private fun setupDebugMode() {
         if (!BuildConfig.DEBUG) return
+
+        Timber.plant(Timber.DebugTree())
 
         StrictMode.setVmPolicy(
             StrictMode.VmPolicy.Builder()

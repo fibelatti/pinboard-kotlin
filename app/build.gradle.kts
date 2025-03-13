@@ -221,6 +221,7 @@ dependencies {
 
     implementation(libs.about.libraries)
 
+    implementation(libs.timber)
     debugImplementation(libs.leakcanary)
 
     // Test
