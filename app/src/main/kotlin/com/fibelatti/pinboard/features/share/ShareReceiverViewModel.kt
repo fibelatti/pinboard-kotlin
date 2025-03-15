@@ -51,7 +51,7 @@ class ShareReceiverViewModel @Inject constructor(
                 return@launch
             }
 
-            extractUrl(url).mapCatching { (extractedUrl, highlightedText) ->
+            extractUrl(inputUrl = url).mapCatching { (extractedUrl, highlightedText) ->
                 val preview = getUrlPreview(
                     GetUrlPreview.Params(
                         url = extractedUrl,
@@ -82,7 +82,7 @@ class ShareReceiverViewModel @Inject constructor(
         }
     }
 
-    private suspend fun editBookmark(urlPreview: UrlPreview) {
+    private fun editBookmark(urlPreview: UrlPreview) {
         val (finalUrl: String, title: String, description: String?) = urlPreview
         val newPost = Post(
             url = finalUrl,

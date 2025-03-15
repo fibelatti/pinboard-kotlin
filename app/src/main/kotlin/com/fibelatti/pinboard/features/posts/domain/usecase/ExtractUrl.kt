@@ -5,24 +5,20 @@ import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.UseCaseWithParams
 import com.fibelatti.pinboard.features.user.domain.UserRepository
-import java.io.UnsupportedEncodingException
-import java.net.URLDecoder
 import javax.inject.Inject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class ExtractUrl @Inject constructor(
     private val userRepository: UserRepository,
 ) : UseCaseWithParams<String, Result<ExtractUrl.ExtractedUrl>> {
 
-    override suspend operator fun invoke(params: String): Result<ExtractedUrl> {
+    override suspend operator fun invoke(inputUrl: String): Result<ExtractedUrl> {
         val schemes = ValidUrlScheme.ALL_SCHEMES.map { "$it://" }
-        val firstSchemeIndex = schemes.mapNotNull { scheme -> params.indexOf(scheme).takeIf { it >= 0 } }
+        val firstSchemeIndex = schemes.mapNotNull { scheme -> inputUrl.indexOf(scheme).takeIf { it >= 0 } }
             .minOrNull()
             ?: return Failure(InvalidUrlException())
-        val sourceUrl = params.substring(startIndex = firstSchemeIndex)
+        val sourceUrl = inputUrl.substring(startIndex = firstSchemeIndex)
             .substringBefore(delimiter = "#:~:text=")
-        val highlightedText = params.substring(startIndex = 0, endIndex = firstSchemeIndex)
+        val highlightedText = inputUrl.substring(startIndex = 0, endIndex = firstSchemeIndex)
             .trim()
             .takeIf { it.startsWith("\"") && it.endsWith("\"") }
             ?.let { it.substring(startIndex = 1, endIndex = it.length - 1) }
@@ -39,16 +35,12 @@ class ExtractUrl @Inject constructor(
             sourceUrl
         }
 
-        return try {
-            Success(
-                ExtractedUrl(
-                    url = withContext(Dispatchers.IO) { URLDecoder.decode(cleanUrl, "UTF-8") },
-                    highlightedText = highlightedText,
-                ),
-            )
-        } catch (_: UnsupportedEncodingException) {
-            Failure(InvalidUrlException())
-        }
+        return Success(
+            ExtractedUrl(
+                url = cleanUrl,
+                highlightedText = highlightedText,
+            ),
+        )
     }
 
     private fun removeQueryParameters(url: String, parameters: List<String>): String {

@@ -36,7 +36,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
 
     private val mockExtractUrl = mockk<ExtractUrl> {
         coEvery {
-            this@mockk.invoke(params = SAMPLE_URL_VALID)
+            this@mockk.invoke(inputUrl = SAMPLE_URL_VALID)
         } returns Success(
             ExtractUrl.ExtractedUrl(url = SAMPLE_URL_VALID),
         )
