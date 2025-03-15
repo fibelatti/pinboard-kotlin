@@ -228,12 +228,13 @@ dependencies {
     testFixturesImplementation(platform(libs.compose.bom))
     testFixturesImplementation(libs.compose.runtime)
 
+    testImplementation(platform(libs.junit5.bom))
     testCompileOnly(libs.junit)
     testRuntimeOnly(libs.junit5.engine)
+    testRuntimeOnly(libs.junit5.launcher)
     testRuntimeOnly(libs.junit5.vintage)
     testImplementation(libs.junit5.api)
     testImplementation(libs.junit5.params)
-    testImplementation(libs.junit.launcher)
 
     testImplementation(libs.truth)
     testImplementation(libs.mockk)

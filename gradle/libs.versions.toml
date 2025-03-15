@@ -11,7 +11,6 @@ okhttp = "4.12.0"
 retrofit = "2.11.0"
 room = "2.6.1"
 aboutLibraries = "11.6.3"
-junit5 = "5.12.0"
 
 [libraries]
 kotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
@@ -66,12 +65,13 @@ about-libraries = { module = "com.mikepenz:aboutlibraries-compose", version.ref 
 leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version = "2.14" }
 
 junit = { module = "junit:junit", version = "4.13.2" }
-junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "1.12.0" }
 
-junit5-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
-junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
-junit5-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit5" }
-junit5-vintage = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "junit5" }
+junit5-bom = { module = "org.junit:junit-bom", version = "5.12.1" }
+junit5-api = { module = "org.junit.jupiter:junit-jupiter-api" }
+junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine" }
+junit5-params = { module = "org.junit.jupiter:junit-jupiter-params" }
+junit5-vintage = { module = "org.junit.vintage:junit-vintage-engine" }
+junit5-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 
 runner = { module = "androidx.test:runner", version = "1.6.2" }
 orchestrator = { module = "androidx.test:orchestrator", version = "1.5.1" }
