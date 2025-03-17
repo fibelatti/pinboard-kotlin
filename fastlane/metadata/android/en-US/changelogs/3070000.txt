@@ -1,0 +1,9 @@
+This version brings the following updates:
+
+* Multi-account support: use Pinboard and Linkding simultaneously!
+* Self-signed certificate support (Linkding)
+* Fixes an encoding issue that affected shared URLs that contained spaces
+
+Thank you for 10k downloads!
+
+Feedback and suggestions are always welcome, thank you for using the app!
