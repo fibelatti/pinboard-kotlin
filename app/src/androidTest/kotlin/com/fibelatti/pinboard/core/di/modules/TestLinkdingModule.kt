@@ -4,7 +4,7 @@ import com.fibelatti.pinboard.LinkdingMockServer
 import com.fibelatti.pinboard.core.di.RestApi
 import com.fibelatti.pinboard.core.di.RestApiProvider
 import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
-import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.components.SingletonComponent
@@ -27,19 +27,23 @@ object TestLinkdingModule {
     @RestApi(RestApiProvider.LINKDING)
     fun linkdingHttpClient(
         @RestApi(RestApiProvider.BASE) httpClient: HttpClient,
-        userSharedPreferences: UserSharedPreferences,
+        userRepository: UserRepository,
         unauthorizedPluginProvider: UnauthorizedPluginProvider,
     ): HttpClient {
         val mockServerUrl = LinkdingMockServer.instance.url("/")
 
         return httpClient.config {
             defaultRequest {
+                val credentials = userRepository.userCredentials.value
+
                 url {
                     protocol = URLProtocol.HTTP
                     host = mockServerUrl.host
                     port = mockServerUrl.port
                 }
-                header("Authorization", "Token ${userSharedPreferences.authToken}")
+                credentials.linkdingAuthToken?.let { token ->
+                    header("Authorization", "Token $token")
+                }
                 accept(ContentType.Application.Json)
             }
 

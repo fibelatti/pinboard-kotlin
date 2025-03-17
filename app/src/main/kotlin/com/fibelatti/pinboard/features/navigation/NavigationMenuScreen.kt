@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
@@ -37,13 +38,13 @@ import com.fibelatti.pinboard.features.appstate.Public
 import com.fibelatti.pinboard.features.appstate.Recent
 import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
+import com.fibelatti.pinboard.features.appstate.ViewAccountSwitcher
 import com.fibelatti.pinboard.features.appstate.ViewNotes
 import com.fibelatti.pinboard.features.appstate.ViewPopular
 import com.fibelatti.pinboard.features.appstate.ViewPreferences
 import com.fibelatti.pinboard.features.appstate.ViewSavedFilters
 import com.fibelatti.pinboard.features.appstate.ViewTags
 import com.fibelatti.pinboard.features.main.MainViewModel
-import com.fibelatti.pinboard.features.user.presentation.AuthViewModel
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -57,7 +58,6 @@ fun NavigationMenuScreen(
     onOptionSelected: () -> Unit,
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel = hiltViewModel(),
-    authViewModel: AuthViewModel = hiltViewModel(),
 ) {
     val state by mainViewModel.appState.collectAsStateWithLifecycle()
 
@@ -107,8 +107,8 @@ fun NavigationMenuScreen(
             mainViewModel.runAction(ViewPreferences)
             onOptionSelected()
         },
-        onLogoutClicked = {
-            authViewModel.logout()
+        onAccountsClicked = {
+            mainViewModel.runAction(ViewAccountSwitcher)
             onOptionSelected()
         },
         onSendFeedbackClicked = {
@@ -149,7 +149,7 @@ private fun NavigationMenuScreen(
     onNotesClicked: () -> Unit,
     onPopularClicked: () -> Unit,
     onPreferencesClicked: () -> Unit,
-    onLogoutClicked: () -> Unit,
+    onAccountsClicked: () -> Unit,
     onSendFeedbackClicked: () -> Unit,
     onWriteReviewClicked: () -> Unit,
     onShareClicked: () -> Unit,
@@ -164,6 +164,23 @@ private fun NavigationMenuScreen(
             .verticalScroll(rememberScrollState())
             .padding(top = 32.dp, bottom = 64.dp),
     ) {
+        val serviceName = remember(appMode) {
+            when (appMode) {
+                AppMode.PINBOARD -> R.string.pinboard
+                AppMode.LINKDING -> R.string.linkding
+                else -> null
+            }
+        }
+
+        if (serviceName != null) {
+            Text(
+                text = stringResource(id = serviceName),
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleLarge,
+            )
+        }
+
         MenuItem(
             textRes = R.string.menu_navigation_all,
             onClick = onAllClicked,
@@ -239,13 +256,11 @@ private fun NavigationMenuScreen(
             iconRes = R.drawable.ic_preferences,
         )
 
-        if (AppMode.NO_API != appMode) {
-            MenuItem(
-                textRes = R.string.menu_navigation_logout,
-                onClick = onLogoutClicked,
-                iconRes = R.drawable.ic_person,
-            )
-        }
+        MenuItem(
+            textRes = R.string.menu_navigation_accounts,
+            onClick = onAccountsClicked,
+            iconRes = R.drawable.ic_person,
+        )
 
         HorizontalDivider(
             modifier = Modifier.padding(all = 16.dp),
@@ -364,7 +379,7 @@ private fun NavigationMenuScreenPreview() {
             onNotesClicked = {},
             onPopularClicked = {},
             onPreferencesClicked = {},
-            onLogoutClicked = {},
+            onAccountsClicked = {},
             onSendFeedbackClicked = {},
             onWriteReviewClicked = {},
             onShareClicked = {},

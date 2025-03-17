@@ -93,11 +93,7 @@ object MockDataProvider {
         isConnected = false,
     )
 
-    fun createLoginContent(
-        isUnauthorized: Boolean = false,
-    ): LoginContent = LoginContent(
-        isUnauthorized = isUnauthorized,
-    )
+    fun createLoginContent(): LoginContent = LoginContent()
 
     fun createGenericResponse(responseCode: ApiResultCodes): GenericResponseDto = GenericResponseDto(responseCode.code)
 

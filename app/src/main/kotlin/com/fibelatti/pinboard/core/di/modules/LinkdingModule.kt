@@ -3,7 +3,7 @@ package com.fibelatti.pinboard.core.di.modules
 import com.fibelatti.pinboard.core.di.RestApi
 import com.fibelatti.pinboard.core.di.RestApiProvider
 import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
-import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,7 +24,7 @@ object LinkdingModule {
     @RestApi(RestApiProvider.LINKDING)
     fun linkdingHttpClient(
         @RestApi(RestApiProvider.BASE) httpClient: HttpClient,
-        userSharedPreferences: UserSharedPreferences,
+        userRepository: UserRepository,
         unauthorizedPluginProvider: UnauthorizedPluginProvider,
     ): HttpClient = httpClient.config {
         engine {
@@ -39,8 +39,12 @@ object LinkdingModule {
         }
 
         defaultRequest {
-            url(userSharedPreferences.linkdingInstanceUrl)
-            header("Authorization", "Token ${userSharedPreferences.authToken}")
+            val credentials = userRepository.userCredentials.value
+
+            url(requireNotNull(credentials.linkdingInstanceUrl))
+            credentials.linkdingAuthToken?.let { token ->
+                header("Authorization", "Token $token")
+            }
             accept(ContentType.Application.Json)
         }
 

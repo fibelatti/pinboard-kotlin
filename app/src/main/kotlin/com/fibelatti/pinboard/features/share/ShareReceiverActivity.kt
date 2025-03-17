@@ -18,14 +18,17 @@ open class ShareReceiverActivity : AppCompatActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
+        val shareReceiverViewModel: ShareReceiverViewModel by viewModels()
+
         setThemedContent {
             ShareReceiverScreen(
                 onEdit = {
                     startActivity(MainComposeActivity.Builder(this).build())
                     finish()
                 },
-                onSaved = { finish() },
-                errorDialogAction = { finish() },
+                onSaved = ::finish,
+                onSelectService = shareReceiverViewModel::selectService,
+                errorDialogAction = ::finish,
             )
         }
 
@@ -35,7 +38,6 @@ open class ShareReceiverActivity : AppCompatActivity() {
             return
         }
 
-        val shareReceiverViewModel: ShareReceiverViewModel by viewModels()
         shareReceiverViewModel.saveUrl(
             url = url,
             title = intentReader.subject,

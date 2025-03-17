@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.share
 
+import app.cash.turbine.test
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.ScreenState
 import com.fibelatti.core.functional.Success
@@ -8,7 +9,9 @@ import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_TITLE
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_VALID
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.network.InvalidRequestException
+import com.fibelatti.pinboard.core.network.MissingAuthTokenException
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.EditPostFromShare
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
@@ -19,20 +22,27 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.ExtractUrl
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetUrlPreview
 import com.fibelatti.pinboard.features.posts.domain.usecase.UrlPreview
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import com.fibelatti.pinboard.features.user.domain.UserCredentials
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
+import io.mockk.coJustRun
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
 internal class ShareReceiverViewModelTest : BaseViewModelTest() {
+
+    private val credentials = mockk<UserCredentials> {
+        every { getConnectedServices() } returns setOf(mockk())
+    }
 
     private val mockExtractUrl = mockk<ExtractUrl> {
         coEvery {
@@ -61,9 +71,13 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         coEvery { getPost(id = any(), url = any()) } returns Failure(InvalidRequestException())
     }
     private val mockUserRepository = mockk<UserRepository> {
-        every { hasAuthToken() } returns true
+        every { userCredentials } returns MutableStateFlow(credentials)
     }
     private val mockAppStateRepository = mockk<AppStateRepository>(relaxUnitFun = true)
+
+    private val mockAppModeProvider = mockk<AppModeProvider> {
+        coJustRun { setSelection(any()) }
+    }
 
     private val post = mockk<Post>()
     private val error = Exception()
@@ -76,7 +90,108 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         addPost = mockAddPost,
         postsRepository = mockPostsRepository,
         userRepository = mockUserRepository,
+        appModeProvider = mockAppModeProvider,
     )
+
+    @Test
+    fun `GIVEN there are no services connected WHEN saveUrl is called THEN error is emitted`() = runTest {
+        shareReceiverViewModel.screenState.test {
+            every { credentials.getConnectedServices() } returns emptySet()
+
+            shareReceiverViewModel.saveUrl(url = SAMPLE_URL_VALID, title = SAMPLE_URL_TITLE)
+
+            val item = expectMostRecentItem()
+
+            assertThat(item).isInstanceOf(ScreenState.Error::class.java)
+            assertThat((item as ScreenState.Error).throwable).isInstanceOf(MissingAuthTokenException::class.java)
+        }
+    }
+
+    @Test
+    fun `GIVEN there is a single connected service WHEN saveUrl is called THEN the url is saved immediately`() =
+        runTest {
+            val defaultPrivate = randomBoolean()
+            val defaultReadLater = randomBoolean()
+            val defaultTags = mockk<List<Tag>>()
+
+            every { mockUserRepository.defaultPrivate } returns defaultPrivate
+            every { mockUserRepository.defaultReadLater } returns defaultReadLater
+            every { mockUserRepository.defaultTags } returns defaultTags
+
+            coEvery {
+                mockAddPost(
+                    Post(
+                        url = SAMPLE_URL_VALID,
+                        title = SAMPLE_URL_VALID,
+                        description = "",
+                        private = defaultPrivate,
+                        readLater = defaultReadLater,
+                        tags = defaultTags,
+                    ),
+                )
+            } returns Success(post)
+
+            shareReceiverViewModel.screenState.test {
+                shareReceiverViewModel.saveUrl(url = SAMPLE_URL_VALID, title = SAMPLE_URL_TITLE, skipEdit = true)
+
+                assertThat(
+                    expectMostRecentItem(),
+                ).isEqualTo(ScreenState.Loaded(ShareReceiverViewModel.SharingResult.Saved()))
+            }
+        }
+
+    @Test
+    fun `GIVEN there are multiple connected services WHEN saveUrl is called THEN choose service is emitted`() =
+        runTest {
+            every { credentials.getConnectedServices() } returns setOf(mockk(), mockk())
+
+            shareReceiverViewModel.screenState.test {
+                shareReceiverViewModel.saveUrl(url = SAMPLE_URL_VALID, title = SAMPLE_URL_TITLE, skipEdit = true)
+
+                assertThat(
+                    expectMostRecentItem(),
+                ).isEqualTo(ScreenState.Loaded(ShareReceiverViewModel.SharingResult.ChooseService()))
+            }
+        }
+
+    @Test
+    fun `GIVEN there are multiple connected services WHEN selectService is called THEN the url is saved`() = runTest {
+        val defaultPrivate = randomBoolean()
+        val defaultReadLater = randomBoolean()
+        val defaultTags = mockk<List<Tag>>()
+
+        every { credentials.getConnectedServices() } returns setOf(mockk(), mockk())
+        every { mockUserRepository.defaultPrivate } returns defaultPrivate
+        every { mockUserRepository.defaultReadLater } returns defaultReadLater
+        every { mockUserRepository.defaultTags } returns defaultTags
+
+        coEvery {
+            mockAddPost(
+                Post(
+                    url = SAMPLE_URL_VALID,
+                    title = SAMPLE_URL_VALID,
+                    description = "",
+                    private = defaultPrivate,
+                    readLater = defaultReadLater,
+                    tags = defaultTags,
+                ),
+            )
+        } returns Success(post)
+
+        shareReceiverViewModel.screenState.test {
+            shareReceiverViewModel.saveUrl(url = SAMPLE_URL_VALID, title = SAMPLE_URL_TITLE, skipEdit = true)
+
+            assertThat(
+                expectMostRecentItem(),
+            ).isEqualTo(ScreenState.Loaded(ShareReceiverViewModel.SharingResult.ChooseService()))
+
+            shareReceiverViewModel.selectService(mockk())
+
+            assertThat(
+                expectMostRecentItem(),
+            ).isEqualTo(ScreenState.Loaded(ShareReceiverViewModel.SharingResult.Saved(R.string.posts_saved_feedback)))
+        }
+    }
 
     @Test
     fun `WHEN ExtractUrl fails THEN failed should receive a value`() = runTest {

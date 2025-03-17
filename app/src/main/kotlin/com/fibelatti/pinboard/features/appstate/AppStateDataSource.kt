@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.appstate
 
-import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.di.AppDispatchers
@@ -16,12 +15,14 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 @Singleton
 class AppStateDataSource @Inject constructor(
@@ -32,7 +33,7 @@ class AppStateDataSource @Inject constructor(
     private val userRepository: UserRepository,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
     private val appModeProvider: AppModeProvider,
-    unauthorizedPluginProvider: UnauthorizedPluginProvider,
+    private val unauthorizedPluginProvider: UnauthorizedPluginProvider,
 ) : AppStateRepository {
 
     private val reducer: MutableSharedFlow<suspend (AppState) -> AppState> = MutableSharedFlow()
@@ -45,7 +46,7 @@ class AppStateDataSource @Inject constructor(
 
     init {
         unauthorizedPluginProvider.unauthorized
-            .onEach { runAction(UserUnauthorized) }
+            .onEach { appMode -> runAction(UserUnauthorized(appMode = appMode)) }
             .launchIn(scope)
     }
 
@@ -57,6 +58,8 @@ class AppStateDataSource @Inject constructor(
 
     private suspend fun reduce(action: Action) {
         reducer.emit { appState: AppState ->
+            Timber.d("Reducing (action=${action.prettyPrint()}, appState=${appState.prettyPrint()})")
+
             val newContent: Content = when (action) {
                 is AppAction -> {
                     when (action) {
@@ -67,10 +70,21 @@ class AppStateDataSource @Inject constructor(
 
                 is AuthAction -> {
                     when (action) {
-                        is UserLoggedIn -> getInitialPostListContent()
-                        is UserLoggedOut, is UserUnauthorized -> {
-                            userRepository.clearAuthToken()
-                            LoginContent(isUnauthorized = action is UserUnauthorized)
+                        is UserLoggedIn -> {
+                            unauthorizedPluginProvider.enable(appMode = action.appMode)
+                            getInitialPostListContent()
+                        }
+
+                        is UserLoginFailed, is UserLoggedOut, is UserUnauthorized -> {
+                            appModeProvider.setSelection(appMode = null)
+                            unauthorizedPluginProvider.disable(appMode = action.appMode)
+                            userRepository.clearAuthToken(appMode = action.appMode)
+
+                            when {
+                                action is UserLoginFailed -> appState.content
+                                userRepository.userCredentials.first().hasAuthToken() -> getInitialPostListContent()
+                                else -> LoginContent()
+                            }
                         }
                     }
                 }
@@ -113,7 +127,7 @@ class AppStateDataSource @Inject constructor(
     )
 
     private fun getInitialContent(): Content {
-        return if (userRepository.hasAuthToken() || AppMode.NO_API == appModeProvider.appMode.value) {
+        return if (userRepository.userCredentials.value.hasAuthToken()) {
             getInitialPostListContent()
         } else {
             LoginContent()

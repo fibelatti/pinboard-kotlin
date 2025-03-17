@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Common -->
+    <string name="pinboard" translatable="false">Pinboard</string>
+    <string name="linkding" translatable="false">Linkding</string>
+
     <string name="hint_ok">OK</string>
     <string name="hint_yes">Yes</string>
     <string name="hint_no">No</string>
@@ -33,7 +36,7 @@
     <string name="menu_navigation_popular">Popular</string>
 
     <string name="menu_navigation_preferences">Preferences</string>
-    <string name="menu_navigation_logout">Logout</string>
+    <string name="menu_navigation_accounts">Account Switcher</string>
 
     <string name="menu_link_delete">Remove bookmark</string>
     <string name="menu_link_edit">Edit bookmark</string>
@@ -53,7 +56,7 @@
     <string name="auth_token_description"><![CDATA[You can find your API token in the <a href="https://pinboard.in/settings/password">Pinboard Settings</a> page. It is composed by your username and an alphanumeric string (e.g. username:00F0D0FE123456789012)]]></string>
     <string name="auth_token_empty">Please enter your API Token.</string>
     <string name="auth_token_error">Login failed. Please double check your API Token</string>
-    <string name="auth_logged_out_feedback">Unable to authenticate. Please verify the provided token.</string>
+    <string name="auth_logged_out_feedback">Invalid token. Please login again.</string>
 
     <string name="auth_switch_to_pinboard">Switch to Pinboard</string>
     <string name="auth_switch_to_linkding">Switch to Linkding</string>
@@ -220,13 +223,19 @@
 
     <string name="quick_actions_customization_save_changes">Save changes</string>
 
+    <!-- Account Switcher -->
+    <string name="account_switcher_title">Account Switcher</string>
+    <string name="account_switcher_select">Select</string>
+    <string name="account_switcher_logout">Logout</string>
+    <string name="account_switcher_add_pinboard">Add Pinboard account</string>
+    <string name="account_switcher_add_linkding">Add Linkding account</string>
+
     <!-- User Preferences -->
     <string name="user_preferences_title">Preferences</string>
 
     <string name="user_preferences_section_app">App preferences</string>
     <string name="user_preferences_section_bookmarking">Bookmarking preferences</string>
 
-    <string name="user_preferences_linkding_connection_description">You are connected to a linkding instance (%1$s). Logout to switch instances or to use Pinboard.</string>
     <string name="user_preferences_periodic_sync">Background sync</string>
     <string name="user_preferences_periodic_sync_description">Automatically pull new bookmarks added to your collection on a regular interval</string>
     <string name="user_preferences_periodic_sync_caveat">When the app is in the foreground your bookmarks are kept in sync regardless of this preference</string>
@@ -296,6 +305,7 @@
     <!-- Share -->
     <string name="share_to_pinkt">Save bookmark</string>
     <string name="share_to_pinkt_no_edit">Quick save bookmark</string>
+    <string name="share_to_pinkt_choose_service">Save bookmark to:</string>
     <string name="share_title">Sharing Pinkt</string>
     <string name="share_text">Check out Pinkt, a bookmarking app for Pinboard and Linkding. Download for free at %s</string>
 

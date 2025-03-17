@@ -12,12 +12,16 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -62,18 +66,16 @@ import com.fibelatti.ui.theme.ExtendedTheme
 @Composable
 fun AuthScreen(
     authViewModel: AuthViewModel = hiltViewModel(),
-    userPreferencesViewModel: UserPreferencesViewModel = hiltViewModel(),
 ) {
     val screenState by authViewModel.screenState.collectAsStateWithLifecycle()
-    val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
 
     val error by authViewModel.error.collectAsStateWithLifecycle()
     LaunchedErrorHandlerEffect(error = error, handler = authViewModel::errorHandled)
 
     AuthScreen(
-        useLinkding = userPreferences.useLinkding,
-        linkdingInstanceUrl = userPreferences.linkdingInstanceUrl,
-        onUseLinkdingChanged = userPreferencesViewModel::useLinkding,
+        allowSwitching = screenState.allowSwitching,
+        useLinkding = screenState.useLinkding,
+        onUseLinkdingChanged = authViewModel::useLinkding,
         onAuthRequested = authViewModel::login,
         isLoading = screenState.isLoading,
         apiTokenError = screenState.apiTokenError,
@@ -83,21 +85,29 @@ fun AuthScreen(
 
 @Composable
 private fun AuthScreen(
+    allowSwitching: Boolean,
     useLinkding: Boolean,
-    linkdingInstanceUrl: String,
     onUseLinkdingChanged: (Boolean) -> Unit,
     onAuthRequested: (token: String, instanceUrl: String) -> Unit,
     isLoading: Boolean,
     apiTokenError: String?,
     instanceUrlError: String?,
 ) {
+    val windowInsetsSides = remember(allowSwitching) {
+        buildList {
+            add(WindowInsetsSides.Horizontal)
+            add(WindowInsetsSides.Bottom)
+            if (allowSwitching) add(WindowInsetsSides.Top)
+        }.reduce { acc, windowInsetsSides -> acc + windowInsetsSides }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(color = ExtendedTheme.colors.backgroundNoOverlay)
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 32.dp)
-            .safeDrawingPadding(),
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(windowInsetsSides)),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -105,7 +115,7 @@ private fun AuthScreen(
             painter = painterResource(id = R.drawable.ic_pin),
             contentDescription = null,
             modifier = Modifier
-                .padding(top = 40.dp, bottom = 20.dp)
+                .padding(top = if (allowSwitching) 40.dp else 0.dp, bottom = 20.dp)
                 .size(80.dp),
             tint = MaterialTheme.colorScheme.primary,
         )
@@ -113,8 +123,7 @@ private fun AuthScreen(
         Surface(
             modifier = Modifier.sizeIn(maxWidth = 600.dp),
             shape = MaterialTheme.shapes.small,
-            color = MaterialTheme.colorScheme.surfaceVariant,
-            shadowElevation = 2.dp,
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
         ) {
             Column(
                 modifier = Modifier
@@ -122,7 +131,7 @@ private fun AuthScreen(
                     .animateContentSize(),
             ) {
                 var authToken by remember { mutableStateOf("") }
-                var instanceUrl by remember { mutableStateOf(linkdingInstanceUrl) }
+                var instanceUrl by remember { mutableStateOf("") }
                 val focusManager = LocalFocusManager.current
 
                 Text(
@@ -236,20 +245,20 @@ private fun AuthScreen(
                     }
                 }
 
-                TextButton(
-                    onClick = { onUseLinkdingChanged(!useLinkding) },
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .align(Alignment.CenterHorizontally),
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.secondary,
-                    ),
-                ) {
-                    Text(
-                        text = stringResource(
-                            if (useLinkding) R.string.auth_switch_to_pinboard else R.string.auth_switch_to_linkding,
-                        ),
-                    )
+                if (allowSwitching) {
+                    TextButton(
+                        onClick = { onUseLinkdingChanged(!useLinkding) },
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                            .align(Alignment.CenterHorizontally),
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary),
+                    ) {
+                        Text(
+                            text = stringResource(
+                                if (useLinkding) R.string.auth_switch_to_pinboard else R.string.auth_switch_to_linkding,
+                            ),
+                        )
+                    }
                 }
 
                 AuthTokenHelp(
@@ -312,7 +321,7 @@ private fun AuthScreenPreview() {
     ExtendedTheme {
         AuthScreen(
             useLinkding = false,
-            linkdingInstanceUrl = "",
+            allowSwitching = true,
             onUseLinkdingChanged = {},
             onAuthRequested = { _, _ -> },
             isLoading = false,
@@ -329,7 +338,7 @@ private fun AuthScreenLinkdingPreview() {
     ExtendedTheme {
         AuthScreen(
             useLinkding = true,
-            linkdingInstanceUrl = "",
+            allowSwitching = true,
             onUseLinkdingChanged = {},
             onAuthRequested = { _, _ -> },
             isLoading = false,
@@ -346,7 +355,7 @@ private fun AuthScreenLoadingPreview() {
     ExtendedTheme {
         AuthScreen(
             useLinkding = false,
-            linkdingInstanceUrl = "",
+            allowSwitching = true,
             onUseLinkdingChanged = {},
             onAuthRequested = { _, _ -> },
             isLoading = true,
@@ -363,7 +372,7 @@ private fun AuthScreenErrorPreview() {
     ExtendedTheme {
         AuthScreen(
             useLinkding = false,
-            linkdingInstanceUrl = "",
+            allowSwitching = true,
             onUseLinkdingChanged = {},
             onAuthRequested = { _, _ -> },
             isLoading = false,

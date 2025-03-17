@@ -229,23 +229,6 @@ private fun AppPreferencesContent(
             style = MaterialTheme.typography.titleLarge,
         )
 
-        if (AppMode.LINKDING == appMode) {
-            Text(
-                text = stringResource(
-                    R.string.user_preferences_linkding_connection_description,
-                    userPreferences.linkdingInstanceUrl,
-                ),
-                modifier = Modifier
-                    .background(
-                        color = MaterialTheme.colorScheme.surfaceContainer,
-                        shape = MaterialTheme.shapes.medium,
-                    )
-                    .padding(all = 8.dp),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-
         SettingItem(
             title = stringResource(id = R.string.user_preferences_appearance),
         ) {

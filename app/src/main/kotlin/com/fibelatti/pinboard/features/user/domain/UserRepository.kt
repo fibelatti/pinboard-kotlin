@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.user.domain
 
+import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
@@ -10,13 +11,11 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface UserRepository {
 
+    val userCredentials: StateFlow<UserCredentials>
+
     val currentPreferences: StateFlow<UserPreferences>
 
-    val authToken: StateFlow<String>
-
-    var useLinkding: Boolean
-
-    var linkdingInstanceUrl: String
+    var linkdingInstanceUrl: String?
 
     var lastUpdate: String
 
@@ -56,11 +55,7 @@ interface UserRepository {
 
     var defaultTags: List<Tag>
 
-    fun getUsername(): String
+    fun setAuthToken(appMode: AppMode, authToken: String)
 
-    fun hasAuthToken(): Boolean
-
-    fun setAuthToken(authToken: String)
-
-    fun clearAuthToken()
+    fun clearAuthToken(appMode: AppMode)
 }

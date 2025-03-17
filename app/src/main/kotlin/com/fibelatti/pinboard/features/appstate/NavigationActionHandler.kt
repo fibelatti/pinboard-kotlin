@@ -31,6 +31,8 @@ class NavigationActionHandler @Inject constructor(
             is ViewNotes -> viewNotes(currentContent)
             is ViewNote -> viewNote(action, currentContent)
             is ViewPopular -> viewPopular(currentContent)
+            is ViewAccountSwitcher -> viewAccountSwitcher(currentContent)
+            is AddAccount -> addAccount(action, currentContent)
             is ViewPreferences -> viewPreferences(currentContent)
         }
     }
@@ -93,8 +95,6 @@ class NavigationActionHandler @Inject constructor(
                             previousContent = currentContent,
                         )
                     }
-
-                    else -> default()
                 }
             }
 
@@ -238,6 +238,27 @@ class NavigationActionHandler @Inject constructor(
         return currentContent
             .reduce(body)
             .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
+    }
+
+    private fun viewAccountSwitcher(currentContent: Content): Content {
+        val body = { postListContent: PostListContent ->
+            AccountSwitcherContent(
+                previousContent = postListContent,
+            )
+        }
+
+        return currentContent
+            .reduce(body)
+            .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
+    }
+
+    private fun addAccount(action: AddAccount, currentContent: Content): Content {
+        return currentContent.reduce<AccountSwitcherContent> { accountSwitcherContent ->
+            LoginContent(
+                appMode = action.appMode,
+                previousContent = accountSwitcherContent,
+            )
+        }
     }
 
     private fun viewPreferences(currentContent: Content): Content {

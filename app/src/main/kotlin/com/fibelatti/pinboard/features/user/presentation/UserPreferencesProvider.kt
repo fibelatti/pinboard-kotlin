@@ -14,8 +14,6 @@ class UserPreferencesProvider : PreviewParameterProvider<UserPreferences> {
     override val values: Sequence<UserPreferences>
         get() = sequenceOf(
             UserPreferences(
-                useLinkding = false,
-                linkdingInstanceUrl = "",
                 periodicSync = PeriodicSync.Every24Hours,
                 appearance = Appearance.SystemDefault,
                 applyDynamicColors = true,

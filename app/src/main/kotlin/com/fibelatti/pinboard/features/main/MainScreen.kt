@@ -50,7 +50,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -65,7 +64,7 @@ import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
 import com.fibelatti.pinboard.core.android.composable.MainTitle
 import com.fibelatti.pinboard.core.android.getWindowSizeClass
 import com.fibelatti.pinboard.core.extension.ScrollDirection
-import com.fibelatti.pinboard.core.extension.showBanner
+import com.fibelatti.pinboard.features.appstate.AccountSwitcherContent
 import com.fibelatti.pinboard.features.appstate.AddPostContent
 import com.fibelatti.pinboard.features.appstate.ConnectionAwareContent
 import com.fibelatti.pinboard.features.appstate.Content
@@ -96,6 +95,7 @@ import com.fibelatti.pinboard.features.posts.presentation.EditBookmarkScreen
 import com.fibelatti.pinboard.features.posts.presentation.PopularBookmarksScreen
 import com.fibelatti.pinboard.features.posts.presentation.SearchBookmarksScreen
 import com.fibelatti.pinboard.features.tags.presentation.TagListScreen
+import com.fibelatti.pinboard.features.user.presentation.AccountSwitcherScreen
 import com.fibelatti.pinboard.features.user.presentation.AuthScreen
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesScreen
 import com.fibelatti.ui.foundation.pxToDp
@@ -207,7 +207,7 @@ fun MainScreen(
         contentAlignment = Alignment.BottomCenter,
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            if (content !is LoginContent) {
+            if (content !is LoginContent || content.previousContent !is ExternalContent) {
                 MainTopAppBar(
                     state = state,
                     onNavigationClick = onNavigationClick,
@@ -280,14 +280,6 @@ private fun MainPanelContent(
         }
     }
 
-    val localView = LocalView.current
-
-    LaunchedEffect(mainPanelContent) {
-        if (content is LoginContent && content.isUnauthorized) {
-            localView.showBanner(messageRes = R.string.auth_logged_out_feedback)
-        }
-    }
-
     AnimatedContent(
         targetState = mainPanelContent,
         modifier = modifier.fillMaxSize(),
@@ -306,6 +298,7 @@ private fun MainPanelContent(
             NoteDetailContent::class -> NoteDetailsScreen()
             PopularPostsContent::class -> PopularBookmarksScreen()
             PopularPostDetailContent::class -> BookmarkDetailsScreen()
+            AccountSwitcherContent::class -> AccountSwitcherScreen()
             UserPreferencesContent::class -> UserPreferencesScreen()
             ExternalBrowserContent::class -> (content as ExternalBrowserContent).let(onExternalBrowserContent)
             ExternalContent::class -> onExternalContent()

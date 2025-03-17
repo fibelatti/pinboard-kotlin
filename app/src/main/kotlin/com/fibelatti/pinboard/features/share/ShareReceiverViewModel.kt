@@ -10,6 +10,8 @@ import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.core.network.MissingAuthTokenException
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
@@ -28,6 +30,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -39,23 +47,54 @@ class ShareReceiverViewModel @Inject constructor(
     private val addPost: AddPost,
     private val postsRepository: PostsRepository,
     private val userRepository: UserRepository,
+    private val appModeProvider: AppModeProvider,
 ) : BaseViewModel(scope, appStateRepository) {
 
     val screenState: StateFlow<ScreenState<SharingResult>> get() = _screenState.asStateFlow()
     private val _screenState = MutableStateFlow<ScreenState<SharingResult>>(ScreenState.Loading.FromEmpty)
 
+    private val saveRequest = MutableStateFlow<SaveRequest?>(null)
+    private val selectedService = MutableStateFlow<AppMode?>(null)
+
+    init {
+        combine(saveRequest.filterNotNull(), selectedService.filterNotNull(), ::processRequest)
+            .take(count = 1)
+            .launchIn(scope)
+    }
+
     fun saveUrl(url: String, title: String?, skipEdit: Boolean = false) {
         scope.launch {
-            if (!userRepository.hasAuthToken()) {
-                _screenState.emitError(MissingAuthTokenException())
-                return@launch
+            saveRequest.update {
+                SaveRequest(
+                    url = url,
+                    title = title,
+                    skipEdit = skipEdit,
+                )
             }
 
-            extractUrl(inputUrl = url).mapCatching { (extractedUrl, highlightedText) ->
+            val connectedServices = userRepository.userCredentials.first().getConnectedServices()
+
+            when (connectedServices.size) {
+                0 -> _screenState.emitError(MissingAuthTokenException())
+                1 -> selectedService.update { connectedServices.first() }
+                else -> _screenState.emitLoaded(SharingResult.ChooseService())
+            }
+        }
+    }
+
+    fun selectService(appMode: AppMode) {
+        selectedService.update { appMode }
+    }
+
+    private suspend fun processRequest(request: SaveRequest, service: AppMode) {
+        appModeProvider.setSelection(appMode = service)
+
+        extractUrl(inputUrl = request.url)
+            .mapCatching { (extractedUrl, highlightedText) ->
                 val preview = getUrlPreview(
                     GetUrlPreview.Params(
                         url = extractedUrl,
-                        title = title,
+                        title = request.title,
                         highlightedText = highlightedText,
                     ),
                 ).getOrThrow()
@@ -63,7 +102,7 @@ class ShareReceiverViewModel @Inject constructor(
                 val existingPost = postsRepository.getPost(id = "", url = preview.url).getOrNull()
 
                 when {
-                    existingPost != null && skipEdit -> {
+                    existingPost != null && request.skipEdit -> {
                         _screenState.emitLoaded(SharingResult.Saved(message = R.string.posts_existing_feedback))
                     }
 
@@ -72,14 +111,14 @@ class ShareReceiverViewModel @Inject constructor(
                         runAction(EditPostFromShare(existingPost))
                     }
 
-                    skipEdit || userRepository.editAfterSharing is EditAfterSharing.AfterSaving -> {
-                        addBookmark(urlPreview = preview, skipEdit = skipEdit)
+                    request.skipEdit || userRepository.editAfterSharing is EditAfterSharing.AfterSaving -> {
+                        addBookmark(urlPreview = preview, skipEdit = request.skipEdit)
                     }
 
                     else -> editBookmark(urlPreview = preview)
                 }
-            }.onFailure(_screenState::emitError)
-        }
+            }
+            .onFailure(_screenState::emitError)
     }
 
     private fun editBookmark(urlPreview: UrlPreview) {
@@ -123,10 +162,20 @@ class ShareReceiverViewModel @Inject constructor(
         }.onFailure(_screenState::emitError)
     }
 
+    private data class SaveRequest(
+        val url: String,
+        val title: String?,
+        val skipEdit: Boolean = false,
+    )
+
     sealed class SharingResult {
 
         @get:StringRes
         abstract val message: Int?
+
+        data class ChooseService(
+            @StringRes override val message: Int? = null,
+        ) : SharingResult()
 
         data class Saved(
             @StringRes override val message: Int? = R.string.posts_saved_feedback,

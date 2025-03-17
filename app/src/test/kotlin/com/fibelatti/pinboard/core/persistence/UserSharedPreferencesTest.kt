@@ -3,9 +3,9 @@ package com.fibelatti.pinboard.core.persistence
 import android.content.SharedPreferences
 import com.fibelatti.core.android.extension.get
 import com.fibelatti.core.test.MockSharedPreferencesEditor
-import com.fibelatti.pinboard.MockDataProvider.SAMPLE_API_TOKEN
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_DATE_TIME
 import com.fibelatti.pinboard.randomBoolean
+import com.fibelatti.pinboard.randomString
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
@@ -23,30 +23,159 @@ internal class UserSharedPreferencesTest {
     private val userSharedPreferences = UserSharedPreferences(mockSharedPreferences)
 
     @Test
-    fun `GIVEN KEY_AUTH_TOKEN has no value WHEN getAuthToken is called THEN empty string is returned`() {
+    fun `GIVEN APP_REVIEW_MODE has no value WHEN appReviewMode is called THEN empty string is returned`() {
         // GIVEN
-        every { mockSharedPreferences.get(KEY_AUTH_TOKEN, "") } returns ""
+        every { mockSharedPreferences.get("APP_REVIEW_MODE", false) } returns false
 
         // THEN
-        assertThat(userSharedPreferences.authToken).isEmpty()
+        assertThat(userSharedPreferences.appReviewMode).isFalse()
     }
 
     @Test
-    fun `GIVEN KEY_AUTH_TOKEN has value WHEN getAuthToken is called THEN value is returned`() {
+    fun `GIVEN APP_REVIEW_MODE has value WHEN appReviewMode is called THEN value is returned`() {
         // GIVEN
-        every { mockSharedPreferences.get(KEY_AUTH_TOKEN, "") } returns SAMPLE_API_TOKEN
+        val result = randomBoolean()
+        every { mockSharedPreferences.get("APP_REVIEW_MODE", false) } returns result
 
         // THEN
-        assertThat(userSharedPreferences.authToken).isEqualTo(SAMPLE_API_TOKEN)
+        assertThat(userSharedPreferences.appReviewMode).isEqualTo(result)
     }
 
     @Test
-    fun `WHEN setAuthToken is called THEN KEY_AUTH_TOKEN is set`() {
+    fun `GIVEN LINKDING_INSTANCE_URL has no value WHEN linkdingInstanceUrl is called THEN null is returned`() {
+        // GIVEN
+        every { mockSharedPreferences.getString("LINKDING_INSTANCE_URL", null) } returns null
+
+        // THEN
+        assertThat(userSharedPreferences.linkdingInstanceUrl).isNull()
+    }
+
+    @Test
+    fun `GIVEN LINKDING_INSTANCE_URL has value WHEN linkdingInstanceUrl is called THEN value is returned`() {
+        // GIVEN
+        val result = randomString()
+        every { mockSharedPreferences.getString("LINKDING_INSTANCE_URL", null) } returns result
+
+        // THEN
+        assertThat(userSharedPreferences.linkdingInstanceUrl).isEqualTo(result)
+    }
+
+    @Test
+    fun `GIVEN AUTH_TOKEN had value AND USE_LINKDING was true WHEN linkdingAuthToken is called THEN value is returned`() {
+        // GIVEN
+        val result = randomString()
+        every { mockSharedPreferences.getString("AUTH_TOKEN", null) } returns result
+        every { mockSharedPreferences.get("USE_LINKDING", false) } returns true
+        every { mockSharedPreferences.get("LINKDING_AUTH_TOKEN", result) } returns result
+
+        // THEN
+        assertThat(userSharedPreferences.linkdingAuthToken).isEqualTo(result)
+    }
+
+    @Test
+    fun `GIVEN AUTH_TOKEN had value AND USE_LINKDING was false WHEN linkdingAuthToken is called THEN null is returned`() {
+        // GIVEN
+        val result = randomString()
+        every { mockSharedPreferences.getString("AUTH_TOKEN", null) } returns result
+        every { mockSharedPreferences.getBoolean("USE_LINKDING", false) } returns false
+        every { mockSharedPreferences.getString("LINKDING_AUTH_TOKEN", null) } returns null
+
+        // THEN
+        assertThat(userSharedPreferences.linkdingAuthToken).isNull()
+    }
+
+    @Test
+    fun `GIVEN LINKDING_AUTH_TOKEN has value WHEN linkdingAuthToken is called THEN value is returned`() {
+        // GIVEN
+        val result = randomString()
+        every { mockSharedPreferences.getString("AUTH_TOKEN", null) } returns null
+        every { mockSharedPreferences.getBoolean("USE_LINKDING", false) } returns false
+        every { mockSharedPreferences.getString("LINKDING_AUTH_TOKEN", null) } returns result
+
+        // THEN
+        assertThat(userSharedPreferences.linkdingAuthToken).isEqualTo(result)
+    }
+
+    @Test
+    fun `GIVEN LINKDING_AUTH_TOKEN has no value WHEN linkdingAuthToken is called THEN null is returned`() {
+        // GIVEN
+        every { mockSharedPreferences.getString("AUTH_TOKEN", null) } returns null
+        every { mockSharedPreferences.getBoolean("USE_LINKDING", false) } returns false
+        every { mockSharedPreferences.getString("LINKDING_AUTH_TOKEN", null) } returns null
+
+        // THEN
+        assertThat(userSharedPreferences.linkdingAuthToken).isNull()
+    }
+
+    @Test
+    fun `WHEN linkdingAuthToken is set THEN LINKDING_AUTH_TOKEN is set`() {
+        // GIVEN
+        val result = randomString()
+
         // WHEN
-        userSharedPreferences.authToken = SAMPLE_API_TOKEN
+        userSharedPreferences.linkdingAuthToken = result
 
         // THEN
-        verify { mockEditor.putString(KEY_AUTH_TOKEN, SAMPLE_API_TOKEN) }
+        verify { mockEditor.putString("LINKDING_AUTH_TOKEN", result) }
+    }
+
+    @Test
+    fun `GIVEN AUTH_TOKEN had value AND USE_LINKDING was false WHEN pinboardAuthToken is called THEN value is returned`() {
+        // GIVEN
+        val result = randomString()
+        every { mockSharedPreferences.getString("AUTH_TOKEN", null) } returns result
+        every { mockSharedPreferences.get("USE_LINKDING", false) } returns false
+        every { mockSharedPreferences.get("PINBOARD_AUTH_TOKEN", result) } returns result
+
+        // THEN
+        assertThat(userSharedPreferences.pinboardAuthToken).isEqualTo(result)
+    }
+
+    @Test
+    fun `GIVEN AUTH_TOKEN had value AND USE_LINKDING was true WHEN pinboardAuthToken is called THEN null is returned`() {
+        // GIVEN
+        val result = randomString()
+        every { mockSharedPreferences.getString("AUTH_TOKEN", null) } returns result
+        every { mockSharedPreferences.getBoolean("USE_LINKDING", false) } returns true
+        every { mockSharedPreferences.getString("PINBOARD_AUTH_TOKEN", null) } returns null
+
+        // THEN
+        assertThat(userSharedPreferences.pinboardAuthToken).isNull()
+    }
+
+    @Test
+    fun `GIVEN PINBOARD_AUTH_TOKEN has value WHEN pinboardAuthToken is called THEN value is returned`() {
+        // GIVEN
+        val result = randomString()
+        every { mockSharedPreferences.getString("AUTH_TOKEN", null) } returns null
+        every { mockSharedPreferences.getBoolean("USE_LINKDING", false) } returns false
+        every { mockSharedPreferences.getString("PINBOARD_AUTH_TOKEN", null) } returns result
+
+        // THEN
+        assertThat(userSharedPreferences.pinboardAuthToken).isEqualTo(result)
+    }
+
+    @Test
+    fun `GIVEN PINBOARD_AUTH_TOKEN has no value WHEN pinboardAuthToken is called THEN null is returned`() {
+        // GIVEN
+        every { mockSharedPreferences.getString("AUTH_TOKEN", null) } returns null
+        every { mockSharedPreferences.getBoolean("USE_LINKDING", false) } returns false
+        every { mockSharedPreferences.getString("PINBOARD_AUTH_TOKEN", null) } returns null
+
+        // THEN
+        assertThat(userSharedPreferences.pinboardAuthToken).isNull()
+    }
+
+    @Test
+    fun `WHEN pinboardAuthToken is set THEN PINBOARD_AUTH_TOKEN is set`() {
+        // GIVEN
+        val result = randomString()
+
+        // WHEN
+        userSharedPreferences.pinboardAuthToken = result
+
+        // THEN
+        verify { mockEditor.putString("PINBOARD_AUTH_TOKEN", result) }
     }
 
     @Test

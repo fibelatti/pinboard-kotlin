@@ -10,9 +10,6 @@ import javax.inject.Singleton
 
 // region Constants
 @VisibleForTesting
-const val KEY_AUTH_TOKEN = "AUTH_TOKEN"
-
-@VisibleForTesting
 const val KEY_LAST_UPDATE = "LAST_UPDATE"
 
 @VisibleForTesting
@@ -73,21 +70,38 @@ const val KEY_REMOVED_URL_PARAMETERS = "REMOVED_URL_PARAMETERS"
 @Singleton
 class UserSharedPreferences @Inject constructor(private val sharedPreferences: SharedPreferences) {
 
-    private var currentLinkdingInstanceUrl = ""
-    private var currentAuthToken: String = ""
+    private var currentLinkdingInstanceUrl: String? = null
+    private var currentLinkdingAuthToken: String? = null
+    private var currentPinboardAuthToken: String? = null
     private var currentLastUpdate: String = ""
 
-    var useLinkding: Boolean
-        get() = sharedPreferences.get("USE_LINKDING", false)
-        set(value) = sharedPreferences.put("USE_LINKDING", value)
+    var appReviewMode: Boolean
+        get() = sharedPreferences.getBoolean("APP_REVIEW_MODE", false)
+        set(value) = sharedPreferences.put("APP_REVIEW_MODE", value)
 
-    var linkdingInstanceUrl: String
-        get() = sharedPreferences.get("LINKDING_INSTANCE_URL", currentLinkdingInstanceUrl)
+    var linkdingInstanceUrl: String?
+        get() = sharedPreferences.getString("LINKDING_INSTANCE_URL", currentLinkdingInstanceUrl)
         set(value) = sharedPreferences.put("LINKDING_INSTANCE_URL", value).also { currentLinkdingInstanceUrl = value }
 
-    var authToken: String
-        get() = sharedPreferences.get(KEY_AUTH_TOKEN, currentAuthToken)
-        set(value) = sharedPreferences.put(KEY_AUTH_TOKEN, value).also { currentAuthToken = value }
+    var linkdingAuthToken: String?
+        get() {
+            val fallback = currentLinkdingAuthToken?.ifBlank { null }
+                ?: sharedPreferences.getString("AUTH_TOKEN", null)
+                    .takeIf { sharedPreferences.get("USE_LINKDING", false) }
+
+            return sharedPreferences.getString("LINKDING_AUTH_TOKEN", fallback)
+        }
+        set(value) = sharedPreferences.put("LINKDING_AUTH_TOKEN", value).also { currentLinkdingAuthToken = value }
+
+    var pinboardAuthToken: String?
+        get() {
+            val fallback = currentPinboardAuthToken?.ifBlank { null }
+                ?: sharedPreferences.getString("AUTH_TOKEN", null)
+                    .takeUnless { sharedPreferences.getBoolean("USE_LINKDING", false) }
+
+            return sharedPreferences.getString("PINBOARD_AUTH_TOKEN", fallback)
+        }
+        set(value) = sharedPreferences.put("PINBOARD_AUTH_TOKEN", value).also { currentPinboardAuthToken = value }
 
     var lastUpdate: String
         get() = sharedPreferences.get(KEY_LAST_UPDATE, currentLastUpdate)

@@ -16,6 +16,7 @@ import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import timber.log.Timber
 
 @Singleton
 internal class PostsDataSourceProxy @Inject constructor(
@@ -32,6 +33,8 @@ internal class PostsDataSourceProxy @Inject constructor(
         get() = runBlocking {
             val appMode = appModeProvider.appMode.first { AppMode.UNSET != it }
 
+            Timber.d("Getting repository (appMode=$appMode)")
+
             currentRepository?.takeIf { currentAppMode == appMode }
                 ?: when (appMode) {
                     AppMode.NO_API -> postsDataSourceNoApi.get()
@@ -39,6 +42,7 @@ internal class PostsDataSourceProxy @Inject constructor(
                     AppMode.LINKDING -> postsDataSourceLinkdingApi.get()
                     AppMode.UNSET -> throw IllegalStateException()
                 }.also {
+                    Timber.d("Setting repository (appMode=$appMode)")
                     currentAppMode = appMode
                     currentRepository = it
                 }

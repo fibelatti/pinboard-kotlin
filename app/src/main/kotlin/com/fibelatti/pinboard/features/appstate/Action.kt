@@ -1,12 +1,16 @@
 package com.fibelatti.pinboard.features.appstate
 
+import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 
-sealed class Action
+sealed class Action {
+
+    fun prettyPrint(): String = this::class.java.simpleName
+}
 
 // region App
 sealed class AppAction : Action()
@@ -16,11 +20,15 @@ data object Reset : AppAction()
 // endregion App
 
 // region AuthAction
-sealed class AuthAction : Action()
+sealed class AuthAction : Action() {
 
-data object UserLoggedIn : AuthAction()
-data object UserLoggedOut : AuthAction()
-data object UserUnauthorized : AuthAction()
+    abstract val appMode: AppMode
+}
+
+data class UserLoggedIn(override val appMode: AppMode) : AuthAction()
+data class UserLoginFailed(override val appMode: AppMode) : AuthAction()
+data class UserLoggedOut(override val appMode: AppMode) : AuthAction()
+data class UserUnauthorized(override val appMode: AppMode) : AuthAction()
 // endregion AuthAction
 
 // region NavigationAction
@@ -36,6 +44,8 @@ data object ViewSavedFilters : NavigationAction()
 data object ViewNotes : NavigationAction()
 data class ViewNote(val id: String) : NavigationAction()
 data object ViewPopular : NavigationAction()
+data object ViewAccountSwitcher : NavigationAction()
+data class AddAccount(val appMode: AppMode) : NavigationAction()
 data object ViewPreferences : NavigationAction()
 
 // region ViewCategory

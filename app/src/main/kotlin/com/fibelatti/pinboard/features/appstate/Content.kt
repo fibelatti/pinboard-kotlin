@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.core.functional.Either
+import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -8,7 +9,10 @@ import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import kotlin.reflect.KClass
 
 // region Markers
-sealed class Content
+sealed class Content {
+
+    fun prettyPrint(): String = this::class.java.simpleName
+}
 
 sealed class ContentWithHistory : Content() {
 
@@ -29,11 +33,9 @@ interface SidePanelContent
 
 // region App Content
 data class LoginContent(
-    val isUnauthorized: Boolean = false,
-) : ContentWithHistory() {
-
-    override val previousContent: Content = ExternalContent
-}
+    val appMode: AppMode? = null,
+    override val previousContent: Content = ExternalContent,
+) : ContentWithHistory()
 
 data class PostListContent(
     val category: ViewCategory,
@@ -125,6 +127,10 @@ data class PopularPostDetailContent(
     override val previousContent: PopularPostsContent,
     override val isConnected: Boolean = true,
 ) : ContentWithHistory(), ConnectionAwareContent, SidePanelContent
+
+data class AccountSwitcherContent(
+    override val previousContent: PostListContent,
+) : ContentWithHistory()
 
 data class UserPreferencesContent(
     val userPreferences: UserPreferences,

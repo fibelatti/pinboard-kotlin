@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.appstate
 import com.fibelatti.core.functional.Either
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.allSealedSubclasses
+import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
@@ -938,6 +939,109 @@ internal class NavigationActionHandlerTest {
             )
 
             verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
+        }
+    }
+
+    @Nested
+    inner class ViewAccountSwitcherTests {
+
+        @Test
+        fun `WHEN currentContent is not PostListContent THEN same content is returned`() = runTest {
+            // GIVEN
+            val content = mockk<ExternalContent>()
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewAccountSwitcher, content)
+
+            // THEN
+            assertThat(result).isEqualTo(content)
+        }
+
+        @Test
+        fun `WHEN currentContent is PostListContent THEN AccountSwitcherContent is returned`() = runTest {
+            // GIVEN
+            val mockCurrentContent = mockk<PostListContent>()
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewAccountSwitcher, mockCurrentContent)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                AccountSwitcherContent(
+                    previousContent = mockCurrentContent,
+                ),
+            )
+        }
+
+        @Test
+        fun `WHEN currentContent is PostDetailContent THEN AccountSwitcherContent is returned`() = runTest {
+            // GIVEN
+            val content = mockk<PostDetailContent> {
+                every { previousContent } returns postListContent
+            }
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewAccountSwitcher, content)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                AccountSwitcherContent(
+                    previousContent = postListContent,
+                ),
+            )
+        }
+    }
+
+    @Nested
+    inner class AddAccountTests {
+
+        @Test
+        fun `WHEN currentContent is not AccountSwitcherContent THEN same content is returned`() = runTest {
+            // GIVEN
+            val content = mockk<PostListContent>()
+            val appMode = mockk<AppMode>()
+
+            // WHEN
+            val result = navigationActionHandler.runAction(AddAccount(appMode = appMode), content)
+
+            // THEN
+            assertThat(result).isEqualTo(content)
+        }
+
+        @Test
+        fun `WHEN currentContent is AccountSwitcherContent THEN LoginContent is returned`() = runTest {
+            // GIVEN
+            val content = mockk<AccountSwitcherContent>()
+            val appMode = mockk<AppMode>()
+
+            // WHEN
+            val result = navigationActionHandler.runAction(AddAccount(appMode = appMode), content)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                LoginContent(
+                    appMode = appMode,
+                    previousContent = content,
+                ),
+            )
+        }
+
+        @Test
+        fun `WHEN currentContent is PostDetailContent THEN AccountSwitcherContent is returned`() = runTest {
+            // GIVEN
+            val content = mockk<PostDetailContent> {
+                every { previousContent } returns postListContent
+            }
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewAccountSwitcher, content)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                AccountSwitcherContent(
+                    previousContent = postListContent,
+                ),
+            )
         }
     }
 

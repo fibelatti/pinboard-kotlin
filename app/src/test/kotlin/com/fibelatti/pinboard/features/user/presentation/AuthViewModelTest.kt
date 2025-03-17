@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.user.presentation
 
+import app.cash.turbine.test
 import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
@@ -7,11 +8,12 @@ import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_API_TOKEN
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_INSTANCE_URL
 import com.fibelatti.pinboard.MockDataProvider.createAppState
+import com.fibelatti.pinboard.MockDataProvider.createPostListContent
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
-import com.fibelatti.pinboard.features.appstate.UserLoggedOut
+import com.fibelatti.pinboard.features.appstate.LoginContent
 import com.fibelatti.pinboard.features.user.domain.Login
-import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.google.common.truth.Truth.assertThat
 import io.ktor.client.plugins.ResponseException
 import io.ktor.client.statement.HttpResponse
@@ -33,26 +35,58 @@ class AuthViewModelTest : BaseViewModelTest() {
 
     private val mockLogin = mockk<Login>()
 
-    private val appStateFlow = MutableStateFlow(createAppState())
+    private val appStateFlow = MutableStateFlow(createAppState(content = LoginContent()))
     private val mockAppStateRepository = mockk<AppStateRepository> {
         every { appState } returns appStateFlow
         coJustRun { runAction(any()) }
-    }
-    private val mockUserRepository = mockk<UserRepository> {
-        every { useLinkding } returns false
     }
     private val mockResourceProvider = mockk<ResourceProvider>()
 
     private val viewModel = AuthViewModel(
         scope = TestScope(dispatcher),
         appStateRepository = mockAppStateRepository,
-        userRepository = mockUserRepository,
         loginUseCase = mockLogin,
         resourceProvider = mockResourceProvider,
     )
 
     @Nested
-    inner class LoginTest {
+    inner class ContentTests {
+
+        @Test
+        fun `content changes reset the screen state`() = runTest {
+            viewModel.screenState.test {
+                assertThat(awaitItem()).isEqualTo(
+                    AuthViewModel.ScreenState(
+                        allowSwitching = true,
+                        useLinkding = false,
+                    ),
+                )
+
+                appStateFlow.value = createAppState(content = createPostListContent())
+                appStateFlow.value = createAppState(content = LoginContent(appMode = AppMode.LINKDING))
+
+                assertThat(awaitItem()).isEqualTo(
+                    AuthViewModel.ScreenState(
+                        allowSwitching = false,
+                        useLinkding = true,
+                    ),
+                )
+
+                appStateFlow.value = createAppState(content = createPostListContent())
+                appStateFlow.value = createAppState(content = LoginContent(appMode = AppMode.PINBOARD))
+
+                assertThat(awaitItem()).isEqualTo(
+                    AuthViewModel.ScreenState(
+                        allowSwitching = false,
+                        useLinkding = false,
+                    ),
+                )
+            }
+        }
+    }
+
+    @Nested
+    inner class LoginTests {
 
         @Test
         fun `GIVEN auth token is empty WHEN login is called THEN error state is emitted`() = runTest {
@@ -62,7 +96,7 @@ class AuthViewModelTest : BaseViewModelTest() {
             // WHEN
             viewModel.login(
                 apiToken = "",
-                instanceUrl = SAMPLE_INSTANCE_URL,
+                instanceUrl = "",
             )
 
             verify { mockLogin wasNot Called }
@@ -79,7 +113,7 @@ class AuthViewModelTest : BaseViewModelTest() {
                 every {
                     mockResourceProvider.getString(R.string.auth_linkding_instance_url_error)
                 } returns "R.string.auth_linkding_instance_url_error"
-                every { mockUserRepository.useLinkding } returns true
+                viewModel.useLinkding(value = true)
 
                 // WHEN
                 viewModel.login(
@@ -90,7 +124,10 @@ class AuthViewModelTest : BaseViewModelTest() {
                 verify { mockLogin wasNot Called }
 
                 assertThat(viewModel.screenState.first()).isEqualTo(
-                    AuthViewModel.ScreenState(instanceUrlError = "R.string.auth_linkding_instance_url_error"),
+                    AuthViewModel.ScreenState(
+                        useLinkding = true,
+                        instanceUrlError = "R.string.auth_linkding_instance_url_error",
+                    ),
                 )
             }
 
@@ -99,12 +136,13 @@ class AuthViewModelTest : BaseViewModelTest() {
             // GIVEN
             coEvery {
                 mockLogin(
-                    Login.Params(
+                    Login.LinkdingParams(
                         authToken = SAMPLE_API_TOKEN,
                         instanceUrl = SAMPLE_INSTANCE_URL,
                     ),
                 )
             } returns Success(Unit)
+            viewModel.useLinkding(value = true)
 
             // WHEN
             viewModel.login(
@@ -115,7 +153,7 @@ class AuthViewModelTest : BaseViewModelTest() {
             // THEN
             coVerify {
                 mockLogin(
-                    Login.Params(
+                    Login.LinkdingParams(
                         authToken = SAMPLE_API_TOKEN,
                         instanceUrl = SAMPLE_INSTANCE_URL,
                     ),
@@ -124,7 +162,10 @@ class AuthViewModelTest : BaseViewModelTest() {
 
             assertThat(viewModel.error.first()).isNull()
             assertThat(viewModel.screenState.first()).isEqualTo(
-                AuthViewModel.ScreenState(isLoading = true),
+                AuthViewModel.ScreenState(
+                    useLinkding = true,
+                    isLoading = true,
+                ),
             )
         }
 
@@ -140,31 +181,17 @@ class AuthViewModelTest : BaseViewModelTest() {
                     }
                 }
 
-                coEvery {
-                    mockLogin(
-                        Login.Params(
-                            authToken = SAMPLE_API_TOKEN,
-                            instanceUrl = SAMPLE_INSTANCE_URL,
-                        ),
-                    )
-                } returns Failure(error)
+                coEvery { mockLogin(Login.PinboardParams(authToken = SAMPLE_API_TOKEN)) } returns Failure(error)
                 every { mockResourceProvider.getString(R.string.auth_token_error) } returns "R.string.auth_token_error"
 
                 // WHEN
                 viewModel.login(
                     apiToken = SAMPLE_API_TOKEN,
-                    instanceUrl = SAMPLE_INSTANCE_URL,
+                    instanceUrl = "",
                 )
 
                 // THEN
-                coVerify {
-                    mockLogin(
-                        Login.Params(
-                            authToken = SAMPLE_API_TOKEN,
-                            instanceUrl = SAMPLE_INSTANCE_URL,
-                        ),
-                    )
-                }
+                coVerify { mockLogin(Login.PinboardParams(authToken = SAMPLE_API_TOKEN)) }
 
                 assertThat(viewModel.error.first()).isNull()
                 assertThat(viewModel.screenState.first()).isEqualTo(
@@ -184,14 +211,7 @@ class AuthViewModelTest : BaseViewModelTest() {
                     }
                 }
 
-                coEvery {
-                    mockLogin(
-                        Login.Params(
-                            authToken = SAMPLE_API_TOKEN,
-                            instanceUrl = SAMPLE_INSTANCE_URL,
-                        ),
-                    )
-                } returns Failure(error)
+                coEvery { mockLogin(Login.PinboardParams(authToken = SAMPLE_API_TOKEN)) } returns Failure(error)
                 every { mockResourceProvider.getString(R.string.auth_token_error) } returns "R.string.auth_token_error"
 
                 // WHEN
@@ -201,14 +221,7 @@ class AuthViewModelTest : BaseViewModelTest() {
                 )
 
                 // THEN
-                coVerify {
-                    mockLogin(
-                        Login.Params(
-                            authToken = SAMPLE_API_TOKEN,
-                            instanceUrl = SAMPLE_INSTANCE_URL,
-                        ),
-                    )
-                }
+                coVerify { mockLogin(Login.PinboardParams(authToken = SAMPLE_API_TOKEN)) }
 
                 assertThat(viewModel.error.first()).isNull()
                 assertThat(viewModel.screenState.first()).isEqualTo(
@@ -220,14 +233,7 @@ class AuthViewModelTest : BaseViewModelTest() {
         fun `GIVEN Login fails WHEN login is called THEN error should receive a value`() = runTest {
             // GIVEN
             val error = Exception()
-            coEvery {
-                mockLogin(
-                    Login.Params(
-                        authToken = SAMPLE_API_TOKEN,
-                        instanceUrl = SAMPLE_INSTANCE_URL,
-                    ),
-                )
-            } returns Failure(error)
+            coEvery { mockLogin(Login.PinboardParams(authToken = SAMPLE_API_TOKEN)) } returns Failure(error)
 
             // WHEN
             viewModel.login(
@@ -236,26 +242,10 @@ class AuthViewModelTest : BaseViewModelTest() {
             )
 
             // THEN
-            coVerify {
-                mockLogin(
-                    Login.Params(
-                        authToken = SAMPLE_API_TOKEN,
-                        instanceUrl = SAMPLE_INSTANCE_URL,
-                    ),
-                )
-            }
+            coVerify { mockLogin(Login.PinboardParams(authToken = SAMPLE_API_TOKEN)) }
 
             assertThat(viewModel.error.first()).isEqualTo(error)
             assertThat(viewModel.screenState.first()).isEqualTo(AuthViewModel.ScreenState())
         }
-    }
-
-    @Test
-    fun `WHEN logout is called THEN appStateRepository runs UserLoggedOut`() {
-        // WHEN
-        viewModel.logout()
-
-        // THEN
-        coVerify { mockAppStateRepository.runAction(UserLoggedOut) }
     }
 }

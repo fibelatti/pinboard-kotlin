@@ -1,8 +1,10 @@
 package com.fibelatti.pinboard.core.di.modules
 
 import com.fibelatti.pinboard.core.di.mapkeys.MainReducerKey
+import com.fibelatti.pinboard.features.appstate.AccountSwitcherContent
 import com.fibelatti.pinboard.features.appstate.AddPostContent
 import com.fibelatti.pinboard.features.appstate.EditPostContent
+import com.fibelatti.pinboard.features.appstate.LoginContent
 import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.pinboard.features.appstate.NoteListContent
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
@@ -13,9 +15,11 @@ import com.fibelatti.pinboard.features.appstate.SavedFiltersContent
 import com.fibelatti.pinboard.features.appstate.SearchContent
 import com.fibelatti.pinboard.features.appstate.TagListContent
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
+import com.fibelatti.pinboard.features.main.reducer.AccountSwitcherReducer
 import com.fibelatti.pinboard.features.main.reducer.BookmarkDetailsReducer
 import com.fibelatti.pinboard.features.main.reducer.BookmarkEditorReducer
 import com.fibelatti.pinboard.features.main.reducer.BookmarkListReducer
+import com.fibelatti.pinboard.features.main.reducer.LoginReducer
 import com.fibelatti.pinboard.features.main.reducer.MainStateReducer
 import com.fibelatti.pinboard.features.main.reducer.NoteDetailsReducer
 import com.fibelatti.pinboard.features.main.reducer.NoteListReducer
@@ -33,6 +37,11 @@ import dagger.multibindings.IntoMap
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class MainModule {
+
+    @Binds
+    @IntoMap
+    @MainReducerKey(LoginContent::class)
+    abstract fun loginReducer(impl: LoginReducer): MainStateReducer
 
     @Binds
     @IntoMap
@@ -88,6 +97,11 @@ abstract class MainModule {
     @IntoMap
     @MainReducerKey(NoteDetailContent::class)
     abstract fun noteDetailsReducer(impl: NoteDetailsReducer): MainStateReducer
+
+    @Binds
+    @IntoMap
+    @MainReducerKey(AccountSwitcherContent::class)
+    abstract fun accountSwitcherReducer(impl: AccountSwitcherReducer): MainStateReducer
 
     @Binds
     @IntoMap

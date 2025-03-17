@@ -64,7 +64,6 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_PAGE_SIZE
 import com.fibelatti.pinboard.core.AppConfig.PINBOARD_USER_URL
 import com.fibelatti.pinboard.core.AppMode
-import com.fibelatti.pinboard.core.android.DialogEntryPoint
 import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
@@ -110,7 +109,6 @@ import com.fibelatti.ui.components.MultilineChipGroup
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -143,6 +141,7 @@ fun BookmarkListScreen(
             derivedStateOf { (postListContent.shouldLoad != Loaded || postDetailScreenState.isLoading) && !hasError }
         }
 
+        val userCredentials by userPreferencesViewModel.userCredentials.collectAsStateWithLifecycle()
         val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
         val tagsClipboard = remember { mutableListOf<Tag>() }
 
@@ -175,12 +174,13 @@ fun BookmarkListScreen(
                 localView.showBanner(R.string.saved_filters_saved_feedback)
             },
             onShareClicked = { searchParameters ->
-                val entryPoint = EntryPointAccessors.fromApplication<DialogEntryPoint>(localContext.applicationContext)
-                shareFilteredResults(
-                    context = localContext,
-                    username = entryPoint.userRepository().getUsername(),
-                    searchParameters = searchParameters,
-                )
+                userCredentials.getPinboardUsername()?.let { username ->
+                    shareFilteredResults(
+                        context = localContext,
+                        username = username,
+                        searchParameters = searchParameters,
+                    )
+                }
             },
             onPullToRefresh = { mainViewModel.runAction(Refresh()) },
             onPostClicked = { post -> mainViewModel.runAction(ViewPost(post)) },

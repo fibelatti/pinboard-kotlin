@@ -10,4 +10,10 @@ data class AppState(
 
     val sidePanelVisible: Boolean
         get() = content is SidePanelContent && multiPanelAvailable
+
+    fun prettyPrint(): String = "AppState(" +
+        "appMode=$appMode, " +
+        "content=${content.prettyPrint()}, " +
+        "multiPanelAvailable=$multiPanelAvailable" +
+        ")"
 }

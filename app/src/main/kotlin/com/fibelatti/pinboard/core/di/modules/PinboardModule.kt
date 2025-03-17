@@ -3,7 +3,7 @@ package com.fibelatti.pinboard.core.di.modules
 import com.fibelatti.pinboard.core.di.RestApi
 import com.fibelatti.pinboard.core.di.RestApiProvider
 import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
-import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,7 +28,7 @@ object PinboardModule {
     @RestApi(RestApiProvider.PINBOARD)
     fun pinboardHttpClient(
         @RestApi(RestApiProvider.BASE) httpClient: HttpClient,
-        userSharedPreferences: UserSharedPreferences,
+        userRepository: UserRepository,
         unauthorizedPluginProvider: UnauthorizedPluginProvider,
     ): HttpClient = httpClient.config {
         engine {
@@ -52,11 +52,15 @@ object PinboardModule {
         }
 
         defaultRequest {
+            val credentials = userRepository.userCredentials.value
+
             url {
                 protocol = URLProtocol.HTTPS
                 host = "api.pinboard.in"
                 parameters.append(name = "format", value = "json")
-                parameters.append(name = "auth_token", value = userSharedPreferences.authToken)
+                credentials.pinboardAuthToken?.let { token ->
+                    parameters.append(name = "auth_token", value = token)
+                }
             }
             accept(ContentType.Application.Json)
         }

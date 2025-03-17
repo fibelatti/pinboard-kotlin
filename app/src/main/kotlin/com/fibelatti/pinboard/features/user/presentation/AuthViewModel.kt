@@ -4,13 +4,12 @@ import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.LoginContent
-import com.fibelatti.pinboard.features.appstate.UserLoggedOut
 import com.fibelatti.pinboard.features.user.domain.Login
-import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.plugins.ResponseException
 import javax.inject.Inject
@@ -18,7 +17,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -27,7 +29,6 @@ import kotlinx.coroutines.launch
 class AuthViewModel @Inject constructor(
     scope: CoroutineScope,
     appStateRepository: AppStateRepository,
-    private val userRepository: UserRepository,
     private val loginUseCase: Login,
     private val resourceProvider: ResourceProvider,
 ) : BaseViewModel(scope, appStateRepository) {
@@ -36,42 +37,69 @@ class AuthViewModel @Inject constructor(
     val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
 
     init {
-        filteredContent<LoginContent>()
-            .onEach { _screenState.update { ScreenState() } }
+        appState.map { it.content }
+            .distinctUntilChangedBy { it::class }
+            .filterIsInstance<LoginContent>()
+            .onEach { loginContent ->
+                _screenState.update {
+                    ScreenState(
+                        allowSwitching = loginContent.appMode == null,
+                        useLinkding = loginContent.appMode == AppMode.LINKDING,
+                    )
+                }
+            }
             .launchIn(scope)
     }
 
+    fun useLinkding(value: Boolean) {
+        _screenState.update { current -> current.copy(useLinkding = value) }
+    }
+
     fun login(apiToken: String, instanceUrl: String) {
-        if (userRepository.useLinkding && instanceUrl.isBlank()) {
-            _screenState.value = ScreenState(
-                instanceUrlError = resourceProvider.getString(R.string.auth_linkding_instance_url_error),
-            )
+        if (screenState.value.useLinkding && instanceUrl.isBlank()) {
+            _screenState.update { current ->
+                current.copy(
+                    isLoading = false,
+                    apiTokenError = null,
+                    instanceUrlError = resourceProvider.getString(R.string.auth_linkding_instance_url_error),
+                )
+            }
             return
         }
 
         if (apiToken.isBlank()) {
-            _screenState.value = ScreenState(
-                apiTokenError = resourceProvider.getString(R.string.auth_token_empty),
-            )
+            _screenState.update { current ->
+                current.copy(
+                    isLoading = false,
+                    apiTokenError = resourceProvider.getString(R.string.auth_token_empty),
+                    instanceUrlError = null,
+                )
+            }
             return
         }
 
         scope.launch {
-            _screenState.value = ScreenState(isLoading = true)
+            _screenState.update { current ->
+                current.copy(
+                    isLoading = true,
+                    apiTokenError = null,
+                    instanceUrlError = null,
+                )
+            }
 
-            val params = Login.Params(
-                authToken = apiToken,
-                instanceUrl = instanceUrl,
-            )
+            val params = if (screenState.value.useLinkding) {
+                Login.LinkdingParams(authToken = apiToken, instanceUrl = instanceUrl)
+            } else {
+                Login.PinboardParams(authToken = apiToken)
+            }
 
             loginUseCase(params)
                 .onFailure { error ->
-                    _screenState.value = ScreenState(isLoading = false)
-
                     when {
                         error is ResponseException && error.response.status.value in AppConfig.LOGIN_FAILED_CODES -> {
                             _screenState.update { currentState ->
                                 currentState.copy(
+                                    isLoading = false,
                                     apiTokenError = resourceProvider.getString(R.string.auth_token_error),
                                 )
                             }
@@ -80,22 +108,24 @@ class AuthViewModel @Inject constructor(
                         error.isServerException() -> {
                             _screenState.update { currentState ->
                                 currentState.copy(
+                                    isLoading = false,
                                     apiTokenError = resourceProvider.getString(R.string.server_error),
                                 )
                             }
                         }
 
-                        else -> handleError(error)
+                        else -> {
+                            _screenState.update { current -> current.copy(isLoading = false) }
+                            handleError(error)
+                        }
                     }
                 }
         }
     }
 
-    fun logout() {
-        runAction(UserLoggedOut)
-    }
-
     data class ScreenState(
+        val allowSwitching: Boolean = true,
+        val useLinkding: Boolean = false,
         val isLoading: Boolean = false,
         val apiTokenError: String? = null,
         val instanceUrlError: String? = null,

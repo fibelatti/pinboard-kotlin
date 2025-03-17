@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.user.data
 
+import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
@@ -7,6 +8,7 @@ import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import com.fibelatti.pinboard.features.user.domain.UserCredentials
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
@@ -14,30 +16,23 @@ import javax.inject.Singleton
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 @Singleton
 class UserDataSource @Inject constructor(
     private val userSharedPreferences: UserSharedPreferences,
 ) : UserRepository {
 
+    private val _userCredentials = MutableStateFlow(getUserCredentials())
+    override val userCredentials: StateFlow<UserCredentials> = _userCredentials.asStateFlow()
+
     private val _currentPreferences = MutableStateFlow(getPreferences())
     override val currentPreferences: StateFlow<UserPreferences> = _currentPreferences.asStateFlow()
 
-    private val _authToken = MutableStateFlow(userSharedPreferences.authToken)
-    override val authToken: StateFlow<String> = _authToken.asStateFlow()
-
-    override var useLinkding: Boolean
-        get() = userSharedPreferences.useLinkding
-        set(value) {
-            userSharedPreferences.useLinkding = value
-            updateCurrentPreferences()
-        }
-
-    override var linkdingInstanceUrl: String
+    override var linkdingInstanceUrl: String?
         get() = userSharedPreferences.linkdingInstanceUrl
         set(value) {
-            userSharedPreferences.linkdingInstanceUrl = if (useLinkding) value else ""
-            updateCurrentPreferences()
+            userSharedPreferences.linkdingInstanceUrl = value
         }
 
     override var lastUpdate: String
@@ -202,13 +197,18 @@ class UserDataSource @Inject constructor(
             updateCurrentPreferences()
         }
 
+    private fun getUserCredentials(): UserCredentials = UserCredentials(
+        pinboardAuthToken = userSharedPreferences.pinboardAuthToken,
+        linkdingInstanceUrl = linkdingInstanceUrl,
+        linkdingAuthToken = userSharedPreferences.linkdingAuthToken,
+        appReviewMode = userSharedPreferences.appReviewMode,
+    )
+
     private fun updateCurrentPreferences() {
         _currentPreferences.value = getPreferences()
     }
 
     private fun getPreferences(): UserPreferences = UserPreferences(
-        useLinkding = useLinkding,
-        linkdingInstanceUrl = linkdingInstanceUrl,
         periodicSync = periodicSync,
         appearance = appearance,
         applyDynamicColors = applyDynamicColors,
@@ -228,20 +228,44 @@ class UserDataSource @Inject constructor(
         defaultTags = defaultTags,
     )
 
-    override fun getUsername(): String = userSharedPreferences.authToken.substringBefore(":")
+    override fun setAuthToken(appMode: AppMode, authToken: String) {
+        when {
+            "app_review_mode" == authToken -> {
+                userSharedPreferences.appReviewMode = true
+                userSharedPreferences.pinboardAuthToken = null
+                userSharedPreferences.linkdingAuthToken = null
+            }
 
-    override fun hasAuthToken(): Boolean = userSharedPreferences.authToken.isNotEmpty()
+            AppMode.PINBOARD == appMode -> userSharedPreferences.pinboardAuthToken = authToken.ifBlank { null }
 
-    override fun setAuthToken(authToken: String) {
-        if (authToken.isNotBlank()) {
-            _authToken.value = authToken
-            userSharedPreferences.authToken = authToken
+            AppMode.LINKDING == appMode -> userSharedPreferences.linkdingAuthToken = authToken.ifBlank { null }
+
+            else -> Unit
         }
+
+        _userCredentials.update { getUserCredentials() }
     }
 
-    override fun clearAuthToken() {
-        userSharedPreferences.authToken = ""
+    override fun clearAuthToken(appMode: AppMode) {
+        when (appMode) {
+            AppMode.PINBOARD -> {
+                userSharedPreferences.pinboardAuthToken = null
+            }
+
+            AppMode.LINKDING -> {
+                userSharedPreferences.linkdingInstanceUrl = null
+                userSharedPreferences.linkdingAuthToken = null
+            }
+
+            AppMode.NO_API -> {
+                userSharedPreferences.appReviewMode = false
+            }
+
+            else -> Unit
+        }
+
         userSharedPreferences.lastUpdate = ""
-        _authToken.value = ""
+
+        _userCredentials.update { getUserCredentials() }
     }
 }

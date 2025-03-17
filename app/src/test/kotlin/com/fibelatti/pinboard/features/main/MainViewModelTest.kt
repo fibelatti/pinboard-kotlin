@@ -5,6 +5,7 @@ import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.createAppState
 import com.fibelatti.pinboard.allSealedSubclasses
 import com.fibelatti.pinboard.core.extension.ScrollDirection
+import com.fibelatti.pinboard.features.appstate.AccountSwitcherContent
 import com.fibelatti.pinboard.features.appstate.AddPostContent
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.Content
@@ -69,6 +70,7 @@ internal class MainViewModelTest : BaseViewModelTest() {
                 is PopularPostDetailContent -> subclass.java to expectedReducerMock()
                 is NoteListContent -> subclass.java to expectedReducerMock()
                 is NoteDetailContent -> subclass.java to expectedReducerMock()
+                is AccountSwitcherContent -> subclass.java to expectedReducerMock()
                 is UserPreferencesContent -> subclass.java to expectedReducerMock()
                 is ExternalBrowserContent -> subclass.java to expectedReducerMock()
                 is ExternalContent -> subclass.java to expectedReducerMock()

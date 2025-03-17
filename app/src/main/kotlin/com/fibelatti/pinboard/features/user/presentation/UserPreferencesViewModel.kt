@@ -9,6 +9,7 @@ import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.sync.PeriodicSyncManager
 import com.fibelatti.pinboard.features.tags.domain.TagManagerRepository
+import com.fibelatti.pinboard.features.user.domain.UserCredentials
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +28,8 @@ class UserPreferencesViewModel @Inject constructor(
     private val periodicSyncManager: PeriodicSyncManager,
 ) : BaseViewModel(scope, appStateRepository), TagManagerRepository by tagManagerRepository {
 
+    val userCredentials: StateFlow<UserCredentials> get() = userRepository.userCredentials
+
     val currentPreferences: StateFlow<UserPreferences> get() = userRepository.currentPreferences
 
     init {
@@ -35,10 +38,6 @@ class UserPreferencesViewModel @Inject constructor(
                 userRepository.defaultTags = value.tags
             }
         }
-    }
-
-    fun useLinkding(value: Boolean) {
-        userRepository.useLinkding = value
     }
 
     fun savePeriodicSync(periodicSync: PeriodicSync) {

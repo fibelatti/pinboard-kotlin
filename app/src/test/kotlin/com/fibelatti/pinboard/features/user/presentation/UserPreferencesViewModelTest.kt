@@ -65,20 +65,6 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `WHEN useLinkding is called THEN repository is updated`() {
-        // GIVEN
-        val value = randomBoolean()
-
-        // WHEN
-        userPreferencesViewModel.useLinkding(value)
-
-        // THEN
-        verify {
-            mockUserRepository.useLinkding = value
-        }
-    }
-
-    @Test
     fun `WHEN savePeriodicSync is called THEN repository is updated AND periodicSyncManager enqueues`() {
         // GIVEN
         val mockPeriodicSync = mockk<PeriodicSync>()
