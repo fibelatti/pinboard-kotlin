@@ -1,0 +1,11 @@
+This version brings the following updates:
+
+* Multi-account support: use Pinboard and Linkding simultaneously!
+* New setting for the preferred sorting method
+* Self-signed certificate support (Linkding)
+* Fixes an encoding issue that affected shared URLs that contained spaces
+* Fixes a crash on 3.7.0 which could happen when using the external browser
+
+Thank you for 10k downloads!
+
+Feedback and suggestions are always welcome, thank you for using the app!
