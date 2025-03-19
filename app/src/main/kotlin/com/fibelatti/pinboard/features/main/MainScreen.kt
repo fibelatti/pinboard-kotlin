@@ -129,24 +129,29 @@ fun MainScreen(
 
     LaunchedEffect(appState.content) {
         mainViewModel.setCurrentScrollDirection(ScrollDirection.IDLE)
+
+        when (val content = appState.content) {
+            is ExternalBrowserContent -> {
+                localActivity.startActivity(
+                    Intent(Intent.ACTION_VIEW, content.post.url.toUri())
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                )
+                mainViewModel.navigateBack()
+            }
+
+            is ExternalContent -> {
+                localActivity.finish()
+                mainViewModel.resetAppNavigation()
+            }
+
+            else -> Unit
+        }
     }
 
     MainScreen(
         state = state,
         sidePanelVisible = appState.sidePanelVisible,
         content = appState.content,
-        onExternalBrowserContent = { browserContent ->
-            localActivity.startActivity(
-                Intent(Intent.ACTION_VIEW, browserContent.post.url.toUri())
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-            )
-
-            mainViewModel.navigateBack()
-        },
-        onExternalContent = {
-            mainViewModel.resetAppNavigation()
-            localActivity.finish()
-        },
         onNavigationClick = {
             localOnBackPressedDispatcher?.onBackPressed()
         },
@@ -191,8 +196,6 @@ fun MainScreen(
     state: MainState,
     sidePanelVisible: Boolean,
     content: Content,
-    onExternalBrowserContent: (ExternalBrowserContent) -> Unit,
-    onExternalContent: () -> Unit,
     onNavigationClick: () -> Unit,
     onActionButtonClick: (data: Any?) -> Unit,
     onOfflineRetryClick: () -> Unit,
@@ -227,8 +230,6 @@ fun MainScreen(
                 MainPanelContent(
                     content = content,
                     sidePanelVisible = sidePanelVisible,
-                    onExternalBrowserContent = onExternalBrowserContent,
-                    onExternalContent = onExternalContent,
                     modifier = Modifier.fillMaxWidth(fraction = if (sidePanelVisible) .45f else 1f),
                 )
 
@@ -267,8 +268,6 @@ fun MainScreen(
 private fun MainPanelContent(
     content: Content,
     sidePanelVisible: Boolean,
-    onExternalBrowserContent: (ExternalBrowserContent) -> Unit,
-    onExternalContent: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val mainPanelContent = remember(content::class, sidePanelVisible) {
@@ -300,8 +299,6 @@ private fun MainPanelContent(
             PopularPostDetailContent::class -> BookmarkDetailsScreen()
             AccountSwitcherContent::class -> AccountSwitcherScreen()
             UserPreferencesContent::class -> UserPreferencesScreen()
-            ExternalBrowserContent::class -> (content as ExternalBrowserContent).let(onExternalBrowserContent)
-            ExternalContent::class -> onExternalContent()
         }
     }
 }
