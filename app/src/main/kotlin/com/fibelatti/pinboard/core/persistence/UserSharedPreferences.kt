@@ -127,6 +127,10 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
         get() = sharedPreferences.get(KEY_PREFERRED_DATE_FORMAT, "")
         set(value) = sharedPreferences.put(KEY_PREFERRED_DATE_FORMAT, value)
 
+    var preferredSortType: String
+        get() = sharedPreferences.get("PREFERRED_SORT_TYPE", "")
+        set(value) = sharedPreferences.put("PREFERRED_SORT_TYPE", value)
+
     var hiddenPostQuickOptions: Set<String>
         get() = sharedPreferences.getStringSet(KEY_HIDDEN_POST_QUICK_OPTIONS, null) ?: emptySet()
         set(value) = sharedPreferences.edit { putStringSet(KEY_HIDDEN_POST_QUICK_OPTIONS, value) }

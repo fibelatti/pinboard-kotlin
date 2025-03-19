@@ -316,6 +316,33 @@ internal class UserSharedPreferencesTest {
     }
 
     @Test
+    fun `GIVEN PREFERRED_SORT_TYPE has no value WHEN preferredSortType getter is called THEN an empty string is returned`() {
+        // GIVEN
+        every { mockSharedPreferences.get("PREFERRED_SORT_TYPE", "") } returns ""
+
+        // THEN
+        assertThat(userSharedPreferences.preferredSortType).isEmpty()
+    }
+
+    @Test
+    fun `GIVEN PREFERRED_SORT_TYPE has value WHEN preferredSortType getter is called THEN the value is returned`() {
+        // GIVEN
+        every { mockSharedPreferences.get("PREFERRED_SORT_TYPE", "") } returns "some-value"
+
+        // THEN
+        assertThat(userSharedPreferences.preferredSortType).isEqualTo("some-value")
+    }
+
+    @Test
+    fun `WHEN preferredSortType setter is called THEN PREFERRED_SORT_TYPE is set`() {
+        // WHEN
+        userSharedPreferences.preferredSortType = "some-value"
+
+        // THEN
+        verify { mockEditor.putString("PREFERRED_SORT_TYPE", "some-value") }
+    }
+
+    @Test
     fun `GIVEN KEY_PREFERRED_DETAILS_VIEW has no value WHEN getAppearance is called THEN empty string is returned`() {
         // GIVEN
         every { mockSharedPreferences.get(KEY_PREFERRED_DETAILS_VIEW, "") } returns ""

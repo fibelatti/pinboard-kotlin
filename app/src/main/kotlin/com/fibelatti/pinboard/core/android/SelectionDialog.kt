@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -45,8 +46,9 @@ object SelectionDialog {
         title: String,
         options: List<T>,
         optionName: (T) -> String,
-        optionIcon: (T) -> Int? = { null },
         onOptionSelected: (T) -> Unit,
+        optionIcon: (T) -> Int? = { null },
+        footer: @Composable () -> Unit = {},
     ) {
         show(
             context = context,
@@ -55,6 +57,7 @@ object SelectionDialog {
             optionName = optionName,
             optionIcon = optionIcon,
             onOptionSelected = onOptionSelected,
+            footer = footer,
         )
     }
 
@@ -63,8 +66,9 @@ object SelectionDialog {
         title: String,
         options: Map<T, Boolean>,
         optionName: (T) -> String,
-        optionIcon: (T) -> Int? = { null },
         onOptionSelected: (T) -> Unit,
+        optionIcon: (T) -> Int? = { null },
+        footer: @Composable () -> Unit = {},
     ) {
         ComposeBottomSheetDialog(context) {
             SelectionDialogContent(
@@ -76,6 +80,7 @@ object SelectionDialog {
                     onOptionSelected(option)
                     dismiss()
                 },
+                footer = footer,
             )
         }.show()
     }
@@ -85,8 +90,8 @@ object SelectionDialog {
         title: String,
         options: Map<T, Boolean>,
         optionName: (T) -> String,
-        optionIcon: (T) -> Int? = { null },
         onConfirm: (Map<T, Boolean>) -> Unit,
+        optionIcon: (T) -> Int? = { null },
     ) {
         ComposeBottomSheetDialog(context) {
             SelectionDialogCustomizationContent(
@@ -104,12 +109,14 @@ object SelectionDialog {
 }
 
 @Composable
+@OptIn(ExperimentalFoundationApi::class)
 private fun <T> SelectionDialogContent(
     title: String,
     options: Map<T, Boolean>,
     optionName: (T) -> String,
     optionIcon: (T) -> Int?,
     onOptionSelected: (T) -> Unit,
+    footer: @Composable () -> Unit = {},
 ) {
     val visibleOptions = remember(options) { options.filterValues { hidden -> !hidden }.keys.toList() }
     val hiddenOptions = remember(options) { options.filterValues { hidden -> hidden }.keys.toList() }
@@ -124,14 +131,16 @@ private fun <T> SelectionDialogContent(
         contentPadding = PaddingValues(all = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        item {
-            Text(
-                text = title,
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleLarge,
-            )
+        if (title.isNotEmpty()) {
+            stickyHeader {
+                Text(
+                    text = title,
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleLarge,
+                )
+            }
         }
 
         items(visibleOptions) { option ->
@@ -168,6 +177,10 @@ private fun <T> SelectionDialogContent(
                     )
                 }
             }
+        }
+
+        item {
+            footer()
         }
     }
 }

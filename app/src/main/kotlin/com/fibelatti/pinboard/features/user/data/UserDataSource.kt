@@ -4,6 +4,13 @@ import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
+import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
+import com.fibelatti.pinboard.features.appstate.ByDateAddedOldestFirst
+import com.fibelatti.pinboard.features.appstate.ByDateModifiedNewestFirst
+import com.fibelatti.pinboard.features.appstate.ByDateModifiedOldestFirst
+import com.fibelatti.pinboard.features.appstate.ByTitleAlphabetical
+import com.fibelatti.pinboard.features.appstate.ByTitleAlphabeticalReverse
+import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
@@ -90,6 +97,20 @@ class UserDataSource @Inject constructor(
         }
         set(value) {
             userSharedPreferences.preferredDateFormat = value.value
+            updateCurrentPreferences()
+        }
+
+    override var preferredSortType: SortType
+        get() = when (userSharedPreferences.preferredSortType) {
+            ByDateAddedOldestFirst.value -> ByDateAddedOldestFirst
+            ByDateModifiedNewestFirst.value -> ByDateModifiedNewestFirst
+            ByDateModifiedOldestFirst.value -> ByDateModifiedOldestFirst
+            ByTitleAlphabetical.value -> ByTitleAlphabetical
+            ByTitleAlphabeticalReverse.value -> ByTitleAlphabeticalReverse
+            else -> ByDateAddedNewestFirst
+        }
+        set(value) {
+            userSharedPreferences.preferredSortType = value.value
             updateCurrentPreferences()
         }
 
@@ -214,6 +235,7 @@ class UserDataSource @Inject constructor(
         applyDynamicColors = applyDynamicColors,
         disableScreenshots = disableScreenshots,
         preferredDateFormat = preferredDateFormat,
+        preferredSortType = preferredSortType,
         hiddenPostQuickOptions = hiddenPostQuickOptions,
         preferredDetailsView = preferredDetailsView,
         followRedirects = followRedirects,

@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.pinboard.MockDataProvider.createTag
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.pinboard.features.user.domain.GetPreferredSortType
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
@@ -18,16 +19,22 @@ internal class TagActionHandlerTest {
     private val mockUserRepository = mockk<UserRepository>()
     private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider>()
 
+    private val mockSortType = mockk<SortType>()
+    private val mockGetPreferredSortType = mockk<GetPreferredSortType> {
+        every { this@mockk.invoke() } returns mockSortType
+    }
+
     private val tagActionHandler = TagActionHandler(
         userRepository = mockUserRepository,
         connectivityInfoProvider = mockConnectivityInfoProvider,
+        getPreferredSortType = mockGetPreferredSortType,
     )
 
     val mockPreviousContent = PostListContent(
         category = All,
         posts = null,
         showDescription = false,
-        sortType = ByDateAddedNewestFirst,
+        sortType = mockSortType,
         searchParameters = SearchParameters(),
         shouldLoad = Loaded,
     )
@@ -154,7 +161,7 @@ internal class TagActionHandlerTest {
                         category = All,
                         posts = null,
                         showDescription = randomBoolean,
-                        sortType = ByDateAddedNewestFirst,
+                        sortType = mockSortType,
                         searchParameters = SearchParameters(tags = listOf(createTag())),
                         shouldLoad = ShouldLoadFirstPage,
                         isConnected = true,
@@ -184,7 +191,7 @@ internal class TagActionHandlerTest {
                     category = All,
                     posts = postList,
                     showDescription = randomBoolean,
-                    sortType = ByDateAddedNewestFirst,
+                    sortType = mockSortType,
                     searchParameters = SearchParameters(tags = listOf(createTag())),
                     shouldLoad = ShouldLoadFirstPage,
                     isConnected = true,

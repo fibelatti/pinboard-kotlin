@@ -8,6 +8,7 @@ import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
+import com.fibelatti.pinboard.features.user.domain.GetPreferredSortType
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
@@ -35,11 +36,17 @@ internal class NavigationActionHandlerTest {
     private val mockPostsRepository = mockk<PostsRepository>()
     private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider>()
 
+    private val mockSortType = mockk<SortType>()
+    private val mockGetPreferredSortType = mockk<GetPreferredSortType> {
+        every { this@mockk.invoke() } returns mockSortType
+    }
+
     private val navigationActionHandler = spyk(
         NavigationActionHandler(
             userRepository = mockUserRepository,
             postsRepository = mockPostsRepository,
             connectivityInfoProvider = mockConnectivityInfoProvider,
+            getPreferredSortType = mockGetPreferredSortType,
         ),
     )
 
@@ -47,7 +54,7 @@ internal class NavigationActionHandlerTest {
         category = All,
         posts = null,
         showDescription = false,
-        sortType = ByDateAddedNewestFirst,
+        sortType = mockSortType,
         searchParameters = SearchParameters(),
         shouldLoad = ShouldLoadFirstPage,
     )
@@ -126,7 +133,7 @@ internal class NavigationActionHandlerTest {
                     category = category,
                     posts = null,
                     showDescription = randomBoolean,
-                    sortType = ByDateAddedNewestFirst,
+                    sortType = mockSortType,
                     searchParameters = SearchParameters(),
                     shouldLoad = ShouldLoadFirstPage,
                     isConnected = false,
@@ -160,7 +167,7 @@ internal class NavigationActionHandlerTest {
                     category = category,
                     posts = postList,
                     showDescription = randomBoolean,
-                    sortType = ByDateAddedNewestFirst,
+                    sortType = mockSortType,
                     searchParameters = SearchParameters(),
                     shouldLoad = ShouldLoadFirstPage,
                     isConnected = false,

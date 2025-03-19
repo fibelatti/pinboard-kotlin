@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.user.domain
 
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
+import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
@@ -13,6 +14,7 @@ data class UserPreferences(
     val applyDynamicColors: Boolean,
     val disableScreenshots: Boolean,
     val preferredDateFormat: PreferredDateFormat,
+    val preferredSortType: SortType,
     val hiddenPostQuickOptions: Set<String>,
     val preferredDetailsView: PreferredDetailsView,
     val followRedirects: Boolean,

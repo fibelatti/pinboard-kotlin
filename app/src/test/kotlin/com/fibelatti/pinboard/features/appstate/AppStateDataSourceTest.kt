@@ -8,6 +8,7 @@ import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
+import com.fibelatti.pinboard.features.user.domain.GetPreferredSortType
 import com.fibelatti.pinboard.features.user.domain.UserCredentials
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
@@ -84,6 +85,11 @@ internal class AppStateDataSourceTest {
         coJustRun { disable(any()) }
     }
 
+    private val mockSortType = mockk<SortType>()
+    private val mockGetPreferredSortType = mockk<GetPreferredSortType> {
+        every { this@mockk.invoke() } returns mockSortType
+    }
+
     private val dispatcher = UnconfinedTestDispatcher()
 
     private val appStateDataSource by lazy {
@@ -96,10 +102,13 @@ internal class AppStateDataSourceTest {
             connectivityInfoProvider = mockConnectivityInfoProvider,
             appModeProvider = mockAppModeProvider,
             unauthorizedPluginProvider = mockUnauthorizedPluginProvider,
+            getPreferredSortType = mockGetPreferredSortType,
         )
     }
 
-    private val expectedInitialContent = createPostListContent()
+    private val expectedInitialContent = createPostListContent(
+        sortType = mockSortType,
+    )
     private val expectedInitialState = createAppState(
         content = expectedInitialContent,
     )
@@ -211,6 +220,7 @@ internal class AppStateDataSourceTest {
                 connectivityInfoProvider = mockConnectivityInfoProvider,
                 appModeProvider = mockAppModeProvider,
                 unauthorizedPluginProvider = mockUnauthorizedPluginProvider,
+                getPreferredSortType = mockGetPreferredSortType,
             )
 
             appStateDataSource.appState.test {

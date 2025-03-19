@@ -4,6 +4,7 @@ import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
@@ -59,6 +60,10 @@ class UserPreferencesViewModel @Inject constructor(
 
     fun savePreferredDateFormat(preferredDateFormat: PreferredDateFormat) {
         userRepository.preferredDateFormat = preferredDateFormat
+    }
+
+    fun savePreferredSortType(sortType: SortType) {
+        userRepository.preferredSortType = sortType
     }
 
     fun saveHiddenPostQuickOptions(hiddenPostQuickOptions: Set<String>) {

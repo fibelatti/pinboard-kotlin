@@ -5,6 +5,7 @@ import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.di.AppDispatchers
 import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
+import com.fibelatti.pinboard.features.user.domain.GetPreferredSortType
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -34,6 +35,7 @@ class AppStateDataSource @Inject constructor(
     private val connectivityInfoProvider: ConnectivityInfoProvider,
     private val appModeProvider: AppModeProvider,
     private val unauthorizedPluginProvider: UnauthorizedPluginProvider,
+    private val getPreferredSortType: GetPreferredSortType,
 ) : AppStateRepository {
 
     private val reducer: MutableSharedFlow<suspend (AppState) -> AppState> = MutableSharedFlow()
@@ -138,7 +140,7 @@ class AppStateDataSource @Inject constructor(
         category = All,
         posts = null,
         showDescription = userRepository.showDescriptionInLists,
-        sortType = ByDateAddedNewestFirst,
+        sortType = getPreferredSortType(),
         searchParameters = SearchParameters(),
         shouldLoad = ShouldLoadFirstPage,
         isConnected = connectivityInfoProvider.isConnected(),

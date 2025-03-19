@@ -1,12 +1,14 @@
 package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.pinboard.features.user.domain.GetPreferredSortType
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
 
 class TagActionHandler @Inject constructor(
     private val userRepository: UserRepository,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
+    private val getPreferredSortType: GetPreferredSortType,
 ) : ActionHandler<TagAction>() {
 
     override suspend fun runAction(action: TagAction, currentContent: Content): Content {
@@ -48,7 +50,7 @@ class TagActionHandler @Inject constructor(
                 // Use the current posts for a smoother transition until the tagged posts are loaded
                 posts = postListContent?.posts,
                 showDescription = userRepository.showDescriptionInLists,
-                sortType = ByDateAddedNewestFirst,
+                sortType = getPreferredSortType(),
                 searchParameters = SearchParameters(tags = listOf(action.tag)),
                 shouldLoad = ShouldLoadFirstPage,
                 isConnected = connectivityInfoProvider.isConnected(),

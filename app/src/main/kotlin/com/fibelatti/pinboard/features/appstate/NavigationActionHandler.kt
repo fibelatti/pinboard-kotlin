@@ -7,6 +7,7 @@ import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.user.domain.GetPreferredSortType
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
 import kotlinx.coroutines.NonCancellable
@@ -17,6 +18,7 @@ class NavigationActionHandler @Inject constructor(
     private val userRepository: UserRepository,
     private val postsRepository: PostsRepository,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
+    private val getPreferredSortType: GetPreferredSortType,
 ) : ActionHandler<NavigationAction>() {
 
     override suspend fun runAction(action: NavigationAction, currentContent: Content): Content {
@@ -55,7 +57,7 @@ class NavigationActionHandler @Inject constructor(
             // Use the current posts for a smoother transition until the category posts are loaded
             posts = (currentContent as? PostListContent)?.posts,
             showDescription = userRepository.showDescriptionInLists,
-            sortType = ByDateAddedNewestFirst,
+            sortType = getPreferredSortType(),
             searchParameters = SearchParameters(),
             shouldLoad = ShouldLoadFirstPage,
             isConnected = connectivityInfoProvider.isConnected(),

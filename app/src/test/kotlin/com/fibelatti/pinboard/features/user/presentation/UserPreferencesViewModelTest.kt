@@ -5,6 +5,7 @@ import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAGS
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
@@ -111,6 +112,18 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
 
         // THEN
         verify { mockUserRepository.preferredDateFormat = mockPreferredDateFormat }
+    }
+
+    @Test
+    fun `WHEN savePreferredSortType is called THEN repository is updated`() {
+        // GIVEN
+        val mockPreferredSortType = mockk<SortType>()
+
+        // WHEN
+        userPreferencesViewModel.savePreferredSortType(mockPreferredSortType)
+
+        // THEN
+        verify { mockUserRepository.preferredSortType = mockPreferredSortType }
     }
 
     @Test

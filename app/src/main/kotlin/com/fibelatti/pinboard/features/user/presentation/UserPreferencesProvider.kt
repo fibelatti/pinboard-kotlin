@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.user.presentation
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
+import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
@@ -19,6 +20,7 @@ class UserPreferencesProvider : PreviewParameterProvider<UserPreferences> {
                 applyDynamicColors = true,
                 disableScreenshots = true,
                 preferredDateFormat = PreferredDateFormat.YearMonthDayWithTime,
+                preferredSortType = ByDateAddedNewestFirst,
                 hiddenPostQuickOptions = emptySet(),
                 preferredDetailsView = PreferredDetailsView.Edit,
                 followRedirects = true,

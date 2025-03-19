@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.user.domain
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
+import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
@@ -28,6 +29,8 @@ interface UserRepository {
     var disableScreenshots: Boolean
 
     var preferredDateFormat: PreferredDateFormat
+
+    var preferredSortType: SortType
 
     var hiddenPostQuickOptions: Set<String>
 

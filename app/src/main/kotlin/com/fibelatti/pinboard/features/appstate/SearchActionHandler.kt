@@ -1,9 +1,12 @@
 package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.features.user.domain.GetPreferredSortType
 import javax.inject.Inject
 
-class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() {
+class SearchActionHandler @Inject constructor(
+    private val getPreferredSortType: GetPreferredSortType,
+) : ActionHandler<SearchAction>() {
 
     override suspend fun runAction(action: SearchAction, currentContent: Content): Content {
         return when (action) {
@@ -83,7 +86,7 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
         return currentContent.reduce<SearchContent> { searchContent ->
             searchContent.previousContent.copy(
                 category = All,
-                sortType = ByDateAddedNewestFirst,
+                sortType = getPreferredSortType(),
                 searchParameters = searchContent.searchParameters.copy(term = searchContent.searchParameters.term),
                 shouldLoad = ShouldLoadFirstPage,
             )
@@ -113,7 +116,7 @@ class SearchActionHandler @Inject constructor() : ActionHandler<SearchAction>() 
         return currentContent.reduce<SavedFiltersContent> { savedFiltersContent ->
             savedFiltersContent.previousContent.copy(
                 category = All,
-                sortType = ByDateAddedNewestFirst,
+                sortType = getPreferredSortType(),
                 searchParameters = SearchParameters(
                     term = action.savedFilter.searchTerm,
                     tags = action.savedFilter.tags,

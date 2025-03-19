@@ -6,7 +6,9 @@ import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAG_3
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAG_4
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_VALID
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
+import com.fibelatti.pinboard.features.user.domain.GetPreferredSortType
 import com.google.common.truth.Truth.assertThat
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Nested
@@ -14,7 +16,14 @@ import org.junit.jupiter.api.Test
 
 internal class SearchActionHandlerTest {
 
-    private val searchActionHandler = SearchActionHandler()
+    private val mockSortType = mockk<SortType>()
+    private val mockGetPreferredSortType = mockk<GetPreferredSortType> {
+        every { this@mockk.invoke() } returns mockSortType
+    }
+
+    private val searchActionHandler = SearchActionHandler(
+        getPreferredSortType = mockGetPreferredSortType,
+    )
 
     @Nested
     inner class RefreshSearchTagsTests {
@@ -336,7 +345,7 @@ internal class SearchActionHandlerTest {
                 category = All,
                 posts = null,
                 showDescription = false,
-                sortType = ByDateAddedNewestFirst,
+                sortType = mockSortType,
                 searchParameters = SearchParameters(),
                 shouldLoad = ShouldLoadFirstPage,
             )
@@ -354,7 +363,7 @@ internal class SearchActionHandlerTest {
                     category = All,
                     posts = null,
                     showDescription = false,
-                    sortType = ByDateAddedNewestFirst,
+                    sortType = mockSortType,
                     searchParameters = SearchParameters(term = SAMPLE_URL_VALID, tags = listOf(SAMPLE_TAG_1)),
                     shouldLoad = ShouldLoadFirstPage,
                 ),
@@ -369,7 +378,7 @@ internal class SearchActionHandlerTest {
                     category = mockk(),
                     posts = null,
                     showDescription = false,
-                    sortType = ByDateAddedNewestFirst,
+                    sortType = mockSortType,
                     searchParameters = SearchParameters(),
                     shouldLoad = ShouldLoadFirstPage,
                 )
@@ -387,7 +396,7 @@ internal class SearchActionHandlerTest {
                         category = All,
                         posts = null,
                         showDescription = false,
-                        sortType = ByDateAddedNewestFirst,
+                        sortType = mockSortType,
                         searchParameters = SearchParameters(term = SAMPLE_URL_VALID, tags = listOf(SAMPLE_TAG_1)),
                         shouldLoad = ShouldLoadFirstPage,
                     ),
@@ -417,7 +426,7 @@ internal class SearchActionHandlerTest {
                 category = All,
                 posts = null,
                 showDescription = false,
-                sortType = ByDateAddedNewestFirst,
+                sortType = mockSortType,
                 searchParameters = SearchParameters(term = SAMPLE_URL_VALID, tags = listOf(SAMPLE_TAG_1)),
                 shouldLoad = Loaded,
             )
@@ -431,7 +440,7 @@ internal class SearchActionHandlerTest {
                     category = All,
                     posts = null,
                     showDescription = false,
-                    sortType = ByDateAddedNewestFirst,
+                    sortType = mockSortType,
                     searchParameters = SearchParameters(),
                     shouldLoad = ShouldLoadFirstPage,
                 ),
@@ -447,7 +456,7 @@ internal class SearchActionHandlerTest {
                     category = All,
                     posts = null,
                     showDescription = false,
-                    sortType = ByDateAddedNewestFirst,
+                    sortType = mockSortType,
                     searchParameters = SearchParameters(term = SAMPLE_URL_VALID, tags = listOf(SAMPLE_TAG_1)),
                     shouldLoad = Loaded,
                 ),
@@ -463,7 +472,7 @@ internal class SearchActionHandlerTest {
                         category = All,
                         posts = null,
                         showDescription = false,
-                        sortType = ByDateAddedNewestFirst,
+                        sortType = mockSortType,
                         searchParameters = SearchParameters(),
                         shouldLoad = ShouldLoadFirstPage,
                     ),
@@ -478,7 +487,7 @@ internal class SearchActionHandlerTest {
                 category = All,
                 posts = null,
                 showDescription = false,
-                sortType = ByDateAddedNewestFirst,
+                sortType = mockSortType,
                 searchParameters = SearchParameters(term = SAMPLE_URL_VALID, tags = listOf(SAMPLE_TAG_1)),
                 shouldLoad = Loaded,
             )
@@ -498,7 +507,7 @@ internal class SearchActionHandlerTest {
                     category = All,
                     posts = null,
                     showDescription = false,
-                    sortType = ByDateAddedNewestFirst,
+                    sortType = mockSortType,
                     searchParameters = SearchParameters(),
                     shouldLoad = ShouldLoadFirstPage,
                 ),
@@ -528,7 +537,7 @@ internal class SearchActionHandlerTest {
                 category = All,
                 posts = null,
                 showDescription = false,
-                sortType = ByDateAddedNewestFirst,
+                sortType = mockSortType,
                 searchParameters = SearchParameters(term = SAMPLE_URL_VALID, tags = listOf(SAMPLE_TAG_1)),
                 shouldLoad = ShouldLoadFirstPage,
             )
@@ -548,7 +557,7 @@ internal class SearchActionHandlerTest {
                     category = All,
                     posts = null,
                     showDescription = false,
-                    sortType = ByDateAddedNewestFirst,
+                    sortType = mockSortType,
                     searchParameters = SearchParameters(term = SAMPLE_URL_VALID, tags = listOf(SAMPLE_TAG_1)),
                     shouldLoad = ShouldLoadFirstPage,
                 ),

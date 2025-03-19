@@ -5,6 +5,13 @@ import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
+import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
+import com.fibelatti.pinboard.features.appstate.ByDateAddedOldestFirst
+import com.fibelatti.pinboard.features.appstate.ByDateModifiedNewestFirst
+import com.fibelatti.pinboard.features.appstate.ByDateModifiedOldestFirst
+import com.fibelatti.pinboard.features.appstate.ByTitleAlphabetical
+import com.fibelatti.pinboard.features.appstate.ByTitleAlphabeticalReverse
+import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
@@ -34,6 +41,7 @@ internal class UserDataSourceTest {
         every { appearance } returns ""
         every { applyDynamicColors } returns false
         every { preferredDateFormat } returns ""
+        every { preferredSortType } returns ""
         every { preferredDetailsView } returns ""
         every { followRedirects } returns true
         every { autoFillDescription } returns false
@@ -50,6 +58,7 @@ internal class UserDataSourceTest {
         applyDynamicColors = false,
         disableScreenshots = false,
         preferredDateFormat = PreferredDateFormat.DayMonthYearWithTime,
+        preferredSortType = ByDateAddedNewestFirst,
         hiddenPostQuickOptions = emptySet(),
         preferredDetailsView = PreferredDetailsView.InAppBrowser(markAsReadOnOpen = false),
         followRedirects = true,
@@ -318,6 +327,86 @@ internal class UserDataSourceTest {
 
                 // THEN
                 verify { mockUserSharedPreferences.preferredDateFormat = "random-value" }
+            }
+        }
+
+        @Nested
+        inner class PreferredSortTypeTests {
+
+            @Test
+            fun `GIVEN the shared preferences has ByDateAddedNewestFirst value WHEN the getter is called THEN ByDateAddedNewestFirst is returned`() {
+                // GIVEN
+                every { mockUserSharedPreferences.preferredSortType } returns ByDateAddedNewestFirst.value
+
+                // THEN
+                assertThat(userDataSource.preferredSortType).isEqualTo(ByDateAddedNewestFirst)
+            }
+
+            @Test
+            fun `GIVEN the shared preferences has ByDateAddedOldestFirst value WHEN the getter is called THEN ByDateAddedOldestFirst is returned`() {
+                // GIVEN
+                every { mockUserSharedPreferences.preferredSortType } returns ByDateAddedOldestFirst.value
+
+                // THEN
+                assertThat(userDataSource.preferredSortType).isEqualTo(ByDateAddedOldestFirst)
+            }
+
+            @Test
+            fun `GIVEN the shared preferences has ByDateModifiedNewestFirst value WHEN the getter is called THEN ByDateModifiedNewestFirst is returned`() {
+                // GIVEN
+                every { mockUserSharedPreferences.preferredSortType } returns ByDateModifiedNewestFirst.value
+
+                // THEN
+                assertThat(userDataSource.preferredSortType).isEqualTo(ByDateModifiedNewestFirst)
+            }
+
+            @Test
+            fun `GIVEN the shared preferences has ByDateModifiedOldestFirst value WHEN the getter is called THEN ByDateModifiedOldestFirst is returned`() {
+                // GIVEN
+                every { mockUserSharedPreferences.preferredSortType } returns ByDateModifiedOldestFirst.value
+
+                // THEN
+                assertThat(userDataSource.preferredSortType).isEqualTo(ByDateModifiedOldestFirst)
+            }
+
+            @Test
+            fun `GIVEN the shared preferences has ByTitleAlphabetical value WHEN the getter is called THEN ByTitleAlphabetical is returned`() {
+                // GIVEN
+                every { mockUserSharedPreferences.preferredSortType } returns ByTitleAlphabetical.value
+
+                // THEN
+                assertThat(userDataSource.preferredSortType).isEqualTo(ByTitleAlphabetical)
+            }
+
+            @Test
+            fun `GIVEN the shared preferences has ByTitleAlphabeticalReverse value WHEN the getter is called THEN ByTitleAlphabeticalReverse is returned`() {
+                // GIVEN
+                every { mockUserSharedPreferences.preferredSortType } returns ByTitleAlphabeticalReverse.value
+
+                // THEN
+                assertThat(userDataSource.preferredSortType).isEqualTo(ByTitleAlphabeticalReverse)
+            }
+
+            @Test
+            fun `GIVEN the shared preferences has an empty value WHEN the getter is called THEN ByDateAddedNewestFirst is returned`() {
+                // GIVEN
+                every { mockUserSharedPreferences.preferredSortType } returns ""
+
+                // THEN
+                assertThat(userDataSource.preferredSortType).isEqualTo(ByDateAddedNewestFirst)
+            }
+
+            @Test
+            fun `WHEN setter is called THEN the shared preferences is updated`() {
+                // GIVEN
+                val mockPreferredSortType = mockk<SortType>()
+                every { mockPreferredSortType.value } returns "random-value"
+
+                // WHEN
+                userDataSource.preferredSortType = mockPreferredSortType
+
+                // THEN
+                verify { mockUserSharedPreferences.preferredSortType = "random-value" }
             }
         }
 
