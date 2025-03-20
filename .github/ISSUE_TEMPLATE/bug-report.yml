@@ -24,11 +24,12 @@ body:
   - type: dropdown
     attributes:
       label: Service
-      description: Which service are you using?
+      description: Which service are you using? (You can select more than 1)
       multiple: true
       options:
         - Pinboard
         - Linkding
+        - Other
     validations:
       required: true
   - type: markdown
