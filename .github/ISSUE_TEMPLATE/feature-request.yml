@@ -29,7 +29,7 @@ body:
       options:
         - Pinboard
         - Linkding
-        - None
+        - Other
     validations:
       required: true
   - type: textarea
