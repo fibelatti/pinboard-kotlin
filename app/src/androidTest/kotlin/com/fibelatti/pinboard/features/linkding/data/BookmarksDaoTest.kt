@@ -74,6 +74,55 @@ class BookmarksDaoTest : BaseDbTest() {
         websiteDescription = "Website description term",
     )
 
+    private val bookmarkChineseTitle = createBookmarkLocal(
+        id = randomHash(),
+        title = "这个Bug还没有解决",
+    )
+    private val bookmarkChineseDescription = createBookmarkLocal(
+        id = randomHash(),
+        description = "这个Bug还没有解决",
+    )
+    private val bookmarkChineseNotes = createBookmarkLocal(
+        id = randomHash(),
+        notes = "这个Bug还没有解决",
+    )
+    private val bookmarkChineseWebsiteTitle = createBookmarkLocal(
+        id = randomHash(),
+        websiteTitle = "这个Bug还没有解决",
+    )
+    private val bookmarkChineseWebsiteDescription = createBookmarkLocal(
+        id = randomHash(),
+        websiteDescription = "这个Bug还没有解决",
+    )
+    private val bookmarkChineseTag = createBookmarkLocal(
+        id = randomHash(),
+        tagNames = "主题",
+    )
+    private val bookmarkCyrillicTitle = createBookmarkLocal(
+        id = randomHash(),
+        title = "Эта ошибка еще не устранена.",
+    )
+    private val bookmarkCyrillicDescription = createBookmarkLocal(
+        id = randomHash(),
+        description = "Эта ошибка еще не устранена.",
+    )
+    private val bookmarkCyrillicNotes = createBookmarkLocal(
+        id = randomHash(),
+        notes = "Эта ошибка еще не устранена.",
+    )
+    private val bookmarkCyrillicWebsiteTitle = createBookmarkLocal(
+        id = randomHash(),
+        websiteTitle = "Эта ошибка еще не устранена.",
+    )
+    private val bookmarkCyrillicWebsiteDescription = createBookmarkLocal(
+        id = randomHash(),
+        websiteDescription = "Эта ошибка еще не устранена.",
+    )
+    private val bookmarkCyrillicTag = createBookmarkLocal(
+        id = randomHash(),
+        tagNames = "Тема",
+    )
+
     private val bookmarkWithoutTags = createBookmarkLocal(id = randomHash(), tagNames = "")
     private val bookmarkWithOneTag = createBookmarkLocal(id = randomHash(), tagNames = SAMPLE_TAG_VALUE_1)
     private val bookmarkWithTwoTags = createBookmarkLocal(
@@ -107,16 +156,31 @@ class BookmarksDaoTest : BaseDbTest() {
         unread = false,
     )
 
-    private val bookmarkFirst =
-        createBookmarkLocal(id = randomHash(), title = "A title", dateAdded = SAMPLE_DATE_TIME_1)
-    private val bookmarkSecond =
-        createBookmarkLocal(id = randomHash(), title = "B title", dateAdded = SAMPLE_DATE_TIME_2)
-    private val bookmarkThird =
-        createBookmarkLocal(id = randomHash(), title = "C title", dateAdded = SAMPLE_DATE_TIME_3)
-    private val bookmarkFourth =
-        createBookmarkLocal(id = randomHash(), title = "D title", dateAdded = SAMPLE_DATE_TIME_4)
-    private val bookmarkFifth =
-        createBookmarkLocal(id = randomHash(), title = "E title", dateAdded = SAMPLE_DATE_TIME_5)
+    private val bookmarkFirst = createBookmarkLocal(
+        id = randomHash(),
+        title = "A title",
+        dateAdded = SAMPLE_DATE_TIME_1,
+    )
+    private val bookmarkSecond = createBookmarkLocal(
+        id = randomHash(),
+        title = "B title",
+        dateAdded = SAMPLE_DATE_TIME_2,
+    )
+    private val bookmarkThird = createBookmarkLocal(
+        id = randomHash(),
+        title = "C title",
+        dateAdded = SAMPLE_DATE_TIME_3,
+    )
+    private val bookmarkFourth = createBookmarkLocal(
+        id = randomHash(),
+        title = "D title",
+        dateAdded = SAMPLE_DATE_TIME_4,
+    )
+    private val bookmarkFifth = createBookmarkLocal(
+        id = randomHash(),
+        title = "E title",
+        dateAdded = SAMPLE_DATE_TIME_5,
+    )
     // endregion
 
     private val bookmarksDao get() = appDatabase.linkdingBookmarksDao()
@@ -124,7 +188,7 @@ class BookmarksDaoTest : BaseDbTest() {
     private fun randomHash(): String = UUID.randomUUID().toString()
 
     @Test
-    fun whenDeleteIsCalledThenAllDataIsDeleted() = runTest {
+    fun whenDeleteIsCalled_ThenAllDataIsDeleted() = runTest {
         // GIVEN
         val list = listOf(createBookmarkLocal(), createBookmarkLocal(id = "other-$SAMPLE_HASH"))
         bookmarksDao.saveBookmarks(list)
@@ -138,7 +202,7 @@ class BookmarksDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun whenDeleteAllSyncedBookmarksIsCalledThenOnlySyncedBookmarksAreDeleted() = runTest {
+    fun whenDeleteAllSyncedBookmarksIsCalled_ThenOnlySyncedBookmarksAreDeleted() = runTest {
         // GIVEN
         val list = listOf(
             createBookmarkLocal(),
@@ -164,7 +228,7 @@ class BookmarksDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenEntryAlreadyExistsInDbWhenSaveBookmarksIsCalledThenReplaceIsUsed() = runTest {
+    fun givenEntryAlreadyExistsInDb_WhenSaveBookmarksIsCalled_ThenReplaceIsUsed() = runTest {
         // GIVEN
         val original = createBookmarkLocal(unread = true)
         val modified = createBookmarkLocal(unread = false)
@@ -184,7 +248,7 @@ class BookmarksDaoTest : BaseDbTest() {
 
     // region getBookmarkCount
     @Test
-    fun givenDbHasNoDataWhenGetBookmarkCountIsCalledThenZeroIsReturned() = runTest {
+    fun givenDbHasNoData_WhenGetBookmarkCountIsCalled_ThenZeroIsReturned() = runTest {
         // WHEN
         val result = bookmarksDao.getBookmarkCount()
 
@@ -193,7 +257,7 @@ class BookmarksDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenDbHasDataWhenGetBookmarkCountIsCalledThenCountIsReturned() = runTest {
+    fun givenDbHasData_WhenGetBookmarkCountIsCalled_ThenCountIsReturned() = runTest {
         // GIVEN
         val list = listOf(createBookmarkLocal())
         bookmarksDao.saveBookmarks(list)
@@ -206,7 +270,7 @@ class BookmarksDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenDbHasDataAndTermFilterIsPassedWhenGetBookmarkCountIsCalledThenCountOfBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndTermFilterIsPassed_WhenGetBookmarkCountIsCalled_ThenCountOfBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -228,7 +292,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndTermFilterIsPassedWithMoreThanOneWordWhenGetBookmarkCountIsCalledThenCountOfBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndTermFilterIsPassedWithMoreThanOneWord_WhenGetBookmarkCountIsCalled_ThenCountOfBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -252,7 +316,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndTermFilterIsPassedAndItContainsAHyphenWhenGetBookmarkCountIsCalledThenCountOfBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndTermFilterIsPassed_AndItContainsAHyphen_WhenGetBookmarkCountIsCalled_ThenCountOfBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -274,7 +338,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndTag1FilterIsPassedWhenGetBookmarkCountIsCalledThenCountOfBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndTag1FilterIsPassed_WhenGetBookmarkCountIsCalled_ThenCountOfBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -293,7 +357,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndTag1FilterIsPassedAndItContainsAHyphenWhenGetBookmarkCountIsCalledThenCountOfBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndTag1FilterIsPassed_AndItContainsAHyphen_WhenGetBookmarkCountIsCalled_ThenCountOfBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -312,7 +376,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndTag1AndTag2FilterIsPassedWhenGetBookmarkCountIsCalledThenCountOfBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndTag1_AndTag2FilterIsPassed_WhenGetBookmarkCountIsCalled_ThenCountOfBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -334,7 +398,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndTag1AndTag2AndTag3FilterIsPassedWhenGetBookmarkCountIsCalledThenCountOfBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndTag1_AndTag2_AndTag3FilterIsPassed_WhenGetBookmarkCountIsCalled_ThenCountOfBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -357,7 +421,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndUntaggedOnlyFilterIsPassedWhenGetBookmarkCountIsCalledThenCountOfBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndUntaggedOnlyFilterIsPassed_WhenGetBookmarkCountIsCalled_ThenCountOfBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -376,7 +440,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndIgnoreVisibilityFilterIsPassedWhenGetBookmarkCountIsCalledThenCountOfBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndIgnoreVisibilityFilterIsPassed_WhenGetBookmarkCountIsCalled_ThenCountOfBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -393,7 +457,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndPublicBookmarksOnlyFilterIsPassedWhenGetBookmarkCountIsCalledThenCountOfBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndPublicBookmarksOnlyFilterIsPassed_WhenGetBookmarkCountIsCalled_ThenCountOfBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -410,7 +474,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndPrivateBookmarksOnlyFilterIsPassedWhenGetBookmarkCountIsCalledThenCountOfBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndPrivateBookmarksOnlyFilterIsPassed_WhenGetBookmarkCountIsCalled_ThenCountOfBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -427,7 +491,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndReadLaterOnlyFilterIsPassedWhenGetBookmarkCountIsCalledThenCountOfBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndReadLaterOnlyFilterIsPassed_WhenGetBookmarkCountIsCalled_ThenCountOfBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -444,61 +508,175 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndAndLimitIsLowerThenDataSizeWhenGetBookmarkCountIsCalledThenTheLimitSizeIsReturned() = runTest {
-        // GIVEN
-        val list = listOf(
-            bookmarkWithoutTerm,
-            bookmarkWithTermInTheUrl,
-            bookmarkWithTermInTheTitle,
-            bookmarkWithTermInTheDescription,
-            bookmarkWithoutTags,
-            bookmarkWithOneTag,
-            bookmarkWithTwoTags,
-            bookmarkWithThreeTags,
-            bookmarkPublic,
-            bookmarkPrivate,
-            bookmarkReadLater,
-            bookmarkNotReadLater,
-        )
-        bookmarksDao.saveBookmarks(list)
+    fun givenDbHasData_AndLimitIsLowerThanDataSize_WhenGetBookmarkCountIsCalled_ThenTheLimitSizeIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                bookmarkWithoutTerm,
+                bookmarkWithTermInTheUrl,
+                bookmarkWithTermInTheTitle,
+                bookmarkWithTermInTheDescription,
+                bookmarkWithoutTags,
+                bookmarkWithOneTag,
+                bookmarkWithTwoTags,
+                bookmarkWithThreeTags,
+                bookmarkPublic,
+                bookmarkPrivate,
+                bookmarkReadLater,
+                bookmarkNotReadLater,
+            )
+            bookmarksDao.saveBookmarks(list)
 
-        // WHEN
-        val result = bookmarksDao.getBookmarkCount(limit = list.size - 1)
+            // WHEN
+            val result = bookmarksDao.getBookmarkCount(limit = list.size - 1)
 
-        // THEN
-        assertThat(result).isEqualTo(list.size - 1)
-    }
+            // THEN
+            assertThat(result).isEqualTo(list.size - 1)
+        }
 
     @Test
-    fun givenDbHasDataAndAndLimitIsHigherThenDataSizeWhenGetBookmarkCountIsCalledThenTheDataSizeIsReturned() = runTest {
-        // GIVEN
-        val list = listOf(
-            bookmarkWithoutTerm,
-            bookmarkWithTermInTheUrl,
-            bookmarkWithTermInTheTitle,
-            bookmarkWithTermInTheDescription,
-            bookmarkWithoutTags,
-            bookmarkWithOneTag,
-            bookmarkWithTwoTags,
-            bookmarkWithThreeTags,
-            bookmarkPublic,
-            bookmarkPrivate,
-            bookmarkReadLater,
-            bookmarkNotReadLater,
-        )
-        bookmarksDao.saveBookmarks(list)
+    fun givenDbHasData_AndLimitIsHigherThanDataSize_WhenGetBookmarkCountIsCalled_ThenTheDataSizeIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                bookmarkWithoutTerm,
+                bookmarkWithTermInTheUrl,
+                bookmarkWithTermInTheTitle,
+                bookmarkWithTermInTheDescription,
+                bookmarkWithoutTags,
+                bookmarkWithOneTag,
+                bookmarkWithTwoTags,
+                bookmarkWithThreeTags,
+                bookmarkPublic,
+                bookmarkPrivate,
+                bookmarkReadLater,
+                bookmarkNotReadLater,
+            )
+            bookmarksDao.saveBookmarks(list)
 
-        // WHEN
-        val result = bookmarksDao.getBookmarkCount(limit = list.size + 1)
+            // WHEN
+            val result = bookmarksDao.getBookmarkCount(limit = list.size + 1)
 
-        // THEN
-        assertThat(result).isEqualTo(list.size)
-    }
+            // THEN
+            assertThat(result).isEqualTo(list.size)
+        }
+
+    @Test
+    fun givenDbHasData_AndTermFilterContainsChineseChars_WhenGetPostCountIsCalled_ThenCountOfPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                bookmarkWithoutTerm,
+                bookmarkChineseTitle,
+                bookmarkChineseDescription,
+                bookmarkChineseNotes,
+                bookmarkChineseWebsiteTitle,
+                bookmarkChineseWebsiteDescription,
+                bookmarkChineseTag,
+                bookmarkCyrillicTitle,
+                bookmarkCyrillicDescription,
+                bookmarkCyrillicNotes,
+                bookmarkCyrillicWebsiteTitle,
+                bookmarkCyrillicWebsiteDescription,
+                bookmarkCyrillicTag,
+            )
+            bookmarksDao.saveBookmarks(list)
+
+            // WHEN
+            val result = bookmarksDao.getBookmarkCountNoFts(term = "还没")
+
+            // THEN
+            assertThat(result).isEqualTo(5)
+        }
+
+    @Test
+    fun givenDbHasData_AndTagFilterContainsChineseChars_WhenGetPostCountIsCalled_ThenCountOfPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                bookmarkWithoutTerm,
+                bookmarkChineseTitle,
+                bookmarkChineseDescription,
+                bookmarkChineseNotes,
+                bookmarkChineseWebsiteTitle,
+                bookmarkChineseWebsiteDescription,
+                bookmarkChineseTag,
+                bookmarkCyrillicTitle,
+                bookmarkCyrillicDescription,
+                bookmarkCyrillicNotes,
+                bookmarkCyrillicWebsiteTitle,
+                bookmarkCyrillicWebsiteDescription,
+                bookmarkCyrillicTag,
+            )
+            bookmarksDao.saveBookmarks(list)
+
+            // WHEN
+            val result = bookmarksDao.getBookmarkCountNoFts(tag1 = "题")
+
+            // THEN
+            assertThat(result).isEqualTo(1)
+        }
+
+    @Test
+    fun givenDbHasData_AndTermFilterContainsCyrillicChars_WhenGetPostCountIsCalled_ThenCountOfPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                bookmarkWithoutTerm,
+                bookmarkChineseTitle,
+                bookmarkChineseDescription,
+                bookmarkChineseNotes,
+                bookmarkChineseWebsiteTitle,
+                bookmarkChineseWebsiteDescription,
+                bookmarkChineseTag,
+                bookmarkCyrillicTitle,
+                bookmarkCyrillicDescription,
+                bookmarkCyrillicNotes,
+                bookmarkCyrillicWebsiteTitle,
+                bookmarkCyrillicWebsiteDescription,
+                bookmarkCyrillicTag,
+            )
+            bookmarksDao.saveBookmarks(list)
+
+            // WHEN
+            val result = bookmarksDao.getBookmarkCountNoFts(term = "ошибка")
+
+            // THEN
+            assertThat(result).isEqualTo(5)
+        }
+
+    @Test
+    fun givenDbHasData_AndTagFilterContainsCyrillicChars_WhenGetPostCountIsCalled_ThenCountOfPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                bookmarkWithoutTerm,
+                bookmarkChineseTitle,
+                bookmarkChineseDescription,
+                bookmarkChineseNotes,
+                bookmarkChineseWebsiteTitle,
+                bookmarkChineseWebsiteDescription,
+                bookmarkChineseTag,
+                bookmarkCyrillicTitle,
+                bookmarkCyrillicDescription,
+                bookmarkCyrillicNotes,
+                bookmarkCyrillicWebsiteTitle,
+                bookmarkCyrillicWebsiteDescription,
+                bookmarkCyrillicTag,
+            )
+            bookmarksDao.saveBookmarks(list)
+
+            // WHEN
+            val result = bookmarksDao.getBookmarkCountNoFts(tag1 = "Те")
+
+            // THEN
+            assertThat(result).isEqualTo(1)
+        }
     // endregion
 
     // region getAllBookmarks
     @Test
-    fun givenDbHasNoDataWhenGetAllBookmarksIsCalledThenEmptyListIsReturned() = runTest {
+    fun givenDbHasNoData_WhenGetAllBookmarksIsCalled_ThenEmptyListIsReturned() = runTest {
         // WHEN
         val result = bookmarksDao.getAllBookmarks()
 
@@ -507,7 +685,7 @@ class BookmarksDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenDbHasDataWhenGetAllBookmarksIsCalledThenListIsReturned() = runTest {
+    fun givenDbHasData_WhenGetAllBookmarksIsCalled_ThenListIsReturned() = runTest {
         // GIVEN
         val list = listOf(createBookmarkLocal())
         bookmarksDao.saveBookmarks(list)
@@ -520,7 +698,7 @@ class BookmarksDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenDbHasDataAndSortTypeIs0WhenGetAllBookmarksIsCalledThenBookmarksAreReturnedOrderByTimeDesc() = runTest {
+    fun givenDbHasData_AndSortTypeIs0_WhenGetAllBookmarksIsCalled_ThenBookmarksAreReturnedOrderByTimeDesc() = runTest {
         // GIVEN
         val list = listOf(
             bookmarkFirst,
@@ -547,7 +725,7 @@ class BookmarksDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenDbHasDataAndSortTypeIs1WhenGetAllBookmarksIsCalledThenBookmarksAreReturnedOrderByTimeAsc() = runTest {
+    fun givenDbHasData_AndSortTypeIs1_WhenGetAllBookmarksIsCalled_ThenBookmarksAreReturnedOrderByTimeAsc() = runTest {
         // GIVEN
         val list = listOf(
             bookmarkFirst,
@@ -574,7 +752,7 @@ class BookmarksDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenDbHasDataAndSortTypeIs2WhenGetAllBookmarksIsCalledThenBookmarksAreReturnedOrderByTitleAsc() = runTest {
+    fun givenDbHasData_AndSortTypeIs2_WhenGetAllBookmarksIsCalled_ThenBookmarksAreReturnedOrderByTitleAsc() = runTest {
         // GIVEN
         val list = listOf(
             bookmarkFirst,
@@ -601,7 +779,7 @@ class BookmarksDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenDbHasDataAndSortTypeIs3WhenGetAllBookmarksIsCalledThenBookmarksAreReturnedOrderByTitleDesc() = runTest {
+    fun givenDbHasData_AndSortTypeIs3_WhenGetAllBookmarksIsCalled_ThenBookmarksAreReturnedOrderByTitleDesc() = runTest {
         // GIVEN
         val list = listOf(
             bookmarkFirst,
@@ -628,7 +806,7 @@ class BookmarksDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun givenDbHasDataAndTermFilterIsPassedWithMoreThanOneWordWhenGetAllBookmarksIsCalledThenBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndTermFilterIsPassedWithMoreThanOneWord_WhenGetAllBookmarksIsCalled_ThenBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -652,7 +830,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndTermFilterIsPassedWhenGetAllBookmarksIsCalledThenBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndTermFilterIsPassed_WhenGetAllBookmarksIsCalled_ThenBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -683,7 +861,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndTermFilterIsPassedAndItContainsAHyphenWhenGetAllBookmarksIsCalledThenBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndTermFilterIsPassed_AndItContainsAHyphen_WhenGetAllBookmarksIsCalled_ThenBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -705,7 +883,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndTag1FilterIsPassedWhenGetAllBookmarksIsCalledThenBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndTag1FilterIsPassed_WhenGetAllBookmarksIsCalled_ThenBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -724,7 +902,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndTag1FilterIsPassedAndItContainsAHyphenWhenGetAllBookmarksIsCalledThenBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndTag1FilterIsPassed_AndItContainsAHyphen_WhenGetAllBookmarksIsCalled_ThenBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -743,7 +921,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndTag1AndTag2FilterIsPassedWhenGetAllBookmarksIsCalledThenBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndTag1_AndTag2FilterIsPassed_WhenGetAllBookmarksIsCalled_ThenBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -765,7 +943,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndTag1AndTag2AndTag3FilterIsPassedWhenGetAllBookmarksIsCalledThenBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndTag1_AndTag2_AndTag3FilterIsPassed_WhenGetAllBookmarksIsCalled_ThenBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -788,7 +966,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndUntaggedOnlyFilterIsPassedWhenGetAllBookmarksIsCalledThenBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndUntaggedOnlyFilterIsPassed_WhenGetAllBookmarksIsCalled_ThenBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -807,7 +985,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndIgnoreVisibilityFilterIsPassedWhenGetAllBookmarksIsCalledThenBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndIgnoreVisibilityFilterIsPassed_WhenGetAllBookmarksIsCalled_ThenBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -824,7 +1002,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndPublicBookmarksOnlyFilterIsPassedWhenGetAllBookmarksIsCalledThenBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndPublicBookmarksOnlyFilterIsPassed_WhenGetAllBookmarksIsCalled_ThenBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -841,7 +1019,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndPrivateBookmarksOnlyFilterIsPassedWhenGetAllBookmarksIsCalledThenBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndPrivateBookmarksOnlyFilterIsPassed_WhenGetAllBookmarksIsCalled_ThenBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -858,7 +1036,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndReadLaterOnlyFilterIsPassedWhenGetAllBookmarksIsCalledThenBookmarksThatMatchTheFilterIsReturned() =
+    fun givenDbHasData_AndReadLaterOnlyFilterIsPassed_WhenGetAllBookmarksIsCalled_ThenBookmarksThatMatchTheFilterIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -875,30 +1053,10 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndAndLimitIsLowerThenDataSizeWhenGetAllBookmarksIsCalledThenTheLimitSizeIsReturned() = runTest {
-        // GIVEN
-        val list = listOf(
-            bookmarkWithoutTerm,
-            bookmarkWithTermInTheUrl,
-            bookmarkWithTermInTheTitle,
-            bookmarkWithTermInTheDescription,
-            bookmarkWithoutTags,
-            bookmarkWithOneTag,
-            bookmarkWithTwoTags,
-            bookmarkWithThreeTags,
-            bookmarkPublic,
-            bookmarkPrivate,
-            bookmarkReadLater,
-            bookmarkNotReadLater,
-        )
-        bookmarksDao.saveBookmarks(list)
-
-        // WHEN
-        val result = bookmarksDao.getAllBookmarks(limit = list.size - 1)
-
-        // THEN
-        assertThat(result).isEqualTo(
-            listOf(
+    fun givenDbHasData_AndLimitIsLowerThanDataSize_WhenGetAllBookmarksIsCalled_ThenTheLimitSizeIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
                 bookmarkWithoutTerm,
                 bookmarkWithTermInTheUrl,
                 bookmarkWithTermInTheTitle,
@@ -910,38 +1068,60 @@ class BookmarksDaoTest : BaseDbTest() {
                 bookmarkPublic,
                 bookmarkPrivate,
                 bookmarkReadLater,
-            ),
-        )
-    }
+                bookmarkNotReadLater,
+            )
+            bookmarksDao.saveBookmarks(list)
+
+            // WHEN
+            val result = bookmarksDao.getAllBookmarks(limit = list.size - 1)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                listOf(
+                    bookmarkWithoutTerm,
+                    bookmarkWithTermInTheUrl,
+                    bookmarkWithTermInTheTitle,
+                    bookmarkWithTermInTheDescription,
+                    bookmarkWithoutTags,
+                    bookmarkWithOneTag,
+                    bookmarkWithTwoTags,
+                    bookmarkWithThreeTags,
+                    bookmarkPublic,
+                    bookmarkPrivate,
+                    bookmarkReadLater,
+                ),
+            )
+        }
 
     @Test
-    fun givenDbHasDataAndAndLimitIsHigherThenDataSizeWhenGetAllBookmarksIsCalledThenTheDataSizeIsReturned() = runTest {
-        // GIVEN
-        val list = listOf(
-            bookmarkWithoutTerm,
-            bookmarkWithTermInTheUrl,
-            bookmarkWithTermInTheTitle,
-            bookmarkWithTermInTheDescription,
-            bookmarkWithoutTags,
-            bookmarkWithOneTag,
-            bookmarkWithTwoTags,
-            bookmarkWithThreeTags,
-            bookmarkPublic,
-            bookmarkPrivate,
-            bookmarkReadLater,
-            bookmarkNotReadLater,
-        )
-        bookmarksDao.saveBookmarks(list)
+    fun givenDbHasData_AndLimitIsHigherThanDataSize_WhenGetAllBookmarksIsCalled_ThenTheDataSizeIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                bookmarkWithoutTerm,
+                bookmarkWithTermInTheUrl,
+                bookmarkWithTermInTheTitle,
+                bookmarkWithTermInTheDescription,
+                bookmarkWithoutTags,
+                bookmarkWithOneTag,
+                bookmarkWithTwoTags,
+                bookmarkWithThreeTags,
+                bookmarkPublic,
+                bookmarkPrivate,
+                bookmarkReadLater,
+                bookmarkNotReadLater,
+            )
+            bookmarksDao.saveBookmarks(list)
 
-        // WHEN
-        val result = bookmarksDao.getAllBookmarks(limit = list.size + 1)
+            // WHEN
+            val result = bookmarksDao.getAllBookmarks(limit = list.size + 1)
 
-        // THEN
-        assertThat(result).isEqualTo(list)
-    }
+            // THEN
+            assertThat(result).isEqualTo(list)
+        }
 
     @Test
-    fun givenDbHasDataAndAndOffsetIsLowerThenDataSizeWhenGetAllBookmarksIsCalledThenTheRemainingDataIsReturned() =
+    fun givenDbHasData_AndOffsetIsLowerThanDataSize_WhenGetAllBookmarksIsCalled_ThenTheRemainingDataIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -968,7 +1148,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun givenDbHasDataAndAndOffsetIsHigherThenDataSizeWhenGetAllBookmarksIsCalledThenNoDataIsReturned() = runTest {
+    fun givenDbHasData_AndOffsetIsHigherThanDataSize_WhenGetAllBookmarksIsCalled_ThenNoDataIsReturned() = runTest {
         // GIVEN
         val list = listOf(
             bookmarkWithoutTerm,
@@ -992,10 +1172,134 @@ class BookmarksDaoTest : BaseDbTest() {
         // THEN
         assertThat(result).isEmpty()
     }
+
+    @Test
+    fun givenDbHasData_AndTermFilterContainsChineseChars_WhenGetAllPostsIsCalled__ThenCountOfPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                bookmarkWithoutTerm,
+                bookmarkChineseTitle,
+                bookmarkChineseDescription,
+                bookmarkChineseNotes,
+                bookmarkChineseWebsiteTitle,
+                bookmarkChineseWebsiteDescription,
+                bookmarkChineseTag,
+                bookmarkCyrillicTitle,
+                bookmarkCyrillicDescription,
+                bookmarkCyrillicNotes,
+                bookmarkCyrillicWebsiteTitle,
+                bookmarkCyrillicWebsiteDescription,
+                bookmarkCyrillicTag,
+            )
+            bookmarksDao.saveBookmarks(list)
+
+            // WHEN
+            val result = bookmarksDao.getAllBookmarksNoFts(term = "还没")
+
+            // THEN
+            assertThat(result).containsExactly(
+                bookmarkChineseTitle,
+                bookmarkChineseDescription,
+                bookmarkChineseNotes,
+                bookmarkChineseWebsiteTitle,
+                bookmarkChineseWebsiteDescription,
+            )
+        }
+
+    @Test
+    fun givenDbHasData_AndTagFilterContainsChineseChars_WhenGetAllPostsIsCalled__ThenCountOfPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                bookmarkWithoutTerm,
+                bookmarkChineseTitle,
+                bookmarkChineseDescription,
+                bookmarkChineseNotes,
+                bookmarkChineseWebsiteTitle,
+                bookmarkChineseWebsiteDescription,
+                bookmarkChineseTag,
+                bookmarkCyrillicTitle,
+                bookmarkCyrillicDescription,
+                bookmarkCyrillicNotes,
+                bookmarkCyrillicWebsiteTitle,
+                bookmarkCyrillicWebsiteDescription,
+                bookmarkCyrillicTag,
+            )
+            bookmarksDao.saveBookmarks(list)
+
+            // WHEN
+            val result = bookmarksDao.getAllBookmarksNoFts(tag1 = "题")
+
+            // THEN
+            assertThat(result).containsExactly(bookmarkChineseTag)
+        }
+
+    @Test
+    fun givenDbHasData_AndTermFilterContainsCyrillicChars_WhenGetAllPostsIsCalled__ThenCountOfPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                bookmarkWithoutTerm,
+                bookmarkChineseTitle,
+                bookmarkChineseDescription,
+                bookmarkChineseNotes,
+                bookmarkChineseWebsiteTitle,
+                bookmarkChineseWebsiteDescription,
+                bookmarkChineseTag,
+                bookmarkCyrillicTitle,
+                bookmarkCyrillicDescription,
+                bookmarkCyrillicNotes,
+                bookmarkCyrillicWebsiteTitle,
+                bookmarkCyrillicWebsiteDescription,
+                bookmarkCyrillicTag,
+            )
+            bookmarksDao.saveBookmarks(list)
+
+            // WHEN
+            val result = bookmarksDao.getAllBookmarksNoFts(term = "ошибка")
+
+            // THEN
+            assertThat(result).containsExactly(
+                bookmarkCyrillicTitle,
+                bookmarkCyrillicDescription,
+                bookmarkCyrillicNotes,
+                bookmarkCyrillicWebsiteTitle,
+                bookmarkCyrillicWebsiteDescription,
+            )
+        }
+
+    @Test
+    fun givenDbHasData_AndTagFilterContainsCyrillicChars_WhenGetAllPostsIsCalled__ThenCountOfPostsThatMatchTheFilterIsReturned() =
+        runTest {
+            // GIVEN
+            val list = listOf(
+                bookmarkWithoutTerm,
+                bookmarkChineseTitle,
+                bookmarkChineseDescription,
+                bookmarkChineseNotes,
+                bookmarkChineseWebsiteTitle,
+                bookmarkChineseWebsiteDescription,
+                bookmarkChineseTag,
+                bookmarkCyrillicTitle,
+                bookmarkCyrillicDescription,
+                bookmarkCyrillicNotes,
+                bookmarkCyrillicWebsiteTitle,
+                bookmarkCyrillicWebsiteDescription,
+                bookmarkCyrillicTag,
+            )
+            bookmarksDao.saveBookmarks(list)
+
+            // WHEN
+            val result = bookmarksDao.getAllBookmarksNoFts(tag1 = "Те")
+
+            // THEN
+            assertThat(result).containsExactly(bookmarkCyrillicTag)
+        }
     // endregion
 
     @Test
-    fun whenSearchExistingBookmarkTagIsCalledThenAListOfStringsContainingThatTagIsReturned() = runTest {
+    fun whenSearchExistingBookmarkTagIsCalled_ThenAListOfStringsContainingThatTagIsReturned() = runTest {
         // GIVEN
         val list = listOf(
             bookmarkWithoutTags,
@@ -1019,7 +1323,7 @@ class BookmarksDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun whenSearchExistingBookmarkTagIsCalledWithAQueryThatContainsAHyphenThenAListOfStringsContainingThatTagIsReturned() =
+    fun whenSearchExistingBookmarkTagIsCalledWithAQueryThatContainsAHyphen_ThenAListOfStringsContainingThatTagIsReturned() =
         runTest {
             // GIVEN
             val list = listOf(
@@ -1044,7 +1348,7 @@ class BookmarksDaoTest : BaseDbTest() {
         }
 
     @Test
-    fun whenGetPendingSyncedBookmarksIsCalledThenOnlyPendingSyncBookmarksAreReturned() = runTest {
+    fun whenGetPendingSyncedBookmarksIsCalled_ThenOnlyPendingSyncBookmarksAreReturned() = runTest {
         // GIVEN
         val list = listOf(
             createBookmarkLocal(),
@@ -1069,7 +1373,7 @@ class BookmarksDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun whenDeletePendingSyncedBookmarkIsCalledThenThatBookmarkIsDeleted() = runTest {
+    fun whenDeletePendingSyncedBookmarkIsCalled_ThenThatBookmarkIsDeleted() = runTest {
         // GIVEN
         val list = listOf(
             createBookmarkLocal(),

@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.posts.data
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 internal class PostsDaoUnitTest {
 
@@ -26,22 +27,28 @@ internal class PostsDaoUnitTest {
     }
 
     @Test
-    fun `GIVEN term contained special characters that are not tokenized WHEN preFormatTerm is called THEN term formatted for the query is returned`() {
-        assertThat(PostsDao.preFormatTerm("term (13)")).isEqualTo("term* NEAR 13*")
-    }
-
-    @Test
-    fun `GIVEN term contained a double quote WHEN preFormatTerm is called THEN term formatted for the query is returned`() {
-        assertThat(PostsDao.preFormatTerm("term\"")).isEqualTo("term*")
-    }
-
-    @Test
     fun `WHEN preFormatTag is called THEN tag formatted for the query is returned`() {
         assertThat(PostsDao.preFormatTag("tag")).isEqualTo("\"tag*\"")
     }
 
     @Test
+    fun `GIVEN term contained special characters that are not tokenized WHEN preFormatTerm is called THEN term formatted for the query is returned`() {
+        assertThrows<IllegalArgumentException> {
+            PostsDao.preFormatTerm("term (13)")
+        }
+    }
+
+    @Test
+    fun `GIVEN term contained a double quote WHEN preFormatTerm is called THEN term formatted for the query is returned`() {
+        assertThrows<IllegalArgumentException> {
+            PostsDao.preFormatTerm("term\"")
+        }
+    }
+
+    @Test
     fun `GIVEN tag contained a double quote WHEN preFormatTag is called THEN tag formatted for the query is returned`() {
-        assertThat(PostsDao.preFormatTag("tag\"")).isEqualTo("\"tag*\"")
+        assertThrows<IllegalArgumentException> {
+            PostsDao.preFormatTag("tag\"")
+        }
     }
 }

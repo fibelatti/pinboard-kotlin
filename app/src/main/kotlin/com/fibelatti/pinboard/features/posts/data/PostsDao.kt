@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.core.persistence.database.isFtsCompatible
 import com.fibelatti.pinboard.features.posts.data.model.POST_FTS_TABLE_NAME
 import com.fibelatti.pinboard.features.posts.data.model.POST_TABLE_NAME
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
@@ -37,8 +38,38 @@ interface PostsDao {
         limit: Int = -1,
     ): Int
 
+    @Query("select count(*) from (select hash from $POST_TABLE_NAME $WHERE_SUB_QUERY_NO_FTS limit :limit)")
+    suspend fun getPostCountNoFts(
+        term: String = "",
+        tag1: String = "",
+        tag2: String = "",
+        tag3: String = "",
+        untaggedOnly: Boolean = false,
+        ignoreVisibility: Boolean = true,
+        publicPostsOnly: Boolean = false,
+        privatePostsOnly: Boolean = false,
+        readLaterOnly: Boolean = false,
+        limit: Int = -1,
+    ): Int
+
     @Query("$SELECT_ALL_FROM_POST $WHERE_SUB_QUERY $ORDER_BY_SUB_QUERY limit :offset, :limit")
     suspend fun getAllPosts(
+        sortType: Int = 0,
+        term: String = "",
+        tag1: String = "",
+        tag2: String = "",
+        tag3: String = "",
+        untaggedOnly: Boolean = false,
+        ignoreVisibility: Boolean = true,
+        publicPostsOnly: Boolean = false,
+        privatePostsOnly: Boolean = false,
+        readLaterOnly: Boolean = false,
+        limit: Int = -1,
+        offset: Int = 0,
+    ): List<PostDto>
+
+    @Query("$SELECT_ALL_FROM_POST $WHERE_SUB_QUERY_NO_FTS $ORDER_BY_SUB_QUERY limit :offset, :limit")
+    suspend fun getAllPostsNoFts(
         sortType: Int = 0,
         term: String = "",
         tag1: String = "",
@@ -79,6 +110,13 @@ interface PostsDao {
             ") " +
             "end"
 
+        private const val LIKE_TERM = "case " +
+            "when :term = '' then 1 " +
+            "else ($POST_TABLE_NAME.href like '%' || :term || '%' or " +
+            "$POST_TABLE_NAME.description like '%' || :term || '%' or " +
+            "$POST_TABLE_NAME.extended like '%' || :term || '%') " +
+            "end"
+
         private const val MATCH_TAGS = "case " +
             "when :tag1 = '' then 1 " +
             "else $POST_TABLE_NAME.rowid in (select rowid from $POST_FTS_TABLE_NAME where tags match :tag1) " +
@@ -92,9 +130,27 @@ interface PostsDao {
             "else $POST_TABLE_NAME.rowid in (select rowid from $POST_FTS_TABLE_NAME where tags match :tag3) " +
             "end "
 
+        private const val LIKE_TAGS = "case " +
+            "when :tag1 = '' then 1 " +
+            "else $POST_TABLE_NAME.tags like '%' || :tag1 || '%' " +
+            "end " +
+            "and case " +
+            "when :tag2 = '' then 1 " +
+            "else $POST_TABLE_NAME.tags like '%' || :tag2 || '%' " +
+            "end " +
+            "and case " +
+            "when :tag3 = '' then 1 " +
+            "else $POST_TABLE_NAME.tags like '%' || :tag3 || '%' " +
+            "end "
+
         private const val MATCH_UNTAGGED_OR_TAGS = "case " +
             "when :untaggedOnly = 1 then tags = '' " +
             "else $MATCH_TAGS " +
+            "end"
+
+        private const val LIKE_UNTAGGED_OR_TAGS = "case " +
+            "when :untaggedOnly = 1 then tags = '' " +
+            "else $LIKE_TAGS " +
             "end"
 
         private const val WHERE_PUBLIC = "case " +
@@ -113,6 +169,11 @@ interface PostsDao {
             "and $WHERE_PUBLIC " +
             "and $WHERE_READ_LATER"
 
+        private const val WHERE_SUB_QUERY_NO_FTS = "where $LIKE_TERM " +
+            "and $LIKE_UNTAGGED_OR_TAGS " +
+            "and $WHERE_PUBLIC " +
+            "and $WHERE_READ_LATER"
+
         private const val ORDER_BY_SUB_QUERY = "order by " +
             "case when :sortType = 0 then time end DESC, " +
             "case when :sortType = 1 then time end ASC," +
@@ -120,15 +181,19 @@ interface PostsDao {
             "case when :sortType = 5 then description end DESC"
 
         @JvmStatic
-        fun preFormatTerm(term: String): String = term
-            .replace("[^A-Za-z0-9 ._\\-=#@&]".toRegex(), "")
-            .trim()
-            .takeIf(String::isNotEmpty)
-            ?.split(" ")
-            ?.joinToString(separator = " NEAR ") { "$it*" }
-            .orEmpty()
+        fun preFormatTerm(term: String): String {
+            require(isFtsCompatible(term))
+
+            return term.trim().takeIf(String::isNotEmpty)
+                ?.split(" ")?.joinToString(separator = " NEAR ") { "$it*" }
+                .orEmpty()
+        }
 
         @JvmStatic
-        fun preFormatTag(tag: String) = "\"${tag.replace(oldValue = "\"", newValue = "")}*\""
+        fun preFormatTag(tag: String): String {
+            require(isFtsCompatible(tag))
+
+            return "\"${tag.replace(oldValue = "\"", newValue = "")}*\""
+        }
     }
 }
