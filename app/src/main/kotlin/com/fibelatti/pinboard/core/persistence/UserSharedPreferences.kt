@@ -91,7 +91,16 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
 
             return sharedPreferences.getString("LINKDING_AUTH_TOKEN", fallback)
         }
-        set(value) = sharedPreferences.put("LINKDING_AUTH_TOKEN", value).also { currentLinkdingAuthToken = value }
+        set(value) {
+            currentLinkdingAuthToken = value
+            sharedPreferences.edit {
+                putString("LINKDING_AUTH_TOKEN", value)
+
+                if (value.isNullOrBlank()) {
+                    remove("AUTH_TOKEN")
+                }
+            }
+        }
 
     var pinboardAuthToken: String?
         get() {
@@ -101,7 +110,16 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
 
             return sharedPreferences.getString("PINBOARD_AUTH_TOKEN", fallback)
         }
-        set(value) = sharedPreferences.put("PINBOARD_AUTH_TOKEN", value).also { currentPinboardAuthToken = value }
+        set(value) {
+            currentPinboardAuthToken = value
+            sharedPreferences.edit {
+                putString("PINBOARD_AUTH_TOKEN", value)
+
+                if (value.isNullOrBlank()) {
+                    remove("AUTH_TOKEN")
+                }
+            }
+        }
 
     var lastUpdate: String
         get() = sharedPreferences.get(KEY_LAST_UPDATE, currentLastUpdate)
