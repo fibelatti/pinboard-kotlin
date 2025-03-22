@@ -214,6 +214,8 @@
     <string name="quick_actions_rename">Rename</string>
     <string name="quick_actions_submit_to_wayback">Send to Wayback Machine</string>
     <string name="quick_actions_search_wayback">Search Wayback Machine</string>
+    <string name="quick_actions_submit_to_archive_today">Send to Archive.Today</string>
+    <string name="quick_actions_submit_to_ghost_archive">Send to Ghost Archive</string>
 
     <string name="quick_actions_more_options">More options</string>
 

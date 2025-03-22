@@ -353,12 +353,20 @@ private fun showQuickActionsDialog(
                     Intent(Intent.ACTION_VIEW, post.url.toUri()),
                 )
 
-                is PostQuickActions.SubmitToWayback -> startActivity(
+                is PostQuickActions.SearchWayback -> startActivity(
+                    Intent(Intent.ACTION_VIEW, "https://web.archive.org/web/*/${post.url}".toUri()),
+                )
+
+                is PostQuickActions.SendToWayback -> startActivity(
                     Intent(Intent.ACTION_VIEW, "https://web.archive.org/save/${post.url}".toUri()),
                 )
 
-                is PostQuickActions.SearchWayback -> startActivity(
-                    Intent(Intent.ACTION_VIEW, "https://web.archive.org/web/*/${post.url}".toUri()),
+                is PostQuickActions.SendToArchiveToday -> startActivity(
+                    Intent(Intent.ACTION_VIEW, "https://archive.today/submit/?url=${post.url}".toUri()),
+                )
+
+                is PostQuickActions.SendToGhostArchive -> startActivity(
+                    Intent(Intent.ACTION_VIEW, "https://ghostarchive.org/save/${post.url}".toUri()),
                 )
             }
         },

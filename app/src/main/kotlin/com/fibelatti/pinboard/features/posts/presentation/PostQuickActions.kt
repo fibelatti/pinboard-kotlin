@@ -110,16 +110,6 @@ sealed class PostQuickActions(
         override val serializedName: String = "OPEN_BROWSER"
     }
 
-    data class SubmitToWayback(
-        override val post: Post,
-    ) : PostQuickActions(
-        title = R.string.quick_actions_submit_to_wayback,
-        icon = R.drawable.ic_send,
-    ) {
-
-        override val serializedName: String = "SUBMIT_TO_WAYBACK"
-    }
-
     data class SearchWayback(
         override val post: Post,
     ) : PostQuickActions(
@@ -130,12 +120,46 @@ sealed class PostQuickActions(
         override val serializedName: String = "SEARCH_WAYBACK"
     }
 
+    data class SendToWayback(
+        override val post: Post,
+    ) : PostQuickActions(
+        title = R.string.quick_actions_submit_to_wayback,
+        icon = R.drawable.ic_send,
+    ) {
+
+        override val serializedName: String = "SUBMIT_TO_WAYBACK"
+    }
+
+    data class SendToArchiveToday(
+        override val post: Post,
+    ) : PostQuickActions(
+        title = R.string.quick_actions_submit_to_archive_today,
+        icon = R.drawable.ic_send,
+    ) {
+
+        override val serializedName: String = "SEND_TO_ARCHIVE_TODAY"
+    }
+
+    data class SendToGhostArchive(
+        override val post: Post,
+    ) : PostQuickActions(
+        title = R.string.quick_actions_submit_to_ghost_archive,
+        icon = R.drawable.ic_send,
+    ) {
+
+        override val serializedName: String = "SEND_TO_GHOST_ARCHIVE"
+    }
+
     companion object {
 
         fun allOptions(
             post: Post,
             tagsClipboard: List<Tag> = emptyList(),
         ): List<PostQuickActions> = buildList {
+            if (post.displayDescription.isNotBlank()) {
+                add(ExpandDescription(post))
+            }
+
             add(ToggleReadLater(post))
 
             if (!post.tags.isNullOrEmpty()) {
@@ -148,14 +172,14 @@ sealed class PostQuickActions(
 
             add(Edit(post))
             add(Delete(post))
+
             add(CopyUrl(post))
             add(Share(post))
-            add(SubmitToWayback(post))
-            add(SearchWayback(post))
 
-            if (post.displayDescription.isNotBlank()) {
-                add(ExpandDescription(post))
-            }
+            add(SearchWayback(post))
+            add(SendToWayback(post))
+            add(SendToArchiveToday(post))
+            add(SendToGhostArchive(post))
 
             add(OpenBrowser(post))
         }
