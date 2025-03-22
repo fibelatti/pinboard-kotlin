@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.FilledTonalButton
@@ -75,7 +76,6 @@ import com.fibelatti.pinboard.core.extension.copyToClipboard
 import com.fibelatti.pinboard.core.extension.rememberScrollDirection
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.appstate.AddPost
-import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
 import com.fibelatti.pinboard.features.appstate.ByDateAddedOldestFirst
 import com.fibelatti.pinboard.features.appstate.ByDateModifiedNewestFirst
@@ -93,7 +93,6 @@ import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.SearchParameters
 import com.fibelatti.pinboard.features.appstate.SetSorting
 import com.fibelatti.pinboard.features.appstate.SortType
-import com.fibelatti.pinboard.features.appstate.ViewCategory
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.appstate.find
@@ -109,7 +108,6 @@ import com.fibelatti.ui.components.MultilineChipGroup
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -120,6 +118,7 @@ fun BookmarkListScreen(
     postListViewModel: PostListViewModel = hiltViewModel(),
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
     userPreferencesViewModel: UserPreferencesViewModel = hiltViewModel(),
+    listState: LazyListState = rememberLazyListState(),
 ) {
     Surface(
         modifier = modifier,
@@ -155,7 +154,6 @@ fun BookmarkListScreen(
 
         BookmarkListScreen(
             appMode = appState.appMode,
-            category = postListContent.category,
             posts = postListContent.posts,
             isLoading = isLoading,
             onScrollDirectionChanged = mainViewModel::setCurrentScrollDirection,
@@ -220,6 +218,7 @@ fun BookmarkListScreen(
             onTagClicked = { post -> mainViewModel.runAction(PostsForTag(post)) },
             showPostDescription = postListContent.showDescription,
             sidePanelVisible = appState.sidePanelVisible,
+            listState = listState,
         )
     }
 }
@@ -445,7 +444,6 @@ private fun showSortingSelector(
 @Composable
 fun BookmarkListScreen(
     appMode: AppMode,
-    category: ViewCategory,
     posts: PostList?,
     isLoading: Boolean,
     onScrollDirectionChanged: (ScrollDirection) -> Unit,
@@ -463,6 +461,7 @@ fun BookmarkListScreen(
     showPostDescription: Boolean,
     sidePanelVisible: Boolean,
     modifier: Modifier = Modifier,
+    listState: LazyListState = rememberLazyListState(),
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -498,8 +497,6 @@ fun BookmarkListScreen(
                 description = stringResource(id = R.string.posts_empty_description),
             )
         } else if (posts != null) {
-            val listState = rememberLazyListState()
-
             val scrollDirection by listState.rememberScrollDirection()
             val currentOnScrollDirectionChanged by rememberUpdatedState(onScrollDirectionChanged)
 
@@ -519,11 +516,6 @@ fun BookmarkListScreen(
 
             LaunchedEffect(scrollDirection) {
                 currentOnScrollDirectionChanged(scrollDirection)
-            }
-
-            LaunchedEffect(category, posts.list.first(), searchParameters) {
-                delay(200L)
-                listState.scrollToItem(index = 0)
             }
 
             val listWindowInsets = WindowInsets.safeDrawing
@@ -826,7 +818,7 @@ private fun BookmarkListScreenPreview(
 ) {
     ExtendedTheme {
         BookmarkListScreen(
-            category = All,
+            appMode = AppMode.LINKDING,
             posts = PostList(
                 list = posts,
                 totalCount = posts.size,
@@ -844,10 +836,9 @@ private fun BookmarkListScreenPreview(
             onPullToRefresh = {},
             onPostClicked = {},
             onPostLongClicked = {},
-            showPostDescription = true,
             onTagClicked = {},
+            showPostDescription = true,
             sidePanelVisible = false,
-            appMode = AppMode.LINKDING,
         )
     }
 }

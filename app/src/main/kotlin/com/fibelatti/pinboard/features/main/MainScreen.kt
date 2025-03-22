@@ -33,6 +33,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -85,6 +87,7 @@ import com.fibelatti.pinboard.features.appstate.SavedFiltersContent
 import com.fibelatti.pinboard.features.appstate.SearchContent
 import com.fibelatti.pinboard.features.appstate.TagListContent
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
+import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.filters.presentation.SavedFiltersScreen
 import com.fibelatti.pinboard.features.navigation.NavigationMenu
 import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsScreen
@@ -102,6 +105,7 @@ import com.fibelatti.ui.foundation.pxToDp
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlin.reflect.KClass
+import kotlinx.coroutines.delay
 
 @Composable
 fun MainScreen(
@@ -270,12 +274,25 @@ private fun MainPanelContent(
     sidePanelVisible: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val mainPanelContent = remember(content::class, sidePanelVisible) {
+    val mainPanelContent: KClass<out Content> = remember(content::class, sidePanelVisible) {
         when {
             sidePanelVisible && content::class == PostDetailContent::class -> PostListContent::class
             sidePanelVisible && content::class == NoteDetailContent::class -> NoteListContent::class
             sidePanelVisible && content::class == PopularPostDetailContent::class -> PopularPostsContent::class
             else -> content::class
+        }
+    }
+    val postListContent: PostListContent? = remember(content) { content.find() }
+    val bookmarkListState: LazyListState = rememberLazyListState()
+
+    LaunchedEffect(
+        postListContent?.category,
+        postListContent?.posts?.list?.firstOrNull(),
+        postListContent?.searchParameters,
+    ) {
+        if (postListContent != null) {
+            delay(200L)
+            bookmarkListState.scrollToItem(index = 0)
         }
     }
 
@@ -286,7 +303,7 @@ private fun MainPanelContent(
     ) { targetState ->
         when (targetState) {
             LoginContent::class -> AuthScreen()
-            PostListContent::class -> BookmarkListScreen()
+            PostListContent::class -> BookmarkListScreen(listState = bookmarkListState)
             PostDetailContent::class -> BookmarkDetailsScreen()
             SearchContent::class -> SearchBookmarksScreen()
             AddPostContent::class -> EditBookmarkScreen()
