@@ -5,6 +5,7 @@ import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.SortType
+import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
@@ -18,6 +19,8 @@ import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -35,7 +38,9 @@ class UserPreferencesViewModel @Inject constructor(
 
     init {
         scope.launch {
-            tagManagerState.collectLatest { value ->
+            tagManagerState.combine(appStateRepository.appState) { tagManagerState, appState ->
+                tagManagerState.takeIf { appState.content is UserPreferencesContent }
+            }.filterNotNull().collectLatest { value ->
                 userRepository.defaultTags = value.tags
             }
         }

@@ -2,10 +2,12 @@ package com.fibelatti.pinboard.features.user.presentation
 
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAGS
+import com.fibelatti.pinboard.MockDataProvider.createAppState
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.SortType
+import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
@@ -28,7 +30,10 @@ import org.junit.jupiter.api.Test
 
 internal class UserPreferencesViewModelTest : BaseViewModelTest() {
 
-    private val mockAppStateRepository = mockk<AppStateRepository>()
+    private val appStateFlow = MutableStateFlow(createAppState())
+    private val mockAppStateRepository = mockk<AppStateRepository> {
+        every { appState } returns appStateFlow
+    }
 
     private val tagManagerStateFlow = MutableStateFlow(TagManagerState())
     private val mockTagManagerRepository = mockk<TagManagerRepository> {
@@ -59,10 +64,21 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
     }
 
     @Test
-    fun `tag manager emissions should save default tags`() = runTest {
+    fun `tag manager emissions should save default tags if the content is UserPreferencesContent`() = runTest {
+        appStateFlow.value = createAppState(content = mockk<UserPreferencesContent>())
+
         tagManagerStateFlow.value = TagManagerState(tags = SAMPLE_TAGS)
 
         verify { mockUserRepository.defaultTags = SAMPLE_TAGS }
+    }
+
+    @Test
+    fun `tag manager emissions should not save default tags if the content is not UserPreferencesContent`() = runTest {
+        appStateFlow.value = createAppState(content = mockk())
+
+        tagManagerStateFlow.value = TagManagerState(tags = SAMPLE_TAGS)
+
+        verify(exactly = 0) { mockUserRepository.defaultTags = any() }
     }
 
     @Test
