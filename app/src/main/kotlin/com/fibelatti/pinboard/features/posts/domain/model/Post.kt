@@ -27,9 +27,13 @@ data class Post(
         get() = title.ifEmpty { websiteTitle ?: "" }
     val displayDescription: String
         get() = description.ifEmpty { websiteDescription ?: "" }
+    val faviconUrl: String?
+        get() = domainRegex.find(url)?.groupValues?.firstOrNull()?.plus("/favicon.ico")
 
     companion object {
 
         val EMPTY = Post(url = "", title = "", description = "")
+
+        private val domainRegex = Regex("[a-z]+://[^/]+")
     }
 }

@@ -2,12 +2,15 @@ package com.fibelatti.pinboard
 
 import android.app.Activity
 import android.app.Application
+import android.content.Context
 import android.os.Bundle
 import android.os.StrictMode
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import coil3.ImageLoader
+import coil3.SingletonImageLoader
 import com.fibelatti.core.android.platform.SimpleActivityLifecycleCallbacks
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.features.sync.PendingSyncManager
@@ -17,10 +20,11 @@ import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
+import javax.inject.Provider
 import timber.log.Timber
 
 @HiltAndroidApp
-class App : Application(), Configuration.Provider {
+class App : Application(), Configuration.Provider, SingletonImageLoader.Factory {
 
     @Inject
     lateinit var periodicSyncManager: PeriodicSyncManager
@@ -33,6 +37,9 @@ class App : Application(), Configuration.Provider {
 
     @Inject
     lateinit var userRepository: UserRepository
+
+    @Inject
+    lateinit var imageLoader: Provider<ImageLoader>
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
@@ -48,6 +55,8 @@ class App : Application(), Configuration.Provider {
         setupDisableScreenshots()
         setupWorkers()
     }
+
+    override fun newImageLoader(context: Context): ImageLoader = imageLoader.get()
 
     private fun setupDebugMode() {
         if (!BuildConfig.DEBUG) return

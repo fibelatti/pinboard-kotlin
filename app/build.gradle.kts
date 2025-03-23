@@ -217,6 +217,7 @@ dependencies {
     implementation(libs.bundles.ktor.common)
     implementation(libs.ktor.client.okhttp)
 
+    implementation(libs.bundles.coil)
     implementation(libs.jsoup)
 
     implementation(libs.about.libraries)

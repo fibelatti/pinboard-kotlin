@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -58,6 +59,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
+import coil3.compose.AsyncImagePainter
+import coil3.compose.rememberAsyncImagePainter
 import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
@@ -674,9 +677,29 @@ private fun BookmarkItem(
                 style = MaterialTheme.typography.titleMedium,
             )
 
-            if (post.url != post.displayTitle) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                post.faviconUrl?.let { faviconUrl ->
+                    val painter: AsyncImagePainter = rememberAsyncImagePainter(model = faviconUrl)
+                    val faviconState: AsyncImagePainter.State by painter.state.collectAsStateWithLifecycle()
+
+                    AnimatedVisibility(
+                        visible = faviconState is AsyncImagePainter.State.Success,
+                        modifier = Modifier.size(16.dp),
+                    ) {
+                        Image(
+                            painter = painter,
+                            contentDescription = null,
+                        )
+                    }
+                }
+
                 Text(
                     text = post.url,
+                    modifier = Modifier.weight(1f),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
@@ -692,6 +715,7 @@ private fun BookmarkItem(
                 },
                 private = post.private,
                 readLater = post.readLater,
+                modifier = Modifier.padding(top = 4.dp),
             )
 
             if (showDescription && post.displayDescription.isNotBlank()) {
