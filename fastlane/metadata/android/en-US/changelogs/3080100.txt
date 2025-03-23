@@ -1,0 +1,8 @@
+This version brings the following updates:
+
+* Search now works as expected for other alphabets, like Chinese or Cyrillic
+* The scrolling position is preserved after viewing or editing a bookmark
+* New bookmark quick actions: send to Archive.Today and Ghost Archive
+* Fix the default tags being overwritten after opening the bookmark editor
+
+Feedback and suggestions are always welcome, thank you for using the app!
