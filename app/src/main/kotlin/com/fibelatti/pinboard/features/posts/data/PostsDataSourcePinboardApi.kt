@@ -369,6 +369,7 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
         return if (isFtsCompatible) {
             postsDao.getPostCount(
                 term = PostsDao.preFormatTerm(searchTerm),
+                termNoFts = searchTerm,
                 tag1 = tags.getTagName(index = 0),
                 tag2 = tags.getTagName(index = 1),
                 tag3 = tags.getTagName(index = 2),
@@ -424,6 +425,7 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
                 postsDao.getAllPosts(
                     sortType = sortType.index,
                     term = PostsDao.preFormatTerm(searchTerm),
+                    termNoFts = searchTerm,
                     tag1 = tags.getTagName(index = 0),
                     tag2 = tags.getTagName(index = 1),
                     tag3 = tags.getTagName(index = 2),

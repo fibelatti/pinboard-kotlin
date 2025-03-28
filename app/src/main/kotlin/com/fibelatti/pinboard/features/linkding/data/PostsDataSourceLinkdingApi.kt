@@ -274,6 +274,7 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
         return if (isFtsCompatible) {
             linkdingDao.getBookmarkCount(
                 term = BookmarksDao.preFormatTerm(searchTerm),
+                termNoFts = searchTerm,
                 tag1 = tags.getTagName(index = 0),
                 tag2 = tags.getTagName(index = 1),
                 tag3 = tags.getTagName(index = 2),
@@ -329,6 +330,7 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
                 linkdingDao.getAllBookmarks(
                     sortType = sortType.index,
                     term = BookmarksDao.preFormatTerm(searchTerm),
+                    termNoFts = searchTerm,
                     tag1 = tags.getTagName(index = 0),
                     tag2 = tags.getTagName(index = 1),
                     tag3 = tags.getTagName(index = 2),

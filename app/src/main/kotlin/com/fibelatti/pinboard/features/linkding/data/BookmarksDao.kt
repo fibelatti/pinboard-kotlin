@@ -25,6 +25,7 @@ interface BookmarksDao {
     @Query("select count(*) from (select id from $TABLE_NAME $WHERE_SUB_QUERY limit :limit)")
     suspend fun getBookmarkCount(
         term: String = "",
+        termNoFts: String = "",
         tag1: String = "",
         tag2: String = "",
         tag3: String = "",
@@ -54,6 +55,7 @@ interface BookmarksDao {
     suspend fun getAllBookmarks(
         sortType: Int = 0,
         term: String = "",
+        termNoFts: String = "",
         tag1: String = "",
         tag2: String = "",
         tag3: String = "",
@@ -103,9 +105,10 @@ interface BookmarksDao {
 
         private const val MATCH_TERM = "case " +
             "when :term = '' then 1 " +
-            "else $TABLE_NAME.rowid in (" +
+            "else ($TABLE_NAME.rowid in (" +
             "select rowid from $FTS_TABLE_NAME where $FTS_TABLE_NAME match :term" +
-            ") " +
+            ") OR " +
+            "$TABLE_NAME.url like '%' || :termNoFts || '%') " +
             "end"
 
         private const val LIKE_TERM = "case " +

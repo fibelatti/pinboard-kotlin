@@ -27,6 +27,7 @@ interface PostsDao {
     @Query("select count(*) from (select hash from $POST_TABLE_NAME $WHERE_SUB_QUERY limit :limit)")
     suspend fun getPostCount(
         term: String = "",
+        termNoFts: String = "",
         tag1: String = "",
         tag2: String = "",
         tag3: String = "",
@@ -56,6 +57,7 @@ interface PostsDao {
     suspend fun getAllPosts(
         sortType: Int = 0,
         term: String = "",
+        termNoFts: String = "",
         tag1: String = "",
         tag2: String = "",
         tag3: String = "",
@@ -105,9 +107,10 @@ interface PostsDao {
 
         private const val MATCH_TERM = "case " +
             "when :term = '' then 1 " +
-            "else $POST_TABLE_NAME.rowid in (" +
+            "else ($POST_TABLE_NAME.rowid in (" +
             "select rowid from $POST_FTS_TABLE_NAME where $POST_FTS_TABLE_NAME match :term" +
-            ") " +
+            ") OR " +
+            "$POST_TABLE_NAME.href like '%' || :termNoFts || '%') " +
             "end"
 
         private const val LIKE_TERM = "case " +
