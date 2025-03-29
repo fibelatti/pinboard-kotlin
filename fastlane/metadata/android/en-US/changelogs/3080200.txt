@@ -1,0 +1,6 @@
+This version brings the following updates:
+
+* Display favicon on URLs when available
+* Fix search not working on the URL
+
+Feedback and suggestions are always welcome, thank you for using the app!
