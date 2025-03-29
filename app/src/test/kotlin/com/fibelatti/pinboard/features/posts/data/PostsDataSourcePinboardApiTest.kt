@@ -1234,6 +1234,7 @@ class PostsDataSourcePinboardApiTest {
             coEvery {
                 mockDao.getPostCount(
                     term = PostsDao.preFormatTerm(SAMPLE_URL_TITLE),
+                    termNoFts = SAMPLE_URL_TITLE,
                     tag1 = PostsDao.preFormatTag(SAMPLE_TAG_1.name),
                     tag2 = "",
                     tag3 = "",
@@ -1282,6 +1283,7 @@ class PostsDataSourcePinboardApiTest {
             coEvery {
                 mockDao.getPostCount(
                     term = any(),
+                    termNoFts = any(),
                     tag1 = any(),
                     tag2 = any(),
                     tag3 = any(),
@@ -1307,6 +1309,7 @@ class PostsDataSourcePinboardApiTest {
             coVerify {
                 mockDao.getPostCount(
                     term = PostsDao.preFormatTerm(SAMPLE_URL_TITLE),
+                    termNoFts = SAMPLE_URL_TITLE,
                     tag1 = "",
                     tag2 = "",
                     tag3 = "",
@@ -1326,6 +1329,7 @@ class PostsDataSourcePinboardApiTest {
             coEvery {
                 mockDao.getPostCount(
                     term = any(),
+                    termNoFts = any(),
                     tag1 = any(),
                     tag2 = any(),
                     tag3 = any(),
@@ -1351,6 +1355,7 @@ class PostsDataSourcePinboardApiTest {
             coVerify {
                 mockDao.getPostCount(
                     term = PostsDao.preFormatTerm(SAMPLE_URL_TITLE),
+                    termNoFts = SAMPLE_URL_TITLE,
                     tag1 = PostsDao.preFormatTag(SAMPLE_TAG_1.name),
                     tag2 = "",
                     tag3 = "",
@@ -1370,6 +1375,7 @@ class PostsDataSourcePinboardApiTest {
             coEvery {
                 mockDao.getPostCount(
                     term = any(),
+                    termNoFts = any(),
                     tag1 = any(),
                     tag2 = any(),
                     tag3 = any(),
@@ -1395,6 +1401,7 @@ class PostsDataSourcePinboardApiTest {
             coVerify {
                 mockDao.getPostCount(
                     term = PostsDao.preFormatTerm(SAMPLE_URL_TITLE),
+                    termNoFts = SAMPLE_URL_TITLE,
                     tag1 = PostsDao.preFormatTag(SAMPLE_TAG_1.name),
                     tag2 = PostsDao.preFormatTag(SAMPLE_TAG_2.name),
                     tag3 = "",
@@ -1414,6 +1421,7 @@ class PostsDataSourcePinboardApiTest {
             coEvery {
                 mockDao.getPostCount(
                     term = any(),
+                    termNoFts = any(),
                     tag1 = any(),
                     tag2 = any(),
                     tag3 = any(),
@@ -1439,6 +1447,7 @@ class PostsDataSourcePinboardApiTest {
             coVerify {
                 mockDao.getPostCount(
                     term = PostsDao.preFormatTerm(SAMPLE_URL_TITLE),
+                    termNoFts = SAMPLE_URL_TITLE,
                     tag1 = PostsDao.preFormatTag(SAMPLE_TAG_1.name),
                     tag2 = PostsDao.preFormatTag(SAMPLE_TAG_2.name),
                     tag3 = PostsDao.preFormatTag(SAMPLE_TAG_3.name),
@@ -1476,6 +1485,7 @@ class PostsDataSourcePinboardApiTest {
                 mockDao.getAllPosts(
                     sortType = any(),
                     term = any(),
+                    termNoFts = any(),
                     tag1 = any(),
                     tag2 = any(),
                     tag3 = any(),
@@ -1551,6 +1561,7 @@ class PostsDataSourcePinboardApiTest {
                 mockDao.getAllPosts(
                     sortType = ByDateAddedNewestFirst.index,
                     term = PostsDao.preFormatTerm(SAMPLE_URL_TITLE),
+                    termNoFts = SAMPLE_URL_TITLE,
                     tag1 = "",
                     tag2 = "",
                     tag3 = "",
@@ -1593,6 +1604,7 @@ class PostsDataSourcePinboardApiTest {
                 mockDao.getAllPosts(
                     sortType = ByDateAddedNewestFirst.index,
                     term = PostsDao.preFormatTerm(SAMPLE_URL_TITLE),
+                    termNoFts = SAMPLE_URL_TITLE,
                     tag1 = PostsDao.preFormatTag(SAMPLE_TAG_1.name),
                     tag2 = "",
                     tag3 = "",
@@ -1635,6 +1647,7 @@ class PostsDataSourcePinboardApiTest {
                 mockDao.getAllPosts(
                     sortType = ByDateAddedNewestFirst.index,
                     term = PostsDao.preFormatTerm(SAMPLE_URL_TITLE),
+                    termNoFts = SAMPLE_URL_TITLE,
                     tag1 = PostsDao.preFormatTag(SAMPLE_TAG_1.name),
                     tag2 = PostsDao.preFormatTag(SAMPLE_TAG_2.name),
                     tag3 = "",
@@ -1677,6 +1690,7 @@ class PostsDataSourcePinboardApiTest {
                 mockDao.getAllPosts(
                     sortType = ByDateAddedNewestFirst.index,
                     term = PostsDao.preFormatTerm(SAMPLE_URL_TITLE),
+                    termNoFts = SAMPLE_URL_TITLE,
                     tag1 = PostsDao.preFormatTag(SAMPLE_TAG_1.name),
                     tag2 = PostsDao.preFormatTag(SAMPLE_TAG_2.name),
                     tag3 = PostsDao.preFormatTag(SAMPLE_TAG_3.name),
@@ -1705,6 +1719,7 @@ class PostsDataSourcePinboardApiTest {
                 mockDao.getAllPosts(
                     sortType = any(),
                     term = any(),
+                    termNoFts = any(),
                     tag1 = any(),
                     tag2 = any(),
                     tag3 = any(),
