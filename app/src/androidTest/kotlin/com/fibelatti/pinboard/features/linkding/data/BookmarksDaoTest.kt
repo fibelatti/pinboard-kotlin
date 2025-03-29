@@ -285,7 +285,10 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getBookmarkCount(term = BookmarksDao.preFormatTerm(mockTerm))
+            val result = bookmarksDao.getBookmarkCount(
+                term = BookmarksDao.preFormatTerm(mockTerm),
+                termNoFts = mockTerm,
+            )
 
             // THEN
             assertThat(result).isEqualTo(6)
@@ -309,6 +312,7 @@ class BookmarksDaoTest : BaseDbTest() {
             // WHEN
             val result = bookmarksDao.getBookmarkCount(
                 term = BookmarksDao.preFormatTerm("$mockTerm $mockSecondTerm"),
+                termNoFts = "$mockTerm $mockSecondTerm",
             )
 
             // THEN
@@ -331,7 +335,10 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getBookmarkCount(term = BookmarksDao.preFormatTerm("term-with"))
+            val result = bookmarksDao.getBookmarkCount(
+                term = BookmarksDao.preFormatTerm("term-with"),
+                termNoFts = "term-with",
+            )
 
             // THEN
             assertThat(result).isEqualTo(2)
@@ -823,6 +830,7 @@ class BookmarksDaoTest : BaseDbTest() {
             // WHEN
             val result = bookmarksDao.getAllBookmarks(
                 term = BookmarksDao.preFormatTerm("$mockTerm $mockSecondTerm"),
+                termNoFts = "$mockTerm $mockSecondTerm",
             )
 
             // THEN
@@ -845,7 +853,10 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getAllBookmarks(term = BookmarksDao.preFormatTerm(mockTerm))
+            val result = bookmarksDao.getAllBookmarks(
+                term = BookmarksDao.preFormatTerm(mockTerm),
+                termNoFts = mockTerm,
+            )
 
             // THEN
             assertThat(result).isEqualTo(
@@ -876,7 +887,10 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getAllBookmarks(term = BookmarksDao.preFormatTerm("term-with"))
+            val result = bookmarksDao.getAllBookmarks(
+                term = BookmarksDao.preFormatTerm("term-with"),
+                termNoFts = "term-with",
+            )
 
             // THEN
             assertThat(result).isEqualTo(listOf(bookmarkWithTermInTheTitle, bookmarkWithTermInTheWebsiteTitle))

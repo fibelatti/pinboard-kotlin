@@ -215,7 +215,10 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getPostCount(term = PostsDao.preFormatTerm(mockTerm))
+            val result = postsDao.getPostCount(
+                term = PostsDao.preFormatTerm(mockTerm),
+                termNoFts = mockTerm,
+            )
 
             // THEN
             assertThat(result).isEqualTo(3)
@@ -236,6 +239,7 @@ class PostsDaoTest : BaseDbTest() {
             // WHEN
             val result = postsDao.getPostCount(
                 term = PostsDao.preFormatTerm("$mockTerm $mockSecondTerm"),
+                termNoFts = "$mockTerm $mockSecondTerm",
             )
 
             // THEN
@@ -255,7 +259,10 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getPostCount(term = PostsDao.preFormatTerm("term-with"))
+            val result = postsDao.getPostCount(
+                term = PostsDao.preFormatTerm("term-with"),
+                termNoFts = "term-with",
+            )
 
             // THEN
             assertThat(result).isEqualTo(1)
@@ -718,6 +725,7 @@ class PostsDaoTest : BaseDbTest() {
             // WHEN
             val result = postsDao.getAllPosts(
                 term = PostsDao.preFormatTerm("$mockTerm $mockSecondTerm"),
+                termNoFts = "$mockTerm $mockSecondTerm",
             )
 
             // THEN
@@ -736,7 +744,10 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getAllPosts(term = PostsDao.preFormatTerm(mockTerm))
+        val result = postsDao.getAllPosts(
+            term = PostsDao.preFormatTerm(mockTerm),
+            termNoFts = mockTerm,
+        )
 
         // THEN
         assertThat(result).isEqualTo(
@@ -761,7 +772,10 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getAllPosts(term = PostsDao.preFormatTerm("term-with"))
+            val result = postsDao.getAllPosts(
+                term = PostsDao.preFormatTerm("term-with"),
+                termNoFts = "term-with",
+            )
 
             // THEN
             assertThat(result).isEqualTo(listOf(postWithTermInTheDescription))
