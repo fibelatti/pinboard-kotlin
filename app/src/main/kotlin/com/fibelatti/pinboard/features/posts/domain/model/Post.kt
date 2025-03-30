@@ -28,11 +28,13 @@ data class Post(
         get() = title.ifEmpty { websiteTitle ?: "" }
     val displayDescription: String
         get() = description.ifEmpty { websiteDescription ?: "" }
-    val domainFaviconUrl: String?
-        get() = domainRegex.find(url)?.groupValues?.firstOrNull()?.plus("/favicon.ico")
-
     val resolvedFaviconUrl: String?
-        get() = faviconUrl ?: domainFaviconUrl
+        get() = faviconUrl ?: gstaticFaviconUrl
+
+    private val gstaticFaviconUrl: String?
+        get() = domainRegex.find(url)?.groupValues?.firstOrNull()?.let {
+            "https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=$it&size=32"
+        }
 
     companion object {
 
