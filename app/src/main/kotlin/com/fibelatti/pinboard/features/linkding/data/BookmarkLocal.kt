@@ -26,6 +26,7 @@ data class BookmarkLocal(
     val notes: String? = null,
     val websiteTitle: String? = null,
     val websiteDescription: String? = null,
+    val faviconUrl: String? = null,
     val isArchived: Boolean? = false,
     val unread: Boolean? = false,
     val shared: Boolean? = true,
@@ -65,6 +66,7 @@ class BookmarkLocalMapper @Inject constructor(
             notes = notes,
             websiteTitle = websiteTitle,
             websiteDescription = websiteDescription,
+            faviconUrl = faviconUrl,
             isArchived = isArchived,
             pendingSync = when (pendingSync) {
                 PendingSyncDto.ADD -> PendingSync.ADD
@@ -84,6 +86,7 @@ class BookmarkLocalMapper @Inject constructor(
             notes = notes,
             websiteTitle = websiteTitle,
             websiteDescription = websiteDescription,
+            faviconUrl = faviconUrl,
             isArchived = isArchived,
             unread = readLater,
             shared = private != true,

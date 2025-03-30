@@ -19,6 +19,7 @@ data class Post(
     val notes: String? = null,
     val websiteTitle: String? = null,
     val websiteDescription: String? = null,
+    val faviconUrl: String? = null,
     val isArchived: Boolean? = null,
     val pendingSync: PendingSync? = null,
 ) {
@@ -27,8 +28,11 @@ data class Post(
         get() = title.ifEmpty { websiteTitle ?: "" }
     val displayDescription: String
         get() = description.ifEmpty { websiteDescription ?: "" }
-    val faviconUrl: String?
+    val domainFaviconUrl: String?
         get() = domainRegex.find(url)?.groupValues?.firstOrNull()?.plus("/favicon.ico")
+
+    val resolvedFaviconUrl: String?
+        get() = faviconUrl ?: domainFaviconUrl
 
     companion object {
 

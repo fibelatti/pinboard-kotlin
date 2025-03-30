@@ -31,6 +31,8 @@ data class BookmarkRemote(
     val websiteTitle: String? = null,
     @SerialName(value = "website_description")
     val websiteDescription: String? = null,
+    @SerialName(value = "favicon_url")
+    val faviconUrl: String? = null,
     @SerialName(value = "is_archived")
     val isArchived: Boolean? = false,
     val unread: Boolean? = false,
@@ -67,6 +69,7 @@ class BookmarkRemoteMapper @Inject constructor(
             notes = notes,
             websiteTitle = websiteTitle,
             websiteDescription = websiteDescription,
+            faviconUrl = faviconUrl,
             isArchived = isArchived,
         )
     }

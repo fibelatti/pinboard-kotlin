@@ -682,7 +682,7 @@ private fun BookmarkItem(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                post.faviconUrl?.let { faviconUrl ->
+                post.resolvedFaviconUrl?.let { faviconUrl ->
                     val painter: AsyncImagePainter = rememberAsyncImagePainter(model = faviconUrl)
                     val faviconState: AsyncImagePainter.State by painter.state.collectAsStateWithLifecycle()
 

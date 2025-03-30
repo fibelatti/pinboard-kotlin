@@ -23,6 +23,7 @@ const val DATABASE_VERSION_4 = 4 // Release 1.18.0
 const val DATABASE_VERSION_5 = 5 // Release 2.2.0
 const val DATABASE_VERSION_6 = 6 // Release 3.0.0 (Linkding support)
 const val DATABASE_VERSION_7 = 7 // Release 3.2.0
+const val DATABASE_VERSION_8 = 8 // Release 3.8.3
 
 @Database(
     entities = [
@@ -30,13 +31,14 @@ const val DATABASE_VERSION_7 = 7 // Release 3.2.0
         BookmarkLocal::class, BookmarkLocalFts::class,
         SavedFilterDto::class,
     ],
-    version = DATABASE_VERSION_7,
+    version = DATABASE_VERSION_8,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = DATABASE_VERSION_3, to = DATABASE_VERSION_4),
         AutoMigration(from = DATABASE_VERSION_4, to = DATABASE_VERSION_5),
         AutoMigration(from = DATABASE_VERSION_5, to = DATABASE_VERSION_6),
         AutoMigration(from = DATABASE_VERSION_6, to = DATABASE_VERSION_7),
+        AutoMigration(from = DATABASE_VERSION_7, to = DATABASE_VERSION_8),
     ],
 )
 abstract class AppDatabase : RoomDatabase() {
