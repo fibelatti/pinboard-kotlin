@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.room)
     alias(libs.plugins.about.libraries)
+    alias(libs.plugins.licensee)
 }
 
 object AppInfo {
@@ -163,6 +164,14 @@ room {
 aboutLibraries {
     excludeFields = arrayOf("generated")
     registerAndroidTasks = false
+}
+
+licensee {
+    allow("Apache-2.0")
+    allow("MIT")
+    allowUrl("https://jsoup.org/license") {
+        because("MIT, but self-hosted copy of the license")
+    }
 }
 
 dependencies {
