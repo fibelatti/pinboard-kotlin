@@ -48,12 +48,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowInsetsCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
-import com.fibelatti.core.android.extension.doOnApplyWindowInsets
 import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
@@ -72,6 +70,8 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.TagManagerState
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagManager
+import com.fibelatti.ui.foundation.RememberedEffect
+import com.fibelatti.ui.foundation.rememberKeyboardState
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -139,6 +139,8 @@ private fun LaunchedViewModelEffects(
     val localContext = LocalContext.current
     val localView = LocalView.current
 
+    val imeVisible by rememberKeyboardState()
+
     BackHandler {
         if (editPostViewModel.hasPendingChanges()) {
             MaterialAlertDialogBuilder(localContext).apply {
@@ -151,21 +153,19 @@ private fun LaunchedViewModelEffects(
         }
     }
 
-    LaunchedEffect(Unit) {
-        localView.doOnApplyWindowInsets { _, insets, _, _ ->
-            if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
-                mainViewModel.updateState { currentState ->
-                    currentState.copy(
-                        actionButton = MainState.ActionButtonComponent.Visible(
-                            contentType = EditPostContent::class,
-                            label = localContext.getString(R.string.hint_save),
-                        ),
-                    )
-                }
-            } else {
-                mainViewModel.updateState { currentState ->
-                    currentState.copy(actionButton = MainState.ActionButtonComponent.Gone)
-                }
+    RememberedEffect(imeVisible) {
+        if (imeVisible) {
+            mainViewModel.updateState { currentState ->
+                currentState.copy(
+                    actionButton = MainState.ActionButtonComponent.Visible(
+                        contentType = EditPostContent::class,
+                        label = localContext.getString(R.string.hint_save),
+                    ),
+                )
+            }
+        } else {
+            mainViewModel.updateState { currentState ->
+                currentState.copy(actionButton = MainState.ActionButtonComponent.Gone)
             }
         }
     }
