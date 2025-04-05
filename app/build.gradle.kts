@@ -133,11 +133,10 @@ android {
 
 androidComponents {
     onVariants { variant ->
-        val appName =
-            StringBuilder().apply {
-                append(AppInfo.APP_NAME)
-                if (variant.name.contains("debug", ignoreCase = true)) append(" Dev")
-            }.toString()
+        val appName = StringBuilder().apply {
+            append(AppInfo.APP_NAME)
+            if (variant.name.contains("debug", ignoreCase = true)) append(" Dev")
+        }.toString()
 
         variant.resValues.put(
             variant.makeResValueKey("string", "app_name"),
