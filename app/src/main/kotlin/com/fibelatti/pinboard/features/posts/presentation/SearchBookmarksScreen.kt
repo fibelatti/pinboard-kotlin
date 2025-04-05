@@ -38,7 +38,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
-import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.extension.showBanner
@@ -85,6 +84,7 @@ fun SearchBookmarksScreen(
 
         val localView = LocalView.current
         val localLifecycle = LocalLifecycleOwner.current.lifecycle
+        val keyboardController = LocalSoftwareKeyboardController.current
 
         LaunchedEffect(Unit) {
             mainViewModel.menuItemClicks(contentType = SearchContent::class)
@@ -116,7 +116,7 @@ fun SearchBookmarksScreen(
 
         DisposableEffect(Unit) {
             onDispose {
-                localView.hideKeyboard()
+                keyboardController?.hide()
             }
         }
 

@@ -52,7 +52,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -61,7 +61,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.SelectionDialog
@@ -86,13 +85,13 @@ fun TagListScreen(
     val tagsState by tagsViewModel.state.collectAsStateWithLifecycle()
 
     val localContext = LocalContext.current
-    val localView = LocalView.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val error by tagsViewModel.error.collectAsStateWithLifecycle()
     LaunchedErrorHandlerEffect(error = error, handler = tagsViewModel::errorHandled)
 
     DisposableEffect(Unit) {
-        onDispose { localView.hideKeyboard() }
+        onDispose { keyboardController?.hide() }
     }
 
     TagList(

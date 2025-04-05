@@ -51,7 +51,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -62,7 +62,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.Appearance
@@ -101,7 +100,7 @@ fun UserPreferencesScreen(
     val appState by userPreferencesViewModel.appState.collectAsStateWithLifecycle()
 
     val localActivity = LocalActivity.current
-    val localView = LocalView.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val scope = rememberCoroutineScope()
     val restartActivity: () -> Unit by rememberUpdatedState {
@@ -112,7 +111,7 @@ fun UserPreferencesScreen(
     }
 
     DisposableEffect(Unit) {
-        onDispose { localView.hideKeyboard() }
+        onDispose { keyboardController?.hide() }
     }
 
     BoxWithConstraints(

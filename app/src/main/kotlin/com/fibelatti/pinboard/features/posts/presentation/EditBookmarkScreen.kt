@@ -40,6 +40,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
@@ -52,7 +53,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
-import com.fibelatti.core.android.extension.hideKeyboard
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
@@ -137,7 +137,7 @@ private fun LaunchedViewModelEffects(
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
 ) {
     val localContext = LocalContext.current
-    val localView = LocalView.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val imeVisible by rememberKeyboardState()
 
@@ -205,7 +205,7 @@ private fun LaunchedViewModelEffects(
                 )
             }
 
-            localView.hideKeyboard()
+            keyboardController?.hide()
         }
     }
 }
@@ -217,13 +217,13 @@ private fun LaunchedMainViewModelEffect(
     editPostViewModel: EditPostViewModel = hiltViewModel(),
 ) {
     val localContext = LocalContext.current
-    val localView = LocalView.current
     val localLifecycle = LocalLifecycleOwner.current.lifecycle
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(Unit) {
         mainViewModel.actionButtonClicks(contentType = EditPostContent::class)
             .onEach {
-                localView.hideKeyboard()
+                keyboardController?.hide()
                 editPostViewModel.saveLink()
             }
             .flowWithLifecycle(localLifecycle)
@@ -245,7 +245,7 @@ private fun LaunchedMainViewModelEffect(
             .launchIn(this)
         mainViewModel.fabClicks(contentType = EditPostContent::class)
             .onEach {
-                localView.hideKeyboard()
+                keyboardController?.hide()
                 editPostViewModel.saveLink()
             }
             .flowWithLifecycle(localLifecycle)
