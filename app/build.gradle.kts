@@ -106,8 +106,9 @@ android {
     }
 
     packaging {
-        resources.excludes.add("META-INF/LICENSE.md")
-        resources.excludes.add("META-INF/LICENSE-notice.md")
+        resources.merges.add("META-INF/LICENSE.md")
+        resources.merges.add("META-INF/LICENSE-notice.md")
+        resources.excludes.add("META-INF/*.version")
     }
 
     dependenciesInfo {
@@ -144,10 +145,6 @@ androidComponents {
         )
 
         variant.androidResources.localeFilters.add("en")
-    }
-
-    onVariants(selector().withBuildType("release")) { variant ->
-        variant.packaging.resources.excludes.add("META-INF/*.version")
     }
 }
 
