@@ -11,7 +11,9 @@ updates:
     schedule:
       interval: "daily"
     groups:
-      compose-kotlin:
+      kotlin:
         patterns:
           - "org.jetbrains.kotlin:*"
+          - "org.jetbrains.kotlinx:*"
+          - "io.ktor:*"
           - "com.google.devtools.ksp"
