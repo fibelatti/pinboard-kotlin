@@ -26,7 +26,7 @@ object DatabaseModule {
         application: Application,
         databaseResetCallback: DatabaseResetCallback,
     ): AppDatabase = Room.databaseBuilder(application, AppDatabase::class.java, DATABASE_NAME)
-        .fallbackToDestructiveMigrationFrom(DATABASE_VERSION_1, DATABASE_VERSION_2)
+        .fallbackToDestructiveMigrationFrom(dropAllTables = true, DATABASE_VERSION_1, DATABASE_VERSION_2)
         .addCallback(databaseResetCallback)
         .build()
 
