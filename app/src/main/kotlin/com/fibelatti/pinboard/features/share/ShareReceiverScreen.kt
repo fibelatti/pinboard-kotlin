@@ -72,7 +72,7 @@ fun ShareReceiverScreen(
     if (currentState is ScreenState.Loaded &&
         currentState.data !is ShareReceiverViewModel.SharingResult.ChooseService
     ) {
-        LocalHapticFeedback.current.performHapticFeedback(HapticFeedbackType.LongPress)
+        LocalHapticFeedback.current.performHapticFeedback(HapticFeedbackType.Confirm)
 
         currentState.data.message?.let {
             Toast.makeText(LocalContext.current, it, Toast.LENGTH_SHORT).show()

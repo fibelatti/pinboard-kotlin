@@ -3,7 +3,6 @@ package com.fibelatti.ui.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -81,7 +80,6 @@ public fun Chip(
 }
 
 @Composable
-@OptIn(ExperimentalLayoutApi::class)
 public fun MultilineChipGroup(
     items: List<ChipGroup.Item>,
     onItemClick: (ChipGroup.Item) -> Unit,

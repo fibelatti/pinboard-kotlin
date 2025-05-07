@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.filters.presentation
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -120,7 +119,6 @@ private fun SavedFiltersScreen(
 }
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 private fun SavedFilterItem(
     savedFilter: SavedFilter,
     onClicked: (SavedFilter) -> Unit,

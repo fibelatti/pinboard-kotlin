@@ -158,8 +158,8 @@ room {
 }
 
 aboutLibraries {
-    excludeFields = arrayOf("generated")
-    registerAndroidTasks = false
+    export.excludeFields = setOf("generated")
+    android.registerAndroidTasks = false
 }
 
 licensee {

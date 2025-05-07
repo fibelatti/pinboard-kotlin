@@ -3,7 +3,6 @@ package com.fibelatti.pinboard.features.posts.presentation
 import android.content.Context
 import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -630,7 +629,6 @@ private fun ActiveSearch(
 }
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 private fun BookmarkItem(
     appMode: AppMode,
     post: Post,

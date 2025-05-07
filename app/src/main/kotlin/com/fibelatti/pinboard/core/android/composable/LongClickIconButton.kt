@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.core.android.composable
 
 import android.widget.Toast
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -22,7 +21,6 @@ import androidx.compose.ui.unit.dp
  * An IconButton that when long clicked will show a toast with the provided [description].
  */
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 fun LongClickIconButton(
     painter: Painter,
     description: String,

@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -140,7 +139,6 @@ fun TagListScreen(
 }
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 fun TagList(
     header: @Composable LazyItemScope.() -> Unit,
     items: List<Tag>,
@@ -326,7 +324,6 @@ private fun TagListSortingControls(
 }
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 private fun TagListItem(
     item: Tag,
     onTagClicked: (Tag) -> Unit,

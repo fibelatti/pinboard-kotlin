@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -109,7 +108,6 @@ object SelectionDialog {
 }
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 private fun <T> SelectionDialogContent(
     title: String,
     options: Map<T, Boolean>,
