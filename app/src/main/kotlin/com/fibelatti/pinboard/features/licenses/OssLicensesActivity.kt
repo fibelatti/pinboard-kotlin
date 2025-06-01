@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -26,8 +28,9 @@ import com.fibelatti.ui.foundation.copy
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.ui.compose.LibrariesContainer
 import com.mikepenz.aboutlibraries.ui.compose.LibraryDefaults
+import com.mikepenz.aboutlibraries.ui.compose.chipColors
 import com.mikepenz.aboutlibraries.ui.compose.libraryColors
-import com.mikepenz.aboutlibraries.util.withJson
+import com.mikepenz.aboutlibraries.ui.compose.rememberLibraries
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -53,20 +56,29 @@ private fun OssLicensesScreen(
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues = WindowInsets.safeDrawing.asPaddingValues(),
 ) {
+    val localContext = LocalContext.current
+    val libs: Libs? by rememberLibraries {
+        localContext.resources.openRawResource(R.raw.aboutlibraries).bufferedReader().use { it.readText() }
+    }
+
     LibrariesContainer(
+        libraries = libs,
         modifier = modifier
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background)
             .padding(top = paddingValues.calculateTopPadding()),
-        librariesBlock = { ctx ->
-            Libs.Builder().withJson(ctx, R.raw.aboutlibraries).build()
-        },
         contentPadding = paddingValues.copy(top = 0.dp),
+        showLicenseBadges = false,
         colors = LibraryDefaults.libraryColors(
             backgroundColor = MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.onBackground,
-            badgeBackgroundColor = MaterialTheme.colorScheme.primaryContainer,
-            badgeContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            versionChipColors = LibraryDefaults.chipColors(
+                containerColor = MaterialTheme.colorScheme.background,
+            ),
+            licenseChipColors = LibraryDefaults.chipColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            ),
             dialogConfirmButtonColor = MaterialTheme.colorScheme.primary,
         ),
         header = {
