@@ -96,6 +96,7 @@ import com.fibelatti.pinboard.features.appstate.SearchParameters
 import com.fibelatti.pinboard.features.appstate.SetSorting
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.appstate.ViewPost
+import com.fibelatti.pinboard.features.appstate.ViewRandomPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
@@ -262,6 +263,10 @@ private fun LaunchedMainViewModelEffect(
             .launchIn(this)
         mainViewModel.fabClicks(contentType = PostListContent::class)
             .onEach { mainViewModel.runAction(AddPost) }
+            .flowWithLifecycle(localLifecycle)
+            .launchIn(this)
+        mainViewModel.actionButtonClicks(contentType = PostListContent::class)
+            .onEach { mainViewModel.runAction(ViewRandomPost) }
             .flowWithLifecycle(localLifecycle)
             .launchIn(this)
     }

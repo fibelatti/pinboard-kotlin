@@ -22,6 +22,7 @@ import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.appstate.ViewCategory
 import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.main.MainState
+import com.fibelatti.pinboard.features.main.MainState.ActionButtonComponent
 import javax.inject.Inject
 
 class BookmarkListReducer @Inject constructor(
@@ -29,7 +30,7 @@ class BookmarkListReducer @Inject constructor(
 ) : MainStateReducer {
 
     override fun invoke(mainState: MainState, appState: AppState): MainState {
-        val content = appState.content.find<PostListContent>() ?: return mainState
+        val content: PostListContent = appState.content.find<PostListContent>() ?: return mainState
 
         return mainState.copy(
             title = MainState.TitleComponent.Visible(getCategoryTitle(content.category)),
@@ -41,6 +42,14 @@ class BookmarkListReducer @Inject constructor(
                 )
             },
             navigation = MainState.NavigationComponent.Gone,
+            actionButton = if (content.category is Unread && !content.posts?.list.isNullOrEmpty()) {
+                ActionButtonComponent.Visible(
+                    contentType = PostListContent::class,
+                    label = resourceProvider.getString(R.string.hint_read_random),
+                )
+            } else {
+                ActionButtonComponent.Gone
+            },
             bottomAppBar = MainState.BottomAppBarComponent.Visible(
                 contentType = PostListContent::class,
                 menuItems = buildList {

@@ -26,6 +26,7 @@ class NavigationActionHandler @Inject constructor(
             is NavigateBack -> navigateBack(currentContent)
             is ViewCategory -> viewCategory(action, currentContent)
             is ViewPost -> viewPost(action, currentContent)
+            is ViewRandomPost -> viewRandomPost(currentContent)
             is ViewSearch -> viewSearch(currentContent)
             is AddPost -> viewAddPost(currentContent)
             is ViewTags -> viewTags(currentContent)
@@ -118,6 +119,22 @@ class NavigationActionHandler @Inject constructor(
 
             else -> currentContent
         }
+    }
+
+    private fun viewRandomPost(currentContent: Content): Content {
+        val body = { postListContent: PostListContent ->
+            PostDetailContent(
+                post = postListContent.posts?.list.orEmpty()
+                    .filter { it.readLater == true }
+                    .random(),
+                previousContent = postListContent,
+                isConnected = connectivityInfoProvider.isConnected(),
+            )
+        }
+
+        return currentContent
+            .reduce(body)
+            .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
     }
 
     @VisibleForTesting
