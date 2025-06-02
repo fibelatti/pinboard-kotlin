@@ -12,6 +12,7 @@ import com.fibelatti.pinboard.features.appstate.LoginContent
 import com.fibelatti.pinboard.features.user.domain.Login
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.plugins.ResponseException
+import java.net.ConnectException
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -96,6 +97,17 @@ class AuthViewModel @Inject constructor(
             loginUseCase(params)
                 .onFailure { error ->
                     when {
+                        error is ConnectException && screenState.value.useLinkding -> {
+                            _screenState.update { currentState ->
+                                currentState.copy(
+                                    isLoading = false,
+                                    instanceUrlError = resourceProvider.getString(
+                                        R.string.auth_linkding_unreachable_instance_url,
+                                    ),
+                                )
+                            }
+                        }
+
                         error is ResponseException && error.response.status.value in AppConfig.LOGIN_FAILED_CODES -> {
                             _screenState.update { currentState ->
                                 currentState.copy(

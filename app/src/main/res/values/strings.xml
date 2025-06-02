@@ -67,6 +67,8 @@
     <string name="auth_linkding_instance_url_error">Please enter a valid instance URL.</string>
     <string name="auth_linkding_description"><![CDATA[<a href="https://github.com/sissbruecker/linkding/tree/master">Linkding</a> is a self-hosted bookmark manager. When using Pinkt for Linkding you must provide your instance URL and your token, which can be found in the Integration tab of the Settings page.]]></string>
 
+    <string name="auth_linkding_unreachable_instance_url">Unable to connect to server. The address must contain a protocol and be publicly accessible.</string>
+
     <!-- Posts -->
     <string name="posts_title_all">All Bookmarks</string>
     <string name="posts_title_recent">Recent Bookmarks</string>
