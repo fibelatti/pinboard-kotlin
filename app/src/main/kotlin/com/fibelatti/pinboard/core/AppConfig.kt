@@ -7,7 +7,6 @@ object AppConfig {
     const val API_BASE_URL_LENGTH = 90
 
     const val API_PAGE_SIZE = 10_000
-    const val MALFORMED_OBJECT_THRESHOLD = 1_000
 
     const val DEFAULT_PAGE_SIZE = 1_000
     const val DEFAULT_RECENT_QUANTITY = 50

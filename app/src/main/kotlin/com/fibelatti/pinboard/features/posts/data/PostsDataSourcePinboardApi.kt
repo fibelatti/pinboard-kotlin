@@ -12,7 +12,6 @@ import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.mapFailure
 import com.fibelatti.pinboard.core.AppConfig.API_BASE_URL_LENGTH
 import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
-import com.fibelatti.pinboard.core.AppConfig.MALFORMED_OBJECT_THRESHOLD
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiMaxLength
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
@@ -299,25 +298,22 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
 
     @VisibleForTesting
     suspend fun getAdditionalPages(initialOffset: Int) = supervisorScope {
-        if (API_PAGE_SIZE - initialOffset > MALFORMED_OBJECT_THRESHOLD) return@supervisorScope
-
         pagedRequestsJob = launch {
             runCatching {
                 var currentOffset = initialOffset
 
-                while (currentOffset != 0) {
+                while (currentOffset > 0) {
                     val additionalPosts = postsApi.getAllPosts(
                         offset = currentOffset,
                         limit = API_PAGE_SIZE,
                     )
 
-                    savePosts(postRemoteDtoMapper.mapList(additionalPosts))
-
-                    if (API_PAGE_SIZE - additionalPosts.size < MALFORMED_OBJECT_THRESHOLD) {
-                        currentOffset += additionalPosts.size
-                    } else {
-                        currentOffset = 0
+                    if (additionalPosts.isEmpty()) {
+                        break
                     }
+
+                    savePosts(postRemoteDtoMapper.mapList(additionalPosts))
+                    currentOffset += additionalPosts.size
                 }
             }
         }
