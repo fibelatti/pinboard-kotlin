@@ -87,6 +87,9 @@ interface BookmarksDao {
     @Query("select tagNames from $FTS_TABLE_NAME where tagNames match :tag")
     suspend fun searchExistingBookmarkTags(tag: String): List<String>
 
+    @Query("select tagNames from $TABLE_NAME where tagNames like '%' || :tag || '%'")
+    suspend fun searchExistingBookmarkTagsNoFts(tag: String): List<String>
+
     @Query("select * from $TABLE_NAME where id = :id or url = :url")
     suspend fun getBookmark(id: String, url: String): BookmarkLocal?
 

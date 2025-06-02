@@ -89,6 +89,9 @@ interface PostsDao {
     @Query("select tags from $POST_FTS_TABLE_NAME where tags match :tag")
     suspend fun searchExistingPostTag(tag: String): List<String>
 
+    @Query("select tags from $POST_TABLE_NAME where tags like '%' || :tag || '%'")
+    suspend fun searchExistingPostTagNoFts(tag: String): List<String>
+
     @Query("select * from $POST_TABLE_NAME where href = :url")
     suspend fun getPost(url: String): PostDto?
 

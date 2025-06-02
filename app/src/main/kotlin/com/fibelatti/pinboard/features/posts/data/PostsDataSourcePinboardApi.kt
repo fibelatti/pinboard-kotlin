@@ -484,11 +484,17 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
         tag: String,
         currentTags: List<Tag>,
     ): Result<List<String>> = resultFrom {
+        val isFtsCompatible = isFtsCompatible(tag)
         val tagNames = currentTags.map(Tag::name)
 
         if (tag.isNotEmpty()) {
-            postsDao.searchExistingPostTag(PostsDao.preFormatTag(tag))
-                .flatMap { it.replaceHtmlChars().split(" ") }
+            val tags = if (isFtsCompatible) {
+                postsDao.searchExistingPostTag(PostsDao.preFormatTag(tag))
+            } else {
+                postsDao.searchExistingPostTagNoFts(tag)
+            }
+
+            tags.flatMap { it.replaceHtmlChars().split(" ") }
                 .filter { it.startsWith(tag, ignoreCase = true) && it !in tagNames }
                 .distinct()
                 .sorted()

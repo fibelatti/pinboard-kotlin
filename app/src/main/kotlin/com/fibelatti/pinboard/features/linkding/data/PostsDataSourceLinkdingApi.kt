@@ -387,11 +387,17 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
         tag: String,
         currentTags: List<Tag>,
     ): Result<List<String>> = resultFrom {
+        val isFtsCompatible = isFtsCompatible(tag)
         val tagNames = currentTags.map(Tag::name)
 
         if (tag.isNotEmpty()) {
-            linkdingDao.searchExistingBookmarkTags(BookmarksDao.preFormatTag(tag))
-                .flatMap { it.replaceHtmlChars().split(" ") }
+            val tags = if (isFtsCompatible) {
+                linkdingDao.searchExistingBookmarkTags(BookmarksDao.preFormatTag(tag))
+            } else {
+                linkdingDao.searchExistingBookmarkTagsNoFts(tag)
+            }
+
+            tags.flatMap { it.replaceHtmlChars().split(" ") }
                 .filter { it.startsWith(tag, ignoreCase = true) && it !in tagNames }
                 .distinct()
                 .sorted()
