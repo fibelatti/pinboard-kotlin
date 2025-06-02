@@ -1,0 +1,8 @@
+This version brings the following updates:
+
+* Adds a new "Read random" action button to the Read Later bookmarks filter
+* Fixes the tag input suggestions not working as expected
+* Fixes search not working as expected for non-latin characters (Linkding)
+* Fixes pagination not working as expected (Pinboard)
+
+Feedback and suggestions are always welcome, thank you for using the app!
