@@ -345,7 +345,7 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
             }
 
             localDataSize > 0 -> {
-                linkdingDao.getAllBookmarks(
+                linkdingDao.getAllBookmarksNoFts(
                     sortType = sortType.index,
                     term = searchTerm.trim(),
                     tag1 = tags.getTagName(index = 0, preFormat = false),
