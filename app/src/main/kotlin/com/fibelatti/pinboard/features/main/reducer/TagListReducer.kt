@@ -11,12 +11,9 @@ class TagListReducer @Inject constructor(
 ) : MainStateReducer {
 
     override fun invoke(mainState: MainState, appState: AppState): MainState {
-        return mainState.copy(
+        return MainState(
             title = MainState.TitleComponent.Visible(resourceProvider.getString(R.string.tags_title)),
-            subtitle = MainState.TitleComponent.Gone,
             navigation = MainState.NavigationComponent.Visible(),
-            bottomAppBar = MainState.BottomAppBarComponent.Gone,
-            floatingActionButton = MainState.FabComponent.Gone,
         )
     }
 }

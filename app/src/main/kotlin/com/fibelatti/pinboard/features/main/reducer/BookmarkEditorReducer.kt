@@ -6,6 +6,7 @@ import com.fibelatti.pinboard.features.appstate.AddPostContent
 import com.fibelatti.pinboard.features.appstate.AppState
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.main.MainState
+import com.fibelatti.pinboard.features.posts.domain.model.Post
 import javax.inject.Inject
 
 class BookmarkEditorReducer @Inject constructor(
@@ -13,15 +14,14 @@ class BookmarkEditorReducer @Inject constructor(
 ) : MainStateReducer {
 
     override fun invoke(mainState: MainState, appState: AppState): MainState {
-        val post = when (appState.content) {
+        val post: Post? = when (appState.content) {
             is EditPostContent -> appState.content.post
             is AddPostContent -> null
             else -> return mainState
         }
 
-        return mainState.copy(
+        return MainState(
             title = MainState.TitleComponent.Visible(resourceProvider.getString(R.string.posts_add_title)),
-            subtitle = MainState.TitleComponent.Gone,
             navigation = MainState.NavigationComponent.Visible(icon = R.drawable.ic_close),
             bottomAppBar = MainState.BottomAppBarComponent.Visible(
                 contentType = EditPostContent::class,

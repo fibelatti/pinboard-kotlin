@@ -14,12 +14,9 @@ class PopularBookmarksReducer @Inject constructor(
     override fun invoke(mainState: MainState, appState: AppState): MainState {
         if (appState.content !is PopularPostsContent) return mainState
 
-        return mainState.copy(
+        return MainState(
             title = MainState.TitleComponent.Visible(resourceProvider.getString(R.string.popular_title)),
-            subtitle = MainState.TitleComponent.Gone,
             navigation = MainState.NavigationComponent.Visible(),
-            bottomAppBar = MainState.BottomAppBarComponent.Gone,
-            floatingActionButton = MainState.FabComponent.Gone,
         )
     }
 }

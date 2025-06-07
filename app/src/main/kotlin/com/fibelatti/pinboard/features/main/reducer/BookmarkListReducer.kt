@@ -3,6 +3,8 @@ package com.fibelatti.pinboard.features.main.reducer
 import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.features.appstate.AccountSwitcherContent
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppState
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
@@ -23,14 +25,23 @@ import com.fibelatti.pinboard.features.appstate.ViewCategory
 import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.main.MainState
 import com.fibelatti.pinboard.features.main.MainState.ActionButtonComponent
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
 
 class BookmarkListReducer @Inject constructor(
     private val resourceProvider: ResourceProvider,
+    private val userRepository: UserRepository,
 ) : MainStateReducer {
 
     override fun invoke(mainState: MainState, appState: AppState): MainState {
         val content: PostListContent = appState.content.find<PostListContent>() ?: return mainState
+        val currentServiceName = when (appState.appMode) {
+            AppMode.PINBOARD -> R.string.pinboard
+            AppMode.LINKDING -> R.string.linkding
+            else -> null
+        }
+        val connectedServices: Set<AppMode> = userRepository.userCredentials.value.getConnectedServices()
+        val hasMultipleAccounts: Boolean = connectedServices.size > 1
 
         return mainState.copy(
             title = MainState.TitleComponent.Visible(getCategoryTitle(content.category)),
@@ -42,13 +53,23 @@ class BookmarkListReducer @Inject constructor(
                 )
             },
             navigation = MainState.NavigationComponent.Gone,
-            actionButton = if (content.category is Unread && !content.posts?.list.isNullOrEmpty()) {
-                ActionButtonComponent.Visible(
-                    contentType = PostListContent::class,
-                    label = resourceProvider.getString(R.string.hint_read_random),
-                )
-            } else {
-                ActionButtonComponent.Gone
+            actionButton = when {
+                content.category is Unread && !content.posts?.list.isNullOrEmpty() -> {
+                    ActionButtonComponent.Visible(
+                        contentType = PostListContent::class,
+                        label = resourceProvider.getString(R.string.hint_read_random),
+                    )
+                }
+
+                hasMultipleAccounts && currentServiceName != null -> {
+                    ActionButtonComponent.Visible(
+                        contentType = AccountSwitcherContent::class,
+                        label = resourceProvider.getString(currentServiceName),
+                        data = connectedServices.first { it != appState.appMode },
+                    )
+                }
+
+                else -> ActionButtonComponent.Gone
             },
             bottomAppBar = MainState.BottomAppBarComponent.Visible(
                 contentType = PostListContent::class,

@@ -18,7 +18,7 @@ class SearchReducer @Inject constructor(
 
         val activeSearchLabel = resourceProvider.getString(R.string.search_result_size, content.queryResultSize)
 
-        return mainState.copy(
+        return MainState(
             title = MainState.TitleComponent.Visible(resourceProvider.getString(R.string.search_title)),
             subtitle = if (isActive) {
                 MainState.TitleComponent.Visible(label = activeSearchLabel)

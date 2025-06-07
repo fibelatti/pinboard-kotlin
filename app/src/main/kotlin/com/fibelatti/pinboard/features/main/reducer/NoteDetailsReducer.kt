@@ -21,12 +21,8 @@ class NoteDetailsReducer @Inject constructor(
                 ),
             )
         } else {
-            mainState.copy(
-                title = MainState.TitleComponent.Gone,
-                subtitle = MainState.TitleComponent.Gone,
+            MainState(
                 navigation = MainState.NavigationComponent.Visible(),
-                bottomAppBar = MainState.BottomAppBarComponent.Gone,
-                floatingActionButton = MainState.FabComponent.Gone,
             )
         }
     }

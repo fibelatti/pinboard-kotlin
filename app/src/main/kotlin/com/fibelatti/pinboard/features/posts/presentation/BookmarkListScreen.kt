@@ -77,6 +77,7 @@ import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.copyToClipboard
 import com.fibelatti.pinboard.core.extension.rememberScrollDirection
 import com.fibelatti.pinboard.core.extension.showBanner
+import com.fibelatti.pinboard.features.appstate.AccountSwitcherContent
 import com.fibelatti.pinboard.features.appstate.AddPost
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
 import com.fibelatti.pinboard.features.appstate.ByDateAddedOldestFirst
@@ -95,6 +96,7 @@ import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.SearchParameters
 import com.fibelatti.pinboard.features.appstate.SetSorting
 import com.fibelatti.pinboard.features.appstate.SortType
+import com.fibelatti.pinboard.features.appstate.UserLoggedIn
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewRandomPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
@@ -267,6 +269,14 @@ private fun LaunchedMainViewModelEffect(
             .launchIn(this)
         mainViewModel.actionButtonClicks(contentType = PostListContent::class)
             .onEach { mainViewModel.runAction(ViewRandomPost) }
+            .flowWithLifecycle(localLifecycle)
+            .launchIn(this)
+        mainViewModel.actionButtonClicks(contentType = AccountSwitcherContent::class)
+            .onEach { data ->
+                if (data is AppMode) {
+                    mainViewModel.runAction(UserLoggedIn(appMode = data))
+                }
+            }
             .flowWithLifecycle(localLifecycle)
             .launchIn(this)
     }

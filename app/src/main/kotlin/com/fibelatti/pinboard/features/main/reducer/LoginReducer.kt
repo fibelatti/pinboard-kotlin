@@ -7,12 +7,8 @@ import javax.inject.Inject
 class LoginReducer @Inject constructor() : MainStateReducer {
 
     override fun invoke(mainState: MainState, appState: AppState): MainState {
-        return mainState.copy(
-            title = MainState.TitleComponent.Gone,
-            subtitle = MainState.TitleComponent.Gone,
+        return MainState(
             navigation = MainState.NavigationComponent.Visible(),
-            bottomAppBar = MainState.BottomAppBarComponent.Gone,
-            floatingActionButton = MainState.FabComponent.Gone,
         )
     }
 }

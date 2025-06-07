@@ -14,7 +14,7 @@ class NoteListReducer @Inject constructor(
     override fun invoke(mainState: MainState, appState: AppState): MainState {
         val content = appState.content as? NoteListContent ?: return mainState
 
-        return mainState.copy(
+        return MainState(
             title = MainState.TitleComponent.Visible(resourceProvider.getString(R.string.notes_title)),
             subtitle = when {
                 content.shouldLoad -> MainState.TitleComponent.Gone
@@ -28,8 +28,6 @@ class NoteListReducer @Inject constructor(
                 )
             },
             navigation = MainState.NavigationComponent.Visible(),
-            bottomAppBar = MainState.BottomAppBarComponent.Gone,
-            floatingActionButton = MainState.FabComponent.Gone,
         )
     }
 }
