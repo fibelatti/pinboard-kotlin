@@ -73,6 +73,7 @@ class AppStateDataSource @Inject constructor(
                 is AuthAction -> {
                     when (action) {
                         is UserLoggedIn -> {
+                            appModeProvider.setSelection(action.appMode)
                             unauthorizedPluginProvider.enable(appMode = action.appMode)
                             getInitialPostListContent()
                         }

@@ -21,7 +21,6 @@ import io.mockk.coVerifyOrder
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkClass
-import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -248,7 +247,10 @@ internal class AppStateDataSourceTest {
 
                             is UserLoggedIn -> {
                                 assertThat(state).isEqualTo(expectedInitialState)
-                                verify { mockUnauthorizedPluginProvider.enable(appMode = mockAppMode) }
+                                coVerifyOrder {
+                                    mockAppModeProvider.setSelection(appMode = mockAppMode)
+                                    mockUnauthorizedPluginProvider.enable(appMode = mockAppMode)
+                                }
                             }
 
                             is UserLoginFailed -> {
