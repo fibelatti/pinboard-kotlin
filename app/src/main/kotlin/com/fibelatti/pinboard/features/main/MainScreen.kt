@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package com.fibelatti.pinboard.features.main
 
 import android.content.Intent
@@ -5,25 +7,24 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,23 +36,22 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FloatingToolbarDefaults
+import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -59,7 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.window.core.layout.WindowSizeClass
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
 import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
@@ -101,7 +101,6 @@ import com.fibelatti.pinboard.features.tags.presentation.TagListScreen
 import com.fibelatti.pinboard.features.user.presentation.AccountSwitcherScreen
 import com.fibelatti.pinboard.features.user.presentation.AuthScreen
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesScreen
-import com.fibelatti.ui.foundation.pxToDp
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlin.reflect.KClass
@@ -117,7 +116,7 @@ fun MainScreen(
     val backHandlerEnabled by remember {
         derivedStateOf { (appState.content as? ContentWithHistory)?.previousContent !is ExternalContent }
     }
-    val multiPanelAvailable = getWindowSizeClass().windowWidthSizeClass != WindowWidthSizeClass.COMPACT
+    val multiPanelAvailable = getWindowSizeClass().isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
 
     val localActivity = LocalAppCompatActivity.current
     val localOnBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
@@ -254,7 +253,15 @@ fun MainScreen(
             }
         }
 
-        if (content !is LoginContent) {
+        val bottomBarVisible = content !is LoginContent &&
+            state.floatingActionButton is MainState.FabComponent.Visible &&
+            state.scrollDirection != ScrollDirection.DOWN
+
+        AnimatedVisibility(
+            visible = bottomBarVisible,
+            enter = slideInVertically(initialOffsetY = { it }),
+            exit = slideOutVertically(targetOffsetY = { it }),
+        ) {
             MainBottomAppBar(
                 state = state,
                 sidePanelVisible = sidePanelVisible,
@@ -262,7 +269,15 @@ fun MainScreen(
                 onMenuItemClick = onMenuItemClick,
                 onSideMenuItemClick = onSideMenuItemClick,
                 onFabClick = onFabClick,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .windowInsetsPadding(
+                        WindowInsets.navigationBars
+                            .add(WindowInsets.displayCutout)
+                            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+                    )
+                    .padding(bottom = 16.dp),
             )
         }
     }
@@ -385,7 +400,10 @@ private fun OfflineAlert(
         )
 
         if (showRetryButton) {
-            TextButton(onClick = onOfflineRetryClick) {
+            Button(
+                onClick = onOfflineRetryClick,
+                shapes = ExtendedTheme.defaultButtonShapes,
+            ) {
                 Text(text = stringResource(id = R.string.offline_retry))
             }
         }
@@ -402,58 +420,31 @@ private fun MainBottomAppBar(
     onFabClick: (data: Any?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
+    Row(
         modifier = modifier.fillMaxWidth(),
-        contentAlignment = Alignment.BottomEnd,
+        horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally),
     ) {
-        var bottomAppBarHeight by remember { mutableIntStateOf(0) }
+        MainPanelBottomAppBar(
+            bottomAppBar = state.bottomAppBar,
+            floatingActionButton = state.floatingActionButton,
+            onBottomNavClick = onBottomNavClick,
+            onMenuItemClick = onMenuItemClick,
+            onFabClick = onFabClick,
+        )
 
         AnimatedVisibility(
             visible = sidePanelVisible && state.sidePanelAppBar is MainState.SidePanelAppBarComponent.Visible,
-            modifier = Modifier
-                .padding(
-                    bottom = if (state.bottomAppBar is MainState.BottomAppBarComponent.Visible) {
-                        bottomAppBarHeight.pxToDp()
-                    } else {
-                        0.dp
-                    },
-                )
-                .windowInsetsPadding(
-                    WindowInsets.navigationBars
-                        .add(WindowInsets.displayCutout)
-                        .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-                ),
-            enter = slideInHorizontally(initialOffsetX = { it }),
-            exit = slideOutHorizontally(targetOffsetX = { it }),
         ) {
             SidePanelBottomAppBar(
                 sidePanelAppBar = state.sidePanelAppBar,
-                scrollDirection = state.scrollDirection,
                 onMenuItemClick = onSideMenuItemClick,
-            )
-        }
-
-        AnimatedVisibility(
-            visible = state.scrollDirection != ScrollDirection.DOWN,
-            modifier = Modifier
-                .fillMaxWidth()
-                .onGloballyPositioned { bottomAppBarHeight = it.size.height },
-            enter = slideInVertically(initialOffsetY = { it }),
-            exit = slideOutVertically(targetOffsetY = { it }),
-        ) {
-            BottomAppBar(
-                bottomAppBar = state.bottomAppBar,
-                floatingActionButton = state.floatingActionButton,
-                onBottomNavClick = onBottomNavClick,
-                onMenuItemClick = onMenuItemClick,
-                onFabClick = onFabClick,
             )
         }
     }
 }
 
 @Composable
-private fun BottomAppBar(
+private fun MainPanelBottomAppBar(
     bottomAppBar: MainState.BottomAppBarComponent,
     floatingActionButton: MainState.FabComponent,
     onBottomNavClick: () -> Unit,
@@ -463,32 +454,37 @@ private fun BottomAppBar(
 ) {
     if (bottomAppBar !is MainState.BottomAppBarComponent.Visible) return
 
-    Surface(
-        modifier = modifier,
-        tonalElevation = 8.dp,
-        color = MaterialTheme.colorScheme.surfaceVariant,
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(all = 16.dp)
-                .windowInsetsPadding(
-                    WindowInsets.navigationBars
-                        .add(WindowInsets.displayCutout)
-                        .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-                ),
-        ) {
-            AnimatedContent(
-                targetState = bottomAppBar.navigationIcon,
-                label = "MainBottomAppBar_NavIcon",
-            ) { icon ->
-                if (icon != null) {
-                    LongClickIconButton(
-                        painter = painterResource(id = icon),
-                        description = stringResource(R.string.cd_menu),
-                        onClick = onBottomNavClick,
+    val expanded: Boolean = bottomAppBar.navigationIcon != null || bottomAppBar.menuItems.isNotEmpty()
+    val fab by rememberUpdatedState(floatingActionButton as? MainState.FabComponent.Visible)
+
+    HorizontalFloatingToolbar(
+        expanded = expanded,
+        floatingActionButton = {
+            FloatingToolbarDefaults.VibrantFloatingActionButton(
+                onClick = { onFabClick(fab?.data) },
+                modifier = Modifier.testTag("fab-${floatingActionButton.contentType.simpleName}"),
+            ) {
+                AnimatedContent(
+                    targetState = fab?.icon,
+                    transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut() },
+                    label = "Fab_Icon",
+                ) { icon ->
+                    Icon(
+                        painter = painterResource(icon ?: R.drawable.ic_hourglass),
+                        contentDescription = null,
                     )
                 }
+            }
+        },
+        modifier = modifier.defaultMinSize(minHeight = if (expanded) 64.dp else 80.dp),
+        colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
+        content = {
+            if (bottomAppBar.navigationIcon != null) {
+                LongClickIconButton(
+                    painter = painterResource(id = bottomAppBar.navigationIcon),
+                    description = stringResource(R.string.cd_menu),
+                    onClick = onBottomNavClick,
+                )
             }
 
             MenuItemsContent(
@@ -496,101 +492,55 @@ private fun BottomAppBar(
                 data = bottomAppBar.data,
                 onMenuItemClick = onMenuItemClick,
             )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            if (floatingActionButton is MainState.FabComponent.Visible) {
-                FloatingActionButton(
-                    onClick = { onFabClick(floatingActionButton.data) },
-                    modifier = Modifier.testTag("fab-${floatingActionButton.contentType.simpleName}"),
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                ) {
-                    AnimatedContent(
-                        targetState = floatingActionButton.icon,
-                        transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut() },
-                        label = "Fab_Icon",
-                    ) { icon ->
-                        Icon(
-                            painter = painterResource(icon),
-                            contentDescription = null,
-                        )
-                    }
-                }
-            }
-        }
-    }
+        },
+    )
 }
 
 @Composable
 private fun SidePanelBottomAppBar(
     sidePanelAppBar: MainState.SidePanelAppBarComponent,
-    scrollDirection: ScrollDirection,
     onMenuItemClick: (MainState.MenuItemComponent, data: Any?) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     if (sidePanelAppBar !is MainState.SidePanelAppBarComponent.Visible) return
 
-    var collapsed by remember(scrollDirection) {
-        mutableStateOf(scrollDirection == ScrollDirection.DOWN)
-    }
-
-    Box(
-        modifier = Modifier
-            .padding(all = 16.dp)
-            .background(
-                color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.75f),
-                shape = MaterialTheme.shapes.large,
-            )
-            .padding(all = 8.dp)
-            .animateContentSize(),
+    HorizontalFloatingToolbar(
+        expanded = true,
+        modifier = modifier,
+        colors = FloatingToolbarDefaults.standardFloatingToolbarColors(),
     ) {
-        if (collapsed) {
-            LongClickIconButton(
-                painter = painterResource(id = R.drawable.ic_chevron_left),
-                description = stringResource(id = R.string.cd_expand_menu),
-                onClick = { collapsed = false },
-            )
-        } else {
-            MenuItemsContent(
-                menuItems = sidePanelAppBar.menuItems,
-                data = sidePanelAppBar.data,
-                onMenuItemClick = onMenuItemClick,
-            )
-        }
+        MenuItemsContent(
+            menuItems = sidePanelAppBar.menuItems,
+            onMenuItemClick = onMenuItemClick,
+            data = sidePanelAppBar.data,
+        )
     }
 }
 
 @Composable
-private fun MenuItemsContent(
+@Suppress("UnusedReceiverParameter")
+private fun RowScope.MenuItemsContent(
     menuItems: List<MainState.MenuItemComponent>,
-    data: Any?,
     onMenuItemClick: (MainState.MenuItemComponent, data: Any?) -> Unit,
+    data: Any? = null,
 ) {
-    AnimatedContent(
-        targetState = menuItems,
-        label = "MenuItemsContent",
-    ) { items ->
-        Row {
-            for (menuItem in items) {
-                if (menuItem.icon == null) {
-                    TextButton(
-                        onClick = { onMenuItemClick(menuItem, data) },
-                        modifier = Modifier.animateEnterExit(enter = fadeIn(), exit = fadeOut()),
-                    ) {
-                        Text(
-                            text = stringResource(id = menuItem.name),
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
-                } else {
-                    LongClickIconButton(
-                        painter = painterResource(id = menuItem.icon),
-                        description = stringResource(id = menuItem.name),
-                        onClick = { onMenuItemClick(menuItem, data) },
-                        modifier = Modifier.animateEnterExit(enter = fadeIn(), exit = fadeOut()),
-                    )
-                }
+    for (menuItem in menuItems) {
+        if (menuItem.icon == null) {
+            TextButton(
+                onClick = { onMenuItemClick(menuItem, data) },
+                shapes = ExtendedTheme.defaultButtonShapes,
+            ) {
+                Text(
+                    text = stringResource(id = menuItem.name),
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
             }
+        } else {
+            LongClickIconButton(
+                painter = painterResource(id = menuItem.icon),
+                description = stringResource(id = menuItem.name),
+                onClick = { onMenuItemClick(menuItem, data) },
+            )
         }
     }
 }
@@ -637,7 +587,7 @@ private fun BottomAppBarPreview() {
         Box(
             contentAlignment = Alignment.BottomCenter,
         ) {
-            BottomAppBar(
+            MainPanelBottomAppBar(
                 bottomAppBar = MainState.BottomAppBarComponent.Visible(
                     contentType = Content::class,
                     menuItems = listOf(MainState.MenuItemComponent.SearchBookmarks),

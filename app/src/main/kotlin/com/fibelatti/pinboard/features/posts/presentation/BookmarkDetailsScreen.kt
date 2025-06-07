@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package com.fibelatti.pinboard.features.posts.presentation
 
 import android.content.ActivityNotFoundException
@@ -19,8 +21,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -458,8 +461,9 @@ private fun BookmarkPlaceholder(
             style = MaterialTheme.typography.bodyMedium,
         )
 
-        ElevatedButton(
+        Button(
             onClick = onButtonClicked,
+            shapes = ExtendedTheme.defaultButtonShapes,
             modifier = Modifier.padding(top = 24.dp),
         ) {
             Text(text = buttonText)

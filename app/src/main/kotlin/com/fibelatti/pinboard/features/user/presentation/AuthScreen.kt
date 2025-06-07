@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package com.fibelatti.pinboard.features.user.presentation
 
 import androidx.compose.animation.AnimatedContent
@@ -29,8 +31,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -51,6 +55,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -140,7 +145,7 @@ private fun AuthScreen(
                     ),
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleLargeEmphasized,
                 )
 
                 AnimatedVisibility(visible = useLinkding) {
@@ -190,6 +195,7 @@ private fun AuthScreen(
                     trailingIcon = {
                         IconButton(
                             onClick = { authTokenVisible = !authTokenVisible },
+                            shapes = IconButtonDefaults.shapes(),
                         ) {
                             AnimatedContent(
                                 targetState = authTokenVisible,
@@ -239,6 +245,7 @@ private fun AuthScreen(
                     } else {
                         Button(
                             onClick = { onAuthRequested(authToken, instanceUrl) },
+                            shapes = ExtendedTheme.defaultButtonShapes,
                         ) {
                             Text(text = stringResource(id = R.string.auth_button))
                         }
@@ -248,6 +255,7 @@ private fun AuthScreen(
                 if (allowSwitching) {
                     TextButton(
                         onClick = { onUseLinkdingChanged(!useLinkding) },
+                        shapes = ExtendedTheme.defaultButtonShapes,
                         modifier = Modifier
                             .padding(top = 8.dp)
                             .align(Alignment.CenterHorizontally),
@@ -286,23 +294,19 @@ private fun AuthTokenHelp(
         label = "help-icon",
     ) { visible ->
         if (visible) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                TextWithLinks(
-                    text = HtmlCompat.fromHtml(
-                        stringResource(
-                            if (useLinkding) R.string.auth_linkding_description else R.string.auth_token_description,
-                        ),
-                        HtmlCompat.FROM_HTML_MODE_COMPACT,
+            TextWithLinks(
+                text = HtmlCompat.fromHtml(
+                    stringResource(
+                        if (useLinkding) R.string.auth_linkding_description else R.string.auth_token_description,
                     ),
-                    modifier = Modifier.padding(top = 8.dp),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    linkColor = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
+                    HtmlCompat.FROM_HTML_MODE_COMPACT,
+                ),
+                modifier = Modifier.padding(top = 8.dp),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                linkColor = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium,
+            )
         } else {
             LongClickIconButton(
                 painter = painterResource(id = R.drawable.ic_help),

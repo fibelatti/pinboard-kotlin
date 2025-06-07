@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.licenses
 
+import android.content.res.Resources
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,7 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -56,9 +57,9 @@ private fun OssLicensesScreen(
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues = WindowInsets.safeDrawing.asPaddingValues(),
 ) {
-    val localContext = LocalContext.current
+    val localResources: Resources = LocalResources.current
     val libs: Libs? by rememberLibraries {
-        localContext.resources.openRawResource(R.raw.aboutlibraries).bufferedReader().use { it.readText() }
+        localResources.openRawResource(R.raw.aboutlibraries).bufferedReader().use { it.readText() }
     }
 
     LibrariesContainer(

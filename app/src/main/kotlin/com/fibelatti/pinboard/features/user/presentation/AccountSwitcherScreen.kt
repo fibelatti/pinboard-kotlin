@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package com.fibelatti.pinboard.features.user.presentation
 
 import androidx.compose.foundation.background
@@ -8,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -129,10 +133,10 @@ private fun AccountSwitcherScreen(
             item(key = "add-pinboard-account") {
                 FilledTonalButton(
                     onClick = onAddPinboardAccountClick,
+                    shapes = ExtendedTheme.defaultButtonShapes,
                     modifier = Modifier
                         .fillMaxWidth()
                         .animateItem(),
-                    shape = MaterialTheme.shapes.small,
                 ) {
                     Text(text = stringResource(R.string.account_switcher_add_pinboard))
                 }
@@ -143,10 +147,10 @@ private fun AccountSwitcherScreen(
             item(key = "add-linkding-account") {
                 FilledTonalButton(
                     onClick = onAddLinkdingAccountClick,
+                    shapes = ExtendedTheme.defaultButtonShapes,
                     modifier = Modifier
                         .fillMaxWidth()
                         .animateItem(),
-                    shape = MaterialTheme.shapes.small,
                 ) {
                     Text(text = stringResource(R.string.account_switcher_add_linkding))
                 }
@@ -192,18 +196,18 @@ private fun AccountItem(
                 .padding(top = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            FilledTonalButton(
+            Button(
                 onClick = onSelectClick,
+                shapes = ExtendedTheme.defaultButtonShapes,
                 modifier = Modifier.weight(2f),
-                shape = MaterialTheme.shapes.small,
             ) {
                 Text(text = stringResource(R.string.account_switcher_select))
             }
 
             TextButton(
                 onClick = onLogoutClick,
+                shapes = ExtendedTheme.defaultButtonShapes,
                 modifier = Modifier.weight(1f),
-                shape = MaterialTheme.shapes.small,
                 colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
             ) {
                 Text(text = stringResource(R.string.account_switcher_logout))

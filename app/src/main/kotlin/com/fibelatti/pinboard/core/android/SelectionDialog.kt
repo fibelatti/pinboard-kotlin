@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package com.fibelatti.pinboard.core.android
 
 import android.content.Context
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -155,6 +158,7 @@ private fun <T> SelectionDialogContent(
                 item {
                     TextButton(
                         onClick = { showHiddenOptions = true },
+                        shapes = ExtendedTheme.defaultButtonShapes,
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text(text = stringResource(R.string.quick_actions_more_options))
@@ -292,6 +296,7 @@ private fun <T> SelectionDialogCustomizationContent(
         item {
             TextButton(
                 onClick = { onConfirm(currentSelection) },
+                shapes = ExtendedTheme.defaultButtonShapes,
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(text = stringResource(R.string.quick_actions_customization_save_changes))
@@ -310,8 +315,8 @@ private fun <T> SelectionItem(
 ) {
     FilledTonalButton(
         onClick = { onClick(option) },
+        shapes = ExtendedTheme.defaultButtonShapes,
         modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.small,
     ) {
         Text(
             text = optionName(option),

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package com.fibelatti.pinboard.core.android.composable
 
 import androidx.compose.animation.AnimatedVisibility
@@ -10,7 +12,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -54,8 +56,7 @@ fun MainTitle(
             .background(color = ExtendedTheme.colors.backgroundNoOverlay)
             .fillMaxWidth()
             .windowInsetsPadding(
-                WindowInsets.safeDrawing
-                    .only(sides = WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
+                WindowInsets.safeDrawing.only(sides = WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
             )
             .padding(bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -73,9 +74,7 @@ fun MainTitle(
         Column(
             modifier = Modifier
                 .heightIn(min = 56.dp)
-                .padding(
-                    start = if (navigation is MainState.NavigationComponent.Visible) 0.dp else 16.dp,
-                ),
+                .padding(start = if (navigation is MainState.NavigationComponent.Visible) 0.dp else 16.dp),
             verticalArrangement = Arrangement.Center,
         ) {
             AnimatedVisibility(
@@ -122,9 +121,8 @@ fun MainTitle(
 
             FilledTonalButton(
                 onClick = { onActionButtonClicked(data) },
+                shapes = ExtendedTheme.defaultButtonShapes,
                 modifier = Modifier.padding(start = 8.dp, end = 16.dp),
-                shape = MaterialTheme.shapes.small,
-                contentPadding = PaddingValues(horizontal = 8.dp),
             ) {
                 Text(
                     text = label,

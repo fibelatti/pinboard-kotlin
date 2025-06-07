@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package com.fibelatti.pinboard.features.tags.presentation
 
 import android.view.KeyEvent
@@ -6,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -106,12 +109,12 @@ fun TagManager(
                     onAddTagClicked(searchTagInput)
                 }
             },
+            shapes = ExtendedTheme.defaultButtonShapes,
             modifier = Modifier.constrainAs(clAddTagButton) {
                 bottom.linkTo(clAddTagInput.bottom, margin = 4.dp)
                 start.linkTo(clAddTagInput.end, margin = 8.dp)
                 end.linkTo(parent.end, margin = horizontalPadding)
             },
-            shape = MaterialTheme.shapes.small,
         ) {
             Text(
                 text = stringResource(id = R.string.posts_add_tags_add),

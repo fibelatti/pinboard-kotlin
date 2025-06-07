@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package com.fibelatti.pinboard.features.tags.presentation
 
 import android.content.Context
@@ -8,8 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -81,10 +83,10 @@ private fun RenameTagScreen(
             maxLines = 1,
         )
 
-        FilledTonalButton(
+        Button(
             onClick = { onRename(newName) },
+            shapes = ExtendedTheme.defaultButtonShapes,
             modifier = Modifier.padding(bottom = 4.dp),
-            shape = MaterialTheme.shapes.small,
         ) {
             Text(text = stringResource(id = R.string.quick_actions_rename))
         }

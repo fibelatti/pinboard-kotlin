@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package com.fibelatti.pinboard.features.user.presentation
 
 import android.os.Build
@@ -34,6 +36,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -726,8 +729,8 @@ private fun RemoveUrlParametersSetting(
 
                 FilledTonalButton(
                     onClick = submitValueAction,
+                    shapes = ExtendedTheme.defaultButtonShapes,
                     modifier = Modifier.padding(bottom = 4.dp),
-                    shape = MaterialTheme.shapes.small,
                 ) {
                     Text(text = stringResource(R.string.hint_add))
                 }
@@ -785,10 +788,10 @@ private fun PreferenceButton(
 ) {
     FilledTonalButton(
         onClick = onClick,
+        shapes = ExtendedTheme.defaultButtonShapes,
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 4.dp),
-        shape = MaterialTheme.shapes.small,
     ) {
         Text(
             text = buttonText,

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package com.fibelatti.pinboard.features.posts.presentation
 
 import android.content.Context
@@ -27,6 +29,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -583,13 +586,12 @@ private fun ActiveSearch(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         val minHeight = 36.dp
-        val shape = MaterialTheme.shapes.small
         val padding = PaddingValues(horizontal = 8.dp)
 
         FilledTonalButton(
             onClick = onViewClicked,
+            shapes = ExtendedTheme.defaultButtonShapes,
             modifier = Modifier.heightIn(min = minHeight),
-            shape = shape,
             contentPadding = padding,
         ) {
             Text(
@@ -602,8 +604,8 @@ private fun ActiveSearch(
 
         FilledTonalButton(
             onClick = onClearClicked,
+            shapes = ExtendedTheme.defaultButtonShapes,
             modifier = Modifier.heightIn(min = minHeight),
-            shape = shape,
             contentPadding = padding,
         ) {
             Icon(
@@ -615,8 +617,8 @@ private fun ActiveSearch(
 
         FilledTonalButton(
             onClick = onSaveClicked,
+            shapes = ExtendedTheme.defaultButtonShapes,
             modifier = Modifier.heightIn(min = minHeight),
-            shape = shape,
             contentPadding = padding,
         ) {
             Icon(
@@ -629,8 +631,8 @@ private fun ActiveSearch(
         if (AppMode.PINBOARD == appMode) {
             FilledTonalButton(
                 onClick = onShareClicked,
+                shapes = ExtendedTheme.defaultButtonShapes,
                 modifier = Modifier.heightIn(min = minHeight),
-                shape = shape,
                 contentPadding = padding,
             ) {
                 Icon(

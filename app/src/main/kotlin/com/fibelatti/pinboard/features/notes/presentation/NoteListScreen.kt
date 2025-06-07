@@ -1,8 +1,12 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package com.fibelatti.pinboard.features.notes.presentation
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
@@ -15,12 +19,12 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonGroupDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,6 +35,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -45,6 +54,7 @@ import com.fibelatti.pinboard.features.appstate.ViewNote
 import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
+import com.fibelatti.ui.components.AutoSizeText
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -114,38 +124,40 @@ private fun NoteListContent(
                 .only(if (sidePanelVisible) WindowInsetsSides.Start else WindowInsetsSides.Horizontal)
                 .add(WindowInsets(left = 16.dp, right = 16.dp))
 
-            SingleChoiceSegmentedButtonRow(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .windowInsetsPadding(windowInsets),
+                horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
             ) {
                 NoteList.Sorting.entries.forEachIndexed { index, sorting ->
-                    SegmentedButton(
-                        selected = index == selectedSortingIndex,
-                        onClick = {
+                    val weight by animateFloatAsState(
+                        targetValue = if (selectedSortingIndex == index) 1.2f else 1f,
+                    )
+
+                    ToggleButton(
+                        checked = index == selectedSortingIndex,
+                        onCheckedChange = {
                             selectedSortingIndex = index
                             onSortOptionClicked(sorting)
                         },
-                        shape = when (index) {
-                            0 -> RoundedCornerShape(
-                                topStart = 8.dp,
-                                bottomStart = 8.dp,
-                            )
-
-                            NoteList.Sorting.entries.size - 1 -> RoundedCornerShape(
-                                topEnd = 8.dp,
-                                bottomEnd = 8.dp,
-                            )
-
-                            else -> RoundedCornerShape(0.dp)
+                        modifier = Modifier
+                            .weight(weight)
+                            .semantics { role = Role.RadioButton },
+                        shapes = when (index) {
+                            0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                            NoteList.Sorting.entries.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                            else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
                         },
-                        label = {
-                            Text(
-                                text = stringResource(id = sorting.label),
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                        },
-                    )
+                    ) {
+                        AutoSizeText(
+                            text = stringResource(id = sorting.label),
+                            style = MaterialTheme.typography.bodySmall,
+                            textAlign = TextAlign.Center,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                        )
+                    }
                 }
             }
 

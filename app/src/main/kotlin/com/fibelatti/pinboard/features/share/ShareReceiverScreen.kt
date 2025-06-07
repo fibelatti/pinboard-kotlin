@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package com.fibelatti.pinboard.features.share
 
 import android.widget.Toast
@@ -18,7 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -154,21 +156,23 @@ fun ShareReceiverScreen(
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
-                    FilledTonalButton(
+                    Button(
                         onClick = {
                             onSelectService(AppMode.PINBOARD)
                             showServicePicker = false
                         },
+                        shapes = ExtendedTheme.defaultButtonShapes,
                         modifier = Modifier.weight(1f),
                     ) {
                         Text(text = stringResource(R.string.pinboard))
                     }
 
-                    FilledTonalButton(
+                    Button(
                         onClick = {
                             onSelectService(AppMode.LINKDING)
                             showServicePicker = false
                         },
+                        shapes = ExtendedTheme.defaultButtonShapes,
                         modifier = Modifier.weight(1f),
                     ) {
                         Text(text = stringResource(R.string.linkding))
@@ -211,7 +215,10 @@ private fun ShareReceiverErrorDialog(
     AlertDialog(
         onDismissRequest = action,
         confirmButton = {
-            Button(onClick = action) {
+            Button(
+                onClick = action,
+                shapes = ExtendedTheme.defaultButtonShapes,
+            ) {
                 Text(text = stringResource(id = R.string.hint_ok))
             }
         },

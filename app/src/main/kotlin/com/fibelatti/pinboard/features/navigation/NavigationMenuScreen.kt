@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package com.fibelatti.pinboard.features.navigation
 
 import androidx.annotation.DrawableRes
@@ -8,14 +10,15 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -25,7 +28,6 @@ import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -178,7 +180,8 @@ private fun NavigationMenuScreen(
                 text = stringResource(id = serviceName),
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
                 color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.titleLarge,
+                fontFamily = FontFamily.Serif,
+                style = MaterialTheme.typography.headlineLarge,
             )
         }
 
@@ -312,21 +315,21 @@ private fun AppVersionDetails(
         Text(
             text = stringResource(id = R.string.about_developer),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontFamily = FontFamily(Font(R.font.jetbrainsmono)),
+            fontFamily = FontFamily.Monospace,
             style = MaterialTheme.typography.bodySmall,
         )
 
         Text(
             text = stringResource(R.string.about_version, BuildConfig.VERSION_NAME),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontFamily = FontFamily(Font(R.font.jetbrainsmono)),
+            fontFamily = FontFamily.Monospace,
             style = MaterialTheme.typography.bodySmall,
         )
 
         Text(
             text = stringResource(id = R.string.about_oss_licenses),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontFamily = FontFamily(Font(R.font.jetbrainsmono)),
+            fontFamily = FontFamily.Monospace,
             style = MaterialTheme.typography.labelSmall,
         )
     }
@@ -341,9 +344,10 @@ private fun MenuItem(
 ) {
     TextButton(
         onClick = onClick,
+        shapes = ExtendedTheme.defaultButtonShapes,
         modifier = modifier
             .fillMaxWidth()
-            .sizeIn(minHeight = 48.dp),
+            .minimumInteractiveComponentSize(),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
     ) {
         if (iconRes != null) {
