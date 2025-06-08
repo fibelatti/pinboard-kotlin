@@ -257,6 +257,10 @@ private fun LaunchedMainViewModelEffect(
                         }
                     }
 
+                    is MainState.MenuItemComponent.RandomBookmark -> {
+                        mainViewModel.runAction(ViewRandomPost)
+                    }
+
                     is MainState.MenuItemComponent.SyncBookmarks -> {
                         mainViewModel.runAction(Refresh(force = true))
                     }
@@ -268,10 +272,6 @@ private fun LaunchedMainViewModelEffect(
             .launchIn(this)
         mainViewModel.fabClicks(contentType = PostListContent::class)
             .onEach { mainViewModel.runAction(AddPost) }
-            .flowWithLifecycle(localLifecycle)
-            .launchIn(this)
-        mainViewModel.actionButtonClicks(contentType = PostListContent::class)
-            .onEach { mainViewModel.runAction(ViewRandomPost) }
             .flowWithLifecycle(localLifecycle)
             .launchIn(this)
         mainViewModel.actionButtonClicks(contentType = AccountSwitcherContent::class)

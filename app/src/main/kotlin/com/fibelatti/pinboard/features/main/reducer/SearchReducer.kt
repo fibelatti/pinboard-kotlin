@@ -26,6 +26,14 @@ class SearchReducer @Inject constructor(
                 MainState.TitleComponent.Gone
             },
             navigation = MainState.NavigationComponent.Visible(),
+            actionButton = if (content.allTags.isNotEmpty()) {
+                MainState.ActionButtonComponent.Visible(
+                    contentType = SearchContent::class,
+                    label = resourceProvider.getString(R.string.search_random),
+                )
+            } else {
+                MainState.ActionButtonComponent.Gone
+            },
             bottomAppBar = MainState.BottomAppBarComponent.Visible(
                 contentType = SearchContent::class,
                 menuItems = if (isActive) {

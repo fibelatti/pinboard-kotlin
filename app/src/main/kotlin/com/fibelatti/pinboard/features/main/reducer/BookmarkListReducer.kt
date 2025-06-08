@@ -54,13 +54,6 @@ class BookmarkListReducer @Inject constructor(
             },
             navigation = MainState.NavigationComponent.Gone,
             actionButton = when {
-                content.category is Unread && !content.posts?.list.isNullOrEmpty() -> {
-                    ActionButtonComponent.Visible(
-                        contentType = PostListContent::class,
-                        label = resourceProvider.getString(R.string.hint_read_random),
-                    )
-                }
-
                 hasMultipleAccounts && currentServiceName != null -> {
                     ActionButtonComponent.Visible(
                         contentType = AccountSwitcherContent::class,
@@ -76,6 +69,10 @@ class BookmarkListReducer @Inject constructor(
                 menuItems = buildList {
                     add(MainState.MenuItemComponent.SearchBookmarks)
                     add(MainState.MenuItemComponent.SortBookmarks)
+
+                    if (!content.posts?.list.isNullOrEmpty()) {
+                        add(MainState.MenuItemComponent.RandomBookmark)
+                    }
 
                     if (content.category == All && content.canForceSync) {
                         add(MainState.MenuItemComponent.SyncBookmarks)

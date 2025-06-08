@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.GetPreferredSortType
 import javax.inject.Inject
 
@@ -16,6 +17,7 @@ class SearchActionHandler @Inject constructor(
             is AddSearchTag -> addSearchTag(action, currentContent)
             is RemoveSearchTag -> removeSearchTag(action, currentContent)
             is SetResultSize -> setResultSize(action, currentContent)
+            is ViewRandomSearch -> viewRandomSearch(currentContent)
             is Search -> search(currentContent)
             is ClearSearch -> clearSearch(currentContent)
             is ViewSavedFilter -> viewSavedFilter(action, currentContent)
@@ -79,6 +81,23 @@ class SearchActionHandler @Inject constructor(
     private fun setResultSize(action: SetResultSize, currentContent: Content): Content {
         return currentContent.reduce<SearchContent> { searchContent ->
             searchContent.copy(queryResultSize = action.resultSize)
+        }
+    }
+
+    private fun viewRandomSearch(currentContent: Content): Content {
+        return currentContent.reduce<SearchContent> { searchContent ->
+            val tags: List<Tag> = if (searchContent.allTags.isNotEmpty()) {
+                listOf(searchContent.allTags.random())
+            } else {
+                emptyList()
+            }
+
+            searchContent.previousContent.copy(
+                category = All,
+                sortType = getPreferredSortType(),
+                searchParameters = SearchParameters(tags = tags),
+                shouldLoad = ShouldLoadFirstPage,
+            )
         }
     }
 

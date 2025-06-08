@@ -124,9 +124,7 @@ class NavigationActionHandler @Inject constructor(
     private fun viewRandomPost(currentContent: Content): Content {
         val body = { postListContent: PostListContent ->
             PostDetailContent(
-                post = postListContent.posts?.list.orEmpty()
-                    .filter { it.readLater == true }
-                    .random(),
+                post = postListContent.posts?.list.orEmpty().random(),
                 previousContent = postListContent,
                 isConnected = connectivityInfoProvider.isConnected(),
             )

@@ -119,6 +119,11 @@ data class MainState(
             icon = R.drawable.ic_sort,
         )
 
+        data object RandomBookmark : MenuItemComponent(
+            name = R.string.menu_read_random,
+            icon = R.drawable.ic_random,
+        )
+
         data object SyncBookmarks : MenuItemComponent(
             name = R.string.menu_main_sync,
             icon = R.drawable.ic_sync,

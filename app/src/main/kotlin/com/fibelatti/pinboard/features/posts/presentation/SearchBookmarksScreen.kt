@@ -48,6 +48,7 @@ import com.fibelatti.pinboard.features.appstate.RemoveSearchTag
 import com.fibelatti.pinboard.features.appstate.Search
 import com.fibelatti.pinboard.features.appstate.SearchContent
 import com.fibelatti.pinboard.features.appstate.SetTerm
+import com.fibelatti.pinboard.features.appstate.ViewRandomSearch
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.pinboard.features.main.MainState
 import com.fibelatti.pinboard.features.main.MainViewModel
@@ -87,6 +88,11 @@ fun SearchBookmarksScreen(
         val keyboardController = LocalSoftwareKeyboardController.current
 
         LaunchedEffect(Unit) {
+            mainViewModel.actionButtonClicks(contentType = SearchContent::class)
+                .onEach { mainViewModel.runAction(ViewRandomSearch) }
+                .flowWithLifecycle(localLifecycle)
+                .launchIn(this)
+
             mainViewModel.menuItemClicks(contentType = SearchContent::class)
                 .onEach { (menuItem, data) ->
                     when (menuItem) {

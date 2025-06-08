@@ -3,7 +3,6 @@
 package com.fibelatti.pinboard.core.android.composable
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.appstate.Content
 import com.fibelatti.pinboard.features.main.MainState
+import com.fibelatti.ui.components.AutoSizeText
 import com.fibelatti.ui.preview.DevicePreviews
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -73,8 +72,12 @@ fun MainTitle(
 
         Column(
             modifier = Modifier
+                .weight(1f)
                 .heightIn(min = 56.dp)
-                .padding(start = if (navigation is MainState.NavigationComponent.Visible) 0.dp else 16.dp),
+                .padding(
+                    start = if (navigation is MainState.NavigationComponent.Visible) 0.dp else 16.dp,
+                    end = 16.dp,
+                ),
             verticalArrangement = Arrangement.Center,
         ) {
             AnimatedVisibility(
@@ -95,21 +98,15 @@ fun MainTitle(
             ) {
                 val label = (subtitle as? MainState.TitleComponent.Visible)?.label ?: ""
 
-                Text(
+                AutoSizeText(
                     text = label,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                 )
             }
         }
-
-        Spacer(
-            modifier = Modifier
-                .weight(1f)
-                .animateContentSize(),
-        )
 
         AnimatedVisibility(
             visible = actionButton is MainState.ActionButtonComponent.Visible,
@@ -122,11 +119,12 @@ fun MainTitle(
             FilledTonalButton(
                 onClick = { onActionButtonClicked(data) },
                 shapes = ExtendedTheme.defaultButtonShapes,
-                modifier = Modifier.padding(start = 8.dp, end = 16.dp),
+                modifier = Modifier.padding(end = 16.dp),
             ) {
                 Text(
                     text = label,
                     textAlign = TextAlign.Center,
+                    maxLines = 1,
                     style = MaterialTheme.typography.labelSmall,
                 )
             }
