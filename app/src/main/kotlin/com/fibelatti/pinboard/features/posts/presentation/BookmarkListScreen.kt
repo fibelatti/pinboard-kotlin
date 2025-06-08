@@ -7,6 +7,7 @@ import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,9 +22,11 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyListState
@@ -45,17 +48,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -95,10 +101,12 @@ import com.fibelatti.pinboard.features.appstate.Loaded
 import com.fibelatti.pinboard.features.appstate.PostList
 import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.PostsForTag
+import com.fibelatti.pinboard.features.appstate.Private
 import com.fibelatti.pinboard.features.appstate.Refresh
 import com.fibelatti.pinboard.features.appstate.SearchParameters
 import com.fibelatti.pinboard.features.appstate.SetSorting
 import com.fibelatti.pinboard.features.appstate.SortType
+import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.UserLoggedIn
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewRandomPost
@@ -224,6 +232,8 @@ fun BookmarkListScreen(
                 )
             },
             onTagClicked = { post -> mainViewModel.runAction(PostsForTag(post)) },
+            onPrivateClicked = { mainViewModel.runAction(Private) },
+            onReadLaterClicked = { mainViewModel.runAction(Unread) },
             showPostDescription = postListContent.showDescription,
             sidePanelVisible = appState.sidePanelVisible,
             listState = listState,
@@ -486,6 +496,8 @@ fun BookmarkListScreen(
     onPostClicked: (Post) -> Unit,
     onPostLongClicked: (Post) -> Unit,
     onTagClicked: (Tag) -> Unit,
+    onPrivateClicked: () -> Unit,
+    onReadLaterClicked: () -> Unit,
     showPostDescription: Boolean,
     sidePanelVisible: Boolean,
     modifier: Modifier = Modifier,
@@ -548,7 +560,7 @@ fun BookmarkListScreen(
 
             val listWindowInsets = WindowInsets.safeDrawing
                 .only(if (sidePanelVisible) WindowInsetsSides.Start else WindowInsetsSides.Horizontal)
-                .add(WindowInsets(top = 4.dp, bottom = 100.dp))
+                .add(WindowInsets(top = 12.dp, bottom = 100.dp))
 
             PullRefreshLayout(
                 onPullToRefresh = onPullToRefresh,
@@ -564,6 +576,8 @@ fun BookmarkListScreen(
                         onPostLongClicked = onPostLongClicked,
                         showDescription = showPostDescription,
                         onTagClicked = onTagClicked,
+                        onPrivateClicked = onPrivateClicked,
+                        onReadLaterClicked = onReadLaterClicked,
                     )
                 }
             }
@@ -654,127 +668,140 @@ private fun BookmarkItem(
     onPostLongClicked: (Post) -> Unit,
     showDescription: Boolean,
     onTagClicked: (Tag) -> Unit,
+    onPrivateClicked: () -> Unit,
+    onReadLaterClicked: () -> Unit,
 ) {
     val haptic = LocalHapticFeedback.current
 
-    Surface(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp)
-            .combinedClickable(
-                onClick = { onPostClicked(post) },
-                onLongClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onPostLongClicked(post)
-                },
-            ),
-        shape = MaterialTheme.shapes.small,
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
+            .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 4.dp),
     ) {
-        Column(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            if (post.pendingSync != null) {
-                PendingSyncIndicator(
-                    text = when (post.pendingSync) {
-                        PendingSync.ADD -> stringResource(id = R.string.posts_pending_add)
-                        PendingSync.UPDATE -> stringResource(id = R.string.posts_pending_update)
-                        PendingSync.DELETE -> stringResource(id = R.string.posts_pending_delete)
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .combinedClickable(
+                    onClick = { onPostClicked(post) },
+                    onLongClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onPostLongClicked(post)
                     },
-                )
-            }
-
-            Text(
-                text = post.displayTitle,
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.titleMedium,
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                ),
+            shape = MaterialTheme.shapes.small,
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+        ) {
+            Column(
+                modifier = Modifier.padding(start = 8.dp, top = 28.dp, end = 8.dp, bottom = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                post.resolvedFaviconUrl?.let { faviconUrl ->
-                    val painter: AsyncImagePainter = rememberAsyncImagePainter(model = faviconUrl)
-                    val faviconState: AsyncImagePainter.State by painter.state.collectAsStateWithLifecycle()
-
-                    AnimatedVisibility(
-                        visible = faviconState is AsyncImagePainter.State.Success,
-                        modifier = Modifier.size(16.dp),
-                    ) {
-                        Image(
-                            painter = painter,
-                            contentDescription = null,
-                        )
-                    }
+                if (post.pendingSync != null) {
+                    PendingSyncIndicator(
+                        text = when (post.pendingSync) {
+                            PendingSync.ADD -> stringResource(id = R.string.posts_pending_add)
+                            PendingSync.UPDATE -> stringResource(id = R.string.posts_pending_update)
+                            PendingSync.DELETE -> stringResource(id = R.string.posts_pending_delete)
+                        },
+                    )
                 }
 
                 Text(
-                    text = post.url,
-                    modifier = Modifier.weight(1f),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
-
-            BookmarkFlags(
-                time = if (sortType == ByDateModifiedNewestFirst || sortType == ByDateModifiedOldestFirst) {
-                    post.displayDateModified
-                } else {
-                    post.displayDateAdded
-                },
-                private = post.private,
-                readLater = post.readLater,
-                modifier = Modifier.padding(top = 4.dp),
-            )
-
-            if (showDescription && post.displayDescription.isNotBlank()) {
-                TextWithBlockquote(
-                    text = post.displayDescription,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp),
-                    textColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 5,
-                    clickableLinks = false,
-                )
-            }
-
-            if (AppMode.LINKDING == appMode && !post.notes.isNullOrBlank()) {
-                HorizontalDivider(
+                    text = post.displayTitle,
+                    modifier = Modifier.fillMaxWidth(),
                     color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(top = 4.dp),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 2,
+                    style = MaterialTheme.typography.titleMediumEmphasized.copy(fontSize = 18.sp),
                 )
 
-                TextWithBlockquote(
-                    text = post.notes,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp),
-                    textColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 5,
-                    clickableLinks = false,
-                )
-            }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    post.resolvedFaviconUrl?.let { faviconUrl ->
+                        val painter: AsyncImagePainter = rememberAsyncImagePainter(model = faviconUrl)
+                        val faviconState: AsyncImagePainter.State by painter.state.collectAsStateWithLifecycle()
 
-            if (!post.tags.isNullOrEmpty()) {
-                val tags = remember(post.tags) {
-                    post.tags.map { tag -> ChipGroup.Item(text = tag.name) }
+                        AnimatedVisibility(
+                            visible = faviconState is AsyncImagePainter.State.Success,
+                            modifier = Modifier.size(16.dp),
+                        ) {
+                            Image(
+                                painter = painter,
+                                contentDescription = null,
+                            )
+                        }
+                    }
+
+                    Text(
+                        text = post.url,
+                        modifier = Modifier.weight(1f),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
                 }
 
-                MultilineChipGroup(
-                    items = tags,
-                    onItemClick = { item -> onTagClicked(post.tags.first { tag -> tag.name == item.text }) },
-                    modifier = Modifier.padding(top = 8.dp),
-                    itemTonalElevation = 16.dp,
-                )
+                if (showDescription && post.displayDescription.isNotBlank()) {
+                    TextWithBlockquote(
+                        text = post.displayDescription,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 5,
+                        clickableLinks = false,
+                    )
+                }
+
+                if (AppMode.LINKDING == appMode && !post.notes.isNullOrBlank()) {
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+
+                    TextWithBlockquote(
+                        text = post.notes,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp),
+                        textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 5,
+                        clickableLinks = false,
+                    )
+                }
+
+                if (!post.tags.isNullOrEmpty()) {
+                    val tags = remember(post.tags) {
+                        post.tags.map { tag -> ChipGroup.Item(text = tag.name) }
+                    }
+
+                    MultilineChipGroup(
+                        items = tags,
+                        onItemClick = { item -> onTagClicked(post.tags.first { tag -> tag.name == item.text }) },
+                        modifier = Modifier.padding(top = 8.dp),
+                        itemTextStyle = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
+                    )
+                }
             }
         }
+
+        BookmarkFlags(
+            time = if (sortType == ByDateModifiedNewestFirst || sortType == ByDateModifiedOldestFirst) {
+                post.displayDateModified
+            } else {
+                post.displayDateAdded
+            },
+            private = post.private,
+            readLater = post.readLater,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .offset(y = (-12).dp, x = (-12).dp),
+            onPrivateClicked = onPrivateClicked,
+            onReadLaterClicked = onReadLaterClicked,
+        )
     }
 }
 
@@ -809,50 +836,67 @@ private fun BookmarkFlags(
     private: Boolean?,
     readLater: Boolean?,
     modifier: Modifier = Modifier,
+    onPrivateClicked: () -> Unit = {},
+    onReadLaterClicked: () -> Unit = {},
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = time,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-        )
-
-        Spacer(modifier = Modifier.size(8.dp))
-
         if (private == true) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_private),
-                contentDescription = null,
-                modifier = Modifier.size(12.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            Box(
+                modifier = Modifier
+                    .shadow(elevation = 4.dp, shape = MaterialTheme.shapes.medium)
+                    .background(
+                        shape = MaterialTheme.shapes.medium,
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                    .clickable(onClick = onPrivateClicked)
+                    .padding(all = 8.dp),
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_private),
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
+            }
 
-            Text(
-                text = stringResource(id = R.string.posts_item_private),
-                modifier = Modifier.padding(end = 8.dp),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-            )
         }
 
         if (readLater == true) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_read_later),
-                contentDescription = null,
-                modifier = Modifier.size(12.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-
-            Text(
-                text = stringResource(id = R.string.posts_item_read_later),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-            )
+            Box(
+                modifier = Modifier
+                    .shadow(elevation = 4.dp, shape = MaterialTheme.shapes.medium)
+                    .background(
+                        shape = MaterialTheme.shapes.medium,
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                    .clickable(onClick = onReadLaterClicked)
+                    .padding(all = 8.dp),
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_read_later),
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
+            }
         }
+
+        Text(
+            text = time,
+            modifier = Modifier
+                .shadow(elevation = 4.dp, shape = MaterialTheme.shapes.medium)
+                .background(
+                    shape = MaterialTheme.shapes.medium,
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                )
+                .padding(all = 8.dp),
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+        )
     }
 }
 // endregion Content
@@ -884,6 +928,8 @@ private fun BookmarkListScreenPreview(
             onPostClicked = {},
             onPostLongClicked = {},
             onTagClicked = {},
+            onPrivateClicked = {},
+            onReadLaterClicked = {},
             showPostDescription = true,
             sidePanelVisible = false,
         )
@@ -913,7 +959,9 @@ private fun BookmarkItemPreview(
 ) {
     ExtendedTheme {
         Box(
-            modifier = Modifier.background(ExtendedTheme.colors.backgroundNoOverlay),
+            modifier = Modifier
+                .background(ExtendedTheme.colors.backgroundNoOverlay)
+                .safeDrawingPadding(),
         ) {
             BookmarkItem(
                 appMode = AppMode.LINKDING,
@@ -923,6 +971,8 @@ private fun BookmarkItemPreview(
                 onPostLongClicked = {},
                 showDescription = true,
                 onTagClicked = {},
+                onPrivateClicked = {},
+                onReadLaterClicked = {},
             )
         }
     }

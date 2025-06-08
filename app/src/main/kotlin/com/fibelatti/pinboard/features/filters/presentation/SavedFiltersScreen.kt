@@ -177,7 +177,6 @@ private fun SavedFilterItem(
                     items = tags,
                     onItemClick = {},
                     modifier = Modifier.padding(top = 4.dp),
-                    itemTonalElevation = 16.dp,
                 )
             }
         }

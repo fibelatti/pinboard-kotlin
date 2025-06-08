@@ -177,7 +177,6 @@ fun TagManager(
                 end.linkTo(parent.end, margin = horizontalPadding)
                 width = Dimension.fillToConstraints
             },
-            itemTonalElevation = 16.dp,
             onItemIconClick = { item -> onRemoveCurrentTagClicked(currentTags.first { it.name == item.text }) },
         )
     }
