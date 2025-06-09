@@ -53,6 +53,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -853,7 +854,8 @@ private fun BookmarkFlags(
                         color = MaterialTheme.colorScheme.surfaceVariant,
                     )
                     .clickable(onClick = onPrivateClicked)
-                    .padding(all = 8.dp),
+                    .padding(all = 8.dp)
+                    .testTag("private-flag"),
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_private),
@@ -873,7 +875,8 @@ private fun BookmarkFlags(
                         color = MaterialTheme.colorScheme.surfaceVariant,
                     )
                     .clickable(onClick = onReadLaterClicked)
-                    .padding(all = 8.dp),
+                    .padding(all = 8.dp)
+                    .testTag("read-later-flag"),
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_read_later),

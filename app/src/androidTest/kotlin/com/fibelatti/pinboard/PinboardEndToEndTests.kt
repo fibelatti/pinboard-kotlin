@@ -106,8 +106,8 @@ class PinboardEndToEndTests {
                 timeoutMillis = DEFAULT_TIMEOUT,
             )
             onNodeWithText("Google").assertIsDisplayed()
-            onNodeWithText("Private").assertIsDisplayed()
-            onNodeWithText("Read later").assertIsDisplayed()
+            onNodeWithTag("private-flag").assertIsDisplayed()
+            onNodeWithTag("read-later-flag").assertIsDisplayed()
             onNodeWithText("android").assertIsDisplayed()
             onNodeWithText("dev").assertIsDisplayed()
         }
@@ -177,8 +177,8 @@ class PinboardEndToEndTests {
                 timeoutMillis = DEFAULT_TIMEOUT,
             )
             onNodeWithText("Google").assertIsDisplayed()
-            onNodeWithText("Private").assertIsDisplayed()
-            onNodeWithText("Read later").assertIsDisplayed()
+            onNodeWithTag("private-flag").assertIsDisplayed()
+            onNodeWithTag("read-later-flag").assertIsDisplayed()
             onNodeWithText("android").assertIsDisplayed()
             onNodeWithText("dev").assertIsDisplayed()
         }
