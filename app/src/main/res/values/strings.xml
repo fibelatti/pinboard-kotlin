@@ -324,6 +324,5 @@
     <string name="cd_navigate_back">Navigate back</string>
     <string name="cd_share_receiver_image">Saving your bookmark</string>
     <string name="cd_menu">Menu</string>
-    <string name="cd_expand_menu">Expand menu</string>
     <string name="cd_scroll_to_top">Scroll to top</string>
 </resources>

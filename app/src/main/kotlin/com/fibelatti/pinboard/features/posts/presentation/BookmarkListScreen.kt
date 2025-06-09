@@ -862,7 +862,6 @@ private fun BookmarkFlags(
                     tint = MaterialTheme.colorScheme.onSurface,
                 )
             }
-
         }
 
         if (readLater == true) {
