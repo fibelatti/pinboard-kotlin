@@ -1,0 +1,9 @@
+This version brings the following updates:
+
+* Refreshed app UI with Material 3 Expressive
+* "Read random" action now available for all categories via the bottom menu
+* Quickly switch accounts via new home screen shortcut when using both services
+* Fixes the account switcher not working as expected
+* Fixes "Follow redirects" not actually following redirects at times
+
+Feedback and suggestions are always welcome, thank you for using the app!
