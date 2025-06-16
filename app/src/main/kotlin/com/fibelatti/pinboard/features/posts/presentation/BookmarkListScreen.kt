@@ -12,6 +12,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,8 +20,10 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
@@ -841,14 +844,15 @@ private fun BookmarkFlags(
     onReadLaterClicked: () -> Unit = {},
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.height(IntrinsicSize.Max),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (private == true) {
             Box(
                 modifier = Modifier
-                    .shadow(elevation = 4.dp, shape = MaterialTheme.shapes.medium)
+                    .fillMaxHeight()
+                    .shadow(elevation = 2.dp, shape = MaterialTheme.shapes.medium)
                     .background(
                         shape = MaterialTheme.shapes.medium,
                         color = MaterialTheme.colorScheme.surfaceVariant,
@@ -856,6 +860,7 @@ private fun BookmarkFlags(
                     .clickable(onClick = onPrivateClicked)
                     .padding(all = 8.dp)
                     .testTag("private-flag"),
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_private),
@@ -869,7 +874,8 @@ private fun BookmarkFlags(
         if (readLater == true) {
             Box(
                 modifier = Modifier
-                    .shadow(elevation = 4.dp, shape = MaterialTheme.shapes.medium)
+                    .fillMaxHeight()
+                    .shadow(elevation = 2.dp, shape = MaterialTheme.shapes.medium)
                     .background(
                         shape = MaterialTheme.shapes.medium,
                         color = MaterialTheme.colorScheme.surfaceVariant,
@@ -877,6 +883,7 @@ private fun BookmarkFlags(
                     .clickable(onClick = onReadLaterClicked)
                     .padding(all = 8.dp)
                     .testTag("read-later-flag"),
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_read_later),
@@ -890,7 +897,8 @@ private fun BookmarkFlags(
         Text(
             text = time,
             modifier = Modifier
-                .shadow(elevation = 4.dp, shape = MaterialTheme.shapes.medium)
+                .fillMaxHeight()
+                .shadow(elevation = 2.dp, shape = MaterialTheme.shapes.medium)
                 .background(
                     shape = MaterialTheme.shapes.medium,
                     color = MaterialTheme.colorScheme.surfaceVariant,
