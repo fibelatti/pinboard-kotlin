@@ -58,6 +58,7 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
+import com.fibelatti.pinboard.core.android.composable.RememberedEffect
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.rememberScrollDirection
@@ -210,7 +211,7 @@ private fun LaunchedPostDetailViewModelEffect(
     val localContext = LocalContext.current
     val localView = LocalView.current
 
-    LaunchedEffect(screenState) {
+    RememberedEffect(screenState) {
         val current = screenState
         when {
             current.deleted is Success<Boolean> && current.deleted.value -> {
@@ -248,7 +249,7 @@ private fun LaunchedPopularPostsViewModelEffect(
     val screenState by popularPostsViewModel.screenState.collectAsStateWithLifecycle()
     val localView = LocalView.current
 
-    LaunchedEffect(screenState) {
+    RememberedEffect(screenState) {
         screenState.savedMessage?.let { messageRes ->
             localView.showBanner(messageRes)
             popularPostsViewModel.userNotified()
@@ -361,11 +362,11 @@ fun BookmarkDetailsScreen(
                 val nestedScrollDirection by rememberScrollDirection(webView)
                 val currentOnScrollDirectionChanged by rememberUpdatedState(onScrollDirectionChanged)
 
-                LaunchedEffect(nestedScrollDirection) {
+                RememberedEffect(nestedScrollDirection) {
                     currentOnScrollDirectionChanged(nestedScrollDirection)
                 }
 
-                LaunchedEffect(post.id) {
+                RememberedEffect(post.id) {
                     webView.loadUrl(post.url)
                     webViewLoading = true
                 }

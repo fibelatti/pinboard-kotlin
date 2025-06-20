@@ -84,6 +84,7 @@ import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
+import com.fibelatti.pinboard.core.android.composable.RememberedEffect
 import com.fibelatti.pinboard.core.android.composable.TextWithBlockquote
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.applySecureFlag
@@ -308,7 +309,7 @@ private fun LaunchedPostDetailViewModelEffect(
     val localContext = LocalContext.current
     val localView = LocalView.current
 
-    LaunchedEffect(screenState) {
+    RememberedEffect(screenState) {
         val current = screenState
         when {
             current.deleted is Success<Boolean> && current.deleted.value -> {
@@ -554,11 +555,11 @@ fun BookmarkListScreen(
             }
             val currentOnNextPageRequested by rememberUpdatedState(onNextPageRequested)
 
-            LaunchedEffect(posts.canPaginate, shouldRequestNewPage) {
+            RememberedEffect(posts.canPaginate, shouldRequestNewPage) {
                 if (posts.canPaginate && shouldRequestNewPage) currentOnNextPageRequested()
             }
 
-            LaunchedEffect(scrollDirection) {
+            RememberedEffect(scrollDirection) {
                 currentOnScrollDirectionChanged(scrollDirection)
             }
 

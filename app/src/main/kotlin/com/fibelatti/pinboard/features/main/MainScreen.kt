@@ -64,6 +64,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
 import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
 import com.fibelatti.pinboard.core.android.composable.MainTitle
+import com.fibelatti.pinboard.core.android.composable.RememberedEffect
 import com.fibelatti.pinboard.core.android.getWindowSizeClass
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.features.appstate.AccountSwitcherContent
@@ -126,11 +127,11 @@ fun MainScreen(
         onBack = mainViewModel::navigateBack,
     )
 
-    LaunchedEffect(multiPanelAvailable) {
+    RememberedEffect(multiPanelAvailable) {
         mainViewModel.setMultiPanelAvailable(value = multiPanelAvailable)
     }
 
-    LaunchedEffect(appState.content) {
+    RememberedEffect(appState.content) {
         mainViewModel.setCurrentScrollDirection(ScrollDirection.IDLE)
 
         when (val content = appState.content) {

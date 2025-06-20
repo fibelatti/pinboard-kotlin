@@ -15,7 +15,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +30,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.ComposeBottomSheetDialog
+import com.fibelatti.pinboard.core.android.composable.RememberedEffect
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -91,7 +91,7 @@ private fun RenameTagScreen(
             Text(text = stringResource(id = R.string.quick_actions_rename))
         }
 
-        LaunchedEffect(Unit) {
+        RememberedEffect(Unit) {
             focusRequester.requestFocus()
         }
     }

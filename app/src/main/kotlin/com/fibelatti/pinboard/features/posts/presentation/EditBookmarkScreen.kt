@@ -261,7 +261,7 @@ private fun LaunchedEditPostViewModelEffect(
     val screenState by editPostViewModel.screenState.collectAsStateWithLifecycle()
     val localView = LocalView.current
 
-    LaunchedEffect(screenState) {
+    RememberedEffect(screenState) {
         when {
             screenState.saved -> {
                 localView.showBanner(R.string.posts_saved_feedback)
@@ -299,7 +299,7 @@ private fun LaunchedPostDetailViewModelEffect(
 
     val localView = LocalView.current
 
-    LaunchedEffect(screenState) {
+    RememberedEffect(screenState) {
         val current = screenState
         if (current.deleted is Success<Boolean> && current.deleted.value) {
             localView.showBanner(R.string.posts_deleted_feedback)
@@ -478,7 +478,7 @@ private fun BookmarkBasicDetails(
             mutableStateOf(if (url.isEmpty()) FocusedField.URL else FocusedField.NONE)
         }
 
-        LaunchedEffect(Unit) {
+        RememberedEffect(Unit) {
             when (focusedField) {
                 FocusedField.NONE -> Unit
                 FocusedField.URL -> frUrl.requestFocus()

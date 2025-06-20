@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.core.android.composable
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalContext
@@ -26,8 +25,8 @@ fun LaunchedErrorHandlerEffect(
         postAction()
     }
 
-    LaunchedEffect(error) {
-        val current = error ?: return@LaunchedEffect
+    RememberedEffect(error) {
+        val current = error ?: return@RememberedEffect
 
         if (BuildConfig.DEBUG) {
             current.printStackTrace()
