@@ -133,10 +133,6 @@ subprojects {
                     }
                 }
             }
-
-            dependencies {
-                "coreLibraryDesugaring"(libs.core.library.desugaring)
-            }
         }
 
         extensions.findByType(ComposeCompilerGradlePluginExtension::class.java)?.apply {
@@ -160,7 +156,14 @@ subprojects {
                 freeCompilerArgs = buildList {
                     addAll(freeCompilerArgs.get())
                     add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
+                    add("-Xannotation-default-target=param-property")
                 }
+            }
+        }
+
+        if (extensions.findByType(CommonExtension::class.java) != null) {
+            dependencies {
+                "coreLibraryDesugaring"(libs.core.library.desugaring)
             }
         }
     }

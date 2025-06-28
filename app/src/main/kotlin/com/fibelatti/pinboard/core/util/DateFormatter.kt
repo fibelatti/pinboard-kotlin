@@ -1,9 +1,12 @@
+@file:OptIn(ExperimentalTime::class)
+
 package com.fibelatti.pinboard.core.util
 
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.DateTimeFormat
@@ -56,7 +59,7 @@ class DateFormatter @Inject constructor(
         return LocalDateTime.Format {
             when (preferredDateFormat) {
                 PreferredDateFormat.DayMonthYearWithTime -> {
-                    dayOfMonth(padding = Padding.ZERO)
+                    day(padding = Padding.ZERO)
                     char(value = '/')
                     monthNumber(padding = Padding.ZERO)
                     char(value = '/')
@@ -66,7 +69,7 @@ class DateFormatter @Inject constructor(
                 PreferredDateFormat.MonthDayYearWithTime -> {
                     monthNumber(padding = Padding.ZERO)
                     char(value = '/')
-                    dayOfMonth(padding = Padding.ZERO)
+                    day(padding = Padding.ZERO)
                     char(value = '/')
                     yearTwoDigits(baseYear = 1970)
                 }
@@ -76,7 +79,7 @@ class DateFormatter @Inject constructor(
                     char(value = '/')
                     monthNumber(padding = Padding.ZERO)
                     char(value = '/')
-                    dayOfMonth(padding = Padding.ZERO)
+                    day(padding = Padding.ZERO)
                 }
 
                 PreferredDateFormat.YearMonthDayWithTime -> {
@@ -84,7 +87,7 @@ class DateFormatter @Inject constructor(
                     char(value = '-')
                     monthNumber(padding = Padding.ZERO)
                     char(value = '-')
-                    dayOfMonth(padding = Padding.ZERO)
+                    day(padding = Padding.ZERO)
                 }
             }
 

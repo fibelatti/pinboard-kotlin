@@ -1,5 +1,6 @@
 package com.fibelatti.core.android.platform
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -31,6 +32,7 @@ public class AppResourceProvider(context: Context) : ResourceProvider {
         context.registerReceiver(receiver, IntentFilter(Intent.ACTION_LOCALE_CHANGED))
     }
 
+    @SuppressLint("AppBundleLocaleChanges")
     private fun getLocalizedContext(context: Context): Context {
         val config = Configuration(context.resources.configuration).apply {
             setLocale(Locale.getDefault())
