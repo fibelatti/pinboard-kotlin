@@ -36,6 +36,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingToolbarDefaults
@@ -52,6 +53,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -524,6 +526,7 @@ private fun RowScope.MenuItemsContent(
     menuItems: List<MainState.MenuItemComponent>,
     onMenuItemClick: (MainState.MenuItemComponent, data: Any?) -> Unit,
     data: Any? = null,
+    contentColor: Color = LocalContentColor.current,
 ) {
     for (menuItem in menuItems) {
         if (menuItem.icon == null) {
@@ -533,7 +536,7 @@ private fun RowScope.MenuItemsContent(
             ) {
                 Text(
                     text = stringResource(id = menuItem.name),
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = contentColor,
                 )
             }
         } else {
@@ -541,6 +544,7 @@ private fun RowScope.MenuItemsContent(
                 painter = painterResource(id = menuItem.icon),
                 description = stringResource(id = menuItem.name),
                 onClick = { onMenuItemClick(menuItem, data) },
+                iconTint = contentColor,
             )
         }
     }

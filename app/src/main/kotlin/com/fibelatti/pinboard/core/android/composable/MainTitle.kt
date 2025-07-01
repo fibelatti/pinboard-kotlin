@@ -66,6 +66,7 @@ fun MainTitle(
                     painter = painterResource(id = navigation.icon),
                     description = stringResource(id = R.string.cd_navigate_back),
                     onClick = onNavigationClicked,
+                    iconTint = MaterialTheme.colorScheme.onSurface,
                 )
             }
         }

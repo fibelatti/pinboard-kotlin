@@ -312,6 +312,7 @@ private fun AuthTokenHelp(
                 painter = painterResource(id = R.drawable.ic_help),
                 description = stringResource(id = R.string.hint_help),
                 onClick = { helpVisible = true },
+                iconTint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }

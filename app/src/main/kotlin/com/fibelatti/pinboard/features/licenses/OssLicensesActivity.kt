@@ -74,13 +74,21 @@ private fun OssLicensesScreen(
             backgroundColor = MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.onBackground,
             versionChipColors = LibraryDefaults.chipColors(
-                containerColor = MaterialTheme.colorScheme.background,
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                contentColor = MaterialTheme.colorScheme.onSurface,
             ),
             licenseChipColors = LibraryDefaults.chipColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                contentColor = MaterialTheme.colorScheme.onSurface,
             ),
             dialogConfirmButtonColor = MaterialTheme.colorScheme.primary,
+        ),
+        padding = LibraryDefaults.libraryPadding(
+            versionPadding = LibraryDefaults.chipPadding(
+                containerPadding = PaddingValues(start = 8.dp, top = 8.dp, end = 8.dp),
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+            ),
+            licenseDialogContentPadding = 16.dp,
         ),
         header = {
             stickyHeader {
@@ -93,6 +101,7 @@ private fun OssLicensesScreen(
                         painter = painterResource(id = R.drawable.ic_back_arrow),
                         description = stringResource(id = R.string.cd_navigate_back),
                         onClick = onBackNavClick,
+                        iconTint = MaterialTheme.colorScheme.onSurface,
                     )
                 }
             }

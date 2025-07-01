@@ -386,6 +386,7 @@ private fun ScrollToTopButton(
                 color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
                 shape = MaterialTheme.shapes.large,
             ),
+        iconTint = MaterialTheme.colorScheme.onPrimaryContainer,
     )
 }
 
