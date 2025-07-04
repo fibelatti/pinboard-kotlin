@@ -8,28 +8,26 @@ import mockwebserver3.RecordedRequest
 
 object LinkdingMockServer {
 
-    val instance: MockWebServer by lazy { MockWebServer().also { it.start() } }
+    val instance: MockWebServer by lazy { MockWebServer() }
 
-    fun setResponses(vararg responses: Triple<String, String, (RecordedRequest) -> MockResponse>) {
+    fun setResponses(vararg responses: Response) {
         instance.dispatcher = object : Dispatcher() {
-            private val handlers = responses.toList()
+            private val handlers: List<Response> = responses.toList()
 
             override fun dispatch(request: RecordedRequest): MockResponse {
                 val requestPath = request.url.toString()
                 val requestMethod = request.method
                 val handler = handlers.firstOrNull { (path, method, _) ->
                     requestPath.contains(path) && requestMethod == method
-                }?.third
+                }?.handler
 
                 return handler?.invoke(request) ?: MockResponse(code = 404)
             }
         }
     }
 
-    fun allBookmarksResponse(
-        isEmpty: Boolean,
-    ): Triple<String, String, (RecordedRequest) -> MockResponse> {
-        return Triple("bookmarks", "GET") { request ->
+    fun allBookmarksResponse(isEmpty: Boolean): Response {
+        return Response(route = "bookmarks", method = "GET") { request ->
             MockResponse(code = 200)
                 .newBuilder()
                 .setHeader("Content-Type", "application/json")
@@ -37,7 +35,7 @@ object LinkdingMockServer {
                     when {
                         isEmpty -> body(TestData.emptyBookmarksResponse())
 
-                        request.url.toString().run { contains("limit=1") || contains("offset=0") } -> {
+                        request.url.toString().run { contains("offset=0") || contains("limit=1") } -> {
                             body(TestData.bookmarksResponse())
                         }
 
@@ -48,8 +46,8 @@ object LinkdingMockServer {
         }
     }
 
-    fun addBookmarkResponse(): Triple<String, String, (RecordedRequest) -> MockResponse> {
-        return Triple("bookmarks", "POST") {
+    fun addBookmarkResponse(): Response {
+        return Response(route = "bookmarks", method = "POST") {
             MockResponse(code = 200)
                 .newBuilder()
                 .setHeader("Content-Type", "application/json")
@@ -57,6 +55,12 @@ object LinkdingMockServer {
                 .build()
         }
     }
+
+    data class Response(
+        val route: String,
+        val method: String,
+        val handler: (RecordedRequest) -> MockResponse,
+    )
 
     object TestData {
 

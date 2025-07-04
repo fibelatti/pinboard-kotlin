@@ -41,6 +41,7 @@ class PinboardEndToEndTests {
     @Before
     fun setup() {
         hiltRule.inject()
+        PinboardMockServer.instance.start()
     }
 
     @After

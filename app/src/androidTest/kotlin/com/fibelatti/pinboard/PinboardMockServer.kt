@@ -7,25 +7,23 @@ import mockwebserver3.RecordedRequest
 
 object PinboardMockServer {
 
-    val instance: MockWebServer by lazy { MockWebServer().also { it.start() } }
+    val instance: MockWebServer by lazy { MockWebServer() }
 
-    fun setResponses(vararg responses: Pair<String, (RecordedRequest) -> MockResponse>) {
+    fun setResponses(vararg responses: Response) {
         instance.dispatcher = object : Dispatcher() {
-            private val handlers = responses.toList()
+            private val handlers: List<Response> = responses.toList()
 
             override fun dispatch(request: RecordedRequest): MockResponse {
                 val requestPath = request.url.toString()
-                val handler = handlers.firstOrNull { (path, _) -> requestPath.contains(path) }?.second
+                val handler = handlers.firstOrNull { (path, _) -> requestPath.contains(path) }?.handler
 
                 return handler?.invoke(request) ?: MockResponse(code = 404)
             }
         }
     }
 
-    fun updateResponse(
-        updateTimestamp: String,
-    ): Pair<String, (RecordedRequest) -> MockResponse> {
-        return "/posts/update" to {
+    fun updateResponse(updateTimestamp: String): Response {
+        return Response(route = "/posts/update") {
             MockResponse(code = 200)
                 .newBuilder()
                 .setHeader("Content-Type", "application/json")
@@ -34,10 +32,8 @@ object PinboardMockServer {
         }
     }
 
-    fun allBookmarksResponse(
-        isEmpty: Boolean,
-    ): Pair<String, (RecordedRequest) -> MockResponse> {
-        return "/posts/all" to { request ->
+    fun allBookmarksResponse(isEmpty: Boolean): Response {
+        return Response(route = "/posts/all") { request ->
             MockResponse(code = 200)
                 .newBuilder()
                 .setHeader("Content-Type", "application/json")
@@ -52,8 +48,8 @@ object PinboardMockServer {
         }
     }
 
-    fun addBookmarkResponse(): Pair<String, (RecordedRequest) -> MockResponse> {
-        return "posts/add" to {
+    fun addBookmarkResponse(): Response {
+        return Response(route = "posts/add") {
             MockResponse(code = 200)
                 .newBuilder()
                 .setHeader("Content-Type", "application/json")
@@ -61,6 +57,11 @@ object PinboardMockServer {
                 .build()
         }
     }
+
+    data class Response(
+        val route: String,
+        val handler: (RecordedRequest) -> MockResponse,
+    )
 
     object TestData {
 

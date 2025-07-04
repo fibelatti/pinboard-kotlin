@@ -37,6 +37,7 @@ class LinkdingEndToEndTests {
     @Before
     fun setup() {
         hiltRule.inject()
+        LinkdingMockServer.instance.start()
     }
 
     @After
