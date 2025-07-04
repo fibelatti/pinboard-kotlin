@@ -41,7 +41,7 @@ class LinkdingEndToEndTests {
 
     @After
     fun tearDown() {
-        LinkdingMockServer.instance.shutdown()
+        LinkdingMockServer.instance.close()
         sharedPreferences.clear()
     }
 
