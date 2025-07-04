@@ -78,7 +78,9 @@ jobs:
           script: echo "Generated AVD snapshot for caching."
 
       - name: Run instrumented tests
+        id: instrumented-tests
         uses: reactivecircus/android-emulator-runner@v2
+        continue-on-error: true
         with:
           api-level: 34
           arch: x86_64
@@ -87,9 +89,25 @@ jobs:
           disable-animations: true
           disk-size: 6000M
           heap-size: 600M
-          script: ./gradlew pixel8api34DebugAndroidTest
-            -Pandroid.experimental.androidTest.numManagedDeviceShards=1
-            -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1
+          script: |
+            adb logcat -c                             # clear logs
+            touch app/emulator.log                    # create log file
+            chmod 777 app/emulator.log                # allow writing to log file
+            adb logcat >> app/emulator.log &          # pipe all logcat messages into log file as a background process
+            ./gradlew pixel8api34DebugAndroidTest
+              -Pandroid.experimental.androidTest.numManagedDeviceShards=1
+              -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1
+
+      - name: Upload failing instrumented tests logs
+        if: steps.instrumented-tests.outcome != 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs
+          path: app/emulator.log
+
+      - name: Report failing instrumented tests
+        if: steps.instrumented-tests.outcome != 'success'
+        run: exit 1
 
   code_analysis:
     name: Code Analysis
