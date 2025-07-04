@@ -1,27 +1,27 @@
 package com.fibelatti.pinboard
 
 import java.util.UUID
-import okhttp3.mockwebserver.Dispatcher
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
-import okhttp3.mockwebserver.RecordedRequest
+import mockwebserver3.Dispatcher
+import mockwebserver3.MockResponse
+import mockwebserver3.MockWebServer
+import mockwebserver3.RecordedRequest
 
 object LinkdingMockServer {
 
-    val instance: MockWebServer by lazy { MockWebServer() }
+    val instance: MockWebServer by lazy { MockWebServer().also { it.start() } }
 
     fun setResponses(vararg responses: Triple<String, String, (RecordedRequest) -> MockResponse>) {
         instance.dispatcher = object : Dispatcher() {
             private val handlers = responses.toList()
 
             override fun dispatch(request: RecordedRequest): MockResponse {
-                val requestPath = request.path.orEmpty()
-                val requestMethod = request.method.orEmpty()
+                val requestPath = request.url.toString()
+                val requestMethod = request.method
                 val handler = handlers.firstOrNull { (path, method, _) ->
                     requestPath.contains(path) && requestMethod == method
                 }?.third
 
-                return handler?.invoke(request) ?: MockResponse().setResponseCode(404)
+                return handler?.invoke(request) ?: MockResponse(code = 404)
             }
         }
     }
@@ -30,29 +30,31 @@ object LinkdingMockServer {
         isEmpty: Boolean,
     ): Triple<String, String, (RecordedRequest) -> MockResponse> {
         return Triple("bookmarks", "GET") { request ->
-            MockResponse()
-                .setResponseCode(200)
+            MockResponse(code = 200)
+                .newBuilder()
                 .setHeader("Content-Type", "application/json")
                 .apply {
                     when {
-                        isEmpty -> setBody(TestData.emptyBookmarksResponse())
+                        isEmpty -> body(TestData.emptyBookmarksResponse())
 
-                        request.requestUrl.toString().run { contains("limit=1") || contains("offset=0") } -> {
-                            setBody(TestData.bookmarksResponse())
+                        request.url.toString().run { contains("limit=1") || contains("offset=0") } -> {
+                            body(TestData.bookmarksResponse())
                         }
 
-                        else -> setBody(TestData.emptyBookmarksResponse())
+                        else -> body(TestData.emptyBookmarksResponse())
                     }
                 }
+                .build()
         }
     }
 
     fun addBookmarkResponse(): Triple<String, String, (RecordedRequest) -> MockResponse> {
         return Triple("bookmarks", "POST") {
-            MockResponse()
-                .setResponseCode(200)
+            MockResponse(code = 200)
+                .newBuilder()
                 .setHeader("Content-Type", "application/json")
-                .setBody(TestData.addBookmarkResponse())
+                .body(TestData.addBookmarkResponse())
+                .build()
         }
     }
 

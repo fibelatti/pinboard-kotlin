@@ -1,23 +1,23 @@
 package com.fibelatti.pinboard
 
-import okhttp3.mockwebserver.Dispatcher
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
-import okhttp3.mockwebserver.RecordedRequest
+import mockwebserver3.Dispatcher
+import mockwebserver3.MockResponse
+import mockwebserver3.MockWebServer
+import mockwebserver3.RecordedRequest
 
 object PinboardMockServer {
 
-    val instance: MockWebServer by lazy { MockWebServer() }
+    val instance: MockWebServer by lazy { MockWebServer().also { it.start() } }
 
     fun setResponses(vararg responses: Pair<String, (RecordedRequest) -> MockResponse>) {
         instance.dispatcher = object : Dispatcher() {
             private val handlers = responses.toList()
 
             override fun dispatch(request: RecordedRequest): MockResponse {
-                val requestPath = request.path.orEmpty()
+                val requestPath = request.url.toString()
                 val handler = handlers.firstOrNull { (path, _) -> requestPath.contains(path) }?.second
 
-                return handler?.invoke(request) ?: MockResponse().setResponseCode(404)
+                return handler?.invoke(request) ?: MockResponse(code = 404)
             }
         }
     }
@@ -26,10 +26,11 @@ object PinboardMockServer {
         updateTimestamp: String,
     ): Pair<String, (RecordedRequest) -> MockResponse> {
         return "/posts/update" to {
-            MockResponse()
-                .setResponseCode(200)
+            MockResponse(code = 200)
+                .newBuilder()
                 .setHeader("Content-Type", "application/json")
-                .setBody(TestData.updateResponse(timestamp = updateTimestamp))
+                .body(TestData.updateResponse(timestamp = updateTimestamp))
+                .build()
         }
     }
 
@@ -37,25 +38,27 @@ object PinboardMockServer {
         isEmpty: Boolean,
     ): Pair<String, (RecordedRequest) -> MockResponse> {
         return "/posts/all" to { request ->
-            MockResponse()
-                .setResponseCode(200)
+            MockResponse(code = 200)
+                .newBuilder()
                 .setHeader("Content-Type", "application/json")
                 .apply {
                     when {
-                        isEmpty -> setBody(TestData.emptyBookmarksResponse())
-                        request.requestUrl.toString().contains("start=0") -> setBody(TestData.allBookmarksResponse())
-                        else -> setBody(TestData.emptyBookmarksResponse())
+                        isEmpty -> body(TestData.emptyBookmarksResponse())
+                        request.url.toString().contains("start=0") -> body(TestData.allBookmarksResponse())
+                        else -> body(TestData.emptyBookmarksResponse())
                     }
                 }
+                .build()
         }
     }
 
     fun addBookmarkResponse(): Pair<String, (RecordedRequest) -> MockResponse> {
         return "posts/add" to {
-            MockResponse()
-                .setResponseCode(200)
+            MockResponse(code = 200)
+                .newBuilder()
                 .setHeader("Content-Type", "application/json")
-                .setBody(TestData.genericResponseDone())
+                .body(TestData.genericResponseDone())
+                .build()
         }
     }
 

@@ -45,7 +45,7 @@ class PinboardEndToEndTests {
 
     @After
     fun tearDown() {
-        PinboardMockServer.instance.shutdown()
+        PinboardMockServer.instance.close()
         sharedPreferences.clear()
     }
 
