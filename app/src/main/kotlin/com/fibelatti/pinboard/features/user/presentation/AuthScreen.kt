@@ -25,8 +25,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.KeyboardActionHandler
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextObfuscationMode
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -36,6 +39,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedSecureTextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -53,8 +57,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
@@ -135,8 +137,8 @@ private fun AuthScreen(
                     .padding(all = 16.dp)
                     .animateContentSize(),
             ) {
-                var authToken by remember { mutableStateOf("") }
-                var instanceUrl by remember { mutableStateOf("") }
+                val authTokenFieldState = rememberTextFieldState()
+                val instanceUrlFieldState = rememberTextFieldState()
                 val focusManager = LocalFocusManager.current
 
                 Text(
@@ -151,8 +153,7 @@ private fun AuthScreen(
                 AnimatedVisibility(visible = useLinkding) {
                     Column {
                         OutlinedTextField(
-                            value = instanceUrl,
-                            onValueChange = { instanceUrl = it },
+                            state = instanceUrlFieldState,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 16.dp),
@@ -162,9 +163,8 @@ private fun AuthScreen(
                                 imeAction = ImeAction.Next,
                                 keyboardType = KeyboardType.Uri,
                             ),
-                            keyboardActions = KeyboardActions { focusManager.moveFocus(FocusDirection.Next) },
-                            singleLine = true,
-                            maxLines = 1,
+                            onKeyboardAction = KeyboardActionHandler { focusManager.moveFocus(FocusDirection.Next) },
+                            lineLimits = TextFieldLineLimits.SingleLine,
                         )
 
                         if (instanceUrlError != null) {
@@ -180,16 +180,15 @@ private fun AuthScreen(
 
                 var authTokenVisible by remember { mutableStateOf(false) }
 
-                OutlinedTextField(
-                    value = authToken,
-                    onValueChange = { authToken = it },
+                OutlinedSecureTextField(
+                    state = authTokenFieldState,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp),
-                    visualTransformation = if (authTokenVisible) {
-                        VisualTransformation.None
+                    textObfuscationMode = if (authTokenVisible) {
+                        TextObfuscationMode.Visible
                     } else {
-                        PasswordVisualTransformation()
+                        TextObfuscationMode.RevealLastTyped
                     },
                     label = { Text(text = stringResource(id = R.string.auth_token_hint)) },
                     trailingIcon = {
@@ -216,9 +215,12 @@ private fun AuthScreen(
                         imeAction = ImeAction.Go,
                         keyboardType = KeyboardType.Password,
                     ),
-                    keyboardActions = KeyboardActions { onAuthRequested(authToken, instanceUrl) },
-                    singleLine = true,
-                    maxLines = 1,
+                    onKeyboardAction = KeyboardActionHandler {
+                        onAuthRequested(
+                            authTokenFieldState.text.toString(),
+                            instanceUrlFieldState.text.toString(),
+                        )
+                    },
                 )
 
                 if (apiTokenError != null) {
@@ -244,7 +246,12 @@ private fun AuthScreen(
                         )
                     } else {
                         Button(
-                            onClick = { onAuthRequested(authToken, instanceUrl) },
+                            onClick = {
+                                onAuthRequested(
+                                    authTokenFieldState.text.toString(),
+                                    instanceUrlFieldState.text.toString(),
+                                )
+                            },
                             shapes = ExtendedTheme.defaultButtonShapes,
                         ) {
                             Text(text = stringResource(id = R.string.auth_button))

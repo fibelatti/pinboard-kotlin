@@ -16,8 +16,11 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.KeyboardActionHandler
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -28,7 +31,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -36,6 +38,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.FocusRequester.Companion.FocusRequesterFactory.component1
+import androidx.compose.ui.focus.FocusRequester.Companion.FocusRequesterFactory.component2
+import androidx.compose.ui.focus.FocusRequester.Companion.FocusRequesterFactory.component3
+import androidx.compose.ui.focus.FocusRequester.Companion.FocusRequesterFactory.component4
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
@@ -43,10 +49,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -488,15 +492,14 @@ private fun BookmarkBasicDetails(
             }
         }
 
-        var urlField by remember {
-            mutableStateOf(TextFieldValue(text = url, selection = TextRange(url.length)))
+        val urlFieldState = rememberTextFieldState(initialText = url)
+
+        RememberedEffect(urlFieldState.text) {
+            onUrlChanged(urlFieldState.text.toString())
         }
+
         OutlinedTextField(
-            value = urlField,
-            onValueChange = { newValue ->
-                urlField = newValue
-                onUrlChanged(newValue.text)
-            },
+            state = urlFieldState,
             modifier = Modifier
                 .fillMaxWidth()
                 .focusRequester(frUrl)
@@ -509,20 +512,20 @@ private fun BookmarkBasicDetails(
             },
             isError = urlError.isNotEmpty(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions { focusManager.moveFocus(FocusDirection.Next) },
-            singleLine = true,
+            onKeyboardAction = KeyboardActionHandler { focusManager.moveFocus(FocusDirection.Next) },
+            lineLimits = TextFieldLineLimits.SingleLine,
         )
 
-        var titleField by remember {
-            mutableStateOf(TextFieldValue(text = title, selection = TextRange(title.length)))
+        val titleFieldState = rememberTextFieldState(initialText = title)
+
+        RememberedEffect(titleFieldState.text) {
+            val coerced = titleFieldState.text.take(AppConfig.PinboardApiMaxLength.TEXT_TYPE.value).toString()
+            titleFieldState.setTextAndPlaceCursorAtEnd(coerced)
+            onTitleChanged(coerced)
         }
+
         OutlinedTextField(
-            value = titleField,
-            onValueChange = { newValue ->
-                val coerced = newValue.copy(text = newValue.text.take(AppConfig.PinboardApiMaxLength.TEXT_TYPE.value))
-                titleField = coerced
-                onTitleChanged(coerced.text)
-            },
+            state = titleFieldState,
             modifier = Modifier
                 .fillMaxWidth()
                 .focusRequester(frTitle)
@@ -535,18 +538,17 @@ private fun BookmarkBasicDetails(
             },
             isError = titleError.isNotEmpty(),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions { focusManager.moveFocus(FocusDirection.Next) },
+            onKeyboardAction = KeyboardActionHandler { focusManager.moveFocus(FocusDirection.Next) },
         )
 
-        var descriptionField by remember {
-            mutableStateOf(TextFieldValue(text = description, selection = TextRange(description.length)))
+        val descriptionFieldState = rememberTextFieldState(initialText = description)
+
+        RememberedEffect(descriptionFieldState.text) {
+            onDescriptionChanged(descriptionFieldState.text.toString())
         }
+
         OutlinedTextField(
-            value = descriptionField,
-            onValueChange = { newValue ->
-                descriptionField = newValue
-                onDescriptionChanged(newValue.text)
-            },
+            state = descriptionFieldState,
             modifier = Modifier
                 .fillMaxWidth()
                 .focusRequester(frDescription)
@@ -556,15 +558,14 @@ private fun BookmarkBasicDetails(
         )
 
         if (AppMode.LINKDING == appMode) {
-            var notesField by remember {
-                mutableStateOf(TextFieldValue(text = notes, selection = TextRange(notes.length)))
+            val notesFieldState = rememberTextFieldState(initialText = notes)
+
+            RememberedEffect(notesFieldState.text) {
+                onNotesChanged(notesFieldState.text.toString())
             }
+
             OutlinedTextField(
-                value = notesField,
-                onValueChange = { newValue ->
-                    notesField = newValue
-                    onNotesChanged(newValue.text)
-                },
+                state = notesFieldState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(frNotes)

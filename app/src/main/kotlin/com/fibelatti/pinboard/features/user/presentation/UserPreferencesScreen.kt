@@ -33,8 +33,11 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.KeyboardActionHandler
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalButton
@@ -45,11 +48,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.onKeyEvent
@@ -694,12 +695,12 @@ private fun RemoveUrlParametersSetting(
                 style = MaterialTheme.typography.bodyMedium,
             )
 
-            var inputValue by remember { mutableStateOf("") }
+            val textFieldState = rememberTextFieldState()
             val submitValueAction by rememberUpdatedState {
-                if (inputValue.isNotBlank()) {
-                    onRemovedParametersChange(removedParameters + inputValue)
+                if (textFieldState.text.isNotBlank()) {
+                    onRemovedParametersChange(removedParameters + textFieldState.text.toString())
                 }
-                inputValue = ""
+                textFieldState.setTextAndPlaceCursorAtEnd("")
             }
 
             Row(
@@ -708,8 +709,7 @@ private fun RemoveUrlParametersSetting(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 OutlinedTextField(
-                    value = inputValue,
-                    onValueChange = { newValue -> inputValue = newValue },
+                    state = textFieldState,
                     modifier = Modifier
                         .weight(1f)
                         .onKeyEvent { keyEvent ->
@@ -722,9 +722,8 @@ private fun RemoveUrlParametersSetting(
                     textStyle = MaterialTheme.typography.bodyMedium,
                     label = { Text(text = stringResource(R.string.user_preferences_remove_url_parameters_hint)) },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-                    keyboardActions = KeyboardActions { submitValueAction() },
-                    singleLine = true,
-                    maxLines = 1,
+                    onKeyboardAction = KeyboardActionHandler { submitValueAction() },
+                    lineLimits = TextFieldLineLimits.SingleLine,
                 )
 
                 FilledTonalButton(

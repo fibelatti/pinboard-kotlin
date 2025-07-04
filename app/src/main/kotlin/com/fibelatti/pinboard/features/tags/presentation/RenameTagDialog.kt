@@ -8,18 +8,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.KeyboardActionHandler
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -67,24 +65,22 @@ private fun RenameTagScreen(
         verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        var newName by rememberSaveable { mutableStateOf("") }
+        val textFieldState = rememberTextFieldState()
         val focusRequester = remember { FocusRequester() }
 
         OutlinedTextField(
-            value = newName,
-            onValueChange = { newValue -> newName = newValue },
+            state = textFieldState,
             modifier = Modifier
                 .weight(1F)
                 .focusRequester(focusRequester),
             label = { Text(text = stringResource(id = R.string.tag_filter_hint)) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions { onRename(newName) },
-            singleLine = true,
-            maxLines = 1,
+            onKeyboardAction = KeyboardActionHandler { onRename(textFieldState.text.toString()) },
+            lineLimits = TextFieldLineLimits.SingleLine,
         )
 
         Button(
-            onClick = { onRename(newName) },
+            onClick = { onRename(textFieldState.text.toString()) },
             shapes = ExtendedTheme.defaultButtonShapes,
             modifier = Modifier.padding(bottom = 4.dp),
         ) {
