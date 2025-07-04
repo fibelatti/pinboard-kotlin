@@ -48,6 +48,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -366,7 +367,8 @@ private fun EditBookmarkScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color = ExtendedTheme.colors.backgroundNoOverlay),
+                    .background(color = ExtendedTheme.colors.backgroundNoOverlay)
+                    .testTag(tag = "editor-loading-indicator"),
                 contentAlignment = Alignment.Center,
             ) {
                 CircularProgressIndicator(

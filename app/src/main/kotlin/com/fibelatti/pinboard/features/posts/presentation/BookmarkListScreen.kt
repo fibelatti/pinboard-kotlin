@@ -530,7 +530,8 @@ fun BookmarkListScreen(
             LinearProgressIndicator(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .windowInsetsPadding(windowInsets),
+                    .windowInsetsPadding(windowInsets)
+                    .testTag(tag = "list-loading-indicator"),
                 color = MaterialTheme.colorScheme.primary,
             )
         }

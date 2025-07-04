@@ -3,6 +3,7 @@ package com.fibelatti.pinboard
 import android.content.SharedPreferences
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -102,8 +103,8 @@ class PinboardEndToEndTests {
             )
             onNodeWithText(context.getString(R.string.posts_title_all)).assertIsDisplayed()
 
-            waitUntilAtLeastOneExists(
-                matcher = hasText("Google"),
+            waitUntilDoesNotExist(
+                matcher = hasTestTag("list-loading-indicator"),
                 timeoutMillis = DEFAULT_TIMEOUT,
             )
             onNodeWithText("Google").assertIsDisplayed()
@@ -165,14 +166,14 @@ class PinboardEndToEndTests {
             // Save
             onNodeWithTag(testTag = "fab-${EditPostContent::class.simpleName}")
                 .performClick()
-
-            // Assert
-            waitUntilAtLeastOneExists(
-                matcher = hasText(context.getString(R.string.posts_title_all)),
+            onNodeWithTag(testTag = "editor-loading-indicator")
+                .assertIsDisplayed()
+            waitUntilDoesNotExist(
+                matcher = hasTestTag("editor-loading-indicator"),
                 timeoutMillis = DEFAULT_TIMEOUT,
             )
-            onNodeWithText(context.getString(R.string.posts_title_all)).assertIsDisplayed()
 
+            // Assert
             waitUntilAtLeastOneExists(
                 matcher = hasText("Google"),
                 timeoutMillis = DEFAULT_TIMEOUT,
