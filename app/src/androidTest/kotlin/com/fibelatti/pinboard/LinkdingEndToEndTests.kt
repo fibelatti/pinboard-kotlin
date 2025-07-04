@@ -154,6 +154,10 @@ class LinkdingEndToEndTests {
             // Save
             onNodeWithTag(testTag = "fab-${EditPostContent::class.simpleName}")
                 .performClick()
+            waitUntilAtLeastOneExists(
+                matcher = hasTestTag("editor-loading-indicator"),
+                timeoutMillis = DEFAULT_TIMEOUT,
+            )
             onNodeWithTag(testTag = "editor-loading-indicator")
                 .assertIsDisplayed()
             waitUntilDoesNotExist(
