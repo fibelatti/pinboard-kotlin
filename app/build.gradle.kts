@@ -273,6 +273,7 @@ dependencies {
 /**
  * Prints the current version code. Used for GitHub releases.
  */
+@Suppress("unused")
 val printReleaseVersionCode by tasks.registering {
     doLast {
         println(AppInfo.versionCode)
