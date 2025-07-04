@@ -164,7 +164,9 @@ aboutLibraries {
 
 licensee {
     allow("Apache-2.0")
-    allow("MIT")
+    allowUrl("https://opensource.org/license/mit") {
+        because("Online copy of the MIT license")
+    }
     allowUrl("https://jsoup.org/license") {
         because("MIT, but self-hosted copy of the license")
     }
