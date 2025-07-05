@@ -94,9 +94,7 @@ jobs:
             touch app/emulator.log                    # create log file
             chmod 777 app/emulator.log                # allow writing to log file
             adb logcat >> app/emulator.log &          # pipe all logcat messages into log file as a background process
-            ./gradlew pixel8api34DebugAndroidTest
-              -Pandroid.experimental.androidTest.numManagedDeviceShards=1
-              -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1
+            ./gradlew connectedCheck
 
       - name: Upload failing instrumented tests logs
         if: steps.instrumented-tests.outcome != 'success'
