@@ -3,7 +3,6 @@ package com.fibelatti.pinboard
 import android.content.SharedPreferences
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -80,17 +79,14 @@ class LinkdingEndToEndTests {
             onNodeWithText(context.getString(R.string.auth_button))
                 .performClick()
 
-            // Assert
             waitUntilAtLeastOneExists(
                 matcher = hasText(context.getString(R.string.posts_title_all)),
                 timeoutMillis = DEFAULT_TIMEOUT,
             )
-            onNodeWithText(context.getString(R.string.posts_title_all)).assertIsDisplayed()
+            waitForIdle()
 
-            waitUntilDoesNotExist(
-                matcher = hasTestTag("list-loading-indicator"),
-                timeoutMillis = DEFAULT_TIMEOUT,
-            )
+            // Assert
+            onNodeWithText(context.getString(R.string.posts_title_all)).assertIsDisplayed()
             onNodeWithText("Google").assertIsDisplayed()
             onNodeWithTag("private-flag").assertIsDisplayed()
             onNodeWithTag("read-later-flag").assertIsDisplayed()
@@ -119,17 +115,22 @@ class LinkdingEndToEndTests {
                 .performTextInput(LinkdingMockServer.TestData.TOKEN)
             onNodeWithText(context.getString(R.string.auth_button))
                 .performClick()
+
             waitUntilAtLeastOneExists(
                 matcher = hasText(context.getString(R.string.posts_title_all)),
                 timeoutMillis = DEFAULT_TIMEOUT,
             )
+            waitForIdle()
 
             // Navigate to add bookmark screen
-            onNodeWithTag(testTag = "fab-${PostListContent::class.simpleName}").performClick()
+            onNodeWithTag(testTag = "fab-${PostListContent::class.simpleName}")
+                .performClick()
+
             waitUntilAtLeastOneExists(
                 hasText(context.getString(R.string.posts_add_title)),
                 timeoutMillis = DEFAULT_TIMEOUT,
             )
+            waitForIdle()
 
             // Enter bookmark details
             onNodeWithText(context.getString(R.string.posts_add_url))
@@ -154,22 +155,14 @@ class LinkdingEndToEndTests {
             // Save
             onNodeWithTag(testTag = "fab-${EditPostContent::class.simpleName}")
                 .performClick()
+
             waitUntilAtLeastOneExists(
-                matcher = hasTestTag("editor-loading-indicator"),
+                matcher = hasText(context.getString(R.string.posts_title_all)),
                 timeoutMillis = DEFAULT_TIMEOUT,
             )
-            onNodeWithTag(testTag = "editor-loading-indicator")
-                .assertIsDisplayed()
-            waitUntilDoesNotExist(
-                matcher = hasTestTag("editor-loading-indicator"),
-                timeoutMillis = DEFAULT_TIMEOUT,
-            )
+            waitForIdle()
 
             // Assert
-            waitUntilAtLeastOneExists(
-                matcher = hasText("Google"),
-                timeoutMillis = DEFAULT_TIMEOUT,
-            )
             onNodeWithText("Google").assertIsDisplayed()
             onNodeWithTag("private-flag").assertIsDisplayed()
             onNodeWithTag("read-later-flag").assertIsDisplayed()
