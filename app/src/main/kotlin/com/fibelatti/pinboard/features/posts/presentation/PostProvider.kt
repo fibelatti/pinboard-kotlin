@@ -64,6 +64,7 @@ class PostListProvider(val size: Int) : PreviewParameterProvider<List<Post>> {
             url = "https://post-$index.com",
             title = "Post #$index",
             description = LOREM_IPSUM_SOURCE,
+            id = "$index",
             private = random.nextBoolean(),
             readLater = random.nextBoolean(),
             tags = LOREM_IPSUM_SOURCE.split(" ").take(value).map { Tag(name = it) },

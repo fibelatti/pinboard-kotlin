@@ -788,7 +788,9 @@ private fun BookmarkItem(
                         items = tags,
                         onItemClick = { item -> onTagClicked(post.tags.first { tag -> tag.name == item.text }) },
                         modifier = Modifier.padding(top = 8.dp),
-                        itemTextStyle = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
+                        itemTextStyle = MaterialTheme.typography.bodySmall.copy(
+                            fontFamily = FontFamily.Monospace,
+                        ),
                     )
                 }
             }

@@ -745,7 +745,7 @@ private fun RemoveUrlParametersSetting(
                     .fillWidthOfParent(parentPaddingStart = 12.dp, parentPaddingEnd = 12.dp)
                     .fillMaxWidth(),
                 itemTextStyle = MaterialTheme.typography.bodySmall.copy(
-                    fontFamily = FontFamily.SansSerif,
+                    fontFamily = FontFamily.Monospace,
                 ),
                 contentPadding = PaddingValues(horizontal = 12.dp),
             )

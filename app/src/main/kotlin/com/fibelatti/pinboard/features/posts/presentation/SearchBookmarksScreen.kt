@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -224,6 +225,9 @@ fun SearchBookmarksScreen(
                         onItemIconClick = { item ->
                             onSelectedTagRemoved(selectedTags.first { it.name == item.text })
                         },
+                        itemTextStyle = MaterialTheme.typography.bodySmall.copy(
+                            fontFamily = FontFamily.Monospace,
+                        ),
                         contentPadding = PaddingValues(horizontal = 16.dp),
                     )
                 }
