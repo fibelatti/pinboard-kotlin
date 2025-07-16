@@ -82,7 +82,7 @@ runner = { module = "androidx.test:runner", version = "1.6.2" }
 orchestrator = { module = "androidx.test:orchestrator", version = "1.5.1" }
 
 truth = { module = "com.google.truth:truth", version = "1.4.4" }
-mockk = { module = "io.mockk:mockk", version = "1.14.4" }
+mockk = { module = "io.mockk:mockk", version = "1.14.5" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 arch-core-testing = { module = "androidx.arch.core:core-testing", version = "2.2.0" }
 room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
