@@ -4,7 +4,7 @@ coroutines = "1.10.2"
 hilt = "2.56.2"
 hiltExtensions = "1.2.0"
 kotlin = "2.2.0"
-ktor = "3.2.1"
+ktor = "3.2.2"
 activity = "1.10.1"
 lifecycle = "2.9.2"
 okhttp = "5.1.0"
@@ -16,7 +16,7 @@ aboutLibraries = "12.2.4"
 kotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.9.0" }
-kotlin-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.7.1" }
+kotlin-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.7.1-0.6.x-compat" }
 
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
