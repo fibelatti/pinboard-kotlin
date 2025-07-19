@@ -41,6 +41,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedSecureTextField
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -165,6 +166,11 @@ private fun AuthScreen(
                             ),
                             onKeyboardAction = KeyboardActionHandler { focusManager.moveFocus(FocusDirection.Next) },
                             lineLimits = TextFieldLineLimits.SingleLine,
+                            contentPadding = OutlinedTextFieldDefaults.contentPadding(
+                                start = 8.dp,
+                                end = 8.dp,
+                                bottom = 8.dp,
+                            ),
                         )
 
                         if (instanceUrlError != null) {
@@ -221,6 +227,11 @@ private fun AuthScreen(
                             instanceUrlFieldState.text.toString(),
                         )
                     },
+                    contentPadding = OutlinedTextFieldDefaults.contentPadding(
+                        start = 8.dp,
+                        end = 8.dp,
+                        bottom = 8.dp,
+                    ),
                 )
 
                 if (apiTokenError != null) {

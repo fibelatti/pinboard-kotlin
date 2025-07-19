@@ -25,6 +25,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -516,6 +517,11 @@ private fun BookmarkBasicDetails(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next),
             onKeyboardAction = KeyboardActionHandler { focusManager.moveFocus(FocusDirection.Next) },
             lineLimits = TextFieldLineLimits.SingleLine,
+            contentPadding = OutlinedTextFieldDefaults.contentPadding(
+                start = 8.dp,
+                end = 8.dp,
+                bottom = 8.dp,
+            ),
         )
 
         val titleFieldState = rememberTextFieldState(initialText = title)
@@ -541,6 +547,11 @@ private fun BookmarkBasicDetails(
             isError = titleError.isNotEmpty(),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             onKeyboardAction = KeyboardActionHandler { focusManager.moveFocus(FocusDirection.Next) },
+            contentPadding = OutlinedTextFieldDefaults.contentPadding(
+                start = 8.dp,
+                end = 8.dp,
+                bottom = 8.dp,
+            ),
         )
 
         val descriptionFieldState = rememberTextFieldState(initialText = description)
@@ -557,6 +568,11 @@ private fun BookmarkBasicDetails(
                 .onFocusChanged { if (it.hasFocus) focusedField = FocusedField.DESCRIPTION },
             label = { Text(text = stringResource(id = R.string.posts_add_url_description)) },
             supportingText = {},
+            contentPadding = OutlinedTextFieldDefaults.contentPadding(
+                start = 8.dp,
+                end = 8.dp,
+                bottom = 8.dp,
+            ),
         )
 
         if (AppMode.LINKDING == appMode) {
@@ -573,6 +589,11 @@ private fun BookmarkBasicDetails(
                     .focusRequester(frNotes)
                     .onFocusChanged { if (it.hasFocus) focusedField = FocusedField.NOTES },
                 label = { Text(text = stringResource(id = R.string.posts_add_url_notes)) },
+                contentPadding = OutlinedTextFieldDefaults.contentPadding(
+                    start = 8.dp,
+                    end = 8.dp,
+                    bottom = 8.dp,
+                ),
             )
         }
     }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -77,6 +78,11 @@ private fun RenameTagScreen(
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             onKeyboardAction = KeyboardActionHandler { onRename(textFieldState.text.toString()) },
             lineLimits = TextFieldLineLimits.SingleLine,
+            contentPadding = OutlinedTextFieldDefaults.contentPadding(
+                start = 8.dp,
+                end = 8.dp,
+                bottom = 8.dp,
+            ),
         )
 
         Button(

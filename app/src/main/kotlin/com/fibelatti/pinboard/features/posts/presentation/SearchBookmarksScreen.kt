@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -189,6 +190,11 @@ fun SearchBookmarksScreen(
                     onKeyboardSearch()
                 },
                 lineLimits = TextFieldLineLimits.SingleLine,
+                contentPadding = OutlinedTextFieldDefaults.contentPadding(
+                    start = 8.dp,
+                    end = 8.dp,
+                    bottom = 8.dp,
+                ),
             )
 
             AnimatedVisibility(
