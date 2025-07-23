@@ -3,9 +3,11 @@ package com.fibelatti.pinboard.core.di.modules
 import android.content.Context
 import android.net.TrafficStats
 import coil3.ImageLoader
+import coil3.annotation.ExperimentalCoilApi
 import coil3.disk.DiskCache
 import coil3.disk.directory
 import coil3.memory.MemoryCache
+import coil3.memoryCacheMaxSizePercentWhileInBackground
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import coil3.request.allowHardware
 import coil3.request.crossfade
@@ -102,6 +104,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    @OptIn(ExperimentalCoilApi::class)
     fun imageLoader(
         @ApplicationContext context: Context,
         threadStatsTagInterceptor: Interceptor,
@@ -122,6 +125,7 @@ object NetworkModule {
                 .maxSizePercent(context = context, percent = 0.25)
                 .build()
         }
+        .memoryCacheMaxSizePercentWhileInBackground(percent = 0.25)
         .diskCache {
             DiskCache.Builder()
                 .directory(context.cacheDir.resolve(relative = "image_cache"))
