@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.core.di.modules
 
 import android.content.Context
 import android.net.TrafficStats
+import android.os.Build
 import coil3.ImageLoader
 import coil3.annotation.ExperimentalCoilApi
 import coil3.disk.DiskCache
@@ -53,7 +54,12 @@ object NetworkModule {
 
     @Provides
     fun threadStatsTagInterceptor(): Interceptor = Interceptor { chain ->
-        TrafficStats.setThreadStatsTag(Thread.currentThread().id.toInt())
+        @Suppress("DEPRECATION")
+        val threadId: Int = Thread.currentThread()
+            .run { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) threadId() else id }
+            .toInt()
+
+        TrafficStats.setThreadStatsTag(threadId)
         chain.proceed(chain.request())
     }
 
