@@ -79,7 +79,7 @@ junit5-vintage = { module = "org.junit.vintage:junit-vintage-engine" }
 junit5-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 
 runner = { module = "androidx.test:runner", version = "1.7.0" }
-orchestrator = { module = "androidx.test:orchestrator", version = "1.5.1" }
+orchestrator = { module = "androidx.test:orchestrator", version = "1.6.0" }
 
 truth = { module = "com.google.truth:truth", version = "1.4.4" }
 mockk = { module = "io.mockk:mockk", version = "1.14.5" }
