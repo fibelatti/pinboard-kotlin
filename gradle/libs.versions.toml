@@ -1,5 +1,5 @@
 [versions]
-agp = "8.11.1"
+agp = "8.12.0"
 coroutines = "1.10.2"
 hilt = "2.57"
 hiltExtensions = "1.2.0"
