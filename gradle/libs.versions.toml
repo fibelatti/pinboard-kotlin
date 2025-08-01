@@ -78,7 +78,7 @@ junit5-params = { module = "org.junit.jupiter:junit-jupiter-params" }
 junit5-vintage = { module = "org.junit.vintage:junit-vintage-engine" }
 junit5-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 
-runner = { module = "androidx.test:runner", version = "1.6.2" }
+runner = { module = "androidx.test:runner", version = "1.7.0" }
 orchestrator = { module = "androidx.test:orchestrator", version = "1.5.1" }
 
 truth = { module = "com.google.truth:truth", version = "1.4.4" }
