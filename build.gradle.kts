@@ -115,9 +115,6 @@ subprojects {
                 animationsDisabled = true
 
                 unitTests {
-                    isReturnDefaultValues = true
-                    isIncludeAndroidResources = true
-
                     all {
                         it.useJUnitPlatform()
                     }
