@@ -1,0 +1,6 @@
+This version brings the following updates:
+
+* Copy Tags action: tags are now copied to the clipboard as well
+* Small UI Adjustments to the bookmark tags and flags (visibility and unread)
+
+Feedback and suggestions are always welcome, thank you for using the app!
