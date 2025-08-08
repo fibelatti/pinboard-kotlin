@@ -2,6 +2,7 @@
 
 package com.fibelatti.pinboard.features.posts.presentation
 
+import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
@@ -48,11 +49,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
@@ -131,6 +135,7 @@ import com.fibelatti.ui.theme.ExtendedTheme
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 @Composable
 fun BookmarkListScreen(
@@ -164,9 +169,13 @@ fun BookmarkListScreen(
         val userCredentials by userPreferencesViewModel.userCredentials.collectAsStateWithLifecycle()
         val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
         val tagsClipboard = remember { mutableListOf<Tag>() }
+        val tagsCopiedFeedback = stringResource(R.string.feedback_tags_copied_to_clipboard)
 
         val localContext = LocalContext.current
         val localView = LocalView.current
+        val localClipboard = LocalClipboard.current
+
+        val coroutineScope = rememberCoroutineScope()
 
         LaunchedMainViewModelEffect()
         LaunchedPostDetailViewModelEffect()
@@ -215,6 +224,16 @@ fun BookmarkListScreen(
                     onCopyTags = { tags ->
                         tagsClipboard.clear()
                         tagsClipboard.addAll(tags)
+
+                        coroutineScope.launch {
+                            val clipData = ClipData.newPlainText(
+                                localContext.getString(R.string.tags_title),
+                                tags.joinToString(separator = " ") { it.name },
+                            )
+                            localClipboard.setClipEntry(ClipEntry(clipData))
+                        }
+
+                        localView.showBanner(message = tagsCopiedFeedback, duration = 3_000)
                     },
                     onPasteTags = { tags ->
                         postDetailViewModel.addTags(post = post, tags = tags)

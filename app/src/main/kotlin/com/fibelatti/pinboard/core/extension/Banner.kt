@@ -19,15 +19,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.fromHtml
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
-fun View.showBanner(@StringRes messageRes: Int) {
-    showBanner(message = resources.getString(messageRes))
+fun View.showBanner(@StringRes messageRes: Int, duration: Long = 1_500) {
+    showBanner(message = resources.getString(messageRes), duration = duration)
 }
 
-fun View.showBanner(message: String) {
+fun View.showBanner(message: String, duration: Long = 1_500) {
     val banner = ComposeView(context).apply {
         alpha = 0F
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -54,7 +57,7 @@ fun View.showBanner(message: String) {
             banner.animate()
                 .alpha(0F)
                 .setDuration(500)
-                .setStartDelay(1_500)
+                .setStartDelay(duration)
                 .setInterpolator(AccelerateInterpolator())
                 .withEndAction { contentView.removeView(banner) }
                 .start()
@@ -72,9 +75,7 @@ private fun View.getContentView(): ViewGroup {
 }
 
 @Composable
-private fun Banner(
-    message: String,
-) {
+private fun Banner(message: String) {
     Surface(
         modifier = Modifier
             .padding(all = 24.dp)
@@ -84,10 +85,11 @@ private fun Banner(
         shadowElevation = 8.dp,
     ) {
         Text(
-            text = message,
-            modifier = Modifier.padding(all = 16.dp),
+            text = AnnotatedString.fromHtml(message),
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
             color = MaterialTheme.colorScheme.inverseOnSurface,
-            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyLarge,
         )
     }
 }

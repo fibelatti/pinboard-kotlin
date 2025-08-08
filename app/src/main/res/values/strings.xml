@@ -19,6 +19,8 @@
 
     <string name="feedback_copied_to_clipboard">Copied to the clipboard</string>
 
+    <string name="feedback_tags_copied_to_clipboard">&lt;b>Tags copied to the clipboard.&lt;/b>&lt;br />Use the &lt;i>Paste tags&lt;/i> action to add them directly to another bookmark.</string>
+
     <!-- Menus -->
     <string name="menu_main_sync">Sync bookmarks</string>
     <string name="menu_main_search">Search</string>
