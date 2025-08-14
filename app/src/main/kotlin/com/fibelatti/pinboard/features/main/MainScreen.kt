@@ -15,6 +15,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,7 @@ import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.layout.LazyLayoutCacheWindow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -287,6 +289,7 @@ fun MainScreen(
 }
 
 @Composable
+@OptIn(ExperimentalFoundationApi::class)
 private fun MainPanelContent(
     content: Content,
     sidePanelVisible: Boolean,
@@ -301,7 +304,9 @@ private fun MainPanelContent(
         }
     }
     val postListContent: PostListContent? = remember(content) { content.find() }
-    val bookmarkListState: LazyListState = rememberLazyListState()
+
+    val dpCacheWindow = LazyLayoutCacheWindow(aheadFraction = .5f, behindFraction = .5f)
+    val bookmarkListState: LazyListState = rememberLazyListState(cacheWindow = dpCacheWindow)
 
     LaunchedEffect(
         postListContent?.category,
