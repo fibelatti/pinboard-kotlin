@@ -17,8 +17,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.byValue
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
@@ -32,6 +34,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -496,6 +499,7 @@ private fun BookmarkBasicDetails(
         }
 
         val urlFieldState = rememberTextFieldState(initialText = url)
+        val urlSanitizationRegex = remember { "\\s".toRegex() }
 
         RememberedEffect(urlFieldState.text) {
             onUrlChanged(urlFieldState.text.toString())
@@ -514,6 +518,9 @@ private fun BookmarkBasicDetails(
                 }
             },
             isError = urlError.isNotEmpty(),
+            inputTransformation = InputTransformation.byValue { _, proposed ->
+                proposed.replace(urlSanitizationRegex, "")
+            },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next),
             onKeyboardAction = KeyboardActionHandler { focusManager.moveFocus(FocusDirection.Next) },
             lineLimits = TextFieldLineLimits.SingleLine,
