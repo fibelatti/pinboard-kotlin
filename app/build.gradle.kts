@@ -158,8 +158,19 @@ room {
 }
 
 aboutLibraries {
-    export.excludeFields = setOf("generated")
-    android.registerAndroidTasks = false
+    collect {
+        filterVariants.add("release")
+    }
+
+    export {
+        variant = "release"
+        excludeFields = setOf("generated")
+    }
+
+    library {
+        duplicationMode = com.mikepenz.aboutlibraries.plugin.DuplicateMode.MERGE
+        duplicationRule = com.mikepenz.aboutlibraries.plugin.DuplicateRule.EXACT
+    }
 }
 
 licensee {
