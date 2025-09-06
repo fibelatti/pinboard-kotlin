@@ -71,16 +71,18 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
-import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
+import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
 import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.RefreshTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
 import com.fibelatti.ui.components.AutoSizeText
+import com.fibelatti.ui.components.rememberAppSheetState
+import com.fibelatti.ui.components.showBottomSheet
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.launch
@@ -92,6 +94,11 @@ fun TagListScreen(
 ) {
     val appState by tagsViewModel.appState.collectAsStateWithLifecycle()
     val tagsState by tagsViewModel.state.collectAsStateWithLifecycle()
+
+    var quickActionTag: Tag? by remember { mutableStateOf(null) }
+
+    val tagQuickActionsSheetState = rememberAppSheetState()
+    val renameTagSheetState = rememberAppSheetState()
 
     val localContext = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -124,28 +131,33 @@ fun TagListScreen(
         onTagClicked = { tagsViewModel.runAction(PostsForTag(it)) },
         onTagLongClicked = { tag ->
             if (AppMode.PINBOARD == appState.appMode) {
-                SelectionDialog.show(
-                    context = localContext,
-                    title = localContext.getString(R.string.quick_actions_title),
-                    options = TagQuickActions.allOptions(tag),
-                    optionName = { localContext.getString(it.title) },
-                    optionIcon = TagQuickActions::icon,
-                    onOptionSelected = { option ->
-                        when (option) {
-                            is TagQuickActions.Rename -> {
-                                RenameTagDialog.show(
-                                    context = localContext,
-                                    tag = option.tag,
-                                    onRename = tagsViewModel::renameTag,
-                                )
-                            }
-                        }
-                    },
-                )
+                quickActionTag = tag
+                tagQuickActionsSheetState.showBottomSheet()
             }
         },
         onPullToRefresh = { tagsViewModel.runAction(RefreshTags) },
     )
+
+    quickActionTag?.let { tag ->
+        SelectionDialogBottomSheet(
+            sheetState = tagQuickActionsSheetState,
+            title = stringResource(R.string.quick_actions_title),
+            options = TagQuickActions.allOptions(tag = tag),
+            optionName = { localContext.getString(it.title) },
+            optionIcon = TagQuickActions::icon,
+            onOptionSelected = { option ->
+                when (option) {
+                    is TagQuickActions.Rename -> renameTagSheetState.showBottomSheet()
+                }
+            },
+        )
+
+        RenameTagBottomSheet(
+            sheetState = renameTagSheetState,
+            tag = tag,
+            onRename = tagsViewModel::renameTag,
+        )
+    }
 }
 
 @Composable

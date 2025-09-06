@@ -33,14 +33,18 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
+import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.appstate.ViewSavedFilter
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
+import com.fibelatti.ui.components.AppSheetState
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
+import com.fibelatti.ui.components.bottomSheetData
+import com.fibelatti.ui.components.rememberAppSheetState
+import com.fibelatti.ui.components.showBottomSheet
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -55,8 +59,9 @@ fun SavedFiltersScreen(
     ) {
         val savedFilters by savedFiltersViewModel.state.collectAsStateWithLifecycle()
 
-        val localContext = LocalContext.current
         val localView = LocalView.current
+
+        val savedFilterMenuSheetState = rememberAppSheetState()
 
         val error by savedFiltersViewModel.error.collectAsStateWithLifecycle()
         LaunchedErrorHandlerEffect(error = error, handler = savedFiltersViewModel::errorHandled)
@@ -67,21 +72,15 @@ fun SavedFiltersScreen(
                 savedFiltersViewModel.runAction(ViewSavedFilter(savedFilter = savedFilter))
             },
             onSavedFilterLongClicked = { savedFilter ->
-                SelectionDialog.show(
-                    context = localContext,
-                    title = localContext.getString(R.string.quick_actions_title),
-                    options = SavedFiltersQuickActions.allOptions(savedFilter),
-                    optionName = { localContext.getString(it.title) },
-                    optionIcon = SavedFiltersQuickActions::icon,
-                    onOptionSelected = { option ->
-                        when (option) {
-                            is SavedFiltersQuickActions.Delete -> {
-                                savedFiltersViewModel.deleteSavedFilter(savedFilter)
-                                localView.showBanner(R.string.saved_filters_deleted_feedback)
-                            }
-                        }
-                    },
-                )
+                savedFilterMenuSheetState.showBottomSheet(data = savedFilter)
+            },
+        )
+
+        SavedFiltersQuickActionsBottomSheet(
+            sheetState = savedFilterMenuSheetState,
+            onDeleteClick = { savedFilter ->
+                savedFiltersViewModel.deleteSavedFilter(savedFilter)
+                localView.showBanner(R.string.saved_filters_deleted_feedback)
             },
         )
     }
@@ -185,6 +184,28 @@ private fun SavedFilterItem(
             }
         }
     }
+}
+
+@Composable
+private fun SavedFiltersQuickActionsBottomSheet(
+    sheetState: AppSheetState,
+    onDeleteClick: (SavedFilter) -> Unit,
+) {
+    val savedFilter: SavedFilter = sheetState.bottomSheetData() ?: return
+    val localContext = LocalContext.current
+
+    SelectionDialogBottomSheet(
+        sheetState = sheetState,
+        title = stringResource(R.string.quick_actions_title),
+        options = SavedFiltersQuickActions.allOptions(savedFilter),
+        optionName = { localContext.getString(it.title) },
+        optionIcon = SavedFiltersQuickActions::icon,
+        onOptionSelected = { option ->
+            when (option) {
+                is SavedFiltersQuickActions.Delete -> onDeleteClick(savedFilter)
+            }
+        },
+    )
 }
 
 // region Previews

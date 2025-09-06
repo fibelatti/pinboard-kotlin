@@ -3,8 +3,6 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import android.content.ClipData
-import android.content.Context
-import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -59,6 +57,7 @@ import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -70,7 +69,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -82,13 +80,12 @@ import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_PAGE_SIZE
-import com.fibelatti.pinboard.core.AppConfig.PINBOARD_USER_URL
 import com.fibelatti.pinboard.core.AppMode
-import com.fibelatti.pinboard.core.android.SelectionDialog
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.android.composable.RememberedEffect
+import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
 import com.fibelatti.pinboard.core.android.composable.TextWithBlockquote
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.applySecureFlag
@@ -121,6 +118,8 @@ import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.ViewRandomPost
 import com.fibelatti.pinboard.features.appstate.ViewSearch
 import com.fibelatti.pinboard.features.appstate.find
+import com.fibelatti.pinboard.features.appstate.pinboardQueryUrl
+import com.fibelatti.pinboard.features.appstate.pinboardTagsUrl
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.pinboard.features.main.MainState
 import com.fibelatti.pinboard.features.main.MainViewModel
@@ -128,8 +127,12 @@ import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesViewModel
+import com.fibelatti.ui.components.AppSheetState
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
+import com.fibelatti.ui.components.bottomSheetData
+import com.fibelatti.ui.components.rememberAppSheetState
+import com.fibelatti.ui.components.showBottomSheet
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -177,7 +180,12 @@ fun BookmarkListScreen(
 
         val coroutineScope = rememberCoroutineScope()
 
-        LaunchedMainViewModelEffect()
+        val bookmarkQuickActionsSheetState = rememberAppSheetState()
+        val bookmarkDescriptionSheetState = rememberAppSheetState()
+        val shareFilterResultsSheetState = rememberAppSheetState()
+        val sortSelectionSheetState = rememberAppSheetState()
+
+        LaunchedMainViewModelEffect(onSortClick = sortSelectionSheetState::showBottomSheet)
         LaunchedPostDetailViewModelEffect()
         LaunchedErrorHandlerEffect(error = postListError, handler = postListViewModel::errorHandled)
         LaunchedErrorHandlerEffect(error = postDetailError, handler = postDetailViewModel::errorHandled)
@@ -201,59 +209,34 @@ fun BookmarkListScreen(
                 )
                 localView.showBanner(R.string.saved_filters_saved_feedback)
             },
-            onShareClicked = { searchParameters ->
-                userCredentials.getPinboardUsername()?.let { username ->
-                    shareFilteredResults(
-                        context = localContext,
-                        username = username,
-                        searchParameters = searchParameters,
-                    )
+            onShareClicked = shareClicked@{
+                val username: String = userCredentials.getPinboardUsername() ?: return@shareClicked
+                val searchParameters: SearchParameters = postListContent.searchParameters
+
+                when {
+                    searchParameters.term.isNotBlank() && searchParameters.tags.isEmpty() -> {
+                        localContext.shareText(
+                            title = R.string.search_share_title,
+                            text = searchParameters.pinboardQueryUrl(username = username),
+                        )
+                    }
+
+                    searchParameters.term.isBlank() && searchParameters.tags.isNotEmpty() -> {
+                        localContext.shareText(
+                            title = R.string.search_share_title,
+                            text = searchParameters.pinboardTagsUrl(username = username),
+                        )
+                    }
+
+                    else -> {
+                        shareFilterResultsSheetState.showBottomSheet()
+                    }
                 }
             },
             onPullToRefresh = { mainViewModel.runAction(Refresh()) },
             onPostClicked = { post -> mainViewModel.runAction(ViewPost(post)) },
             onPostLongClicked = { post ->
-                showQuickActionsDialog(
-                    context = localContext,
-                    post = post,
-                    tagsClipboard = tagsClipboard,
-                    hiddenPostQuickOptions = userPreferences.hiddenPostQuickOptions,
-                    onToggleReadLater = {
-                        postDetailViewModel.toggleReadLater(post = post)
-                    },
-                    onCopyTags = { tags ->
-                        tagsClipboard.clear()
-                        tagsClipboard.addAll(tags)
-
-                        coroutineScope.launch {
-                            val clipData = ClipData.newPlainText(
-                                localContext.getString(R.string.tags_title),
-                                tags.joinToString(separator = " ") { it.name },
-                            )
-                            localClipboard.setClipEntry(ClipEntry(clipData))
-                        }
-
-                        localView.showBanner(message = tagsCopiedFeedback, duration = 3_000)
-                    },
-                    onPasteTags = { tags ->
-                        postDetailViewModel.addTags(post = post, tags = tags)
-                    },
-                    onEdit = {
-                        mainViewModel.runAction(action = EditPost(post))
-                    },
-                    onDelete = {
-                        showDeleteConfirmationDialog(context = localContext) {
-                            postDetailViewModel.deletePost(post)
-                        }
-                    },
-                    onExpandDescription = {
-                        PostDescriptionDialog.showPostDescriptionDialog(
-                            context = localContext,
-                            appMode = appState.appMode,
-                            post = post,
-                        )
-                    },
-                )
+                bookmarkQuickActionsSheetState.showBottomSheet(post)
             },
             onTagClicked = { post -> mainViewModel.runAction(PostsForTag(post)) },
             onPrivateClicked = { mainViewModel.runAction(Private) },
@@ -262,6 +245,60 @@ fun BookmarkListScreen(
             sidePanelVisible = appState.sidePanelVisible,
             listState = listState,
         )
+
+        BookmarkQuickActionsBottomSheet(
+            sheetState = bookmarkQuickActionsSheetState,
+            tagsClipboard = tagsClipboard,
+            hiddenPostQuickOptions = userPreferences.hiddenPostQuickOptions,
+            onToggleReadLater = { post ->
+                postDetailViewModel.toggleReadLater(post = post)
+            },
+            onCopyTags = { tags ->
+                tagsClipboard.clear()
+                tagsClipboard.addAll(tags)
+
+                coroutineScope.launch {
+                    val clipData = ClipData.newPlainText(
+                        localContext.getString(R.string.tags_title),
+                        tags.joinToString(separator = " ") { it.name },
+                    )
+                    localClipboard.setClipEntry(ClipEntry(clipData))
+                }
+
+                localView.showBanner(message = tagsCopiedFeedback, duration = 3_000)
+            },
+            onPasteTags = { post, tags ->
+                postDetailViewModel.addTags(post = post, tags = tags)
+            },
+            onEdit = { post ->
+                mainViewModel.runAction(action = EditPost(post))
+            },
+            onDelete = { post ->
+                showDeleteConfirmationDialog(context = localContext) {
+                    postDetailViewModel.deletePost(post)
+                }
+            },
+            onExpandDescription = { post ->
+                bookmarkDescriptionSheetState.showBottomSheet(data = post)
+            },
+        )
+
+        BookmarkDescriptionBottomSheet(
+            sheetState = bookmarkDescriptionSheetState,
+            appMode = appState.appMode,
+        )
+
+        ShareFilterResultsBottomSheet(
+            sheetState = shareFilterResultsSheetState,
+            searchParameters = postListContent.searchParameters,
+            username = userCredentials.getPinboardUsername().orEmpty(),
+        )
+
+        SortingSelectionBottomSheet(
+            sheetState = sortSelectionSheetState,
+            appMode = appState.appMode,
+            onOptionSelected = { sortType -> mainViewModel.runAction(SetSorting(sortType)) },
+        )
     }
 }
 
@@ -269,9 +306,8 @@ fun BookmarkListScreen(
 @Composable
 private fun LaunchedMainViewModelEffect(
     mainViewModel: MainViewModel = hiltViewModel(),
+    onSortClick: () -> Unit,
 ) {
-    val appState by mainViewModel.appState.collectAsStateWithLifecycle()
-    val localContext = LocalContext.current
     val localLifecycle = LocalLifecycleOwner.current.lifecycle
 
     LaunchedEffect(Unit) {
@@ -283,12 +319,7 @@ private fun LaunchedMainViewModelEffect(
                     }
 
                     is MainState.MenuItemComponent.SortBookmarks -> {
-                        showSortingSelector(
-                            context = localContext,
-                            appMode = appState.appMode,
-                        ) { option ->
-                            mainViewModel.runAction(SetSorting(option))
-                        }
+                        onSortClick()
                     }
 
                     is MainState.MenuItemComponent.RandomBookmark -> {
@@ -357,151 +388,6 @@ private fun LaunchedPostDetailViewModelEffect(
 }
 // endregion ViewModel setup
 
-// region Service functions
-private fun showQuickActionsDialog(
-    context: Context,
-    post: Post,
-    tagsClipboard: List<Tag>,
-    hiddenPostQuickOptions: Set<String>,
-    onToggleReadLater: () -> Unit,
-    onCopyTags: (List<Tag>) -> Unit,
-    onPasteTags: (List<Tag>) -> Unit,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit,
-    onExpandDescription: () -> Unit,
-) = with(context) {
-    val allOptions = PostQuickActions.allOptions(post = post, tagsClipboard = tagsClipboard)
-        .associateWith { option -> option.serializedName in hiddenPostQuickOptions }
-
-    SelectionDialog.show(
-        context = context,
-        title = getString(R.string.quick_actions_title),
-        options = allOptions,
-        optionName = { option -> getString(option.title) },
-        optionIcon = PostQuickActions::icon,
-        onOptionSelected = { option ->
-            when (option) {
-                is PostQuickActions.ToggleReadLater -> onToggleReadLater()
-
-                is PostQuickActions.CopyTags -> onCopyTags(option.tags)
-
-                is PostQuickActions.PasteTags -> onPasteTags(option.tags)
-
-                is PostQuickActions.Edit -> onEdit()
-
-                is PostQuickActions.Delete -> onDelete()
-
-                is PostQuickActions.CopyUrl -> copyToClipboard(
-                    label = post.displayTitle,
-                    text = post.url,
-                )
-
-                is PostQuickActions.Share -> shareText(
-                    title = R.string.posts_share_title,
-                    text = post.url,
-                )
-
-                is PostQuickActions.ExpandDescription -> onExpandDescription()
-
-                is PostQuickActions.OpenBrowser -> startActivity(
-                    Intent(Intent.ACTION_VIEW, post.url.toUri()),
-                )
-
-                is PostQuickActions.SearchWayback -> startActivity(
-                    Intent(Intent.ACTION_VIEW, "https://web.archive.org/web/*/${post.url}".toUri()),
-                )
-
-                is PostQuickActions.SendToWayback -> startActivity(
-                    Intent(Intent.ACTION_VIEW, "https://web.archive.org/save/${post.url}".toUri()),
-                )
-
-                is PostQuickActions.SendToArchiveToday -> startActivity(
-                    Intent(Intent.ACTION_VIEW, "https://archive.today/submit/?url=${post.url}".toUri()),
-                )
-
-                is PostQuickActions.SendToGhostArchive -> startActivity(
-                    Intent(Intent.ACTION_VIEW, "https://ghostarchive.org/save/${post.url}".toUri()),
-                )
-            }
-        },
-    )
-}
-
-private fun shareFilteredResults(
-    context: Context,
-    username: String,
-    searchParameters: SearchParameters,
-) = with(context) {
-    val queryUrl = "$PINBOARD_USER_URL$username?query=${searchParameters.term}"
-    val tagsUrl = "$PINBOARD_USER_URL$username/${searchParameters.tags.joinToString { "t:${it.name}/" }}"
-
-    when {
-        searchParameters.term.isNotBlank() && searchParameters.tags.isEmpty() -> {
-            shareText(R.string.search_share_title, queryUrl)
-        }
-
-        searchParameters.term.isBlank() && searchParameters.tags.isNotEmpty() -> {
-            shareText(R.string.search_share_title, tagsUrl)
-        }
-
-        else -> {
-            SelectionDialog.show(
-                context = context,
-                title = getString(R.string.search_share_title),
-                options = ShareSearchOption.entries,
-                optionName = { option ->
-                    when (option) {
-                        ShareSearchOption.QUERY -> getString(R.string.search_share_query)
-                        ShareSearchOption.TAGS -> getString(R.string.search_share_tags)
-                    }
-                },
-                onOptionSelected = { option ->
-                    val url = when (option) {
-                        ShareSearchOption.QUERY -> queryUrl
-                        ShareSearchOption.TAGS -> tagsUrl
-                    }
-                    shareText(R.string.search_share_title, url)
-                },
-            )
-        }
-    }
-}
-
-private fun showSortingSelector(
-    context: Context,
-    appMode: AppMode,
-    onOptionSelected: (SortType) -> Unit,
-) = with(context) {
-    SelectionDialog.show(
-        context = context,
-        title = getString(R.string.menu_main_sorting),
-        options = buildList {
-            add(ByDateAddedNewestFirst)
-            add(ByDateAddedOldestFirst)
-
-            if (AppMode.LINKDING == appMode) {
-                add(ByDateModifiedNewestFirst)
-                add(ByDateModifiedOldestFirst)
-            }
-
-            add(ByTitleAlphabetical)
-            add(ByTitleAlphabeticalReverse)
-        },
-        optionName = { option ->
-            when (option) {
-                is ByDateAddedNewestFirst -> getString(R.string.sorting_by_date_added_newest_first)
-                is ByDateAddedOldestFirst -> getString(R.string.sorting_by_date_added_oldest_first)
-                is ByDateModifiedNewestFirst -> getString(R.string.sorting_by_date_modified_newest_first)
-                is ByDateModifiedOldestFirst -> getString(R.string.sorting_by_date_modified_oldest_first)
-                is ByTitleAlphabetical -> getString(R.string.sorting_by_title_alphabetical)
-                is ByTitleAlphabeticalReverse -> getString(R.string.sorting_by_title_alphabetical_reverse)
-            }
-        },
-        onOptionSelected = onOptionSelected,
-    )
-}
-// endregion Service functions
-
 // region Content
 @Composable
 fun BookmarkListScreen(
@@ -515,7 +401,7 @@ fun BookmarkListScreen(
     onActiveSearchClicked: () -> Unit,
     onClearClicked: () -> Unit,
     onSaveClicked: () -> Unit,
-    onShareClicked: (SearchParameters) -> Unit,
+    onShareClicked: () -> Unit,
     onPullToRefresh: () -> Unit,
     onPostClicked: (Post) -> Unit,
     onPostLongClicked: (Post) -> Unit,
@@ -540,7 +426,7 @@ fun BookmarkListScreen(
                 onViewClicked = onActiveSearchClicked,
                 onClearClicked = onClearClicked,
                 onSaveClicked = onSaveClicked,
-                onShareClicked = { onShareClicked(searchParameters) },
+                onShareClicked = onShareClicked,
                 modifier = Modifier.windowInsetsPadding(windowInsets),
             )
         }
@@ -933,6 +819,162 @@ private fun BookmarkFlags(
     }
 }
 // endregion Content
+
+// region Bottom sheets
+@Composable
+private fun BookmarkQuickActionsBottomSheet(
+    sheetState: AppSheetState,
+    tagsClipboard: List<Tag>,
+    hiddenPostQuickOptions: Set<String>,
+    onToggleReadLater: (Post) -> Unit,
+    onCopyTags: (List<Tag>) -> Unit,
+    onPasteTags: (Post, List<Tag>) -> Unit,
+    onEdit: (Post) -> Unit,
+    onDelete: (Post) -> Unit,
+    onExpandDescription: (Post) -> Unit,
+) {
+    val post: Post = sheetState.bottomSheetData() ?: return
+    val localContext = LocalContext.current
+    val localUriHandler = LocalUriHandler.current
+
+    val allOptions: Map<PostQuickActions, Boolean> = remember(
+        key1 = post,
+        key2 = tagsClipboard,
+        key3 = hiddenPostQuickOptions,
+    ) {
+        PostQuickActions.allOptions(post = post, tagsClipboard = tagsClipboard)
+            .associateWith { option -> option.serializedName in hiddenPostQuickOptions }
+    }
+
+    SelectionDialogBottomSheet(
+        sheetState = sheetState,
+        title = stringResource(R.string.quick_actions_title),
+        options = allOptions,
+        optionName = { option -> localContext.getString(option.title) },
+        optionIcon = PostQuickActions::icon,
+        onOptionSelected = { option ->
+            when (option) {
+                is PostQuickActions.ToggleReadLater -> {
+                    onToggleReadLater(post)
+                }
+
+                is PostQuickActions.CopyTags -> {
+                    onCopyTags(option.tags)
+                }
+
+                is PostQuickActions.PasteTags -> {
+                    onPasteTags(post, option.tags)
+                }
+
+                is PostQuickActions.Edit -> {
+                    onEdit(post)
+                }
+
+                is PostQuickActions.Delete -> {
+                    onDelete(post)
+                }
+
+                is PostQuickActions.CopyUrl -> {
+                    localContext.copyToClipboard(label = post.displayTitle, text = post.url)
+                }
+
+                is PostQuickActions.Share -> {
+                    localContext.shareText(title = R.string.posts_share_title, text = post.url)
+                }
+
+                is PostQuickActions.ExpandDescription -> {
+                    onExpandDescription(post)
+                }
+
+                is PostQuickActions.OpenBrowser -> {
+                    localUriHandler.openUri(post.url)
+                }
+
+                is PostQuickActions.SearchWayback -> {
+                    localUriHandler.openUri("https://web.archive.org/web/*/${post.url}")
+                }
+
+                is PostQuickActions.SendToWayback -> {
+                    localUriHandler.openUri("https://web.archive.org/save/${post.url}")
+                }
+
+                is PostQuickActions.SendToArchiveToday -> {
+                    localUriHandler.openUri("https://archive.today/submit/?url=${post.url}")
+                }
+
+                is PostQuickActions.SendToGhostArchive -> {
+                    localUriHandler.openUri("https://ghostarchive.org/save/${post.url}")
+                }
+            }
+        },
+    )
+}
+
+@Composable
+private fun SortingSelectionBottomSheet(
+    sheetState: AppSheetState,
+    appMode: AppMode,
+    onOptionSelected: (SortType) -> Unit,
+) {
+    val localContext = LocalContext.current
+
+    SelectionDialogBottomSheet(
+        sheetState = sheetState,
+        title = stringResource(R.string.menu_main_sorting),
+        options = buildList {
+            add(ByDateAddedNewestFirst)
+            add(ByDateAddedOldestFirst)
+
+            if (AppMode.LINKDING == appMode) {
+                add(ByDateModifiedNewestFirst)
+                add(ByDateModifiedOldestFirst)
+            }
+
+            add(ByTitleAlphabetical)
+            add(ByTitleAlphabeticalReverse)
+        },
+        optionName = { option ->
+            when (option) {
+                is ByDateAddedNewestFirst -> localContext.getString(R.string.sorting_by_date_added_newest_first)
+                is ByDateAddedOldestFirst -> localContext.getString(R.string.sorting_by_date_added_oldest_first)
+                is ByDateModifiedNewestFirst -> localContext.getString(R.string.sorting_by_date_modified_newest_first)
+                is ByDateModifiedOldestFirst -> localContext.getString(R.string.sorting_by_date_modified_oldest_first)
+                is ByTitleAlphabetical -> localContext.getString(R.string.sorting_by_title_alphabetical)
+                is ByTitleAlphabeticalReverse -> localContext.getString(R.string.sorting_by_title_alphabetical_reverse)
+            }
+        },
+        onOptionSelected = onOptionSelected,
+    )
+}
+
+@Composable
+private fun ShareFilterResultsBottomSheet(
+    sheetState: AppSheetState,
+    searchParameters: SearchParameters,
+    username: String,
+) {
+    val localContext = LocalContext.current
+
+    SelectionDialogBottomSheet(
+        sheetState = sheetState,
+        title = stringResource(R.string.search_share_title),
+        options = ShareSearchOption.entries,
+        optionName = { option ->
+            when (option) {
+                ShareSearchOption.QUERY -> localContext.getString(R.string.search_share_query)
+                ShareSearchOption.TAGS -> localContext.getString(R.string.search_share_tags)
+            }
+        },
+        onOptionSelected = { option ->
+            val url = when (option) {
+                ShareSearchOption.QUERY -> searchParameters.pinboardQueryUrl(username = username)
+                ShareSearchOption.TAGS -> searchParameters.pinboardTagsUrl(username = username)
+            }
+            localContext.shareText(R.string.search_share_title, url)
+        },
+    )
+}
+// endregion Bottoms sheets
 
 // region Previews
 @Composable

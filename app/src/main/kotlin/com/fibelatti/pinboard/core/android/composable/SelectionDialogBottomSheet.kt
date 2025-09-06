@@ -1,8 +1,7 @@
 @file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
 
-package com.fibelatti.pinboard.core.android
+package com.fibelatti.pinboard.core.android.composable
 
-import android.content.Context
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.tween
@@ -38,75 +37,88 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.R
+import com.fibelatti.ui.components.AppBottomSheet
+import com.fibelatti.ui.components.AppSheetState
+import com.fibelatti.ui.components.hideBottomSheet
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
-object SelectionDialog {
+@Composable
+fun <T> SelectionDialogBottomSheet(
+    sheetState: AppSheetState,
+    title: String,
+    options: List<T>,
+    optionName: (T) -> String,
+    onOptionSelected: (T) -> Unit,
+    modifier: Modifier = Modifier,
+    optionIcon: (T) -> Int? = { null },
+    footer: @Composable () -> Unit = {},
+) {
+    SelectionDialogBottomSheet(
+        sheetState = sheetState,
+        title = title,
+        options = options.associateWith { false },
+        optionName = optionName,
+        onOptionSelected = onOptionSelected,
+        modifier = modifier,
+        optionIcon = optionIcon,
+        footer = footer,
+    )
+}
 
-    fun <T> show(
-        context: Context,
-        title: String,
-        options: List<T>,
-        optionName: (T) -> String,
-        onOptionSelected: (T) -> Unit,
-        optionIcon: (T) -> Int? = { null },
-        footer: @Composable () -> Unit = {},
+@Composable
+fun <T> SelectionDialogBottomSheet(
+    sheetState: AppSheetState,
+    title: String,
+    options: Map<T, Boolean>,
+    optionName: (T) -> String,
+    onOptionSelected: (T) -> Unit,
+    modifier: Modifier = Modifier,
+    optionIcon: (T) -> Int? = { null },
+    footer: @Composable () -> Unit = {},
+) {
+    AppBottomSheet(
+        sheetState = sheetState,
+        modifier = modifier,
     ) {
-        show(
-            context = context,
+        SelectionDialogContent(
             title = title,
-            options = options.associateWith { false },
+            options = options,
             optionName = optionName,
             optionIcon = optionIcon,
-            onOptionSelected = onOptionSelected,
+            onOptionSelected = { option ->
+                onOptionSelected(option)
+                sheetState.hideBottomSheet()
+            },
             footer = footer,
         )
     }
+}
 
-    fun <T> show(
-        context: Context,
-        title: String,
-        options: Map<T, Boolean>,
-        optionName: (T) -> String,
-        onOptionSelected: (T) -> Unit,
-        optionIcon: (T) -> Int? = { null },
-        footer: @Composable () -> Unit = {},
+@Composable
+fun <T> SelectionDialogCustomizationBottomSheet(
+    sheetState: AppSheetState,
+    title: String,
+    options: Map<T, Boolean>,
+    optionName: (T) -> String,
+    onConfirm: (Map<T, Boolean>) -> Unit,
+    modifier: Modifier = Modifier,
+    optionIcon: (T) -> Int? = { null },
+) {
+    AppBottomSheet(
+        sheetState = sheetState,
+        modifier = modifier,
     ) {
-        ComposeBottomSheetDialog(context) {
-            SelectionDialogContent(
-                title = title,
-                options = options,
-                optionName = optionName,
-                optionIcon = optionIcon,
-                onOptionSelected = { option ->
-                    onOptionSelected(option)
-                    dismiss()
-                },
-                footer = footer,
-            )
-        }.show()
-    }
-
-    fun <T> showCustomizationDialog(
-        context: Context,
-        title: String,
-        options: Map<T, Boolean>,
-        optionName: (T) -> String,
-        onConfirm: (Map<T, Boolean>) -> Unit,
-        optionIcon: (T) -> Int? = { null },
-    ) {
-        ComposeBottomSheetDialog(context) {
-            SelectionDialogCustomizationContent(
-                title = title,
-                options = options,
-                optionName = optionName,
-                optionIcon = optionIcon,
-                onConfirm = { selectedOptions ->
-                    onConfirm(selectedOptions)
-                    dismiss()
-                },
-            )
-        }.show()
+        SelectionDialogCustomizationContent(
+            title = title,
+            options = options,
+            optionName = optionName,
+            optionIcon = optionIcon,
+            onConfirm = { selectedOptions ->
+                onConfirm(selectedOptions)
+                sheetState.hideBottomSheet()
+            },
+        )
     }
 }
 

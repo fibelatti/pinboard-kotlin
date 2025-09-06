@@ -19,11 +19,6 @@
         <item name="android:windowBlurBehindRadius" tools:targetApi="s">10dp</item>
     </style>
 
-    <style name="AppTheme.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
-        <item name="android:windowBlurBehindEnabled" tools:targetApi="s">true</item>
-        <item name="android:windowBlurBehindRadius" tools:targetApi="s">10dp</item>
-    </style>
-
     <!-- Animation -->
     <style name="AppTheme.AppActivityAnimation" parent="@android:style/Animation.Activity">
         <item name="android:activityOpenEnterAnimation">@anim/slide_right_in</item>

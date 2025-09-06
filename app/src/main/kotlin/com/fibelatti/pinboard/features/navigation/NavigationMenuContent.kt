@@ -20,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -30,11 +29,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.features.appstate.Action
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.Private
 import com.fibelatti.pinboard.features.appstate.Public
@@ -47,99 +45,45 @@ import com.fibelatti.pinboard.features.appstate.ViewPopular
 import com.fibelatti.pinboard.features.appstate.ViewPreferences
 import com.fibelatti.pinboard.features.appstate.ViewSavedFilters
 import com.fibelatti.pinboard.features.appstate.ViewTags
-import com.fibelatti.pinboard.features.main.MainViewModel
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
-fun NavigationMenuScreen(
+fun NavigationMenuContent(
+    appMode: AppMode,
+    onNavOptionClicked: (Action) -> Unit,
     onSendFeedbackClicked: () -> Unit,
     onWriteReviewClicked: () -> Unit,
     onShareClicked: () -> Unit,
     onPrivacyPolicyClicked: () -> Unit,
     onLicensesClicked: () -> Unit,
-    onOptionSelected: () -> Unit,
     modifier: Modifier = Modifier,
-    mainViewModel: MainViewModel = hiltViewModel(),
 ) {
-    val state by mainViewModel.appState.collectAsStateWithLifecycle()
-
-    NavigationMenuScreen(
-        appMode = state.appMode,
-        onAllClicked = {
-            mainViewModel.runAction(All)
-            onOptionSelected()
-        },
-        onRecentClicked = {
-            mainViewModel.runAction(Recent)
-            onOptionSelected()
-        },
-        onPublicClicked = {
-            mainViewModel.runAction(Public)
-            onOptionSelected()
-        },
-        onPrivateClicked = {
-            mainViewModel.runAction(Private)
-            onOptionSelected()
-        },
-        onReadLaterClicked = {
-            mainViewModel.runAction(Unread)
-            onOptionSelected()
-        },
-        onUntaggedClicked = {
-            mainViewModel.runAction(Untagged)
-            onOptionSelected()
-        },
-        onSavedFiltersClicked = {
-            mainViewModel.runAction(ViewSavedFilters)
-            onOptionSelected()
-        },
-        onTagsClicked = {
-            mainViewModel.runAction(ViewTags)
-            onOptionSelected()
-        },
-        onNotesClicked = {
-            mainViewModel.runAction(ViewNotes)
-            onOptionSelected()
-        },
-        onPopularClicked = {
-            mainViewModel.runAction(ViewPopular)
-            onOptionSelected()
-        },
-        onPreferencesClicked = {
-            mainViewModel.runAction(ViewPreferences)
-            onOptionSelected()
-        },
-        onAccountsClicked = {
-            mainViewModel.runAction(ViewAccountSwitcher)
-            onOptionSelected()
-        },
-        onSendFeedbackClicked = {
-            onSendFeedbackClicked()
-            onOptionSelected()
-        },
-        onWriteReviewClicked = {
-            onWriteReviewClicked()
-            onOptionSelected()
-        },
-        onShareClicked = {
-            onShareClicked()
-            onOptionSelected()
-        },
-        onPrivacyPolicyClicked = {
-            onPrivacyPolicyClicked()
-            onOptionSelected()
-        },
-        onLicensesClicked = {
-            onLicensesClicked()
-            onOptionSelected()
-        },
+    NavigationMenuContent(
+        appMode = appMode,
+        onAllClicked = { onNavOptionClicked(All) },
+        onRecentClicked = { onNavOptionClicked(Recent) },
+        onPublicClicked = { onNavOptionClicked(Public) },
+        onPrivateClicked = { onNavOptionClicked(Private) },
+        onReadLaterClicked = { onNavOptionClicked(Unread) },
+        onUntaggedClicked = { onNavOptionClicked(Untagged) },
+        onSavedFiltersClicked = { onNavOptionClicked(ViewSavedFilters) },
+        onTagsClicked = { onNavOptionClicked(ViewTags) },
+        onNotesClicked = { onNavOptionClicked(ViewNotes) },
+        onPopularClicked = { onNavOptionClicked(ViewPopular) },
+        onPreferencesClicked = { onNavOptionClicked(ViewPreferences) },
+        onAccountsClicked = { onNavOptionClicked(ViewAccountSwitcher) },
+        onSendFeedbackClicked = onSendFeedbackClicked,
+        onWriteReviewClicked = onWriteReviewClicked,
+        onShareClicked = onShareClicked,
+        onPrivacyPolicyClicked = onPrivacyPolicyClicked,
+        onLicensesClicked = onLicensesClicked,
         modifier = modifier,
     )
 }
 
 @Composable
-private fun NavigationMenuScreen(
+private fun NavigationMenuContent(
     appMode: AppMode,
     onAllClicked: () -> Unit,
     onRecentClicked: () -> Unit,
@@ -371,9 +315,9 @@ private fun MenuItem(
 
 @Composable
 @ThemePreviews
-private fun NavigationMenuScreenPreview() {
+private fun NavigationMenuContentPreview() {
     ExtendedTheme {
-        NavigationMenuScreen(
+        NavigationMenuContent(
             appMode = AppMode.PINBOARD,
             onAllClicked = {},
             onRecentClicked = {},

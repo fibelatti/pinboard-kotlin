@@ -21,7 +21,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
@@ -44,6 +43,8 @@ import com.fibelatti.pinboard.features.appstate.RefreshPopular
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.ui.components.rememberAppSheetState
+import com.fibelatti.ui.components.showBottomSheet
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -63,7 +64,6 @@ fun PopularBookmarksScreen(
 
         val screenState by popularPostsViewModel.screenState.collectAsStateWithLifecycle()
 
-        val localContext = LocalContext.current
         val localView = LocalView.current
 
         RememberedEffect(screenState.savedMessage) {
@@ -76,6 +76,8 @@ fun PopularBookmarksScreen(
         val error by popularPostsViewModel.error.collectAsStateWithLifecycle()
         LaunchedErrorHandlerEffect(error = error, handler = popularPostsViewModel::errorHandled)
 
+        val popularBookmarkQuickActionsSheetState = rememberAppSheetState()
+
         CrossfadeLoadingLayout(
             data = popularPostsContent.posts.takeUnless { popularPostsContent.shouldLoad || screenState.isLoading },
             modifier = Modifier.fillMaxSize(),
@@ -85,13 +87,14 @@ fun PopularBookmarksScreen(
                 onPullToRefresh = { popularPostsViewModel.runAction(RefreshPopular) },
                 onBookmarkClicked = { popularPostsViewModel.runAction(ViewPost(it)) },
                 onBookmarkLongClicked = { post ->
-                    PopularPostsQuickActionsDialog.show(
-                        context = localContext,
-                        post = post,
-                        onSave = popularPostsViewModel::saveLink,
-                    )
+                    popularBookmarkQuickActionsSheetState.showBottomSheet(data = post)
                 },
                 sidePanelVisible = appState.sidePanelVisible,
+            )
+
+            PopularBookmarkQuickActionsBottomSheet(
+                sheetState = popularBookmarkQuickActionsSheetState,
+                onSave = popularPostsViewModel::saveLink,
             )
         }
     }

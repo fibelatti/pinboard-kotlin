@@ -71,7 +71,8 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
-import com.fibelatti.pinboard.core.android.SelectionDialog
+import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
+import com.fibelatti.pinboard.core.android.composable.SelectionDialogCustomizationBottomSheet
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.core.extension.fillWidthOfParent
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
@@ -92,6 +93,8 @@ import com.fibelatti.pinboard.features.tags.presentation.TagManager
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
+import com.fibelatti.ui.components.rememberAppSheetState
+import com.fibelatti.ui.components.showBottomSheet
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.delay
@@ -406,31 +409,35 @@ private fun AppPreferencesContent(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
+            val bookmarkQuickActionCustomizationSheetState = rememberAppSheetState()
             val localContext = LocalContext.current
+            val quickActionOptions = remember {
+                val samplePost = Post.EMPTY.copy(
+                    description = "sample_description",
+                    tags = listOf(Tag(name = "sample_tags")),
+                )
+                PostQuickActions.allOptions(samplePost).associateWith { option ->
+                    option.serializedName in userPreferences.hiddenPostQuickOptions
+                }
+            }
+
             PreferenceButton(
                 buttonText = stringResource(R.string.user_preferences_customize),
-                onClick = {
-                    val samplePost = Post.EMPTY.copy(
-                        description = "sample_description",
-                        tags = listOf(Tag(name = "sample_tags")),
-                    )
-                    val allOptions = PostQuickActions.allOptions(samplePost)
-                        .associateWith { option -> option.serializedName in userPreferences.hiddenPostQuickOptions }
+                onClick = bookmarkQuickActionCustomizationSheetState::showBottomSheet,
+            )
 
-                    SelectionDialog.showCustomizationDialog(
-                        context = localContext,
-                        title = localContext.getString(R.string.user_preferences_bookmark_quick_options),
-                        options = allOptions,
-                        optionName = { option -> localContext.getString(option.title) },
-                        optionIcon = PostQuickActions::icon,
-                        onConfirm = { options ->
-                            val hiddenOptions = options.filterValues { hidden -> hidden }.keys
-                                .map { it.serializedName }
-                                .toSet()
+            SelectionDialogCustomizationBottomSheet(
+                sheetState = bookmarkQuickActionCustomizationSheetState,
+                title = stringResource(R.string.user_preferences_bookmark_quick_options),
+                options = quickActionOptions,
+                optionName = { option -> localContext.getString(option.title) },
+                optionIcon = PostQuickActions::icon,
+                onConfirm = { options ->
+                    val hiddenOptions = options.filterValues { hidden -> hidden }.keys
+                        .map { it.serializedName }
+                        .toSet()
 
-                            onHiddenOptionsChange(hiddenOptions)
-                        },
-                    )
+                    onHiddenOptionsChange(hiddenOptions)
                 },
             )
         }
@@ -825,20 +832,21 @@ private fun <T> PreferenceSelectionButton(
     footer: @Composable () -> Unit = {},
 ) {
     val localContext = LocalContext.current
+    val sheetState = rememberAppSheetState()
 
     PreferenceButton(
         buttonText = stringResource(buttonText(currentSelection)),
-        onClick = {
-            SelectionDialog.show(
-                context = localContext,
-                title = localContext.getString(title),
-                options = options(),
-                optionName = { option -> localContext.getString(buttonText(option)) },
-                onOptionSelected = onOptionSelected,
-                footer = footer,
-            )
-        },
+        onClick = sheetState::showBottomSheet,
         modifier = modifier,
+    )
+
+    SelectionDialogBottomSheet(
+        sheetState = sheetState,
+        title = stringResource(title),
+        options = options(),
+        optionName = { option -> localContext.getString(buttonText(option)) },
+        onOptionSelected = onOptionSelected,
+        footer = footer,
     )
 }
 // endregion Components

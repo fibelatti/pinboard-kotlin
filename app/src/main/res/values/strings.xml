@@ -168,6 +168,7 @@
     <string name="tags_sorting_less_first">Less first</string>
     <string name="tags_sorting_filter">Search</string>
     <string name="tag_filter_hint">Tag name</string>
+    <string name="tag_rename_title">Renaming tag: %s</string>
 
     <!-- Saved Filters -->
     <string name="saved_filters_title">Saved Filters</string>

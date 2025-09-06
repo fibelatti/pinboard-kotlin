@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
-import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,29 +17,32 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.core.AppMode
-import com.fibelatti.pinboard.core.android.ComposeBottomSheetDialog
 import com.fibelatti.pinboard.core.android.composable.TextWithBlockquote
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.ui.components.AppBottomSheet
+import com.fibelatti.ui.components.AppSheetState
 import com.fibelatti.ui.components.TextWithLinks
+import com.fibelatti.ui.components.bottomSheetData
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
-object PostDescriptionDialog {
+@Composable
+fun BookmarkDescriptionBottomSheet(
+    sheetState: AppSheetState,
+    appMode: AppMode,
+) {
+    val post: Post = sheetState.bottomSheetData() ?: return
 
-    fun showPostDescriptionDialog(
-        context: Context,
-        appMode: AppMode,
-        post: Post,
+    AppBottomSheet(
+        sheetState = sheetState,
     ) {
-        ComposeBottomSheetDialog(context) {
-            BookmarkDescriptionScreen(
-                appMode = appMode,
-                title = post.displayTitle,
-                url = post.url,
-                description = post.displayDescription,
-                notes = post.notes,
-            )
-        }.show()
+        BookmarkDescriptionScreen(
+            appMode = appMode,
+            title = post.displayTitle,
+            url = post.url,
+            description = post.displayDescription,
+            notes = post.notes,
+        )
     }
 }
 

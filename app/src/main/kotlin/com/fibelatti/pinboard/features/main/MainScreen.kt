@@ -2,7 +2,6 @@
 
 package com.fibelatti.pinboard.features.main
 
-import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.AnimatedContent
@@ -56,11 +55,11 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
@@ -94,7 +93,7 @@ import com.fibelatti.pinboard.features.appstate.TagListContent
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
 import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.filters.presentation.SavedFiltersScreen
-import com.fibelatti.pinboard.features.navigation.NavigationMenu
+import com.fibelatti.pinboard.features.navigation.NavigationMenuBottomSheet
 import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsScreen
 import com.fibelatti.pinboard.features.notes.presentation.NoteListScreen
 import com.fibelatti.pinboard.features.posts.presentation.BookmarkDetailsScreen
@@ -106,6 +105,8 @@ import com.fibelatti.pinboard.features.tags.presentation.TagListScreen
 import com.fibelatti.pinboard.features.user.presentation.AccountSwitcherScreen
 import com.fibelatti.pinboard.features.user.presentation.AuthScreen
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesScreen
+import com.fibelatti.ui.components.rememberAppSheetState
+import com.fibelatti.ui.components.showBottomSheet
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlin.reflect.KClass
@@ -126,6 +127,10 @@ fun MainScreen(
     val localActivity = LocalAppCompatActivity.current
     val localOnBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
+    val localUriHandler = LocalUriHandler.current
+
+    val navMenuSheetState = rememberAppSheetState()
+
     BackHandler(
         enabled = backHandlerEnabled,
         onBack = mainViewModel::navigateBack,
@@ -140,10 +145,7 @@ fun MainScreen(
 
         when (val content = appState.content) {
             is ExternalBrowserContent -> {
-                localActivity.startActivity(
-                    Intent(Intent.ACTION_VIEW, content.post.url.toUri())
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-                )
+                localUriHandler.openUri(content.post.url)
                 mainViewModel.navigateBack()
             }
 
@@ -175,9 +177,7 @@ fun MainScreen(
 
             mainViewModel.runAction(action)
         },
-        onBottomNavClick = {
-            NavigationMenu.show(activity = localActivity)
-        },
+        onBottomNavClick = navMenuSheetState::showBottomSheet,
         onMenuItemClick = { menuItem, data ->
             mainViewModel.menuItemClicked(
                 contentType = state.bottomAppBar.contentType,
@@ -196,6 +196,12 @@ fun MainScreen(
             mainViewModel.fabClicked(contentType = state.floatingActionButton.contentType, data = data)
         },
         modifier = modifier,
+    )
+
+    NavigationMenuBottomSheet(
+        sheetState = navMenuSheetState,
+        appMode = appState.appMode,
+        onNavOptionClicked = mainViewModel::runAction,
     )
 }
 
