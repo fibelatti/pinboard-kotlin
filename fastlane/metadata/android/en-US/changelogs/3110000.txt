@@ -1,0 +1,7 @@
+This version brings the following updates:
+
+* More date options: hide the time or date altogether
+* New preference to disable the split navigation
+* Update app internals to keep it running smoothly
+
+Feedback and suggestions are always welcome, thank you for using the app!

@@ -18,8 +18,8 @@ object AppInfo {
     const val APPLICATION_ID = "com.fibelatti.pinboard"
 
     private const val VERSION_MAJOR = 3
-    private const val VERSION_MINOR = 10
-    private const val VERSION_PATCH = 1
+    private const val VERSION_MINOR = 11
+    private const val VERSION_PATCH = 0
     private const val VERSION_BUILD = 0
 
     val versionCode: Int = (VERSION_MAJOR * 1_000_000 + VERSION_MINOR * 10_000 + VERSION_PATCH * 100 + VERSION_BUILD)
