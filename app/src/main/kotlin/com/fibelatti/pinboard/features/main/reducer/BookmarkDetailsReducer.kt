@@ -43,7 +43,7 @@ class BookmarkDetailsReducer @Inject constructor(
             MainState.ActionButtonComponent.Gone
         }
 
-        return if (appState.multiPanelAvailable) {
+        return if (appState.sidePanelVisible) {
             val baseState = appState.content.find<PopularPostsContent>()
                 ?.let { popularBookmarksReducer(mainState = mainState, appState = appState) }
                 ?: bookmarkListReducer(mainState = mainState, appState = appState)

@@ -122,7 +122,8 @@ fun MainScreen(
     val backHandlerEnabled by remember {
         derivedStateOf { (appState.content as? ContentWithHistory)?.previousContent !is ExternalContent }
     }
-    val multiPanelAvailable = getWindowSizeClass().isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
+    val isWidthAtLeastBreakpoint = getWindowSizeClass()
+        .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
 
     val localActivity = LocalAppCompatActivity.current
     val localOnBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
@@ -136,8 +137,8 @@ fun MainScreen(
         onBack = mainViewModel::navigateBack,
     )
 
-    RememberedEffect(multiPanelAvailable) {
-        mainViewModel.setMultiPanelAvailable(value = multiPanelAvailable)
+    RememberedEffect(isWidthAtLeastBreakpoint) {
+        mainViewModel.setMultiPanelAvailable(value = isWidthAtLeastBreakpoint)
     }
 
     RememberedEffect(appState.content) {

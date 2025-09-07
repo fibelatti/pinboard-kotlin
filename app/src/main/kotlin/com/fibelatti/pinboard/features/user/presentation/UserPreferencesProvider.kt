@@ -23,6 +23,7 @@ class UserPreferencesProvider : PreviewParameterProvider<UserPreferences> {
                 preferredSortType = ByDateAddedNewestFirst,
                 hiddenPostQuickOptions = emptySet(),
                 preferredDetailsView = PreferredDetailsView.Edit,
+                useSplitNav = true,
                 followRedirects = true,
                 removeUtmParameters = true,
                 removedUrlParameters = emptySet(),

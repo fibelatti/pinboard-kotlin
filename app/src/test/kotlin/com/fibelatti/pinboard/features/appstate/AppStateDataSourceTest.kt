@@ -63,6 +63,7 @@ internal class AppStateDataSourceTest {
     private val mockUserRepository = mockk<UserRepository> {
         every { userCredentials } returns MutableStateFlow(mockUserCredentials)
         every { showDescriptionInLists } returns false
+        every { useSplitNav } returns true
         coJustRun { clearAuthToken(appMode = any()) }
     }
 

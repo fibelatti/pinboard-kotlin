@@ -87,6 +87,10 @@ class UserPreferencesViewModel @Inject constructor(
         userRepository.preferredDetailsView = preferredDetailsView
     }
 
+    fun saveUseSplitNav(value: Boolean) {
+        userRepository.useSplitNav = value
+    }
+
     fun saveMarkAsReadOnOpen(value: Boolean) {
         userRepository.markAsReadOnOpen = value
     }

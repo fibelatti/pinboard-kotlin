@@ -36,6 +36,8 @@ interface UserRepository {
 
     var preferredDetailsView: PreferredDetailsView
 
+    var useSplitNav: Boolean
+
     var markAsReadOnOpen: Boolean
 
     var followRedirects: Boolean

@@ -159,6 +159,13 @@ class UserDataSource @Inject constructor(
             updateCurrentPreferences()
         }
 
+    override var useSplitNav: Boolean
+        get() = userSharedPreferences.useSplitNav
+        set(value) {
+            userSharedPreferences.useSplitNav = value
+            updateCurrentPreferences()
+        }
+
     override var markAsReadOnOpen: Boolean
         get() = userSharedPreferences.markAsReadOnOpen
         set(value) {
@@ -260,6 +267,7 @@ class UserDataSource @Inject constructor(
         preferredSortType = preferredSortType,
         hiddenPostQuickOptions = hiddenPostQuickOptions,
         preferredDetailsView = preferredDetailsView,
+        useSplitNav = useSplitNav,
         followRedirects = followRedirects,
         removeUtmParameters = removeUtmParameters,
         removedUrlParameters = removedUrlParameters,

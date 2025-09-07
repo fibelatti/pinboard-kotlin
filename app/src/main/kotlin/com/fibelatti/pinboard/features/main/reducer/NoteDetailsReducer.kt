@@ -13,7 +13,7 @@ class NoteDetailsReducer @Inject constructor(
     override fun invoke(mainState: MainState, appState: AppState): MainState {
         if (appState.content !is NoteDetailContent) return mainState
 
-        return if (appState.multiPanelAvailable) {
+        return if (appState.sidePanelVisible) {
             mainState.copy(
                 sidePanelAppBar = MainState.SidePanelAppBarComponent.Visible(
                     contentType = NoteDetailContent::class,

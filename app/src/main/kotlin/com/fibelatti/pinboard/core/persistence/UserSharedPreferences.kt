@@ -37,6 +37,9 @@ const val KEY_HIDDEN_POST_QUICK_OPTIONS = "HIDDEN_POST_QUICK_OPTIONS"
 const val KEY_PREFERRED_DETAILS_VIEW = "PREFERRED_DETAILS_VIEW"
 
 @VisibleForTesting
+const val KEY_USE_SPLIT_NAV = "USE_SPLIT_NAV"
+
+@VisibleForTesting
 const val KEY_MARK_AS_READ_ON_OPEN = "MARK_AS_READ_ON_OPEN"
 
 @VisibleForTesting
@@ -163,6 +166,10 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
     var preferredDetailsView: String
         get() = sharedPreferences.get(KEY_PREFERRED_DETAILS_VIEW, "")
         set(value) = sharedPreferences.put(KEY_PREFERRED_DETAILS_VIEW, value)
+
+    var useSplitNav: Boolean
+        get() = sharedPreferences.get(KEY_USE_SPLIT_NAV, defaultValue = true)
+        set(value) = sharedPreferences.put(KEY_USE_SPLIT_NAV, value)
 
     var markAsReadOnOpen: Boolean
         get() = sharedPreferences.get(KEY_MARK_AS_READ_ON_OPEN, false)

@@ -211,6 +211,7 @@ private fun AppPreferencesContent(
         onPeriodicSyncChange = userPreferencesViewModel::savePeriodicSync,
         onHiddenOptionsChange = userPreferencesViewModel::saveHiddenPostQuickOptions,
         onPreferredViewChange = userPreferencesViewModel::savePreferredDetailsView,
+        onUseSplitNavChange = userPreferencesViewModel::saveUseSplitNav,
         onMarkAsReadOnOpenChange = userPreferencesViewModel::saveMarkAsReadOnOpen,
         onShowDescriptionInListsChange = userPreferencesViewModel::saveShowDescriptionInLists,
         modifier = modifier,
@@ -229,6 +230,7 @@ private fun AppPreferencesContent(
     onPeriodicSyncChange: (PeriodicSync) -> Unit,
     onHiddenOptionsChange: (Set<String>) -> Unit,
     onPreferredViewChange: (PreferredDetailsView) -> Unit,
+    onUseSplitNavChange: (Boolean) -> Unit,
     onMarkAsReadOnOpenChange: (Boolean) -> Unit,
     onShowDescriptionInListsChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -516,6 +518,13 @@ private fun AppPreferencesContent(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+
+        SettingToggle(
+            title = stringResource(R.string.user_preferences_use_split_nav),
+            description = stringResource(R.string.user_preferences_use_split_nav_description),
+            checked = userPreferences.useSplitNav,
+            onCheckedChange = onUseSplitNavChange,
+        )
 
         AnimatedVisibility(
             visible = userPreferences.preferredDetailsView !is PreferredDetailsView.Edit,
@@ -898,6 +907,7 @@ private fun AppPreferencesContentPreview(
             onHiddenOptionsChange = {},
             onPeriodicSyncChange = {},
             onPreferredViewChange = {},
+            onUseSplitNavChange = {},
             onMarkAsReadOnOpenChange = {},
             onShowDescriptionInListsChange = {},
             modifier = Modifier.safeDrawingPadding(),

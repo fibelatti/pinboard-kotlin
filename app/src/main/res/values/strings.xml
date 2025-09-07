@@ -273,6 +273,8 @@
     <string name="user_preferences_preferred_details_view_caveat">Long press list items when browsing bookmarks to access share and edit shortcuts</string>
     <string name="user_preferences_preferred_details_view_mark_as_read_on_open">Mark as read on open</string>
     <string name="user_preferences_preferred_details_view_mark_as_read_on_open_caveat">Automatically update the bookmark to remove the read later flag</string>
+    <string name="user_preferences_use_split_nav">Use split navigation</string>
+    <string name="user_preferences_use_split_nav_description">Keep lists visible when browsing (available for landscape devices, foldables and tablets)</string>
     <string name="user_preferences_follow_redirects">Follow redirects</string>
     <string name="user_preferences_follow_redirects_description">Automatically follow redirects when sharing a bookmark to the app, saving the final URL. Increases the loading time when saving a bookmark via the share action</string>
 

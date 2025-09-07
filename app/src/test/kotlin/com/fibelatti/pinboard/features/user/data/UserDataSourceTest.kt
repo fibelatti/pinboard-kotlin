@@ -44,6 +44,7 @@ internal class UserDataSourceTest {
         every { dateIncludesTime } returns true
         every { preferredSortType } returns ""
         every { preferredDetailsView } returns ""
+        every { useSplitNav } returns true
         every { followRedirects } returns true
         every { autoFillDescription } returns false
         every { showDescriptionInLists } returns false
@@ -62,6 +63,7 @@ internal class UserDataSourceTest {
         preferredSortType = ByDateAddedNewestFirst,
         hiddenPostQuickOptions = emptySet(),
         preferredDetailsView = PreferredDetailsView.InAppBrowser(markAsReadOnOpen = false),
+        useSplitNav = true,
         followRedirects = true,
         removeUtmParameters = false,
         removedUrlParameters = emptySet(),

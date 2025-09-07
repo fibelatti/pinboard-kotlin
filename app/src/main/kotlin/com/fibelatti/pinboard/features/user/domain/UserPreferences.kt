@@ -17,6 +17,7 @@ data class UserPreferences(
     val preferredSortType: SortType,
     val hiddenPostQuickOptions: Set<String>,
     val preferredDetailsView: PreferredDetailsView,
+    val useSplitNav: Boolean,
     val followRedirects: Boolean,
     val removeUtmParameters: Boolean,
     val removedUrlParameters: Set<String>,

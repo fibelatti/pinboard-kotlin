@@ -76,6 +76,7 @@ object MockDataProvider {
         appMode = appMode,
         content = content,
         multiPanelAvailable = multiPanelAvailable,
+        useSplitNav = true,
     )
 
     fun createPostListContent(

@@ -106,6 +106,7 @@ class AppStateDataSource @Inject constructor(
                 } else {
                     appState.multiPanelAvailable
                 },
+                useSplitNav = userRepository.useSplitNav,
             )
         }
     }
@@ -127,6 +128,7 @@ class AppStateDataSource @Inject constructor(
         appMode = appModeProvider.appMode.value,
         content = getInitialContent(),
         multiPanelAvailable = false,
+        useSplitNav = userRepository.useSplitNav,
     )
 
     private fun getInitialContent(): Content {
