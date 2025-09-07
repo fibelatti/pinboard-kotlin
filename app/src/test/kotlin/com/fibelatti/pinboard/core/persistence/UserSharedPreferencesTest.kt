@@ -316,6 +316,35 @@ internal class UserSharedPreferencesTest {
     }
 
     @Test
+    fun `GIVEN KEY_DATE_INCLUDES_TIME has no value WHEN dateIncludesTime getter is called THEN true is returned`() {
+        // GIVEN
+        every { mockSharedPreferences.get(KEY_DATE_INCLUDES_TIME, true) } returns true
+
+        // THEN
+        assertThat(userSharedPreferences.dateIncludesTime).isTrue()
+    }
+
+    @Test
+    fun `GIVEN KEY_DATE_INCLUDES_TIME has value WHEN dateIncludesTime getter is called THEN the value is returned`() {
+        // GIVEN
+        every { mockSharedPreferences.get(KEY_DATE_INCLUDES_TIME, true) } returns false
+
+        // THEN
+        assertThat(userSharedPreferences.dateIncludesTime).isFalse()
+    }
+
+    @Test
+    fun `WHEN dateIncludesTime setter is called THEN KEY_DATE_INCLUDES_TIME is set`() {
+        val randomBoolean = randomBoolean()
+
+        // WHEN
+        userSharedPreferences.dateIncludesTime = randomBoolean
+
+        // THEN
+        verify { mockEditor.putBoolean(KEY_DATE_INCLUDES_TIME, randomBoolean) }
+    }
+
+    @Test
     fun `GIVEN PREFERRED_SORT_TYPE has no value WHEN preferredSortType getter is called THEN an empty string is returned`() {
         // GIVEN
         every { mockSharedPreferences.get("PREFERRED_SORT_TYPE", "") } returns ""

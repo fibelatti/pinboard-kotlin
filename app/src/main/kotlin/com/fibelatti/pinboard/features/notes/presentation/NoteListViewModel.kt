@@ -42,13 +42,9 @@ class NoteListViewModel @Inject constructor(
     fun sort(notes: List<Note>, sorting: NoteSorting) {
         scope.launch {
             val updatedNotes = when (sorting) {
-                NoteSorting.ByDateUpdatedDesc -> {
-                    notes.sortedByDescending { dateFormatter.displayFormatToMillis(it.updatedAt) }
-                }
+                NoteSorting.ByDateUpdatedDesc -> notes.sortedByDescending { it.updatedAt }
 
-                NoteSorting.ByDateUpdatedAsc -> {
-                    notes.sortedBy { dateFormatter.displayFormatToMillis(it.updatedAt) }
-                }
+                NoteSorting.ByDateUpdatedAsc -> notes.sortedBy { it.updatedAt }
 
                 NoteSorting.AtoZ -> notes.sortedBy(Note::title)
             }

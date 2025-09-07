@@ -19,7 +19,7 @@ class UserPreferencesProvider : PreviewParameterProvider<UserPreferences> {
                 appearance = Appearance.SystemDefault,
                 applyDynamicColors = true,
                 disableScreenshots = true,
-                preferredDateFormat = PreferredDateFormat.YearMonthDayWithTime,
+                preferredDateFormat = PreferredDateFormat.YearMonthDayWithTime(),
                 preferredSortType = ByDateAddedNewestFirst,
                 hiddenPostQuickOptions = emptySet(),
                 preferredDetailsView = PreferredDetailsView.Edit,

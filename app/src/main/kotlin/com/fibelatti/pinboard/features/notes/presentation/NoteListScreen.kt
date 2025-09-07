@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -32,6 +33,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -189,14 +191,17 @@ private fun NoteListItem(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
+            .heightIn(min = 60.dp)
             .padding(horizontal = 8.dp)
             .clickable { onNoteClicked(note) },
         shape = MaterialTheme.shapes.small,
         color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp, alignment = Alignment.CenterVertically),
         ) {
             Text(
                 text = note.title,
@@ -204,15 +209,17 @@ private fun NoteListItem(
                 style = MaterialTheme.typography.titleMedium,
             )
 
-            Text(
-                text = stringResource(id = R.string.notes_saved_at, note.createdAt),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-
-            if (note.updatedAt != note.createdAt) {
+            if (note.displayCreatedAt.isNotEmpty()) {
                 Text(
-                    text = stringResource(id = R.string.notes_updated_at, note.updatedAt),
+                    text = stringResource(id = R.string.notes_saved_at, note.displayCreatedAt),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+
+            if (note.displayUpdatedAt.isNotEmpty() && note.displayUpdatedAt != note.displayCreatedAt) {
+                Text(
+                    text = stringResource(id = R.string.notes_updated_at, note.displayUpdatedAt),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodyMedium,
                 )
@@ -249,7 +256,9 @@ private fun NoteListContentPreview() {
                 id = "$it",
                 title = "Note $it",
                 createdAt = "$it",
+                displayCreatedAt = "$it",
                 updatedAt = "${if (it % 2 == 0) it else it + 1}",
+                displayUpdatedAt = "${if (it % 2 == 0) it else it + 1}",
                 text = "Note text $it",
             )
         }

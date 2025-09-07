@@ -74,6 +74,7 @@ import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogCustomizationBottomSheet
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
+import com.fibelatti.pinboard.core.android.composable.SwitchWithIcon
 import com.fibelatti.pinboard.core.extension.fillWidthOfParent
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
 import com.fibelatti.pinboard.features.appstate.ByDateAddedOldestFirst
@@ -223,7 +224,7 @@ private fun AppPreferencesContent(
     onAppearanceChange: (Appearance) -> Unit,
     onDynamicColorChange: (Boolean) -> Unit,
     onDisableScreenshotsChange: (Boolean) -> Unit,
-    onDateFormatChange: (PreferredDateFormat) -> Unit,
+    onDateFormatChange: (PreferredDateFormat, Boolean) -> Unit,
     onSortTypeChange: (SortType) -> Unit,
     onPeriodicSyncChange: (PeriodicSync) -> Unit,
     onHiddenOptionsChange: (Set<String>) -> Unit,
@@ -292,33 +293,61 @@ private fun AppPreferencesContent(
                 currentSelection = userPreferences.preferredDateFormat,
                 buttonText = { option: PreferredDateFormat ->
                     when (option) {
-                        PreferredDateFormat.DayMonthYearWithTime -> {
+                        is PreferredDateFormat.DayMonthYearWithTime -> {
                             R.string.user_preferences_date_format_day_first
                         }
 
-                        PreferredDateFormat.MonthDayYearWithTime -> {
+                        is PreferredDateFormat.MonthDayYearWithTime -> {
                             R.string.user_preferences_date_format_month_first
                         }
 
-                        PreferredDateFormat.ShortYearMonthDayWithTime -> {
+                        is PreferredDateFormat.ShortYearMonthDayWithTime -> {
                             R.string.user_preferences_date_format_short_year_first
                         }
 
-                        PreferredDateFormat.YearMonthDayWithTime -> {
+                        is PreferredDateFormat.YearMonthDayWithTime -> {
                             R.string.user_preferences_date_format_year_first
+                        }
+
+                        is PreferredDateFormat.NoDate -> {
+                            R.string.user_preferences_date_format_no_date
                         }
                     }
                 },
                 title = R.string.user_preferences_date_format,
                 options = {
                     listOf(
-                        PreferredDateFormat.DayMonthYearWithTime,
-                        PreferredDateFormat.MonthDayYearWithTime,
-                        PreferredDateFormat.ShortYearMonthDayWithTime,
-                        PreferredDateFormat.YearMonthDayWithTime,
+                        PreferredDateFormat.DayMonthYearWithTime(),
+                        PreferredDateFormat.MonthDayYearWithTime(),
+                        PreferredDateFormat.ShortYearMonthDayWithTime(),
+                        PreferredDateFormat.YearMonthDayWithTime(),
+                        PreferredDateFormat.NoDate,
                     )
                 },
-                onOptionSelected = onDateFormatChange,
+                onOptionSelected = { newSelection ->
+                    onDateFormatChange(newSelection, userPreferences.preferredDateFormat.includeTime)
+                },
+                footer = {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.user_preferences_date_format_include_time),
+                            modifier = Modifier.weight(1f),
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+
+                        SwitchWithIcon(
+                            checked = userPreferences.preferredDateFormat.includeTime,
+                            onCheckedChange = { newValue ->
+                                onDateFormatChange(userPreferences.preferredDateFormat, newValue)
+                            },
+                        )
+                    }
+                },
             )
         }
 
@@ -864,7 +893,7 @@ private fun AppPreferencesContentPreview(
             onAppearanceChange = {},
             onDynamicColorChange = {},
             onDisableScreenshotsChange = {},
-            onDateFormatChange = {},
+            onDateFormatChange = { _, _ -> },
             onSortTypeChange = {},
             onHiddenOptionsChange = {},
             onPeriodicSyncChange = {},

@@ -45,6 +45,7 @@ class NavigationActionHandler @Inject constructor(
             if (currentContent is UserPreferencesContent) {
                 currentContent.previousContent.copy(
                     showDescription = userRepository.showDescriptionInLists,
+                    shouldLoad = ShouldLoadFirstPage,
                 )
             } else {
                 contentWithHistory.previousContent

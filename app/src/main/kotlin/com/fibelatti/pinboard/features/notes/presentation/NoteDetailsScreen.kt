@@ -130,7 +130,9 @@ private fun NoteContentPreview(
                 id = "note-id",
                 title = "Note title",
                 createdAt = "21/04/2023",
+                displayCreatedAt = "21/04/2023",
                 updatedAt = "22/04/2023",
+                displayUpdatedAt = "22/04/2023",
                 text = text,
             ),
         )

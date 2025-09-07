@@ -27,6 +27,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 
 internal class UserPreferencesViewModelTest : BaseViewModelTest() {
 
@@ -118,16 +120,30 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         verify { mockUserRepository.applyDynamicColors = value }
     }
 
-    @Test
-    fun `WHEN savePreferredDateFormat is called THEN repository is updated`() {
+    @ParameterizedTest
+    @MethodSource("preferredDateFormats")
+    fun `WHEN savePreferredDateFormat is called THEN repository is updated`(
+        testCase: PreferredDateFormat,
+    ) {
         // GIVEN
-        val mockPreferredDateFormat = mockk<PreferredDateFormat>()
+        val randomBoolean = randomBoolean()
 
         // WHEN
-        userPreferencesViewModel.savePreferredDateFormat(mockPreferredDateFormat)
+        userPreferencesViewModel.savePreferredDateFormat(
+            preferredDateFormat = testCase,
+            includeTime = randomBoolean,
+        )
 
         // THEN
-        verify { mockUserRepository.preferredDateFormat = mockPreferredDateFormat }
+        verify {
+            mockUserRepository.preferredDateFormat = when (testCase) {
+                is PreferredDateFormat.DayMonthYearWithTime -> testCase.copy(includeTime = randomBoolean)
+                is PreferredDateFormat.MonthDayYearWithTime -> testCase.copy(includeTime = randomBoolean)
+                is PreferredDateFormat.ShortYearMonthDayWithTime -> testCase.copy(includeTime = randomBoolean)
+                is PreferredDateFormat.YearMonthDayWithTime -> testCase.copy(includeTime = randomBoolean)
+                is PreferredDateFormat.NoDate -> testCase
+            }
+        }
     }
 
     @Test
@@ -236,5 +252,19 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
 
         // THEN
         verify { mockUserRepository.defaultReadLater = value }
+    }
+
+    companion object {
+
+        @JvmStatic
+        fun preferredDateFormats(): List<PreferredDateFormat> {
+            return listOf(
+                PreferredDateFormat.DayMonthYearWithTime(),
+                PreferredDateFormat.MonthDayYearWithTime(),
+                PreferredDateFormat.ShortYearMonthDayWithTime(),
+                PreferredDateFormat.YearMonthDayWithTime(),
+                PreferredDateFormat.NoDate,
+            )
+        }
     }
 }

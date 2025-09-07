@@ -63,8 +63,16 @@ class UserPreferencesViewModel @Inject constructor(
         userRepository.disableScreenshots = value
     }
 
-    fun savePreferredDateFormat(preferredDateFormat: PreferredDateFormat) {
-        userRepository.preferredDateFormat = preferredDateFormat
+    fun savePreferredDateFormat(preferredDateFormat: PreferredDateFormat, includeTime: Boolean) {
+        val newValue = when (preferredDateFormat) {
+            is PreferredDateFormat.DayMonthYearWithTime -> preferredDateFormat.copy(includeTime = includeTime)
+            is PreferredDateFormat.MonthDayYearWithTime -> preferredDateFormat.copy(includeTime = includeTime)
+            is PreferredDateFormat.ShortYearMonthDayWithTime -> preferredDateFormat.copy(includeTime = includeTime)
+            is PreferredDateFormat.YearMonthDayWithTime -> preferredDateFormat.copy(includeTime = includeTime)
+            is PreferredDateFormat.NoDate -> preferredDateFormat
+        }
+
+        userRepository.preferredDateFormat = newValue
     }
 
     fun savePreferredSortType(sortType: SortType) {

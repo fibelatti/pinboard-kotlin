@@ -23,7 +23,7 @@ internal class DateFormatterTest {
 
     @Test
     fun `WHEN dataFormatToDisplayFormat is called AND preferred date format is DayMonthYearWithTime THEN it is correctly returned`() {
-        every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.DayMonthYearWithTime
+        every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.DayMonthYearWithTime()
 
         assertThat(dateFormatter.dataFormatToDisplayFormat("1991-08-20T11:00:00Z"))
             .isEqualTo("20/08/91, 11:00")
@@ -31,15 +31,24 @@ internal class DateFormatterTest {
 
     @Test
     fun `WHEN dataFormatToDisplayFormat is called AND preferred date format is DayMonthYearWithTime THEN it is correctly returned - with millis`() {
-        every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.DayMonthYearWithTime
+        every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.DayMonthYearWithTime()
 
         assertThat(dateFormatter.dataFormatToDisplayFormat("1991-08-20T11:00:00.123456Z"))
             .isEqualTo("20/08/91, 11:00")
     }
 
     @Test
+    fun `WHEN dataFormatToDisplayFormat is called AND preferred date format is DayMonthYearWithTime THEN it is correctly returned - no time`() {
+        every { testUserRepository.preferredDateFormat } returns
+            PreferredDateFormat.DayMonthYearWithTime(includeTime = false)
+
+        assertThat(dateFormatter.dataFormatToDisplayFormat("1991-08-20T11:00:00Z"))
+            .isEqualTo("20/08/91")
+    }
+
+    @Test
     fun `WHEN dataFormatToDisplayFormat is called AND preferred date format is MonthDayYearWithTime THEN it is correctly returned`() {
-        every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.MonthDayYearWithTime
+        every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.MonthDayYearWithTime()
 
         assertThat(dateFormatter.dataFormatToDisplayFormat("1991-08-20T11:00:00Z"))
             .isEqualTo("08/20/91, 11:00")
@@ -47,7 +56,7 @@ internal class DateFormatterTest {
 
     @Test
     fun `WHEN dataFormatToDisplayFormat is called AND preferred date format is DayMonthYearWithTime THEN it is correctly returned - notes`() {
-        every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.DayMonthYearWithTime
+        every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.DayMonthYearWithTime()
 
         assertThat(dateFormatter.dataFormatToDisplayFormat("1991-08-20 11:00:00"))
             .isEqualTo("20/08/91, 11:00")
@@ -55,10 +64,18 @@ internal class DateFormatterTest {
 
     @Test
     fun `WHEN dataFormatToDisplayFormat is called AND preferred date format is MonthDayYearWithTime THEN it is correctly returned - notes`() {
-        every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.MonthDayYearWithTime
+        every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.MonthDayYearWithTime()
 
         assertThat(dateFormatter.dataFormatToDisplayFormat("1991-08-20 11:00:00"))
             .isEqualTo("08/20/91, 11:00")
+    }
+
+    @Test
+    fun `WHEN dataFormatToDisplayFormat is called AND preferred date format is NoDate THEN it is correctly returned`() {
+        every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.NoDate
+
+        assertThat(dateFormatter.dataFormatToDisplayFormat("1991-08-20 11:00:00"))
+            .isEqualTo("")
     }
 
     @Test
@@ -68,14 +85,5 @@ internal class DateFormatterTest {
         )
 
         assertThat(result).isTrue()
-    }
-
-    @Test
-    fun `WHEN displayFormatToMillis is called THEN millis is returned`() {
-        every { testUserRepository.preferredDateFormat } returns PreferredDateFormat.DayMonthYearWithTime
-
-        val result = dateFormatter.displayFormatToMillis("20/08/91, 11:00")
-
-        assertThat(result).isEqualTo(682_686_000_000)
     }
 }

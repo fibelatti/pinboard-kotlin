@@ -4,6 +4,8 @@ data class Note(
     val id: String,
     val title: String,
     val createdAt: String,
+    val displayCreatedAt: String,
     val updatedAt: String,
+    val displayUpdatedAt: String,
     val text: String,
 )

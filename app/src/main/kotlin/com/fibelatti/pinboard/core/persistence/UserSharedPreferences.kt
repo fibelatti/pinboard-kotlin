@@ -28,6 +28,9 @@ const val KEY_DISABLE_SCREENSHOTS = "DISABLE_SCREENSHOTS"
 const val KEY_PREFERRED_DATE_FORMAT = "PREFERRED_DATE_FORMAT"
 
 @VisibleForTesting
+const val KEY_DATE_INCLUDES_TIME = "DATE_INCLUDES_TIME"
+
+@VisibleForTesting
 const val KEY_HIDDEN_POST_QUICK_OPTIONS = "HIDDEN_POST_QUICK_OPTIONS"
 
 @VisibleForTesting
@@ -144,6 +147,10 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
     var preferredDateFormat: String
         get() = sharedPreferences.get(KEY_PREFERRED_DATE_FORMAT, "")
         set(value) = sharedPreferences.put(KEY_PREFERRED_DATE_FORMAT, value)
+
+    var dateIncludesTime: Boolean
+        get() = sharedPreferences.get(KEY_DATE_INCLUDES_TIME, true)
+        set(value) = sharedPreferences.put(KEY_DATE_INCLUDES_TIME, value)
 
     var preferredSortType: String
         get() = sharedPreferences.get("PREFERRED_SORT_TYPE", "")

@@ -84,7 +84,8 @@ internal class NavigationActionHandlerTest {
             val returnedContent = when (contentWithHistory) {
                 is NoteDetailContent -> mockk<NoteListContent>()
                 is PopularPostDetailContent -> mockk<PopularPostsContent>()
-                else -> postListContent
+                is UserPreferencesContent -> postListContent.copy(shouldLoad = ShouldLoadFirstPage)
+                else -> postListContent.copy(shouldLoad = Loaded)
             }
 
             every { contentWithHistory.previousContent } returns returnedContent

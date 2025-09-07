@@ -264,6 +264,8 @@
     <string name="user_preferences_date_format_month_first">mm/dd/yy, hh:mm</string>
     <string name="user_preferences_date_format_short_year_first">yy/mm/dd, hh:mm</string>
     <string name="user_preferences_date_format_year_first">yyyy-mm-dd, hh:mm</string>
+    <string name="user_preferences_date_format_no_date">Hide dates</string>
+    <string name="user_preferences_date_format_include_time">Include time (when showing dates)</string>
     <string name="user_preferences_preferred_details_view">Viewing bookmarks</string>
     <string name="user_preferences_preferred_details_in_app_browser">Use in-app browser</string>
     <string name="user_preferences_preferred_details_external_browser">Use external browser</string>

@@ -88,15 +88,37 @@ class UserDataSource @Inject constructor(
         }
 
     override var preferredDateFormat: PreferredDateFormat
-        get() = when (userSharedPreferences.preferredDateFormat) {
-            PreferredDateFormat.DayMonthYearWithTime.value -> PreferredDateFormat.DayMonthYearWithTime
-            PreferredDateFormat.MonthDayYearWithTime.value -> PreferredDateFormat.MonthDayYearWithTime
-            PreferredDateFormat.ShortYearMonthDayWithTime.value -> PreferredDateFormat.ShortYearMonthDayWithTime
-            PreferredDateFormat.YearMonthDayWithTime.value -> PreferredDateFormat.YearMonthDayWithTime
-            else -> PreferredDateFormat.DayMonthYearWithTime
+        get() {
+            val includeTime = userSharedPreferences.dateIncludesTime
+            return when (userSharedPreferences.preferredDateFormat) {
+                PreferredDateFormat.DayMonthYearWithTime().value -> {
+                    PreferredDateFormat.DayMonthYearWithTime(includeTime = includeTime)
+                }
+
+                PreferredDateFormat.MonthDayYearWithTime().value -> {
+                    PreferredDateFormat.MonthDayYearWithTime(includeTime = includeTime)
+                }
+
+                PreferredDateFormat.ShortYearMonthDayWithTime().value -> {
+                    PreferredDateFormat.ShortYearMonthDayWithTime(includeTime = includeTime)
+                }
+
+                PreferredDateFormat.YearMonthDayWithTime().value -> {
+                    PreferredDateFormat.YearMonthDayWithTime(includeTime = includeTime)
+                }
+
+                PreferredDateFormat.NoDate.value -> {
+                    PreferredDateFormat.NoDate
+                }
+
+                else -> {
+                    PreferredDateFormat.DayMonthYearWithTime(includeTime = includeTime)
+                }
+            }
         }
         set(value) {
             userSharedPreferences.preferredDateFormat = value.value
+            userSharedPreferences.dateIncludesTime = value.includeTime
             updateCurrentPreferences()
         }
 

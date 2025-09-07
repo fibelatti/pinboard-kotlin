@@ -29,36 +29,39 @@ class DateFormatter @Inject constructor(
      * - **Pinboard note**: 2024-10-21 11:00:00
      * - **Linkding**: 2024-10-21T11:00:00.123456Z
      */
-    private val dateTimeFormat = LocalDateTime.Format {
+    private val dateTimeFormat: DateTimeFormat<LocalDateTime> = LocalDateTime.Format {
         byUnicodePattern(pattern = "yyyy-MM-dd['T'][' ']HH:mm:ss[.SSSSSS]['Z']")
     }
 
-    fun dataFormatToDisplayFormat(input: String): String = try {
-        val parsed: LocalDateTime = dateTimeFormat.parse(input)
-            .toInstant(TimeZone.UTC)
-            .toLocalDateTime(TimeZone.currentSystemDefault())
-        getLocalDateTimeFormat(userRepository.preferredDateFormat).format(parsed)
-    } catch (_: Exception) {
-        input
+    fun dataFormatToDisplayFormat(input: String): String {
+        try {
+            val preferredDateFormat: PreferredDateFormat = userRepository.preferredDateFormat
+
+            if (preferredDateFormat == PreferredDateFormat.NoDate) {
+                return ""
+            }
+
+            val parsed: LocalDateTime = dateTimeFormat.parse(input)
+                .toInstant(TimeZone.UTC)
+                .toLocalDateTime(TimeZone.currentSystemDefault())
+
+            return getLocalDateTimeFormat(preferredDateFormat).format(parsed)
+        } catch (_: Exception) {
+            return input
+        }
     }
 
     fun nowAsDataFormat(): String {
-        val nowInUtc = Clock.System.now().toLocalDateTime(TimeZone.UTC)
+        val nowInUtc: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.UTC)
 
         return dateTimeFormat.format(nowInUtc).replace(" ", "")
     }
 
-    fun displayFormatToMillis(input: String): Long {
-        return getLocalDateTimeFormat(userRepository.preferredDateFormat)
-            .parse(input)
-            .toInstant(TimeZone.UTC)
-            .toEpochMilliseconds()
-    }
-
+    @Throws(IllegalStateException::class)
     private fun getLocalDateTimeFormat(preferredDateFormat: PreferredDateFormat): DateTimeFormat<LocalDateTime> {
         return LocalDateTime.Format {
             when (preferredDateFormat) {
-                PreferredDateFormat.DayMonthYearWithTime -> {
+                is PreferredDateFormat.DayMonthYearWithTime -> {
                     day(padding = Padding.ZERO)
                     char(value = '/')
                     monthNumber(padding = Padding.ZERO)
@@ -66,7 +69,7 @@ class DateFormatter @Inject constructor(
                     yearTwoDigits(baseYear = 1970)
                 }
 
-                PreferredDateFormat.MonthDayYearWithTime -> {
+                is PreferredDateFormat.MonthDayYearWithTime -> {
                     monthNumber(padding = Padding.ZERO)
                     char(value = '/')
                     day(padding = Padding.ZERO)
@@ -74,7 +77,7 @@ class DateFormatter @Inject constructor(
                     yearTwoDigits(baseYear = 1970)
                 }
 
-                PreferredDateFormat.ShortYearMonthDayWithTime -> {
+                is PreferredDateFormat.ShortYearMonthDayWithTime -> {
                     yearTwoDigits(baseYear = 1970)
                     char(value = '/')
                     monthNumber(padding = Padding.ZERO)
@@ -82,19 +85,25 @@ class DateFormatter @Inject constructor(
                     day(padding = Padding.ZERO)
                 }
 
-                PreferredDateFormat.YearMonthDayWithTime -> {
+                is PreferredDateFormat.YearMonthDayWithTime -> {
                     year()
                     char(value = '-')
                     monthNumber(padding = Padding.ZERO)
                     char(value = '-')
                     day(padding = Padding.ZERO)
                 }
+
+                is PreferredDateFormat.NoDate -> {
+                    error("`NoDate` cannot be formatted.")
+                }
             }
 
-            chars(", ")
-            hour(padding = Padding.ZERO)
-            char(value = ':')
-            minute(padding = Padding.ZERO)
+            if (preferredDateFormat.includeTime) {
+                chars(", ")
+                hour(padding = Padding.ZERO)
+                char(value = ':')
+                minute(padding = Padding.ZERO)
+            }
         }
     }
 }

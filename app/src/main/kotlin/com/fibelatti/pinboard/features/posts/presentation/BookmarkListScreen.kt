@@ -803,19 +803,21 @@ private fun BookmarkFlags(
             }
         }
 
-        Text(
-            text = time,
-            modifier = Modifier
-                .fillMaxHeight()
-                .shadow(elevation = 2.dp, shape = MaterialTheme.shapes.medium)
-                .background(
-                    shape = MaterialTheme.shapes.medium,
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                )
-                .padding(all = 8.dp),
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-        )
+        if (time.isNotEmpty()) {
+            Text(
+                text = time,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .shadow(elevation = 2.dp, shape = MaterialTheme.shapes.medium)
+                    .background(
+                        shape = MaterialTheme.shapes.medium,
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                    .padding(all = 8.dp),
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+            )
+        }
     }
 }
 // endregion Content

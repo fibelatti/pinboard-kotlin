@@ -41,6 +41,7 @@ internal class UserDataSourceTest {
         every { appearance } returns ""
         every { applyDynamicColors } returns false
         every { preferredDateFormat } returns ""
+        every { dateIncludesTime } returns true
         every { preferredSortType } returns ""
         every { preferredDetailsView } returns ""
         every { followRedirects } returns true
@@ -57,7 +58,7 @@ internal class UserDataSourceTest {
         appearance = Appearance.SystemDefault,
         applyDynamicColors = false,
         disableScreenshots = false,
-        preferredDateFormat = PreferredDateFormat.DayMonthYearWithTime,
+        preferredDateFormat = PreferredDateFormat.DayMonthYearWithTime(),
         preferredSortType = ByDateAddedNewestFirst,
         hiddenPostQuickOptions = emptySet(),
         preferredDetailsView = PreferredDetailsView.InAppBrowser(markAsReadOnOpen = false),
@@ -271,40 +272,65 @@ internal class UserDataSourceTest {
             fun `GIVEN the shared preferences has DayMonthYearWithTime value WHEN the getter is called THEN DayMonthYearWithTime is returned`() {
                 // GIVEN
                 every { mockUserSharedPreferences.preferredDateFormat } returns
-                    PreferredDateFormat.DayMonthYearWithTime.value
+                    PreferredDateFormat.DayMonthYearWithTime().value
+                val randomBoolean = randomBoolean()
+                every { mockUserSharedPreferences.dateIncludesTime } returns randomBoolean
 
                 // THEN
-                assertThat(userDataSource.preferredDateFormat).isEqualTo(PreferredDateFormat.DayMonthYearWithTime)
+                assertThat(userDataSource.preferredDateFormat)
+                    .isEqualTo(PreferredDateFormat.DayMonthYearWithTime(includeTime = randomBoolean))
             }
 
             @Test
             fun `GIVEN the shared preferences has MonthDayYearWithTime value WHEN the getter is called THEN MonthDayYearWithTime is returned`() {
                 // GIVEN
                 every { mockUserSharedPreferences.preferredDateFormat } returns
-                    PreferredDateFormat.MonthDayYearWithTime.value
+                    PreferredDateFormat.MonthDayYearWithTime().value
+                val randomBoolean = randomBoolean()
+                every { mockUserSharedPreferences.dateIncludesTime } returns randomBoolean
 
                 // THEN
-                assertThat(userDataSource.preferredDateFormat).isEqualTo(PreferredDateFormat.MonthDayYearWithTime)
+                assertThat(userDataSource.preferredDateFormat)
+                    .isEqualTo(PreferredDateFormat.MonthDayYearWithTime(includeTime = randomBoolean))
             }
 
             @Test
             fun `GIVEN the shared preferences has ShortYearMonthDayWithTime value WHEN the getter is called THEN YearMonthDayWithTime is returned`() {
                 // GIVEN
                 every { mockUserSharedPreferences.preferredDateFormat } returns
-                    PreferredDateFormat.ShortYearMonthDayWithTime.value
+                    PreferredDateFormat.ShortYearMonthDayWithTime().value
+                val randomBoolean = randomBoolean()
+                every { mockUserSharedPreferences.dateIncludesTime } returns randomBoolean
 
                 // THEN
-                assertThat(userDataSource.preferredDateFormat).isEqualTo(PreferredDateFormat.ShortYearMonthDayWithTime)
+                assertThat(userDataSource.preferredDateFormat)
+                    .isEqualTo(PreferredDateFormat.ShortYearMonthDayWithTime(includeTime = randomBoolean))
             }
 
             @Test
             fun `GIVEN the shared preferences has YearMonthDayWithTime value WHEN the getter is called THEN YearMonthDayWithTime is returned`() {
                 // GIVEN
                 every { mockUserSharedPreferences.preferredDateFormat } returns
-                    PreferredDateFormat.YearMonthDayWithTime.value
+                    PreferredDateFormat.YearMonthDayWithTime().value
+                val randomBoolean = randomBoolean()
+                every { mockUserSharedPreferences.dateIncludesTime } returns randomBoolean
 
                 // THEN
-                assertThat(userDataSource.preferredDateFormat).isEqualTo(PreferredDateFormat.YearMonthDayWithTime)
+                assertThat(userDataSource.preferredDateFormat)
+                    .isEqualTo(PreferredDateFormat.YearMonthDayWithTime(includeTime = randomBoolean))
+            }
+
+            @Test
+            fun `GIVEN the shared preferences has NoDate value WHEN the getter is called THEN NoDate is returned`() {
+                // GIVEN
+                every { mockUserSharedPreferences.preferredDateFormat } returns
+                    PreferredDateFormat.NoDate.value
+                val randomBoolean = randomBoolean()
+                every { mockUserSharedPreferences.dateIncludesTime } returns randomBoolean
+
+                // THEN
+                assertThat(userDataSource.preferredDateFormat)
+                    .isEqualTo(PreferredDateFormat.NoDate)
             }
 
             @Test
@@ -313,20 +339,26 @@ internal class UserDataSourceTest {
                 every { mockUserSharedPreferences.preferredDateFormat } returns "anything really"
 
                 // THEN
-                assertThat(userDataSource.preferredDateFormat).isEqualTo(PreferredDateFormat.DayMonthYearWithTime)
+                assertThat(userDataSource.preferredDateFormat)
+                    .isEqualTo(PreferredDateFormat.DayMonthYearWithTime(includeTime = true))
             }
 
             @Test
             fun `WHEN setter is called THEN the shared preferences is updated`() {
                 // GIVEN
                 val mockPreferredDateFormat = mockk<PreferredDateFormat>()
+                val randomBoolean = randomBoolean()
                 every { mockPreferredDateFormat.value } returns "random-value"
+                every { mockPreferredDateFormat.includeTime } returns randomBoolean
 
                 // WHEN
                 userDataSource.preferredDateFormat = mockPreferredDateFormat
 
                 // THEN
-                verify { mockUserSharedPreferences.preferredDateFormat = "random-value" }
+                verify {
+                    mockUserSharedPreferences.preferredDateFormat = "random-value"
+                    mockUserSharedPreferences.dateIncludesTime = randomBoolean
+                }
             }
         }
 

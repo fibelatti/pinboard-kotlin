@@ -109,8 +109,10 @@ internal class NoteDtoMapperTest {
             Note(
                 id = SAMPLE_NOTE_ID,
                 title = mockTitle,
-                createdAt = outputDate,
-                updatedAt = outputDate,
+                createdAt = inputDate,
+                displayCreatedAt = outputDate,
+                updatedAt = inputDate,
+                displayUpdatedAt = outputDate,
                 text = mockText,
             ),
         )
