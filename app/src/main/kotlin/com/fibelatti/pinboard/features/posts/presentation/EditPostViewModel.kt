@@ -85,7 +85,9 @@ class EditPostViewModel @Inject constructor(
 
     init {
         merge(filteredContent<AddPostContent>(), filteredContent<EditPostContent>())
-            .onEach { _screenState.update { ScreenState() } }
+            .onEach { content ->
+                _screenState.update { ScreenState(isNewBookmark = content is AddPostContent) }
+            }
             .launchIn(scope)
 
         scope.launch {
@@ -178,6 +180,7 @@ class EditPostViewModel @Inject constructor(
     }
 
     data class ScreenState(
+        val isNewBookmark: Boolean = true,
         val isLoading: Boolean = false,
         val invalidUrlError: String = "",
         val invalidTitleError: String = "",

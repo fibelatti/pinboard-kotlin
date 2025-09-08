@@ -106,6 +106,7 @@ fun EditBookmarkScreen(
     EditBookmarkScreen(
         appMode = appState.appMode,
         post = currentState,
+        isNewBookmark = editPostScreenState.isNewBookmark,
         isLoading = editPostScreenState.isLoading || postDetailScreenState.isLoading,
         onUrlChanged = { newValue ->
             editPostViewModel.updatePost { post -> post.copy(url = newValue) }
@@ -323,6 +324,7 @@ private fun LaunchedPostDetailViewModelEffect(
 private fun EditBookmarkScreen(
     appMode: AppMode,
     post: Post,
+    isNewBookmark: Boolean,
     isLoading: Boolean,
     onUrlChanged: (String) -> Unit,
     urlError: String,
@@ -349,6 +351,7 @@ private fun EditBookmarkScreen(
         BookmarkContent(
             appMode = appMode,
             post = post,
+            isNewBookmark = isNewBookmark,
             onUrlChanged = onUrlChanged,
             urlError = urlError,
             onTitleChanged = onTitleChanged,
@@ -388,6 +391,7 @@ private fun EditBookmarkScreen(
 private fun BookmarkContent(
     appMode: AppMode,
     post: Post,
+    isNewBookmark: Boolean,
     onUrlChanged: (String) -> Unit,
     urlError: String,
     onTitleChanged: (String) -> Unit,
@@ -429,6 +433,7 @@ private fun BookmarkContent(
 
         BookmarkBasicDetails(
             appMode = appMode,
+            isNewBookmark = isNewBookmark,
             url = post.url,
             onUrlChanged = onUrlChanged,
             urlError = urlError,
@@ -466,6 +471,7 @@ private fun BookmarkContent(
 @Composable
 private fun BookmarkBasicDetails(
     appMode: AppMode,
+    isNewBookmark: Boolean,
     url: String,
     onUrlChanged: (String) -> Unit,
     urlError: String,
@@ -501,6 +507,9 @@ private fun BookmarkBasicDetails(
         val urlFieldState = rememberTextFieldState(initialText = url)
         val urlSanitizationRegex = remember { "\\s".toRegex() }
 
+        // The Pinboard API uses the URL as the key; Changing the URL means creating a new bookmark
+        val isUrlInputEnabled = isNewBookmark || appMode != AppMode.PINBOARD
+
         RememberedEffect(urlFieldState.text) {
             onUrlChanged(urlFieldState.text.toString())
         }
@@ -511,10 +520,16 @@ private fun BookmarkBasicDetails(
                 .fillMaxWidth()
                 .focusRequester(frUrl)
                 .onFocusChanged { if (it.hasFocus) focusedField = FocusedField.URL },
+            enabled = isUrlInputEnabled,
             label = { Text(text = stringResource(id = R.string.posts_add_url)) },
             supportingText = {
                 if (urlError.isNotEmpty()) {
                     Text(text = urlError)
+                } else if (!isUrlInputEnabled) {
+                    Text(
+                        text = stringResource(R.string.posts_add_non_editable_url),
+                        modifier = Modifier.padding(bottom = 12.dp),
+                    )
                 }
             },
             isError = urlError.isNotEmpty(),
@@ -659,6 +674,7 @@ private fun EditBookmarkScreenPreview(
         EditBookmarkScreen(
             appMode = AppMode.PINBOARD,
             post = post.copy(description = post.description.take(200)),
+            isNewBookmark = true,
             isLoading = false,
             onUrlChanged = {},
             urlError = "",

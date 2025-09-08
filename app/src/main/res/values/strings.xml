@@ -111,6 +111,8 @@
     <string name="posts_add_private">Private</string>
     <string name="posts_add_read_later">Read later</string>
 
+    <string name="posts_add_non_editable_url">To edit the URL, visit Pinboard on your browser.</string>
+
     <string name="posts_add_tags">New tag</string>
     <string name="posts_add_tags_add">Add tag</string>
 

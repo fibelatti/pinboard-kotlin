@@ -126,6 +126,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
             // THEN
             assertThat(expectMostRecentItem()).isEqualTo(
                 EditPostViewModel.ScreenState(
+                    isNewBookmark = false,
                     invalidUrlError = "R.string.validation_error_empty_url",
                     saved = false,
                 ),
@@ -147,6 +148,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                 // THEN
                 assertThat(expectMostRecentItem()).isEqualTo(
                     EditPostViewModel.ScreenState(
+                        isNewBookmark = false,
                         invalidTitleError = "R.string.validation_error_empty_title",
                         saved = false,
                     ),
@@ -168,6 +170,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                 // THEN
                 assertThat(expectMostRecentItem()).isEqualTo(
                     EditPostViewModel.ScreenState(
+                        isNewBookmark = false,
                         isLoading = false,
                         invalidUrlError = "R.string.validation_error_invalid_url",
                         invalidTitleError = "",
@@ -195,6 +198,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
             // THEN
             assertThat(screenState.expectMostRecentItem()).isEqualTo(
                 EditPostViewModel.ScreenState(
+                    isNewBookmark = false,
                     isLoading = false,
                     invalidUrlError = "",
                     invalidTitleError = "",
@@ -222,6 +226,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
                 // THEN
                 assertThat(screenState.expectMostRecentItem()).isEqualTo(
                     EditPostViewModel.ScreenState(
+                        isNewBookmark = false,
                         isLoading = true,
                         invalidUrlError = "",
                         invalidTitleError = "",
