@@ -9,6 +9,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Composer
 import androidx.compose.runtime.ExperimentalComposeRuntimeApi
+import androidx.compose.runtime.tooling.ComposeStackTraceMode
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import coil3.ImageLoader
@@ -80,7 +81,7 @@ class App : Application(), Configuration.Provider, SingletonImageLoader.Factory 
                 .build(),
         )
 
-        Composer.setDiagnosticStackTraceEnabled(enabled = true)
+        Composer.setDiagnosticStackTraceMode(ComposeStackTraceMode.Auto)
     }
 
     private fun setupThemeAndColors() {
