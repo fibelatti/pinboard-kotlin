@@ -10,7 +10,7 @@ lifecycle = "2.9.3"
 okhttp = "5.1.0"
 room = "2.8.0"
 coil = "3.3.0"
-aboutLibraries = "13.0.0-b01"
+aboutLibraries = "13.0.0-rc01"
 
 [libraries]
 kotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
