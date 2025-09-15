@@ -230,7 +230,7 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.dagger.hilt.android)
     implementation(libs.hilt.work)
-    implementation(libs.hilt.navigation.compose)
+    implementation(libs.hilt.lifecycle.viewmodel.compose)
 
     implementation(libs.bundles.ktor.common)
     implementation(libs.ktor.client.okhttp)
