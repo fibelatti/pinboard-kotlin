@@ -1,11 +1,15 @@
 package com.fibelatti.pinboard.features.main
 
+import androidx.lifecycle.SavedStateHandle
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.Content
+import com.fibelatti.pinboard.features.appstate.EditPost
+import com.fibelatti.pinboard.features.appstate.Loaded
 import com.fibelatti.pinboard.features.appstate.MultiPanelAvailabilityChanged
 import com.fibelatti.pinboard.features.appstate.NavigateBack
+import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.Reset
 import com.fibelatti.pinboard.features.main.reducer.MainStateReducer
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,6 +30,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     scope: CoroutineScope,
     sharingStarted: SharingStarted,
     appStateRepository: AppStateRepository,
@@ -48,6 +53,17 @@ class MainViewModel @Inject constructor(
                 mainStateReducers[appState.content::class.java]?.let { mainStateReducer: MainStateReducer ->
                     reducer.emit { current: MainState -> mainStateReducer(current, appState) }
                 }
+            }
+            .onEach { appState ->
+                val pendingDeeplinkPostId = savedStateHandle.get<String?>("deeplinkPostId")
+                if (pendingDeeplinkPostId != null && appState.content is PostListContent && appState.content.shouldLoad == Loaded) {
+                    savedStateHandle.remove<String?>("deeplinkPostId")
+                    appState.content.posts?.list?.first { it.id == pendingDeeplinkPostId }?.let { post ->
+                        runAction(EditPost(post = post))
+                    }
+                }
+
+                appState
             }
             .launchIn(scope)
     }

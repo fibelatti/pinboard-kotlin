@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.main
 
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +8,7 @@ import android.view.ViewGroup
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.getSystemService
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -26,6 +28,8 @@ class MainComposeActivity : AppCompatActivity() {
 
     private val mainViewModel: MainViewModel by viewModels()
 
+    private val notificationManager: NotificationManager? get() = getSystemService()
+
     @Inject
     lateinit var unauthorizedPluginProvider: UnauthorizedPluginProvider
 
@@ -33,10 +37,14 @@ class MainComposeActivity : AppCompatActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        observeUnauthorized()
-
         setThemedContent {
             MainScreen()
+        }
+
+        observeUnauthorized()
+
+        intent.deeplinkNotificationId?.let { notificationId ->
+            notificationManager?.cancel(notificationId)
         }
     }
 
@@ -64,10 +72,18 @@ class MainComposeActivity : AppCompatActivity() {
         init {
             intent.fromBuilder = true
         }
+
+        fun notificationExtras(postId: String, notificationId: Int): Builder = apply {
+            intent.deeplinkPostId = postId
+            intent.deeplinkNotificationId = notificationId
+        }
     }
 
     private companion object {
 
         var Intent.fromBuilder by intentExtras(default = false)
+
+        var Intent.deeplinkPostId: String? by intentExtras()
+        var Intent.deeplinkNotificationId: Int? by intentExtras()
     }
 }

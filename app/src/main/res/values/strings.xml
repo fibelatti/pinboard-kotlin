@@ -323,6 +323,16 @@
     <string name="share_title">Sharing Pinkt</string>
     <string name="share_text">Check out Pinkt, a bookmarking app for Pinboard and Linkding. Download for free at %s</string>
 
+    <!-- Share Notifications -->
+    <string name="share_notification_channel_name">Share Results</string>
+    <string name="share_notification_channel_description">Notifies you about the result of sharing a link to the app, to be saved as a bookmark</string>
+    <string name="share_notification_unprocessable_url_feedback">Unable to process URL!</string>
+    <string name="share_notification_missing_permission_feedback">Adding bookmark… Grant notifications permission to be notified of the result</string>
+    <string name="share_notification_title_foreground">Adding bookmark</string>
+    <string name="share_notification_title_success">Bookmark added successfully!</string>
+    <string name="share_notification_title_existing">Existing bookmark found!</string>
+    <string name="share_notification_title_failure">Failed to add bookmark</string>
+
     <!-- Error -->
     <string name="error_send_email">Send email</string>
     <string name="error_report_rationale">Looks like something went wrong.\n\nYou can report this error by email which helps with troubleshooting and fixing.</string>

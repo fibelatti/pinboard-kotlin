@@ -2,6 +2,8 @@ package com.fibelatti.pinboard
 
 import android.app.Activity
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.os.Bundle
 import android.os.StrictMode
@@ -16,6 +18,7 @@ import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import com.fibelatti.core.android.platform.SimpleActivityLifecycleCallbacks
 import com.fibelatti.pinboard.core.android.Appearance
+import com.fibelatti.pinboard.features.share.ShareReceiverWorker
 import com.fibelatti.pinboard.features.sync.PendingSyncManager
 import com.fibelatti.pinboard.features.sync.PeriodicSyncManager
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -57,6 +60,7 @@ class App : Application(), Configuration.Provider, SingletonImageLoader.Factory 
         setupThemeAndColors()
         setupDisableScreenshots()
         setupWorkers()
+        setupNotificationChannels()
     }
 
     override fun newImageLoader(context: Context): ImageLoader = imageLoader.get()
@@ -119,5 +123,18 @@ class App : Application(), Configuration.Provider, SingletonImageLoader.Factory 
     private fun setupWorkers() {
         periodicSyncManager.enqueueWork()
         pendingSyncManager.setupListeners()
+    }
+
+    private fun setupNotificationChannels() {
+        val notificationManager: NotificationManager = getSystemService<NotificationManager>() ?: return
+        val notificationChannel: NotificationChannel = NotificationChannel(
+            ShareReceiverWorker.NOTIFICATION_CHANNEL_ID,
+            getString(R.string.share_notification_channel_name),
+            NotificationManager.IMPORTANCE_DEFAULT,
+        ).apply {
+            description = getString(R.string.share_notification_channel_description)
+        }
+
+        notificationManager.createNotificationChannel(notificationChannel)
     }
 }
