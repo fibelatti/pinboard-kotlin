@@ -108,14 +108,19 @@ class PostActionHandler @Inject constructor(
     }
 
     private fun setSorting(action: SetSorting, currentContent: Content): Content {
-        val body = { postListContent: PostListContent ->
+        val body: (PostListContent) -> PostListContent = { postListContent: PostListContent ->
+            userRepository.preferredSortType = action.sortType
+
             if (connectivityInfoProvider.isConnected()) {
                 postListContent.copy(
                     sortType = action.sortType,
                     shouldLoad = ShouldLoadFirstPage,
                 )
             } else {
-                postListContent.copy(isConnected = false)
+                postListContent.copy(
+                    sortType = action.sortType,
+                    isConnected = false,
+                )
             }
         }
 

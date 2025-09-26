@@ -9,6 +9,7 @@ import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
+import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
@@ -17,7 +18,9 @@ import org.junit.jupiter.api.Test
 
 internal class PostActionHandlerTest {
 
-    private val mockUserRepository = mockk<UserRepository>()
+    private val mockUserRepository = mockk<UserRepository> {
+        justRun { preferredSortType = any() }
+    }
     private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider>()
 
     private val mockPost = mockk<Post>()
@@ -505,13 +508,19 @@ internal class PostActionHandlerTest {
         fun `GIVEN isConnected is false WHEN currentContent is PostListContent THEN same content is returned`() =
             runTest {
                 // GIVEN
+                val sortType: SortType = mockk()
                 every { mockConnectivityInfoProvider.isConnected() } returns false
 
                 // WHEN
-                val result = postActionHandler.runAction(SetSorting(mockk()), initialContent)
+                val result = postActionHandler.runAction(SetSorting(sortType), initialContent)
 
                 // THEN
-                assertThat(result).isEqualTo(initialContent.copy(isConnected = false))
+                assertThat(result).isEqualTo(
+                    initialContent.copy(
+                        sortType = sortType,
+                        isConnected = false,
+                    ),
+                )
             }
 
         @Test
@@ -540,6 +549,7 @@ internal class PostActionHandlerTest {
         fun `GIVEN isConnected is false WHEN currentContent is PostDetailContent THEN same content is returned`() =
             runTest {
                 // GIVEN
+                val sortType: SortType = mockk()
                 every { mockConnectivityInfoProvider.isConnected() } returns false
 
                 val content = PostDetailContent(
@@ -548,12 +558,15 @@ internal class PostActionHandlerTest {
                 )
 
                 // WHEN
-                val result = postActionHandler.runAction(SetSorting(mockk()), content)
+                val result = postActionHandler.runAction(SetSorting(sortType), content)
 
                 // THEN
                 assertThat(result).isEqualTo(
                     content.copy(
-                        previousContent = initialContent.copy(isConnected = false),
+                        previousContent = initialContent.copy(
+                            sortType = sortType,
+                            isConnected = false,
+                        ),
                     ),
                 )
             }

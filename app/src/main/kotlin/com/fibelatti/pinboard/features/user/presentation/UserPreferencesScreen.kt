@@ -76,13 +76,6 @@ import com.fibelatti.pinboard.core.android.composable.SelectionDialogCustomizati
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.core.android.composable.SwitchWithIcon
 import com.fibelatti.pinboard.core.extension.fillWidthOfParent
-import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
-import com.fibelatti.pinboard.features.appstate.ByDateAddedOldestFirst
-import com.fibelatti.pinboard.features.appstate.ByDateModifiedNewestFirst
-import com.fibelatti.pinboard.features.appstate.ByDateModifiedOldestFirst
-import com.fibelatti.pinboard.features.appstate.ByTitleAlphabetical
-import com.fibelatti.pinboard.features.appstate.ByTitleAlphabeticalReverse
-import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -207,7 +200,6 @@ private fun AppPreferencesContent(
             onDisableScreenshotsChange()
         },
         onDateFormatChange = userPreferencesViewModel::savePreferredDateFormat,
-        onSortTypeChange = userPreferencesViewModel::savePreferredSortType,
         onPeriodicSyncChange = userPreferencesViewModel::savePeriodicSync,
         onHiddenOptionsChange = userPreferencesViewModel::saveHiddenPostQuickOptions,
         onPreferredViewChange = userPreferencesViewModel::savePreferredDetailsView,
@@ -226,7 +218,6 @@ private fun AppPreferencesContent(
     onDynamicColorChange: (Boolean) -> Unit,
     onDisableScreenshotsChange: (Boolean) -> Unit,
     onDateFormatChange: (PreferredDateFormat, Boolean) -> Unit,
-    onSortTypeChange: (SortType) -> Unit,
     onPeriodicSyncChange: (PeriodicSync) -> Unit,
     onHiddenOptionsChange: (Set<String>) -> Unit,
     onPreferredViewChange: (PreferredDetailsView) -> Unit,
@@ -349,44 +340,6 @@ private fun AppPreferencesContent(
                             },
                         )
                     }
-                },
-            )
-        }
-
-        SettingItem(
-            title = stringResource(id = R.string.user_preferences_sort_type),
-        ) {
-            PreferenceSelectionButton(
-                currentSelection = userPreferences.preferredSortType,
-                buttonText = { option: SortType ->
-                    when (option) {
-                        is ByDateAddedNewestFirst -> R.string.sorting_by_date_added_newest_first
-                        is ByDateAddedOldestFirst -> R.string.sorting_by_date_added_oldest_first
-                        is ByDateModifiedNewestFirst -> R.string.sorting_by_date_modified_newest_first
-                        is ByDateModifiedOldestFirst -> R.string.sorting_by_date_modified_oldest_first
-                        is ByTitleAlphabetical -> R.string.sorting_by_title_alphabetical
-                        is ByTitleAlphabeticalReverse -> R.string.sorting_by_title_alphabetical_reverse
-                    }
-                },
-                title = R.string.user_preferences_sort_type,
-                options = {
-                    buildList {
-                        add(ByDateAddedNewestFirst)
-                        add(ByDateAddedOldestFirst)
-                        add(ByDateModifiedNewestFirst)
-                        add(ByDateModifiedOldestFirst)
-                        add(ByTitleAlphabetical)
-                        add(ByTitleAlphabeticalReverse)
-                    }
-                },
-                onOptionSelected = onSortTypeChange,
-                footer = {
-                    Text(
-                        text = stringResource(R.string.user_preferences_sort_type_linkding_exclusive_types),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
                 },
             )
         }
@@ -903,7 +856,6 @@ private fun AppPreferencesContentPreview(
             onDynamicColorChange = {},
             onDisableScreenshotsChange = {},
             onDateFormatChange = { _, _ -> },
-            onSortTypeChange = {},
             onHiddenOptionsChange = {},
             onPeriodicSyncChange = {},
             onPreferredViewChange = {},
