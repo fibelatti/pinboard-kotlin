@@ -59,6 +59,7 @@ public sealed class Either<out L, out R> {
 }
 
 // region Result
+
 /**
  * Alias to [Either] to be used in scenarios which the Failure is a [Throwable].
  */
