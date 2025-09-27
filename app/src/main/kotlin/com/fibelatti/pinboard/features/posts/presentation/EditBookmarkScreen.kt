@@ -21,8 +21,8 @@ import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.byValue
+import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -549,9 +549,7 @@ private fun BookmarkBasicDetails(
         val titleFieldState = rememberTextFieldState(initialText = title)
 
         RememberedEffect(titleFieldState.text) {
-            val coerced = titleFieldState.text.take(AppConfig.PinboardApiMaxLength.TEXT_TYPE.value).toString()
-            titleFieldState.setTextAndPlaceCursorAtEnd(coerced)
-            onTitleChanged(coerced)
+            onTitleChanged(titleFieldState.text.toString())
         }
 
         OutlinedTextField(
@@ -567,6 +565,7 @@ private fun BookmarkBasicDetails(
                 }
             },
             isError = titleError.isNotEmpty(),
+            inputTransformation = InputTransformation.maxLength(AppConfig.PinboardApiMaxLength.TEXT_TYPE.value),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             onKeyboardAction = KeyboardActionHandler { focusManager.moveFocus(FocusDirection.Next) },
             contentPadding = OutlinedTextFieldDefaults.contentPadding(
