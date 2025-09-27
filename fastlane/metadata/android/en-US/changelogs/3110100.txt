@@ -1,0 +1,10 @@
+This version brings the following updates:
+
+* Fixes the cursor behavior when editing the bookmark title
+* Removes preferred sorting setting. The applied sorting is always saved now
+* Pinboard: Disables the URL input when editing an existing bookmark
+
+Given how the Pinboard API works, editing the URL would always result in a new
+bookmark. This change aims to prevents this type of accidental duplication.
+
+Feedback and suggestions are always welcome, thank you for using the app!
