@@ -22,9 +22,16 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -60,48 +67,73 @@ fun MainTitle(
             .padding(bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        AnimatedVisibility(visible = navigation is MainState.NavigationComponent.Visible) {
+        var navigationIconRes: Int by remember { mutableIntStateOf(-1) }
+        RememberedEffect(navigation) {
             if (navigation is MainState.NavigationComponent.Visible) {
-                LongClickIconButton(
-                    painter = painterResource(id = navigation.icon),
-                    description = stringResource(id = R.string.cd_navigate_back),
-                    onClick = onNavigationClicked,
-                    iconTint = MaterialTheme.colorScheme.onSurface,
-                )
+                navigationIconRes = navigation.icon
             }
+        }
+
+        AnimatedVisibility(visible = navigation is MainState.NavigationComponent.Visible && navigationIconRes != -1) {
+            LongClickIconButton(
+                painter = painterResource(id = navigationIconRes),
+                description = stringResource(id = R.string.cd_navigate_back),
+                onClick = onNavigationClicked,
+                iconTint = MaterialTheme.colorScheme.onSurface,
+            )
         }
 
         Column(
             modifier = Modifier
                 .weight(1f)
-                .heightIn(min = 56.dp)
+                .heightIn(min = 64.dp)
                 .padding(
                     start = if (navigation is MainState.NavigationComponent.Visible) 0.dp else 16.dp,
                     end = 16.dp,
                 ),
             verticalArrangement = Arrangement.Center,
         ) {
-            AnimatedVisibility(
-                visible = title is MainState.TitleComponent.Visible,
-            ) {
-                val label = (title as? MainState.TitleComponent.Visible)?.label ?: ""
-                Text(
-                    text = label,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                    style = MaterialTheme.typography.headlineSmall,
-                )
+            var titleText by remember { mutableStateOf("") }
+            RememberedEffect(title) {
+                if (title is MainState.TitleComponent.Visible) {
+                    titleText = title.label
+                }
+            }
+
+            var subtitleText by remember { mutableStateOf("") }
+            RememberedEffect(subtitle) {
+                if (subtitle is MainState.TitleComponent.Visible) {
+                    subtitleText = subtitle.label
+                }
             }
 
             AnimatedVisibility(
-                visible = subtitle is MainState.TitleComponent.Visible,
+                visible = title is MainState.TitleComponent.Visible && titleText.isNotEmpty(),
             ) {
-                val label = (subtitle as? MainState.TitleComponent.Visible)?.label ?: ""
+                Text(
+                    text = titleText,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.headlineMedium,
+                )
+            }
 
+            val colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors()
+
+            AnimatedVisibility(
+                visible = subtitle is MainState.TitleComponent.Visible && subtitleText.isNotEmpty(),
+            ) {
                 AutoSizeText(
-                    text = label,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    text = subtitleText,
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .background(
+                            color = colors.toolbarContainerColor,
+                            shape = MaterialTheme.shapes.small,
+                        )
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                    color = colors.toolbarContentColor,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
                     style = MaterialTheme.typography.bodySmall,
@@ -109,21 +141,26 @@ fun MainTitle(
             }
         }
 
+        var actionButtonText by remember { mutableStateOf("") }
+        RememberedEffect(actionButton) {
+            if (actionButton is MainState.ActionButtonComponent.Visible) {
+                actionButtonText = actionButton.label
+            }
+        }
+        val actionButtonData by rememberUpdatedState((actionButton as? MainState.ActionButtonComponent.Visible)?.data)
+
         AnimatedVisibility(
-            visible = actionButton is MainState.ActionButtonComponent.Visible,
+            visible = actionButton is MainState.ActionButtonComponent.Visible && actionButtonText.isNotEmpty(),
             enter = fadeIn() + scaleIn(),
             exit = fadeOut() + scaleOut(),
         ) {
-            val label = (actionButton as? MainState.ActionButtonComponent.Visible)?.label ?: ""
-            val data = (actionButton as? MainState.ActionButtonComponent.Visible)?.data
-
             FilledTonalButton(
-                onClick = { onActionButtonClicked(data) },
+                onClick = { onActionButtonClicked(actionButtonData) },
                 shapes = ExtendedTheme.defaultButtonShapes,
                 modifier = Modifier.padding(end = 16.dp),
             ) {
                 Text(
-                    text = label,
+                    text = actionButtonText,
                     textAlign = TextAlign.Center,
                     maxLines = 1,
                     style = MaterialTheme.typography.labelSmall,
