@@ -1,10 +1,13 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
+import android.os.Build
 import com.fibelatti.core.extension.ifNullOrBlank
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.UseCaseWithParams
 import com.fibelatti.core.functional.catching
+import com.fibelatti.core.functional.onFailure
 import com.fibelatti.core.functional.onFailureReturn
+import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
@@ -12,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import timber.log.Timber
 
 class GetUrlPreview @Inject constructor(
     private val userRepository: UserRepository,
@@ -23,7 +27,8 @@ class GetUrlPreview @Inject constructor(
         } else {
             createUrlPreview(params)
         }
-    }.onFailureReturn(createUrlPreview(params))
+    }.onFailure(Timber::e)
+        .onFailureReturn(createUrlPreview(params))
 
     private fun createUrlPreview(params: Params): UrlPreview = UrlPreview(
         url = params.url,
@@ -33,7 +38,12 @@ class GetUrlPreview @Inject constructor(
 
     private suspend fun loadUrl(params: Params): UrlPreview {
         val document: Document = withContext(Dispatchers.IO) {
-            Jsoup.connect(params.url).get()
+            Jsoup.connect(params.url)
+                .header(
+                    /* name = */ "User-Agent",
+                    /* value = */ "Pinkt/${BuildConfig.VERSION_NAME} (Android; ${Build.VERSION.SDK_INT})",
+                )
+                .get()
         }
 
         val previewUrl: String = if (userRepository.followRedirects) document.location() else params.url
