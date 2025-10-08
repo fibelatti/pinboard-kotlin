@@ -10,7 +10,7 @@ interface TagManagerRepository {
 
     val tagManagerState: Flow<TagManagerState>
 
-    fun addTag(value: String, index: Int = 0)
+    fun addTag(value: String)
 
     fun removeTag(tag: Tag)
 

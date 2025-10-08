@@ -71,6 +71,9 @@ const val KEY_REMOVE_UTM_PARAMETERS = "REMOVE_UTM_PARAMETERS"
 
 @VisibleForTesting
 const val KEY_REMOVED_URL_PARAMETERS = "REMOVED_URL_PARAMETERS"
+
+@VisibleForTesting
+const val KEY_ALPHABETIZE_TAGS = "ALPHABETIZE_TAGS"
 // endregion
 
 @Singleton
@@ -227,4 +230,8 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
     var removedUrlParameters: Set<String>
         get() = sharedPreferences.getStringSet(KEY_REMOVED_URL_PARAMETERS, null) ?: emptySet()
         set(value) = sharedPreferences.edit { putStringSet(KEY_REMOVED_URL_PARAMETERS, value) }
+
+    var alphabetizeTags: Boolean
+        get() = sharedPreferences.get(KEY_ALPHABETIZE_TAGS, true)
+        set(value) = sharedPreferences.put(KEY_ALPHABETIZE_TAGS, value)
 }

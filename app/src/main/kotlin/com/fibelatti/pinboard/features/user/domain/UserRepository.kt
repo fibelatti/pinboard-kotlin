@@ -60,6 +60,8 @@ interface UserRepository {
 
     var defaultTags: List<Tag>
 
+    var alphabetizeTags: Boolean
+
     fun setAuthToken(appMode: AppMode, authToken: String)
 
     fun clearAuthToken(appMode: AppMode)

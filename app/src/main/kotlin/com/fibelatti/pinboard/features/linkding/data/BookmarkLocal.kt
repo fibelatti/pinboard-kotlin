@@ -62,7 +62,7 @@ class BookmarkLocalMapper @Inject constructor(
             displayDateModified = dateFormatter.dataFormatToDisplayFormat(dateModified),
             private = shared == false,
             readLater = unread == true,
-            tags = tagNames?.ifBlank { null }?.split(" ")?.sorted()?.map(::Tag),
+            tags = tagNames?.ifBlank { null }?.split(" ")?.map(::Tag),
             notes = notes,
             websiteTitle = websiteTitle,
             websiteDescription = websiteDescription,

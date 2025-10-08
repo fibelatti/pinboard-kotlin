@@ -20,6 +20,7 @@ internal class PostActionHandlerTest {
 
     private val mockUserRepository = mockk<UserRepository> {
         justRun { preferredSortType = any() }
+        every { alphabetizeTags } returns true
     }
     private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider>()
 
@@ -284,6 +285,7 @@ internal class PostActionHandlerTest {
                             list = listOf(createPost()),
                             totalCount = 1,
                             canPaginate = canPaginate,
+                            alphabetizeTags = true,
                         ),
                         showDescription = false,
                         sortType = ByDateAddedNewestFirst,
@@ -329,6 +331,7 @@ internal class PostActionHandlerTest {
                             list = listOf(createPost()),
                             totalCount = 1,
                             canPaginate = canPaginate,
+                            alphabetizeTags = true,
                         ),
                         showDescription = false,
                         sortType = ByDateAddedNewestFirst,
@@ -374,6 +377,7 @@ internal class PostActionHandlerTest {
                         list = listOf(mockk()),
                         totalCount = 1,
                         canPaginate = canPaginate,
+                        alphabetizeTags = true,
                     ),
                     showDescription = false,
                     sortType = ByDateAddedNewestFirst,
@@ -449,6 +453,7 @@ internal class PostActionHandlerTest {
                         list = mockCurrentList,
                         totalCount = 1,
                         canPaginate = canPaginate,
+                        alphabetizeTags = true,
                     ),
                     showDescription = false,
                     sortType = ByDateAddedNewestFirst,
@@ -478,6 +483,7 @@ internal class PostActionHandlerTest {
                             list = mockCurrentList.plus(mockNewList),
                             totalCount = 2,
                             canPaginate = canPaginate,
+                            alphabetizeTags = true,
                         ),
                         showDescription = false,
                         sortType = ByDateAddedNewestFirst,

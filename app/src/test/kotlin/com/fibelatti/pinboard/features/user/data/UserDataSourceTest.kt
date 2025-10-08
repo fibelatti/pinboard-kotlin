@@ -52,6 +52,7 @@ internal class UserDataSourceTest {
         every { defaultReadLater } returns null
         every { editAfterSharing } returns ""
         every { defaultTags } returns emptyList()
+        every { alphabetizeTags } returns true
     }
 
     private val defaultPreferences = UserPreferences(
@@ -74,6 +75,7 @@ internal class UserDataSourceTest {
         defaultReadLater = false,
         editAfterSharing = EditAfterSharing.AfterSaving,
         defaultTags = emptyList(),
+        alphabetizeTags = true,
     )
 
     private val userDataSource = UserDataSource(

@@ -290,6 +290,8 @@
     <string name="user_preferences_use_blockquote_description">Wrap the description in a blockquote tag</string>
     <string name="user_preferences_description_visible_in_lists">Show description in lists</string>
     <string name="user_preferences_description_visible_in_lists_description">Show the first 5 lines of the description when browsing bookmarks</string>
+    <string name="user_preferences_alphabetize_tags">Alphabetize tags</string>
+    <string name="user_preferences_alphabetize_tags_description">Enable to display tags under your bookmarks in alphabetical order, otherwise they are displayed in the order you entered them. This does not change the order in which they are saved.</string>
     <string name="user_preferences_default_private_label">Private by default</string>
     <string name="user_preferences_default_private_description">If active bookmarks shared to Pinkt are saved as private, otherwise your default preferences apply</string>
     <string name="user_preferences_default_read_later_label">Read later by default</string>

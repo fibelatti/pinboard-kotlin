@@ -65,7 +65,7 @@ class BookmarkRemoteMapper @Inject constructor(
             displayDateModified = dateFormatter.dataFormatToDisplayFormat(input = dateModified ?: dateAdded),
             private = shared == false,
             readLater = unread == true,
-            tags = tagNames?.sorted()?.map(::Tag),
+            tags = tagNames?.map(::Tag),
             notes = notes,
             websiteTitle = websiteTitle,
             websiteDescription = websiteDescription,

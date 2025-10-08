@@ -206,6 +206,7 @@ private fun AppPreferencesContent(
         onUseSplitNavChange = userPreferencesViewModel::saveUseSplitNav,
         onMarkAsReadOnOpenChange = userPreferencesViewModel::saveMarkAsReadOnOpen,
         onShowDescriptionInListsChange = userPreferencesViewModel::saveShowDescriptionInLists,
+        onAlphabetizeTagsChange = userPreferencesViewModel::saveAlphabetizeTags,
         modifier = modifier,
     )
 }
@@ -224,6 +225,7 @@ private fun AppPreferencesContent(
     onUseSplitNavChange: (Boolean) -> Unit,
     onMarkAsReadOnOpenChange: (Boolean) -> Unit,
     onShowDescriptionInListsChange: (Boolean) -> Unit,
+    onAlphabetizeTagsChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -499,6 +501,13 @@ private fun AppPreferencesContent(
             description = stringResource(id = R.string.user_preferences_description_visible_in_lists_description),
             checked = userPreferences.showDescriptionInLists,
             onCheckedChange = onShowDescriptionInListsChange,
+        )
+
+        SettingToggle(
+            title = stringResource(id = R.string.user_preferences_alphabetize_tags),
+            description = stringResource(id = R.string.user_preferences_alphabetize_tags_description),
+            checked = userPreferences.alphabetizeTags,
+            onCheckedChange = onAlphabetizeTagsChange,
         )
     }
 }
@@ -862,6 +871,7 @@ private fun AppPreferencesContentPreview(
             onUseSplitNavChange = {},
             onMarkAsReadOnOpenChange = {},
             onShowDescriptionInListsChange = {},
+            onAlphabetizeTagsChange = {},
             modifier = Modifier.safeDrawingPadding(),
         )
     }

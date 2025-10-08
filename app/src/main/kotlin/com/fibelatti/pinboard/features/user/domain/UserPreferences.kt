@@ -28,4 +28,5 @@ data class UserPreferences(
     val defaultReadLater: Boolean,
     val editAfterSharing: EditAfterSharing,
     val defaultTags: List<Tag>,
+    val alphabetizeTags: Boolean,
 )

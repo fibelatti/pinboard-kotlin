@@ -64,7 +64,7 @@ class TagManagerDataSource @Inject constructor(
         }
     }
 
-    override fun addTag(value: String, index: Int) {
+    override fun addTag(value: String) {
         val currentTags = _tagManagerState.value?.tags.orEmpty().map { it.name }
         val newTags = value.trim()
             .split(" ")
@@ -73,7 +73,7 @@ class TagManagerDataSource @Inject constructor(
 
         _tagManagerState.update { current ->
             current?.copy(
-                tags = current.tags.toMutableList().apply { addAll(index, newTags) },
+                tags = current.tags + newTags,
                 currentQuery = "",
             )
         }

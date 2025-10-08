@@ -483,6 +483,7 @@ fun BookmarkListScreen(
                         appMode = appMode,
                         post = post,
                         sortType = sortType,
+                        alphabetizeTags = posts.alphabetizeTags,
                         onPostClicked = onPostClicked,
                         onPostLongClicked = onPostLongClicked,
                         showDescription = showPostDescription,
@@ -575,6 +576,7 @@ private fun BookmarkItem(
     appMode: AppMode,
     post: Post,
     sortType: SortType,
+    alphabetizeTags: Boolean,
     onPostClicked: (Post) -> Unit,
     onPostLongClicked: (Post) -> Unit,
     showDescription: Boolean,
@@ -685,8 +687,10 @@ private fun BookmarkItem(
                 }
 
                 if (!post.tags.isNullOrEmpty()) {
-                    val tags = remember(post.tags) {
-                        post.tags.map { tag -> ChipGroup.Item(text = tag.name) }
+                    val tags = remember(post.tags, alphabetizeTags) {
+                        post.tags
+                            .run { if (alphabetizeTags) sortedBy { it.name } else this }
+                            .map { tag -> ChipGroup.Item(text = tag.name) }
                     }
 
                     MultilineChipGroup(
@@ -991,6 +995,7 @@ private fun BookmarkListScreenPreview(
                 list = posts,
                 totalCount = posts.size,
                 canPaginate = false,
+                alphabetizeTags = true,
             ),
             isLoading = true,
             onScrollDirectionChanged = {},
@@ -1044,6 +1049,7 @@ private fun BookmarkItemPreview(
                 appMode = AppMode.LINKDING,
                 post = post,
                 sortType = ByDateModifiedNewestFirst,
+                alphabetizeTags = true,
                 onPostClicked = {},
                 onPostLongClicked = {},
                 showDescription = true,

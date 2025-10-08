@@ -247,6 +247,13 @@ class UserDataSource @Inject constructor(
             updateCurrentPreferences()
         }
 
+    override var alphabetizeTags: Boolean
+        get() = userSharedPreferences.alphabetizeTags
+        set(value) {
+            userSharedPreferences.alphabetizeTags = value
+            updateCurrentPreferences()
+        }
+
     private fun getUserCredentials(): UserCredentials = UserCredentials(
         pinboardAuthToken = userSharedPreferences.pinboardAuthToken,
         linkdingInstanceUrl = linkdingInstanceUrl,
@@ -278,6 +285,7 @@ class UserDataSource @Inject constructor(
         defaultReadLater = defaultReadLater ?: false,
         editAfterSharing = editAfterSharing,
         defaultTags = defaultTags,
+        alphabetizeTags = alphabetizeTags,
     )
 
     override fun setAuthToken(appMode: AppMode, authToken: String) {

@@ -125,4 +125,8 @@ class UserPreferencesViewModel @Inject constructor(
     fun saveDefaultReadLater(value: Boolean) {
         userRepository.defaultReadLater = value
     }
+
+    fun saveAlphabetizeTags(value: Boolean) {
+        userRepository.alphabetizeTags = value
+    }
 }

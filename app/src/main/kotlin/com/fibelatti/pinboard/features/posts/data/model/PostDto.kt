@@ -59,7 +59,6 @@ class PostDtoMapper @Inject constructor(
             } else {
                 tags.replaceHtmlChars()
                     .split(PinboardApiLiterals.TAG_SEPARATOR)
-                    .sorted()
                     .map(::Tag)
             },
             pendingSync = when (pendingSync) {

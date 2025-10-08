@@ -50,6 +50,7 @@ class PostActionHandler @Inject constructor(
                         list = newList,
                         totalCount = action.postListResult.totalCount,
                         canPaginate = action.postListResult.canPaginate,
+                        alphabetizeTags = userRepository.alphabetizeTags,
                     )
                 },
                 shouldLoad = if (action.postListResult.upToDate) Loaded else Syncing,
@@ -90,6 +91,7 @@ class PostActionHandler @Inject constructor(
                     list = updatedList,
                     totalCount = action.postListResult.totalCount,
                     canPaginate = action.postListResult.canPaginate,
+                    alphabetizeTags = userRepository.alphabetizeTags,
                 )
 
                 postListContent.copy(posts = posts, shouldLoad = Loaded)
