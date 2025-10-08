@@ -8,7 +8,7 @@ ktor = "3.3.0"
 activity = "1.11.0"
 lifecycle = "2.9.4"
 okhttp = "5.2.0"
-room = "2.8.1"
+room = "2.8.2"
 coil = "3.3.0"
 aboutLibraries = "13.0.0-rc01"
 
