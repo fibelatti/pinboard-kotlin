@@ -1,0 +1,6 @@
+This version brings the following updates:
+
+* Tags are no longer forcibly sorted; Their original input order is preserved
+* New setting to sort tags when browsing bookmarks
+
+Thank you for using the app!
