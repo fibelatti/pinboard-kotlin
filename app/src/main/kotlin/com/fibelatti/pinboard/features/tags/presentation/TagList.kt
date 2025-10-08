@@ -52,9 +52,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -100,7 +100,7 @@ fun TagListScreen(
     val tagQuickActionsSheetState = rememberAppSheetState()
     val renameTagSheetState = rememberAppSheetState()
 
-    val localContext = LocalContext.current
+    val localResources = LocalResources.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val error by tagsViewModel.error.collectAsStateWithLifecycle()
@@ -143,7 +143,7 @@ fun TagListScreen(
             sheetState = tagQuickActionsSheetState,
             title = stringResource(R.string.quick_actions_title),
             options = TagQuickActions.allOptions(tag = tag),
-            optionName = { localContext.getString(it.title) },
+            optionName = { localResources.getString(it.title) },
             optionIcon = TagQuickActions::icon,
             onOptionSelected = { option ->
                 when (option) {

@@ -55,7 +55,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -396,7 +396,7 @@ private fun AppPreferencesContent(
             )
 
             val bookmarkQuickActionCustomizationSheetState = rememberAppSheetState()
-            val localContext = LocalContext.current
+            val localResources = LocalResources.current
             val quickActionOptions = remember {
                 val samplePost = Post.EMPTY.copy(
                     description = "sample_description",
@@ -416,7 +416,7 @@ private fun AppPreferencesContent(
                 sheetState = bookmarkQuickActionCustomizationSheetState,
                 title = stringResource(R.string.user_preferences_bookmark_quick_options),
                 options = quickActionOptions,
-                optionName = { option -> localContext.getString(option.title) },
+                optionName = { option -> localResources.getString(option.title) },
                 optionIcon = PostQuickActions::icon,
                 onConfirm = { options ->
                     val hiddenOptions = options.filterValues { hidden -> hidden }.keys
@@ -831,7 +831,7 @@ private fun <T> PreferenceSelectionButton(
     modifier: Modifier = Modifier,
     footer: @Composable () -> Unit = {},
 ) {
-    val localContext = LocalContext.current
+    val localResources = LocalResources.current
     val sheetState = rememberAppSheetState()
 
     PreferenceButton(
@@ -844,7 +844,7 @@ private fun <T> PreferenceSelectionButton(
         sheetState = sheetState,
         title = stringResource(title),
         options = options(),
-        optionName = { option -> localContext.getString(buttonText(option)) },
+        optionName = { option -> localResources.getString(buttonText(option)) },
         onOptionSelected = onOptionSelected,
         footer = footer,
     )

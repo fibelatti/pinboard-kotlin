@@ -50,6 +50,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
@@ -147,6 +148,7 @@ private fun LaunchedViewModelEffects(
     postDetailViewModel: PostDetailViewModel = hiltViewModel(),
 ) {
     val localContext = LocalContext.current
+    val localResources = LocalResources.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val imeVisible by rememberKeyboardState()
@@ -169,7 +171,7 @@ private fun LaunchedViewModelEffects(
                 currentState.copy(
                     actionButton = MainState.ActionButtonComponent.Visible(
                         contentType = EditPostContent::class,
-                        label = localContext.getString(R.string.hint_save),
+                        label = localResources.getString(R.string.hint_save),
                     ),
                 )
             }
