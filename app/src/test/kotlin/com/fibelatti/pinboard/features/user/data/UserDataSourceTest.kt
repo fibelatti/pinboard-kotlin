@@ -275,9 +275,9 @@ internal class UserDataSourceTest {
             @Test
             fun `GIVEN the shared preferences has DayMonthYearWithTime value WHEN the getter is called THEN DayMonthYearWithTime is returned`() {
                 // GIVEN
-                every { mockUserSharedPreferences.preferredDateFormat } returns
-                    PreferredDateFormat.DayMonthYearWithTime().value
                 val randomBoolean = randomBoolean()
+                every { mockUserSharedPreferences.preferredDateFormat } returns
+                    PreferredDateFormat.DayMonthYearWithTime(includeTime = randomBoolean).value
                 every { mockUserSharedPreferences.dateIncludesTime } returns randomBoolean
 
                 // THEN
@@ -301,9 +301,9 @@ internal class UserDataSourceTest {
             @Test
             fun `GIVEN the shared preferences has ShortYearMonthDayWithTime value WHEN the getter is called THEN YearMonthDayWithTime is returned`() {
                 // GIVEN
-                every { mockUserSharedPreferences.preferredDateFormat } returns
-                    PreferredDateFormat.ShortYearMonthDayWithTime().value
                 val randomBoolean = randomBoolean()
+                every { mockUserSharedPreferences.preferredDateFormat } returns
+                    PreferredDateFormat.ShortYearMonthDayWithTime(includeTime = randomBoolean).value
                 every { mockUserSharedPreferences.dateIncludesTime } returns randomBoolean
 
                 // THEN
@@ -314,9 +314,9 @@ internal class UserDataSourceTest {
             @Test
             fun `GIVEN the shared preferences has YearMonthDayWithTime value WHEN the getter is called THEN YearMonthDayWithTime is returned`() {
                 // GIVEN
-                every { mockUserSharedPreferences.preferredDateFormat } returns
-                    PreferredDateFormat.YearMonthDayWithTime().value
                 val randomBoolean = randomBoolean()
+                every { mockUserSharedPreferences.preferredDateFormat } returns
+                    PreferredDateFormat.YearMonthDayWithTime(includeTime = randomBoolean).value
                 every { mockUserSharedPreferences.dateIncludesTime } returns randomBoolean
 
                 // THEN
