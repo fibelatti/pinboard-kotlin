@@ -57,6 +57,7 @@ import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
@@ -176,6 +177,7 @@ fun BookmarkListScreen(
 
         val localContext = LocalContext.current
         val localView = LocalView.current
+        val localResources = LocalResources.current
         val localClipboard = LocalClipboard.current
 
         val coroutineScope = rememberCoroutineScope()
@@ -259,7 +261,7 @@ fun BookmarkListScreen(
 
                 coroutineScope.launch {
                     val clipData = ClipData.newPlainText(
-                        localContext.getString(R.string.tags_title),
+                        localResources.getString(R.string.tags_title),
                         tags.joinToString(separator = " ") { it.name },
                     )
                     localClipboard.setClipEntry(ClipEntry(clipData))
@@ -841,6 +843,7 @@ private fun BookmarkQuickActionsBottomSheet(
 ) {
     val post: Post = sheetState.bottomSheetData() ?: return
     val localContext = LocalContext.current
+    val localResources = LocalResources.current
     val localUriHandler = LocalUriHandler.current
 
     val allOptions: Map<PostQuickActions, Boolean> = remember(
@@ -856,7 +859,7 @@ private fun BookmarkQuickActionsBottomSheet(
         sheetState = sheetState,
         title = stringResource(R.string.quick_actions_title),
         options = allOptions,
-        optionName = { option -> localContext.getString(option.title) },
+        optionName = { option -> localResources.getString(option.title) },
         optionIcon = PostQuickActions::icon,
         onOptionSelected = { option ->
             when (option) {
@@ -922,7 +925,7 @@ private fun SortingSelectionBottomSheet(
     appMode: AppMode,
     onOptionSelected: (SortType) -> Unit,
 ) {
-    val localContext = LocalContext.current
+    val localResources = LocalResources.current
 
     SelectionDialogBottomSheet(
         sheetState = sheetState,
@@ -940,14 +943,16 @@ private fun SortingSelectionBottomSheet(
             add(ByTitleAlphabeticalReverse)
         },
         optionName = { option ->
-            when (option) {
-                is ByDateAddedNewestFirst -> localContext.getString(R.string.sorting_by_date_added_newest_first)
-                is ByDateAddedOldestFirst -> localContext.getString(R.string.sorting_by_date_added_oldest_first)
-                is ByDateModifiedNewestFirst -> localContext.getString(R.string.sorting_by_date_modified_newest_first)
-                is ByDateModifiedOldestFirst -> localContext.getString(R.string.sorting_by_date_modified_oldest_first)
-                is ByTitleAlphabetical -> localContext.getString(R.string.sorting_by_title_alphabetical)
-                is ByTitleAlphabeticalReverse -> localContext.getString(R.string.sorting_by_title_alphabetical_reverse)
+            val resId: Int = when (option) {
+                is ByDateAddedNewestFirst -> R.string.sorting_by_date_added_newest_first
+                is ByDateAddedOldestFirst -> R.string.sorting_by_date_added_oldest_first
+                is ByDateModifiedNewestFirst -> R.string.sorting_by_date_modified_newest_first
+                is ByDateModifiedOldestFirst -> R.string.sorting_by_date_modified_oldest_first
+                is ByTitleAlphabetical -> R.string.sorting_by_title_alphabetical
+                is ByTitleAlphabeticalReverse -> R.string.sorting_by_title_alphabetical_reverse
             }
+
+            localResources.getString(resId)
         },
         onOptionSelected = onOptionSelected,
     )
@@ -960,6 +965,7 @@ private fun ShareFilterResultsBottomSheet(
     username: String,
 ) {
     val localContext = LocalContext.current
+    val localResources = LocalResources.current
 
     SelectionDialogBottomSheet(
         sheetState = sheetState,
@@ -967,8 +973,8 @@ private fun ShareFilterResultsBottomSheet(
         options = ShareSearchOption.entries,
         optionName = { option ->
             when (option) {
-                ShareSearchOption.QUERY -> localContext.getString(R.string.search_share_query)
-                ShareSearchOption.TAGS -> localContext.getString(R.string.search_share_tags)
+                ShareSearchOption.QUERY -> localResources.getString(R.string.search_share_query)
+                ShareSearchOption.TAGS -> localResources.getString(R.string.search_share_tags)
             }
         },
         onOptionSelected = { option ->

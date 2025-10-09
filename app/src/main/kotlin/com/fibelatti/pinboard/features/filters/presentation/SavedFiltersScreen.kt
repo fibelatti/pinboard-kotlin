@@ -22,8 +22,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -192,13 +192,13 @@ private fun SavedFiltersQuickActionsBottomSheet(
     onDeleteClick: (SavedFilter) -> Unit,
 ) {
     val savedFilter: SavedFilter = sheetState.bottomSheetData() ?: return
-    val localContext = LocalContext.current
+    val localResources = LocalResources.current
 
     SelectionDialogBottomSheet(
         sheetState = sheetState,
         title = stringResource(R.string.quick_actions_title),
         options = SavedFiltersQuickActions.allOptions(savedFilter),
-        optionName = { localContext.getString(it.title) },
+        optionName = { localResources.getString(it.title) },
         optionIcon = SavedFiltersQuickActions::icon,
         onOptionSelected = { option ->
             when (option) {

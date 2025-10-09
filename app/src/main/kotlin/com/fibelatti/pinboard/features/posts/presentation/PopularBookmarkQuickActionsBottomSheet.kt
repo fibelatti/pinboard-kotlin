@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import com.fibelatti.core.android.extension.shareText
@@ -21,13 +22,14 @@ fun PopularBookmarkQuickActionsBottomSheet(
 ) {
     val post: Post = sheetState.bottomSheetData() ?: return
     val localContext = LocalContext.current
+    val localResources = LocalResources.current
     val localUriHandler = LocalUriHandler.current
 
     SelectionDialogBottomSheet(
         sheetState = sheetState,
         title = stringResource(R.string.quick_actions_title),
         options = PopularPostQuickActions.allOptions(post),
-        optionName = { option -> localContext.getString(option.title) },
+        optionName = { option -> localResources.getString(option.title) },
         optionIcon = PopularPostQuickActions::icon,
         onOptionSelected = { option ->
             when (option) {
