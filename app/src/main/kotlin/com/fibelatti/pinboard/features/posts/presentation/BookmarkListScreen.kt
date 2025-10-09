@@ -943,14 +943,16 @@ private fun SortingSelectionBottomSheet(
             add(ByTitleAlphabeticalReverse)
         },
         optionName = { option ->
-            when (option) {
-                is ByDateAddedNewestFirst -> localResources.getString(R.string.sorting_by_date_added_newest_first)
-                is ByDateAddedOldestFirst -> localResources.getString(R.string.sorting_by_date_added_oldest_first)
-                is ByDateModifiedNewestFirst -> localResources.getString(R.string.sorting_by_date_modified_newest_first)
-                is ByDateModifiedOldestFirst -> localResources.getString(R.string.sorting_by_date_modified_oldest_first)
-                is ByTitleAlphabetical -> localResources.getString(R.string.sorting_by_title_alphabetical)
-                is ByTitleAlphabeticalReverse -> localResources.getString(R.string.sorting_by_title_alphabetical_reverse)
+            val resId: Int = when (option) {
+                is ByDateAddedNewestFirst -> R.string.sorting_by_date_added_newest_first
+                is ByDateAddedOldestFirst -> R.string.sorting_by_date_added_oldest_first
+                is ByDateModifiedNewestFirst -> R.string.sorting_by_date_modified_newest_first
+                is ByDateModifiedOldestFirst -> R.string.sorting_by_date_modified_oldest_first
+                is ByTitleAlphabetical -> R.string.sorting_by_title_alphabetical
+                is ByTitleAlphabeticalReverse -> R.string.sorting_by_title_alphabetical_reverse
             }
+
+            localResources.getString(resId)
         },
         onOptionSelected = onOptionSelected,
     )
