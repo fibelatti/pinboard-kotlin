@@ -89,32 +89,17 @@ class UserDataSource @Inject constructor(
 
     override var preferredDateFormat: PreferredDateFormat
         get() {
-            val includeTime = userSharedPreferences.dateIncludesTime
-            return when (userSharedPreferences.preferredDateFormat) {
-                PreferredDateFormat.DayMonthYearWithTime().value -> {
-                    PreferredDateFormat.DayMonthYearWithTime(includeTime = includeTime)
-                }
+            val includeTime: Boolean = userSharedPreferences.dateIncludesTime
+            val formats: List<PreferredDateFormat> = listOf(
+                PreferredDateFormat.DayMonthYearWithTime(includeTime = includeTime),
+                PreferredDateFormat.MonthDayYearWithTime(includeTime = includeTime),
+                PreferredDateFormat.ShortYearMonthDayWithTime(includeTime = includeTime),
+                PreferredDateFormat.YearMonthDayWithTime(includeTime = includeTime),
+                PreferredDateFormat.NoDate,
+            )
 
-                PreferredDateFormat.MonthDayYearWithTime().value -> {
-                    PreferredDateFormat.MonthDayYearWithTime(includeTime = includeTime)
-                }
-
-                PreferredDateFormat.ShortYearMonthDayWithTime().value -> {
-                    PreferredDateFormat.ShortYearMonthDayWithTime(includeTime = includeTime)
-                }
-
-                PreferredDateFormat.YearMonthDayWithTime().value -> {
-                    PreferredDateFormat.YearMonthDayWithTime(includeTime = includeTime)
-                }
-
-                PreferredDateFormat.NoDate.value -> {
-                    PreferredDateFormat.NoDate
-                }
-
-                else -> {
-                    PreferredDateFormat.DayMonthYearWithTime(includeTime = includeTime)
-                }
-            }
+            return formats.firstOrNull { it.value == userSharedPreferences.preferredDateFormat }
+                ?: formats.first()
         }
         set(value) {
             userSharedPreferences.preferredDateFormat = value.value

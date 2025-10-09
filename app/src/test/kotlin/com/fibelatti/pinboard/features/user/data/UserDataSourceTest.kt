@@ -288,9 +288,9 @@ internal class UserDataSourceTest {
             @Test
             fun `GIVEN the shared preferences has MonthDayYearWithTime value WHEN the getter is called THEN MonthDayYearWithTime is returned`() {
                 // GIVEN
-                every { mockUserSharedPreferences.preferredDateFormat } returns
-                    PreferredDateFormat.MonthDayYearWithTime().value
                 val randomBoolean = randomBoolean()
+                every { mockUserSharedPreferences.preferredDateFormat } returns
+                    PreferredDateFormat.MonthDayYearWithTime(includeTime = randomBoolean).value
                 every { mockUserSharedPreferences.dateIncludesTime } returns randomBoolean
 
                 // THEN
