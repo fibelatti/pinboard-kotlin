@@ -1,0 +1,6 @@
+This version brings the following updates:
+
+* Fixes the preferred date format not being respected when hiding the time
+* Updates how search queries handle multiple words for more accurate results
+
+Thank you for using the app!
