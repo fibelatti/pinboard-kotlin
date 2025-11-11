@@ -14,6 +14,7 @@ import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAG_VALUE_3
 import com.fibelatti.pinboard.MockDataProvider.createPostDto
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
+import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.tooling.BaseDbTest
 import com.google.common.truth.Truth.assertThat
 import java.util.UUID
@@ -216,8 +217,7 @@ class PostsDaoTest : BaseDbTest() {
 
             // WHEN
             val result = postsDao.getPostCount(
-                term = PostsDao.preFormatTerm(mockTerm),
-                termNoFts = mockTerm,
+                query = PostsDao.postCountFtsQuery(term = mockTerm),
             )
 
             // THEN
@@ -238,8 +238,7 @@ class PostsDaoTest : BaseDbTest() {
 
             // WHEN
             val result = postsDao.getPostCount(
-                term = PostsDao.preFormatTerm("$mockTerm $mockSecondTerm"),
-                termNoFts = "$mockTerm $mockSecondTerm",
+                query = PostsDao.postCountFtsQuery(term = "$mockTerm $mockSecondTerm"),
             )
 
             // THEN
@@ -260,8 +259,7 @@ class PostsDaoTest : BaseDbTest() {
 
             // WHEN
             val result = postsDao.getPostCount(
-                term = PostsDao.preFormatTerm("term-with"),
-                termNoFts = "term-with",
+                query = PostsDao.postCountFtsQuery(term = "term-with"),
             )
 
             // THEN
@@ -281,7 +279,9 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getPostCount(tag1 = PostsDao.preFormatTag(SAMPLE_TAG_VALUE_1))
+            val result = postsDao.getPostCount(
+                query = PostsDao.postCountFtsQuery(tag1 = SAMPLE_TAG_VALUE_1),
+            )
 
             // THEN
             assertThat(result).isEqualTo(3)
@@ -300,7 +300,9 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getPostCount(tag1 = PostsDao.preFormatTag(SAMPLE_TAG_VALUE_1))
+            val result = postsDao.getPostCount(
+                query = PostsDao.postCountFtsQuery(tag1 = SAMPLE_TAG_VALUE_1),
+            )
 
             // THEN
             assertThat(result).isEqualTo(3)
@@ -320,8 +322,10 @@ class PostsDaoTest : BaseDbTest() {
 
             // WHEN
             val result = postsDao.getPostCount(
-                tag1 = PostsDao.preFormatTag(SAMPLE_TAG_VALUE_1),
-                tag2 = PostsDao.preFormatTag(SAMPLE_TAG_VALUE_2),
+                query = PostsDao.postCountFtsQuery(
+                    tag1 = SAMPLE_TAG_VALUE_1,
+                    tag2 = SAMPLE_TAG_VALUE_2,
+                ),
             )
 
             // THEN
@@ -342,9 +346,11 @@ class PostsDaoTest : BaseDbTest() {
 
             // WHEN
             val result = postsDao.getPostCount(
-                tag1 = PostsDao.preFormatTag(SAMPLE_TAG_VALUE_1),
-                tag2 = PostsDao.preFormatTag(SAMPLE_TAG_VALUE_2),
-                tag3 = PostsDao.preFormatTag(SAMPLE_TAG_VALUE_3),
+                query = PostsDao.postCountFtsQuery(
+                    tag1 = SAMPLE_TAG_VALUE_1,
+                    tag2 = SAMPLE_TAG_VALUE_2,
+                    tag3 = SAMPLE_TAG_VALUE_3,
+                ),
             )
 
             // THEN
@@ -364,7 +370,11 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getPostCount(untaggedOnly = true)
+            val result = postsDao.getPostCount(
+                query = PostsDao.postCountFtsQuery(
+                    untaggedOnly = true,
+                ),
+            )
 
             // THEN
             assertThat(result).isEqualTo(1)
@@ -381,7 +391,11 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getPostCount(ignoreVisibility = true)
+            val result = postsDao.getPostCount(
+                query = PostsDao.postCountFtsQuery(
+                    postVisibility = PostVisibility.None,
+                ),
+            )
 
             // THEN
             assertThat(result).isEqualTo(2)
@@ -398,7 +412,11 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getPostCount(publicPostsOnly = true)
+            val result = postsDao.getPostCount(
+                query = PostsDao.postCountFtsQuery(
+                    postVisibility = PostVisibility.Public,
+                ),
+            )
 
             // THEN
             assertThat(result).isEqualTo(1)
@@ -415,7 +433,11 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getPostCount(privatePostsOnly = true)
+            val result = postsDao.getPostCount(
+                query = PostsDao.postCountFtsQuery(
+                    postVisibility = PostVisibility.Private,
+                ),
+            )
 
             // THEN
             assertThat(result).isEqualTo(1)
@@ -432,7 +454,11 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getPostCount(readLaterOnly = true)
+            val result = postsDao.getPostCount(
+                query = PostsDao.postCountFtsQuery(
+                    readLaterOnly = true,
+                ),
+            )
 
             // THEN
             assertThat(result).isEqualTo(1)
@@ -458,7 +484,11 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getPostCount(limit = list.size - 1)
+        val result = postsDao.getPostCount(
+            query = PostsDao.postCountFtsQuery(
+                limit = list.size - 1,
+            ),
+        )
 
         // THEN
         assertThat(result).isEqualTo(list.size - 1)
@@ -484,7 +514,11 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getPostCount(limit = list.size + 1)
+        val result = postsDao.getPostCount(
+            query = PostsDao.postCountFtsQuery(
+                limit = list.size + 1,
+            ),
+        )
 
         // THEN
         assertThat(result).isEqualTo(list.size)
@@ -506,7 +540,11 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getPostCountNoFts(term = "还没")
+            val result = postsDao.getPostCount(
+                query = PostsDao.postCountNoFtsQuery(
+                    term = "还没",
+                ),
+            )
 
             // THEN
             assertThat(result).isEqualTo(2)
@@ -528,7 +566,11 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getPostCountNoFts(tag1 = "题")
+            val result = postsDao.getPostCount(
+                query = PostsDao.postCountNoFtsQuery(
+                    tag1 = "题",
+                ),
+            )
 
             // THEN
             assertThat(result).isEqualTo(1)
@@ -550,7 +592,11 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getPostCountNoFts(term = "ошибка")
+            val result = postsDao.getPostCount(
+                query = PostsDao.postCountFtsQuery(
+                    term = "ошибка",
+                ),
+            )
 
             // THEN
             assertThat(result).isEqualTo(2)
@@ -572,7 +618,11 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getPostCountNoFts(tag1 = "Те")
+            val result = postsDao.getPostCount(
+                query = PostsDao.postCountNoFtsQuery(
+                    tag1 = "Те",
+                ),
+            )
 
             // THEN
             assertThat(result).isEqualTo(1)
@@ -615,7 +665,11 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getAllPosts(sortType = 0)
+        val result = postsDao.getAllPosts(
+            query = PostsDao.allPostsFtsQuery(
+                sortType = 0,
+            ),
+        )
 
         // THEN
         assertThat(result).isEqualTo(
@@ -642,7 +696,11 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getAllPosts(sortType = 1)
+        val result = postsDao.getAllPosts(
+            query = PostsDao.allPostsFtsQuery(
+                sortType = 1,
+            ),
+        )
 
         // THEN
         assertThat(result).isEqualTo(
@@ -669,7 +727,11 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getAllPosts(sortType = 4)
+        val result = postsDao.getAllPosts(
+            query = PostsDao.allPostsFtsQuery(
+                sortType = 4,
+            ),
+        )
 
         // THEN
         assertThat(result).isEqualTo(
@@ -696,7 +758,11 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getAllPosts(sortType = 5)
+        val result = postsDao.getAllPosts(
+            query = PostsDao.allPostsFtsQuery(
+                sortType = 5,
+            ),
+        )
 
         // THEN
         assertThat(result).isEqualTo(
@@ -724,8 +790,9 @@ class PostsDaoTest : BaseDbTest() {
 
             // WHEN
             val result = postsDao.getAllPosts(
-                term = PostsDao.preFormatTerm("$mockTerm $mockSecondTerm"),
-                termNoFts = "$mockTerm $mockSecondTerm",
+                query = PostsDao.allPostsFtsQuery(
+                    term = "$mockTerm $mockSecondTerm",
+                ),
             )
 
             // THEN
@@ -745,8 +812,9 @@ class PostsDaoTest : BaseDbTest() {
 
         // WHEN
         val result = postsDao.getAllPosts(
-            term = PostsDao.preFormatTerm(mockTerm),
-            termNoFts = mockTerm,
+            query = PostsDao.allPostsFtsQuery(
+                term = mockTerm,
+            ),
         )
 
         // THEN
@@ -773,8 +841,9 @@ class PostsDaoTest : BaseDbTest() {
 
             // WHEN
             val result = postsDao.getAllPosts(
-                term = PostsDao.preFormatTerm("term-with"),
-                termNoFts = "term-with",
+                query = PostsDao.allPostsFtsQuery(
+                    term = "term-with",
+                ),
             )
 
             // THEN
@@ -793,7 +862,11 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getAllPosts(tag1 = PostsDao.preFormatTag(SAMPLE_TAG_VALUE_1))
+        val result = postsDao.getAllPosts(
+            query = PostsDao.allPostsFtsQuery(
+                tag1 = SAMPLE_TAG_VALUE_1,
+            ),
+        )
 
         // THEN
         assertThat(result).isEqualTo(listOf(postWithOneTag, postWithTwoTags, postWithThreeTags))
@@ -812,7 +885,11 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getAllPosts(tag1 = PostsDao.preFormatTag(SAMPLE_TAG_VALUE_1))
+            val result = postsDao.getAllPosts(
+                query = PostsDao.allPostsFtsQuery(
+                    tag1 = SAMPLE_TAG_VALUE_1,
+                ),
+            )
 
             // THEN
             assertThat(result).isEqualTo(listOf(postWithOneTag, postWithTwoTags, postWithThreeTags))
@@ -832,8 +909,10 @@ class PostsDaoTest : BaseDbTest() {
 
             // WHEN
             val result = postsDao.getAllPosts(
-                tag1 = PostsDao.preFormatTag(SAMPLE_TAG_VALUE_1),
-                tag2 = PostsDao.preFormatTag(SAMPLE_TAG_VALUE_2),
+                query = PostsDao.allPostsFtsQuery(
+                    tag1 = SAMPLE_TAG_VALUE_1,
+                    tag2 = SAMPLE_TAG_VALUE_2,
+                ),
             )
 
             // THEN
@@ -854,9 +933,11 @@ class PostsDaoTest : BaseDbTest() {
 
             // WHEN
             val result = postsDao.getAllPosts(
-                tag1 = PostsDao.preFormatTag(SAMPLE_TAG_VALUE_1),
-                tag2 = PostsDao.preFormatTag(SAMPLE_TAG_VALUE_2),
-                tag3 = PostsDao.preFormatTag(SAMPLE_TAG_VALUE_3),
+                query = PostsDao.allPostsFtsQuery(
+                    tag1 = SAMPLE_TAG_VALUE_1,
+                    tag2 = SAMPLE_TAG_VALUE_2,
+                    tag3 = SAMPLE_TAG_VALUE_3,
+                ),
             )
 
             // THEN
@@ -876,7 +957,11 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getAllPosts(untaggedOnly = true)
+            val result = postsDao.getAllPosts(
+                query = PostsDao.allPostsFtsQuery(
+                    untaggedOnly = true,
+                ),
+            )
 
             // THEN
             assertThat(result).isEqualTo(listOf(postWithNoTags))
@@ -893,7 +978,11 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getAllPosts(ignoreVisibility = true)
+            val result = postsDao.getAllPosts(
+                query = PostsDao.allPostsFtsQuery(
+                    postVisibility = PostVisibility.None,
+                ),
+            )
 
             // THEN
             assertThat(result).isEqualTo(listOf(postPublic, postPrivate))
@@ -910,7 +999,11 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getAllPosts(publicPostsOnly = true)
+            val result = postsDao.getAllPosts(
+                query = PostsDao.allPostsFtsQuery(
+                    postVisibility = PostVisibility.Public,
+                ),
+            )
 
             // THEN
             assertThat(result).isEqualTo(listOf(postPublic))
@@ -927,7 +1020,11 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getAllPosts(privatePostsOnly = true)
+            val result = postsDao.getAllPosts(
+                query = PostsDao.allPostsFtsQuery(
+                    postVisibility = PostVisibility.Private,
+                ),
+            )
 
             // THEN
             assertThat(result).isEqualTo(listOf(postPrivate))
@@ -944,7 +1041,11 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getAllPosts(readLaterOnly = true)
+            val result = postsDao.getAllPosts(
+                query = PostsDao.allPostsFtsQuery(
+                    readLaterOnly = true,
+                ),
+            )
 
             // THEN
             assertThat(result).isEqualTo(listOf(postReadLater))
@@ -970,7 +1071,11 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getAllPosts(limit = list.size - 1)
+        val result = postsDao.getAllPosts(
+            query = PostsDao.allPostsFtsQuery(
+                limit = list.size - 1,
+            ),
+        )
 
         // THEN
         assertThat(result).isEqualTo(
@@ -1010,7 +1115,11 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getAllPosts(limit = list.size + 1)
+        val result = postsDao.getAllPosts(
+            query = PostsDao.allPostsFtsQuery(
+                limit = list.size + 1,
+            ),
+        )
 
         // THEN
         assertThat(result).isEqualTo(list)
@@ -1037,7 +1146,11 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getAllPosts(offset = list.size - 1)
+            val result = postsDao.getAllPosts(
+                query = PostsDao.allPostsFtsQuery(
+                    offset = list.size - 1,
+                ),
+            )
 
             // THEN
             assertThat(result).hasSize(1)
@@ -1063,7 +1176,11 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.getAllPosts(offset = list.size)
+        val result = postsDao.getAllPosts(
+            query = PostsDao.allPostsFtsQuery(
+                offset = list.size,
+            ),
+        )
 
         // THEN
         assertThat(result).isEmpty()
@@ -1085,7 +1202,11 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getAllPostsNoFts(term = "还没")
+            val result = postsDao.getAllPosts(
+                query = PostsDao.allPostsNoFtsQuery(
+                    term = "还没",
+                ),
+            )
 
             // THEN
             assertThat(result).containsExactly(
@@ -1110,7 +1231,11 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getAllPostsNoFts(tag1 = "题")
+            val result = postsDao.getAllPosts(
+                query = PostsDao.allPostsNoFtsQuery(
+                    tag1 = "题",
+                ),
+            )
 
             // THEN
             assertThat(result).containsExactly(postChineseTag)
@@ -1132,7 +1257,11 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getAllPostsNoFts(term = "ошибка")
+            val result = postsDao.getAllPosts(
+                query = PostsDao.allPostsNoFtsQuery(
+                    term = "ошибка",
+                ),
+            )
 
             // THEN
             assertThat(result).containsExactly(
@@ -1157,7 +1286,11 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.getAllPostsNoFts(tag1 = "Те")
+            val result = postsDao.getAllPosts(
+                query = PostsDao.allPostsNoFtsQuery(
+                    tag1 = "Те",
+                ),
+            )
 
             // THEN
             assertThat(result).containsExactly(postCyrillicTag)
@@ -1176,7 +1309,9 @@ class PostsDaoTest : BaseDbTest() {
         postsDao.savePosts(list)
 
         // WHEN
-        val result = postsDao.searchExistingPostTag(PostsDao.preFormatTag(SAMPLE_TAG_VALUE_1))
+        val result = postsDao.searchExistingPostTag(
+            query = PostsDao.existingPostTagFtsQuery(tag = SAMPLE_TAG_VALUE_1),
+        )
 
         // THEN
         assertThat(result).isEqualTo(
@@ -1201,7 +1336,9 @@ class PostsDaoTest : BaseDbTest() {
             postsDao.savePosts(list)
 
             // WHEN
-            val result = postsDao.searchExistingPostTag(PostsDao.preFormatTag(SAMPLE_TAG_VALUE_1))
+            val result = postsDao.searchExistingPostTag(
+                query = PostsDao.existingPostTagFtsQuery(tag = SAMPLE_TAG_VALUE_1),
+            )
 
             // THEN
             assertThat(result).isEqualTo(

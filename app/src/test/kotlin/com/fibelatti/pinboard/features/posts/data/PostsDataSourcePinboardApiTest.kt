@@ -1199,42 +1199,34 @@ class PostsDataSourcePinboardApiTest {
 
         @Test
         fun `WHEN getQueryResultSize is called then it returns the dao post count`() = runTest {
-            coEvery {
-                mockDao.getPostCount(
-                    term = PostsDao.preFormatTerm(SAMPLE_URL_TITLE),
-                    termNoFts = SAMPLE_URL_TITLE,
-                    tag1 = PostsDao.preFormatTag(SAMPLE_TAG_1.name),
-                    tag2 = "",
-                    tag3 = "",
-                    untaggedOnly = false,
-                    ignoreVisibility = true,
-                    publicPostsOnly = false,
-                    privatePostsOnly = false,
-                    readLaterOnly = false,
-                    limit = -1,
-                )
-            } returns 13
+            coEvery { mockDao.getPostCount(query = any()) } returns 13
 
             val result = dataSource.getQueryResultSize(SAMPLE_URL_TITLE, listOf(SAMPLE_TAG_1))
+
+            coVerify {
+                mockDao.getPostCount(
+                    query = withArg {
+                        assertThat(it.sql).isEqualTo(
+                            PostsDao.postCountFtsQuery(
+                                term = SAMPLE_URL_TITLE,
+                                tag1 = SAMPLE_TAG_1.name,
+                                tag2 = "",
+                                tag3 = "",
+                                untaggedOnly = false,
+                                postVisibility = PostVisibility.None,
+                                readLaterOnly = false,
+                            ).sql,
+                        )
+                    },
+                )
+            }
 
             assertThat(result).isEqualTo(13)
         }
 
         @Test
         fun `WHEN getQueryResultSize is called and the dao throws then it returns 0`() = runTest {
-            coEvery {
-                mockDao.getPostCount(
-                    term = any(),
-                    tag1 = any(),
-                    tag2 = any(),
-                    tag3 = any(),
-                    untaggedOnly = any(),
-                    publicPostsOnly = any(),
-                    privatePostsOnly = any(),
-                    readLaterOnly = any(),
-                    limit = any(),
-                )
-            } throws Exception()
+            coEvery { mockDao.getPostCount(query = any()) } throws Exception()
 
             val result = dataSource.getQueryResultSize(SAMPLE_URL_TITLE, listOf(SAMPLE_TAG_1))
 
@@ -1248,20 +1240,7 @@ class PostsDataSourcePinboardApiTest {
         @Test
         fun `WHEN tags is empty THEN tag1 tag2 and tag3 are sent as empty`() = runTest {
             // GIVEN
-            coEvery {
-                mockDao.getPostCount(
-                    term = any(),
-                    termNoFts = any(),
-                    tag1 = any(),
-                    tag2 = any(),
-                    tag3 = any(),
-                    untaggedOnly = any(),
-                    publicPostsOnly = any(),
-                    privatePostsOnly = any(),
-                    readLaterOnly = any(),
-                    limit = any(),
-                )
-            } returns 0
+            coEvery { mockDao.getPostCount(query = any()) } returns 0
 
             // WHEN
             val result = dataSource.getLocalDataSize(
@@ -1276,16 +1255,20 @@ class PostsDataSourcePinboardApiTest {
             // THEN
             coVerify {
                 mockDao.getPostCount(
-                    term = PostsDao.preFormatTerm(SAMPLE_URL_TITLE),
-                    termNoFts = SAMPLE_URL_TITLE,
-                    tag1 = "",
-                    tag2 = "",
-                    tag3 = "",
-                    untaggedOnly = false,
-                    publicPostsOnly = false,
-                    privatePostsOnly = false,
-                    readLaterOnly = false,
-                    limit = -1,
+                    query = withArg {
+                        assertThat(it.sql).isEqualTo(
+                            PostsDao.postCountFtsQuery(
+                                term = SAMPLE_URL_TITLE,
+                                tag1 = "",
+                                tag2 = "",
+                                tag3 = "",
+                                untaggedOnly = false,
+                                postVisibility = PostVisibility.None,
+                                readLaterOnly = false,
+                                limit = -1,
+                            ).sql,
+                        )
+                    },
                 )
             }
             assertThat(result).isEqualTo(0)
@@ -1294,20 +1277,7 @@ class PostsDataSourcePinboardApiTest {
         @Test
         fun `WHEN tags size is 1 THEN tag2 and tag3 are sent as empty`() = runTest {
             // GIVEN
-            coEvery {
-                mockDao.getPostCount(
-                    term = any(),
-                    termNoFts = any(),
-                    tag1 = any(),
-                    tag2 = any(),
-                    tag3 = any(),
-                    untaggedOnly = any(),
-                    publicPostsOnly = any(),
-                    privatePostsOnly = any(),
-                    readLaterOnly = any(),
-                    limit = any(),
-                )
-            } returns 0
+            coEvery { mockDao.getPostCount(query = any()) } returns 0
 
             // WHEN
             val result = dataSource.getLocalDataSize(
@@ -1322,16 +1292,20 @@ class PostsDataSourcePinboardApiTest {
             // THEN
             coVerify {
                 mockDao.getPostCount(
-                    term = PostsDao.preFormatTerm(SAMPLE_URL_TITLE),
-                    termNoFts = SAMPLE_URL_TITLE,
-                    tag1 = PostsDao.preFormatTag(SAMPLE_TAG_1.name),
-                    tag2 = "",
-                    tag3 = "",
-                    untaggedOnly = false,
-                    publicPostsOnly = false,
-                    privatePostsOnly = false,
-                    readLaterOnly = false,
-                    limit = -1,
+                    query = withArg {
+                        assertThat(it.sql).isEqualTo(
+                            PostsDao.postCountFtsQuery(
+                                term = SAMPLE_URL_TITLE,
+                                tag1 = SAMPLE_TAG_1.name,
+                                tag2 = "",
+                                tag3 = "",
+                                untaggedOnly = false,
+                                postVisibility = PostVisibility.None,
+                                readLaterOnly = false,
+                                limit = -1,
+                            ).sql,
+                        )
+                    },
                 )
             }
             assertThat(result).isEqualTo(0)
@@ -1340,20 +1314,7 @@ class PostsDataSourcePinboardApiTest {
         @Test
         fun `WHEN tags size is 2 THEN tag3 is sent as empty`() = runTest {
             // GIVEN
-            coEvery {
-                mockDao.getPostCount(
-                    term = any(),
-                    termNoFts = any(),
-                    tag1 = any(),
-                    tag2 = any(),
-                    tag3 = any(),
-                    untaggedOnly = any(),
-                    publicPostsOnly = any(),
-                    privatePostsOnly = any(),
-                    readLaterOnly = any(),
-                    limit = any(),
-                )
-            } returns 0
+            coEvery { mockDao.getPostCount(query = any()) } returns 0
 
             // WHEN
             val result = dataSource.getLocalDataSize(
@@ -1368,16 +1329,20 @@ class PostsDataSourcePinboardApiTest {
             // THEN
             coVerify {
                 mockDao.getPostCount(
-                    term = PostsDao.preFormatTerm(SAMPLE_URL_TITLE),
-                    termNoFts = SAMPLE_URL_TITLE,
-                    tag1 = PostsDao.preFormatTag(SAMPLE_TAG_1.name),
-                    tag2 = PostsDao.preFormatTag(SAMPLE_TAG_2.name),
-                    tag3 = "",
-                    untaggedOnly = false,
-                    publicPostsOnly = false,
-                    privatePostsOnly = false,
-                    readLaterOnly = false,
-                    limit = -1,
+                    query = withArg {
+                        assertThat(it.sql).isEqualTo(
+                            PostsDao.postCountFtsQuery(
+                                term = SAMPLE_URL_TITLE,
+                                tag1 = SAMPLE_TAG_1.name,
+                                tag2 = SAMPLE_TAG_2.name,
+                                tag3 = "",
+                                untaggedOnly = false,
+                                postVisibility = PostVisibility.None,
+                                readLaterOnly = false,
+                                limit = -1,
+                            ).sql,
+                        )
+                    },
                 )
             }
             assertThat(result).isEqualTo(0)
@@ -1386,20 +1351,7 @@ class PostsDataSourcePinboardApiTest {
         @Test
         fun `WHEN tags size is 3 THEN all tags are sent`() = runTest {
             // GIVEN
-            coEvery {
-                mockDao.getPostCount(
-                    term = any(),
-                    termNoFts = any(),
-                    tag1 = any(),
-                    tag2 = any(),
-                    tag3 = any(),
-                    untaggedOnly = any(),
-                    publicPostsOnly = any(),
-                    privatePostsOnly = any(),
-                    readLaterOnly = any(),
-                    limit = any(),
-                )
-            } returns 0
+            coEvery { mockDao.getPostCount(query = any()) } returns 0
 
             // WHEN
             val result = dataSource.getLocalDataSize(
@@ -1414,16 +1366,20 @@ class PostsDataSourcePinboardApiTest {
             // THEN
             coVerify {
                 mockDao.getPostCount(
-                    term = PostsDao.preFormatTerm(SAMPLE_URL_TITLE),
-                    termNoFts = SAMPLE_URL_TITLE,
-                    tag1 = PostsDao.preFormatTag(SAMPLE_TAG_1.name),
-                    tag2 = PostsDao.preFormatTag(SAMPLE_TAG_2.name),
-                    tag3 = PostsDao.preFormatTag(SAMPLE_TAG_3.name),
-                    untaggedOnly = false,
-                    publicPostsOnly = false,
-                    privatePostsOnly = false,
-                    readLaterOnly = false,
-                    limit = -1,
+                    query = withArg {
+                        assertThat(it.sql).isEqualTo(
+                            PostsDao.postCountFtsQuery(
+                                term = SAMPLE_URL_TITLE,
+                                tag1 = SAMPLE_TAG_1.name,
+                                tag2 = SAMPLE_TAG_2.name,
+                                tag3 = SAMPLE_TAG_3.name,
+                                untaggedOnly = false,
+                                postVisibility = PostVisibility.None,
+                                readLaterOnly = false,
+                                limit = -1,
+                            ).sql,
+                        )
+                    },
                 )
             }
             assertThat(result).isEqualTo(0)
@@ -1449,22 +1405,7 @@ class PostsDataSourcePinboardApiTest {
                 )
             } returns mockLocalDataSize
 
-            coEvery {
-                mockDao.getAllPosts(
-                    sortType = any(),
-                    term = any(),
-                    termNoFts = any(),
-                    tag1 = any(),
-                    tag2 = any(),
-                    tag3 = any(),
-                    untaggedOnly = any(),
-                    publicPostsOnly = any(),
-                    privatePostsOnly = any(),
-                    readLaterOnly = any(),
-                    limit = any(),
-                    offset = any(),
-                )
-            } returns mockListPostDto
+            coEvery { mockDao.getAllPosts(query = any()) } returns mockListPostDto
 
             every { mockPostDtoMapper.mapList(mockListPostDto) } returns mockListPost
         }
@@ -1527,18 +1468,20 @@ class PostsDataSourcePinboardApiTest {
             // THEN
             coVerify {
                 mockDao.getAllPosts(
-                    sortType = ByDateAddedNewestFirst.index,
-                    term = PostsDao.preFormatTerm(SAMPLE_URL_TITLE),
-                    termNoFts = SAMPLE_URL_TITLE,
-                    tag1 = "",
-                    tag2 = "",
-                    tag3 = "",
-                    untaggedOnly = false,
-                    publicPostsOnly = false,
-                    privatePostsOnly = false,
-                    readLaterOnly = false,
-                    limit = -1,
-                    offset = 0,
+                    query = withArg {
+                        assertThat(it.sql).isEqualTo(
+                            PostsDao.allPostsFtsQuery(
+                                term = SAMPLE_URL_TITLE,
+                                tag1 = "",
+                                tag2 = "",
+                                tag3 = "",
+                                untaggedOnly = false,
+                                postVisibility = PostVisibility.None,
+                                readLaterOnly = false,
+                                sortType = ByDateAddedNewestFirst.index,
+                            ).sql,
+                        )
+                    },
                 )
             }
             assertThat(result.getOrThrow()).isEqualTo(
@@ -1570,18 +1513,20 @@ class PostsDataSourcePinboardApiTest {
             // THEN
             coVerify {
                 mockDao.getAllPosts(
-                    sortType = ByDateAddedNewestFirst.index,
-                    term = PostsDao.preFormatTerm(SAMPLE_URL_TITLE),
-                    termNoFts = SAMPLE_URL_TITLE,
-                    tag1 = PostsDao.preFormatTag(SAMPLE_TAG_1.name),
-                    tag2 = "",
-                    tag3 = "",
-                    untaggedOnly = false,
-                    publicPostsOnly = false,
-                    privatePostsOnly = false,
-                    readLaterOnly = false,
-                    limit = -1,
-                    offset = 0,
+                    query = withArg {
+                        assertThat(it.sql).isEqualTo(
+                            PostsDao.allPostsFtsQuery(
+                                term = SAMPLE_URL_TITLE,
+                                tag1 = SAMPLE_TAG_1.name,
+                                tag2 = "",
+                                tag3 = "",
+                                untaggedOnly = false,
+                                postVisibility = PostVisibility.None,
+                                readLaterOnly = false,
+                                sortType = ByDateAddedNewestFirst.index,
+                            ).sql,
+                        )
+                    },
                 )
             }
             assertThat(result.getOrThrow()).isEqualTo(
@@ -1613,18 +1558,20 @@ class PostsDataSourcePinboardApiTest {
             // THEN
             coVerify {
                 mockDao.getAllPosts(
-                    sortType = ByDateAddedNewestFirst.index,
-                    term = PostsDao.preFormatTerm(SAMPLE_URL_TITLE),
-                    termNoFts = SAMPLE_URL_TITLE,
-                    tag1 = PostsDao.preFormatTag(SAMPLE_TAG_1.name),
-                    tag2 = PostsDao.preFormatTag(SAMPLE_TAG_2.name),
-                    tag3 = "",
-                    untaggedOnly = false,
-                    publicPostsOnly = false,
-                    privatePostsOnly = false,
-                    readLaterOnly = false,
-                    limit = -1,
-                    offset = 0,
+                    query = withArg {
+                        assertThat(it.sql).isEqualTo(
+                            PostsDao.allPostsFtsQuery(
+                                term = SAMPLE_URL_TITLE,
+                                tag1 = SAMPLE_TAG_1.name,
+                                tag2 = SAMPLE_TAG_2.name,
+                                tag3 = "",
+                                untaggedOnly = false,
+                                postVisibility = PostVisibility.None,
+                                readLaterOnly = false,
+                                sortType = ByDateAddedNewestFirst.index,
+                            ).sql,
+                        )
+                    },
                 )
             }
             assertThat(result.getOrThrow()).isEqualTo(
@@ -1656,18 +1603,20 @@ class PostsDataSourcePinboardApiTest {
             // THEN
             coVerify {
                 mockDao.getAllPosts(
-                    sortType = ByDateAddedNewestFirst.index,
-                    term = PostsDao.preFormatTerm(SAMPLE_URL_TITLE),
-                    termNoFts = SAMPLE_URL_TITLE,
-                    tag1 = PostsDao.preFormatTag(SAMPLE_TAG_1.name),
-                    tag2 = PostsDao.preFormatTag(SAMPLE_TAG_2.name),
-                    tag3 = PostsDao.preFormatTag(SAMPLE_TAG_3.name),
-                    untaggedOnly = false,
-                    publicPostsOnly = false,
-                    privatePostsOnly = false,
-                    readLaterOnly = false,
-                    limit = -1,
-                    offset = 0,
+                    query = withArg {
+                        assertThat(it.sql).isEqualTo(
+                            PostsDao.allPostsFtsQuery(
+                                term = SAMPLE_URL_TITLE,
+                                tag1 = SAMPLE_TAG_1.name,
+                                tag2 = SAMPLE_TAG_2.name,
+                                tag3 = SAMPLE_TAG_3.name,
+                                untaggedOnly = false,
+                                postVisibility = PostVisibility.None,
+                                readLaterOnly = false,
+                                sortType = ByDateAddedNewestFirst.index,
+                            ).sql,
+                        )
+                    },
                 )
             }
             assertThat(result.getOrThrow()).isEqualTo(
@@ -1683,22 +1632,7 @@ class PostsDataSourcePinboardApiTest {
         @Test
         fun `WHEN getGetAll posts fails THEN Failure is returned`() = runTest {
             // GIVEN
-            coEvery {
-                mockDao.getAllPosts(
-                    sortType = any(),
-                    term = any(),
-                    termNoFts = any(),
-                    tag1 = any(),
-                    tag2 = any(),
-                    tag3 = any(),
-                    untaggedOnly = any(),
-                    publicPostsOnly = any(),
-                    privatePostsOnly = any(),
-                    readLaterOnly = any(),
-                    limit = any(),
-                    offset = any(),
-                )
-            } throws Exception()
+            coEvery { mockDao.getAllPosts(query = any()) } throws Exception()
 
             // WHEN
             val result = dataSource.getLocalData(

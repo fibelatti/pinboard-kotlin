@@ -2,10 +2,13 @@ package com.fibelatti.pinboard.features.linkding.data
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.RawQuery
 import androidx.room.Upsert
-import com.fibelatti.pinboard.core.persistence.database.isFtsCompatible
+import androidx.sqlite.db.SimpleSQLiteQuery
+import androidx.sqlite.db.SupportSQLiteQuery
 import com.fibelatti.pinboard.features.linkding.data.BookmarkLocal.Companion.TABLE_NAME
 import com.fibelatti.pinboard.features.linkding.data.BookmarkLocalFts.Companion.TABLE_NAME as FTS_TABLE_NAME
+import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 
 @Dao
 interface BookmarksDao {
@@ -22,73 +25,14 @@ interface BookmarksDao {
     @Upsert
     suspend fun saveBookmarks(bookmarks: List<BookmarkLocal>)
 
-    @Query("select count(*) from (select id from $TABLE_NAME $WHERE_SUB_QUERY limit :limit)")
-    suspend fun getBookmarkCount(
-        term: String = "",
-        termNoFts: String = "",
-        tag1: String = "",
-        tag2: String = "",
-        tag3: String = "",
-        untaggedOnly: Boolean = false,
-        ignoreVisibility: Boolean = true,
-        publicBookmarksOnly: Boolean = false,
-        privateBookmarksOnly: Boolean = false,
-        readLaterOnly: Boolean = false,
-        limit: Int = -1,
-    ): Int
+    @RawQuery
+    suspend fun getBookmarkCount(query: SupportSQLiteQuery = bookmarksCountFtsQuery()): Int
 
-    @Query("select count(*) from (select id from $TABLE_NAME $WHERE_SUB_QUERY_NO_FTS limit :limit)")
-    suspend fun getBookmarkCountNoFts(
-        term: String = "",
-        tag1: String = "",
-        tag2: String = "",
-        tag3: String = "",
-        untaggedOnly: Boolean = false,
-        ignoreVisibility: Boolean = true,
-        publicBookmarksOnly: Boolean = false,
-        privateBookmarksOnly: Boolean = false,
-        readLaterOnly: Boolean = false,
-        limit: Int = -1,
-    ): Int
+    @RawQuery
+    suspend fun getAllBookmarks(query: SupportSQLiteQuery = allBookmarksFtsQuery()): List<BookmarkLocal>
 
-    @Query("$SELECT_ALL_FROM_BOOKMARKS $WHERE_SUB_QUERY $ORDER_BY_SUB_QUERY limit :offset, :limit")
-    suspend fun getAllBookmarks(
-        sortType: Int = 0,
-        term: String = "",
-        termNoFts: String = "",
-        tag1: String = "",
-        tag2: String = "",
-        tag3: String = "",
-        untaggedOnly: Boolean = false,
-        ignoreVisibility: Boolean = true,
-        publicBookmarksOnly: Boolean = false,
-        privateBookmarksOnly: Boolean = false,
-        readLaterOnly: Boolean = false,
-        limit: Int = -1,
-        offset: Int = 0,
-    ): List<BookmarkLocal>
-
-    @Query("$SELECT_ALL_FROM_BOOKMARKS $WHERE_SUB_QUERY_NO_FTS $ORDER_BY_SUB_QUERY limit :offset, :limit")
-    suspend fun getAllBookmarksNoFts(
-        sortType: Int = 0,
-        term: String = "",
-        tag1: String = "",
-        tag2: String = "",
-        tag3: String = "",
-        untaggedOnly: Boolean = false,
-        ignoreVisibility: Boolean = true,
-        publicBookmarksOnly: Boolean = false,
-        privateBookmarksOnly: Boolean = false,
-        readLaterOnly: Boolean = false,
-        limit: Int = -1,
-        offset: Int = 0,
-    ): List<BookmarkLocal>
-
-    @Query("select tagNames from $FTS_TABLE_NAME where tagNames match :tag")
-    suspend fun searchExistingBookmarkTags(tag: String): List<String>
-
-    @Query("select tagNames from $TABLE_NAME where tagNames like '%' || :tag || '%'")
-    suspend fun searchExistingBookmarkTagsNoFts(tag: String): List<String>
+    @RawQuery
+    suspend fun searchExistingBookmarkTags(query: SupportSQLiteQuery): List<String>
 
     @Query("select * from $TABLE_NAME where id = :id or url = :url")
     suspend fun getBookmark(id: String, url: String): BookmarkLocal?
@@ -104,105 +48,301 @@ interface BookmarksDao {
 
     companion object {
 
-        private const val SELECT_ALL_FROM_BOOKMARKS = "select $TABLE_NAME.* from $TABLE_NAME"
-
-        private const val MATCH_TERM = "case " +
-            "when :term = '' then 1 " +
-            "else ($TABLE_NAME.rowid in (" +
-            "select rowid from $FTS_TABLE_NAME where $FTS_TABLE_NAME match :term" +
-            ") OR " +
-            "$TABLE_NAME.url like '%' || :termNoFts || '%') " +
-            "end"
-
-        private const val LIKE_TERM = "case " +
-            "when :term = '' then 1 " +
-            "else ($TABLE_NAME.url like '%' || :term || '%' or " +
-            "$TABLE_NAME.title like '%' || :term || '%' or " +
-            "$TABLE_NAME.description like '%' || :term || '%' or " +
-            "$TABLE_NAME.notes like '%' || :term || '%' or " +
-            "$TABLE_NAME.websiteTitle like '%' || :term || '%' or " +
-            "$TABLE_NAME.websiteDescription like '%' || :term || '%') " +
-            "end"
-
-        private const val MATCH_TAGS = "case " +
-            "when :tag1 = '' then 1 " +
-            "else $TABLE_NAME.rowid in (select rowid from $FTS_TABLE_NAME where tagNames match :tag1) " +
-            "end " +
-            "and case " +
-            "when :tag2 = '' then 1 " +
-            "else $TABLE_NAME.rowid in (select rowid from $FTS_TABLE_NAME where tagNames match :tag2) " +
-            "end " +
-            "and case " +
-            "when :tag3 = '' then 1 " +
-            "else $TABLE_NAME.rowid in (select rowid from $FTS_TABLE_NAME where tagNames match :tag3) " +
-            "end "
-
-        private const val LIKE_TAGS = "case " +
-            "when :tag1 = '' then 1 " +
-            "else $TABLE_NAME.tagNames like '%' || :tag1 || '%' " +
-            "end " +
-            "and case " +
-            "when :tag2 = '' then 1 " +
-            "else $TABLE_NAME.tagNames like '%' || :tag2 || '%' " +
-            "end " +
-            "and case " +
-            "when :tag3 = '' then 1 " +
-            "else $TABLE_NAME.tagNames like '%' || :tag3 || '%' " +
-            "end "
-
-        private const val MATCH_UNTAGGED_OR_TAGS = "case " +
-            "when :untaggedOnly = 1 then tagNames = '' " +
-            "else $MATCH_TAGS " +
-            "end"
-
-        private const val LIKE_UNTAGGED_OR_TAGS = "case " +
-            "when :untaggedOnly = 1 then tagNames = '' " +
-            "else $LIKE_TAGS " +
-            "end"
-
-        private const val WHERE_PUBLIC = "case " +
-            "when :publicBookmarksOnly = 1 then shared = 1 " +
-            "when :privateBookmarksOnly = 1 then shared = 0 " +
-            "when :ignoreVisibility = 1 then 1 " +
-            "end"
-
-        private const val WHERE_READ_LATER = "case " +
-            "when :readLaterOnly = 1 then unread = 1 " +
-            "else 1 " +
-            "end"
-
-        private const val WHERE_SUB_QUERY = "where $MATCH_TERM " +
-            "and $MATCH_UNTAGGED_OR_TAGS " +
-            "and $WHERE_PUBLIC " +
-            "and $WHERE_READ_LATER"
-
-        private const val WHERE_SUB_QUERY_NO_FTS = "where $LIKE_TERM " +
-            "and $LIKE_UNTAGGED_OR_TAGS " +
-            "and $WHERE_PUBLIC " +
-            "and $WHERE_READ_LATER"
-
-        private const val ORDER_BY_SUB_QUERY = "order by " +
-            "case when :sortType = 0 then dateAdded end DESC, " +
-            "case when :sortType = 1 then dateAdded end ASC," +
-            "case when :sortType = 2 then dateModified end DESC, " +
-            "case when :sortType = 3 then dateModified end ASC," +
-            "case when :sortType = 4 then title end ASC," +
-            "case when :sortType = 5 then title end DESC"
-
-        @JvmStatic
-        fun preFormatTerm(term: String): String {
-            require(isFtsCompatible(term))
-
-            return term.trim().takeIf(String::isNotEmpty)
-                ?.split(" ")?.joinToString(separator = " NEAR ") { "$it*" }
-                .orEmpty()
+        // region FTS queries
+        fun bookmarksCountFtsQuery(
+            term: String = "",
+            tag1: String = "",
+            tag2: String = "",
+            tag3: String = "",
+            untaggedOnly: Boolean = false,
+            postVisibility: PostVisibility = PostVisibility.None,
+            readLaterOnly: Boolean = false,
+            limit: Int = -1,
+        ): SimpleSQLiteQuery {
+            return bookmarksFtsQuery(
+                selectStatement = "select count(*) from (select id from $TABLE_NAME where 1=1",
+                term = term,
+                tag1 = tag1,
+                tag2 = tag2,
+                tag3 = tag3,
+                untaggedOnly = untaggedOnly,
+                postVisibility = postVisibility,
+                readLaterOnly = readLaterOnly,
+                limit = limit,
+                addTrailingParenthesis = true,
+            )
         }
 
-        @JvmStatic
-        fun preFormatTag(tag: String): String {
-            require(isFtsCompatible(tag))
-
-            return "\"${tag.replace(oldValue = "\"", newValue = "")}*\""
+        fun allBookmarksFtsQuery(
+            term: String = "",
+            tag1: String = "",
+            tag2: String = "",
+            tag3: String = "",
+            untaggedOnly: Boolean = false,
+            postVisibility: PostVisibility = PostVisibility.None,
+            readLaterOnly: Boolean = false,
+            sortType: Int = 0,
+            offset: Int = 0,
+            limit: Int = -1,
+        ): SimpleSQLiteQuery {
+            return bookmarksFtsQuery(
+                selectStatement = "select $TABLE_NAME.* from $TABLE_NAME where 1=1",
+                term = term,
+                tag1 = tag1,
+                tag2 = tag2,
+                tag3 = tag3,
+                untaggedOnly = untaggedOnly,
+                postVisibility = postVisibility,
+                readLaterOnly = readLaterOnly,
+                sortType = sortType,
+                offset = offset,
+                limit = limit,
+            )
         }
+
+        private fun bookmarksFtsQuery(
+            selectStatement: String,
+            term: String,
+            tag1: String,
+            tag2: String,
+            tag3: String,
+            untaggedOnly: Boolean,
+            postVisibility: PostVisibility,
+            readLaterOnly: Boolean,
+            sortType: Int = 0,
+            offset: Int = 0,
+            limit: Int = -1,
+            addTrailingParenthesis: Boolean = false,
+        ): SimpleSQLiteQuery {
+            val words: List<String> = term.trim()
+                .split(regex = "\\s+".toRegex())
+                .filterNot { it.isEmpty() }
+            val sql: String = buildString {
+                append(selectStatement)
+
+                if (words.isNotEmpty()) {
+                    val termStatement: String = "$TABLE_NAME.rowid in" +
+                        " (select rowid from $FTS_TABLE_NAME where $FTS_TABLE_NAME match ?)" +
+                        " or (" + words.joinToString(separator = " and ") { "$TABLE_NAME.url like ?" } + ")"
+
+                    append(" and ($termStatement)")
+                }
+
+                if (untaggedOnly) {
+                    append(" and tagNames = ''")
+                } else {
+                    val tagsStatement: String = " and $TABLE_NAME.rowid in" +
+                        " (select rowid from $FTS_TABLE_NAME where tagNames match ?)"
+
+                    if (tag1.isNotBlank()) append(tagsStatement)
+                    if (tag2.isNotBlank()) append(tagsStatement)
+                    if (tag3.isNotBlank()) append(tagsStatement)
+                }
+
+                when (postVisibility) {
+                    is PostVisibility.Public -> append(" and shared = 1")
+                    is PostVisibility.Private -> append(" and shared = 0")
+                    is PostVisibility.None -> Unit
+                }
+
+                if (readLaterOnly) {
+                    append(" and unread = 1")
+                }
+
+                when (sortType) {
+                    0 -> append(" order by dateAdded DESC")
+                    1 -> append(" order by dateAdded ASC")
+                    2 -> append(" order by dateModified DESC")
+                    3 -> append(" order by dateModified ASC")
+                    4 -> append(" order by title ASC")
+                    5 -> append(" order by title DESC")
+                }
+
+                append(" limit ?, ?")
+
+                if (addTrailingParenthesis) {
+                    append(")")
+                }
+            }
+            val args: List<Any> = buildList {
+                if (words.isNotEmpty()) {
+                    add(words.joinToString(separator = " and ") { "*$it*" })
+                    addAll(words.map { "%$it%" })
+                }
+
+                if (!untaggedOnly) {
+                    if (tag1.isNotBlank()) add(formatTagArgument(tag1))
+                    if (tag2.isNotBlank()) add(formatTagArgument(tag2))
+                    if (tag3.isNotBlank()) add(formatTagArgument(tag3))
+                }
+
+                add(offset)
+                add(limit)
+            }
+
+            return SimpleSQLiteQuery(query = sql, bindArgs = args.toTypedArray())
+        }
+
+        fun existingBookmarkTagFtsQuery(tag: String): SimpleSQLiteQuery {
+            return SimpleSQLiteQuery(
+                query = "select tagNames from $FTS_TABLE_NAME where tagNames match ?",
+                bindArgs = arrayOf(formatTagArgument(tag = tag)),
+            )
+        }
+
+        private fun formatTagArgument(tag: String): String {
+            return "*${tag.replace(oldValue = "\"", newValue = "")}*"
+        }
+        // endregion FTS queries
+
+        // region No FTS queries
+        fun bookmarksCountNoFtsQuery(
+            term: String = "",
+            tag1: String = "",
+            tag2: String = "",
+            tag3: String = "",
+            untaggedOnly: Boolean = false,
+            postVisibility: PostVisibility = PostVisibility.None,
+            readLaterOnly: Boolean = false,
+            limit: Int = -1,
+        ): SimpleSQLiteQuery {
+            return bookmarksNoFtsQuery(
+                selectStatement = "select count(*) from (select id from $TABLE_NAME where 1=1",
+                term = term,
+                tag1 = tag1,
+                tag2 = tag2,
+                tag3 = tag3,
+                untaggedOnly = untaggedOnly,
+                postVisibility = postVisibility,
+                readLaterOnly = readLaterOnly,
+                limit = limit,
+                addTrailingParenthesis = true,
+            )
+        }
+
+        fun allBookmarksNoFtsQuery(
+            term: String = "",
+            tag1: String = "",
+            tag2: String = "",
+            tag3: String = "",
+            untaggedOnly: Boolean = false,
+            postVisibility: PostVisibility = PostVisibility.None,
+            readLaterOnly: Boolean = false,
+            sortType: Int = 0,
+            offset: Int = 0,
+            limit: Int = -1,
+        ): SimpleSQLiteQuery {
+            return bookmarksNoFtsQuery(
+                selectStatement = "select $TABLE_NAME.* from $TABLE_NAME where 1=1",
+                term = term,
+                tag1 = tag1,
+                tag2 = tag2,
+                tag3 = tag3,
+                untaggedOnly = untaggedOnly,
+                postVisibility = postVisibility,
+                readLaterOnly = readLaterOnly,
+                sortType = sortType,
+                offset = offset,
+                limit = limit,
+            )
+        }
+
+        private fun bookmarksNoFtsQuery(
+            selectStatement: String,
+            term: String,
+            tag1: String,
+            tag2: String,
+            tag3: String,
+            untaggedOnly: Boolean,
+            postVisibility: PostVisibility,
+            readLaterOnly: Boolean,
+            sortType: Int = -1,
+            offset: Int = 0,
+            limit: Int = -1,
+            addTrailingParenthesis: Boolean = false,
+        ): SimpleSQLiteQuery {
+            val termColumns: List<String> = listOf(
+                "$TABLE_NAME.url",
+                "$TABLE_NAME.title",
+                "$TABLE_NAME.description",
+                "$TABLE_NAME.notes",
+                "$TABLE_NAME.websiteTitle",
+                "$TABLE_NAME.websiteDescription",
+                "$TABLE_NAME.tagNames",
+            )
+            val words: List<String> = term.trim()
+                .split(regex = "\\s+".toRegex())
+                .filterNot { it.isEmpty() }
+            val sql: String = buildString {
+                append(selectStatement)
+
+                if (words.isNotEmpty()) {
+                    val termStatement: String = termColumns.joinToString(separator = " or ") { columnName ->
+                        "(" + words.joinToString(separator = " and ") { "$columnName like ?" } + ")"
+                    }
+
+                    append(" and ($termStatement)")
+                }
+
+                if (untaggedOnly) {
+                    append(" and tagNames = ''")
+                } else {
+                    if (tag1.isNotBlank()) append(" and $TABLE_NAME.tagNames like ?")
+                    if (tag2.isNotBlank()) append(" and $TABLE_NAME.tagNames like ?")
+                    if (tag3.isNotBlank()) append(" and $TABLE_NAME.tagNames like ?")
+                }
+
+                when (postVisibility) {
+                    is PostVisibility.Public -> append(" and shared = 1")
+                    is PostVisibility.Private -> append(" and shared = 0")
+                    is PostVisibility.None -> Unit
+                }
+
+                if (readLaterOnly) {
+                    append(" and unread = 1")
+                }
+
+                when (sortType) {
+                    0 -> append(" order by dateAdded DESC")
+                    1 -> append(" order by dateAdded ASC")
+                    2 -> append(" order by dateModified DESC")
+                    3 -> append(" order by dateModified ASC")
+                    4 -> append(" order by title ASC")
+                    5 -> append(" order by title DESC")
+                }
+
+                append(" limit ?, ?")
+
+                if (addTrailingParenthesis) {
+                    append(")")
+                }
+            }
+            val args: List<Any> = buildList {
+                if (words.isNotEmpty()) {
+                    repeat(times = termColumns.size) {
+                        addAll(words.map { "%$it%" })
+                    }
+                }
+
+                if (!untaggedOnly) {
+                    if (tag1.isNotBlank()) add("%$tag1%")
+                    if (tag2.isNotBlank()) add("%$tag2%")
+                    if (tag3.isNotBlank()) add("%$tag3%")
+                }
+
+                add(offset)
+                add(limit)
+            }
+
+            return SimpleSQLiteQuery(query = sql, bindArgs = args.toTypedArray())
+        }
+
+        fun existingBookmarkTagNoFtsQuery(tag: String): SimpleSQLiteQuery {
+            return SimpleSQLiteQuery(
+                query = "select tagNames from $TABLE_NAME where tagNames like ?",
+                bindArgs = arrayOf("%$tag%"),
+            )
+        }
+        // endregion No FTS queries
     }
 }

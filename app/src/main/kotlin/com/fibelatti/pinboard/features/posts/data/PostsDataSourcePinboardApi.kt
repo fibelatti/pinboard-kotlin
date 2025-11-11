@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.posts.data
 
 import androidx.annotation.VisibleForTesting
+import androidx.sqlite.db.SimpleSQLiteQuery
 import com.fibelatti.core.extension.ifNullOrBlank
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
@@ -359,37 +360,34 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
         readLaterOnly: Boolean,
         countLimit: Int,
     ): Int {
-        val isFtsCompatible = isFtsCompatible(searchTerm) &&
+        val isFtsCompatible: Boolean = isFtsCompatible(searchTerm) &&
             (tags.isNullOrEmpty() || tags.all { isFtsCompatible(it.name) })
 
-        return if (isFtsCompatible) {
-            postsDao.getPostCount(
-                term = PostsDao.preFormatTerm(searchTerm),
-                termNoFts = searchTerm,
+        val query: SimpleSQLiteQuery = if (isFtsCompatible) {
+            PostsDao.postCountFtsQuery(
+                term = searchTerm,
                 tag1 = tags.getTagName(index = 0),
                 tag2 = tags.getTagName(index = 1),
                 tag3 = tags.getTagName(index = 2),
                 untaggedOnly = untaggedOnly,
-                ignoreVisibility = postVisibility is PostVisibility.None,
-                publicPostsOnly = postVisibility is PostVisibility.Public,
-                privatePostsOnly = postVisibility is PostVisibility.Private,
+                postVisibility = postVisibility,
                 readLaterOnly = readLaterOnly,
                 limit = countLimit,
             )
         } else {
-            postsDao.getPostCountNoFts(
-                term = searchTerm.trim(),
-                tag1 = tags.getTagName(index = 0, preFormat = false),
-                tag2 = tags.getTagName(index = 1, preFormat = false),
-                tag3 = tags.getTagName(index = 2, preFormat = false),
+            PostsDao.postCountNoFtsQuery(
+                term = searchTerm,
+                tag1 = tags.getTagName(index = 0),
+                tag2 = tags.getTagName(index = 1),
+                tag3 = tags.getTagName(index = 2),
                 untaggedOnly = untaggedOnly,
-                ignoreVisibility = postVisibility is PostVisibility.None,
-                publicPostsOnly = postVisibility is PostVisibility.Public,
-                privatePostsOnly = postVisibility is PostVisibility.Private,
+                postVisibility = postVisibility,
                 readLaterOnly = readLaterOnly,
                 limit = countLimit,
             )
         }
+
+        return postsDao.getPostCount(query = query)
     }
 
     @VisibleForTesting
@@ -413,45 +411,38 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
             readLaterOnly = readLaterOnly,
             countLimit = countLimit,
         )
-        val isFtsCompatible = isFtsCompatible(searchTerm) &&
+        val isFtsCompatible: Boolean = isFtsCompatible(searchTerm) &&
             (tags.isNullOrEmpty() || tags.all { isFtsCompatible(it.name) })
+        val query: SimpleSQLiteQuery = if (isFtsCompatible) {
+            PostsDao.allPostsFtsQuery(
+                term = searchTerm,
+                tag1 = tags.getTagName(index = 0),
+                tag2 = tags.getTagName(index = 1),
+                tag3 = tags.getTagName(index = 2),
+                untaggedOnly = untaggedOnly,
+                postVisibility = postVisibility,
+                readLaterOnly = readLaterOnly,
+                sortType = sortType.index,
+                offset = pageOffset,
+                limit = pageLimit,
+            )
+        } else {
+            PostsDao.allPostsNoFtsQuery(
+                term = searchTerm,
+                tag1 = tags.getTagName(index = 0),
+                tag2 = tags.getTagName(index = 1),
+                tag3 = tags.getTagName(index = 2),
+                untaggedOnly = untaggedOnly,
+                postVisibility = postVisibility,
+                readLaterOnly = readLaterOnly,
+                sortType = sortType.index,
+                offset = pageOffset,
+                limit = pageLimit,
+            )
+        }
 
         val localData: List<Post> = when {
-            localDataSize > 0 && isFtsCompatible -> {
-                postsDao.getAllPosts(
-                    sortType = sortType.index,
-                    term = PostsDao.preFormatTerm(searchTerm),
-                    termNoFts = searchTerm,
-                    tag1 = tags.getTagName(index = 0),
-                    tag2 = tags.getTagName(index = 1),
-                    tag3 = tags.getTagName(index = 2),
-                    untaggedOnly = untaggedOnly,
-                    ignoreVisibility = postVisibility is PostVisibility.None,
-                    publicPostsOnly = postVisibility is PostVisibility.Public,
-                    privatePostsOnly = postVisibility is PostVisibility.Private,
-                    readLaterOnly = readLaterOnly,
-                    limit = pageLimit,
-                    offset = pageOffset,
-                ).let(postDtoMapper::mapList)
-            }
-
-            localDataSize > 0 -> {
-                postsDao.getAllPostsNoFts(
-                    sortType = sortType.index,
-                    term = searchTerm.trim(),
-                    tag1 = tags.getTagName(index = 0, preFormat = false),
-                    tag2 = tags.getTagName(index = 1, preFormat = false),
-                    tag3 = tags.getTagName(index = 2, preFormat = false),
-                    untaggedOnly = untaggedOnly,
-                    ignoreVisibility = postVisibility is PostVisibility.None,
-                    publicPostsOnly = postVisibility is PostVisibility.Public,
-                    privatePostsOnly = postVisibility is PostVisibility.Private,
-                    readLaterOnly = readLaterOnly,
-                    limit = pageLimit,
-                    offset = pageOffset,
-                ).let(postDtoMapper::mapList)
-            }
-
+            localDataSize > 0 -> postsDao.getAllPosts(query = query).let(postDtoMapper::mapList)
             else -> emptyList()
         }
 
@@ -463,11 +454,7 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
         )
     }
 
-    private fun List<Tag>?.getTagName(index: Int, preFormat: Boolean = true): String {
-        val name: String = this?.getOrNull(index)?.name.orEmpty()
-
-        return if (preFormat && name.isNotEmpty()) PostsDao.preFormatTag(name) else name
-    }
+    private fun List<Tag>?.getTagName(index: Int): String = this?.getOrNull(index)?.name.orEmpty()
 
     override suspend fun getPost(id: String, url: String): Result<Post> = resultFromNetwork {
         val post = postsDao.getPost(url)
@@ -480,17 +467,18 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
         tag: String,
         currentTags: List<Tag>,
     ): Result<List<String>> = resultFrom {
-        val isFtsCompatible = isFtsCompatible(tag)
-        val tagNames = currentTags.map(Tag::name)
+        val isFtsCompatible: Boolean = isFtsCompatible(tag)
+        val tagNames: List<String> = currentTags.map(Tag::name)
 
         if (tag.isNotEmpty()) {
-            val tags = if (isFtsCompatible) {
-                postsDao.searchExistingPostTag(PostsDao.preFormatTag(tag))
+            val query: SimpleSQLiteQuery = if (isFtsCompatible) {
+                PostsDao.existingPostTagFtsQuery(tag)
             } else {
-                postsDao.searchExistingPostTagNoFts(tag)
+                PostsDao.existingPostTagNoFtsQuery(tag)
             }
 
-            tags.flatMap { it.replaceHtmlChars().split(" ") }
+            postsDao.searchExistingPostTag(query = query)
+                .flatMap { it.replaceHtmlChars().split(" ") }
                 .filter { it.startsWith(tag, ignoreCase = true) && it !in tagNames }
                 .distinct()
                 .sorted()

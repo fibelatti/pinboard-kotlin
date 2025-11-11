@@ -13,6 +13,7 @@ import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAG_VALUE_2
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAG_VALUE_3
 import com.fibelatti.pinboard.MockDataProvider.createBookmarkLocal
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
+import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.tooling.BaseDbTest
 import com.google.common.truth.Truth.assertThat
 import java.util.UUID
@@ -286,8 +287,7 @@ class BookmarksDaoTest : BaseDbTest() {
 
             // WHEN
             val result = bookmarksDao.getBookmarkCount(
-                term = BookmarksDao.preFormatTerm(mockTerm),
-                termNoFts = mockTerm,
+                query = BookmarksDao.bookmarksCountFtsQuery(term = mockTerm),
             )
 
             // THEN
@@ -311,8 +311,7 @@ class BookmarksDaoTest : BaseDbTest() {
 
             // WHEN
             val result = bookmarksDao.getBookmarkCount(
-                term = BookmarksDao.preFormatTerm("$mockTerm $mockSecondTerm"),
-                termNoFts = "$mockTerm $mockSecondTerm",
+                query = BookmarksDao.bookmarksCountFtsQuery(term = "$mockTerm $mockSecondTerm"),
             )
 
             // THEN
@@ -336,8 +335,7 @@ class BookmarksDaoTest : BaseDbTest() {
 
             // WHEN
             val result = bookmarksDao.getBookmarkCount(
-                term = BookmarksDao.preFormatTerm("term-with"),
-                termNoFts = "term-with",
+                query = BookmarksDao.bookmarksCountFtsQuery(term = "term-with"),
             )
 
             // THEN
@@ -357,7 +355,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getBookmarkCount(tag1 = BookmarksDao.preFormatTag(SAMPLE_TAG_VALUE_1))
+            val result = bookmarksDao.getBookmarkCount(
+                query = BookmarksDao.bookmarksCountFtsQuery(tag1 = SAMPLE_TAG_VALUE_1),
+            )
 
             // THEN
             assertThat(result).isEqualTo(3)
@@ -376,7 +376,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getBookmarkCount(tag1 = BookmarksDao.preFormatTag(SAMPLE_TAG_VALUE_1))
+            val result = bookmarksDao.getBookmarkCount(
+                query = BookmarksDao.bookmarksCountFtsQuery(tag1 = SAMPLE_TAG_VALUE_1),
+            )
 
             // THEN
             assertThat(result).isEqualTo(3)
@@ -396,8 +398,10 @@ class BookmarksDaoTest : BaseDbTest() {
 
             // WHEN
             val result = bookmarksDao.getBookmarkCount(
-                tag1 = BookmarksDao.preFormatTag(SAMPLE_TAG_VALUE_1),
-                tag2 = BookmarksDao.preFormatTag(SAMPLE_TAG_VALUE_2),
+                query = BookmarksDao.bookmarksCountFtsQuery(
+                    tag1 = SAMPLE_TAG_VALUE_1,
+                    tag2 = SAMPLE_TAG_VALUE_2,
+                ),
             )
 
             // THEN
@@ -418,9 +422,11 @@ class BookmarksDaoTest : BaseDbTest() {
 
             // WHEN
             val result = bookmarksDao.getBookmarkCount(
-                tag1 = BookmarksDao.preFormatTag(SAMPLE_TAG_VALUE_1),
-                tag2 = BookmarksDao.preFormatTag(SAMPLE_TAG_VALUE_2),
-                tag3 = BookmarksDao.preFormatTag(SAMPLE_TAG_VALUE_3),
+                query = BookmarksDao.bookmarksCountFtsQuery(
+                    tag1 = SAMPLE_TAG_VALUE_1,
+                    tag2 = SAMPLE_TAG_VALUE_2,
+                    tag3 = SAMPLE_TAG_VALUE_3,
+                ),
             )
 
             // THEN
@@ -440,7 +446,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getBookmarkCount(untaggedOnly = true)
+            val result = bookmarksDao.getBookmarkCount(
+                query = BookmarksDao.bookmarksCountFtsQuery(untaggedOnly = true),
+            )
 
             // THEN
             assertThat(result).isEqualTo(1)
@@ -457,7 +465,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getBookmarkCount(ignoreVisibility = true)
+            val result = bookmarksDao.getBookmarkCount(
+                query = BookmarksDao.bookmarksCountFtsQuery(postVisibility = PostVisibility.None),
+            )
 
             // THEN
             assertThat(result).isEqualTo(2)
@@ -474,7 +484,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getBookmarkCount(publicBookmarksOnly = true)
+            val result = bookmarksDao.getBookmarkCount(
+                query = BookmarksDao.bookmarksCountFtsQuery(postVisibility = PostVisibility.Public),
+            )
 
             // THEN
             assertThat(result).isEqualTo(1)
@@ -491,7 +503,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getBookmarkCount(privateBookmarksOnly = true)
+            val result = bookmarksDao.getBookmarkCount(
+                query = BookmarksDao.bookmarksCountFtsQuery(postVisibility = PostVisibility.Private),
+            )
 
             // THEN
             assertThat(result).isEqualTo(1)
@@ -508,7 +522,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getBookmarkCount(readLaterOnly = true)
+            val result = bookmarksDao.getBookmarkCount(
+                query = BookmarksDao.bookmarksCountFtsQuery(readLaterOnly = true),
+            )
 
             // THEN
             assertThat(result).isEqualTo(1)
@@ -535,7 +551,11 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getBookmarkCount(limit = list.size - 1)
+            val result = bookmarksDao.getBookmarkCount(
+                query = BookmarksDao.bookmarksCountFtsQuery(
+                    limit = list.size - 1,
+                ),
+            )
 
             // THEN
             assertThat(result).isEqualTo(list.size - 1)
@@ -562,7 +582,11 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getBookmarkCount(limit = list.size + 1)
+            val result = bookmarksDao.getBookmarkCount(
+                query = BookmarksDao.bookmarksCountFtsQuery(
+                    limit = list.size + 1,
+                ),
+            )
 
             // THEN
             assertThat(result).isEqualTo(list.size)
@@ -590,7 +614,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getBookmarkCountNoFts(term = "还没")
+            val result = bookmarksDao.getBookmarkCount(
+                query = BookmarksDao.bookmarksCountNoFtsQuery(term = "还没"),
+            )
 
             // THEN
             assertThat(result).isEqualTo(5)
@@ -618,7 +644,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getBookmarkCountNoFts(tag1 = "题")
+            val result = bookmarksDao.getBookmarkCount(
+                query = BookmarksDao.bookmarksCountNoFtsQuery(tag1 = "题"),
+            )
 
             // THEN
             assertThat(result).isEqualTo(1)
@@ -646,7 +674,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getBookmarkCountNoFts(term = "ошибка")
+            val result = bookmarksDao.getBookmarkCount(
+                query = BookmarksDao.bookmarksCountNoFtsQuery(term = "ошибка"),
+            )
 
             // THEN
             assertThat(result).isEqualTo(5)
@@ -674,7 +704,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getBookmarkCountNoFts(tag1 = "Те")
+            val result = bookmarksDao.getBookmarkCount(
+                query = BookmarksDao.bookmarksCountNoFtsQuery(tag1 = "Те"),
+            )
 
             // THEN
             assertThat(result).isEqualTo(1)
@@ -717,7 +749,9 @@ class BookmarksDaoTest : BaseDbTest() {
         bookmarksDao.saveBookmarks(list)
 
         // WHEN
-        val result = bookmarksDao.getAllBookmarks(sortType = 0)
+        val result = bookmarksDao.getAllBookmarks(
+            query = BookmarksDao.allBookmarksFtsQuery(sortType = 0),
+        )
 
         // THEN
         assertThat(result).isEqualTo(
@@ -744,7 +778,9 @@ class BookmarksDaoTest : BaseDbTest() {
         bookmarksDao.saveBookmarks(list)
 
         // WHEN
-        val result = bookmarksDao.getAllBookmarks(sortType = 1)
+        val result = bookmarksDao.getAllBookmarks(
+            query = BookmarksDao.allBookmarksFtsQuery(sortType = 1),
+        )
 
         // THEN
         assertThat(result).isEqualTo(
@@ -771,7 +807,9 @@ class BookmarksDaoTest : BaseDbTest() {
         bookmarksDao.saveBookmarks(list)
 
         // WHEN
-        val result = bookmarksDao.getAllBookmarks(sortType = 4)
+        val result = bookmarksDao.getAllBookmarks(
+            query = BookmarksDao.allBookmarksFtsQuery(sortType = 4),
+        )
 
         // THEN
         assertThat(result).isEqualTo(
@@ -798,7 +836,9 @@ class BookmarksDaoTest : BaseDbTest() {
         bookmarksDao.saveBookmarks(list)
 
         // WHEN
-        val result = bookmarksDao.getAllBookmarks(sortType = 5)
+        val result = bookmarksDao.getAllBookmarks(
+            query = BookmarksDao.allBookmarksFtsQuery(sortType = 5),
+        )
 
         // THEN
         assertThat(result).isEqualTo(
@@ -829,8 +869,7 @@ class BookmarksDaoTest : BaseDbTest() {
 
             // WHEN
             val result = bookmarksDao.getAllBookmarks(
-                term = BookmarksDao.preFormatTerm("$mockTerm $mockSecondTerm"),
-                termNoFts = "$mockTerm $mockSecondTerm",
+                query = BookmarksDao.allBookmarksFtsQuery(term = "$mockTerm $mockSecondTerm"),
             )
 
             // THEN
@@ -854,8 +893,7 @@ class BookmarksDaoTest : BaseDbTest() {
 
             // WHEN
             val result = bookmarksDao.getAllBookmarks(
-                term = BookmarksDao.preFormatTerm(mockTerm),
-                termNoFts = mockTerm,
+                query = BookmarksDao.allBookmarksFtsQuery(term = mockTerm),
             )
 
             // THEN
@@ -888,8 +926,7 @@ class BookmarksDaoTest : BaseDbTest() {
 
             // WHEN
             val result = bookmarksDao.getAllBookmarks(
-                term = BookmarksDao.preFormatTerm("term-with"),
-                termNoFts = "term-with",
+                query = BookmarksDao.allBookmarksFtsQuery(term = "term-with"),
             )
 
             // THEN
@@ -909,7 +946,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getAllBookmarks(tag1 = BookmarksDao.preFormatTag(SAMPLE_TAG_VALUE_1))
+            val result = bookmarksDao.getAllBookmarks(
+                query = BookmarksDao.allBookmarksFtsQuery(tag1 = SAMPLE_TAG_VALUE_1),
+            )
 
             // THEN
             assertThat(result).isEqualTo(listOf(bookmarkWithOneTag, bookmarkWithTwoTags, bookmarkWithThreeTags))
@@ -928,7 +967,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getAllBookmarks(tag1 = BookmarksDao.preFormatTag(SAMPLE_TAG_VALUE_1))
+            val result = bookmarksDao.getAllBookmarks(
+                query = BookmarksDao.allBookmarksFtsQuery(tag1 = SAMPLE_TAG_VALUE_1),
+            )
 
             // THEN
             assertThat(result).isEqualTo(listOf(bookmarkWithOneTag, bookmarkWithTwoTags, bookmarkWithThreeTags))
@@ -948,8 +989,10 @@ class BookmarksDaoTest : BaseDbTest() {
 
             // WHEN
             val result = bookmarksDao.getAllBookmarks(
-                tag1 = BookmarksDao.preFormatTag(SAMPLE_TAG_VALUE_1),
-                tag2 = BookmarksDao.preFormatTag(SAMPLE_TAG_VALUE_2),
+                query = BookmarksDao.allBookmarksFtsQuery(
+                    tag1 = SAMPLE_TAG_VALUE_1,
+                    tag2 = SAMPLE_TAG_VALUE_2,
+                ),
             )
 
             // THEN
@@ -970,9 +1013,11 @@ class BookmarksDaoTest : BaseDbTest() {
 
             // WHEN
             val result = bookmarksDao.getAllBookmarks(
-                tag1 = BookmarksDao.preFormatTag(SAMPLE_TAG_VALUE_1),
-                tag2 = BookmarksDao.preFormatTag(SAMPLE_TAG_VALUE_2),
-                tag3 = BookmarksDao.preFormatTag(SAMPLE_TAG_VALUE_3),
+                query = BookmarksDao.allBookmarksFtsQuery(
+                    tag1 = SAMPLE_TAG_VALUE_1,
+                    tag2 = SAMPLE_TAG_VALUE_2,
+                    tag3 = SAMPLE_TAG_VALUE_3,
+                ),
             )
 
             // THEN
@@ -992,7 +1037,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getAllBookmarks(untaggedOnly = true)
+            val result = bookmarksDao.getAllBookmarks(
+                query = BookmarksDao.allBookmarksFtsQuery(untaggedOnly = true),
+            )
 
             // THEN
             assertThat(result).isEqualTo(listOf(bookmarkWithoutTags))
@@ -1009,7 +1056,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getAllBookmarks(ignoreVisibility = true)
+            val result = bookmarksDao.getAllBookmarks(
+                query = BookmarksDao.allBookmarksFtsQuery(postVisibility = PostVisibility.None),
+            )
 
             // THEN
             assertThat(result).isEqualTo(listOf(bookmarkPublic, bookmarkPrivate))
@@ -1026,7 +1075,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getAllBookmarks(publicBookmarksOnly = true)
+            val result = bookmarksDao.getAllBookmarks(
+                query = BookmarksDao.allBookmarksFtsQuery(postVisibility = PostVisibility.Public),
+            )
 
             // THEN
             assertThat(result).isEqualTo(listOf(bookmarkPublic))
@@ -1043,7 +1094,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getAllBookmarks(privateBookmarksOnly = true)
+            val result = bookmarksDao.getAllBookmarks(
+                query = BookmarksDao.allBookmarksFtsQuery(postVisibility = PostVisibility.Private),
+            )
 
             // THEN
             assertThat(result).isEqualTo(listOf(bookmarkPrivate))
@@ -1060,7 +1113,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getAllBookmarks(readLaterOnly = true)
+            val result = bookmarksDao.getAllBookmarks(
+                query = BookmarksDao.allBookmarksFtsQuery(readLaterOnly = true),
+            )
 
             // THEN
             assertThat(result).isEqualTo(listOf(bookmarkReadLater))
@@ -1087,7 +1142,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getAllBookmarks(limit = list.size - 1)
+            val result = bookmarksDao.getAllBookmarks(
+                query = BookmarksDao.allBookmarksFtsQuery(limit = list.size - 1),
+            )
 
             // THEN
             assertThat(result).isEqualTo(
@@ -1128,7 +1185,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getAllBookmarks(limit = list.size + 1)
+            val result = bookmarksDao.getAllBookmarks(
+                query = BookmarksDao.allBookmarksFtsQuery(limit = list.size + 1),
+            )
 
             // THEN
             assertThat(result).isEqualTo(list)
@@ -1155,7 +1214,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getAllBookmarks(offset = list.size - 1)
+            val result = bookmarksDao.getAllBookmarks(
+                query = BookmarksDao.allBookmarksFtsQuery(offset = list.size - 1),
+            )
 
             // THEN
             assertThat(result).hasSize(1)
@@ -1181,7 +1242,9 @@ class BookmarksDaoTest : BaseDbTest() {
         bookmarksDao.saveBookmarks(list)
 
         // WHEN
-        val result = bookmarksDao.getAllBookmarks(offset = list.size)
+        val result = bookmarksDao.getAllBookmarks(
+            query = BookmarksDao.allBookmarksFtsQuery(offset = list.size),
+        )
 
         // THEN
         assertThat(result).isEmpty()
@@ -1209,7 +1272,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getAllBookmarksNoFts(term = "还没")
+            val result = bookmarksDao.getAllBookmarks(
+                query = BookmarksDao.allBookmarksNoFtsQuery(term = "还没"),
+            )
 
             // THEN
             assertThat(result).containsExactly(
@@ -1243,7 +1308,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getAllBookmarksNoFts(tag1 = "题")
+            val result = bookmarksDao.getAllBookmarks(
+                query = BookmarksDao.allBookmarksNoFtsQuery(tag1 = "题"),
+            )
 
             // THEN
             assertThat(result).containsExactly(bookmarkChineseTag)
@@ -1271,7 +1338,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getAllBookmarksNoFts(term = "ошибка")
+            val result = bookmarksDao.getAllBookmarks(
+                query = BookmarksDao.allBookmarksNoFtsQuery(term = "ошибка"),
+            )
 
             // THEN
             assertThat(result).containsExactly(
@@ -1305,7 +1374,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.getAllBookmarksNoFts(tag1 = "Те")
+            val result = bookmarksDao.getAllBookmarks(
+                query = BookmarksDao.allBookmarksNoFtsQuery(tag1 = "Те"),
+            )
 
             // THEN
             assertThat(result).containsExactly(bookmarkCyrillicTag)
@@ -1324,7 +1395,9 @@ class BookmarksDaoTest : BaseDbTest() {
         bookmarksDao.saveBookmarks(list)
 
         // WHEN
-        val result = bookmarksDao.searchExistingBookmarkTags(BookmarksDao.preFormatTag(SAMPLE_TAG_VALUE_1))
+        val result = bookmarksDao.searchExistingBookmarkTags(
+            query = BookmarksDao.existingBookmarkTagFtsQuery(tag = SAMPLE_TAG_VALUE_1),
+        )
 
         // THEN
         assertThat(result).isEqualTo(
@@ -1349,7 +1422,9 @@ class BookmarksDaoTest : BaseDbTest() {
             bookmarksDao.saveBookmarks(list)
 
             // WHEN
-            val result = bookmarksDao.searchExistingBookmarkTags(BookmarksDao.preFormatTag(SAMPLE_TAG_VALUE_1))
+            val result = bookmarksDao.searchExistingBookmarkTags(
+                query = BookmarksDao.existingBookmarkTagFtsQuery(tag = SAMPLE_TAG_VALUE_1),
+            )
 
             // THEN
             assertThat(result).isEqualTo(

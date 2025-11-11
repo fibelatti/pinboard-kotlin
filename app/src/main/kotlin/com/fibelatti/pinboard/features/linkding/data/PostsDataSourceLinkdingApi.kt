@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.linkding.data
 
 import androidx.annotation.VisibleForTesting
+import androidx.sqlite.db.SimpleSQLiteQuery
 import com.fibelatti.core.extension.ifNullOrBlank
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
@@ -268,37 +269,34 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
         readLaterOnly: Boolean,
         countLimit: Int,
     ): Int {
-        val isFtsCompatible = isFtsCompatible(searchTerm) &&
+        val isFtsCompatible: Boolean = isFtsCompatible(searchTerm) &&
             (tags.isNullOrEmpty() || tags.all { isFtsCompatible(it.name) })
 
-        return if (isFtsCompatible) {
-            linkdingDao.getBookmarkCount(
-                term = BookmarksDao.preFormatTerm(searchTerm),
-                termNoFts = searchTerm,
+        val query: SimpleSQLiteQuery = if (isFtsCompatible) {
+            BookmarksDao.bookmarksCountFtsQuery(
+                term = searchTerm,
                 tag1 = tags.getTagName(index = 0),
                 tag2 = tags.getTagName(index = 1),
                 tag3 = tags.getTagName(index = 2),
                 untaggedOnly = untaggedOnly,
-                ignoreVisibility = postVisibility is PostVisibility.None,
-                publicBookmarksOnly = postVisibility is PostVisibility.Public,
-                privateBookmarksOnly = postVisibility is PostVisibility.Private,
+                postVisibility = postVisibility,
                 readLaterOnly = readLaterOnly,
                 limit = countLimit,
             )
         } else {
-            linkdingDao.getBookmarkCountNoFts(
-                term = searchTerm.trim(),
-                tag1 = tags.getTagName(index = 0, preFormat = false),
-                tag2 = tags.getTagName(index = 1, preFormat = false),
-                tag3 = tags.getTagName(index = 2, preFormat = false),
+            BookmarksDao.bookmarksCountNoFtsQuery(
+                term = searchTerm,
+                tag1 = tags.getTagName(index = 0),
+                tag2 = tags.getTagName(index = 1),
+                tag3 = tags.getTagName(index = 2),
                 untaggedOnly = untaggedOnly,
-                ignoreVisibility = postVisibility is PostVisibility.None,
-                publicBookmarksOnly = postVisibility is PostVisibility.Public,
-                privateBookmarksOnly = postVisibility is PostVisibility.Private,
+                postVisibility = postVisibility,
                 readLaterOnly = readLaterOnly,
                 limit = countLimit,
             )
         }
+
+        return linkdingDao.getBookmarkCount(query = query)
     }
 
     @VisibleForTesting
@@ -322,45 +320,38 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
             readLaterOnly = readLaterOnly,
             countLimit = countLimit,
         )
-        val isFtsCompatible = isFtsCompatible(searchTerm) &&
+        val isFtsCompatible: Boolean = isFtsCompatible(searchTerm) &&
             (tags.isNullOrEmpty() || tags.all { isFtsCompatible(it.name) })
+        val query: SimpleSQLiteQuery = if (isFtsCompatible) {
+            BookmarksDao.allBookmarksFtsQuery(
+                term = searchTerm,
+                tag1 = tags.getTagName(index = 0),
+                tag2 = tags.getTagName(index = 1),
+                tag3 = tags.getTagName(index = 2),
+                untaggedOnly = untaggedOnly,
+                postVisibility = postVisibility,
+                readLaterOnly = readLaterOnly,
+                sortType = sortType.index,
+                offset = pageOffset,
+                limit = pageLimit,
+            )
+        } else {
+            BookmarksDao.allBookmarksNoFtsQuery(
+                term = searchTerm,
+                tag1 = tags.getTagName(index = 0),
+                tag2 = tags.getTagName(index = 1),
+                tag3 = tags.getTagName(index = 2),
+                untaggedOnly = untaggedOnly,
+                postVisibility = postVisibility,
+                readLaterOnly = readLaterOnly,
+                sortType = sortType.index,
+                offset = pageOffset,
+                limit = pageLimit,
+            )
+        }
 
         val localData: List<Post> = when {
-            localDataSize > 0 && isFtsCompatible -> {
-                linkdingDao.getAllBookmarks(
-                    sortType = sortType.index,
-                    term = BookmarksDao.preFormatTerm(searchTerm),
-                    termNoFts = searchTerm,
-                    tag1 = tags.getTagName(index = 0),
-                    tag2 = tags.getTagName(index = 1),
-                    tag3 = tags.getTagName(index = 2),
-                    untaggedOnly = untaggedOnly,
-                    ignoreVisibility = postVisibility is PostVisibility.None,
-                    publicBookmarksOnly = postVisibility is PostVisibility.Public,
-                    privateBookmarksOnly = postVisibility is PostVisibility.Private,
-                    readLaterOnly = readLaterOnly,
-                    limit = pageLimit,
-                    offset = pageOffset,
-                ).let(bookmarkLocalMapper::mapList)
-            }
-
-            localDataSize > 0 -> {
-                linkdingDao.getAllBookmarksNoFts(
-                    sortType = sortType.index,
-                    term = searchTerm.trim(),
-                    tag1 = tags.getTagName(index = 0, preFormat = false),
-                    tag2 = tags.getTagName(index = 1, preFormat = false),
-                    tag3 = tags.getTagName(index = 2, preFormat = false),
-                    untaggedOnly = untaggedOnly,
-                    ignoreVisibility = postVisibility is PostVisibility.None,
-                    publicBookmarksOnly = postVisibility is PostVisibility.Public,
-                    privateBookmarksOnly = postVisibility is PostVisibility.Private,
-                    readLaterOnly = readLaterOnly,
-                    limit = pageLimit,
-                    offset = pageOffset,
-                ).let(bookmarkLocalMapper::mapList)
-            }
-
+            localDataSize > 0 -> linkdingDao.getAllBookmarks(query = query).let(bookmarkLocalMapper::mapList)
             else -> emptyList()
         }
 
@@ -372,11 +363,7 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
         )
     }
 
-    private fun List<Tag>?.getTagName(index: Int, preFormat: Boolean = true): String {
-        val name: String = this?.getOrNull(index)?.name.orEmpty()
-
-        return if (preFormat && name.isNotEmpty()) BookmarksDao.preFormatTag(name) else name
-    }
+    private fun List<Tag>?.getTagName(index: Int): String = this?.getOrNull(index)?.name.orEmpty()
 
     override suspend fun getPost(id: String, url: String): Result<Post> = resultFromNetwork {
         linkdingDao.getBookmark(id = id, url = url)?.let(bookmarkLocalMapper::map)
@@ -387,17 +374,18 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
         tag: String,
         currentTags: List<Tag>,
     ): Result<List<String>> = resultFrom {
-        val isFtsCompatible = isFtsCompatible(tag)
-        val tagNames = currentTags.map(Tag::name)
+        val isFtsCompatible: Boolean = isFtsCompatible(tag)
+        val tagNames: List<String> = currentTags.map(Tag::name)
 
         if (tag.isNotEmpty()) {
-            val tags = if (isFtsCompatible) {
-                linkdingDao.searchExistingBookmarkTags(BookmarksDao.preFormatTag(tag))
+            val query: SimpleSQLiteQuery = if (isFtsCompatible) {
+                BookmarksDao.existingBookmarkTagFtsQuery(tag)
             } else {
-                linkdingDao.searchExistingBookmarkTagsNoFts(tag)
+                BookmarksDao.existingBookmarkTagNoFtsQuery(tag)
             }
 
-            tags.flatMap { it.replaceHtmlChars().split(" ") }
+            linkdingDao.searchExistingBookmarkTags(query = query)
+                .flatMap { it.replaceHtmlChars().split(" ") }
                 .filter { it.startsWith(tag, ignoreCase = true) && it !in tagNames }
                 .distinct()
                 .sorted()
