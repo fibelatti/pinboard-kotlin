@@ -1,0 +1,8 @@
+This version brings the following updates:
+
+* Fixes pending sync bookmarks getting stuck, even after syncing
+
+If you're affected by this issue, please logout and login again to clear the
+local bookmarks cache.
+
+Thank you for using the app!
