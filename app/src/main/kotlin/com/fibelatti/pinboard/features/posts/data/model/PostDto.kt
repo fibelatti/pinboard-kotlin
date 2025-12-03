@@ -4,15 +4,12 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.fibelatti.core.functional.TwoWayMapper
-import com.fibelatti.pinboard.core.AppConfig.API_ENCODING
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import java.net.URLDecoder
-import java.net.URLEncoder
 import javax.inject.Inject
 import kotlinx.serialization.Serializable
 
@@ -40,13 +37,8 @@ class PostDtoMapper @Inject constructor(
 ) : TwoWayMapper<PostDto, Post> {
 
     override fun map(param: PostDto): Post = with(param) {
-        val preparedUrl = listOf(
-            ::preparePercentForDecoding,
-            ::preparePlusForDecoding,
-        ).fold(href) { current, preparation -> preparation(current) }
-
         Post(
-            url = URLDecoder.decode(preparedUrl, API_ENCODING),
+            url = href,
             title = description.orEmpty(),
             description = extended.orEmpty(),
             id = hash,
@@ -70,19 +62,9 @@ class PostDtoMapper @Inject constructor(
         )
     }
 
-    private fun preparePercentForDecoding(source: String): String = source.replace(
-        regex = "%(?![0-9a-fA-F]{2})".toRegex(),
-        replacement = "%25",
-    )
-
-    private fun preparePlusForDecoding(source: String): String = source.replace(
-        oldValue = "+",
-        newValue = "%2B",
-    )
-
     override fun mapReverse(param: Post): PostDto = with(param) {
         PostDto(
-            href = URLEncoder.encode(url, API_ENCODING),
+            href = url,
             description = title,
             extended = description,
             hash = id,

@@ -3,12 +3,15 @@ package com.fibelatti.pinboard.core.di.modules
 import com.fibelatti.pinboard.core.di.RestApi
 import com.fibelatti.pinboard.core.di.RestApiProvider
 import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
+import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
+import com.fibelatti.pinboard.features.posts.data.model.isDone
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttpConfig
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.ResponseException
@@ -70,8 +73,16 @@ object PinboardModule {
         HttpResponseValidator {
             validateResponse { response ->
                 // Unfortunately nothing can be done if the server is acting up.
-                // A `ResponseException` is used when handling exceptions to notify users.
                 if (response.status == HttpStatusCode.InternalServerError) {
+                    runCatching {
+                        // Although, the action may have succeeded despite the 500 status code.
+                        if (response.body<GenericResponseDto>().isDone) {
+                            // In that case, no need to abort.
+                            return@validateResponse
+                        }
+                    }
+
+                    // A `ResponseException` is used when handling exceptions to notify users.
                     throw ResponseException(response, "")
                 }
             }

@@ -2,8 +2,6 @@ package com.fibelatti.pinboard.core
 
 object AppConfig {
 
-    const val API_ENCODING = "UTF-8"
-
     const val API_BASE_URL_LENGTH = 90
 
     const val API_PAGE_SIZE = 10_000

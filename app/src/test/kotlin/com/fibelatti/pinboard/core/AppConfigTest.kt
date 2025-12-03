@@ -6,11 +6,6 @@ import org.junit.jupiter.api.Test
 internal class AppConfigTest {
 
     @Test
-    fun `API_ENCODING should be UTF-8`() {
-        assertThat(AppConfig.API_ENCODING).isEqualTo("UTF-8")
-    }
-
-    @Test
     fun `DEFAULT_PAGE_SIZE should be 1000`() {
         assertThat(AppConfig.DEFAULT_PAGE_SIZE).isEqualTo(1_000)
     }

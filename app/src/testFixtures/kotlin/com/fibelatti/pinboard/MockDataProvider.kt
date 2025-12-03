@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard
 
-import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.network.ApiResultCodes
@@ -24,7 +23,6 @@ import com.fibelatti.pinboard.features.posts.data.model.PostRemoteDto
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import java.net.URLEncoder
 
 object MockDataProvider {
 
@@ -99,7 +97,7 @@ object MockDataProvider {
     fun createGenericResponse(responseCode: ApiResultCodes): GenericResponseDto = GenericResponseDto(responseCode.code)
 
     fun createPostDto(
-        href: String = URLEncoder.encode(SAMPLE_URL_VALID, AppConfig.API_ENCODING),
+        href: String = SAMPLE_URL_VALID,
         description: String? = SAMPLE_URL_TITLE,
         extended: String? = SAMPLE_URL_DESCRIPTION,
         hash: String = SAMPLE_HASH,
@@ -121,7 +119,7 @@ object MockDataProvider {
     )
 
     fun createPostRemoteDto(
-        href: String = URLEncoder.encode(SAMPLE_URL_VALID, AppConfig.API_ENCODING),
+        href: String = SAMPLE_URL_VALID,
         description: String? = SAMPLE_URL_TITLE,
         extended: String? = SAMPLE_URL_DESCRIPTION,
         hash: String = SAMPLE_HASH,

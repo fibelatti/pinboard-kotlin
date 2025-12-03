@@ -31,6 +31,7 @@ import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
 import com.fibelatti.pinboard.features.posts.data.model.PostRemoteDtoMapper
+import com.fibelatti.pinboard.features.posts.data.model.isDone
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
@@ -60,20 +61,10 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
     private val connectivityInfoProvider: ConnectivityInfoProvider,
 ) : PostsRepository {
 
-    companion object {
-
-        private const val HTTP_URI_TOO_LONG = 414
-
-        private const val SERVER_DOWN_TIMEOUT_SHORT = 10_000L
-        private const val SERVER_DOWN_TIMEOUT_LONG = 15_000L
-    }
-
     private var pagedRequestsJob: Job? = null
 
-    private fun <T> Result<T>.mapApiRequestFailure(
-        endpoint: String,
-    ): Result<T> = mapFailure { throwable ->
-        val mappedValue = if (throwable is ResponseException) {
+    private fun <T> Result<T>.mapApiRequestFailure(endpoint: String): Result<T> = mapFailure { throwable ->
+        val mappedValue: Throwable = if (throwable is ResponseException) {
             RuntimeException(
                 "Network call to `$endpoint` failed. HTTP Code ${throwable.response.status.value}.",
                 throwable,
@@ -92,7 +83,7 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
     }.mapApiRequestFailure(endpoint = "posts/update")
 
     override suspend fun add(post: Post): Result<Post> {
-        val resolvedPost = post.copy(
+        val resolvedPost: Post = post.copy(
             id = post.id.ifBlank { UUID.randomUUID().toString() },
             dateAdded = post.dateAdded.ifNullOrBlank { dateFormatter.nowAsDataFormat() },
         )
@@ -174,7 +165,7 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
     }
 
     private suspend fun addPostLocal(post: Post): Result<Post> = resultFrom {
-        val existingPost = postsDao.getPost(post.url)
+        val existingPost: PostDto? = postsDao.getPost(post.url)
 
         val newPost = PostDto(
             href = existingPost?.href ?: post.url,
@@ -209,7 +200,7 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
         return when (networkResult) {
             is Success -> {
                 catching {
-                    if (networkResult.value.resultCode == ApiResultCodes.DONE.code) {
+                    if (networkResult.value.isDone) {
                         postsDao.deletePost(post.url)
                     } else {
                         throw ApiException(networkResult.value.resultCode)
@@ -324,12 +315,9 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
     suspend fun savePosts(posts: List<PostDto>) {
         if (posts.isEmpty()) return
 
-        val updatedPosts = posts.map { post ->
-            if (post.tags.containsHtmlChars() || post.href.contains("%20")) {
-                post.copy(
-                    href = post.href.replace("%20", " "),
-                    tags = post.tags.replaceHtmlChars(),
-                )
+        val updatedPosts: List<PostDto> = posts.map { post ->
+            if (post.tags.containsHtmlChars()) {
+                post.copy(tags = post.tags.replaceHtmlChars())
             } else {
                 post
             }
@@ -503,5 +491,13 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
 
     override suspend fun clearCache(): Result<Unit> = resultFrom {
         postsDao.deleteAllPosts()
+    }
+
+    private companion object {
+
+        private const val HTTP_URI_TOO_LONG = 414
+
+        private const val SERVER_DOWN_TIMEOUT_SHORT = 10_000L
+        private const val SERVER_DOWN_TIMEOUT_LONG = 15_000L
     }
 }
