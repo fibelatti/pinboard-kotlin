@@ -57,6 +57,7 @@ class BookmarkListReducer @Inject constructor(
                 hasMultipleAccounts && currentServiceName != null -> {
                     ActionButtonComponent.Visible(
                         contentType = AccountSwitcherContent::class,
+                        icon = null,
                         label = resourceProvider.getString(currentServiceName),
                         data = connectedServices.first { it != appState.appMode },
                     )

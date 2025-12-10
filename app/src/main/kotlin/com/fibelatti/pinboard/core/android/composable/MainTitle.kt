@@ -20,11 +20,11 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -119,52 +119,52 @@ fun MainTitle(
                 )
             }
 
-            val colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors()
-
             AnimatedVisibility(
                 visible = subtitle is MainState.TitleComponent.Visible && subtitleText.isNotEmpty(),
             ) {
                 AutoSizeText(
                     text = subtitleText,
-                    modifier = Modifier
-                        .padding(top = 4.dp)
-                        .background(
-                            color = colors.toolbarContainerColor,
-                            shape = MaterialTheme.shapes.small,
-                        )
-                        .padding(horizontal = 8.dp, vertical = 4.dp),
-                    color = colors.toolbarContentColor,
+                    modifier = Modifier.padding(all = 2.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
         }
 
-        var actionButtonText by remember { mutableStateOf("") }
-        RememberedEffect(actionButton) {
-            if (actionButton is MainState.ActionButtonComponent.Visible) {
-                actionButtonText = actionButton.label
-            }
-        }
-        val actionButtonData by rememberUpdatedState((actionButton as? MainState.ActionButtonComponent.Visible)?.data)
+        val currentActionButton: MainState.ActionButtonComponent.Visible? by rememberUpdatedState(
+            actionButton as? MainState.ActionButtonComponent.Visible,
+        )
 
         AnimatedVisibility(
-            visible = actionButton is MainState.ActionButtonComponent.Visible && actionButtonText.isNotEmpty(),
+            visible = currentActionButton != null,
             enter = fadeIn() + scaleIn(),
             exit = fadeOut() + scaleOut(),
         ) {
-            FilledTonalButton(
-                onClick = { onActionButtonClicked(actionButtonData) },
-                shapes = ExtendedTheme.defaultButtonShapes,
-                modifier = Modifier.padding(end = 16.dp),
-            ) {
-                Text(
-                    text = actionButtonText,
-                    textAlign = TextAlign.Center,
-                    maxLines = 1,
-                    style = MaterialTheme.typography.labelSmall,
-                )
+            currentActionButton?.let {
+                if (it.icon != null) {
+                    LongClickIconButton(
+                        painter = painterResource(id = it.icon),
+                        description = it.label,
+                        onClick = { onActionButtonClicked(currentActionButton?.data) },
+                        modifier = Modifier.padding(end = 16.dp),
+                        iconTint = MaterialTheme.colorScheme.primary,
+                    )
+                } else {
+                    TextButton(
+                        onClick = { onActionButtonClicked(currentActionButton?.data) },
+                        shapes = ExtendedTheme.defaultButtonShapes,
+                        modifier = Modifier.padding(end = 16.dp),
+                        contentPadding = ButtonDefaults.ExtraSmallContentPadding,
+                    ) {
+                        Text(
+                            text = it.label,
+                            textAlign = TextAlign.Center,
+                            maxLines = 1,
+                        )
+                    }
+                }
             }
         }
     }
@@ -182,7 +182,11 @@ private fun MainTitlePreview() {
                 subtitle = MainState.TitleComponent.Gone,
                 navigation = MainState.NavigationComponent.Visible(),
                 onNavigationClicked = {},
-                actionButton = MainState.ActionButtonComponent.Visible(contentType = Content::class, label = "Action"),
+                actionButton = MainState.ActionButtonComponent.Visible(
+                    contentType = Content::class,
+                    icon = R.drawable.ic_save,
+                    label = "Action",
+                ),
                 onActionButtonClicked = {},
             )
         }
@@ -200,7 +204,11 @@ private fun MainTitleWithSubtitlePreview() {
                 subtitle = MainState.TitleComponent.Visible("Subtitle"),
                 navigation = MainState.NavigationComponent.Visible(),
                 onNavigationClicked = {},
-                actionButton = MainState.ActionButtonComponent.Visible(contentType = Content::class, label = "Action"),
+                actionButton = MainState.ActionButtonComponent.Visible(
+                    contentType = Content::class,
+                    icon = R.drawable.ic_random,
+                    label = "Action",
+                ),
                 onActionButtonClicked = {},
             )
         }

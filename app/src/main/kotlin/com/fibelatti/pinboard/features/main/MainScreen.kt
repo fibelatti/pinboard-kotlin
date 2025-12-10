@@ -575,6 +575,7 @@ private fun MainTopAppBarPreview() {
                     navigation = MainState.NavigationComponent.Visible(),
                     actionButton = MainState.ActionButtonComponent.Visible(
                         contentType = Content::class,
+                        icon = R.drawable.ic_save,
                         label = "Action",
                     ),
                     bottomAppBar = MainState.BottomAppBarComponent.Visible(

@@ -42,6 +42,7 @@ data class MainState(
 
         data class Visible(
             override val contentType: ContentType,
+            @DrawableRes val icon: Int?,
             val label: String,
             val data: Any? = null,
         ) : ActionButtonComponent()

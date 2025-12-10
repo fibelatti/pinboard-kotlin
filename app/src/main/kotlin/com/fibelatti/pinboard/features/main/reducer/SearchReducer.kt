@@ -16,7 +16,11 @@ class SearchReducer @Inject constructor(
         val content = appState.content as? SearchContent ?: return mainState
         val isActive = content.searchParameters.isActive()
 
-        val activeSearchLabel = resourceProvider.getString(R.string.search_result_size, content.queryResultSize)
+        val activeSearchLabel = resourceProvider.getQuantityString(
+            R.plurals.search_result_size,
+            content.queryResultSize,
+            content.queryResultSize,
+        )
 
         return MainState(
             title = MainState.TitleComponent.Visible(resourceProvider.getString(R.string.search_title)),
@@ -29,6 +33,7 @@ class SearchReducer @Inject constructor(
             actionButton = if (content.allTags.isNotEmpty()) {
                 MainState.ActionButtonComponent.Visible(
                     contentType = SearchContent::class,
+                    icon = R.drawable.ic_random,
                     label = resourceProvider.getString(R.string.search_random),
                 )
             } else {

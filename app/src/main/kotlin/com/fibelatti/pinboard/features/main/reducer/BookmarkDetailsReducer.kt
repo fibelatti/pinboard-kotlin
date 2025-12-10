@@ -36,6 +36,7 @@ class BookmarkDetailsReducer @Inject constructor(
         val actionButtonState = if (post.readLater == true && !post.isFile()) {
             MainState.ActionButtonComponent.Visible(
                 contentType = PostDetailContent::class,
+                icon = R.drawable.ic_done,
                 label = resourceProvider.getString(R.string.hint_mark_as_read),
                 data = post,
             )

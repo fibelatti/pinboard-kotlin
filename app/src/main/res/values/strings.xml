@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Common -->
     <string name="pinboard" translatable="false">Pinboard</string>
     <string name="linkding" translatable="false">Linkding</string>
@@ -80,7 +80,6 @@
     <string name="posts_title_untagged">Untagged Bookmarks</string>
 
     <plurals name="posts_quantity">
-        <item quantity="zero">No items</item>
         <item quantity="one">1 item</item>
         <item quantity="other">%s items</item>
     </plurals>
@@ -147,7 +146,12 @@
     <string name="search_selected_tags">Selected tags (max. 3)</string>
     <string name="search_tags">All tags</string>
     <string name="search_active">Filter applied</string>
-    <string name="search_result_size" tools:ignore="PluralsCandidate">%d bookmarks match the current search</string>
+
+    <plurals name="search_result_size">
+        <item quantity="one">1 match</item>
+        <item quantity="other">%d matches</item>
+    </plurals>
+
     <string name="search_share_title">Sharing search results</string>
     <string name="search_share_query">Share query</string>
     <string name="search_share_tags">Share tags</string>
@@ -184,7 +188,6 @@
     <!-- Notes -->
     <string name="notes_title">Notes</string>
     <plurals name="notes_quantity">
-        <item quantity="zero">Empty</item>
         <item quantity="one">1 note</item>
         <item quantity="other">%d notes</item>
     </plurals>

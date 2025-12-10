@@ -171,6 +171,7 @@ private fun LaunchedViewModelEffects(
                 currentState.copy(
                     actionButton = MainState.ActionButtonComponent.Visible(
                         contentType = EditPostContent::class,
+                        icon = R.drawable.ic_save,
                         label = localResources.getString(R.string.hint_save),
                     ),
                 )
