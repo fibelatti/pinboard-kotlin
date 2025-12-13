@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerBasedShape
@@ -122,12 +123,17 @@ public fun SingleLineChipGroup(
     itemTextStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.SansSerif),
     spacing: Dp = ChipGroup.Spacing,
     contentPadding: PaddingValues = PaddingValues(0.dp),
+    header: @Composable LazyItemScope.() -> Unit = {},
 ) {
     LazyRow(
         modifier = modifier,
         contentPadding = contentPadding,
         horizontalArrangement = Arrangement.spacedBy(spacing),
     ) {
+        stickyHeader(key = "header") {
+            header()
+        }
+
         items(items, key = { it.hashCode() }) { item ->
             Chip(
                 item = item,
@@ -145,7 +151,7 @@ public fun SingleLineChipGroup(
 
 public object ChipGroup {
 
-    internal val MinSize: Dp = 40.dp
+    public val MinSize: Dp = 40.dp
     internal val Spacing: Dp = 4.dp
     internal val TonalElevation: Dp = 2.dp
 

@@ -6,10 +6,16 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldLineLimits
@@ -24,13 +30,13 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -154,7 +160,7 @@ fun SearchBookmarksScreen(
 }
 
 @Composable
-fun SearchBookmarksScreen(
+private fun SearchBookmarksScreen(
     modifier: Modifier = Modifier,
     searchTerm: String = "",
     onSearchTermChanged: (String) -> Unit = {},
@@ -202,42 +208,52 @@ fun SearchBookmarksScreen(
                 enter = fadeIn() + expandVertically(),
                 exit = fadeOut() + shrinkVertically(),
             ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.search_selected_tags),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-
-                    SingleLineChipGroup(
-                        items = selectedTags.map {
-                            ChipGroup.Item(
-                                text = it.name,
-                                icon = painterResource(id = R.drawable.ic_close),
+                SingleLineChipGroup(
+                    items = selectedTags.map {
+                        ChipGroup.Item(
+                            text = it.name,
+                            icon = painterResource(id = R.drawable.ic_close),
+                        )
+                    },
+                    onItemClick = { item ->
+                        onSelectedTagRemoved(selectedTags.first { it.name == item.text })
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                    onItemIconClick = { item ->
+                        onSelectedTagRemoved(selectedTags.first { it.name == item.text })
+                    },
+                    itemTextStyle = MaterialTheme.typography.bodySmall.copy(
+                        fontFamily = FontFamily.Monospace,
+                    ),
+                    contentPadding = PaddingValues(end = 16.dp),
+                    header = {
+                        Box(
+                            modifier = Modifier
+                                .fillParentMaxHeight()
+                                .heightIn(min = ChipGroup.MinSize)
+                                .background(
+                                    color = ExtendedTheme.colors.backgroundNoOverlay,
+                                    shape = MaterialTheme.shapes.small.copy(
+                                        topStart = CornerSize(0.dp),
+                                        bottomStart = CornerSize(0.dp),
+                                    ),
+                                )
+                                .padding(start = 16.dp, end = 12.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.search_selected_tags),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                style = MaterialTheme.typography.titleMedium,
                             )
-                        },
-                        onItemClick = { item ->
-                            onSelectedTagRemoved(selectedTags.first { it.name == item.text })
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp),
-                        onItemIconClick = { item ->
-                            onSelectedTagRemoved(selectedTags.first { it.name == item.text })
-                        },
-                        itemTextStyle = MaterialTheme.typography.bodySmall.copy(
-                            fontFamily = FontFamily.Monospace,
-                        ),
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                    )
-                }
+                        }
+                    },
+                )
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = stringResource(id = R.string.search_tags),
@@ -245,8 +261,7 @@ fun SearchBookmarksScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.headlineSmall,
             )
         },
         items = availableTags,
@@ -265,7 +280,10 @@ fun SearchBookmarksScreen(
 @ThemePreviews
 private fun DefaultSearchBookmarksScreenPreview() {
     ExtendedTheme {
-        SearchBookmarksScreen()
+        SearchBookmarksScreen(
+            modifier = Modifier.safeDrawingPadding(),
+            searchTerm = "",
+        )
     }
 }
 
@@ -274,6 +292,7 @@ private fun DefaultSearchBookmarksScreenPreview() {
 private fun ActiveSearchBookmarksScreenPreview() {
     ExtendedTheme {
         SearchBookmarksScreen(
+            modifier = Modifier.safeDrawingPadding(),
             selectedTags = listOf(Tag(name = "dev")),
             availableTags = listOf(Tag(name = "compose"), Tag(name = "ui")),
         )
