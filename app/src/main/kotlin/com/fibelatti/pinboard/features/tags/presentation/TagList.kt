@@ -25,10 +25,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonGroupDefaults
@@ -200,22 +203,22 @@ fun TagList(
             val listState = rememberLazyListState()
             val showScrollToTop by remember { derivedStateOf { listState.firstVisibleItemIndex > 5 } }
 
-            val windowInsets = WindowInsets.safeDrawing
+            val windowInsets: WindowInsets = WindowInsets.safeDrawing
                 .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-                .add(WindowInsets(bottom = 100.dp))
+                .add(WindowInsets(bottom = 120.dp))
 
             PullRefreshLayout(
                 onPullToRefresh = onPullToRefresh,
                 listState = listState,
                 contentPadding = windowInsets.asPaddingValues(),
-                verticalArrangement = Arrangement.Top,
+                verticalArrangement = Arrangement.spacedBy(space = 2.dp, alignment = Alignment.Top),
             ) {
-                item {
+                item(key = "header") {
                     header()
                 }
 
                 if (items.isEmpty() && searchInput.isBlank()) {
-                    item {
+                    item(key = "empty-list") {
                         EmptyListContent(
                             icon = painterResource(id = R.drawable.ic_tag),
                             title = stringResource(id = R.string.tags_empty_title),
@@ -224,20 +227,39 @@ fun TagList(
                         )
                     }
                 } else {
-                    stickyHeader {
+                    stickyHeader(key = "sorting-controls") {
                         TagListSortingControls(
                             onSortOptionClicked = onSortOptionClicked,
                             onSearchInputChanged = onSearchInputChanged,
                             onSearchInputFocusChanged = onSearchInputFocusChanged,
                             searchInput = searchInput,
+                            modifier = Modifier.padding(bottom = 8.dp),
                         )
                     }
 
-                    items(items) { item ->
+                    itemsIndexed(items, key = { _, item -> item.hashCode() }) { idx, item ->
                         TagListItem(
                             item = item,
                             onTagClicked = onTagClicked,
                             onTagLongClicked = onTagLongClicked,
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .background(
+                                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                                    shape = when (idx) {
+                                        0 -> MaterialTheme.shapes.small.copy(
+                                            bottomStart = CornerSize(0.dp),
+                                            bottomEnd = CornerSize(0.dp),
+                                        )
+
+                                        items.size - 1 -> MaterialTheme.shapes.small.copy(
+                                            topStart = CornerSize(0.dp),
+                                            topEnd = CornerSize(0.dp),
+                                        )
+
+                                        else -> RoundedCornerShape(0.dp)
+                                    },
+                                ),
                         )
                     }
                 }
@@ -259,6 +281,7 @@ fun TagList(
                             listState.animateScrollToItem(index = 0)
                         }
                     },
+                    modifier = Modifier.padding(all = 8.dp),
                 )
             }
         }
@@ -271,9 +294,10 @@ private fun TagListSortingControls(
     onSearchInputChanged: (newValue: String) -> Unit,
     onSearchInputFocusChanged: (hasFocus: Boolean) -> Unit,
     searchInput: String,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(color = ExtendedTheme.colors.backgroundNoOverlay),
     ) {
@@ -352,10 +376,11 @@ private fun TagListItem(
     item: Tag,
     onTagClicked: (Tag) -> Unit,
     onTagLongClicked: (Tag) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val haptic = LocalHapticFeedback.current
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .combinedClickable(
                 onClick = { onTagClicked(item) },
@@ -368,7 +393,7 @@ private fun TagListItem(
     ) {
         Text(
             text = item.name,
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = 8.dp),
             color = MaterialTheme.colorScheme.secondary,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
@@ -378,7 +403,7 @@ private fun TagListItem(
         )
         Text(
             text = pluralStringResource(R.plurals.posts_quantity, item.posts, item.posts),
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = 8.dp),
             color = MaterialTheme.colorScheme.onBackground,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
@@ -390,13 +415,13 @@ private fun TagListItem(
 @Composable
 private fun ScrollToTopButton(
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     LongClickIconButton(
         painter = painterResource(id = R.drawable.ic_chevron_top),
         description = stringResource(id = R.string.cd_scroll_to_top),
         onClick = onClick,
-        modifier = Modifier
-            .padding(all = 16.dp)
+        modifier = modifier
             .background(
                 color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
                 shape = MaterialTheme.shapes.large,
@@ -425,6 +450,7 @@ private fun EmptyTagListPreview() {
             header = {},
             items = emptyList(),
             isLoading = false,
+            modifier = Modifier.safeDrawingPadding(),
         )
     }
 }
@@ -437,6 +463,7 @@ private fun TagListPreview() {
             header = {},
             items = List(size = 5) { Tag(name = "Tag $it", posts = it * it) },
             isLoading = false,
+            modifier = Modifier.safeDrawingPadding(),
         )
     }
 }
