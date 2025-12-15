@@ -32,7 +32,6 @@ import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetAllPosts
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetPostParams
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
-import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
 import io.mockk.Called
 import io.mockk.coJustRun
@@ -51,6 +50,7 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
+@Suppress("UnusedFlow")
 internal class PostListViewModelTest : BaseViewModelTest() {
 
     private val appStateFlow = MutableStateFlow(createAppState(content = createLoginContent()))
@@ -72,7 +72,6 @@ internal class PostListViewModelTest : BaseViewModelTest() {
 
     private val mockSortType = mockk<SortType>()
     private val mockSearchTerm = "term"
-    private val mockOffset = 12
 
     private val postListViewModel = PostListViewModel(
         scope = TestScope(dispatcher),
@@ -160,13 +159,65 @@ internal class PostListViewModelTest : BaseViewModelTest() {
             verify { mockGetAllPosts wasNot Called }
         }
 
+        @Test
+        fun `WHEN getAllPosts fails THEN repository won't run any actions`() = runTest {
+            every { mockGetAllPosts(any()) } returns flowOf(Failure(mockException))
+
+            postListViewModel.loadContent(
+                createPostListContent(
+                    category = All,
+                    shouldLoad = ShouldLoadFirstPage,
+                ),
+            )
+
+            coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
+            assertThat(postListViewModel.error.first()).isEqualTo(mockException)
+        }
+
+        @Test
+        fun `WHEN getAllPosts succeeds and offset is 0 THEN repository will run SetPosts`() = runTest {
+            // GIVEN
+            every { mockGetAllPosts(GetPostParams(offset = 0)) } returns flowOf(Success(mockResponse))
+
+            // WHEN
+            postListViewModel.loadContent(
+                createPostListContent(
+                    category = All,
+                    shouldLoad = ShouldLoadFirstPage,
+                ),
+            )
+
+            // THEN
+            coVerify { mockAppStateRepository.runAction(SetPosts(mockResponse)) }
+            assertThat(postListViewModel.error.first()).isNull()
+        }
+
+        @Test
+        fun `WHEN getAllPosts succeeds and offset is greater than 0 THEN repository will run SetNextPostPage`() =
+            runTest {
+                // GIVEN
+                every { mockGetAllPosts(GetPostParams(offset = 1)) } returns flowOf(Success(mockResponse))
+
+                // WHEN
+                postListViewModel.loadContent(
+                    createPostListContent(
+                        category = All,
+                        shouldLoad = ShouldLoadNextPage(offset = 1),
+                    ),
+                )
+
+                // THEN
+                coVerify { mockAppStateRepository.runAction(SetNextPostPage(mockResponse)) }
+                assertThat(postListViewModel.error.first()).isNull()
+            }
+
         @Nested
         @TestInstance(TestInstance.Lifecycle.PER_CLASS)
         inner class OffsetTests {
 
             @ParameterizedTest
             @MethodSource("testCases")
-            fun `WHEN loadContent is called AND category is All THEN getAll should be called`(
+            fun `WHEN loadContent is called AND category is All THEN getAllPosts should be called`(
                 testCase: Pair<ShouldLoad, Int>,
             ) = runTest {
                 // GIVEN
@@ -198,7 +249,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
 
             @ParameterizedTest
             @MethodSource("testCases")
-            fun `WHEN loadContent is called AND category is Public THEN getPublic should be called`(
+            fun `WHEN loadContent is called AND category is Public THEN getAllPosts should be called`(
                 testCase: Pair<ShouldLoad, Int>,
             ) = runTest {
                 // GIVEN
@@ -210,7 +261,6 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                         category = Public,
                         shouldLoad = shouldLoad,
                         sortType = mockSortType,
-                        searchParameters = SearchParameters(term = mockSearchTerm, tags = SAMPLE_TAGS),
                     ),
                 )
 
@@ -219,8 +269,6 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     mockGetAllPosts(
                         GetPostParams(
                             sorting = mockSortType,
-                            searchTerm = mockSearchTerm,
-                            tags = GetPostParams.Tags.Tagged(SAMPLE_TAGS),
                             visibility = PostVisibility.Public,
                             offset = expectedOffset,
                         ),
@@ -230,7 +278,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
 
             @ParameterizedTest
             @MethodSource("testCases")
-            fun `WHEN loadContent is called AND category is Unread THEN getUnread should be called`(
+            fun `WHEN loadContent is called AND category is Unread THEN getAllPosts should be called`(
                 testCase: Pair<ShouldLoad, Int>,
             ) = runTest {
                 // GIVEN
@@ -242,7 +290,6 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                         category = Unread,
                         shouldLoad = shouldLoad,
                         sortType = mockSortType,
-                        searchParameters = SearchParameters(term = mockSearchTerm, tags = SAMPLE_TAGS),
                     ),
                 )
 
@@ -251,8 +298,6 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     mockGetAllPosts(
                         GetPostParams(
                             sorting = mockSortType,
-                            searchTerm = mockSearchTerm,
-                            tags = GetPostParams.Tags.Tagged(SAMPLE_TAGS),
                             readLater = true,
                             offset = expectedOffset,
                         ),
@@ -262,7 +307,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
 
             @ParameterizedTest
             @MethodSource("testCases")
-            fun `WHEN loadContent is called AND category is Private THEN getPrivate should be called`(
+            fun `WHEN loadContent is called AND category is Private THEN getAllPosts should be called`(
                 testCase: Pair<ShouldLoad, Int>,
             ) = runTest {
                 // GIVEN
@@ -274,7 +319,6 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                         category = Private,
                         shouldLoad = shouldLoad,
                         sortType = mockSortType,
-                        searchParameters = SearchParameters(term = mockSearchTerm, tags = SAMPLE_TAGS),
                     ),
                 )
 
@@ -283,8 +327,6 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     mockGetAllPosts(
                         GetPostParams(
                             sorting = mockSortType,
-                            searchTerm = mockSearchTerm,
-                            tags = GetPostParams.Tags.Tagged(SAMPLE_TAGS),
                             visibility = PostVisibility.Private,
                             offset = expectedOffset,
                         ),
@@ -294,7 +336,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
 
             @ParameterizedTest
             @MethodSource("testCases")
-            fun `WHEN loadContent is called AND category is Untagged THEN getUntagged should be called`(
+            fun `WHEN loadContent is called AND category is Untagged THEN getAllPosts should be called`(
                 testCase: Pair<ShouldLoad, Int>,
             ) = runTest {
                 // GIVEN
@@ -306,7 +348,6 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                         category = Untagged,
                         shouldLoad = shouldLoad,
                         sortType = mockSortType,
-                        searchParameters = SearchParameters(term = mockSearchTerm, tags = SAMPLE_TAGS),
                     ),
                 )
 
@@ -315,7 +356,6 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                     mockGetAllPosts(
                         GetPostParams(
                             sorting = mockSortType,
-                            searchTerm = mockSearchTerm,
                             tags = GetPostParams.Tags.Untagged,
                             offset = expectedOffset,
                         ),
@@ -329,40 +369,21 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                 add(ShouldLoadNextPage(13) to 13)
             }
         }
-
-        @Test
-        fun `WHEN loadContent is called AND category is Recent THEN getRecent should be called`() = runTest {
-            // WHEN
-            postListViewModel.loadContent(
-                createPostListContent(
-                    category = Recent,
-                    shouldLoad = ShouldLoadFirstPage,
-                    sortType = mockSortType,
-                    searchParameters = SearchParameters(term = mockSearchTerm, tags = SAMPLE_TAGS),
-                ),
-            )
-
-            // THEN
-            coVerify {
-                mockGetRecentPosts.invoke(
-                    GetPostParams(
-                        sorting = mockSortType,
-                        searchTerm = mockSearchTerm,
-                        tags = GetPostParams.Tags.Tagged(SAMPLE_TAGS),
-                    ),
-                )
-            }
-        }
     }
 
     @Nested
     inner class CategoryTests {
 
         @Test
-        fun `WHEN getAll is called THEN launchGetAll is called with the expected GetPostParams`() = runTest {
-            val force = randomBoolean()
-
-            postListViewModel.getAll(mockSortType, mockSearchTerm, SAMPLE_TAGS, mockOffset, force)
+        fun `WHEN category is All THEN getAllPosts is called with the expected params`() = runTest {
+            postListViewModel.loadContent(
+                createPostListContent(
+                    category = All,
+                    shouldLoad = ShouldLoadFirstPage,
+                    sortType = mockSortType,
+                    searchParameters = SearchParameters(term = mockSearchTerm, tags = SAMPLE_TAGS),
+                ),
+            )
 
             coVerify {
                 mockGetAllPosts(
@@ -370,144 +391,132 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                         sorting = mockSortType,
                         searchTerm = mockSearchTerm,
                         tags = GetPostParams.Tags.Tagged(SAMPLE_TAGS),
-                        offset = mockOffset,
-                        forceRefresh = force,
+                        offset = 0,
+                        forceRefresh = false,
                     ),
                 )
             }
         }
 
         @Test
-        fun `GIVEN getRecentPosts will fail WHEN launchGetAll is called THEN repository won't run any actions`() =
-            runTest {
-                every { mockGetRecentPosts(any()) } returns flowOf(Failure(mockException))
+        fun `WHEN category is Recent THEN getRecentPosts should be called`() = runTest {
+            // WHEN
+            postListViewModel.loadContent(
+                createPostListContent(
+                    category = Recent,
+                    sortType = mockSortType,
+                ),
+            )
 
-                postListViewModel.getRecent(mockSortType, mockSearchTerm, SAMPLE_TAGS)
-
-                coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
-                assertThat(postListViewModel.error.first()).isEqualTo(mockException)
+            // THEN
+            coVerify {
+                mockGetRecentPosts.invoke(GetPostParams(sorting = mockSortType))
             }
+        }
 
         @Test
-        fun `GIVEN getRecentPosts will succeed WHEN launchGetAll is called THEN repository will run SetPosts`() =
-            runTest {
-                postListViewModel.getRecent(mockSortType, mockSearchTerm, SAMPLE_TAGS)
+        fun `WHEN getRecentPosts fails THEN repository won't run any actions`() = runTest {
+            every { mockGetRecentPosts(any()) } returns flowOf(Failure(mockException))
 
-                coVerify { mockAppStateRepository.runAction(SetPosts(mockResponse)) }
-                assertThat(postListViewModel.error.first()).isNull()
-            }
+            postListViewModel.loadContent(
+                createPostListContent(
+                    category = Recent,
+                    sortType = mockSortType,
+                ),
+            )
+
+            coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
+            assertThat(postListViewModel.error.first()).isEqualTo(mockException)
+        }
 
         @Test
-        fun `WHEN getPublic is called THEN launchGetAll is called with the expected GetPostParams`() = runTest {
-            postListViewModel.getPublic(mockSortType, mockSearchTerm, SAMPLE_TAGS, mockOffset)
+        fun `WHEN getRecentPosts succeeds THEN repository will run SetPosts`() = runTest {
+            postListViewModel.loadContent(
+                createPostListContent(
+                    category = Recent,
+                    sortType = mockSortType,
+                ),
+            )
+
+            coVerify { mockAppStateRepository.runAction(SetPosts(mockResponse)) }
+            assertThat(postListViewModel.error.first()).isNull()
+        }
+
+        @Test
+        fun `WHEN category is Public THEN getRecentPosts should be called`() = runTest {
+            postListViewModel.loadContent(
+                createPostListContent(
+                    category = Public,
+                    sortType = mockSortType,
+                ),
+            )
 
             verify {
                 mockGetAllPosts(
                     GetPostParams(
                         sorting = mockSortType,
-                        searchTerm = mockSearchTerm,
-                        tags = GetPostParams.Tags.Tagged(SAMPLE_TAGS),
                         visibility = PostVisibility.Public,
-                        offset = mockOffset,
                     ),
                 )
             }
         }
 
         @Test
-        fun `WHEN getPrivate is called THEN launchGetAll is called with the expected GetPostParams`() = runTest {
-            postListViewModel.getPrivate(mockSortType, mockSearchTerm, SAMPLE_TAGS, mockOffset)
+        fun `WHEN category is Private THEN getRecentPosts should be called`() = runTest {
+            postListViewModel.loadContent(
+                createPostListContent(
+                    category = Private,
+                    sortType = mockSortType,
+                ),
+            )
 
             verify {
                 mockGetAllPosts(
                     GetPostParams(
                         sorting = mockSortType,
-                        searchTerm = mockSearchTerm,
-                        tags = GetPostParams.Tags.Tagged(SAMPLE_TAGS),
                         visibility = PostVisibility.Private,
-                        offset = mockOffset,
                     ),
                 )
             }
         }
 
         @Test
-        fun `WHEN getUnread is called THEN launchGetAll is called with the expected GetPostParams`() = runTest {
-            postListViewModel.getUnread(mockSortType, mockSearchTerm, SAMPLE_TAGS, mockOffset)
+        fun `WHEN category is Unread THEN getRecentPosts should be called`() = runTest {
+            postListViewModel.loadContent(
+                createPostListContent(
+                    category = Unread,
+                    sortType = mockSortType,
+                ),
+            )
 
             verify {
                 mockGetAllPosts(
                     GetPostParams(
                         sorting = mockSortType,
-                        searchTerm = mockSearchTerm,
-                        tags = GetPostParams.Tags.Tagged(SAMPLE_TAGS),
                         readLater = true,
-                        offset = mockOffset,
                     ),
                 )
             }
         }
 
         @Test
-        fun `WHEN getUntagged is called THEN launchGetAll is called with the expected GetPostParams`() = runTest {
-            postListViewModel.getUntagged(mockSortType, mockSearchTerm, mockOffset)
+        fun `WHEN category is Untagged THEN getRecentPosts should be called`() = runTest {
+            postListViewModel.loadContent(
+                createPostListContent(
+                    category = Untagged,
+                    sortType = mockSortType,
+                ),
+            )
 
             verify {
                 mockGetAllPosts(
                     GetPostParams(
                         sorting = mockSortType,
-                        searchTerm = mockSearchTerm,
                         tags = GetPostParams.Tags.Untagged,
-                        offset = mockOffset,
                     ),
                 )
             }
         }
-    }
-
-    @Nested
-    inner class LaunchGetAllTests {
-
-        @Test
-        fun `GIVEN getAllPosts will fail WHEN launchGetAll is called THEN repository won't run any actions`() =
-            runTest {
-                every { mockGetAllPosts(GetPostParams()) } returns flowOf(Failure(mockException))
-
-                postListViewModel.launchGetAll(GetPostParams())
-
-                coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
-                assertThat(postListViewModel.error.first()).isEqualTo(mockException)
-            }
-
-        @Test
-        fun `GIVEN getAllPosts will succeed and offset is 0 WHEN launchGetAll is called THEN repository will run SetPosts`() =
-            runTest {
-                // GIVEN
-                val params = GetPostParams(offset = 0)
-                every { mockGetAllPosts(params) } returns flowOf(Success(mockResponse))
-
-                // WHEN
-                postListViewModel.launchGetAll(params)
-
-                // THEN
-                coVerify { mockAppStateRepository.runAction(SetPosts(mockResponse)) }
-                assertThat(postListViewModel.error.first()).isNull()
-            }
-
-        @Test
-        fun `GIVEN getAllPosts will succeed and offset is not 0 WHEN launchGetAll is called THEN repository will run SetNextPostPage`() =
-            runTest {
-                // GIVEN
-                val params = GetPostParams(offset = 1)
-                every { mockGetAllPosts(params) } returns flowOf(Success(mockResponse))
-
-                // WHEN
-                postListViewModel.launchGetAll(params)
-
-                // THEN
-                coVerify { mockAppStateRepository.runAction(SetNextPostPage(mockResponse)) }
-                assertThat(postListViewModel.error.first()).isNull()
-            }
     }
 
     @Test

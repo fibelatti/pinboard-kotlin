@@ -106,7 +106,7 @@ class SearchActionHandler @Inject constructor(
             searchContent.previousContent.copy(
                 category = All,
                 sortType = getPreferredSortType(),
-                searchParameters = searchContent.searchParameters.copy(term = searchContent.searchParameters.term),
+                searchParameters = searchContent.searchParameters,
                 shouldLoad = ShouldLoadFirstPage,
             )
         }

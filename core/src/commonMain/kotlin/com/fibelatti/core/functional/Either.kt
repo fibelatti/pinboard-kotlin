@@ -2,6 +2,8 @@ package com.fibelatti.core.functional
 
 import com.fibelatti.core.functional.Either.Left
 import com.fibelatti.core.functional.Either.Right
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onEach
 
 /**
  * Represents a value of one of two possible types (a disjoint union).
@@ -236,3 +238,21 @@ public inline fun <T> Result<T>.onSuccess(action: (value: T) -> Unit): Result<T>
     it.getOrNull()?.let(action)
 }
 // endregion
+
+// region Extensions
+public inline fun <T> Flow<Result<T>>.onEachSuccess(
+    crossinline action: (value: T) -> Unit,
+): Flow<Result<T>> {
+    return this.onEach { result: Result<T> ->
+        result.onSuccess(action)
+    }
+}
+
+public inline fun <T> Flow<Result<T>>.onEachFailure(
+    crossinline action: (exception: Throwable) -> Unit,
+): Flow<Result<T>> {
+    return this.onEach { result: Result<T> ->
+        result.onFailure(action)
+    }
+}
+// endregion Extensions

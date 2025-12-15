@@ -16,6 +16,7 @@ data class GetPostParams(
     val offset: Int = 0,
     val forceRefresh: Boolean = false,
 ) {
+
     sealed class Tags {
         data object Untagged : Tags()
         data class Tagged(val tags: List<Tag>?) : Tags()
