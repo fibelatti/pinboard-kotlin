@@ -6,7 +6,6 @@ import com.fibelatti.core.functional.onEachSuccess
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
-import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
 import com.fibelatti.pinboard.features.appstate.PostAction
 import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.Private
@@ -72,11 +71,15 @@ class PostListViewModel @Inject constructor(
         when (content.category) {
             is All -> {
                 getAll(
-                    sorting = content.sortType,
-                    searchTerm = content.searchParameters.term,
-                    tags = GetPostParams.Tags.Tagged(content.searchParameters.tags),
-                    offset = offset,
-                    forceRefresh = content.shouldLoad is ShouldForceLoad,
+                    params = GetPostParams(
+                        sorting = content.sortType,
+                        searchTerm = content.searchParameters.term,
+                        tags = GetPostParams.Tags.Tagged(content.searchParameters.tags),
+                        matchAll = content.searchParameters.matchAll,
+                        exactMatch = content.searchParameters.exactMatch,
+                        offset = offset,
+                        forceRefresh = content.shouldLoad is ShouldForceLoad,
+                    ),
                 )
             }
 
@@ -88,40 +91,48 @@ class PostListViewModel @Inject constructor(
 
             is Public -> {
                 getAll(
-                    sorting = content.sortType,
-                    visibility = PostVisibility.Public,
-                    offset = offset,
+                    params = GetPostParams(
+                        sorting = content.sortType,
+                        visibility = PostVisibility.Public,
+                        offset = offset,
+                    ),
                 )
             }
 
             is Private -> {
                 getAll(
-                    sorting = content.sortType,
-                    visibility = PostVisibility.Private,
-                    offset = offset,
+                    params = GetPostParams(
+                        sorting = content.sortType,
+                        visibility = PostVisibility.Private,
+                        offset = offset,
+                    ),
                 )
             }
 
             is Unread -> {
                 getAll(
-                    sorting = content.sortType,
-                    readLater = true,
-                    offset = offset,
+                    params = GetPostParams(
+                        sorting = content.sortType,
+                        readLater = true,
+                        offset = offset,
+                    ),
                 )
             }
 
             is Untagged -> {
                 getAll(
-                    sorting = content.sortType,
-                    tags = GetPostParams.Tags.Untagged,
-                    offset = offset,
+                    params = GetPostParams(
+                        sorting = content.sortType,
+                        tags = GetPostParams.Tags.Untagged,
+                        offset = offset,
+                    ),
                 )
             }
         }
     }
 
     private fun getRecent(sorting: SortType) {
-        getRecentPosts(params = GetPostParams(sorting))
+        getRecentPosts(params = sorting)
             .onEachSuccess { result: PostListResult ->
                 runAction(SetPosts(result))
             }
@@ -129,25 +140,7 @@ class PostListViewModel @Inject constructor(
             .launchIn(scope)
     }
 
-    private fun getAll(
-        sorting: SortType = ByDateAddedNewestFirst,
-        searchTerm: String = "",
-        tags: GetPostParams.Tags = GetPostParams.Tags.None,
-        visibility: PostVisibility = PostVisibility.None,
-        readLater: Boolean = false,
-        offset: Int = 0,
-        forceRefresh: Boolean = false,
-    ) {
-        val params = GetPostParams(
-            sorting = sorting,
-            searchTerm = searchTerm,
-            tags = tags,
-            visibility = visibility,
-            readLater = readLater,
-            offset = offset,
-            forceRefresh = forceRefresh,
-        )
-
+    private fun getAll(params: GetPostParams) {
         getAllPosts(params)
             .onEachSuccess { result: PostListResult ->
                 val action: PostAction = if (params.offset == 0) {

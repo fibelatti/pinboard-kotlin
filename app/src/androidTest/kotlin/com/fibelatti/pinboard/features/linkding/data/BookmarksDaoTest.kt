@@ -645,7 +645,7 @@ class BookmarksDaoTest : BaseDbTest() {
 
             // WHEN
             val result = bookmarksDao.getBookmarkCount(
-                query = BookmarksDao.bookmarksCountNoFtsQuery(tag1 = "题"),
+                query = BookmarksDao.bookmarksCountNoFtsQuery(tag1 = "主题"),
             )
 
             // THEN
@@ -705,7 +705,7 @@ class BookmarksDaoTest : BaseDbTest() {
 
             // WHEN
             val result = bookmarksDao.getBookmarkCount(
-                query = BookmarksDao.bookmarksCountNoFtsQuery(tag1 = "Те"),
+                query = BookmarksDao.bookmarksCountNoFtsQuery(tag1 = "Тема"),
             )
 
             // THEN
@@ -1309,7 +1309,7 @@ class BookmarksDaoTest : BaseDbTest() {
 
             // WHEN
             val result = bookmarksDao.getAllBookmarks(
-                query = BookmarksDao.allBookmarksNoFtsQuery(tag1 = "题"),
+                query = BookmarksDao.allBookmarksNoFtsQuery(tag1 = "主题"),
             )
 
             // THEN
@@ -1375,7 +1375,7 @@ class BookmarksDaoTest : BaseDbTest() {
 
             // WHEN
             val result = bookmarksDao.getAllBookmarks(
-                query = BookmarksDao.allBookmarksNoFtsQuery(tag1 = "Те"),
+                query = BookmarksDao.allBookmarksNoFtsQuery(tag1 = "Тема"),
             )
 
             // THEN

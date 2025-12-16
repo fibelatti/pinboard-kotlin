@@ -125,6 +125,8 @@ internal class PostsDataSourceProxyTest {
                 sortType = any(),
                 searchTerm = stringArg,
                 tags = any(),
+                matchAll = booleanArg,
+                exactMatch = booleanArg,
                 untaggedOnly = booleanArg,
                 postVisibility = any(),
                 readLaterOnly = booleanArg,
@@ -139,6 +141,8 @@ internal class PostsDataSourceProxyTest {
             sortType = mockk(),
             searchTerm = stringArg,
             tags = mockk(),
+            matchAll = booleanArg,
+            exactMatch = booleanArg,
             untaggedOnly = booleanArg,
             postVisibility = mockk(),
             readLaterOnly = booleanArg,
@@ -151,10 +155,13 @@ internal class PostsDataSourceProxyTest {
         assertThat(result.first()).isEqualTo(expectedResult)
 
         coVerify {
+            @Suppress("UnusedFlow")
             repository.getAllPosts(
                 sortType = any(),
                 searchTerm = stringArg,
                 tags = any(),
+                matchAll = booleanArg,
+                exactMatch = booleanArg,
                 untaggedOnly = booleanArg,
                 postVisibility = any(),
                 readLaterOnly = booleanArg,
@@ -178,12 +185,16 @@ internal class PostsDataSourceProxyTest {
             repository.getQueryResultSize(
                 searchTerm = stringArg,
                 tags = any(),
+                matchAll = booleanArg,
+                exactMatch = booleanArg,
             )
         } returns expectedResult
 
         val result = proxy.getQueryResultSize(
             searchTerm = stringArg,
             tags = mockk(),
+            matchAll = booleanArg,
+            exactMatch = booleanArg,
         )
 
         assertThat(result).isEqualTo(expectedResult)
@@ -192,6 +203,8 @@ internal class PostsDataSourceProxyTest {
             repository.getQueryResultSize(
                 searchTerm = stringArg,
                 tags = any(),
+                matchAll = booleanArg,
+                exactMatch = booleanArg,
             )
         }
         verifyAllSources()

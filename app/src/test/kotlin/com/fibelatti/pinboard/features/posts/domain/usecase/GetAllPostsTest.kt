@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.posts.domain.usecase
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAGS
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_VALID
+import com.fibelatti.pinboard.core.AppConfig.DEFAULT_PAGE_SIZE
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
 import com.fibelatti.pinboard.features.appstate.ByDateAddedOldestFirst
 import com.fibelatti.pinboard.features.appstate.ByTitleAlphabetical
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
+@Suppress("UnusedFlow")
 class GetAllPostsTest {
 
     private val mockResponse = mockk<PostListResult>()
@@ -38,6 +40,8 @@ class GetAllPostsTest {
                 sortType = any(),
                 searchTerm = any(),
                 tags = any(),
+                matchAll = any(),
+                exactMatch = any(),
                 untaggedOnly = any(),
                 postVisibility = any(),
                 readLaterOnly = any(),
@@ -68,14 +72,16 @@ class GetAllPostsTest {
             verify {
                 mockPostsRepository.getAllPosts(
                     sortType = sorting,
-                    searchTerm = any(),
-                    tags = any(),
-                    untaggedOnly = any(),
-                    postVisibility = any(),
-                    readLaterOnly = any(),
+                    searchTerm = "",
+                    tags = null,
+                    matchAll = true,
+                    exactMatch = false,
+                    untaggedOnly = false,
+                    postVisibility = PostVisibility.None,
+                    readLaterOnly = false,
                     countLimit = -1,
-                    pageLimit = any(),
-                    pageOffset = any(),
+                    pageLimit = DEFAULT_PAGE_SIZE,
+                    pageOffset = 0,
                     forceRefresh = false,
                 )
             }
@@ -104,12 +110,14 @@ class GetAllPostsTest {
                     sortType = ByDateAddedNewestFirst,
                     searchTerm = SAMPLE_URL_VALID,
                     tags = null,
+                    matchAll = true,
+                    exactMatch = false,
                     untaggedOnly = false,
                     postVisibility = PostVisibility.None,
                     readLaterOnly = false,
                     countLimit = -1,
-                    pageLimit = params.limit,
-                    pageOffset = params.offset,
+                    pageLimit = DEFAULT_PAGE_SIZE,
+                    pageOffset = 0,
                     forceRefresh = false,
                 )
             }
@@ -127,15 +135,17 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    sortType = any(),
-                    searchTerm = any(),
-                    tags = isNull(),
-                    untaggedOnly = any(),
-                    postVisibility = any(),
-                    readLaterOnly = any(),
+                    sortType = ByDateAddedNewestFirst,
+                    searchTerm = "",
+                    tags = null,
+                    matchAll = true,
+                    exactMatch = false,
+                    untaggedOnly = false,
+                    postVisibility = PostVisibility.None,
+                    readLaterOnly = false,
                     countLimit = -1,
-                    pageLimit = any(),
-                    pageOffset = any(),
+                    pageLimit = DEFAULT_PAGE_SIZE,
+                    pageOffset = 0,
                     forceRefresh = false,
                 )
             }
@@ -153,15 +163,17 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    sortType = any(),
-                    searchTerm = any(),
-                    tags = any(),
+                    sortType = ByDateAddedNewestFirst,
+                    searchTerm = "",
+                    tags = null,
+                    matchAll = true,
+                    exactMatch = false,
                     untaggedOnly = true,
-                    postVisibility = any(),
-                    readLaterOnly = any(),
+                    postVisibility = PostVisibility.None,
+                    readLaterOnly = false,
                     countLimit = -1,
-                    pageLimit = any(),
-                    pageOffset = any(),
+                    pageLimit = DEFAULT_PAGE_SIZE,
+                    pageOffset = 0,
                     forceRefresh = false,
                 )
             }
@@ -179,15 +191,17 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    sortType = any(),
-                    searchTerm = any(),
+                    sortType = ByDateAddedNewestFirst,
+                    searchTerm = "",
                     tags = SAMPLE_TAGS,
-                    untaggedOnly = any(),
-                    postVisibility = any(),
-                    readLaterOnly = any(),
+                    matchAll = true,
+                    exactMatch = false,
+                    untaggedOnly = false,
+                    postVisibility = PostVisibility.None,
+                    readLaterOnly = false,
                     countLimit = -1,
-                    pageLimit = any(),
-                    pageOffset = any(),
+                    pageLimit = DEFAULT_PAGE_SIZE,
+                    pageOffset = 0,
                     forceRefresh = false,
                 )
             }
@@ -205,15 +219,17 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    sortType = any(),
-                    searchTerm = any(),
-                    tags = any(),
-                    untaggedOnly = any(),
+                    sortType = ByDateAddedNewestFirst,
+                    searchTerm = "",
+                    tags = null,
+                    matchAll = true,
+                    exactMatch = false,
+                    untaggedOnly = false,
                     postVisibility = PostVisibility.None,
-                    readLaterOnly = any(),
+                    readLaterOnly = false,
                     countLimit = -1,
-                    pageLimit = any(),
-                    pageOffset = any(),
+                    pageLimit = DEFAULT_PAGE_SIZE,
+                    pageOffset = 0,
                     forceRefresh = false,
                 )
             }
@@ -231,15 +247,17 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    sortType = any(),
-                    searchTerm = any(),
-                    tags = any(),
-                    untaggedOnly = any(),
+                    sortType = ByDateAddedNewestFirst,
+                    searchTerm = "",
+                    tags = null,
+                    matchAll = true,
+                    exactMatch = false,
+                    untaggedOnly = false,
                     postVisibility = PostVisibility.Public,
-                    readLaterOnly = any(),
+                    readLaterOnly = false,
                     countLimit = -1,
-                    pageLimit = any(),
-                    pageOffset = any(),
+                    pageLimit = DEFAULT_PAGE_SIZE,
+                    pageOffset = 0,
                     forceRefresh = false,
                 )
             }
@@ -257,15 +275,17 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    sortType = any(),
-                    searchTerm = any(),
-                    tags = any(),
-                    untaggedOnly = any(),
+                    sortType = ByDateAddedNewestFirst,
+                    searchTerm = "",
+                    tags = null,
+                    matchAll = true,
+                    exactMatch = false,
+                    untaggedOnly = false,
                     postVisibility = PostVisibility.Private,
-                    readLaterOnly = any(),
+                    readLaterOnly = false,
                     countLimit = -1,
-                    pageLimit = any(),
-                    pageOffset = any(),
+                    pageLimit = DEFAULT_PAGE_SIZE,
+                    pageOffset = 0,
                     forceRefresh = false,
                 )
             }
@@ -283,15 +303,17 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    sortType = any(),
-                    searchTerm = any(),
-                    tags = any(),
-                    untaggedOnly = any(),
-                    postVisibility = any(),
+                    sortType = ByDateAddedNewestFirst,
+                    searchTerm = "",
+                    tags = null,
+                    matchAll = true,
+                    exactMatch = false,
+                    untaggedOnly = false,
+                    postVisibility = PostVisibility.None,
                     readLaterOnly = true,
                     countLimit = -1,
-                    pageLimit = any(),
-                    pageOffset = any(),
+                    pageLimit = DEFAULT_PAGE_SIZE,
+                    pageOffset = 0,
                     forceRefresh = false,
                 )
             }
@@ -309,15 +331,17 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    sortType = any(),
-                    searchTerm = any(),
-                    tags = any(),
-                    untaggedOnly = any(),
-                    postVisibility = any(),
+                    sortType = ByDateAddedNewestFirst,
+                    searchTerm = "",
+                    tags = null,
+                    matchAll = true,
+                    exactMatch = false,
+                    untaggedOnly = false,
+                    postVisibility = PostVisibility.None,
                     readLaterOnly = false,
                     countLimit = -1,
-                    pageLimit = any(),
-                    pageOffset = any(),
+                    pageLimit = DEFAULT_PAGE_SIZE,
+                    pageOffset = 0,
                     forceRefresh = false,
                 )
             }
@@ -335,15 +359,17 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    sortType = any(),
-                    searchTerm = any(),
-                    tags = any(),
-                    untaggedOnly = any(),
-                    postVisibility = any(),
-                    readLaterOnly = any(),
+                    sortType = ByDateAddedNewestFirst,
+                    searchTerm = "",
+                    tags = null,
+                    matchAll = true,
+                    exactMatch = false,
+                    untaggedOnly = false,
+                    postVisibility = PostVisibility.None,
+                    readLaterOnly = false,
                     countLimit = -1,
                     pageLimit = 100,
-                    pageOffset = any(),
+                    pageOffset = 0,
                     forceRefresh = false,
                 )
             }
@@ -361,14 +387,16 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    sortType = any(),
-                    searchTerm = any(),
-                    tags = any(),
-                    untaggedOnly = any(),
-                    postVisibility = any(),
-                    readLaterOnly = any(),
+                    sortType = ByDateAddedNewestFirst,
+                    searchTerm = "",
+                    tags = null,
+                    matchAll = true,
+                    exactMatch = false,
+                    untaggedOnly = false,
+                    postVisibility = PostVisibility.None,
+                    readLaterOnly = false,
                     countLimit = -1,
-                    pageLimit = any(),
+                    pageLimit = DEFAULT_PAGE_SIZE,
                     pageOffset = 100,
                     forceRefresh = false,
                 )
@@ -387,15 +415,17 @@ class GetAllPostsTest {
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    sortType = any(),
-                    searchTerm = any(),
-                    tags = any(),
-                    untaggedOnly = any(),
-                    postVisibility = any(),
-                    readLaterOnly = any(),
+                    sortType = ByDateAddedNewestFirst,
+                    searchTerm = "",
+                    tags = null,
+                    matchAll = true,
+                    exactMatch = false,
+                    untaggedOnly = false,
+                    postVisibility = PostVisibility.None,
+                    readLaterOnly = false,
                     countLimit = -1,
-                    pageLimit = any(),
-                    pageOffset = any(),
+                    pageLimit = DEFAULT_PAGE_SIZE,
+                    pageOffset = 0,
                     forceRefresh = true,
                 )
             }

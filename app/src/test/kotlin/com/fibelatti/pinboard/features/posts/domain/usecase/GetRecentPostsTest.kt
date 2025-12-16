@@ -1,10 +1,12 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
 import com.fibelatti.core.functional.Success
-import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAGS
-import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_VALID
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_RECENT_QUANTITY
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
+import com.fibelatti.pinboard.features.appstate.ByDateAddedOldestFirst
+import com.fibelatti.pinboard.features.appstate.ByTitleAlphabetical
+import com.fibelatti.pinboard.features.appstate.ByTitleAlphabeticalReverse
+import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
@@ -13,8 +15,12 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 
+@Suppress("UnusedFlow")
 class GetRecentPostsTest {
 
     private val mockResponse = mockk<PostListResult>()
@@ -25,6 +31,8 @@ class GetRecentPostsTest {
                 sortType = any(),
                 searchTerm = any(),
                 tags = any(),
+                matchAll = any(),
+                exactMatch = any(),
                 untaggedOnly = any(),
                 postVisibility = any(),
                 readLaterOnly = any(),
@@ -40,21 +48,26 @@ class GetRecentPostsTest {
         postsRepository = mockPostsRepository,
     )
 
-    @Test
-    fun `GIVEN search term was set in the params WHEN getRecentPosts is called THEN repository is called with the expected params`() =
-        runTest {
-            // GIVEN
-            val params = GetPostParams(searchTerm = SAMPLE_URL_VALID)
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    inner class SortingTest {
 
+        @ParameterizedTest
+        @MethodSource("testCases")
+        fun `GIVEN sorting was set in the params WHEN getRecentPosts is called THEN repository is called with the expected params`(
+            sorting: SortType,
+        ) = runTest {
             // WHEN
-            getRecentPosts(params)
+            getRecentPosts(sorting)
 
             // THEN
             verify {
                 mockPostsRepository.getAllPosts(
-                    sortType = ByDateAddedNewestFirst,
-                    searchTerm = SAMPLE_URL_VALID,
+                    sortType = sorting,
+                    searchTerm = "",
                     tags = null,
+                    matchAll = true,
+                    exactMatch = false,
                     untaggedOnly = false,
                     postVisibility = PostVisibility.None,
                     readLaterOnly = false,
@@ -66,107 +79,11 @@ class GetRecentPostsTest {
             }
         }
 
-    @Test
-    fun `GIVEN tagParams was None WHEN getRecentPosts is called THEN repository is called with the expected params`() =
-        runTest {
-            // GIVEN
-            val params = GetPostParams(tags = GetPostParams.Tags.None)
-
-            // WHEN
-            getRecentPosts(params)
-
-            // THEN
-            verify {
-                mockPostsRepository.getAllPosts(
-                    sortType = ByDateAddedNewestFirst,
-                    searchTerm = "",
-                    tags = null,
-                    untaggedOnly = false,
-                    postVisibility = PostVisibility.None,
-                    readLaterOnly = false,
-                    countLimit = DEFAULT_RECENT_QUANTITY,
-                    pageLimit = DEFAULT_RECENT_QUANTITY,
-                    pageOffset = 0,
-                    forceRefresh = false,
-                )
-            }
-        }
-
-    @Test
-    fun `GIVEN tagParams was Untagged WHEN getRecentPosts is called THEN repository is called with the expected params`() =
-        runTest {
-            // GIVEN
-            val params = GetPostParams(tags = GetPostParams.Tags.Untagged)
-
-            // WHEN
-            getRecentPosts(params)
-
-            // THEN
-            verify {
-                mockPostsRepository.getAllPosts(
-                    sortType = ByDateAddedNewestFirst,
-                    searchTerm = "",
-                    tags = null,
-                    untaggedOnly = false,
-                    postVisibility = PostVisibility.None,
-                    readLaterOnly = false,
-                    countLimit = DEFAULT_RECENT_QUANTITY,
-                    pageLimit = DEFAULT_RECENT_QUANTITY,
-                    pageOffset = 0,
-                    forceRefresh = false,
-                )
-            }
-        }
-
-    @Test
-    fun `GIVEN tagParams was Tagged WHEN getRecentPosts is called THEN repository is called with the expected params`() =
-        runTest {
-            // GIVEN
-            val params = GetPostParams(tags = GetPostParams.Tags.Tagged(SAMPLE_TAGS))
-
-            // WHEN
-            getRecentPosts(params)
-
-            // THEN
-            verify {
-                mockPostsRepository.getAllPosts(
-                    sortType = ByDateAddedNewestFirst,
-                    searchTerm = "",
-                    tags = SAMPLE_TAGS,
-                    untaggedOnly = false,
-                    postVisibility = PostVisibility.None,
-                    readLaterOnly = false,
-                    countLimit = DEFAULT_RECENT_QUANTITY,
-                    pageLimit = DEFAULT_RECENT_QUANTITY,
-                    pageOffset = 0,
-                    forceRefresh = false,
-                )
-            }
-        }
-
-    @Test
-    fun `GIVEN forceRefresh was set in the params WHEN getRecentPosts is called THEN repository is called with the expected params`() =
-        runTest {
-            // GIVEN
-            val params = GetPostParams(forceRefresh = true)
-
-            // WHEN
-            getRecentPosts(params)
-
-            // THEN
-            verify {
-                mockPostsRepository.getAllPosts(
-                    sortType = ByDateAddedNewestFirst,
-                    searchTerm = "",
-                    tags = null,
-                    untaggedOnly = false,
-                    postVisibility = PostVisibility.None,
-                    readLaterOnly = false,
-                    countLimit = DEFAULT_RECENT_QUANTITY,
-                    pageLimit = DEFAULT_RECENT_QUANTITY,
-                    pageOffset = 0,
-                    forceRefresh = true,
-                )
-            }
-        }
+        fun testCases(): List<SortType> = listOf(
+            ByDateAddedNewestFirst,
+            ByDateAddedOldestFirst,
+            ByTitleAlphabetical,
+            ByTitleAlphabeticalReverse,
+        )
+    }
 }

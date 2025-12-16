@@ -10,6 +10,8 @@ data class GetPostParams(
     val sorting: SortType = ByDateAddedNewestFirst,
     val searchTerm: String = "",
     val tags: Tags = Tags.None,
+    val matchAll: Boolean = true,
+    val exactMatch: Boolean = false,
     val visibility: PostVisibility = PostVisibility.None,
     val readLater: Boolean = false,
     val limit: Int = DEFAULT_PAGE_SIZE,

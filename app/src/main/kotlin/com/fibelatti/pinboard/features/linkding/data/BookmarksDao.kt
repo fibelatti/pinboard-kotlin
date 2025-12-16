@@ -54,6 +54,8 @@ interface BookmarksDao {
             tag1: String = "",
             tag2: String = "",
             tag3: String = "",
+            matchAll: Boolean = true,
+            exactMatch: Boolean = false,
             untaggedOnly: Boolean = false,
             postVisibility: PostVisibility = PostVisibility.None,
             readLaterOnly: Boolean = false,
@@ -65,6 +67,8 @@ interface BookmarksDao {
                 tag1 = tag1,
                 tag2 = tag2,
                 tag3 = tag3,
+                matchAll = matchAll,
+                exactMatch = exactMatch,
                 untaggedOnly = untaggedOnly,
                 postVisibility = postVisibility,
                 readLaterOnly = readLaterOnly,
@@ -78,6 +82,8 @@ interface BookmarksDao {
             tag1: String = "",
             tag2: String = "",
             tag3: String = "",
+            matchAll: Boolean = true,
+            exactMatch: Boolean = false,
             untaggedOnly: Boolean = false,
             postVisibility: PostVisibility = PostVisibility.None,
             readLaterOnly: Boolean = false,
@@ -91,6 +97,8 @@ interface BookmarksDao {
                 tag1 = tag1,
                 tag2 = tag2,
                 tag3 = tag3,
+                matchAll = matchAll,
+                exactMatch = exactMatch,
                 untaggedOnly = untaggedOnly,
                 postVisibility = postVisibility,
                 readLaterOnly = readLaterOnly,
@@ -106,6 +114,8 @@ interface BookmarksDao {
             tag1: String,
             tag2: String,
             tag3: String,
+            matchAll: Boolean,
+            exactMatch: Boolean,
             untaggedOnly: Boolean,
             postVisibility: PostVisibility,
             readLaterOnly: Boolean,
@@ -117,26 +127,42 @@ interface BookmarksDao {
             val words: List<String> = term.trim()
                 .split(regex = "\\s+".toRegex())
                 .filterNot { it.isEmpty() }
+            val logicalOperator: String = if (matchAll) "and" else "or"
+
+            val filterSubquery: String = buildString {
+                if (words.isNotEmpty()) {
+                    val termSubstatement: String = words.joinToString(separator = " $logicalOperator ") {
+                        "$TABLE_NAME.url like ?"
+                    }
+                    val termStatement: String = "$TABLE_NAME.rowid in" +
+                        " (select rowid from $FTS_TABLE_NAME where $FTS_TABLE_NAME match ?)" +
+                        " or ($termSubstatement)"
+
+                    append("($termStatement)")
+                }
+
+                val tagsStatement: String = "$TABLE_NAME.rowid in" +
+                    " (select rowid from $FTS_TABLE_NAME where tagNames match ?)"
+                val tags: String = listOf(tag1, tag2, tag3)
+                    .filter { it.isNotBlank() && !untaggedOnly }
+                    .joinToString(separator = " $logicalOperator ") { tagsStatement }
+
+                if (isNotEmpty() && tags.isNotEmpty()) {
+                    append(" $logicalOperator ")
+                }
+
+                append(tags)
+            }
+
             val sql: String = buildString {
                 append(selectStatement)
 
-                if (words.isNotEmpty()) {
-                    val termStatement: String = "$TABLE_NAME.rowid in" +
-                        " (select rowid from $FTS_TABLE_NAME where $FTS_TABLE_NAME match ?)" +
-                        " or (" + words.joinToString(separator = " and ") { "$TABLE_NAME.url like ?" } + ")"
-
-                    append(" and ($termStatement)")
+                if (filterSubquery.isNotEmpty()) {
+                    append(" and ($filterSubquery)")
                 }
 
                 if (untaggedOnly) {
                     append(" and tagNames = ''")
-                } else {
-                    val tagsStatement: String = " and $TABLE_NAME.rowid in" +
-                        " (select rowid from $FTS_TABLE_NAME where tagNames match ?)"
-
-                    if (tag1.isNotBlank()) append(tagsStatement)
-                    if (tag2.isNotBlank()) append(tagsStatement)
-                    if (tag3.isNotBlank()) append(tagsStatement)
                 }
 
                 when (postVisibility) {
@@ -166,8 +192,16 @@ interface BookmarksDao {
             }
             val args: List<Any> = buildList {
                 if (words.isNotEmpty()) {
-                    add(words.joinToString(separator = " and ") { "*$it*" })
-                    addAll(words.map { "%$it%" })
+                    add(
+                        words.joinToString(separator = " $logicalOperator ") { word: String ->
+                            if (exactMatch) word else "*$word*"
+                        },
+                    )
+                    addAll(
+                        words.map { word: String ->
+                            if (exactMatch) word else "%$word%"
+                        },
+                    )
                 }
 
                 if (!untaggedOnly) {
@@ -186,12 +220,13 @@ interface BookmarksDao {
         fun existingBookmarkTagFtsQuery(tag: String): SimpleSQLiteQuery {
             return SimpleSQLiteQuery(
                 query = "select tagNames from $FTS_TABLE_NAME where tagNames match ?",
-                bindArgs = arrayOf(formatTagArgument(tag = tag)),
+                bindArgs = arrayOf(formatTagArgument(tag = tag, exactMatch = false)),
             )
         }
 
-        private fun formatTagArgument(tag: String): String {
-            return "*${tag.replace(oldValue = "\"", newValue = "")}*"
+        private fun formatTagArgument(tag: String, exactMatch: Boolean = true): String {
+            val sanitizedTag: String = tag.replace(oldValue = "\"", newValue = "")
+            return if (exactMatch) sanitizedTag else "*$sanitizedTag*"
         }
         // endregion FTS queries
 
@@ -201,6 +236,8 @@ interface BookmarksDao {
             tag1: String = "",
             tag2: String = "",
             tag3: String = "",
+            matchAll: Boolean = true,
+            exactMatch: Boolean = false,
             untaggedOnly: Boolean = false,
             postVisibility: PostVisibility = PostVisibility.None,
             readLaterOnly: Boolean = false,
@@ -212,6 +249,8 @@ interface BookmarksDao {
                 tag1 = tag1,
                 tag2 = tag2,
                 tag3 = tag3,
+                matchAll = matchAll,
+                exactMatch = exactMatch,
                 untaggedOnly = untaggedOnly,
                 postVisibility = postVisibility,
                 readLaterOnly = readLaterOnly,
@@ -225,6 +264,8 @@ interface BookmarksDao {
             tag1: String = "",
             tag2: String = "",
             tag3: String = "",
+            matchAll: Boolean = true,
+            exactMatch: Boolean = false,
             untaggedOnly: Boolean = false,
             postVisibility: PostVisibility = PostVisibility.None,
             readLaterOnly: Boolean = false,
@@ -238,6 +279,8 @@ interface BookmarksDao {
                 tag1 = tag1,
                 tag2 = tag2,
                 tag3 = tag3,
+                matchAll = matchAll,
+                exactMatch = exactMatch,
                 untaggedOnly = untaggedOnly,
                 postVisibility = postVisibility,
                 readLaterOnly = readLaterOnly,
@@ -253,6 +296,8 @@ interface BookmarksDao {
             tag1: String,
             tag2: String,
             tag3: String,
+            matchAll: Boolean,
+            exactMatch: Boolean,
             untaggedOnly: Boolean,
             postVisibility: PostVisibility,
             readLaterOnly: Boolean,
@@ -273,23 +318,37 @@ interface BookmarksDao {
             val words: List<String> = term.trim()
                 .split(regex = "\\s+".toRegex())
                 .filterNot { it.isEmpty() }
+            val logicalOperator: String = if (matchAll) "and" else "or"
+
+            val filterSubquery: String = buildString {
+                if (words.isNotEmpty()) {
+                    val termStatement: String = termColumns.joinToString(separator = " or ") { columnName: String ->
+                        "(" + words.joinToString(separator = " $logicalOperator ") { "$columnName like ?" } + ")"
+                    }
+
+                    append("($termStatement)")
+                }
+
+                val tags: String = listOf(tag1, tag2, tag3)
+                    .filter { it.isNotBlank() && !untaggedOnly }
+                    .joinToString(separator = " $logicalOperator ") { "$TABLE_NAME.tagNames like ?" }
+
+                if (isNotEmpty() && tags.isNotEmpty()) {
+                    append(" $logicalOperator ")
+                }
+
+                append(tags)
+            }
+
             val sql: String = buildString {
                 append(selectStatement)
 
-                if (words.isNotEmpty()) {
-                    val termStatement: String = termColumns.joinToString(separator = " or ") { columnName ->
-                        "(" + words.joinToString(separator = " and ") { "$columnName like ?" } + ")"
-                    }
-
-                    append(" and ($termStatement)")
+                if (filterSubquery.isNotEmpty()) {
+                    append(" and ($filterSubquery)")
                 }
 
                 if (untaggedOnly) {
                     append(" and tagNames = ''")
-                } else {
-                    if (tag1.isNotBlank()) append(" and $TABLE_NAME.tagNames like ?")
-                    if (tag2.isNotBlank()) append(" and $TABLE_NAME.tagNames like ?")
-                    if (tag3.isNotBlank()) append(" and $TABLE_NAME.tagNames like ?")
                 }
 
                 when (postVisibility) {
@@ -320,14 +379,18 @@ interface BookmarksDao {
             val args: List<Any> = buildList {
                 if (words.isNotEmpty()) {
                     repeat(times = termColumns.size) {
-                        addAll(words.map { "%$it%" })
+                        addAll(
+                            words.map { word: String ->
+                                if (exactMatch) word else "%$word%"
+                            },
+                        )
                     }
                 }
 
                 if (!untaggedOnly) {
-                    if (tag1.isNotBlank()) add("%$tag1%")
-                    if (tag2.isNotBlank()) add("%$tag2%")
-                    if (tag3.isNotBlank()) add("%$tag3%")
+                    if (tag1.isNotBlank()) add(tag1)
+                    if (tag2.isNotBlank()) add(tag2)
+                    if (tag3.isNotBlank()) add(tag3)
                 }
 
                 add(offset)

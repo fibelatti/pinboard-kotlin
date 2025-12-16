@@ -100,6 +100,8 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                             sorting = postListContent.sortType,
                             searchTerm = postListContent.searchParameters.term,
                             tags = GetPostParams.Tags.Tagged(emptyList()),
+                            matchAll = postListContent.searchParameters.matchAll,
+                            exactMatch = postListContent.searchParameters.exactMatch,
                             offset = 0,
                             forceRefresh = false,
                         ),
@@ -128,6 +130,8 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                             sorting = postListContent.sortType,
                             searchTerm = postListContent.searchParameters.term,
                             tags = GetPostParams.Tags.Tagged(emptyList()),
+                            matchAll = postListContent.searchParameters.matchAll,
+                            exactMatch = postListContent.searchParameters.exactMatch,
                             offset = 0,
                             forceRefresh = true,
                         ),
@@ -410,7 +414,7 @@ internal class PostListViewModelTest : BaseViewModelTest() {
 
             // THEN
             coVerify {
-                mockGetRecentPosts.invoke(GetPostParams(sorting = mockSortType))
+                mockGetRecentPosts.invoke(mockSortType)
             }
         }
 

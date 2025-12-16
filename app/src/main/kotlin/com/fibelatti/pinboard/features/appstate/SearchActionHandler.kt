@@ -12,6 +12,7 @@ class SearchActionHandler @Inject constructor(
     override suspend fun runAction(action: SearchAction, currentContent: Content): Content {
         return when (action) {
             is RefreshSearchTags -> refresh(currentContent)
+            is SetAdvancedSearchParameters -> setAdvancedSearchParameters(action, currentContent)
             is SetTerm -> setSearchTerm(action, currentContent)
             is SetSearchTags -> setSearchTags(action, currentContent)
             is AddSearchTag -> addSearchTag(action, currentContent)
@@ -27,6 +28,20 @@ class SearchActionHandler @Inject constructor(
     private fun refresh(currentContent: Content): Content {
         return currentContent.reduce<SearchContent> { searchContent ->
             searchContent.copy(shouldLoadTags = true)
+        }
+    }
+
+    private fun setAdvancedSearchParameters(
+        action: SetAdvancedSearchParameters,
+        currentContent: Content,
+    ): Content {
+        return currentContent.reduce<SearchContent> { searchContent ->
+            searchContent.copy(
+                searchParameters = searchContent.searchParameters.copy(
+                    matchAll = action.matchAll,
+                    exactMatch = action.exactMatch,
+                ),
+            )
         }
     }
 

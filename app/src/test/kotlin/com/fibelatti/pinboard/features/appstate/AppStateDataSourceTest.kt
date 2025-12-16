@@ -384,6 +384,7 @@ internal class AppStateDataSourceTest {
                 is SetSearchTags -> value to ExpectedHandler.SEARCH
                 is AddSearchTag -> value to ExpectedHandler.SEARCH
                 is RemoveSearchTag -> value to ExpectedHandler.SEARCH
+                is SetAdvancedSearchParameters -> value to ExpectedHandler.SEARCH
                 is SetResultSize -> value to ExpectedHandler.SEARCH
                 is ViewRandomSearch -> value to ExpectedHandler.SEARCH
                 is Search -> value to ExpectedHandler.SEARCH

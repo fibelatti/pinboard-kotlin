@@ -31,6 +31,8 @@ class SearchPostViewModel @Inject constructor(
                     postsRepository.getQueryResultSize(
                         searchTerm = content.searchParameters.term,
                         tags = content.searchParameters.tags,
+                        matchAll = content.searchParameters.matchAll,
+                        exactMatch = content.searchParameters.exactMatch,
                     )
                 } else {
                     0

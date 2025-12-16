@@ -15,6 +15,8 @@ class GetAllPosts @Inject constructor(
         sortType = params.sorting,
         searchTerm = params.searchTerm,
         tags = (params.tags as? GetPostParams.Tags.Tagged)?.tags,
+        matchAll = params.matchAll,
+        exactMatch = params.exactMatch,
         untaggedOnly = params.tags is GetPostParams.Tags.Untagged,
         postVisibility = params.visibility,
         readLaterOnly = params.readLater,

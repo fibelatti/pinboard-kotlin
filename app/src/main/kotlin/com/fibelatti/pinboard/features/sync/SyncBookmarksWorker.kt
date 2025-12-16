@@ -35,6 +35,8 @@ class SyncBookmarksWorker @AssistedInject constructor(
             sortType = ByDateAddedNewestFirst,
             searchTerm = "",
             tags = null,
+            matchAll = true,
+            exactMatch = false,
             untaggedOnly = false,
             postVisibility = PostVisibility.None,
             readLaterOnly = false,

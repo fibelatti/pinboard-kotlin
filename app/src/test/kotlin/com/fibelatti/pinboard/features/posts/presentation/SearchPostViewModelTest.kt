@@ -10,6 +10,7 @@ import com.fibelatti.pinboard.features.appstate.SetResultSize
 import com.fibelatti.pinboard.features.filters.domain.SavedFiltersRepository
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
+import com.fibelatti.pinboard.randomBoolean
 import io.mockk.coEvery
 import io.mockk.coJustRun
 import io.mockk.coVerify
@@ -41,12 +42,27 @@ internal class SearchPostViewModelTest : BaseViewModelTest() {
     @Test
     fun `WHEN SearchContent is emitted AND searchParameters is active THEN getQueryResultSize is called`() = runTest {
         // GIVEN
-        coEvery { mockPostsRepository.getQueryResultSize(searchTerm = "term", tags = emptyList()) } returns 13
+        val matchAll = randomBoolean()
+        val exactMatch = randomBoolean()
+
+        coEvery {
+            mockPostsRepository.getQueryResultSize(
+                searchTerm = "term",
+                tags = emptyList(),
+                matchAll = matchAll,
+                exactMatch = exactMatch,
+            )
+        } returns 13
 
         // WHEN
         appStateFlow.value = createAppState(
             content = SearchContent(
-                searchParameters = SearchParameters(term = "term", tags = emptyList()),
+                searchParameters = SearchParameters(
+                    term = "term",
+                    tags = emptyList(),
+                    matchAll = matchAll,
+                    exactMatch = exactMatch,
+                ),
                 previousContent = createPostListContent(),
             ),
         )

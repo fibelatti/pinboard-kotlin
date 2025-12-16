@@ -19,6 +19,8 @@ interface PostsRepository {
         sortType: SortType,
         searchTerm: String,
         tags: List<Tag>?,
+        matchAll: Boolean,
+        exactMatch: Boolean,
         untaggedOnly: Boolean,
         postVisibility: PostVisibility,
         readLaterOnly: Boolean,
@@ -31,6 +33,8 @@ interface PostsRepository {
     suspend fun getQueryResultSize(
         searchTerm: String,
         tags: List<Tag>?,
+        matchAll: Boolean,
+        exactMatch: Boolean,
     ): Int
 
     suspend fun getPost(id: String, url: String): Result<Post>

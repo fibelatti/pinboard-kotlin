@@ -58,6 +58,8 @@ internal class PostsDataSourceProxy @Inject constructor(
         sortType: SortType,
         searchTerm: String,
         tags: List<Tag>?,
+        matchAll: Boolean,
+        exactMatch: Boolean,
         untaggedOnly: Boolean,
         postVisibility: PostVisibility,
         readLaterOnly: Boolean,
@@ -69,6 +71,8 @@ internal class PostsDataSourceProxy @Inject constructor(
         sortType = sortType,
         searchTerm = searchTerm,
         tags = tags,
+        matchAll = matchAll,
+        exactMatch = exactMatch,
         untaggedOnly = untaggedOnly,
         postVisibility = postVisibility,
         readLaterOnly = readLaterOnly,
@@ -81,9 +85,13 @@ internal class PostsDataSourceProxy @Inject constructor(
     override suspend fun getQueryResultSize(
         searchTerm: String,
         tags: List<Tag>?,
+        matchAll: Boolean,
+        exactMatch: Boolean,
     ): Int = repository.getQueryResultSize(
         searchTerm = searchTerm,
         tags = tags,
+        matchAll = matchAll,
+        exactMatch = exactMatch,
     )
 
     override suspend fun getPost(

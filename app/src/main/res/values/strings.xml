@@ -143,7 +143,7 @@
     <string name="search_title">Filter bookmarks</string>
     <string name="search_random">Random tag</string>
     <string name="search_term">Search the URL, title or description</string>
-    <string name="search_selected_tags">Tags (max. 3):</string>
+    <string name="search_selected_tags">Tags (%d of 3):</string>
     <string name="search_tags">All tags</string>
     <string name="search_active">Filter applied</string>
 
@@ -155,6 +155,12 @@
     <string name="search_share_title">Sharing search results</string>
     <string name="search_share_query">Share query</string>
     <string name="search_share_tags">Share tags</string>
+
+    <string name="search_advanced_content_description">Advanced</string>
+    <string name="search_advanced_match_all">Match all</string>
+    <string name="search_advanced_match_all_description">Bookmarks must include all search terms and selected tags</string>
+    <string name="search_advanced_exact_match">Exact match</string>
+    <string name="search_advanced_exact_match_description">Bookmarks must include the search terms exactly as typed</string>
 
     <!-- Sorting -->
     <string name="sorting_by_date_added_newest_first">By date added (Newest first)</string>

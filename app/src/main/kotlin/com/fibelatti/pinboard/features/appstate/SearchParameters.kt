@@ -8,6 +8,8 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 data class SearchParameters(
     val term: String = "",
     val tags: List<Tag> = listOf(),
+    val matchAll: Boolean = true,
+    val exactMatch: Boolean = false,
 ) {
 
     fun isActive(): Boolean = term.isNotEmpty() || tags.isNotEmpty()

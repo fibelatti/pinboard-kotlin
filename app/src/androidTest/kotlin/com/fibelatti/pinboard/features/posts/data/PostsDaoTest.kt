@@ -568,7 +568,7 @@ class PostsDaoTest : BaseDbTest() {
             // WHEN
             val result = postsDao.getPostCount(
                 query = PostsDao.postCountNoFtsQuery(
-                    tag1 = "题",
+                    tag1 = "主题",
                 ),
             )
 
@@ -620,7 +620,7 @@ class PostsDaoTest : BaseDbTest() {
             // WHEN
             val result = postsDao.getPostCount(
                 query = PostsDao.postCountNoFtsQuery(
-                    tag1 = "Те",
+                    tag1 = "Тема",
                 ),
             )
 
@@ -1233,7 +1233,7 @@ class PostsDaoTest : BaseDbTest() {
             // WHEN
             val result = postsDao.getAllPosts(
                 query = PostsDao.allPostsNoFtsQuery(
-                    tag1 = "题",
+                    tag1 = "主题",
                 ),
             )
 
@@ -1288,7 +1288,7 @@ class PostsDaoTest : BaseDbTest() {
             // WHEN
             val result = postsDao.getAllPosts(
                 query = PostsDao.allPostsNoFtsQuery(
-                    tag1 = "Те",
+                    tag1 = "Тема",
                 ),
             )
 

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package com.fibelatti.pinboard.features.posts.presentation
 
 import androidx.activity.compose.BackHandler
@@ -7,8 +9,10 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,6 +24,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -46,6 +54,7 @@ import androidx.lifecycle.flowWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.RememberedEffect
+import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.appstate.AddSearchTag
 import com.fibelatti.pinboard.features.appstate.ClearSearch
@@ -53,6 +62,8 @@ import com.fibelatti.pinboard.features.appstate.RefreshSearchTags
 import com.fibelatti.pinboard.features.appstate.RemoveSearchTag
 import com.fibelatti.pinboard.features.appstate.Search
 import com.fibelatti.pinboard.features.appstate.SearchContent
+import com.fibelatti.pinboard.features.appstate.SearchParameters
+import com.fibelatti.pinboard.features.appstate.SetAdvancedSearchParameters
 import com.fibelatti.pinboard.features.appstate.SetTerm
 import com.fibelatti.pinboard.features.appstate.ViewRandomSearch
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
@@ -62,8 +73,12 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
 import com.fibelatti.pinboard.features.tags.presentation.TagList
 import com.fibelatti.pinboard.features.tags.presentation.TagsViewModel
+import com.fibelatti.ui.components.AppBottomSheet
+import com.fibelatti.ui.components.AutoSizeText
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
+import com.fibelatti.ui.components.rememberAppSheetState
+import com.fibelatti.ui.components.showBottomSheet
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.flow.launchIn
@@ -80,10 +95,10 @@ fun SearchBookmarksScreen(
         modifier = modifier,
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
-        val searchContent by searchPostViewModel.searchContent.collectAsStateWithLifecycle(null)
-        val currentContent by rememberUpdatedState(newValue = searchContent ?: return@Surface)
+        val searchContent: SearchContent? by searchPostViewModel.searchContent.collectAsStateWithLifecycle(null)
+        val currentContent: SearchContent by rememberUpdatedState(newValue = searchContent ?: return@Surface)
 
-        val tagsState by tagsViewModel.state.collectAsStateWithLifecycle()
+        val tagsState: TagsViewModel.State by tagsViewModel.state.collectAsStateWithLifecycle()
 
         BackHandler {
             searchPostViewModel.runAction(Search)
@@ -123,7 +138,7 @@ fun SearchBookmarksScreen(
                 .launchIn(this)
         }
 
-        val error by tagsViewModel.error.collectAsStateWithLifecycle()
+        val error: Throwable? by tagsViewModel.error.collectAsStateWithLifecycle()
         LaunchedErrorHandlerEffect(error = error, handler = tagsViewModel::errorHandled)
 
         DisposableEffect(Unit) {
@@ -133,11 +148,13 @@ fun SearchBookmarksScreen(
         }
 
         SearchBookmarksScreen(
-            searchTerm = currentContent.searchParameters.term,
+            searchParameters = currentContent.searchParameters,
             onSearchTermChanged = { newValue -> searchPostViewModel.runAction(SetTerm(newValue)) },
             onKeyboardSearch = { searchPostViewModel.runAction(Search) },
-            selectedTags = currentContent.searchParameters.tags,
             onSelectedTagRemoved = { tag -> searchPostViewModel.runAction(RemoveSearchTag(tag)) },
+            onUpdateSearchParameters = { matchAll: Boolean, exactMatch: Boolean ->
+                searchPostViewModel.runAction(SetAdvancedSearchParameters(matchAll, exactMatch))
+            },
             availableTags = tagsState.filteredTags,
             isLoadingTags = tagsState.isLoading,
             onTagsSortOptionClicked = { sorting ->
@@ -161,12 +178,12 @@ fun SearchBookmarksScreen(
 
 @Composable
 private fun SearchBookmarksScreen(
+    searchParameters: SearchParameters,
     modifier: Modifier = Modifier,
-    searchTerm: String = "",
     onSearchTermChanged: (String) -> Unit = {},
     onKeyboardSearch: () -> Unit = {},
-    selectedTags: List<Tag> = emptyList(),
     onSelectedTagRemoved: (Tag) -> Unit = {},
+    onUpdateSearchParameters: (matchAll: Boolean, exactMatch: Boolean) -> Unit = { _, _ -> },
     availableTags: List<Tag> = emptyList(),
     isLoadingTags: Boolean = false,
     onTagsSortOptionClicked: (TagList.Sorting) -> Unit = {},
@@ -175,54 +192,79 @@ private fun SearchBookmarksScreen(
     onAvailableTagClicked: (Tag) -> Unit = {},
     onTagsPullToRefresh: () -> Unit = {},
 ) {
+    val advancedDialogState = rememberAppSheetState()
+
     TagList(
         header = {
             val keyboardController = LocalSoftwareKeyboardController.current
-            val searchTermFieldState = rememberTextFieldState(initialText = searchTerm)
+            val searchTermFieldState = rememberTextFieldState(initialText = searchParameters.term)
 
             RememberedEffect(searchTermFieldState.text) {
                 onSearchTermChanged(searchTermFieldState.text.toString())
             }
 
-            OutlinedTextField(
-                state = searchTermFieldState,
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
-                label = { Text(text = stringResource(id = R.string.search_term)) },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                onKeyboardAction = KeyboardActionHandler {
-                    keyboardController?.hide()
-                    onKeyboardSearch()
-                },
-                lineLimits = TextFieldLineLimits.SingleLine,
-                contentPadding = OutlinedTextFieldDefaults.contentPadding(
-                    start = 8.dp,
-                    end = 8.dp,
-                    bottom = 8.dp,
-                ),
-            )
+                    .padding(start = 16.dp, end = 8.dp, bottom = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.Bottom,
+            ) {
+                OutlinedTextField(
+                    state = searchTermFieldState,
+                    modifier = Modifier.weight(1f),
+                    label = {
+                        AutoSizeText(
+                            text = stringResource(id = R.string.search_term),
+                            maxLines = 1,
+                        )
+                    },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    onKeyboardAction = KeyboardActionHandler {
+                        keyboardController?.hide()
+                        onKeyboardSearch()
+                    },
+                    lineLimits = TextFieldLineLimits.SingleLine,
+                    contentPadding = OutlinedTextFieldDefaults.contentPadding(
+                        start = 8.dp,
+                        end = 8.dp,
+                        bottom = 8.dp,
+                    ),
+                )
+
+                IconButton(
+                    onClick = { advancedDialogState.showBottomSheet() },
+                    shapes = IconButtonDefaults.shapes(),
+                    modifier = Modifier.padding(bottom = 4.dp, end = 8.dp),
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_preferences),
+                        contentDescription = stringResource(R.string.search_advanced_content_description),
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+            }
 
             AnimatedVisibility(
-                visible = selectedTags.isNotEmpty(),
+                visible = searchParameters.tags.isNotEmpty(),
                 enter = fadeIn() + expandVertically(),
                 exit = fadeOut() + shrinkVertically(),
             ) {
                 SingleLineChipGroup(
-                    items = selectedTags.map {
+                    items = searchParameters.tags.map {
                         ChipGroup.Item(
                             text = it.name,
                             icon = painterResource(id = R.drawable.ic_close),
                         )
                     },
                     onItemClick = { item ->
-                        onSelectedTagRemoved(selectedTags.first { it.name == item.text })
+                        onSelectedTagRemoved(searchParameters.tags.first { it.name == item.text })
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp),
                     onItemIconClick = { item ->
-                        onSelectedTagRemoved(selectedTags.first { it.name == item.text })
+                        onSelectedTagRemoved(searchParameters.tags.first { it.name == item.text })
                     },
                     itemTextStyle = MaterialTheme.typography.bodySmall.copy(
                         fontFamily = FontFamily.Monospace,
@@ -244,7 +286,7 @@ private fun SearchBookmarksScreen(
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
-                                text = stringResource(id = R.string.search_selected_tags),
+                                text = stringResource(id = R.string.search_selected_tags, searchParameters.tags.size),
                                 color = MaterialTheme.colorScheme.onSurface,
                                 style = MaterialTheme.typography.titleMedium,
                             )
@@ -273,6 +315,34 @@ private fun SearchBookmarksScreen(
         onTagClicked = onAvailableTagClicked,
         onPullToRefresh = onTagsPullToRefresh,
     )
+
+    AppBottomSheet(
+        sheetState = advancedDialogState,
+    ) {
+        SettingToggle(
+            title = stringResource(R.string.search_advanced_match_all),
+            description = stringResource(R.string.search_advanced_match_all_description),
+            checked = searchParameters.matchAll,
+            onCheckedChange = { matchAll ->
+                onUpdateSearchParameters(matchAll, searchParameters.exactMatch)
+            },
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        SettingToggle(
+            title = stringResource(R.string.search_advanced_exact_match),
+            description = stringResource(R.string.search_advanced_exact_match_description),
+            checked = searchParameters.exactMatch,
+            onCheckedChange = { exactMatch ->
+                onUpdateSearchParameters(searchParameters.matchAll, exactMatch)
+            },
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+    }
 }
 
 // region Previews
@@ -281,8 +351,8 @@ private fun SearchBookmarksScreen(
 private fun DefaultSearchBookmarksScreenPreview() {
     ExtendedTheme {
         SearchBookmarksScreen(
+            searchParameters = SearchParameters(),
             modifier = Modifier.safeDrawingPadding(),
-            searchTerm = "",
         )
     }
 }
@@ -293,7 +363,7 @@ private fun ActiveSearchBookmarksScreenPreview() {
     ExtendedTheme {
         SearchBookmarksScreen(
             modifier = Modifier.safeDrawingPadding(),
-            selectedTags = listOf(Tag(name = "dev")),
+            searchParameters = SearchParameters(tags = listOf(Tag(name = "dev"))),
             availableTags = listOf(Tag(name = "compose"), Tag(name = "ui")),
         )
     }
