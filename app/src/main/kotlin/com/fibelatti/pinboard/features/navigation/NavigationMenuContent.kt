@@ -5,23 +5,31 @@ package com.fibelatti.pinboard.features.navigation
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CornerBasedShape
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
@@ -45,6 +53,7 @@ import com.fibelatti.pinboard.features.appstate.ViewPopular
 import com.fibelatti.pinboard.features.appstate.ViewPreferences
 import com.fibelatti.pinboard.features.appstate.ViewSavedFilters
 import com.fibelatti.pinboard.features.appstate.ViewTags
+import com.fibelatti.ui.components.AutoSizeText
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -112,7 +121,8 @@ private fun NavigationMenuContent(
             .fillMaxWidth()
             .nestedScroll(rememberNestedScrollInteropConnection())
             .verticalScroll(rememberScrollState())
-            .padding(top = 32.dp, bottom = 64.dp),
+            .padding(start = 16.dp, top = 32.dp, end = 16.dp, bottom = 64.dp),
+        verticalArrangement = Arrangement.spacedBy(1.dp),
     ) {
         val serviceName = remember(appMode) {
             when (appMode) {
@@ -125,17 +135,22 @@ private fun NavigationMenuContent(
         if (serviceName != null) {
             Text(
                 text = stringResource(id = serviceName),
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
                 color = MaterialTheme.colorScheme.primary,
                 fontFamily = FontFamily.Serif,
                 style = MaterialTheme.typography.headlineLarge,
             )
+
+            Spacer(modifier = Modifier.height(30.dp))
         }
 
         MenuItem(
             textRes = R.string.menu_navigation_all,
             onClick = onAllClicked,
             iconRes = R.drawable.ic_bookmarks,
+            shape = MaterialTheme.shapes.medium.copy(
+                bottomStart = CornerSize(2.dp),
+                bottomEnd = CornerSize(2.dp),
+            ),
         )
 
         MenuItem(
@@ -168,18 +183,52 @@ private fun NavigationMenuContent(
             textRes = R.string.menu_navigation_untagged,
             onClick = onUntaggedClicked,
             iconRes = R.drawable.ic_bookmarks,
+            shape = if (AppMode.PINBOARD == appMode) {
+                RoundedCornerShape(2.dp)
+            } else {
+                MaterialTheme.shapes.medium.copy(
+                    topStart = CornerSize(2.dp),
+                    topEnd = CornerSize(2.dp),
+                )
+            },
         )
+
+        if (AppMode.PINBOARD == appMode) {
+            MenuItem(
+                textRes = R.string.menu_navigation_popular,
+                onClick = onPopularClicked,
+                iconRes = R.drawable.ic_bookmarks,
+                shape = MaterialTheme.shapes.medium.copy(
+                    topStart = CornerSize(2.dp),
+                    topEnd = CornerSize(2.dp),
+                ),
+            )
+        }
+
+        Spacer(modifier = Modifier.height(30.dp))
 
         MenuItem(
             textRes = R.string.menu_navigation_saved_filters,
             onClick = onSavedFiltersClicked,
             iconRes = R.drawable.ic_filter,
+            shape = MaterialTheme.shapes.medium.copy(
+                bottomStart = CornerSize(2.dp),
+                bottomEnd = CornerSize(2.dp),
+            ),
         )
 
         MenuItem(
             textRes = R.string.menu_navigation_tags,
             onClick = onTagsClicked,
             iconRes = R.drawable.ic_tag,
+            shape = if (AppMode.PINBOARD == appMode) {
+                RoundedCornerShape(2.dp)
+            } else {
+                MaterialTheme.shapes.medium.copy(
+                    topStart = CornerSize(2.dp),
+                    topEnd = CornerSize(2.dp),
+                )
+            },
         )
 
         if (AppMode.PINBOARD == appMode) {
@@ -187,24 +236,23 @@ private fun NavigationMenuContent(
                 textRes = R.string.menu_navigation_notes,
                 onClick = onNotesClicked,
                 iconRes = R.drawable.ic_notes,
-            )
-
-            MenuItem(
-                textRes = R.string.menu_navigation_popular,
-                onClick = onPopularClicked,
-                iconRes = R.drawable.ic_bookmarks,
+                shape = MaterialTheme.shapes.medium.copy(
+                    topStart = CornerSize(2.dp),
+                    topEnd = CornerSize(2.dp),
+                ),
             )
         }
 
-        HorizontalDivider(
-            modifier = Modifier.padding(all = 16.dp),
-            color = MaterialTheme.colorScheme.onSurface,
-        )
+        Spacer(modifier = Modifier.height(30.dp))
 
         MenuItem(
             textRes = R.string.menu_navigation_preferences,
             onClick = onPreferencesClicked,
             iconRes = R.drawable.ic_preferences,
+            shape = MaterialTheme.shapes.medium.copy(
+                bottomStart = CornerSize(2.dp),
+                bottomEnd = CornerSize(2.dp),
+            ),
         )
 
         MenuItem(
@@ -217,17 +265,22 @@ private fun NavigationMenuContent(
             textRes = R.string.menu_navigation_export,
             onClick = onExportClicked,
             iconRes = R.drawable.ic_backup,
+            shape = MaterialTheme.shapes.medium.copy(
+                topStart = CornerSize(2.dp),
+                topEnd = CornerSize(2.dp),
+            ),
         )
 
-        HorizontalDivider(
-            modifier = Modifier.padding(all = 16.dp),
-            color = MaterialTheme.colorScheme.onSurface,
-        )
+        Spacer(modifier = Modifier.height(30.dp))
 
         MenuItem(
             textRes = R.string.about_send_feedback,
             onClick = onSendFeedbackClicked,
             iconRes = R.drawable.ic_feedback,
+            shape = MaterialTheme.shapes.medium.copy(
+                bottomStart = CornerSize(2.dp),
+                bottomEnd = CornerSize(2.dp),
+            ),
         )
 
         MenuItem(
@@ -246,11 +299,16 @@ private fun NavigationMenuContent(
             textRes = R.string.about_privacy_policy,
             onClick = onPrivacyPolicyClicked,
             iconRes = R.drawable.ic_privacy_policy,
+            shape = MaterialTheme.shapes.medium.copy(
+                topStart = CornerSize(2.dp),
+                topEnd = CornerSize(2.dp),
+            ),
         )
+
+        Spacer(modifier = Modifier.height(30.dp))
 
         AppVersionDetails(
             onClick = onLicensesClicked,
-            modifier = Modifier.padding(start = 16.dp, top = 32.dp, end = 16.dp),
         )
     }
 }
@@ -263,13 +321,16 @@ private fun AppVersionDetails(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick, role = Role.Button),
+            .clip(MaterialTheme.shapes.small)
+            .clickable(onClick = onClick, role = Role.Button)
+            .padding(horizontal = 4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(
+        AutoSizeText(
             text = stringResource(id = R.string.about_developer),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontFamily = FontFamily.Monospace,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+            maxLines = 1,
         )
 
         Text(
@@ -294,14 +355,19 @@ private fun MenuItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     @DrawableRes iconRes: Int? = null,
+    shape: CornerBasedShape = RoundedCornerShape(2.dp),
 ) {
-    TextButton(
+    Button(
         onClick = onClick,
-        shapes = ExtendedTheme.defaultButtonShapes,
         modifier = modifier
             .fillMaxWidth()
             .minimumInteractiveComponentSize(),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
+        shape = shape,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+        ),
+        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
     ) {
         if (iconRes != null) {
             Icon(
