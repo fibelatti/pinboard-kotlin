@@ -52,6 +52,7 @@ import com.fibelatti.ui.theme.ExtendedTheme
 fun NavigationMenuContent(
     appMode: AppMode,
     onNavOptionClicked: (Action) -> Unit,
+    onExportClicked: () -> Unit,
     onSendFeedbackClicked: () -> Unit,
     onWriteReviewClicked: () -> Unit,
     onShareClicked: () -> Unit,
@@ -73,6 +74,7 @@ fun NavigationMenuContent(
         onPopularClicked = { onNavOptionClicked(ViewPopular) },
         onPreferencesClicked = { onNavOptionClicked(ViewPreferences) },
         onAccountsClicked = { onNavOptionClicked(ViewAccountSwitcher) },
+        onExportClicked = onExportClicked,
         onSendFeedbackClicked = onSendFeedbackClicked,
         onWriteReviewClicked = onWriteReviewClicked,
         onShareClicked = onShareClicked,
@@ -97,6 +99,7 @@ private fun NavigationMenuContent(
     onPopularClicked: () -> Unit,
     onPreferencesClicked: () -> Unit,
     onAccountsClicked: () -> Unit,
+    onExportClicked: () -> Unit,
     onSendFeedbackClicked: () -> Unit,
     onWriteReviewClicked: () -> Unit,
     onShareClicked: () -> Unit,
@@ -208,6 +211,12 @@ private fun NavigationMenuContent(
             textRes = R.string.menu_navigation_accounts,
             onClick = onAccountsClicked,
             iconRes = R.drawable.ic_person,
+        )
+
+        MenuItem(
+            textRes = R.string.menu_navigation_export,
+            onClick = onExportClicked,
+            iconRes = R.drawable.ic_backup,
         )
 
         HorizontalDivider(
@@ -331,6 +340,7 @@ private fun NavigationMenuContentPreview() {
             onPopularClicked = {},
             onPreferencesClicked = {},
             onAccountsClicked = {},
+            onExportClicked = {},
             onSendFeedbackClicked = {},
             onWriteReviewClicked = {},
             onShareClicked = {},

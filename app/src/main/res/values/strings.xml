@@ -40,6 +40,7 @@
 
     <string name="menu_navigation_preferences">Preferences</string>
     <string name="menu_navigation_accounts">Account Switcher</string>
+    <string name="menu_navigation_export">Export Bookmarks</string>
 
     <string name="menu_link_delete">Remove bookmark</string>
     <string name="menu_link_edit">Edit bookmark</string>
@@ -246,6 +247,10 @@
     <string name="account_switcher_logout">Logout</string>
     <string name="account_switcher_add_pinboard">Add Pinboard account</string>
     <string name="account_switcher_add_linkding">Add Linkding account</string>
+
+    <!-- Export -->
+    <string name="export_feedback_success">Bookmarks exported successfully!</string>
+    <string name="export_feedback_failure">Failed to export bookmarks</string>
 
     <!-- User Preferences -->
     <string name="user_preferences_title">Preferences</string>

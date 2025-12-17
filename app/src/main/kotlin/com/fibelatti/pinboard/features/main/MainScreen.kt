@@ -201,8 +201,6 @@ fun MainScreen(
 
     NavigationMenuBottomSheet(
         sheetState = navMenuSheetState,
-        appMode = appState.appMode,
-        onNavOptionClicked = mainViewModel::runAction,
     )
 }
 

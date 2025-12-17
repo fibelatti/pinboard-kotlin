@@ -25,7 +25,7 @@ object AppInfo {
     val versionCode: Int = (VERSION_MAJOR * 1_000_000 + VERSION_MINOR * 10_000 + VERSION_PATCH * 100 + VERSION_BUILD)
         .also { println("versionCode: $it") }
 
-    @Suppress("KotlinConstantConditions")
+    @Suppress("KotlinConstantConditions", "SimplifyBooleanWithConstants")
     val versionName: String = StringBuilder("$VERSION_MAJOR.$VERSION_MINOR")
         .apply { if (VERSION_PATCH != 0) append(".$VERSION_PATCH") }
         .toString()
@@ -193,6 +193,7 @@ dependencies {
     implementation(libs.kotlin.reflect)
     implementation(libs.kotlin.serialization)
     implementation(libs.kotlin.datetime)
+    implementation(libs.kotlin.html)
 
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)

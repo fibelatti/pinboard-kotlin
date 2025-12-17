@@ -51,6 +51,16 @@ class DateFormatter @Inject constructor(
         }
     }
 
+    fun dataFormatToEpoch(input: String): Long {
+        return try {
+            dateTimeFormat.parse(input)
+                .toInstant(TimeZone.UTC)
+                .epochSeconds
+        } catch (_: Exception) {
+            -1
+        }
+    }
+
     fun nowAsDataFormat(): String {
         val nowInUtc: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.UTC)
 
