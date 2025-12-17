@@ -211,7 +211,7 @@ fun TagList(
                 onPullToRefresh = onPullToRefresh,
                 listState = listState,
                 contentPadding = windowInsets.asPaddingValues(),
-                verticalArrangement = Arrangement.spacedBy(space = 2.dp, alignment = Alignment.Top),
+                verticalArrangement = Arrangement.spacedBy(space = 1.dp, alignment = Alignment.Top),
             ) {
                 item(key = "header") {
                     header()
@@ -245,19 +245,19 @@ fun TagList(
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)
                                 .background(
-                                    color = MaterialTheme.colorScheme.surfaceContainerLow,
+                                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
                                     shape = when (idx) {
                                         0 -> MaterialTheme.shapes.small.copy(
-                                            bottomStart = CornerSize(0.dp),
-                                            bottomEnd = CornerSize(0.dp),
+                                            bottomStart = CornerSize(2.dp),
+                                            bottomEnd = CornerSize(2.dp),
                                         )
 
                                         items.size - 1 -> MaterialTheme.shapes.small.copy(
-                                            topStart = CornerSize(0.dp),
-                                            topEnd = CornerSize(0.dp),
+                                            topStart = CornerSize(2.dp),
+                                            topEnd = CornerSize(2.dp),
                                         )
 
-                                        else -> RoundedCornerShape(0.dp)
+                                        else -> RoundedCornerShape(2.dp)
                                     },
                                 ),
                         )
