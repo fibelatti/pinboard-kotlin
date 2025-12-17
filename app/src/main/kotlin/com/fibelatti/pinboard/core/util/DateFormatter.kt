@@ -1,12 +1,9 @@
-@file:OptIn(ExperimentalTime::class)
-
 package com.fibelatti.pinboard.core.util
 
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.DateTimeFormat

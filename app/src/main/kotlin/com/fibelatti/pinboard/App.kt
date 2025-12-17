@@ -8,7 +8,6 @@ import android.os.StrictMode
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Composer
-import androidx.compose.runtime.ExperimentalComposeRuntimeApi
 import androidx.compose.runtime.tooling.ComposeStackTraceMode
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
@@ -61,7 +60,6 @@ class App : Application(), Configuration.Provider, SingletonImageLoader.Factory 
 
     override fun newImageLoader(context: Context): ImageLoader = imageLoader.get()
 
-    @OptIn(ExperimentalComposeRuntimeApi::class)
     private fun setupDebugMode() {
         if (!BuildConfig.DEBUG) return
 
