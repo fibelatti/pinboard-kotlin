@@ -1,0 +1,7 @@
+This version brings the following updates:
+
+* Advanced search parameters to match all or any terms
+* New option to export the local bookmark cache
+* Small UI tweaks to improve the information hierarchy
+
+Thank you for using the app!
