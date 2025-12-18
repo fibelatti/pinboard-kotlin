@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.filters.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import com.fibelatti.core.functional.TwoWayMapper
 import com.fibelatti.pinboard.features.filters.data.SavedFilterDto.Companion.TABLE_NAME
@@ -9,11 +10,15 @@ import javax.inject.Inject
 
 @Entity(
     tableName = TABLE_NAME,
-    primaryKeys = ["term", "tags"],
+    primaryKeys = ["term", "tags", "matchAll", "exactMatch"],
 )
 data class SavedFilterDto(
     val term: String,
     val tags: String,
+    @ColumnInfo(defaultValue = "1")
+    val matchAll: Boolean = true,
+    @ColumnInfo(defaultValue = "0")
+    val exactMatch: Boolean = false,
 ) {
 
     companion object {
@@ -25,12 +30,16 @@ data class SavedFilterDto(
 class SavedFilterDtoMapper @Inject constructor() : TwoWayMapper<SavedFilterDto, SavedFilter> {
 
     override fun map(param: SavedFilterDto): SavedFilter = SavedFilter(
-        searchTerm = param.term,
+        term = param.term,
         tags = param.tags.split(",").map(::Tag).filterNot { it.name.isBlank() },
+        matchAll = param.matchAll,
+        exactMatch = param.exactMatch,
     )
 
     override fun mapReverse(param: SavedFilter): SavedFilterDto = SavedFilterDto(
-        term = param.searchTerm,
+        term = param.term,
         tags = param.tags.joinToString(separator = ",") { it.name },
+        matchAll = param.matchAll,
+        exactMatch = param.exactMatch,
     )
 }

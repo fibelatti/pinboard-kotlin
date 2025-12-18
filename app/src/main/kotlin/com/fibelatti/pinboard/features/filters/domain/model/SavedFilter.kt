@@ -5,6 +5,8 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 
 @Stable
 data class SavedFilter(
-    val searchTerm: String,
+    val term: String,
     val tags: List<Tag>,
+    val matchAll: Boolean = true,
+    val exactMatch: Boolean = false,
 )

@@ -205,8 +205,10 @@ fun BookmarkListScreen(
             onSaveClicked = {
                 postListViewModel.saveFilter(
                     SavedFilter(
-                        searchTerm = postListContent.searchParameters.term,
+                        term = postListContent.searchParameters.term,
                         tags = postListContent.searchParameters.tags,
+                        matchAll = postListContent.searchParameters.matchAll,
+                        exactMatch = postListContent.searchParameters.exactMatch,
                     ),
                 )
                 localView.showBanner(R.string.saved_filters_saved_feedback)

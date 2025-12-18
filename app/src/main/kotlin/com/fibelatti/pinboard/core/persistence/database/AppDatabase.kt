@@ -18,12 +18,13 @@ import javax.inject.Inject
 const val DATABASE_NAME = "com.fibelatti.pinboard.db"
 const val DATABASE_VERSION_1 = 1 // Release 1.0.0
 const val DATABASE_VERSION_2 = 2 // Release 1.7.0
-const val DATABASE_VERSION_3 = 3 // Release 1.16.4
-const val DATABASE_VERSION_4 = 4 // Release 1.18.0
-const val DATABASE_VERSION_5 = 5 // Release 2.2.0
-const val DATABASE_VERSION_6 = 6 // Release 3.0.0 (Linkding support)
-const val DATABASE_VERSION_7 = 7 // Release 3.2.0
-const val DATABASE_VERSION_8 = 8 // Release 3.8.3
+private const val DATABASE_VERSION_3 = 3 // Release 1.16.4
+private const val DATABASE_VERSION_4 = 4 // Release 1.18.0
+private const val DATABASE_VERSION_5 = 5 // Release 2.2.0
+private const val DATABASE_VERSION_6 = 6 // Release 3.0.0 (Linkding support)
+private const val DATABASE_VERSION_7 = 7 // Release 3.2.0
+private const val DATABASE_VERSION_8 = 8 // Release 3.8.3
+private const val DATABASE_VERSION_9 = 9 // Release 3.12.0 (Advanced search)
 
 @Database(
     entities = [
@@ -31,7 +32,7 @@ const val DATABASE_VERSION_8 = 8 // Release 3.8.3
         BookmarkLocal::class, BookmarkLocalFts::class,
         SavedFilterDto::class,
     ],
-    version = DATABASE_VERSION_8,
+    version = DATABASE_VERSION_9,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = DATABASE_VERSION_3, to = DATABASE_VERSION_4),
@@ -39,6 +40,7 @@ const val DATABASE_VERSION_8 = 8 // Release 3.8.3
         AutoMigration(from = DATABASE_VERSION_5, to = DATABASE_VERSION_6),
         AutoMigration(from = DATABASE_VERSION_6, to = DATABASE_VERSION_7),
         AutoMigration(from = DATABASE_VERSION_7, to = DATABASE_VERSION_8),
+        AutoMigration(from = DATABASE_VERSION_8, to = DATABASE_VERSION_9),
     ],
 )
 abstract class AppDatabase : RoomDatabase() {

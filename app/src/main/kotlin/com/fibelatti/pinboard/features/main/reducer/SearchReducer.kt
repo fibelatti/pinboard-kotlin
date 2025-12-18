@@ -50,8 +50,10 @@ class SearchReducer @Inject constructor(
                     emptyList()
                 },
                 data = SavedFilter(
-                    searchTerm = content.searchParameters.term,
+                    term = content.searchParameters.term,
                     tags = content.searchParameters.tags,
+                    matchAll = content.searchParameters.matchAll,
+                    exactMatch = content.searchParameters.exactMatch,
                 ),
             ),
             floatingActionButton = MainState.FabComponent.Visible(

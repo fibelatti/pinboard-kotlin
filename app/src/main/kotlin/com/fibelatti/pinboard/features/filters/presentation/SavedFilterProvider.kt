@@ -33,8 +33,10 @@ class SavedFilterProvider(val size: Int) : PreviewParameterProvider<List<SavedFi
         val range = 1..3
         val value = range.random()
         return SavedFilter(
-            searchTerm = LOREM_IPSUM_SOURCE.split(" ").take(value).joinToString(separator = " "),
+            term = LOREM_IPSUM_SOURCE.split(" ").take(value).joinToString(separator = " "),
             tags = LOREM_IPSUM_SOURCE.split(" ").take(value).map { Tag(name = it) },
+            matchAll = value != 2,
+            exactMatch = value <= 2,
         )
     }
 }

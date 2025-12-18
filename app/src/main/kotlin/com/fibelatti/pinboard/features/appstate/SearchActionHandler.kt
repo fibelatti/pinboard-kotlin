@@ -152,8 +152,10 @@ class SearchActionHandler @Inject constructor(
                 category = All,
                 sortType = getPreferredSortType(),
                 searchParameters = SearchParameters(
-                    term = action.savedFilter.searchTerm,
+                    term = action.savedFilter.term,
                     tags = action.savedFilter.tags,
+                    matchAll = action.savedFilter.matchAll,
+                    exactMatch = action.savedFilter.exactMatch,
                 ),
                 shouldLoad = ShouldLoadFirstPage,
             )

@@ -163,6 +163,9 @@
     <string name="search_advanced_exact_match">Exact match</string>
     <string name="search_advanced_exact_match_description">Bookmarks must include the search terms exactly as typed</string>
 
+    <string name="search_advanced_match_any">Match any</string>
+    <string name="search_advanced_partial_match">Partial match</string>
+
     <!-- Sorting -->
     <string name="sorting_by_date_added_newest_first">By date added (Newest first)</string>
     <string name="sorting_by_date_added_oldest_first">By date added (Oldest first)</string>

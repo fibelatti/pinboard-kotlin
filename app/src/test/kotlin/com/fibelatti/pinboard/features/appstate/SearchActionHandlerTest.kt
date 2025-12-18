@@ -7,6 +7,7 @@ import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAG_4
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_VALID
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.pinboard.features.user.domain.GetPreferredSortType
+import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
@@ -538,16 +539,25 @@ internal class SearchActionHandlerTest {
                 posts = null,
                 showDescription = false,
                 sortType = mockSortType,
-                searchParameters = SearchParameters(term = SAMPLE_URL_VALID, tags = listOf(SAMPLE_TAG_1)),
+                searchParameters = SearchParameters(),
                 shouldLoad = ShouldLoadFirstPage,
             )
             val initialContent = SavedFiltersContent(
                 previousContent = previousContent,
             )
+            val matchAll = randomBoolean()
+            val exactMatch = randomBoolean()
 
             // WHEN
             val result = searchActionHandler.runAction(
-                ViewSavedFilter(savedFilter = SavedFilter(searchTerm = SAMPLE_URL_VALID, tags = listOf(SAMPLE_TAG_1))),
+                ViewSavedFilter(
+                    savedFilter = SavedFilter(
+                        term = SAMPLE_URL_VALID,
+                        tags = listOf(SAMPLE_TAG_1),
+                        matchAll = matchAll,
+                        exactMatch = exactMatch,
+                    ),
+                ),
                 initialContent,
             )
 
@@ -558,7 +568,12 @@ internal class SearchActionHandlerTest {
                     posts = null,
                     showDescription = false,
                     sortType = mockSortType,
-                    searchParameters = SearchParameters(term = SAMPLE_URL_VALID, tags = listOf(SAMPLE_TAG_1)),
+                    searchParameters = SearchParameters(
+                        term = SAMPLE_URL_VALID,
+                        tags = listOf(SAMPLE_TAG_1),
+                        matchAll = matchAll,
+                        exactMatch = exactMatch,
+                    ),
                     shouldLoad = ShouldLoadFirstPage,
                 ),
             )

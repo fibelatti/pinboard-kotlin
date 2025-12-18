@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.filters.presentation
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
@@ -12,8 +13,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -28,6 +31,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -91,16 +95,18 @@ private fun SavedFiltersScreen(
     savedFilters: List<SavedFilter>,
     onSavedFilterClicked: (SavedFilter) -> Unit,
     onSavedFilterLongClicked: (SavedFilter) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     if (savedFilters.isEmpty()) {
         EmptyListContent(
             icon = painterResource(id = R.drawable.ic_filter),
             title = stringResource(id = R.string.saved_filters_empty_title),
             description = stringResource(id = R.string.saved_filters_empty_description),
+            modifier = modifier,
         )
     } else {
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
             contentPadding = WindowInsets.safeDrawing
                 .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
                 .add(WindowInsets(bottom = 100.dp))
@@ -144,7 +150,7 @@ private fun SavedFilterItem(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            if (savedFilter.searchTerm.isNotBlank()) {
+            if (savedFilter.term.isNotBlank()) {
                 Text(
                     text = stringResource(id = R.string.saved_filters_item_keywords),
                     modifier = Modifier.fillMaxWidth(),
@@ -153,7 +159,7 @@ private fun SavedFilterItem(
                 )
 
                 Text(
-                    text = savedFilter.searchTerm,
+                    text = savedFilter.term,
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.titleMedium,
                 )
@@ -180,6 +186,48 @@ private fun SavedFilterItem(
                     itemTextStyle = MaterialTheme.typography.bodySmall.copy(
                         fontFamily = FontFamily.Monospace,
                     ),
+                )
+            }
+
+            HorizontalDivider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    text = stringResource(
+                        id = if (savedFilter.matchAll) {
+                            R.string.search_advanced_match_all
+                        } else {
+                            R.string.search_advanced_match_any
+                        },
+                    ),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontStyle = FontStyle.Italic,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+
+                Text(
+                    text = "•",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+
+                Text(
+                    text = stringResource(
+                        id = if (savedFilter.exactMatch) {
+                            R.string.search_advanced_exact_match
+                        } else {
+                            R.string.search_advanced_partial_match
+                        },
+                    ),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontStyle = FontStyle.Italic,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
         }
@@ -219,6 +267,7 @@ private fun SavedFilterScreenPreview(
             savedFilters = remember { savedFilters },
             onSavedFilterClicked = {},
             onSavedFilterLongClicked = {},
+            modifier = Modifier.safeDrawingPadding(),
         )
     }
 }
@@ -231,6 +280,7 @@ private fun SavedFilterScreenEmptyPreview() {
             savedFilters = emptyList(),
             onSavedFilterClicked = {},
             onSavedFilterLongClicked = {},
+            modifier = Modifier.safeDrawingPadding(),
         )
     }
 }
