@@ -195,7 +195,7 @@ private fun NoteListItem(
             .padding(horizontal = 8.dp)
             .clickable { onNoteClicked(note) },
         shape = MaterialTheme.shapes.small,
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        color = MaterialTheme.colorScheme.surfaceContainer,
     ) {
         Column(
             modifier = Modifier

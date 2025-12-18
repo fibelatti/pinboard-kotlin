@@ -606,7 +606,7 @@ private fun BookmarkItem(
                     },
                 ),
             shape = MaterialTheme.shapes.small,
-            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            color = MaterialTheme.colorScheme.surfaceContainer,
         ) {
             Column(
                 modifier = Modifier.padding(start = 8.dp, top = 28.dp, end = 8.dp, bottom = 12.dp),

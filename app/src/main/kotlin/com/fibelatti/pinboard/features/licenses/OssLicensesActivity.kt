@@ -74,7 +74,7 @@ private fun OssLicensesScreen(
             libraryBackgroundColor = MaterialTheme.colorScheme.background,
             libraryContentColor = MaterialTheme.colorScheme.onBackground,
             versionChipColors = LibraryDefaults.chipColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                 contentColor = MaterialTheme.colorScheme.onSurface,
             ),
             dialogBackgroundColor = MaterialTheme.colorScheme.surfaceContainerHigh,

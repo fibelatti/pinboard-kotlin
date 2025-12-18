@@ -156,7 +156,7 @@ private fun PopularBookmarkItem(
                 },
             ),
         shape = MaterialTheme.shapes.small,
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        color = MaterialTheme.colorScheme.surfaceContainer,
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),

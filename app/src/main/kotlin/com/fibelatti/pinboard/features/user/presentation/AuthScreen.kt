@@ -131,7 +131,7 @@ private fun AuthScreen(
         Surface(
             modifier = Modifier.sizeIn(maxWidth = 600.dp),
             shape = MaterialTheme.shapes.small,
-            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            color = MaterialTheme.colorScheme.surfaceContainer,
         ) {
             Column(
                 modifier = Modifier

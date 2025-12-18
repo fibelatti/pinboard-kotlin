@@ -776,7 +776,7 @@ private fun SettingItem(
     Column(
         modifier = modifier
             .background(
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
+                color = MaterialTheme.colorScheme.surfaceContainer,
                 shape = MaterialTheme.shapes.small,
             )
             .padding(horizontal = 8.dp, vertical = 12.dp),

@@ -170,8 +170,8 @@ public object ChipGroup {
 
     @Composable
     public fun colors(
-        selectedChipColor: Color = MaterialTheme.colorScheme.surfaceContainerHighest,
-        unselectedChipColor: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        selectedChipColor: Color = MaterialTheme.colorScheme.primary,
+        unselectedChipColor: Color = MaterialTheme.colorScheme.surfaceContainerHighest,
     ): Colors = Colors(
         selectedChipColor = selectedChipColor,
         unselectedChipColor = unselectedChipColor,
