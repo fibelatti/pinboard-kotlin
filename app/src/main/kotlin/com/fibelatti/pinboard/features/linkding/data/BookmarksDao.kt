@@ -388,9 +388,9 @@ interface BookmarksDao {
                 }
 
                 if (!untaggedOnly) {
-                    if (tag1.isNotBlank()) add(tag1)
-                    if (tag2.isNotBlank()) add(tag2)
-                    if (tag3.isNotBlank()) add(tag3)
+                    if (tag1.isNotBlank()) add("%$tag1%")
+                    if (tag2.isNotBlank()) add("%$tag2%")
+                    if (tag3.isNotBlank()) add("%$tag3%")
                 }
 
                 add(offset)

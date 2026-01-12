@@ -161,7 +161,7 @@
     <string name="search_advanced_match_all">Match all</string>
     <string name="search_advanced_match_all_description">Bookmarks must include all search terms and selected tags</string>
     <string name="search_advanced_exact_match">Exact match</string>
-    <string name="search_advanced_exact_match_description">Bookmarks must include the search terms exactly as typed</string>
+    <string name="search_advanced_exact_match_description">Bookmarks must include all search terms exactly as typed. If your search includes non-Latin characters, it is recommended to leave this option disabled</string>
 
     <string name="search_advanced_match_any">Match any</string>
     <string name="search_advanced_partial_match">Partial match</string>
