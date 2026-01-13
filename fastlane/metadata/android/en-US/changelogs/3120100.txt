@@ -1,0 +1,5 @@
+This version brings the following updates:
+
+* Fix filtering by tag not working as expected with non-english characters
+
+Thank you for using the app!
