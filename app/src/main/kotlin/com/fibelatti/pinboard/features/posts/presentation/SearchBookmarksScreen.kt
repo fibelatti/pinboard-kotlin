@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,6 +24,7 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -37,9 +39,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
@@ -197,10 +202,15 @@ private fun SearchBookmarksScreen(
     TagList(
         header = {
             val keyboardController = LocalSoftwareKeyboardController.current
+            val focusRequester = remember { FocusRequester() }
             val searchTermFieldState = rememberTextFieldState(initialText = searchParameters.term)
 
             RememberedEffect(searchTermFieldState.text) {
                 onSearchTermChanged(searchTermFieldState.text.toString())
+            }
+
+            RememberedEffect(Unit) {
+                focusRequester.requestFocus()
             }
 
             Row(
@@ -212,12 +222,23 @@ private fun SearchBookmarksScreen(
             ) {
                 OutlinedTextField(
                     state = searchTermFieldState,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .focusRequester(focusRequester),
                     label = {
                         AutoSizeText(
                             text = stringResource(id = R.string.search_term),
                             maxLines = 1,
                         )
+                    },
+                    trailingIcon = {
+                        if (searchTermFieldState.text.isNotEmpty()) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_close),
+                                contentDescription = null,
+                                modifier = Modifier.clickable(onClick = searchTermFieldState::clearText),
+                            )
+                        }
                     },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     onKeyboardAction = KeyboardActionHandler {
