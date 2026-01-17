@@ -2,12 +2,14 @@
 
 package com.fibelatti.ui.components
 
+import androidx.compose.foundation.LocalOverscrollFactory
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -67,16 +69,20 @@ public fun AppBottomSheet(
         return
     }
 
-    ModalBottomSheet(
-        onDismissRequest = {
-            // The sheet was dismissed with a gesture or click outside: clean up the custom state and notify the caller
-            sheetState.isVisible = false
-            onDismissRequest()
-        },
-        modifier = modifier,
-        sheetState = sheetState.state,
-        content = content,
-    )
+    CompositionLocalProvider(
+        LocalOverscrollFactory provides null,
+    ) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                // The sheet was dismissed with a gesture or click outside: clean up the custom state and notify the caller
+                sheetState.isVisible = false
+                onDismissRequest()
+            },
+            modifier = modifier,
+            sheetState = sheetState.state,
+            content = content,
+        )
+    }
 }
 
 /**
