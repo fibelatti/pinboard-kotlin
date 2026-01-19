@@ -35,7 +35,11 @@ fun SwitchWithIcon(
                     painter = painter,
                     contentDescription = null,
                     modifier = Modifier.size(SwitchDefaults.IconSize),
-                    tint = if (checked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.inverseOnSurface,
+                    tint = if (checked) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.inverseOnSurface
+                    },
                 )
             }
         },
