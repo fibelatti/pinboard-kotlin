@@ -86,6 +86,7 @@ import com.fibelatti.ui.components.rememberAppSheetState
 import com.fibelatti.ui.components.showBottomSheet
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -209,7 +210,9 @@ private fun SearchBookmarksScreen(
                 onSearchTermChanged(searchTermFieldState.text.toString())
             }
 
-            RememberedEffect(Unit) {
+            LaunchedEffect(Unit) {
+                // Compose bug: without this delay the cursor won't appear
+                delay(100)
                 focusRequester.requestFocus()
             }
 

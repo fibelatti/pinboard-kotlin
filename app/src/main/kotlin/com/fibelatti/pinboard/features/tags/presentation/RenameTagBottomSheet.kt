@@ -19,6 +19,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,13 +30,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.android.composable.RememberedEffect
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.ui.components.AppBottomSheet
 import com.fibelatti.ui.components.AppSheetState
 import com.fibelatti.ui.components.hideBottomSheet
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
+import kotlinx.coroutines.delay
 
 @Composable
 fun RenameTagBottomSheet(
@@ -84,6 +85,12 @@ private fun RenameTagScreen(
             val textFieldState = rememberTextFieldState()
             val focusRequester = remember { FocusRequester() }
 
+            LaunchedEffect(Unit) {
+                // Compose bug: without this delay the cursor won't appear
+                delay(100)
+                focusRequester.requestFocus()
+            }
+
             OutlinedTextField(
                 state = textFieldState,
                 modifier = Modifier
@@ -106,10 +113,6 @@ private fun RenameTagScreen(
                 modifier = Modifier.padding(bottom = 4.dp),
             ) {
                 Text(text = stringResource(id = R.string.quick_actions_rename))
-            }
-
-            RememberedEffect(Unit) {
-                focusRequester.requestFocus()
             }
         }
     }

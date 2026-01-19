@@ -33,21 +33,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.FocusRequester.Companion.FocusRequesterFactory.component1
-import androidx.compose.ui.focus.FocusRequester.Companion.FocusRequesterFactory.component2
-import androidx.compose.ui.focus.FocusRequester.Companion.FocusRequesterFactory.component3
-import androidx.compose.ui.focus.FocusRequester.Companion.FocusRequesterFactory.component4
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalResources
@@ -85,6 +77,7 @@ import com.fibelatti.ui.foundation.rememberKeyboardState
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -492,26 +485,21 @@ private fun BookmarkBasicDetails(
             .padding(horizontal = 16.dp),
     ) {
         val focusManager = LocalFocusManager.current
-        val (frUrl, frTitle, frDescription, frNotes) = FocusRequester.createRefs()
-        var focusedField by rememberSaveable {
-            mutableStateOf(if (url.isEmpty()) FocusedField.URL else FocusedField.NONE)
-        }
-
-        RememberedEffect(Unit) {
-            when (focusedField) {
-                FocusedField.NONE -> Unit
-                FocusedField.URL -> frUrl.requestFocus()
-                FocusedField.TITLE -> frTitle.requestFocus()
-                FocusedField.DESCRIPTION -> frDescription.requestFocus()
-                FocusedField.NOTES -> frNotes.requestFocus()
-            }
-        }
+        val focusRequester = remember { FocusRequester() }
 
         val urlFieldState = rememberTextFieldState(initialText = url)
         val urlSanitizationRegex = remember { "\\s".toRegex() }
 
         // The Pinboard API uses the URL as the key; Changing the URL means creating a new bookmark
         val isUrlInputEnabled = isNewBookmark || appMode != AppMode.PINBOARD
+
+        LaunchedEffect(Unit) {
+            if (isUrlInputEnabled) {
+                // Compose bug: without this delay the cursor won't appear
+                delay(100)
+                focusRequester.requestFocus()
+            }
+        }
 
         RememberedEffect(urlFieldState.text) {
             onUrlChanged(urlFieldState.text.toString())
@@ -521,8 +509,7 @@ private fun BookmarkBasicDetails(
             state = urlFieldState,
             modifier = Modifier
                 .fillMaxWidth()
-                .focusRequester(frUrl)
-                .onFocusChanged { if (it.hasFocus) focusedField = FocusedField.URL },
+                .focusRequester(focusRequester),
             enabled = isUrlInputEnabled,
             label = { Text(text = stringResource(id = R.string.posts_add_url)) },
             supportingText = {
@@ -557,10 +544,7 @@ private fun BookmarkBasicDetails(
 
         OutlinedTextField(
             state = titleFieldState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(frTitle)
-                .onFocusChanged { if (it.hasFocus) focusedField = FocusedField.TITLE },
+            modifier = Modifier.fillMaxWidth(),
             label = { Text(text = stringResource(id = R.string.posts_add_url_title)) },
             supportingText = {
                 if (titleError.isNotEmpty()) {
@@ -586,10 +570,7 @@ private fun BookmarkBasicDetails(
 
         OutlinedTextField(
             state = descriptionFieldState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(frDescription)
-                .onFocusChanged { if (it.hasFocus) focusedField = FocusedField.DESCRIPTION },
+            modifier = Modifier.fillMaxWidth(),
             label = { Text(text = stringResource(id = R.string.posts_add_url_description)) },
             supportingText = {},
             contentPadding = OutlinedTextFieldDefaults.contentPadding(
@@ -608,10 +589,7 @@ private fun BookmarkBasicDetails(
 
             OutlinedTextField(
                 state = notesFieldState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(frNotes)
-                    .onFocusChanged { if (it.hasFocus) focusedField = FocusedField.NOTES },
+                modifier = Modifier.fillMaxWidth(),
                 label = { Text(text = stringResource(id = R.string.posts_add_url_notes)) },
                 contentPadding = OutlinedTextFieldDefaults.contentPadding(
                     start = 8.dp,
