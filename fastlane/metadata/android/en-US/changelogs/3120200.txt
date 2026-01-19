@@ -1,0 +1,6 @@
+This version brings the following updates:
+
+* Small improvements to the search screen input
+* Fixes an issue where sometimes the cursor wouldn't be visible on inputs
+
+Thank you for using the app!
