@@ -8,6 +8,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
@@ -34,6 +35,7 @@ fun SwitchWithIcon(
                     painter = painter,
                     contentDescription = null,
                     modifier = Modifier.size(SwitchDefaults.IconSize),
+                    tint = if (checked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.inverseOnSurface,
                 )
             }
         },

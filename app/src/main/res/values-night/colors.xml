@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Only colors that change depending on the configuration should be defined here
+    everything else should be follow the style and use the query syntax (?attr/) -->
+    <color name="color_primary">#A8C8FF</color>
+    <color name="color_surface_container_high">#282A2F</color>
+    <color name="color_on_surface">#E1E2E9</color>
+
     <color name="color_navigation_bar">#000000</color>
 
     <color name="color_background">#000000</color>

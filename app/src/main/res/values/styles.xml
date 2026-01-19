@@ -5,7 +5,7 @@
         <item name="android:navigationBarColor">@color/color_navigation_bar</item>
         <item name="android:windowAnimationStyle">@style/AppTheme.AppActivityAnimation</item>
         <item name="android:windowBackground">@color/color_background</item>
-        <item name="colorPrimary">#0051E1</item>
+        <item name="colorPrimary">@color/color_primary</item>
         <item name="enableEdgeToEdge">true</item>
         <item name="materialAlertDialogTheme">@style/AppTheme.MaterialDialog</item>
     </style>
@@ -17,6 +17,10 @@
     <style name="AppTheme.MaterialDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="android:windowBlurBehindEnabled" tools:targetApi="s">true</item>
         <item name="android:windowBlurBehindRadius" tools:targetApi="s">10dp</item>
+
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorSurfaceContainerHigh">@color/color_surface_container_high</item>
+        <item name="colorOnSurface">@color/color_on_surface</item>
     </style>
 
     <!-- Animation -->

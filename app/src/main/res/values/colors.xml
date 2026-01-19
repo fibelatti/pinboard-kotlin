@@ -2,6 +2,10 @@
 <resources>
     <!-- Only colors that change depending on the configuration should be defined here
     everything else should be follow the style and use the query syntax (?attr/) -->
+    <color name="color_primary">#3F5F90</color>
+    <color name="color_surface_container_high">#E7E8EE</color>
+    <color name="color_on_surface">#191C20</color>
+
     <color name="color_navigation_bar">#9E9E9E</color>
 
     <color name="color_background">#FFFFFF</color>
