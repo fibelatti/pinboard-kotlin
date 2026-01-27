@@ -184,9 +184,13 @@ private fun LaunchedMainViewModelEffect(
                     }
 
                     is MainState.MenuItemComponent.EditBookmark -> mainViewModel.runAction(EditPost(post))
+
                     is MainState.MenuItemComponent.SaveBookmark -> popularPostsViewModel.saveLink(post)
+
                     is MainState.MenuItemComponent.OpenInBrowser -> openUrlInExternalBrowser(localContext, post)
+
                     is MainState.MenuItemComponent.CloseSidePanel -> localOnBackPressedDispatcher?.onBackPressed()
+
                     else -> Unit
                 }
             }

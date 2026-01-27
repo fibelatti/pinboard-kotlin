@@ -194,7 +194,9 @@ private fun ShareReceiverErrorDialog(
 
     val errorMessage = when {
         throwable is InvalidUrlException -> R.string.validation_error_invalid_url_rationale
+
         throwable.isServerException() -> R.string.server_error
+
         throwable is ResponseException && throwable.response.status.value in AppConfig.LOGIN_FAILED_CODES -> {
             R.string.auth_logged_out_feedback
         }

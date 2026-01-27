@@ -31,6 +31,7 @@ public fun ExtendedTheme(
         }
 
         darkTheme -> DarkColorScheme
+
         else -> LightColorScheme
     }
 

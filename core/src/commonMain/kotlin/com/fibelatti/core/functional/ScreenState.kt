@@ -49,6 +49,7 @@ public inline fun <reified T> Flow<ScreenState<T>>.onScreenState(
         }
 
         is ScreenState.Loaded -> onLoaded(state.data)
+
         is ScreenState.Error -> onError(state.throwable)
     }
 }
