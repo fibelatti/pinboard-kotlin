@@ -342,67 +342,111 @@ internal class AppStateDataSourceTest {
 
                 // Auth
                 is UserLoggedIn -> value to ExpectedHandler.NONE
+
                 is UserLoginFailed -> value to ExpectedHandler.NONE
+
                 is UserLoggedOut -> value to ExpectedHandler.NONE
+
                 is UserUnauthorized -> value to ExpectedHandler.NONE
 
                 // Navigation
                 is NavigateBack -> value to ExpectedHandler.NAVIGATION
+
                 is All -> value to ExpectedHandler.NAVIGATION
+
                 is Recent -> value to ExpectedHandler.NAVIGATION
+
                 is Public -> value to ExpectedHandler.NAVIGATION
+
                 is Private -> value to ExpectedHandler.NAVIGATION
+
                 is Unread -> value to ExpectedHandler.NAVIGATION
+
                 is Untagged -> value to ExpectedHandler.NAVIGATION
+
                 is ViewPost -> value to ExpectedHandler.NAVIGATION
+
                 is ViewRandomPost -> value to ExpectedHandler.NAVIGATION
+
                 is ViewSearch -> value to ExpectedHandler.NAVIGATION
+
                 is AddPost -> value to ExpectedHandler.NAVIGATION
+
                 is ViewTags -> value to ExpectedHandler.NAVIGATION
+
                 is ViewSavedFilters -> value to ExpectedHandler.NAVIGATION
+
                 is ViewNotes -> value to ExpectedHandler.NAVIGATION
+
                 is ViewNote -> value to ExpectedHandler.NAVIGATION
+
                 is ViewPopular -> value to ExpectedHandler.NAVIGATION
+
                 is ViewAccountSwitcher -> value to ExpectedHandler.NAVIGATION
+
                 is AddAccount -> value to ExpectedHandler.NAVIGATION
+
                 is ViewPreferences -> value to ExpectedHandler.NAVIGATION
 
                 // Post
                 is Refresh -> value to ExpectedHandler.POST
+
                 is SetPosts -> value to ExpectedHandler.POST
+
                 is GetNextPostPage -> value to ExpectedHandler.POST
+
                 is SetNextPostPage -> value to ExpectedHandler.POST
+
                 is SetSorting -> value to ExpectedHandler.POST
+
                 is EditPost -> value to ExpectedHandler.POST
+
                 is EditPostFromShare -> value to ExpectedHandler.POST
+
                 is PostSaved -> value to ExpectedHandler.POST
+
                 is PostDeleted -> value to ExpectedHandler.POST
 
                 // Search
                 is RefreshSearchTags -> value to ExpectedHandler.SEARCH
+
                 is SetTerm -> value to ExpectedHandler.SEARCH
+
                 is SetSearchTags -> value to ExpectedHandler.SEARCH
+
                 is AddSearchTag -> value to ExpectedHandler.SEARCH
+
                 is RemoveSearchTag -> value to ExpectedHandler.SEARCH
+
                 is SetAdvancedSearchParameters -> value to ExpectedHandler.SEARCH
+
                 is SetResultSize -> value to ExpectedHandler.SEARCH
+
                 is ViewRandomSearch -> value to ExpectedHandler.SEARCH
+
                 is Search -> value to ExpectedHandler.SEARCH
+
                 is ClearSearch -> value to ExpectedHandler.SEARCH
+
                 is ViewSavedFilter -> value to ExpectedHandler.SEARCH
 
                 // Tag
                 is RefreshTags -> value to ExpectedHandler.TAG
+
                 is SetTags -> value to ExpectedHandler.TAG
+
                 is PostsForTag -> value to ExpectedHandler.TAG
 
                 // Notes
                 is RefreshNotes -> value to ExpectedHandler.NOTE
+
                 is SetNotes -> value to ExpectedHandler.NOTE
+
                 is SetNote -> value to ExpectedHandler.NOTE
 
                 // Popular
                 is RefreshPopular -> value to ExpectedHandler.POPULAR
+
                 is SetPopularPosts -> value to ExpectedHandler.POPULAR
             }
         }

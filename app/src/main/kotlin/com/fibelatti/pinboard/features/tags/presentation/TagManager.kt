@@ -77,7 +77,9 @@ fun TagManager(
                 when {
                     // Handle keyboards that add a space after punctuation, . is used for private tags
                     newValue == ". " -> onSearchTagInputChanged(".")
+
                     newValue.isNotBlank() && newValue.endsWith(" ") -> onAddTagClicked(newValue)
+
                     else -> onSearchTagInputChanged(newValue)
                 }
             },

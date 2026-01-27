@@ -43,9 +43,7 @@ class NoteListViewModel @Inject constructor(
         scope.launch {
             val updatedNotes = when (sorting) {
                 NoteSorting.ByDateUpdatedDesc -> notes.sortedByDescending { it.updatedAt }
-
                 NoteSorting.ByDateUpdatedAsc -> notes.sortedBy { it.updatedAt }
-
                 NoteSorting.AtoZ -> notes.sortedBy(Note::title)
             }
             runAction(SetNotes(updatedNotes))

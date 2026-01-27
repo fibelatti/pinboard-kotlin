@@ -18,7 +18,9 @@ class NoteListReducer @Inject constructor(
             title = MainState.TitleComponent.Visible(resourceProvider.getString(R.string.notes_title)),
             subtitle = when {
                 content.shouldLoad -> MainState.TitleComponent.Gone
+
                 content.notes.isEmpty() -> MainState.TitleComponent.Gone
+
                 else -> MainState.TitleComponent.Visible(
                     resourceProvider.getQuantityString(
                         R.plurals.notes_quantity,
