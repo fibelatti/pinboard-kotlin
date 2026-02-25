@@ -9,7 +9,7 @@ activity = "1.12.4"
 lifecycle = "2.10.0"
 okhttp = "5.3.2"
 room = "2.8.4"
-coil = "3.3.0"
+coil = "3.4.0"
 aboutLibraries = "13.2.1"
 
 [libraries]
