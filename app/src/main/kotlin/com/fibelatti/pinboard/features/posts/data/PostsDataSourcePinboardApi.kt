@@ -42,6 +42,7 @@ import com.fibelatti.pinboard.features.user.domain.UserRepository
 import io.ktor.client.plugins.ResponseException
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.concurrent.Volatile
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -50,6 +51,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withTimeout
 import kotlinx.io.IOException
+import timber.log.Timber
 
 internal class PostsDataSourcePinboardApi @Inject constructor(
     private val userRepository: UserRepository,
@@ -61,6 +63,7 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
     private val connectivityInfoProvider: ConnectivityInfoProvider,
 ) : PostsRepository {
 
+    @Volatile
     private var pagedRequestsJob: Job? = null
 
     private fun <T> Result<T>.mapApiRequestFailure(endpoint: String): Result<T> = mapFailure { throwable ->
@@ -311,7 +314,7 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
                     savePosts(postRemoteDtoMapper.mapList(additionalPosts))
                     currentOffset += additionalPosts.size
                 }
-            }
+            }.onFailure { Timber.e(it, "Failed to fetch additional pages") }
         }
     }
 

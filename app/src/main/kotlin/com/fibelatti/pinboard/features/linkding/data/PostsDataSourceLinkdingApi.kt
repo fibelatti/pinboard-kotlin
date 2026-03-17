@@ -26,6 +26,7 @@ import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.concurrent.Volatile
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -34,6 +35,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.io.IOException
+import timber.log.Timber
 
 internal class PostsDataSourceLinkdingApi @Inject constructor(
     private val linkdingApi: LinkdingApi,
@@ -45,6 +47,8 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
 ) : PostsRepository {
 
     private var lastGetAllTimeMillis: Long = 0
+
+    @Volatile
     private var pagedRequestsJob: Job? = null
 
     /**
@@ -246,7 +250,7 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
                             .let(bookmarkLocalMapper::mapListReverse),
                     )
                 }
-            }
+            }.onFailure { Timber.e(it, "Failed to fetch additional pages") }
         }
     }
 
