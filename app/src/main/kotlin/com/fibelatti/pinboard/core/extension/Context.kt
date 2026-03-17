@@ -11,7 +11,6 @@ import androidx.core.net.toUri
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppModeProvider
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -39,7 +38,7 @@ fun Context.showErrorReportDialog(
     )
     val appModeProvider = entryPoint.appModeProvider()
 
-    MaterialAlertDialogBuilder(this).apply {
+    materialAlertDialogBuilder().apply {
         if (title.isNotBlank()) {
             setTitle(title)
         }

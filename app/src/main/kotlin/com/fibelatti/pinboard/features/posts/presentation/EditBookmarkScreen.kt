@@ -62,6 +62,7 @@ import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.core.extension.applySecureFlag
+import com.fibelatti.pinboard.core.extension.materialAlertDialogBuilder
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.NavigateBack
@@ -76,7 +77,6 @@ import com.fibelatti.ui.foundation.RememberedEffect
 import com.fibelatti.ui.foundation.rememberKeyboardState
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -148,7 +148,7 @@ private fun LaunchedViewModelEffects(
 
     BackHandler {
         if (editPostViewModel.hasPendingChanges()) {
-            MaterialAlertDialogBuilder(localContext).apply {
+            localContext.materialAlertDialogBuilder().apply {
                 setMessage(R.string.alert_confirm_unsaved_changes)
                 setPositiveButton(R.string.hint_yes) { _, _ -> mainViewModel.runAction(NavigateBack) }
                 setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }

@@ -7,7 +7,6 @@
         <item name="android:windowBackground">@color/color_background</item>
         <item name="colorPrimary">@color/color_primary</item>
         <item name="enableEdgeToEdge">true</item>
-        <item name="materialAlertDialogTheme">@style/AppTheme.MaterialDialog</item>
     </style>
 
     <style name="AppTheme.Overlay" parent="ThemeOverlay.Material3.DynamicColors.DayNight">
@@ -15,6 +14,11 @@
     </style>
 
     <style name="AppTheme.MaterialDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="android:windowBlurBehindEnabled" tools:targetApi="s">true</item>
+        <item name="android:windowBlurBehindRadius" tools:targetApi="s">10dp</item>
+    </style>
+
+    <style name="AppTheme.MaterialDialog.DefaultColors">
         <item name="android:windowBlurBehindEnabled" tools:targetApi="s">true</item>
         <item name="android:windowBlurBehindRadius" tools:targetApi="s">10dp</item>
 

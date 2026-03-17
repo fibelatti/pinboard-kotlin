@@ -61,6 +61,7 @@ import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.RememberedEffect
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.applySecureFlag
+import com.fibelatti.pinboard.core.extension.materialAlertDialogBuilder
 import com.fibelatti.pinboard.core.extension.rememberScrollDirection
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.appstate.EditPost
@@ -71,7 +72,6 @@ import com.fibelatti.pinboard.features.main.MainViewModel
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.preview.ThemePreviews
 import com.fibelatti.ui.theme.ExtendedTheme
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -224,7 +224,7 @@ private fun LaunchedPostDetailViewModelEffect(
             }
 
             current.deleted is Failure -> {
-                MaterialAlertDialogBuilder(localContext).apply {
+                localContext.materialAlertDialogBuilder().apply {
                     setMessage(R.string.posts_deleted_error)
                     setPositiveButton(R.string.hint_ok) { dialog, _ -> dialog?.dismiss() }
                 }.applySecureFlag().show()
@@ -264,7 +264,7 @@ private fun LaunchedPopularPostsViewModelEffect(
 
 // region Service functions
 fun showDeleteConfirmationDialog(context: Context, onConfirm: () -> Unit) {
-    MaterialAlertDialogBuilder(context).apply {
+    context.materialAlertDialogBuilder().apply {
         setMessage(R.string.alert_confirm_deletion)
         setPositiveButton(R.string.hint_yes) { _, _ -> onConfirm() }
         setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
