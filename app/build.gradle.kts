@@ -1,10 +1,9 @@
 @file:Suppress("UnstableApiUsage")
 
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.fibelatti.android.application)
+    alias(libs.plugins.fibelatti.manifest.permission.validation)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.room)
@@ -33,16 +32,13 @@ object AppInfo {
 }
 
 android {
-    val compileSdkVersion: Int by project
     val targetSdkVersion: Int by project
-    val minSdkVersion: Int by project
 
     namespace = "com.fibelatti.pinboard"
-    compileSdk = compileSdkVersion
 
     buildFeatures {
         buildConfig = true
-        compose = true
+        resValues = true
     }
 
     defaultConfig {
@@ -50,7 +46,6 @@ android {
         versionCode = AppInfo.versionCode
         versionName = AppInfo.versionName
         targetSdk = targetSdkVersion
-        minSdk = minSdkVersion
 
         base.archivesName = "$applicationId-v$versionName-$versionCode"
 
@@ -101,9 +96,9 @@ android {
     }
 
     sourceSets {
-        forEach { sourceSet -> getByName(sourceSet.name).java.srcDirs("src/${sourceSet.name}/kotlin") }
+        forEach { sourceSet -> sourceSet.java.directories += "src/${sourceSet.name}/kotlin" }
 
-        getByName("androidTest").assets.srcDirs(files("$projectDir/schemas"))
+        getByName("androidTest").assets.directories += "$projectDir/schemas"
     }
 
     packaging {
@@ -189,18 +184,15 @@ dependencies {
     implementation(projects.ui)
 
     // Kotlin
-    implementation(libs.kotlin)
     implementation(libs.kotlin.reflect)
     implementation(libs.kotlin.serialization)
     implementation(libs.kotlin.datetime)
     implementation(libs.kotlin.html)
 
-    implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)
 
     // Android
     implementation(libs.appcompat)
-    implementation(libs.core.ktx)
     implementation(libs.activity.compose)
     implementation(libs.adaptive.android)
     implementation(libs.material)
@@ -217,13 +209,7 @@ dependencies {
 
     implementation(libs.browser)
 
-    implementation(platform(libs.compose.bom))
-    implementation(libs.compose.runtime)
     implementation(libs.compose.material)
-    implementation(libs.compose.material3)
-    implementation(libs.compose.ui)
-    implementation(libs.compose.ui.tooling.preview)
-    implementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
 
     // Misc

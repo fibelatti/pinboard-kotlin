@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--
+Auto-generated baseline file with the expected permissions for this app.
+Last updated: 2026-03-17T11:48:36.27462
+-->
+<!--@formatter:off-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:documentation="custom">
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" documentation:comment="Basic permission to monitor the network state, identifying when the app is online for its basic functionality."/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" documentation:comment="This permission is used by Work Manager to manage background work, in this case, used to sync bookmarks in the background."/>
+    <uses-permission android:name="android.permission.INTERNET" documentation:comment="Basic permission to access the internet and reach the bookmark services."/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" documentation:comment="Used by LeakCanary in debug builds only."/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" documentation:comment="Used by LeakCanary in debug builds only."/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" documentation:comment="This permission instructs Android to run the application every time you start your phone. The app then schedules its background work to keep bookmarks up-to-date."/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" documentation:comment="This permission is used by Work Manager to manage background work, in this case, used to sync bookmarks in the background."/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" documentation:comment="Used by LeakCanary in debug builds only."/>
+    <uses-permission android:name="com.fibelatti.pinboard.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" documentation:comment="This is not a real permission, but rather a quirk. It is used with API level 33 and above (Android 13+), simply meaning that the application intends to send intents – but only to itself, while rejecting them from elsewhere."/>
+    <permission android:name="com.fibelatti.pinboard.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" android:protectionLevel="signature" documentation:comment="This is not a real permission, but rather a quirk. It is used with API level 33 and above (Android 13+), simply meaning that the application intends to send intents – but only to itself, while rejecting them from elsewhere."/>
+</manifest>

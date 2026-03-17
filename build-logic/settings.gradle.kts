@@ -1,9 +1,8 @@
 @file:Suppress("UnstableApiUsage")
 
-rootProject.name = "Pinkt"
+rootProject.name = "build-logic"
 
 pluginManagement {
-    includeBuild("build-logic")
     repositories {
         maven(url = "https://maven.google.com/") {
             mavenContent {
@@ -18,7 +17,6 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         maven(url = "https://maven.google.com/") {
             mavenContent {
@@ -27,22 +25,16 @@ dependencyResolutionManagement {
                 includeGroupAndSubgroups("com.google")
             }
         }
+
         mavenCentral()
+    }
+    versionCatalogs {
+        create("libs") {
+            from(files("../gradle/libs.versions.toml"))
+        }
     }
 }
 
-
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-include(":app")
-include(":core")
-include(":core-android")
-include(":ui")
-
-check(JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_21)) {
-    """
-    The project requires JDK 21+ but it is currently using JDK ${JavaVersion.current()}.
-    Java Home: [${System.getProperty("java.home")}]
-    https://developer.android.com/build/jdks#jdk-config-in-studio
-    """.trimIndent()
-}
+include(":convention")

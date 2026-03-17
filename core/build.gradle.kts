@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.fibelatti.kotlin.library)
 }
 
 dependencies {

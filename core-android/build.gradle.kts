@@ -1,6 +1,5 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.fibelatti.android.library)
 }
 
 android {
@@ -8,8 +7,5 @@ android {
 }
 
 dependencies {
-    implementation(libs.kotlin)
-
-    implementation(libs.core.ktx)
     implementation(libs.appcompat)
 }
