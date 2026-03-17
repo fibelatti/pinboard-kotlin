@@ -40,11 +40,20 @@ class AppStateDataSource @Inject constructor(
 
     private val reducer: MutableSharedFlow<suspend (AppState) -> AppState> = MutableSharedFlow()
 
+    private val initialAppState: AppState by lazy {
+        AppState(
+            appMode = appModeProvider.appMode.value,
+            content = getInitialContent(),
+            multiPanelAvailable = false,
+            useSplitNav = userRepository.useSplitNav,
+        )
+    }
+
     override val appState: StateFlow<AppState> = reducer
-        .scan(getInitialAppState()) { appState, reducer -> reducer(appState) }
+        .scan(initialAppState) { appState, reducer -> reducer(appState) }
         .combine(appModeProvider.appMode) { appState, appMode -> appState.copy(appMode = appMode) }
         .flowOn(dispatcher)
-        .stateIn(scope = scope, started = sharingStarted, initialValue = getInitialAppState())
+        .stateIn(scope = scope, started = sharingStarted, initialValue = initialAppState)
 
     init {
         unauthorizedPluginProvider.unauthorized
@@ -123,13 +132,6 @@ class AppStateDataSource @Inject constructor(
 
         return supertype
     }
-
-    private fun getInitialAppState(): AppState = AppState(
-        appMode = appModeProvider.appMode.value,
-        content = getInitialContent(),
-        multiPanelAvailable = false,
-        useSplitNav = userRepository.useSplitNav,
-    )
 
     private fun getInitialContent(): Content {
         return if (userRepository.userCredentials.value.hasAuthToken()) {
