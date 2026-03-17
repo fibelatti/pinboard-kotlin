@@ -3,10 +3,6 @@ plugins {
     alias(libs.plugins.fibelatti.kotlin.library)
 }
 
-dependencies {
-    platform(libs.junit5.bom)
-}
-
 kotlin {
     jvm()
 
@@ -21,12 +17,13 @@ kotlin {
 
         commonTest {
             dependencies {
+                implementation(project.dependencies.platform(libs.junit6.bom))
                 compileOnly(libs.junit)
-                runtimeOnly(libs.junit5.engine)
-                runtimeOnly(libs.junit5.launcher)
-                runtimeOnly(libs.junit5.vintage)
-                implementation(libs.junit5.api)
-                implementation(libs.junit5.params)
+                runtimeOnly(libs.junit6.engine)
+                runtimeOnly(libs.junit6.launcher)
+                runtimeOnly(libs.junit6.vintage)
+                implementation(libs.junit6.api)
+                implementation(libs.junit6.params)
 
                 implementation(libs.truth)
                 implementation(libs.mockk)

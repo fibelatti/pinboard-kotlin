@@ -139,7 +139,8 @@ class PostsDataSourcePinboardApiTest {
 
         @BeforeEach
         fun setup() {
-            clearMocks(mockApi, mockUserRepository)
+            clearMocks(mockApi, mockUserRepository, mockDao, mockConnectivityInfoProvider)
+            every { mockConnectivityInfoProvider.isConnected() } returns true
         }
 
         @Test
