@@ -30,7 +30,6 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
@@ -48,7 +47,7 @@ class PostListViewModel @Inject constructor(
         scope.launch {
             appStateRepository.appState
                 .mapNotNull { appState -> appState.content.find<PostListContent>() }
-                .collectLatest { content: PostListContent ->
+                .collect { content: PostListContent ->
                     val shouldLoadContent: Boolean = content.shouldLoad is ShouldLoadFirstPage ||
                         content.shouldLoad is ShouldForceLoad ||
                         content.shouldLoad is ShouldLoadNextPage
