@@ -2,7 +2,6 @@ package com.fibelatti.pinboard.features.appstate
 
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.functional.Either
-import com.fibelatti.core.functional.catching
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
@@ -11,8 +10,10 @@ import com.fibelatti.pinboard.features.user.domain.GetPreferredSortType
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class NavigationActionHandler @Inject constructor(
     private val userRepository: UserRepository,
@@ -139,10 +140,11 @@ class NavigationActionHandler @Inject constructor(
     @VisibleForTesting
     suspend fun markAsRead(post: Post): ShouldLoad {
         return if (post.readLater == true && userRepository.markAsReadOnOpen) {
-            withContext(NonCancellable) {
+            coroutineScope {
                 launch {
-                    catching {
-                        postsRepository.add(post.copy(readLater = false))
+                    withContext(NonCancellable) {
+                        runCatching { postsRepository.add(post.copy(readLater = false)) }
+                            .onFailure { Timber.e(it, "Failed to mark as read (bookmark=$post)") }
                     }
                 }
             }
