@@ -20,5 +20,5 @@ fun SearchParameters.pinboardQueryUrl(username: String): String {
 }
 
 fun SearchParameters.pinboardTagsUrl(username: String): String {
-    return "$PINBOARD_USER_URL$username/${tags.joinToString { "t:${it.name}/" }}"
+    return "$PINBOARD_USER_URL$username/${tags.joinToString(separator = "") { "t:${it.name}/" }}"
 }
