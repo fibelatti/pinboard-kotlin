@@ -2,7 +2,7 @@ package com.fibelatti.pinboard.core.network
 
 import com.fibelatti.pinboard.features.posts.data.model.GenericResponseDto
 import io.ktor.client.plugins.api.createClientPlugin
-import io.ktor.utils.io.readUTF8Line
+import io.ktor.utils.io.readLine
 
 /**
  * Following a refactor on December 2024 the API started returning an invalid JSON response (with
@@ -17,7 +17,7 @@ val PinboardResponseFixerPlugin = createClientPlugin("PinboardResponseFixer") {
             return@transformResponseBody null
         }
 
-        content.readUTF8Line()
+        content.readLine()
             ?.let(regex::find)
             ?.groupValues?.get(1)
             ?.let(::GenericResponseDto)
