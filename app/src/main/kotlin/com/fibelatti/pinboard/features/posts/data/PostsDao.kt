@@ -56,7 +56,6 @@ interface PostsDao {
             tag1: String = "",
             tag2: String = "",
             tag3: String = "",
-            matchAll: Boolean = true,
             exactMatch: Boolean = false,
             untaggedOnly: Boolean = false,
             postVisibility: PostVisibility = PostVisibility.None,
@@ -69,7 +68,6 @@ interface PostsDao {
                 tag1 = tag1,
                 tag2 = tag2,
                 tag3 = tag3,
-                matchAll = matchAll,
                 exactMatch = exactMatch,
                 untaggedOnly = untaggedOnly,
                 postVisibility = postVisibility,
@@ -84,7 +82,6 @@ interface PostsDao {
             tag1: String = "",
             tag2: String = "",
             tag3: String = "",
-            matchAll: Boolean = true,
             exactMatch: Boolean = false,
             untaggedOnly: Boolean = false,
             postVisibility: PostVisibility = PostVisibility.None,
@@ -99,7 +96,6 @@ interface PostsDao {
                 tag1 = tag1,
                 tag2 = tag2,
                 tag3 = tag3,
-                matchAll = matchAll,
                 exactMatch = exactMatch,
                 untaggedOnly = untaggedOnly,
                 postVisibility = postVisibility,
@@ -116,7 +112,6 @@ interface PostsDao {
             tag1: String,
             tag2: String,
             tag3: String,
-            matchAll: Boolean,
             exactMatch: Boolean,
             untaggedOnly: Boolean,
             postVisibility: PostVisibility,
@@ -129,7 +124,7 @@ interface PostsDao {
             val words: List<String> = term.trim()
                 .split(regex = "\\s+".toRegex())
                 .filterNot { it.isEmpty() }
-            val logicalOperator: String = if (matchAll) "and" else "or"
+            val logicalOperator = "and"
 
             val filterSubquery: String = buildString {
                 if (words.isNotEmpty()) {
@@ -193,13 +188,13 @@ interface PostsDao {
             val args: List<Any> = buildList {
                 if (words.isNotEmpty()) {
                     add(
-                        words.joinToString(separator = " $logicalOperator ") { word: String ->
-                            if (exactMatch) word else "*$word*"
+                        words.joinToString(separator = " ") { word: String ->
+                            if (exactMatch) word else "$word*"
                         },
                     )
                     addAll(
                         words.map { word: String ->
-                            if (exactMatch) word else "%$word%"
+                            if (exactMatch) word else "$word%"
                         },
                     )
                 }
@@ -226,7 +221,7 @@ interface PostsDao {
 
         private fun formatTagArgument(tag: String, exactMatch: Boolean = true): String {
             val sanitizedTag: String = tag.replace(oldValue = "\"", newValue = "")
-            return if (exactMatch) sanitizedTag else "*$sanitizedTag*"
+            return if (exactMatch) sanitizedTag else "$sanitizedTag*"
         }
         // endregion FTS queries
 

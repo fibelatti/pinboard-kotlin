@@ -283,7 +283,8 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
         readLaterOnly: Boolean,
         countLimit: Int,
     ): Int {
-        val isFtsCompatible: Boolean = isFtsCompatible(searchTerm) &&
+        val isFtsCompatible: Boolean = matchAll &&
+            isFtsCompatible(searchTerm) &&
             (tags.isNullOrEmpty() || tags.all { isFtsCompatible(it.name) })
 
         val query: SimpleSQLiteQuery = if (isFtsCompatible) {
@@ -292,7 +293,6 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
                 tag1 = tags.getTagName(index = 0),
                 tag2 = tags.getTagName(index = 1),
                 tag3 = tags.getTagName(index = 2),
-                matchAll = matchAll,
                 exactMatch = exactMatch,
                 untaggedOnly = untaggedOnly,
                 postVisibility = postVisibility,
@@ -342,7 +342,8 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
             readLaterOnly = readLaterOnly,
             countLimit = countLimit,
         )
-        val isFtsCompatible: Boolean = isFtsCompatible(searchTerm) &&
+        val isFtsCompatible: Boolean = matchAll &&
+            isFtsCompatible(searchTerm) &&
             (tags.isNullOrEmpty() || tags.all { isFtsCompatible(it.name) })
         val query: SimpleSQLiteQuery = if (isFtsCompatible) {
             BookmarksDao.allBookmarksFtsQuery(
@@ -350,7 +351,6 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
                 tag1 = tags.getTagName(index = 0),
                 tag2 = tags.getTagName(index = 1),
                 tag3 = tags.getTagName(index = 2),
-                matchAll = matchAll,
                 exactMatch = exactMatch,
                 untaggedOnly = untaggedOnly,
                 postVisibility = postVisibility,
