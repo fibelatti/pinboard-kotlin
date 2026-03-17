@@ -13,8 +13,10 @@ plugins {
 
     alias(libs.plugins.fibelatti.android.application) apply false
     alias(libs.plugins.fibelatti.android.library) apply false
+    alias(libs.plugins.fibelatti.android.base) apply false
     alias(libs.plugins.fibelatti.android.compose) apply false
     alias(libs.plugins.fibelatti.kotlin.library) apply false
+    alias(libs.plugins.fibelatti.manifest.permission.validation) apply false
     alias(libs.plugins.fibelatti.spotless)
 }
 
