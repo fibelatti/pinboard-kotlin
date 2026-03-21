@@ -22,6 +22,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.cache.storage.FileStorage
@@ -64,46 +65,62 @@ object NetworkModule {
     }
 
     @Provides
-    @RestApi(RestApiProvider.BASE)
-    fun baseHttpClient(
+    @Singleton
+    @RestApi(RestApiProvider.COMMON)
+    fun commonHttpClient(builder: HttpClientBuilder): HttpClient = builder.build()
+
+    @Provides
+    @Singleton
+    fun httpClientBuilder(
         json: Json,
         threadStatsTagInterceptor: Interceptor,
         @ApplicationContext context: Context,
-    ): HttpClient = HttpClient(OkHttp) {
-        engine {
-            config {
-                connectionPool(
-                    ConnectionPool(
-                        maxIdleConnections = 0,
-                        keepAliveDuration = 5,
-                        timeUnit = TimeUnit.MINUTES,
-                    ),
-                )
+    ): HttpClientBuilder = object : HttpClientBuilder {
 
-                connectTimeout(60, TimeUnit.SECONDS)
-                readTimeout(30, TimeUnit.SECONDS)
-                writeTimeout(30, TimeUnit.SECONDS)
+        override fun build(
+            extraHttpClientConfig: HttpClientConfig<*>.() -> Unit,
+            extraOkHttpClientConfig: OkHttpClient.Builder.() -> Unit,
+        ): HttpClient = HttpClient(OkHttp) {
+            install(PinboardResponseFixerPlugin)
 
-                followRedirects(true)
-                followSslRedirects(true)
-
-                addInterceptor(threadStatsTagInterceptor)
+            install(ContentNegotiation) {
+                json(json, contentType = ContentType.Any)
             }
-        }
 
-        install(PinboardResponseFixerPlugin)
-        install(ContentNegotiation) {
-            json(json, contentType = ContentType.Any)
-        }
+            install(HttpCache) {
+                publicStorage(FileStorage(File("${context.cacheDir}/http-cache")))
+            }
 
-        install(HttpCache) {
-            publicStorage(FileStorage(File("${context.cacheDir}/http-cache")))
-        }
+            extraHttpClientConfig()
 
-        if (BuildConfig.DEBUG) {
-            install(Logging) {
-                level = LogLevel.INFO
-                logger = Logger.ANDROID
+            if (BuildConfig.DEBUG) {
+                install(Logging) {
+                    level = LogLevel.INFO
+                    logger = Logger.ANDROID
+                }
+            }
+
+            engine {
+                config {
+                    connectionPool(
+                        ConnectionPool(
+                            maxIdleConnections = 0,
+                            keepAliveDuration = 5,
+                            timeUnit = TimeUnit.MINUTES,
+                        ),
+                    )
+
+                    connectTimeout(60, TimeUnit.SECONDS)
+                    readTimeout(30, TimeUnit.SECONDS)
+                    writeTimeout(30, TimeUnit.SECONDS)
+
+                    followRedirects(true)
+                    followSslRedirects(true)
+
+                    addInterceptor(threadStatsTagInterceptor)
+
+                    extraOkHttpClientConfig(this)
+                }
             }
         }
     }
@@ -142,4 +159,12 @@ object NetworkModule {
         .allowHardware(enable = false)
         .crossfade(enable = true)
         .build()
+}
+
+interface HttpClientBuilder {
+
+    fun build(
+        extraHttpClientConfig: HttpClientConfig<*>.() -> Unit = {},
+        extraOkHttpClientConfig: OkHttpClient.Builder.() -> Unit = {},
+    ): HttpClient
 }

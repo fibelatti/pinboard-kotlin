@@ -18,6 +18,8 @@ interface UserRepository {
 
     var linkdingInstanceUrl: String?
 
+    var linkdingClientCertAlias: String?
+
     var lastUpdate: String
 
     var periodicSync: PeriodicSync

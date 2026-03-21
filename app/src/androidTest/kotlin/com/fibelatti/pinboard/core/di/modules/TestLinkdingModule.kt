@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.core.di.modules
 import com.fibelatti.pinboard.LinkdingMockServer
 import com.fibelatti.pinboard.core.di.RestApi
 import com.fibelatti.pinboard.core.di.RestApiProvider
+import com.fibelatti.pinboard.core.network.LinkdingSSLSocketFactory
 import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.Module
@@ -15,6 +16,8 @@ import io.ktor.client.request.accept
 import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.URLProtocol
+import javax.inject.Singleton
+import okhttp3.ConnectionSpec
 
 @Module
 @TestInstallIn(
@@ -24,15 +27,20 @@ import io.ktor.http.URLProtocol
 object TestLinkdingModule {
 
     @Provides
+    @Singleton
     @RestApi(RestApiProvider.LINKDING)
     fun linkdingHttpClient(
-        @RestApi(RestApiProvider.BASE) httpClient: HttpClient,
+        httpClientBuilder: HttpClientBuilder,
         userRepository: UserRepository,
         unauthorizedPluginProvider: UnauthorizedPluginProvider,
-    ): HttpClient {
-        val mockServerUrl = LinkdingMockServer.instance.url("/")
+        linkdingSSLSocketFactory: LinkdingSSLSocketFactory,
+    ): HttpClient = httpClientBuilder.build(
+        extraHttpClientConfig = {
+            install(unauthorizedPluginProvider.plugin)
 
-        return httpClient.config {
+            expectSuccess = true
+
+            val mockServerUrl = LinkdingMockServer.instance.url("/")
             defaultRequest {
                 val credentials = userRepository.userCredentials.value
 
@@ -46,8 +54,22 @@ object TestLinkdingModule {
                 }
                 accept(ContentType.Application.Json)
             }
+        },
+        extraOkHttpClientConfig = {
+            connectionSpecs(
+                listOf(
+                    ConnectionSpec.COMPATIBLE_TLS,
+                    // Linkding instances can be self-hosted and use insecure connections
+                    ConnectionSpec.CLEARTEXT,
+                ),
+            )
 
-            install(unauthorizedPluginProvider.plugin)
-        }
-    }
+            // Always registering the factory to avoid having to recreate objects if the alias
+            // changes. It uses the default behavior when there's no alias set by the user.
+            sslSocketFactory(
+                sslSocketFactory = linkdingSSLSocketFactory,
+                trustManager = linkdingSSLSocketFactory.trustManager,
+            )
+        },
+    )
 }

@@ -7,10 +7,13 @@ import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.UserLoggedIn
 import com.fibelatti.pinboard.features.appstate.UserLoggedOut
 import com.fibelatti.pinboard.features.user.domain.UserRepository
+import io.mockk.Runs
 import io.mockk.coJustRun
 import io.mockk.coVerify
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -56,5 +59,23 @@ class AccountSwitcherViewModelTest : BaseViewModelTest() {
         accountSwitcherViewModel.logout(appMode = appMode)
 
         coVerify { mockAppStateRepository.runAction(UserLoggedOut(appMode)) }
+    }
+
+    @Test
+    fun `setClientCertAlias updates the repository`() = runTest {
+        every { mockUserRepository.linkdingClientCertAlias = any() } just Runs
+
+        accountSwitcherViewModel.setClientCertAlias("my-cert")
+
+        verify { mockUserRepository.linkdingClientCertAlias = "my-cert" }
+    }
+
+    @Test
+    fun `setClientCertAlias with null clears the repository`() = runTest {
+        every { mockUserRepository.linkdingClientCertAlias = any() } just Runs
+
+        accountSwitcherViewModel.setClientCertAlias(null)
+
+        verify { mockUserRepository.linkdingClientCertAlias = null }
     }
 }

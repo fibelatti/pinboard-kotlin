@@ -23,7 +23,7 @@ class Login @Inject constructor(
 
     override suspend operator fun invoke(params: Params): Result<Unit> {
         Timber.d("Logging in (params=$params)")
-        val appMode = when (params) {
+        val appMode: AppMode = when (params) {
             is PinboardParams -> AppMode.PINBOARD
             is LinkdingParams -> AppMode.LINKDING
         }
@@ -35,6 +35,7 @@ class Login @Inject constructor(
 
             is LinkdingParams -> {
                 userRepository.linkdingInstanceUrl = params.instanceUrl.trim()
+                userRepository.linkdingClientCertAlias = params.clientCertAlias
                 userRepository.setAuthToken(appMode = appMode, authToken = params.authToken.trim())
                 appModeProvider.setSelection(appMode = appMode)
             }
@@ -51,7 +52,13 @@ class Login @Inject constructor(
         abstract val authToken: String
     }
 
-    data class PinboardParams(override val authToken: String) : Params()
+    data class PinboardParams(
+        override val authToken: String,
+    ) : Params()
 
-    data class LinkdingParams(override val authToken: String, val instanceUrl: String) : Params()
+    data class LinkdingParams(
+        override val authToken: String,
+        val instanceUrl: String,
+        val clientCertAlias: String?,
+    ) : Params()
 }

@@ -111,6 +111,10 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
             }
         }
 
+    var linkdingClientCertAlias: String?
+        get() = sharedPreferences.getString("LINKDING_CLIENT_CERT_ALIAS", null)
+        set(value) = sharedPreferences.put("LINKDING_CLIENT_CERT_ALIAS", value)
+
     var pinboardAuthToken: String?
         get() {
             val fallback = currentPinboardAuthToken?.ifBlank { null }

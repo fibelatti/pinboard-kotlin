@@ -4,6 +4,7 @@ import com.fibelatti.pinboard.MockDataProvider.SAMPLE_DATE_TIME
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
+import com.fibelatti.pinboard.core.network.LinkdingSSLSocketFactory
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
 import com.fibelatti.pinboard.features.appstate.ByDateAddedOldestFirst
@@ -21,7 +22,9 @@ import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.randomBoolean
 import com.fibelatti.pinboard.randomString
 import com.google.common.truth.Truth.assertThat
+import io.mockk.Runs
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
@@ -35,6 +38,7 @@ internal class UserDataSourceTest {
         every { appReviewMode } returns false
         every { linkdingInstanceUrl } returns "linkding-url"
         every { linkdingAuthToken } returns "linkding-token"
+        every { linkdingClientCertAlias } returns null
         every { pinboardAuthToken } returns "pinboard-token"
         every { lastUpdate } returns ""
         every { periodicSync } returns 0L
@@ -78,8 +82,13 @@ internal class UserDataSourceTest {
         alphabetizeTags = true,
     )
 
+    private val mockLinkdingSSLSocketFactory = mockk<LinkdingSSLSocketFactory> {
+        every { reset() } just Runs
+    }
+
     private val userDataSource = UserDataSource(
         userSharedPreferences = mockUserSharedPreferences,
+        linkdingSSLSocketFactory = mockLinkdingSSLSocketFactory,
     )
 
     @Nested
@@ -130,6 +139,40 @@ internal class UserDataSourceTest {
                 // THEN
                 verify { mockUserSharedPreferences.linkdingInstanceUrl = value }
             }
+        }
+
+        @Nested
+        inner class LinkdingClientCertAliasTests {
+
+            @Test
+            fun `WHEN linkdingClientCertAlias getter is called THEN UserSharedPreferences is returned`() {
+                val value = randomString()
+
+                // GIVEN
+                every { mockUserSharedPreferences.linkdingClientCertAlias } returns value
+
+                // THEN
+                assertThat(userDataSource.linkdingClientCertAlias).isEqualTo(value)
+            }
+
+            @Test
+            fun `WHEN linkdingClientCertAlias setter is called THEN UserSharedPreferences is updated and userCredentials is refreshed`() =
+                runTest {
+                    val value = randomString()
+
+                    // GIVEN
+                    every { mockUserSharedPreferences.linkdingClientCertAlias } returns value
+
+                    // WHEN
+                    userDataSource.linkdingClientCertAlias = value
+
+                    // THEN
+                    verify {
+                        mockUserSharedPreferences.linkdingClientCertAlias = value
+                        mockLinkdingSSLSocketFactory.reset()
+                    }
+                    assertThat(userDataSource.userCredentials.first().linkdingClientCertAlias).isEqualTo(value)
+                }
         }
 
         @Nested
@@ -803,7 +846,10 @@ internal class UserDataSourceTest {
                 verify {
                     mockUserSharedPreferences.linkdingAuthToken = null
                     mockUserSharedPreferences.linkdingInstanceUrl = null
+                    mockUserSharedPreferences.linkdingClientCertAlias = null
                     mockUserSharedPreferences.lastUpdate = ""
+
+                    mockLinkdingSSLSocketFactory.reset()
                 }
             }
         }

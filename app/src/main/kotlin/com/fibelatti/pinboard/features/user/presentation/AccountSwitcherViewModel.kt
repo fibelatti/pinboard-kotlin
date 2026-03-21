@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 class AccountSwitcherViewModel @Inject constructor(
     scope: CoroutineScope,
     appStateRepository: AppStateRepository,
-    userRepository: UserRepository,
+    private val userRepository: UserRepository,
 ) : BaseViewModel(scope, appStateRepository) {
 
     val userCredentials: StateFlow<UserCredentials> = userRepository.userCredentials
@@ -32,5 +32,9 @@ class AccountSwitcherViewModel @Inject constructor(
 
     fun logout(appMode: AppMode) {
         runAction(UserLoggedOut(appMode = appMode))
+    }
+
+    fun setClientCertAlias(alias: String?) {
+        userRepository.linkdingClientCertAlias = alias
     }
 }

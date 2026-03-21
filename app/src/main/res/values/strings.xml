@@ -72,6 +72,11 @@
 
     <string name="auth_linkding_unreachable_instance_url">Unable to connect to server. The address must contain a protocol and be publicly accessible.</string>
 
+    <string name="auth_linkding_client_certificate">Client certificate (optional): %s</string>
+    <string name="auth_linkding_client_certificate_none">None</string>
+    <string name="auth_linkding_client_certificate_clear">Remove client certificate</string>
+    <string name="auth_linkding_client_certificate_not_selected">No certificate selected. Have you installed it on device?</string>
+
     <!-- Posts -->
     <string name="posts_title_all">All Bookmarks</string>
     <string name="posts_title_recent">Recent Bookmarks</string>

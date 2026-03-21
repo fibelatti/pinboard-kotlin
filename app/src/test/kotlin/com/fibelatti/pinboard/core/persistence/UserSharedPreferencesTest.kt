@@ -120,6 +120,37 @@ internal class UserSharedPreferencesTest {
     }
 
     @Test
+    fun `GIVEN LINKDING_CLIENT_CERT_ALIAS has no value WHEN linkdingClientCertAlias is called THEN null is returned`() {
+        // GIVEN
+        every { mockSharedPreferences.getString("LINKDING_CLIENT_CERT_ALIAS", null) } returns null
+
+        // THEN
+        assertThat(userSharedPreferences.linkdingClientCertAlias).isNull()
+    }
+
+    @Test
+    fun `GIVEN LINKDING_CLIENT_CERT_ALIAS has value WHEN linkdingClientCertAlias is called THEN value is returned`() {
+        // GIVEN
+        val result = randomString()
+        every { mockSharedPreferences.getString("LINKDING_CLIENT_CERT_ALIAS", null) } returns result
+
+        // THEN
+        assertThat(userSharedPreferences.linkdingClientCertAlias).isEqualTo(result)
+    }
+
+    @Test
+    fun `WHEN linkdingClientCertAlias is set THEN LINKDING_CLIENT_CERT_ALIAS is set`() {
+        // GIVEN
+        val result = randomString()
+
+        // WHEN
+        userSharedPreferences.linkdingClientCertAlias = result
+
+        // THEN
+        verify { mockEditor.putString("LINKDING_CLIENT_CERT_ALIAS", result) }
+    }
+
+    @Test
     fun `GIVEN AUTH_TOKEN had value AND USE_LINKDING was false WHEN pinboardAuthToken is called THEN value is returned`() {
         // GIVEN
         val result = randomString()

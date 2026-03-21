@@ -13,6 +13,7 @@ import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.UserLoggedIn
 import com.fibelatti.pinboard.features.appstate.UserLoginFailed
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
+import com.fibelatti.pinboard.randomString
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coJustRun
@@ -25,6 +26,7 @@ class LoginTest {
 
     private val mockUserRepository = mockk<UserRepository> {
         coJustRun { linkdingInstanceUrl = any() }
+        coJustRun { linkdingClientCertAlias = any() }
         coJustRun { setAuthToken(appMode = any(), authToken = any()) }
     }
     private val mockAppStateRepository = mockk<AppStateRepository> {
@@ -67,12 +69,49 @@ class LoginTest {
         coEvery { mockPostsRepository.clearCache() } returns Success(Unit)
 
         // WHEN
-        val result = login(Login.LinkdingParams(authToken = SAMPLE_API_TOKEN, instanceUrl = SAMPLE_INSTANCE_URL))
+        val result = login(
+            Login.LinkdingParams(
+                authToken = SAMPLE_API_TOKEN,
+                instanceUrl = SAMPLE_INSTANCE_URL,
+                clientCertAlias = null,
+            ),
+        )
 
         // THEN
         assertThat(result.getOrNull()).isEqualTo(Unit)
         coVerifySequence {
             mockUserRepository.linkdingInstanceUrl = SAMPLE_INSTANCE_URL
+            mockUserRepository.linkdingClientCertAlias = null
+            mockUserRepository.setAuthToken(appMode = AppMode.LINKDING, authToken = SAMPLE_API_TOKEN)
+            mockAppModeProvider.setSelection(appMode = AppMode.LINKDING)
+            mockPostsRepository.update()
+            mockPostsRepository.clearCache()
+            mockAppStateRepository.runAction(UserLoggedIn(appMode = AppMode.LINKDING))
+        }
+    }
+
+    @Test
+    fun `GIVEN repository call is successful WHEN Login is called THEN UserLoggedIn runs - mTLS`() = runTest {
+        // GIVEN
+        coEvery { mockPostsRepository.update() } returns Success(SAMPLE_DATE_TIME)
+        coEvery { mockPostsRepository.clearCache() } returns Success(Unit)
+
+        val clientCert = randomString()
+
+        // WHEN
+        val result = login(
+            Login.LinkdingParams(
+                authToken = SAMPLE_API_TOKEN,
+                instanceUrl = SAMPLE_INSTANCE_URL,
+                clientCertAlias = clientCert,
+            ),
+        )
+
+        // THEN
+        assertThat(result.getOrNull()).isEqualTo(Unit)
+        coVerifySequence {
+            mockUserRepository.linkdingInstanceUrl = SAMPLE_INSTANCE_URL
+            mockUserRepository.linkdingClientCertAlias = clientCert
             mockUserRepository.setAuthToken(appMode = AppMode.LINKDING, authToken = SAMPLE_API_TOKEN)
             mockAppModeProvider.setSelection(appMode = AppMode.LINKDING)
             mockPostsRepository.update()

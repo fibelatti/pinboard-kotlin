@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 
 class GetPopularPosts @Inject constructor(
-    @RestApi(RestApiProvider.BASE) private val httpClient: HttpClient,
+    @RestApi(RestApiProvider.COMMON) private val httpClient: HttpClient,
 ) : UseCase<Result<Map<Post, Int>>> {
 
     override suspend operator fun invoke(): Result<Map<Post, Int>> = catching {

@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.core.di.modules
 
 import com.fibelatti.pinboard.core.di.RestApi
 import com.fibelatti.pinboard.core.di.RestApiProvider
+import com.fibelatti.pinboard.core.network.LinkdingSSLSocketFactory
 import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.Module
@@ -9,11 +10,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.okhttp.OkHttpConfig
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.accept
 import io.ktor.client.request.header
 import io.ktor.http.ContentType
+import javax.inject.Singleton
 import okhttp3.ConnectionSpec
 
 @Module
@@ -21,35 +22,44 @@ import okhttp3.ConnectionSpec
 object LinkdingModule {
 
     @Provides
+    @Singleton
     @RestApi(RestApiProvider.LINKDING)
     fun linkdingHttpClient(
-        @RestApi(RestApiProvider.BASE) httpClient: HttpClient,
+        httpClientBuilder: HttpClientBuilder,
         userRepository: UserRepository,
         unauthorizedPluginProvider: UnauthorizedPluginProvider,
-    ): HttpClient = httpClient.config {
-        engine {
-            (this as OkHttpConfig).config {
-                connectionSpecs(
-                    listOf(
-                        ConnectionSpec.COMPATIBLE_TLS,
-                        ConnectionSpec.CLEARTEXT,
-                    ),
-                )
+        linkdingSSLSocketFactory: LinkdingSSLSocketFactory,
+    ): HttpClient = httpClientBuilder.build(
+        extraHttpClientConfig = {
+            install(unauthorizedPluginProvider.plugin)
+
+            expectSuccess = true
+
+            defaultRequest {
+                val credentials = userRepository.userCredentials.value
+
+                url(requireNotNull(credentials.linkdingInstanceUrl))
+                credentials.linkdingAuthToken?.let { token ->
+                    header("Authorization", "Token $token")
+                }
+                accept(ContentType.Application.Json)
             }
-        }
+        },
+        extraOkHttpClientConfig = {
+            connectionSpecs(
+                listOf(
+                    ConnectionSpec.COMPATIBLE_TLS,
+                    // Linkding instances can be self-hosted and use insecure connections
+                    ConnectionSpec.CLEARTEXT,
+                ),
+            )
 
-        defaultRequest {
-            val credentials = userRepository.userCredentials.value
-
-            url(requireNotNull(credentials.linkdingInstanceUrl))
-            credentials.linkdingAuthToken?.let { token ->
-                header("Authorization", "Token $token")
-            }
-            accept(ContentType.Application.Json)
-        }
-
-        expectSuccess = true
-
-        install(unauthorizedPluginProvider.plugin)
-    }
+            // Always registering the factory to avoid having to recreate objects if the alias
+            // changes. It uses the default behavior when there's no alias set by the user.
+            sslSocketFactory(
+                sslSocketFactory = linkdingSSLSocketFactory,
+                trustManager = linkdingSSLSocketFactory.trustManager,
+            )
+        },
+    )
 }

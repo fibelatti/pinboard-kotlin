@@ -2,6 +2,10 @@
 
 package com.fibelatti.pinboard.features.user.presentation
 
+import android.app.Activity
+import android.security.KeyChain
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -14,6 +18,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
@@ -65,6 +70,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
+import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
 import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
 import com.fibelatti.ui.components.TextWithLinks
 import com.fibelatti.ui.preview.DevicePreviews
@@ -75,15 +81,25 @@ import com.fibelatti.ui.theme.ExtendedTheme
 fun AuthScreen(
     authViewModel: AuthViewModel = hiltViewModel(),
 ) {
-    val screenState by authViewModel.screenState.collectAsStateWithLifecycle()
+    val screenState: AuthViewModel.ScreenState by authViewModel.screenState.collectAsStateWithLifecycle()
 
-    val error by authViewModel.error.collectAsStateWithLifecycle()
+    val error: Throwable? by authViewModel.error.collectAsStateWithLifecycle()
     LaunchedErrorHandlerEffect(error = error, handler = authViewModel::errorHandled)
+
+    val activity: AppCompatActivity = LocalAppCompatActivity.current
 
     AuthScreen(
         allowSwitching = screenState.allowSwitching,
         useLinkding = screenState.useLinkding,
         onUseLinkdingChanged = authViewModel::useLinkding,
+        clientCertAlias = screenState.clientCertAlias,
+        onClientCertAliasClick = {
+            activity.launchClientCertPicker(
+                currentAlias = screenState.clientCertAlias,
+                onAliasSelected = authViewModel::setClientCertAlias,
+            )
+        },
+        onClientCertAliasChanged = authViewModel::setClientCertAlias,
         onAuthRequested = authViewModel::login,
         isLoading = screenState.isLoading,
         apiTokenError = screenState.apiTokenError,
@@ -96,6 +112,9 @@ private fun AuthScreen(
     allowSwitching: Boolean,
     useLinkding: Boolean,
     onUseLinkdingChanged: (Boolean) -> Unit,
+    clientCertAlias: String?,
+    onClientCertAliasClick: () -> Unit,
+    onClientCertAliasChanged: (String?) -> Unit,
     onAuthRequested: (token: String, instanceUrl: String) -> Unit,
     isLoading: Boolean,
     apiTokenError: String?,
@@ -243,6 +262,15 @@ private fun AuthScreen(
                     )
                 }
 
+                AnimatedVisibility(visible = useLinkding) {
+                    ClientCertPicker(
+                        onClientCertAliasClick = onClientCertAliasClick,
+                        clientCertAlias = clientCertAlias,
+                        onClientCertAliasChanged = onClientCertAliasChanged,
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
+                }
+
                 AnimatedContent(
                     targetState = isLoading,
                     modifier = Modifier
@@ -299,6 +327,73 @@ private fun AuthScreen(
 }
 
 @Composable
+fun ClientCertPicker(
+    onClientCertAliasClick: () -> Unit,
+    clientCertAlias: String?,
+    onClientCertAliasChanged: (String?) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        TextButton(
+            onClick = onClientCertAliasClick,
+            modifier = Modifier.weight(1f),
+            shapes = ExtendedTheme.defaultButtonShapes,
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            ),
+        ) {
+            val certAlias: String =
+                clientCertAlias ?: stringResource(id = R.string.auth_linkding_client_certificate_none)
+
+            Text(text = stringResource(id = R.string.auth_linkding_client_certificate, certAlias))
+        }
+
+        if (clientCertAlias != null) {
+            IconButton(
+                onClick = { onClientCertAliasChanged(null) },
+                shapes = IconButtonDefaults.shapes(),
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_delete),
+                    contentDescription = stringResource(
+                        id = R.string.auth_linkding_client_certificate_clear,
+                    ),
+                )
+            }
+        }
+    }
+}
+
+fun Activity.launchClientCertPicker(
+    currentAlias: String?,
+    onAliasSelected: (String) -> Unit,
+) {
+    KeyChain.choosePrivateKeyAlias(
+        /* activity = */ this,
+        /* response = */
+        { alias: String? ->
+            if (alias != null) {
+                onAliasSelected(alias)
+            } else {
+                Toast.makeText(
+                    /* context = */ this,
+                    /* resId = */ R.string.auth_linkding_client_certificate_not_selected,
+                    /* duration = */ Toast.LENGTH_SHORT,
+                ).show()
+            }
+        },
+        /* keyTypes = */ null,
+        /* issuers = */ null,
+        /* host = */ null,
+        /* port = */ -1,
+        /* alias = */ currentAlias,
+    )
+}
+
+@Composable
 private fun AuthTokenHelp(
     useLinkding: Boolean,
     modifier: Modifier = Modifier,
@@ -346,6 +441,9 @@ private fun AuthScreenPreview() {
             useLinkding = false,
             allowSwitching = true,
             onUseLinkdingChanged = {},
+            clientCertAlias = null,
+            onClientCertAliasClick = {},
+            onClientCertAliasChanged = {},
             onAuthRequested = { _, _ -> },
             isLoading = false,
             apiTokenError = null,
@@ -363,6 +461,9 @@ private fun AuthScreenLinkdingPreview() {
             useLinkding = true,
             allowSwitching = true,
             onUseLinkdingChanged = {},
+            clientCertAlias = null,
+            onClientCertAliasClick = {},
+            onClientCertAliasChanged = {},
             onAuthRequested = { _, _ -> },
             isLoading = false,
             apiTokenError = null,
@@ -380,6 +481,9 @@ private fun AuthScreenLoadingPreview() {
             useLinkding = false,
             allowSwitching = true,
             onUseLinkdingChanged = {},
+            clientCertAlias = null,
+            onClientCertAliasClick = {},
+            onClientCertAliasChanged = {},
             onAuthRequested = { _, _ -> },
             isLoading = true,
             apiTokenError = null,
@@ -397,6 +501,9 @@ private fun AuthScreenErrorPreview() {
             useLinkding = false,
             allowSwitching = true,
             onUseLinkdingChanged = {},
+            clientCertAlias = null,
+            onClientCertAliasClick = {},
+            onClientCertAliasChanged = {},
             onAuthRequested = { _, _ -> },
             isLoading = false,
             apiTokenError = "Some error happened. Please try again.",

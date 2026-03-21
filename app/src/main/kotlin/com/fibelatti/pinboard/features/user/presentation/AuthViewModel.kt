@@ -10,6 +10,7 @@ import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.LoginContent
 import com.fibelatti.pinboard.features.user.domain.Login
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.plugins.ResponseException
 import java.net.ConnectException
@@ -32,6 +33,7 @@ class AuthViewModel @Inject constructor(
     appStateRepository: AppStateRepository,
     private val loginUseCase: Login,
     private val resourceProvider: ResourceProvider,
+    private val userRepository: UserRepository,
 ) : BaseViewModel(scope, appStateRepository) {
 
     private val _screenState = MutableStateFlow(ScreenState())
@@ -46,6 +48,7 @@ class AuthViewModel @Inject constructor(
                     ScreenState(
                         allowSwitching = loginContent.appMode == null,
                         useLinkding = loginContent.appMode == AppMode.LINKDING,
+                        clientCertAlias = userRepository.linkdingClientCertAlias,
                     )
                 }
             }
@@ -54,6 +57,10 @@ class AuthViewModel @Inject constructor(
 
     fun useLinkding(value: Boolean) {
         _screenState.update { current -> current.copy(useLinkding = value) }
+    }
+
+    fun setClientCertAlias(alias: String?) {
+        _screenState.update { current -> current.copy(clientCertAlias = alias) }
     }
 
     fun login(apiToken: String, instanceUrl: String) {
@@ -88,10 +95,16 @@ class AuthViewModel @Inject constructor(
                 )
             }
 
-            val params = if (screenState.value.useLinkding) {
-                Login.LinkdingParams(authToken = apiToken, instanceUrl = instanceUrl)
+            val params: Login.Params = if (screenState.value.useLinkding) {
+                Login.LinkdingParams(
+                    authToken = apiToken,
+                    instanceUrl = instanceUrl,
+                    clientCertAlias = screenState.value.clientCertAlias,
+                )
             } else {
-                Login.PinboardParams(authToken = apiToken)
+                Login.PinboardParams(
+                    authToken = apiToken,
+                )
             }
 
             loginUseCase(params)
@@ -138,6 +151,7 @@ class AuthViewModel @Inject constructor(
     data class ScreenState(
         val allowSwitching: Boolean = true,
         val useLinkding: Boolean = false,
+        val clientCertAlias: String? = null,
         val isLoading: Boolean = false,
         val apiTokenError: String? = null,
         val instanceUrlError: String? = null,

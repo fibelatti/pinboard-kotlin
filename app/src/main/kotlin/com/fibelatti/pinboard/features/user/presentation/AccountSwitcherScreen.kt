@@ -5,6 +5,7 @@ package com.fibelatti.pinboard.features.user.presentation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -32,6 +33,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
 import com.fibelatti.pinboard.features.user.domain.UserCredentials
 import com.fibelatti.ui.preview.DevicePreviews
 import com.fibelatti.ui.preview.ThemePreviews
@@ -47,6 +49,7 @@ fun AccountSwitcherScreen(
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
         val credentials by accountSwitcherViewModel.userCredentials.collectAsStateWithLifecycle()
+        val activity = LocalAppCompatActivity.current
 
         AccountSwitcherScreen(
             userCredentials = credentials,
@@ -68,6 +71,13 @@ fun AccountSwitcherScreen(
             onLogoutLinkdingClick = {
                 accountSwitcherViewModel.logout(appMode = AppMode.LINKDING)
             },
+            onClientCertAliasClick = {
+                activity.launchClientCertPicker(
+                    currentAlias = credentials.linkdingClientCertAlias,
+                    onAliasSelected = accountSwitcherViewModel::setClientCertAlias,
+                )
+            },
+            onClientCertAliasChanged = accountSwitcherViewModel::setClientCertAlias,
             onAddPinboardAccountClick = {
                 accountSwitcherViewModel.addAccount(appMode = AppMode.PINBOARD)
             },
@@ -91,6 +101,8 @@ private fun AccountSwitcherScreen(
     onLogoutPinboardClick: () -> Unit,
     onSelectLinkdingClick: () -> Unit,
     onLogoutLinkdingClick: () -> Unit,
+    onClientCertAliasClick: () -> Unit,
+    onClientCertAliasChanged: (String?) -> Unit,
     onAddPinboardAccountClick: () -> Unit,
     onAddLinkdingAccountClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -134,7 +146,14 @@ private fun AccountSwitcherScreen(
                     onLogoutClick = onLogoutLinkdingClick,
                     description = userCredentials.linkdingInstanceUrl,
                     modifier = Modifier.animateItem(),
-                )
+                ) {
+                    ClientCertPicker(
+                        onClientCertAliasClick = onClientCertAliasClick,
+                        clientCertAlias = userCredentials.linkdingClientCertAlias,
+                        onClientCertAliasChanged = onClientCertAliasChanged,
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
+                }
             }
         }
 
@@ -175,6 +194,7 @@ private fun AccountItem(
     onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier,
     description: String? = null,
+    additionalContent: @Composable ColumnScope.() -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -198,6 +218,8 @@ private fun AccountItem(
                 style = MaterialTheme.typography.bodyLarge,
             )
         }
+
+        additionalContent()
 
         Row(
             modifier = Modifier
@@ -243,6 +265,8 @@ private fun AccountSwitcherScreenPinboardOnlyPreview() {
             onLogoutPinboardClick = {},
             onSelectLinkdingClick = {},
             onLogoutLinkdingClick = {},
+            onClientCertAliasClick = {},
+            onClientCertAliasChanged = {},
             onAddPinboardAccountClick = {},
             onAddLinkdingAccountClick = {},
             modifier = Modifier.safeDrawingPadding(),
@@ -267,6 +291,35 @@ private fun AccountSwitcherScreenLinkdingOnlyPreview() {
             onLogoutPinboardClick = {},
             onSelectLinkdingClick = {},
             onLogoutLinkdingClick = {},
+            onClientCertAliasClick = {},
+            onClientCertAliasChanged = {},
+            onAddPinboardAccountClick = {},
+            onAddLinkdingAccountClick = {},
+            modifier = Modifier.safeDrawingPadding(),
+        )
+    }
+}
+
+@ThemePreviews
+@DevicePreviews
+@Composable
+private fun AccountSwitcherScreenLinkdingWithCertPreview() {
+    ExtendedTheme {
+        AccountSwitcherScreen(
+            userCredentials = UserCredentials(
+                pinboardAuthToken = null,
+                linkdingInstanceUrl = "https://my.linkding.com",
+                linkdingAuthToken = "linkding-token",
+                linkdingClientCertAlias = "my-client-cert",
+            ),
+            onSelectReviewModeClick = {},
+            onLogoutReviewModeClick = {},
+            onSelectPinboardClick = {},
+            onLogoutPinboardClick = {},
+            onSelectLinkdingClick = {},
+            onLogoutLinkdingClick = {},
+            onClientCertAliasClick = {},
+            onClientCertAliasChanged = {},
             onAddPinboardAccountClick = {},
             onAddLinkdingAccountClick = {},
             modifier = Modifier.safeDrawingPadding(),
@@ -292,6 +345,8 @@ private fun AccountSwitcherScreenReviewModePreview() {
             onLogoutPinboardClick = {},
             onSelectLinkdingClick = {},
             onLogoutLinkdingClick = {},
+            onClientCertAliasClick = {},
+            onClientCertAliasChanged = {},
             onAddPinboardAccountClick = {},
             onAddLinkdingAccountClick = {},
             modifier = Modifier.safeDrawingPadding(),
@@ -316,6 +371,8 @@ private fun AccountSwitcherScreenPreview() {
             onLogoutPinboardClick = {},
             onSelectLinkdingClick = {},
             onLogoutLinkdingClick = {},
+            onClientCertAliasClick = {},
+            onClientCertAliasChanged = {},
             onAddPinboardAccountClick = {},
             onAddLinkdingAccountClick = {},
             modifier = Modifier.safeDrawingPadding(),

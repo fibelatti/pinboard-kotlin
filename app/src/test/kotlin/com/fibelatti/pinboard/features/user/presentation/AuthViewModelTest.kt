@@ -14,6 +14,7 @@ import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.LoginContent
 import com.fibelatti.pinboard.features.user.domain.Login
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.google.common.truth.Truth.assertThat
 import io.ktor.client.plugins.ResponseException
 import io.ktor.client.statement.HttpResponse
@@ -41,12 +42,16 @@ class AuthViewModelTest : BaseViewModelTest() {
         coJustRun { runAction(any()) }
     }
     private val mockResourceProvider = mockk<ResourceProvider>()
+    private val mockUserRepository = mockk<UserRepository> {
+        every { linkdingClientCertAlias } returns null
+    }
 
     private val viewModel = AuthViewModel(
         scope = TestScope(dispatcher),
         appStateRepository = mockAppStateRepository,
         loginUseCase = mockLogin,
         resourceProvider = mockResourceProvider,
+        userRepository = mockUserRepository,
     )
 
     @Nested
@@ -82,6 +87,42 @@ class AuthViewModelTest : BaseViewModelTest() {
                     ),
                 )
             }
+        }
+    }
+
+    @Nested
+    inner class ClientCertTests {
+
+        @Test
+        fun `screenState clientCertAlias is initialized from userRepository`() = runTest {
+            val viewModelWithCert = AuthViewModel(
+                scope = TestScope(dispatcher),
+                appStateRepository = mockAppStateRepository,
+                loginUseCase = mockLogin,
+                resourceProvider = mockResourceProvider,
+                userRepository = mockk<UserRepository> {
+                    every { linkdingClientCertAlias } returns "my-cert"
+                },
+            )
+
+            viewModelWithCert.screenState.test {
+                assertThat(awaitItem().clientCertAlias).isEqualTo("my-cert")
+            }
+        }
+
+        @Test
+        fun `setClientCertAlias updates the screen state`() = runTest {
+            viewModel.setClientCertAlias("new-cert")
+
+            assertThat(viewModel.screenState.first().clientCertAlias).isEqualTo("new-cert")
+        }
+
+        @Test
+        fun `setClientCertAlias with null clears the screen state`() = runTest {
+            viewModel.setClientCertAlias("some-cert")
+            viewModel.setClientCertAlias(null)
+
+            assertThat(viewModel.screenState.first().clientCertAlias).isNull()
         }
     }
 
@@ -139,6 +180,7 @@ class AuthViewModelTest : BaseViewModelTest() {
                     Login.LinkdingParams(
                         authToken = SAMPLE_API_TOKEN,
                         instanceUrl = SAMPLE_INSTANCE_URL,
+                        clientCertAlias = null,
                     ),
                 )
             } returns Success(Unit)
@@ -156,6 +198,7 @@ class AuthViewModelTest : BaseViewModelTest() {
                     Login.LinkdingParams(
                         authToken = SAMPLE_API_TOKEN,
                         instanceUrl = SAMPLE_INSTANCE_URL,
+                        clientCertAlias = null,
                     ),
                 )
             }

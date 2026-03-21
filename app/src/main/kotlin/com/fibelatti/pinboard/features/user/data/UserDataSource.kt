@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.user.data
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
+import com.fibelatti.pinboard.core.network.LinkdingSSLSocketFactory
 import com.fibelatti.pinboard.core.persistence.UserSharedPreferences
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
 import com.fibelatti.pinboard.features.appstate.ByDateAddedOldestFirst
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.update
 @Singleton
 class UserDataSource @Inject constructor(
     private val userSharedPreferences: UserSharedPreferences,
+    private val linkdingSSLSocketFactory: LinkdingSSLSocketFactory,
 ) : UserRepository {
 
     private val _userCredentials = MutableStateFlow(getUserCredentials())
@@ -40,6 +42,14 @@ class UserDataSource @Inject constructor(
         get() = userSharedPreferences.linkdingInstanceUrl
         set(value) {
             userSharedPreferences.linkdingInstanceUrl = value
+        }
+
+    override var linkdingClientCertAlias: String?
+        get() = userSharedPreferences.linkdingClientCertAlias
+        set(value) {
+            userSharedPreferences.linkdingClientCertAlias = value
+            linkdingSSLSocketFactory.reset()
+            _userCredentials.update { getUserCredentials() }
         }
 
     override var lastUpdate: String
@@ -243,6 +253,7 @@ class UserDataSource @Inject constructor(
         pinboardAuthToken = userSharedPreferences.pinboardAuthToken,
         linkdingInstanceUrl = linkdingInstanceUrl,
         linkdingAuthToken = userSharedPreferences.linkdingAuthToken,
+        linkdingClientCertAlias = userSharedPreferences.linkdingClientCertAlias,
         appReviewMode = userSharedPreferences.appReviewMode,
     )
 
@@ -300,6 +311,9 @@ class UserDataSource @Inject constructor(
             AppMode.LINKDING -> {
                 userSharedPreferences.linkdingInstanceUrl = null
                 userSharedPreferences.linkdingAuthToken = null
+                userSharedPreferences.linkdingClientCertAlias = null
+
+                linkdingSSLSocketFactory.reset()
             }
 
             AppMode.NO_API -> {

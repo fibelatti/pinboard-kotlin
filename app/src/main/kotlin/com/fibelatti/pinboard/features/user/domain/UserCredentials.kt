@@ -6,6 +6,7 @@ data class UserCredentials(
     val pinboardAuthToken: String?,
     val linkdingInstanceUrl: String?,
     val linkdingAuthToken: String?,
+    val linkdingClientCertAlias: String? = null,
     val appReviewMode: Boolean = false,
 ) {
 
