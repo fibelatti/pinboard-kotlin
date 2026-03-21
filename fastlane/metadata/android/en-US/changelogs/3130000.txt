@@ -1,0 +1,6 @@
+This version brings the following updates:
+
+* Add client certificate (mTLS) support for Linkding
+* Fix search behavior when using multiple search terms
+
+Thank you for using the app!
