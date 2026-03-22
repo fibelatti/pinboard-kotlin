@@ -51,3 +51,6 @@
 # OkHttp
 -dontwarn okhttp3.**
 -dontnote okhttp3.**
+
+# jsoup - optional re2j dependency
+-dontwarn com.google.re2j.**
