@@ -123,6 +123,7 @@
 
     <string name="posts_saved_feedback">Bookmark saved successfully!</string>
     <string name="posts_existing_feedback">Existing bookmark found!</string>
+    <string name="posts_existing_feedback_with_date">Existing bookmark found, saved on %s</string>
 
     <string name="posts_url_offline_error">Looks like you are offline. Please try again once connection is available</string>
     <string name="posts_url_error">This bookmark cannot be viewed using the internal browser. Use your default browser instead.</string>

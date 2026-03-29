@@ -1,6 +1,6 @@
 package com.fibelatti.pinboard.features.share
 
-import androidx.annotation.StringRes
+import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.core.functional.ScreenState
 import com.fibelatti.core.functional.emitError
 import com.fibelatti.core.functional.emitLoaded
@@ -42,6 +42,7 @@ import kotlinx.coroutines.launch
 class ShareReceiverViewModel @Inject constructor(
     scope: CoroutineScope,
     appStateRepository: AppStateRepository,
+    private val resourceProvider: ResourceProvider,
     private val extractUrl: ExtractUrl,
     private val getUrlPreview: GetUrlPreview,
     private val addPost: AddPost,
@@ -103,11 +104,11 @@ class ShareReceiverViewModel @Inject constructor(
 
                 when {
                     existingPost != null && request.skipEdit -> {
-                        _screenState.emitLoaded(SharingResult.Saved(message = R.string.posts_existing_feedback))
+                        _screenState.emitLoaded(SharingResult.Saved(message = existingFeedback(existingPost)))
                     }
 
                     existingPost != null -> {
-                        _screenState.emitLoaded(SharingResult.Edit(message = R.string.posts_existing_feedback))
+                        _screenState.emitLoaded(SharingResult.Edit(message = existingFeedback(existingPost)))
                         runAction(EditPostFromShare(existingPost))
                     }
 
@@ -119,6 +120,15 @@ class ShareReceiverViewModel @Inject constructor(
                 }
             }
             .onFailure(_screenState::emitError)
+    }
+
+    private fun existingFeedback(existingPost: Post): String {
+        val dateAdded = existingPost.displayDateAdded
+        return if (dateAdded.isNotEmpty()) {
+            resourceProvider.getString(R.string.posts_existing_feedback_with_date, dateAdded)
+        } else {
+            resourceProvider.getString(R.string.posts_existing_feedback)
+        }
     }
 
     private fun editBookmark(urlPreview: UrlPreview) {
@@ -154,9 +164,13 @@ class ShareReceiverViewModel @Inject constructor(
             ),
         ).onSuccess {
             if (skipEdit) {
-                _screenState.emitLoaded(SharingResult.Saved())
+                _screenState.emitLoaded(
+                    SharingResult.Saved(message = resourceProvider.getString(R.string.posts_saved_feedback)),
+                )
             } else {
-                _screenState.emitLoaded(SharingResult.Edit(message = R.string.posts_saved_feedback))
+                _screenState.emitLoaded(
+                    SharingResult.Edit(message = resourceProvider.getString(R.string.posts_saved_feedback)),
+                )
                 runAction(EditPostFromShare(it))
             }
         }.onFailure(_screenState::emitError)
@@ -170,19 +184,18 @@ class ShareReceiverViewModel @Inject constructor(
 
     sealed class SharingResult {
 
-        @get:StringRes
-        abstract val message: Int?
+        abstract val message: String?
 
         data class ChooseService(
-            @StringRes override val message: Int? = null,
+            override val message: String? = null,
         ) : SharingResult()
 
         data class Saved(
-            @StringRes override val message: Int? = R.string.posts_saved_feedback,
+            override val message: String? = null,
         ) : SharingResult()
 
         data class Edit(
-            @StringRes override val message: Int? = null,
+            override val message: String? = null,
         ) : SharingResult()
     }
 }

@@ -77,7 +77,7 @@ fun ShareReceiverScreen(
         LocalHapticFeedback.current.performHapticFeedback(HapticFeedbackType.Confirm)
 
         currentState.data.message?.let {
-            Toast.makeText(LocalContext.current, it, Toast.LENGTH_SHORT).show()
+            Toast.makeText(LocalContext.current, it, Toast.LENGTH_LONG).show()
         }
         when (currentState.data) {
             is ShareReceiverViewModel.SharingResult.Edit -> onEdit()

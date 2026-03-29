@@ -1,10 +1,12 @@
 package com.fibelatti.pinboard.features.share
 
 import app.cash.turbine.test
+import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.ScreenState
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_DATE_TIME
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_TITLE
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_VALID
 import com.fibelatti.pinboard.MockDataProvider.createPost
@@ -74,17 +76,21 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         every { userCredentials } returns MutableStateFlow(credentials)
     }
     private val mockAppStateRepository = mockk<AppStateRepository>(relaxUnitFun = true)
+    private val mockResourceProvider = mockk<ResourceProvider>()
 
     private val mockAppModeProvider = mockk<AppModeProvider> {
         coJustRun { setSelection(any()) }
     }
 
-    private val post = mockk<Post>()
+    private val post = mockk<Post> {
+        every { displayDateAdded } returns SAMPLE_DATE_TIME
+    }
     private val error = Exception()
 
     private val shareReceiverViewModel = ShareReceiverViewModel(
         scope = TestScope(dispatcher),
         appStateRepository = mockAppStateRepository,
+        resourceProvider = mockResourceProvider,
         extractUrl = mockExtractUrl,
         getUrlPreview = mockGetUrlPreview,
         addPost = mockAddPost,
@@ -118,6 +124,9 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
             every { mockUserRepository.defaultReadLater } returns defaultReadLater
             every { mockUserRepository.defaultTags } returns defaultTags
 
+            val savedFeedback = "Bookmark saved successfully!"
+            every { mockResourceProvider.getString(R.string.posts_saved_feedback) } returns savedFeedback
+
             coEvery {
                 mockAddPost(
                     Post(
@@ -136,7 +145,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
 
                 assertThat(
                     expectMostRecentItem(),
-                ).isEqualTo(ScreenState.Loaded(ShareReceiverViewModel.SharingResult.Saved()))
+                ).isEqualTo(ScreenState.Loaded(ShareReceiverViewModel.SharingResult.Saved(savedFeedback)))
             }
         }
 
@@ -178,6 +187,9 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
             )
         } returns Success(post)
 
+        val savedFeedback = "Bookmark saved successfully!"
+        every { mockResourceProvider.getString(R.string.posts_saved_feedback) } returns savedFeedback
+
         shareReceiverViewModel.screenState.test {
             shareReceiverViewModel.saveUrl(url = SAMPLE_URL_VALID, title = SAMPLE_URL_TITLE, skipEdit = true)
 
@@ -189,7 +201,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
 
             assertThat(
                 expectMostRecentItem(),
-            ).isEqualTo(ScreenState.Loaded(ShareReceiverViewModel.SharingResult.Saved(R.string.posts_saved_feedback)))
+            ).isEqualTo(ScreenState.Loaded(ShareReceiverViewModel.SharingResult.Saved(savedFeedback)))
         }
     }
 
@@ -222,7 +234,11 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     @Test
     fun `GIVEN skipEdit is true WHEN an existing post is found THEN save should receive a value`() = runTest {
         // GIVEN
+        val existingFeedback = "Existing bookmark found, saved on $SAMPLE_DATE_TIME"
         coEvery { mockPostsRepository.getPost(id = "", url = SAMPLE_URL_VALID) } returns Success(post)
+        every {
+            mockResourceProvider.getString(R.string.posts_existing_feedback_with_date, SAMPLE_DATE_TIME)
+        } returns existingFeedback
 
         // WHEN
         shareReceiverViewModel.saveUrl(url = SAMPLE_URL_VALID, title = SAMPLE_URL_TITLE, skipEdit = true)
@@ -230,7 +246,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         // THEN
         assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(
             ScreenState.Loaded(
-                ShareReceiverViewModel.SharingResult.Saved(message = R.string.posts_existing_feedback),
+                ShareReceiverViewModel.SharingResult.Saved(message = existingFeedback),
             ),
         )
     }
@@ -239,8 +255,12 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     fun `GIVEN getEditAfterSharing is BeforeSaving WHEN an existing post is found THEN save should receive a value`() =
         runTest {
             // GIVEN
+            val existingFeedback = "Existing bookmark found, saved on $SAMPLE_DATE_TIME"
             coEvery { mockPostsRepository.getPost(id = "", url = SAMPLE_URL_VALID) } returns Success(post)
             every { mockUserRepository.editAfterSharing } returns EditAfterSharing.BeforeSaving
+            every {
+                mockResourceProvider.getString(R.string.posts_existing_feedback_with_date, SAMPLE_DATE_TIME)
+            } returns existingFeedback
 
             // WHEN
             shareReceiverViewModel.saveUrl(url = SAMPLE_URL_VALID, title = SAMPLE_URL_TITLE)
@@ -248,7 +268,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
             // THEN
             assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(
                 ScreenState.Loaded(
-                    ShareReceiverViewModel.SharingResult.Edit(message = R.string.posts_existing_feedback),
+                    ShareReceiverViewModel.SharingResult.Edit(message = existingFeedback),
                 ),
             )
             coVerify { mockAppStateRepository.runAction(EditPostFromShare(post)) }
@@ -258,8 +278,12 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     fun `GIVEN getEditAfterSharing is AfterSaving WHEN an existing post is found THEN save should receive a value`() =
         runTest {
             // GIVEN
+            val existingFeedback = "Existing bookmark found, saved on $SAMPLE_DATE_TIME"
             coEvery { mockPostsRepository.getPost(id = "", url = SAMPLE_URL_VALID) } returns Success(post)
             every { mockUserRepository.editAfterSharing } returns EditAfterSharing.AfterSaving
+            every {
+                mockResourceProvider.getString(R.string.posts_existing_feedback_with_date, SAMPLE_DATE_TIME)
+            } returns existingFeedback
 
             // WHEN
             shareReceiverViewModel.saveUrl(url = SAMPLE_URL_VALID, title = SAMPLE_URL_TITLE)
@@ -267,7 +291,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
             // THEN
             assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(
                 ScreenState.Loaded(
-                    ShareReceiverViewModel.SharingResult.Edit(message = R.string.posts_existing_feedback),
+                    ShareReceiverViewModel.SharingResult.Edit(message = existingFeedback),
                 ),
             )
             coVerify { mockAppStateRepository.runAction(EditPostFromShare(post)) }
@@ -360,6 +384,9 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         every { mockUserRepository.defaultReadLater } returns defaultReadLater
         every { mockUserRepository.defaultTags } returns defaultTags
 
+        val savedFeedback = "Bookmark saved successfully!"
+        every { mockResourceProvider.getString(R.string.posts_saved_feedback) } returns savedFeedback
+
         coEvery {
             mockAddPost(
                 Post(
@@ -384,7 +411,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         }
         assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(
             ScreenState.Loaded(
-                ShareReceiverViewModel.SharingResult.Saved(message = R.string.posts_saved_feedback),
+                ShareReceiverViewModel.SharingResult.Saved(message = savedFeedback),
             ),
         )
     }
@@ -400,6 +427,9 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         every { mockUserRepository.defaultReadLater } returns defaultReadLater
         every { mockUserRepository.defaultTags } returns defaultTags
         every { mockUserRepository.editAfterSharing } returns EditAfterSharing.AfterSaving
+
+        val savedFeedback = "Bookmark saved successfully!"
+        every { mockResourceProvider.getString(R.string.posts_saved_feedback) } returns savedFeedback
 
         val post = createPost()
         coEvery {
@@ -426,7 +456,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         }
         assertThat(shareReceiverViewModel.screenState.first()).isEqualTo(
             ScreenState.Loaded(
-                ShareReceiverViewModel.SharingResult.Edit(message = R.string.posts_saved_feedback),
+                ShareReceiverViewModel.SharingResult.Edit(message = savedFeedback),
             ),
         )
         coVerify { mockAppStateRepository.runAction(EditPostFromShare(post)) }
