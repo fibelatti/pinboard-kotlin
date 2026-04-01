@@ -199,13 +199,13 @@ dependencies {
     implementation(libs.constraint.layout.compose)
 
     implementation(libs.lifecycle.process)
-    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.lifecycle.runtime)
     implementation(libs.lifecycle.runtime.compose)
 
     implementation(libs.room.runtime)
     ksp(libs.room.compiler)
 
-    implementation(libs.work.runtime.ktx)
+    implementation(libs.work.runtime)
 
     implementation(libs.browser)
 
