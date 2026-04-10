@@ -7,6 +7,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
+import kotlinx.coroutines.CancellationException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -309,6 +310,13 @@ internal class EitherTest {
 
             // THEN
             assertThat(catching(function)).isEqualTo(Failure(mockError))
+        }
+
+        @Test
+        fun `GIVEN catching is called WHEN block throws CancellationException THEN it is rethrown`() {
+            assertThrows<CancellationException> {
+                catching { throw CancellationException() }
+            }
         }
 
         @Test

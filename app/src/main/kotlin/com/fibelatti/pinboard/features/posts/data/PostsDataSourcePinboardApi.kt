@@ -43,7 +43,9 @@ import io.ktor.client.plugins.ResponseException
 import java.util.UUID
 import javax.inject.Inject
 import kotlin.concurrent.Volatile
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
@@ -298,10 +300,11 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
     @VisibleForTesting
     suspend fun getAdditionalPages(initialOffset: Int) = supervisorScope {
         pagedRequestsJob = launch {
-            runCatching {
+            try {
                 var currentOffset = initialOffset
 
                 while (currentOffset > 0) {
+                    ensureActive()
                     val additionalPosts = postsApi.getAllPosts(
                         offset = currentOffset,
                         limit = API_PAGE_SIZE,
@@ -314,7 +317,11 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
                     savePosts(postRemoteDtoMapper.mapList(additionalPosts))
                     currentOffset += additionalPosts.size
                 }
-            }.onFailure { Timber.e(it, "Failed to fetch additional pages") }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Throwable) {
+                Timber.e(e, "Failed to fetch additional pages")
+            }
         }
     }
 

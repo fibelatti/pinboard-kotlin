@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.html.DL
@@ -46,14 +47,14 @@ class ExportBookmarksUseCase @Inject constructor(
 
     private val parentDir: File = context.cacheDir
 
-    override suspend fun invoke(): File? = runCatching {
+    override suspend fun invoke(): File? = try {
         withContext(Dispatchers.Default) {
             Timber.d("Loading bookmarks to export...")
 
             val posts: List<Post> = getPosts()
             Timber.d("${posts.size} bookmarks found.")
 
-            return@withContext if (posts.isNotEmpty()) {
+            if (posts.isNotEmpty()) {
                 createExportFile().apply {
                     exportBookmarks(file = this, posts = posts)
                 }
@@ -61,7 +62,11 @@ class ExportBookmarksUseCase @Inject constructor(
                 null
             }
         }
-    }.getOrNull()
+    } catch (e: CancellationException) {
+        throw e
+    } catch (_: Throwable) {
+        null
+    }
 
     private suspend fun getPosts(): List<Post> {
         val appMode: AppMode = appModeProvider.appMode.value

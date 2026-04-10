@@ -2,6 +2,7 @@ package com.fibelatti.core.functional
 
 import com.fibelatti.core.functional.Either.Left
 import com.fibelatti.core.functional.Either.Right
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onEach
 
@@ -212,6 +213,8 @@ public inline fun <T> Result<T>.mapFailure(onFailure: (Throwable) -> Result<T>):
  */
 public inline fun <R> catching(block: () -> R): Result<R> = try {
     Success(block())
+} catch (cancellationException: CancellationException) {
+    throw cancellationException
 } catch (exception: Throwable) {
     Failure(exception)
 }

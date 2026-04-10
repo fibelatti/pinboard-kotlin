@@ -28,7 +28,9 @@ import java.util.UUID
 import javax.inject.Inject
 import kotlin.concurrent.Volatile
 import kotlin.time.Duration.Companion.minutes
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
@@ -238,8 +240,9 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
         if (totalCount <= AppConfig.API_PAGE_SIZE) return@supervisorScope
 
         pagedRequestsJob = launch {
-            runCatching {
+            try {
                 for (currentOffset in AppConfig.API_PAGE_SIZE until totalCount step AppConfig.API_PAGE_SIZE) {
+                    ensureActive()
                     val additionalPosts = linkdingApi.getBookmarks(
                         offset = currentOffset,
                         limit = AppConfig.API_PAGE_SIZE,
@@ -250,7 +253,11 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
                             .let(bookmarkLocalMapper::mapListReverse),
                     )
                 }
-            }.onFailure { Timber.e(it, "Failed to fetch additional pages") }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Throwable) {
+                Timber.e(e, "Failed to fetch additional pages")
+            }
         }
     }
 
