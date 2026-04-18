@@ -6,10 +6,15 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Project checkout
         uses: actions/checkout@v6
@@ -43,6 +48,8 @@ jobs:
   instrumented_tests:
     name: Instrumented Tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     timeout-minutes: 30
     needs: [ build, unit_tests ]
     steps:
