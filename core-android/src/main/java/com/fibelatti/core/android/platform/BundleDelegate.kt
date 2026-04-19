@@ -40,6 +40,7 @@ private class BundleDelegate<T>(
         property: KProperty<*>,
     ): T = (thisRef.get(property.name) ?: default) as T
 
+    @Suppress("DEPRECATION")
     override fun setValue(
         thisRef: Bundle,
         property: KProperty<*>,
