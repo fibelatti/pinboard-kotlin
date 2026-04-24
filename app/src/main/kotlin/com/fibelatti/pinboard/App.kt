@@ -7,7 +7,9 @@ import android.os.Bundle
 import android.os.StrictMode
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.runtime.ComposeRuntimeFlags
 import androidx.compose.runtime.Composer
+import androidx.compose.runtime.ExperimentalComposeApi
 import androidx.compose.runtime.tooling.ComposeStackTraceMode
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
@@ -60,6 +62,7 @@ class App : Application(), Configuration.Provider, SingletonImageLoader.Factory 
 
     override fun newImageLoader(context: Context): ImageLoader = imageLoader.get()
 
+    @OptIn(ExperimentalComposeApi::class)
     private fun setupDebugMode() {
         if (!BuildConfig.DEBUG) return
 
@@ -80,6 +83,8 @@ class App : Application(), Configuration.Provider, SingletonImageLoader.Factory 
         )
 
         Composer.setDiagnosticStackTraceMode(ComposeStackTraceMode.Auto)
+
+        ComposeRuntimeFlags.isLinkBufferComposerEnabled = true
     }
 
     private fun setupThemeAndColors() {
