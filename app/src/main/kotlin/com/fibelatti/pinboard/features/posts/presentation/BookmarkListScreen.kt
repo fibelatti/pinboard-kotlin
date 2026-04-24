@@ -135,7 +135,9 @@ import com.fibelatti.ui.components.MultilineChipGroup
 import com.fibelatti.ui.components.bottomSheetData
 import com.fibelatti.ui.components.rememberAppSheetState
 import com.fibelatti.ui.components.showBottomSheet
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAccessibility
+import com.fibelatti.ui.preview.PreviewAll
+import com.fibelatti.ui.preview.PreviewThemesAndColors
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -992,7 +994,7 @@ private fun ShareFilterResultsBottomSheet(
 
 // region Previews
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun BookmarkListScreenPreview(
     @PreviewParameter(provider = PostListProvider::class) posts: List<Post>,
 ) {
@@ -1027,7 +1029,8 @@ private fun BookmarkListScreenPreview(
 }
 
 @Composable
-@ThemePreviews
+@PreviewThemesAndColors
+@PreviewAccessibility
 private fun ActiveSearchPreview() {
     ExtendedTheme {
         Box {
@@ -1043,7 +1046,8 @@ private fun ActiveSearchPreview() {
 }
 
 @Composable
-@ThemePreviews
+@PreviewThemesAndColors
+@PreviewAccessibility
 private fun BookmarkItemPreview(
     @PreviewParameter(provider = PostProvider::class) post: Post,
 ) {

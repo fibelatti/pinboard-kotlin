@@ -57,7 +57,7 @@ import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
 import com.fibelatti.ui.components.AutoSizeText
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
@@ -238,7 +238,7 @@ object NoteList {
 }
 
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun EmptyNoteListScreenPreview() {
     ExtendedTheme {
         NoteListContent(
@@ -248,7 +248,7 @@ private fun EmptyNoteListScreenPreview() {
 }
 
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun NoteListContentPreview() {
     ExtendedTheme {
         val notes = List(10) {

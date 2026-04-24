@@ -86,7 +86,7 @@ import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
 import com.fibelatti.ui.components.AutoSizeText
 import com.fibelatti.ui.components.rememberAppSheetState
 import com.fibelatti.ui.components.showBottomSheet
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.launch
 
@@ -443,7 +443,7 @@ object TagList {
 
 // region Previews
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun EmptyTagListPreview() {
     ExtendedTheme {
         TagList(
@@ -456,7 +456,7 @@ private fun EmptyTagListPreview() {
 }
 
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun TagListPreview() {
     ExtendedTheme {
         TagList(

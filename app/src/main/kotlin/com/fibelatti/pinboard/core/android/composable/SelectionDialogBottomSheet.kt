@@ -40,7 +40,8 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.ui.components.AppBottomSheet
 import com.fibelatti.ui.components.AppSheetState
 import com.fibelatti.ui.components.hideBottomSheet
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAccessibility
+import com.fibelatti.ui.preview.PreviewThemesAndColors
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
@@ -348,7 +349,8 @@ private fun <T> SelectionItem(
 
 // region Previews
 @Composable
-@ThemePreviews
+@PreviewThemesAndColors
+@PreviewAccessibility
 private fun SelectionDialogContentPreview() {
     ExtendedTheme {
         SelectionDialogContent(
@@ -362,7 +364,8 @@ private fun SelectionDialogContentPreview() {
 }
 
 @Composable
-@ThemePreviews
+@PreviewThemesAndColors
+@PreviewAccessibility
 private fun SelectionDialogContentHiddenOptionsPreview() {
     ExtendedTheme {
         SelectionDialogContent(

@@ -45,7 +45,7 @@ import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.components.rememberAppSheetState
 import com.fibelatti.ui.components.showBottomSheet
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
@@ -188,7 +188,7 @@ private fun PopularBookmarkItem(
 }
 
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun PopularBookmarksContentPreview(
     @PreviewParameter(provider = PostListProvider::class) posts: List<Post>,
 ) {

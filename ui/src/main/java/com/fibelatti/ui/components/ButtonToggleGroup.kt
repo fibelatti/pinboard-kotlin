@@ -31,7 +31,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.fibelatti.ui.components.ToggleButtonGroup.SquareCorner
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAccessibility
+import com.fibelatti.ui.preview.PreviewThemesAndColors
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
@@ -350,7 +351,8 @@ public object ToggleButtonGroup {
 }
 
 @Composable
-@ThemePreviews
+@PreviewThemesAndColors
+@PreviewAccessibility
 private fun RowToggleButtonGroupPreview() {
     ExtendedTheme {
         val items = List(4) {

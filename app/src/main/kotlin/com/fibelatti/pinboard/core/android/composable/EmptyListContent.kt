@@ -27,7 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.R
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
@@ -89,7 +89,7 @@ fun EmptyListContent(
 }
 
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun EmptyListContentPreview() {
     ExtendedTheme {
         EmptyListContent()

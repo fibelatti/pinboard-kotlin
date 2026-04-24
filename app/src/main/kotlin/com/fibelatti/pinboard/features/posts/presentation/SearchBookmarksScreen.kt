@@ -84,7 +84,7 @@ import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
 import com.fibelatti.ui.components.rememberAppSheetState
 import com.fibelatti.ui.components.showBottomSheet
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
@@ -371,7 +371,7 @@ private fun SearchBookmarksScreen(
 
 // region Previews
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun DefaultSearchBookmarksScreenPreview() {
     ExtendedTheme {
         SearchBookmarksScreen(
@@ -382,7 +382,7 @@ private fun DefaultSearchBookmarksScreenPreview() {
 }
 
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun ActiveSearchBookmarksScreenPreview() {
     ExtendedTheme {
         SearchBookmarksScreen(

@@ -31,7 +31,7 @@ import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.pinboard.features.main.MainState
 import com.fibelatti.pinboard.features.main.MainViewModel
 import com.fibelatti.pinboard.features.notes.domain.model.Note
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -120,7 +120,7 @@ private fun NoteContent(
 }
 
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun NoteContentPreview(
     @PreviewParameter(provider = LoremIpsum::class) text: String,
 ) {

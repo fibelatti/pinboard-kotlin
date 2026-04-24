@@ -73,8 +73,7 @@ import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
 import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
 import com.fibelatti.ui.components.TextWithLinks
-import com.fibelatti.ui.preview.DevicePreviews
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
@@ -433,8 +432,7 @@ private fun AuthTokenHelp(
 
 // region Previews
 @Composable
-@ThemePreviews
-@DevicePreviews
+@PreviewAll
 private fun AuthScreenPreview() {
     ExtendedTheme {
         AuthScreen(
@@ -453,8 +451,7 @@ private fun AuthScreenPreview() {
 }
 
 @Composable
-@ThemePreviews
-@DevicePreviews
+@PreviewAll
 private fun AuthScreenLinkdingPreview() {
     ExtendedTheme {
         AuthScreen(
@@ -473,8 +470,7 @@ private fun AuthScreenLinkdingPreview() {
 }
 
 @Composable
-@ThemePreviews
-@DevicePreviews
+@PreviewAll
 private fun AuthScreenLoadingPreview() {
     ExtendedTheme {
         AuthScreen(
@@ -493,8 +489,7 @@ private fun AuthScreenLoadingPreview() {
 }
 
 @Composable
-@ThemePreviews
-@DevicePreviews
+@PreviewAll
 private fun AuthScreenErrorPreview() {
     ExtendedTheme {
         AuthScreen(

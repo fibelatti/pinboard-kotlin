@@ -34,7 +34,7 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.ui.components.AppBottomSheet
 import com.fibelatti.ui.components.AppSheetState
 import com.fibelatti.ui.components.hideBottomSheet
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.delay
 
@@ -119,7 +119,7 @@ private fun RenameTagScreen(
 }
 
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun RenameTagScreenPreview() {
     ExtendedTheme {
         Box {

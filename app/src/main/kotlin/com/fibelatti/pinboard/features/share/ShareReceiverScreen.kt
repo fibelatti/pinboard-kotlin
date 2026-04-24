@@ -49,7 +49,8 @@ import com.fibelatti.pinboard.core.android.composable.RememberedEffect
 import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.core.extension.showErrorReportDialog
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAll
+import com.fibelatti.ui.preview.PreviewThemesAndColors
 import com.fibelatti.ui.theme.ExtendedTheme
 import io.ktor.client.plugins.ResponseException
 
@@ -231,7 +232,7 @@ private fun ShareReceiverErrorDialog(
 }
 
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun ShareReceiverScreenPreview() {
     ExtendedTheme {
         ShareReceiverScreen(
@@ -243,7 +244,7 @@ private fun ShareReceiverScreenPreview() {
 }
 
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun ShareReceiverScreenWithPickerPreview() {
     ExtendedTheme {
         ShareReceiverScreen(
@@ -255,7 +256,7 @@ private fun ShareReceiverScreenWithPickerPreview() {
 }
 
 @Composable
-@ThemePreviews
+@PreviewThemesAndColors
 private fun ShareReceiverErrorDialogPreview() {
     ExtendedTheme {
         ShareReceiverErrorDialog(

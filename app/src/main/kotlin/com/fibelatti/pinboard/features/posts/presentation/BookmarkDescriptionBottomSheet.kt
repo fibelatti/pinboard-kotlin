@@ -23,7 +23,7 @@ import com.fibelatti.ui.components.AppBottomSheet
 import com.fibelatti.ui.components.AppSheetState
 import com.fibelatti.ui.components.TextWithLinks
 import com.fibelatti.ui.components.bottomSheetData
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
@@ -109,7 +109,7 @@ private fun BookmarkDescriptionScreen(
 }
 
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun BookmarkDescriptionScreenPreview(
     @PreviewParameter(provider = LoremIpsum::class) description: String,
 ) {

@@ -89,7 +89,7 @@ import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
 import com.fibelatti.ui.components.rememberAppSheetState
 import com.fibelatti.ui.components.showBottomSheet
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -853,7 +853,7 @@ private fun <T> PreferenceSelectionButton(
 
 // region Previews
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun AppPreferencesContentPreview(
     @PreviewParameter(UserPreferencesProvider::class) userPreferences: UserPreferences,
 ) {
@@ -878,7 +878,7 @@ private fun AppPreferencesContentPreview(
 }
 
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun BookmarkingPreferencesContentPreview(
     @PreviewParameter(UserPreferencesProvider::class) userPreferences: UserPreferences,
 ) {

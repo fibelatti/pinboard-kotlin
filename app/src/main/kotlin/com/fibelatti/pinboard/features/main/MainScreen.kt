@@ -107,7 +107,7 @@ import com.fibelatti.pinboard.features.user.presentation.AuthScreen
 import com.fibelatti.pinboard.features.user.presentation.UserPreferencesScreen
 import com.fibelatti.ui.components.rememberAppSheetState
 import com.fibelatti.ui.components.showBottomSheet
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlin.reflect.KClass
 import kotlinx.coroutines.delay
@@ -562,7 +562,7 @@ private fun RowScope.MenuItemsContent(
 
 // region Previews
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun MainTopAppBarPreview() {
     ExtendedTheme {
         MainTopAppBar(
@@ -597,7 +597,7 @@ private fun MainTopAppBarPreview() {
 }
 
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun BottomAppBarPreview() {
     ExtendedTheme {
         Box(

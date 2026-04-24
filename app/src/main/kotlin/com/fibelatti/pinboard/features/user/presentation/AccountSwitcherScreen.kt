@@ -35,8 +35,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
 import com.fibelatti.pinboard.features.user.domain.UserCredentials
-import com.fibelatti.ui.preview.DevicePreviews
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
@@ -248,9 +247,8 @@ private fun AccountItem(
 }
 
 // region Previews
-@ThemePreviews
-@DevicePreviews
 @Composable
+@PreviewAll
 private fun AccountSwitcherScreenPinboardOnlyPreview() {
     ExtendedTheme {
         AccountSwitcherScreen(
@@ -274,9 +272,8 @@ private fun AccountSwitcherScreenPinboardOnlyPreview() {
     }
 }
 
-@ThemePreviews
-@DevicePreviews
 @Composable
+@PreviewAll
 private fun AccountSwitcherScreenLinkdingOnlyPreview() {
     ExtendedTheme {
         AccountSwitcherScreen(
@@ -300,9 +297,8 @@ private fun AccountSwitcherScreenLinkdingOnlyPreview() {
     }
 }
 
-@ThemePreviews
-@DevicePreviews
 @Composable
+@PreviewAll
 private fun AccountSwitcherScreenLinkdingWithCertPreview() {
     ExtendedTheme {
         AccountSwitcherScreen(
@@ -327,9 +323,8 @@ private fun AccountSwitcherScreenLinkdingWithCertPreview() {
     }
 }
 
-@ThemePreviews
-@DevicePreviews
 @Composable
+@PreviewAll
 private fun AccountSwitcherScreenReviewModePreview() {
     ExtendedTheme {
         AccountSwitcherScreen(
@@ -354,9 +349,8 @@ private fun AccountSwitcherScreenReviewModePreview() {
     }
 }
 
-@ThemePreviews
-@DevicePreviews
 @Composable
+@PreviewAll
 private fun AccountSwitcherScreenPreview() {
     ExtendedTheme {
         AccountSwitcherScreen(

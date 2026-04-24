@@ -70,7 +70,7 @@ import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.main.MainState
 import com.fibelatti.pinboard.features.main.MainViewModel
 import com.fibelatti.pinboard.features.posts.domain.model.Post
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -479,7 +479,7 @@ private fun BookmarkPlaceholder(
 
 // region Previews
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun FileBookmarkPreview() {
     ExtendedTheme {
         BookmarkPlaceholder(
@@ -494,7 +494,7 @@ private fun FileBookmarkPreview() {
 }
 
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun BookmarkErrorPreview() {
     ExtendedTheme {
         BookmarkPlaceholder(

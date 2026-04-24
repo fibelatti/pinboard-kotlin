@@ -13,7 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAccessibility
+import com.fibelatti.ui.preview.PreviewThemesAndColors
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
@@ -62,7 +63,8 @@ fun SettingToggle(
 }
 
 @Composable
-@ThemePreviews
+@PreviewThemesAndColors
+@PreviewAccessibility
 private fun SettingTogglePreview() {
     ExtendedTheme {
         Column(

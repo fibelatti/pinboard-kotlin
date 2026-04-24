@@ -43,8 +43,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.appstate.Content
 import com.fibelatti.pinboard.features.main.MainState
 import com.fibelatti.ui.components.AutoSizeText
-import com.fibelatti.ui.preview.DevicePreviews
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
@@ -172,8 +171,7 @@ fun MainTitle(
 
 // region Previews
 @Composable
-@ThemePreviews
-@DevicePreviews
+@PreviewAll
 private fun MainTitlePreview() {
     ExtendedTheme {
         Box {
@@ -194,8 +192,7 @@ private fun MainTitlePreview() {
 }
 
 @Composable
-@ThemePreviews
-@DevicePreviews
+@PreviewAll
 private fun MainTitleWithSubtitlePreview() {
     ExtendedTheme {
         Box {

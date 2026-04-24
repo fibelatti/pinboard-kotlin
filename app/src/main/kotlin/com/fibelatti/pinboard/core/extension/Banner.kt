@@ -23,7 +23,8 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAccessibility
+import com.fibelatti.ui.preview.PreviewThemesAndColors
 import com.fibelatti.ui.theme.ExtendedTheme
 
 fun View.showBanner(@StringRes messageRes: Int, duration: Long = 1_500) {
@@ -95,7 +96,8 @@ private fun Banner(message: String) {
 }
 
 @Composable
-@ThemePreviews
+@PreviewThemesAndColors
+@PreviewAccessibility
 private fun BannerPreview() {
     ExtendedTheme {
         Box(

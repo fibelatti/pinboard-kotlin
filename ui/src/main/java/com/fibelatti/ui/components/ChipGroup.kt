@@ -30,7 +30,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.fibelatti.ui.R
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAccessibility
+import com.fibelatti.ui.preview.PreviewThemesAndColors
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
@@ -179,7 +180,8 @@ public object ChipGroup {
 }
 
 @Composable
-@ThemePreviews
+@PreviewThemesAndColors
+@PreviewAccessibility
 private fun MultilineChipGroupPreview() {
     ExtendedTheme {
         val tags = listOf("kotlin", "dev", "ui", "android", "compose", "dependency-injection", "testing")
@@ -201,7 +203,8 @@ private fun MultilineChipGroupPreview() {
 }
 
 @Composable
-@ThemePreviews
+@PreviewThemesAndColors
+@PreviewAccessibility
 private fun SingleLineChipGroupPreview() {
     ExtendedTheme {
         val tags = listOf("kotlin", "dev", "ui", "android", "compose", "dependency-injection", "testing")

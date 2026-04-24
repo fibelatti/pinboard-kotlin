@@ -33,7 +33,7 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
@@ -192,7 +192,7 @@ fun TagManager(
 }
 
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun TagManagerPreview() {
     ExtendedTheme {
         TagManager(

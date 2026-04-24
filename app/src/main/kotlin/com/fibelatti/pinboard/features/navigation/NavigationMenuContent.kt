@@ -51,7 +51,7 @@ import com.fibelatti.pinboard.features.appstate.ViewPreferences
 import com.fibelatti.pinboard.features.appstate.ViewSavedFilters
 import com.fibelatti.pinboard.features.appstate.ViewTags
 import com.fibelatti.ui.components.AutoSizeText
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
@@ -386,7 +386,7 @@ private fun MenuItem(
 }
 
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun NavigationMenuContentPreview() {
     ExtendedTheme {
         NavigationMenuContent(

@@ -49,7 +49,7 @@ import com.fibelatti.ui.components.MultilineChipGroup
 import com.fibelatti.ui.components.bottomSheetData
 import com.fibelatti.ui.components.rememberAppSheetState
 import com.fibelatti.ui.components.showBottomSheet
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
@@ -258,7 +258,7 @@ private fun SavedFiltersQuickActionsBottomSheet(
 
 // region Previews
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun SavedFilterScreenPreview(
     @PreviewParameter(provider = SavedFilterProvider::class) savedFilters: List<SavedFilter>,
 ) {
@@ -273,7 +273,7 @@ private fun SavedFilterScreenPreview(
 }
 
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun SavedFilterScreenEmptyPreview() {
     ExtendedTheme {
         SavedFiltersScreen(

@@ -75,7 +75,7 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagManager
 import com.fibelatti.ui.foundation.RememberedEffect
 import com.fibelatti.ui.foundation.rememberKeyboardState
-import com.fibelatti.ui.preview.ThemePreviews
+import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
@@ -646,7 +646,7 @@ private fun BookmarkFlags(
 
 // region Previews
 @Composable
-@ThemePreviews
+@PreviewAll
 private fun EditBookmarkScreenPreview(
     @PreviewParameter(provider = PostProvider::class) post: Post,
 ) {
