@@ -40,9 +40,9 @@ import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import io.ktor.client.plugins.ResponseException
-import java.util.UUID
 import javax.inject.Inject
 import kotlin.concurrent.Volatile
+import kotlin.uuid.Uuid
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ensureActive
@@ -89,7 +89,7 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
 
     override suspend fun add(post: Post): Result<Post> {
         val resolvedPost: Post = post.copy(
-            id = post.id.ifBlank { UUID.randomUUID().toString() },
+            id = post.id.ifBlank { Uuid.random().toString() },
             dateAdded = post.dateAdded.ifNullOrBlank { dateFormatter.nowAsDataFormat() },
         )
 

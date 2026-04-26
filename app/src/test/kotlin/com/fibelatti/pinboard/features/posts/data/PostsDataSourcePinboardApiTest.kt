@@ -57,10 +57,10 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
-import io.mockk.mockkStatic
+import io.mockk.mockkObject
 import io.mockk.spyk
 import io.mockk.verify
-import java.util.UUID
+import kotlin.uuid.Uuid
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
@@ -353,8 +353,8 @@ class PostsDataSourcePinboardApiTest {
                     dateAdded = SAMPLE_DATE_TIME,
                 )
 
-                mockkStatic(UUID::class)
-                every { UUID.randomUUID() } returns mockk {
+                mockkObject(Uuid.Companion)
+                every { Uuid.random() } returns mockk {
                     every { this@mockk.toString() } returns SAMPLE_HASH
                 }
                 every { mockDateFormatter.nowAsDataFormat() } returns SAMPLE_DATE_TIME
@@ -525,8 +525,8 @@ class PostsDataSourcePinboardApiTest {
                 val expectedPost = baseExpectedPost.copy(pendingSync = PendingSyncDto.ADD)
 
                 coEvery { mockDao.getPost(SAMPLE_URL_VALID) } returns null
-                mockkStatic(UUID::class)
-                every { UUID.randomUUID() } returns mockk {
+                mockkObject(Uuid.Companion)
+                every { Uuid.random() } returns mockk {
                     every { this@mockk.toString() } returns SAMPLE_HASH
                 }
                 every { mockDateFormatter.nowAsDataFormat() } returns SAMPLE_DATE_TIME

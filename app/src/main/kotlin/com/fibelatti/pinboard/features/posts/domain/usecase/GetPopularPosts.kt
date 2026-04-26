@@ -9,8 +9,8 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
-import java.util.UUID
 import javax.inject.Inject
+import kotlin.uuid.Uuid
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
@@ -33,7 +33,7 @@ class GetPopularPosts @Inject constructor(
                     url = url,
                     title = title,
                     description = "",
-                    id = UUID.randomUUID().toString(),
+                    id = Uuid.random().toString(),
                 )
                 val count = element.select(".bookmark_count").firstOrNull()
                     ?.text()?.toIntOrNull()

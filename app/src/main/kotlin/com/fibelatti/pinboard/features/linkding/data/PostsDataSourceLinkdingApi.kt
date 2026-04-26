@@ -24,10 +24,10 @@ import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import java.util.UUID
 import javax.inject.Inject
 import kotlin.concurrent.Volatile
 import kotlin.time.Duration.Companion.minutes
+import kotlin.uuid.Uuid
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ensureActive
@@ -122,7 +122,7 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
         val existingPost = linkdingDao.getBookmark(id = post.id, url = post.url)
 
         val newPost = BookmarkLocal(
-            id = post.id.ifEmpty { UUID.randomUUID().toString() },
+            id = post.id.ifEmpty { Uuid.random().toString() },
             url = existingPost?.url ?: post.url,
             title = post.title,
             description = post.description,

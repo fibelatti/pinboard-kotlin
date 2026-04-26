@@ -21,8 +21,8 @@ import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import java.util.UUID
 import javax.inject.Inject
+import kotlin.uuid.Uuid
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -43,7 +43,7 @@ class PostsDataSourceNoApi @Inject constructor(
             href = existingPost?.href ?: post.url,
             description = post.title,
             extended = post.description,
-            hash = existingPost?.hash ?: post.id.ifEmpty { UUID.randomUUID().toString() },
+            hash = existingPost?.hash ?: post.id.ifEmpty { Uuid.random().toString() },
             time = existingPost?.time ?: post.dateAdded.ifEmpty { dateFormatter.nowAsDataFormat() },
             shared = if (post.private == true) {
                 AppConfig.PinboardApiLiterals.NO

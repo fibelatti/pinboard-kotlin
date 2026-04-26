@@ -1,6 +1,6 @@
 package com.fibelatti.pinboard
 
-import java.util.UUID
+import kotlin.uuid.Uuid
 import mockwebserver3.Dispatcher
 import mockwebserver3.MockResponse
 import mockwebserver3.MockWebServer
@@ -64,7 +64,7 @@ object LinkdingMockServer {
 
     object TestData {
 
-        val TOKEN: String = UUID.randomUUID().toString()
+        val TOKEN: String = Uuid.random().toString()
 
         fun bookmarksResponse(): String = """
             {

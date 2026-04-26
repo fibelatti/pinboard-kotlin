@@ -16,7 +16,7 @@ import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.tooling.BaseDbTest
 import com.google.common.truth.Truth.assertThat
-import java.util.UUID
+import kotlin.uuid.Uuid
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
@@ -186,7 +186,7 @@ class BookmarksDaoTest : BaseDbTest() {
 
     private val bookmarksDao get() = appDatabase.linkdingBookmarksDao()
 
-    private fun randomHash(): String = UUID.randomUUID().toString()
+    private fun randomHash(): String = Uuid.random().toString()
 
     @Test
     fun whenDeleteIsCalled_ThenAllDataIsDeleted() = runTest {
