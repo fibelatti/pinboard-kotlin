@@ -15,7 +15,7 @@ kotlin {
             }
         }
 
-        commonTest {
+        jvmTest {
             dependencies {
                 implementation(project.dependencies.platform(libs.junit6.bom))
                 compileOnly(libs.junit)
