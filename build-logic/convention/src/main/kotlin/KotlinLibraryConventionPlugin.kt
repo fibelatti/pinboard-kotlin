@@ -1,5 +1,6 @@
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.getByType
@@ -30,6 +31,13 @@ class KotlinLibraryConventionPlugin : Plugin<Project> {
     private fun Project.configureTestOptions() {
         tasks.withType<Test>().configureEach {
             useJUnitPlatform()
+        }
+
+        if (plugins.hasPlugin(versionCatalog.findPluginIdByAlias("kotlin.multiplatform"))) {
+            tasks.register("test") {
+                group = JavaBasePlugin.VERIFICATION_GROUP
+                dependsOn("jvmTest")
+            }
         }
     }
 }
