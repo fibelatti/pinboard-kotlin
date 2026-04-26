@@ -57,9 +57,9 @@
     <string name="auth_token_hint">API Token</string>
     <string name="auth_title_pinboard">Login to Pinboard</string>
     <string name="auth_button">Login</string>
-    <string name="auth_token_description"><![CDATA[You can find your API token in the <a href="https://pinboard.in/settings/password">Pinboard Settings</a> page. It is composed by your username and an alphanumeric string (e.g. username:00F0D0FE123456789012)]]></string>
+    <string name="auth_token_description"><![CDATA[You can find your API token in the <a href="https://pinboard.in/settings/password">Pinboard Settings</a> page. It is composed of your username and an alphanumeric string (e.g. username:00F0D0FE123456789012)]]></string>
     <string name="auth_token_empty">Please enter your API Token.</string>
-    <string name="auth_token_error">Login failed. Please double check your API Token</string>
+    <string name="auth_token_error">Login failed. Please double-check your API token</string>
     <string name="auth_logged_out_feedback">Invalid token. Please login again.</string>
 
     <string name="auth_switch_to_pinboard">Switch to Pinboard</string>
@@ -75,7 +75,7 @@
     <string name="auth_linkding_client_certificate">Client certificate (optional): %s</string>
     <string name="auth_linkding_client_certificate_none">None</string>
     <string name="auth_linkding_client_certificate_clear">Remove client certificate</string>
-    <string name="auth_linkding_client_certificate_not_selected">No certificate selected. Have you installed it on device?</string>
+    <string name="auth_linkding_client_certificate_not_selected">No certificate selected. Have you installed it on your device?</string>
 
     <!-- Posts -->
     <string name="posts_title_all">All Bookmarks</string>
@@ -106,7 +106,7 @@
     <string name="posts_deleted_error">An error happened and the bookmark was not removed. If the problem persists please delete it using the web client.</string>
 
     <string name="posts_marked_as_read_feedback">Read Later flag updated successfully</string>
-    <string name="posts_marked_as_read_error">Failed to update the Read Later flag. Please try again</string>
+    <string name="posts_marked_as_read_error">Failed to update the Read Later flag. Please try again.</string>
 
     <string name="posts_add_title">Save bookmark</string>
     <string name="posts_add_url">URL</string>
@@ -116,7 +116,7 @@
     <string name="posts_add_private">Private</string>
     <string name="posts_add_read_later">Read later</string>
 
-    <string name="posts_add_non_editable_url">To edit the URL, visit Pinboard on your browser.</string>
+    <string name="posts_add_non_editable_url">To edit the URL, visit Pinboard in your browser.</string>
 
     <string name="posts_add_tags">New tag</string>
     <string name="posts_add_tags_add">Add tag</string>
@@ -125,7 +125,7 @@
     <string name="posts_existing_feedback">Existing bookmark found!</string>
     <string name="posts_existing_feedback_with_date">Existing bookmark found, saved on %s</string>
 
-    <string name="posts_url_offline_error">Looks like you are offline. Please try again once connection is available</string>
+    <string name="posts_url_offline_error">Looks like you are offline. Please try again once a connection is available.</string>
     <string name="posts_url_error">This bookmark cannot be viewed using the internal browser. Use your default browser instead.</string>
     <string name="posts_open_in_browser">Open external browser</string>
 
@@ -142,8 +142,8 @@
 
     <!-- Validation -->
     <string name="validation_error_empty_url">The URL cannot be empty</string>
-    <string name="validation_error_invalid_url">The URL is not accepted by the service</string>
-    <string name="validation_error_invalid_url_rationale">The URL could not be saved. Please verify that it is valid</string>
+    <string name="validation_error_invalid_url">The URL is not accepted by the service.</string>
+    <string name="validation_error_invalid_url_rationale">The URL could not be saved. Please verify that it is valid.</string>
     <string name="validation_error_empty_title">The title cannot be empty</string>
 
     <!-- Search -->
@@ -165,7 +165,7 @@
 
     <string name="search_advanced_content_description">Advanced</string>
     <string name="search_advanced_match_all">Match all</string>
-    <string name="search_advanced_match_all_description">Bookmarks must include all search terms and selected tags</string>
+    <string name="search_advanced_match_all_description">Bookmarks must include all search terms and selected tags.</string>
     <string name="search_advanced_exact_match">Exact match</string>
     <string name="search_advanced_exact_match_description">Bookmarks must include all search terms exactly as typed. If your search includes non-Latin characters, it is recommended to leave this option disabled</string>
 
@@ -245,7 +245,7 @@
     <string name="quick_actions_more_options">More options</string>
 
     <string name="quick_actions_customization_hidden_options_title">Hidden options</string>
-    <string name="quick_actions_customization_hidden_options_instruction">Click on each option to toggle its visibility</string>
+    <string name="quick_actions_customization_hidden_options_instruction">Tap each option to toggle its visibility</string>
     <string name="quick_actions_customization_hidden_options_description">These are available by clicking on \"More options\" when viewing the quick actions menu</string>
 
     <string name="quick_actions_customization_save_changes">Save changes</string>
@@ -269,7 +269,7 @@
 
     <string name="user_preferences_periodic_sync">Background sync</string>
     <string name="user_preferences_periodic_sync_description">Automatically pull new bookmarks added to your collection on a regular interval</string>
-    <string name="user_preferences_periodic_sync_caveat">When the app is in the foreground your bookmarks are kept in sync regardless of this preference</string>
+    <string name="user_preferences_periodic_sync_caveat">When the app is in the foreground, your bookmarks are kept in sync regardless of this preference</string>
     <string name="user_preferences_periodic_sync_off">Off</string>
     <string name="user_preferences_periodic_sync_6_hours">Every 6 hours</string>
     <string name="user_preferences_periodic_sync_12_hours">Every 12 hours</string>
@@ -279,7 +279,7 @@
     <string name="user_preferences_appearance_light">Light theme</string>
     <string name="user_preferences_appearance_system_default">Follow system</string>
     <string name="user_preferences_dynamic_colors">Use dynamic colors</string>
-    <string name="user_preferences_dynamic_colors_caveat">Change the colors of the app, matching your device style</string>
+    <string name="user_preferences_dynamic_colors_caveat">Changes the app colors to match your device style</string>
     <string name="user_preferences_disable_screenshots">Disable screenshots and recording</string>
     <string name="user_preferences_disable_screenshots_caveat">Prevent app contents from being displayed on screenshots and screen recordings</string>
     <string name="user_preferences_date_format">Preferred date format</string>
@@ -295,9 +295,9 @@
     <string name="user_preferences_preferred_details_post_details">Open bookmark details screen</string>
     <string name="user_preferences_preferred_details_view_caveat">Long press list items when browsing bookmarks to access share and edit shortcuts</string>
     <string name="user_preferences_preferred_details_view_mark_as_read_on_open">Mark as read on open</string>
-    <string name="user_preferences_preferred_details_view_mark_as_read_on_open_caveat">Automatically update the bookmark to remove the read later flag</string>
+    <string name="user_preferences_preferred_details_view_mark_as_read_on_open_caveat">Automatically update the bookmark to remove the read later flag.</string>
     <string name="user_preferences_use_split_nav">Use split navigation</string>
-    <string name="user_preferences_use_split_nav_description">Keep lists visible when browsing (available for landscape devices, foldables and tablets)</string>
+    <string name="user_preferences_use_split_nav_description">Keep lists visible when browsing (available for landscape devices, foldables, and tablets)</string>
     <string name="user_preferences_follow_redirects">Follow redirects</string>
     <string name="user_preferences_follow_redirects_description">Automatically follow redirects when sharing a bookmark to the app, saving the final URL. Increases the loading time when saving a bookmark via the share action</string>
 
@@ -314,17 +314,17 @@
     <string name="user_preferences_description_visible_in_lists">Show description in lists</string>
     <string name="user_preferences_description_visible_in_lists_description">Show the first 5 lines of the description when browsing bookmarks</string>
     <string name="user_preferences_alphabetize_tags">Alphabetize tags</string>
-    <string name="user_preferences_alphabetize_tags_description">Enable to display tags under your bookmarks in alphabetical order, otherwise they are displayed in the order you entered them. This does not change the order in which they are saved.</string>
+    <string name="user_preferences_alphabetize_tags_description">When enabled, tags are shown under your bookmarks in alphabetical order; otherwise, they appear in the order you entered them. This does not change the order in which they are saved.</string>
     <string name="user_preferences_default_private_label">Private by default</string>
-    <string name="user_preferences_default_private_description">If active bookmarks shared to Pinkt are saved as private, otherwise your default preferences apply</string>
+    <string name="user_preferences_default_private_description">When enabled, bookmarks shared to Pinkt are saved as private; otherwise, your default preferences apply</string>
     <string name="user_preferences_default_read_later_label">Read later by default</string>
-    <string name="user_preferences_default_read_later_description">If active bookmarks shared to Pinkt are saved as read later, otherwise your default preferences apply</string>
+    <string name="user_preferences_default_read_later_description">When enabled, bookmarks shared to Pinkt are saved as read later; otherwise, your default preferences apply</string>
     <string name="user_preferences_default_tags">Default tags</string>
     <string name="user_preferences_default_tags_description">Tags to be added to all bookmarks created with or shared to Pinkt</string>
     <string name="user_preferences_edit_after_sharing_title">Open editor when sharing</string>
     <string name="user_preferences_edit_after_sharing_before_saving">Before saving</string>
     <string name="user_preferences_edit_after_sharing_after_saving">After saving</string>
-    <string name="user_preferences_edit_after_sharing_description">Controls when the bookmark editor should be displayed after choosing the \"Save bookmark\" share action. To skip the editor, choose \"Quick save bookmark\" when sharing instead</string>
+    <string name="user_preferences_edit_after_sharing_description">Controls when the bookmark editor should be displayed after choosing the \"Save bookmark\" share action. To skip the editor, choose \"Quick save bookmark\" when sharing instead.</string>
     <string name="user_preferences_bookmark_quick_options">Bookmark quick actions</string>
     <string name="user_preferences_bookmark_quick_actions_description">Customize which options are immediately visible when opening the quick actions menu</string>
 
@@ -348,7 +348,7 @@
 
     <!-- Error -->
     <string name="error_send_email">Send email</string>
-    <string name="error_report_rationale">Looks like something went wrong.\n\nYou can report this error by email which helps with troubleshooting and fixing.</string>
+    <string name="error_report_rationale">Looks like something went wrong.\n\nYou can report this error by email which helps me diagnose and fix issues.</string>
     <string name="error_report">Report</string>
     <string name="error_ignore">Ignore</string>
 
