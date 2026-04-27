@@ -628,4 +628,24 @@ internal class UserSharedPreferencesTest {
         // THEN
         verify { mockEditor.putString(KEY_DEFAULT_TAGS, "test,another-test") }
     }
+
+    @Test
+    fun `WHEN useBackgroundShareReceiver getter is called THEN its value is returned`() {
+        // GIVEN
+        val value = randomBoolean()
+        every { mockSharedPreferences.get(KEY_USE_BACKGROUND_SHARE_RECEIVER, false) } returns value
+
+        // THEN
+        assertThat(userSharedPreferences.useBackgroundShareReceiver).isEqualTo(value)
+    }
+
+    @Test
+    fun `WHEN useBackgroundShareReceiver setter is called THEN KEY_USE_BACKGROUND_SHARE_RECEIVER is set`() {
+        // WHEN
+        val value = randomBoolean()
+        userSharedPreferences.useBackgroundShareReceiver = value
+
+        // THEN
+        verify { mockEditor.putBoolean(KEY_USE_BACKGROUND_SHARE_RECEIVER, value) }
+    }
 }

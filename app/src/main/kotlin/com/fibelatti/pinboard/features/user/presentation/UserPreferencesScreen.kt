@@ -2,9 +2,12 @@
 
 package com.fibelatti.pinboard.features.user.presentation
 
+import android.Manifest
 import android.os.Build
 import android.view.KeyEvent
 import androidx.activity.compose.LocalActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedVisibility
@@ -71,11 +74,14 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
+import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogCustomizationBottomSheet
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.core.android.composable.SwitchWithIcon
 import com.fibelatti.pinboard.core.extension.fillWidthOfParent
+import com.fibelatti.pinboard.core.extension.showBanner
+import com.fibelatti.pinboard.features.notifications.isNotificationPermissionGranted
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -521,6 +527,18 @@ private fun BookmarkingPreferencesContent(
     val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
     val tagState by userPreferencesViewModel.tagManagerState.collectAsStateWithLifecycle(TagManagerState())
 
+    val localAppCompatActivity = LocalAppCompatActivity.current
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { granted: Boolean ->
+            if (!granted) {
+                localAppCompatActivity.showBanner(
+                    messageRes = R.string.user_preferences_use_background_share_receiver_missing_permission,
+                )
+            }
+        },
+    )
+
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -529,6 +547,15 @@ private fun BookmarkingPreferencesContent(
             appMode = appMode,
             userPreferences = userPreferences,
             onEditAfterSharingChange = userPreferencesViewModel::saveEditAfterSharing,
+            onUseBackgroundShareReceiverChange = { newValue: Boolean ->
+                userPreferencesViewModel.saveUseBackgroundShareReceiver(newValue)
+
+                val permissionNotGranted: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                    !localAppCompatActivity.isNotificationPermissionGranted()
+                if (newValue && permissionNotGranted) {
+                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            },
             onFollowRedirectsChange = userPreferencesViewModel::saveFollowRedirects,
             onRemoveUtmParametersChange = userPreferencesViewModel::saveRemoveUtmParameters,
             onRemovedUrlParametersChange = userPreferencesViewModel::saveRemovedUrlParameters,
@@ -572,6 +599,7 @@ private fun BookmarkingPreferencesContent(
     appMode: AppMode,
     userPreferences: UserPreferences,
     onEditAfterSharingChange: (EditAfterSharing) -> Unit,
+    onUseBackgroundShareReceiverChange: (Boolean) -> Unit,
     onFollowRedirectsChange: (Boolean) -> Unit,
     onRemoveUtmParametersChange: (Boolean) -> Unit,
     onRemovedUrlParametersChange: (Set<String>) -> Unit,
@@ -621,6 +649,13 @@ private fun BookmarkingPreferencesContent(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+
+        SettingToggle(
+            title = stringResource(id = R.string.user_preferences_use_background_share_receiver),
+            description = stringResource(id = R.string.user_preferences_use_background_share_receiver_description),
+            checked = userPreferences.useBackgroundShareReceiver,
+            onCheckedChange = onUseBackgroundShareReceiverChange,
+        )
 
         SettingToggle(
             title = stringResource(id = R.string.user_preferences_follow_redirects),
@@ -887,6 +922,7 @@ private fun BookmarkingPreferencesContentPreview(
             appMode = AppMode.PINBOARD,
             userPreferences = userPreferences,
             onEditAfterSharingChange = {},
+            onUseBackgroundShareReceiverChange = {},
             onFollowRedirectsChange = {},
             onRemoveUtmParametersChange = {},
             onRemovedUrlParametersChange = {},

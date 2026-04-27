@@ -129,4 +129,8 @@ class UserPreferencesViewModel @Inject constructor(
     fun saveAlphabetizeTags(value: Boolean) {
         userRepository.alphabetizeTags = value
     }
+
+    fun saveUseBackgroundShareReceiver(value: Boolean) {
+        userRepository.useBackgroundShareReceiver = value
+    }
 }

@@ -7,7 +7,16 @@ public open class BaseIntentBuilder(context: Context?, clazz: Class<*>) {
 
     protected val intent: Intent = Intent(context, clazz)
 
+    init {
+        intent.fromBuilder = true
+    }
+
     public fun clearTop(): BaseIntentBuilder = apply { intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP) }
 
     public fun build(): Intent = intent
+
+    public companion object {
+
+        public var Intent.fromBuilder: Boolean by intentExtras(default = false)
+    }
 }

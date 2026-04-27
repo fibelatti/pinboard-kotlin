@@ -64,6 +64,8 @@ interface UserRepository {
 
     var alphabetizeTags: Boolean
 
+    var useBackgroundShareReceiver: Boolean
+
     fun setAuthToken(appMode: AppMode, authToken: String)
 
     fun clearAuthToken(appMode: AppMode)

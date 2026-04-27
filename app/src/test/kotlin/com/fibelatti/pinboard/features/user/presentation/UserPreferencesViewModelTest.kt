@@ -241,6 +241,18 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         verify { mockUserRepository.defaultReadLater = value }
     }
 
+    @Test
+    fun `WHEN saveUseBackgroundShareReceiver is called THEN repository is updated`() {
+        // GIVEN
+        val value = randomBoolean()
+
+        // WHEN
+        userPreferencesViewModel.saveUseBackgroundShareReceiver(value)
+
+        // THEN
+        verify { mockUserRepository.useBackgroundShareReceiver = value }
+    }
+
     companion object {
 
         @JvmStatic

@@ -1,13 +1,19 @@
 package com.fibelatti.pinboard.features.main
 
+import androidx.lifecycle.SavedStateHandle
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.core.extension.ScrollDirection
+import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.Content
+import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.MultiPanelAvailabilityChanged
 import com.fibelatti.pinboard.features.appstate.NavigateBack
+import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.Reset
+import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.main.reducer.MainStateReducer
+import com.fibelatti.pinboard.features.posts.domain.model.Post
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -26,6 +32,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
     scope: CoroutineScope,
     sharingStarted: SharingStarted,
     appStateRepository: AppStateRepository,
@@ -47,6 +54,10 @@ class MainViewModel @Inject constructor(
             .onEach { appState ->
                 mainStateReducers[appState.content::class.java]?.let { mainStateReducer: MainStateReducer ->
                     reducer.emit { current: MainState -> mainStateReducer(current, appState) }
+                }
+
+                if (appState.content is PostListContent) {
+                    consumeDeepLink(appState.content)
                 }
             }
             .launchIn(scope)
@@ -105,4 +116,29 @@ class MainViewModel @Inject constructor(
     fun fabClicks(contentType: ContentType): Flow<Any?> = fabClicks
         .filter { (type, _) -> type == contentType }
         .map { (_, data) -> data }
+
+    fun handleDeeplink(postId: String, openEditor: Boolean) {
+        savedStateHandle[KEY_DEEP_LINK_POST_ID] = postId
+        savedStateHandle[KEY_DEEP_LINK_OPEN_EDITOR] = openEditor
+
+        runAction(All)
+    }
+
+    private fun consumeDeepLink(content: PostListContent) {
+        val pendingDeeplinkPostId: String = savedStateHandle[KEY_DEEP_LINK_POST_ID] ?: return
+        val posts: List<Post> = content.posts?.list ?: return
+        val post: Post = posts.find { it.id == pendingDeeplinkPostId } ?: return
+        val openEditor: Boolean? = savedStateHandle[KEY_DEEP_LINK_OPEN_EDITOR]
+
+        runAction(if (openEditor == true) EditPost(post = post) else ViewPost(post))
+
+        savedStateHandle.remove<String?>(KEY_DEEP_LINK_POST_ID)
+        savedStateHandle.remove<Boolean?>(KEY_DEEP_LINK_OPEN_EDITOR)
+    }
+
+    private companion object {
+
+        private const val KEY_DEEP_LINK_POST_ID: String = "deeplinkPostId"
+        private const val KEY_DEEP_LINK_OPEN_EDITOR: String = "deeplinkOpenEditor"
+    }
 }

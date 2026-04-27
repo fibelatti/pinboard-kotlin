@@ -298,6 +298,9 @@
     <string name="user_preferences_preferred_details_view_mark_as_read_on_open_caveat">Automatically update the bookmark to remove the read later flag.</string>
     <string name="user_preferences_use_split_nav">Use split navigation</string>
     <string name="user_preferences_use_split_nav_description">Keep lists visible when browsing (available for landscape devices, foldables, and tablets)</string>
+    <string name="user_preferences_use_background_share_receiver">Quick save in the background</string>
+    <string name="user_preferences_use_background_share_receiver_description">When enabled, selecting \"Quick save bookmark\" in the share sheet saves the bookmark in the background and notifies you of the result via push notification</string>
+    <string name="user_preferences_use_background_share_receiver_missing_permission">Grant notification permission through the settings app to see the result.</string>
     <string name="user_preferences_follow_redirects">Follow redirects</string>
     <string name="user_preferences_follow_redirects_description">Automatically follow redirects when sharing a bookmark to the app, saving the final URL. Increases the loading time when saving a bookmark via the share action</string>
 
@@ -345,6 +348,17 @@
     <string name="share_to_pinkt_choose_service">Save bookmark to:</string>
     <string name="share_title">Sharing Pinkt</string>
     <string name="share_text">Check out Pinkt, a bookmarking app for Pinboard and Linkding. Download for free at %s</string>
+
+    <!-- Share Notifications -->
+    <string name="share_notification_channel_name">Save bookmark results</string>
+    <string name="share_notification_channel_description">Shows notifications with the result of saving a shared URL as a bookmark</string>
+    <string name="share_notification_unprocessable_url_feedback">Unable to process an empty URL.</string>
+    <string name="share_notification_missing_permission_feedback">Adding bookmark… Grant notification permission to see the result.</string>
+    <string name="share_notification_title_foreground">Adding bookmark…</string>
+    <string name="share_notification_title_success">Bookmark added successfully!</string>
+    <string name="share_notification_title_existing">Existing bookmark found, saved on %s</string>
+    <string name="share_notification_title_failure">Couldn\'t add bookmark</string>
+    <string name="share_notification_opening_deep_link">Opening deep link…</string>
 
     <!-- Error -->
     <string name="error_send_email">Send email</string>

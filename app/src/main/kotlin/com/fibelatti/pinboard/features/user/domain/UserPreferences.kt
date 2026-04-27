@@ -29,4 +29,5 @@ data class UserPreferences(
     val editAfterSharing: EditAfterSharing,
     val defaultTags: List<Tag>,
     val alphabetizeTags: Boolean,
+    val useBackgroundShareReceiver: Boolean,
 )

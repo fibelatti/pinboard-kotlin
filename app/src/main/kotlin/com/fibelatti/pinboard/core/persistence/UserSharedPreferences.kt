@@ -74,6 +74,9 @@ const val KEY_REMOVED_URL_PARAMETERS = "REMOVED_URL_PARAMETERS"
 
 @VisibleForTesting
 const val KEY_ALPHABETIZE_TAGS = "ALPHABETIZE_TAGS"
+
+@VisibleForTesting
+const val KEY_USE_BACKGROUND_SHARE_RECEIVER = "USE_BACKGROUND_SHARE_RECEIVER"
 // endregion
 
 @Singleton
@@ -238,4 +241,8 @@ class UserSharedPreferences @Inject constructor(private val sharedPreferences: S
     var alphabetizeTags: Boolean
         get() = sharedPreferences.get(KEY_ALPHABETIZE_TAGS, true)
         set(value) = sharedPreferences.put(KEY_ALPHABETIZE_TAGS, value)
+
+    var useBackgroundShareReceiver: Boolean
+        get() = sharedPreferences.get(KEY_USE_BACKGROUND_SHARE_RECEIVER, false)
+        set(value) = sharedPreferences.put(KEY_USE_BACKGROUND_SHARE_RECEIVER, value)
 }

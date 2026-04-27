@@ -249,6 +249,13 @@ class UserDataSource @Inject constructor(
             updateCurrentPreferences()
         }
 
+    override var useBackgroundShareReceiver: Boolean
+        get() = userSharedPreferences.useBackgroundShareReceiver
+        set(value) {
+            userSharedPreferences.useBackgroundShareReceiver = value
+            updateCurrentPreferences()
+        }
+
     private fun getUserCredentials(): UserCredentials = UserCredentials(
         pinboardAuthToken = userSharedPreferences.pinboardAuthToken,
         linkdingInstanceUrl = linkdingInstanceUrl,
@@ -282,6 +289,7 @@ class UserDataSource @Inject constructor(
         editAfterSharing = editAfterSharing,
         defaultTags = defaultTags,
         alphabetizeTags = alphabetizeTags,
+        useBackgroundShareReceiver = useBackgroundShareReceiver,
     )
 
     override fun setAuthToken(appMode: AppMode, authToken: String) {

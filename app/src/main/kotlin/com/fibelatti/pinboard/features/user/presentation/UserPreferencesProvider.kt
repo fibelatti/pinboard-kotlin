@@ -35,6 +35,7 @@ class UserPreferencesProvider : PreviewParameterProvider<UserPreferences> {
                 editAfterSharing = EditAfterSharing.AfterSaving,
                 defaultTags = listOf(Tag(name = "Android")),
                 alphabetizeTags = true,
+                useBackgroundShareReceiver = false,
             ),
         )
 }

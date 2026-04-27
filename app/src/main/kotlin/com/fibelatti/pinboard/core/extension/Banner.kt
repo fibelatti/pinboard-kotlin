@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.core.extension
 
+import android.app.Activity
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +27,12 @@ import androidx.compose.ui.unit.dp
 import com.fibelatti.ui.preview.PreviewAccessibility
 import com.fibelatti.ui.preview.PreviewThemesAndColors
 import com.fibelatti.ui.theme.ExtendedTheme
+
+fun Activity.showBanner(@StringRes messageRes: Int, duration: Long = 1_500) {
+    window.decorView.findViewById<ViewGroup>(android.R.id.content)
+        ?.getChildAt(0)
+        ?.showBanner(messageRes = messageRes, duration = duration)
+}
 
 fun View.showBanner(@StringRes messageRes: Int, duration: Long = 1_500) {
     showBanner(message = resources.getString(messageRes), duration = duration)

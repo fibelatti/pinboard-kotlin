@@ -1,14 +1,19 @@
 package com.fibelatti.pinboard.features.main
 
+import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.createAppState
+import com.fibelatti.pinboard.MockDataProvider.createPost
+import com.fibelatti.pinboard.MockDataProvider.createPostListContent
 import com.fibelatti.pinboard.allSealedSubclasses
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.features.appstate.AccountSwitcherContent
 import com.fibelatti.pinboard.features.appstate.AddPostContent
+import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.Content
+import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.ExternalBrowserContent
 import com.fibelatti.pinboard.features.appstate.ExternalContent
@@ -20,12 +25,14 @@ import com.fibelatti.pinboard.features.appstate.NoteListContent
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
+import com.fibelatti.pinboard.features.appstate.PostList
 import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.Reset
 import com.fibelatti.pinboard.features.appstate.SavedFiltersContent
 import com.fibelatti.pinboard.features.appstate.SearchContent
 import com.fibelatti.pinboard.features.appstate.TagListContent
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
+import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.main.reducer.MainStateReducer
 import com.fibelatti.pinboard.randomBoolean
 import com.fibelatti.pinboard.receivedItems
@@ -78,6 +85,7 @@ internal class MainViewModelTest : BaseViewModelTest() {
         }
 
     private val viewModel = MainViewModel(
+        savedStateHandle = SavedStateHandle(),
         scope = TestScope(dispatcher),
         sharingStarted = SharingStarted.Lazily,
         appStateRepository = mockAppStateRepository,
@@ -215,6 +223,60 @@ internal class MainViewModelTest : BaseViewModelTest() {
             viewModel.fabClicked(contentType = PostListContent::class, data = null)
 
             assertThat(receivedItems()).containsExactly(data, null)
+        }
+    }
+
+    @Nested
+    inner class HandleDeeplinkTests {
+
+        private val post = createPost(id = "deeplink-post-id")
+        private val postListContent = createPostListContent().copy(
+            posts = PostList(list = listOf(post), totalCount = 1, canPaginate = false, alphabetizeTags = false),
+        )
+
+        @Test
+        fun `handleDeeplink dispatches All action`() = runTest {
+            viewModel.handleDeeplink(postId = "deeplink-post-id", openEditor = false)
+
+            coVerify { mockAppStateRepository.runAction(All) }
+        }
+
+        @Test
+        fun `consumeDeepLink dispatches ViewPost when post is found and openEditor is false`() = runTest {
+            viewModel.handleDeeplink(postId = "deeplink-post-id", openEditor = false)
+
+            appStateFlow.update { it.copy(content = postListContent) }
+
+            coVerify { mockAppStateRepository.runAction(ViewPost(post)) }
+        }
+
+        @Test
+        fun `consumeDeepLink dispatches EditPost when post is found and openEditor is true`() = runTest {
+            viewModel.handleDeeplink(postId = "deeplink-post-id", openEditor = true)
+
+            appStateFlow.update { it.copy(content = postListContent) }
+
+            coVerify { mockAppStateRepository.runAction(EditPost(post = post)) }
+        }
+
+        @Test
+        fun `consumeDeepLink does nothing when no post matches the pending deeplink id`() = runTest {
+            viewModel.handleDeeplink(postId = "non-existent-id", openEditor = false)
+
+            appStateFlow.update { it.copy(content = postListContent) }
+
+            coVerify(exactly = 0) { mockAppStateRepository.runAction(any<ViewPost>()) }
+            coVerify(exactly = 0) { mockAppStateRepository.runAction(any<EditPost>()) }
+        }
+
+        @Test
+        fun `consumeDeepLink does nothing when posts are not yet loaded`() = runTest {
+            viewModel.handleDeeplink(postId = "deeplink-post-id", openEditor = false)
+
+            appStateFlow.update { it.copy(content = createPostListContent()) }
+
+            coVerify(exactly = 0) { mockAppStateRepository.runAction(any<ViewPost>()) }
+            coVerify(exactly = 0) { mockAppStateRepository.runAction(any<EditPost>()) }
         }
     }
 

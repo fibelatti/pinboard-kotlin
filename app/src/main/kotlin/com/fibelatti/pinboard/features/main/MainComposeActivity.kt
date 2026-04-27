@@ -3,7 +3,6 @@ package com.fibelatti.pinboard.features.main
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.ViewGroup
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +15,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
+import com.fibelatti.pinboard.features.notifications.AppNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.flow.launchIn
@@ -29,15 +29,25 @@ class MainComposeActivity : AppCompatActivity() {
     @Inject
     lateinit var unauthorizedPluginProvider: UnauthorizedPluginProvider
 
+    @Inject
+    lateinit var appNotificationManager: AppNotificationManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        observeUnauthorized()
-
         setThemedContent {
             MainScreen()
         }
+
+        observeUnauthorized()
+        checkForDeeplink()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        checkForDeeplink()
     }
 
     override fun onDestroy() {
@@ -50,24 +60,42 @@ class MainComposeActivity : AppCompatActivity() {
 
     private fun observeUnauthorized() {
         unauthorizedPluginProvider.unauthorized
-            .onEach {
-                window.decorView.findViewById<ViewGroup>(android.R.id.content)
-                    ?.getChildAt(0)
-                    ?.showBanner(messageRes = R.string.auth_logged_out_feedback)
-            }
+            .onEach { showBanner(messageRes = R.string.auth_logged_out_feedback) }
             .flowWithLifecycle(lifecycle = lifecycle, minActiveState = Lifecycle.State.RESUMED)
             .launchIn(lifecycleScope)
     }
 
+    private fun checkForDeeplink() {
+        val notificationId: Int = intent.deeplinkNotificationId ?: return
+
+        appNotificationManager.cancelNotification(notificationId)
+
+        val postId: String? = intent.deeplinkPostId
+        val openEditor: Boolean? = intent.deeplinkOpenEditor
+
+        if (postId != null && openEditor != null) {
+            mainViewModel.handleDeeplink(postId, openEditor)
+            showBanner(messageRes = R.string.share_notification_opening_deep_link)
+        }
+    }
+
     class Builder(context: Context) : BaseIntentBuilder(context, MainComposeActivity::class.java) {
 
-        init {
-            intent.fromBuilder = true
+        fun notificationExtras(
+            notificationId: Int,
+            postId: String,
+            openEditor: Boolean,
+        ): Builder = apply {
+            intent.deeplinkNotificationId = notificationId
+            intent.deeplinkPostId = postId
+            intent.deeplinkOpenEditor = openEditor
         }
     }
 
     private companion object {
 
-        var Intent.fromBuilder by intentExtras(default = false)
+        var Intent.deeplinkPostId: String? by intentExtras()
+        var Intent.deeplinkNotificationId: Int? by intentExtras()
+        var Intent.deeplinkOpenEditor: Boolean? by intentExtras()
     }
 }

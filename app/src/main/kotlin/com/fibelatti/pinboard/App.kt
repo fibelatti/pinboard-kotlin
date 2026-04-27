@@ -17,6 +17,7 @@ import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import com.fibelatti.core.android.platform.SimpleActivityLifecycleCallbacks
 import com.fibelatti.pinboard.core.android.Appearance
+import com.fibelatti.pinboard.features.notifications.AppNotificationManager
 import com.fibelatti.pinboard.features.sync.PendingSyncManager
 import com.fibelatti.pinboard.features.sync.PeriodicSyncManager
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -35,6 +36,9 @@ class App : Application(), Configuration.Provider, SingletonImageLoader.Factory 
 
     @Inject
     lateinit var pendingSyncManager: PendingSyncManager
+
+    @Inject
+    lateinit var appNotificationManager: AppNotificationManager
 
     @Inject
     lateinit var hiltWorkerFactory: HiltWorkerFactory
@@ -58,6 +62,7 @@ class App : Application(), Configuration.Provider, SingletonImageLoader.Factory 
         setupThemeAndColors()
         setupDisableScreenshots()
         setupWorkers()
+        appNotificationManager.createNotificationChannels()
     }
 
     override fun newImageLoader(context: Context): ImageLoader = imageLoader.get()
