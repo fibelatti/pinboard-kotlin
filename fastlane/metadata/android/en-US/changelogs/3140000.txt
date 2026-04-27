@@ -1,0 +1,6 @@
+This version brings the following updates:
+
+* New user preference to save shared URLs in the background
+* Show saved date when trying to add a previously saved URL
+
+Thank you for using the app!
