@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Common -->
+    <string name="hint_ok">OK</string>
+    <string name="hint_yes">Ja</string>
+    <string name="hint_no">Nein</string>
+    <string name="hint_save">Speichern</string>
+    <string name="hint_help">Hilfe</string>
+    <string name="hint_mark_as_read">Als gelesen markieren</string>
+    <string name="hint_add">Hinzufügen</string>
+
+    <string name="alert_confirm_deletion">Möchten Sie dieses Lesezeichen wirklich löschen?</string>
+    <string name="alert_confirm_unsaved_changes">Sie haben nicht gespeicherte Änderungen, die verloren gehen. Ohne Speichern fortfahren?</string>
+
+    <string name="server_error">Der Dienst ist nicht erreichbar. Überprüfen Sie Ihr Authentifizierungstoken oder versuchen Sie es in Kürze erneut.</string>
+
+    <string name="feedback_copied_to_clipboard">In die Zwischenablage kopiert</string>
+
+    <string name="feedback_tags_copied_to_clipboard">&lt;b>Tags in die Zwischenablage kopiert.&lt;/b>&lt;br />Verwenden Sie die Aktion &lt;i>Tags einfügen&lt;/i>, um sie direkt zu einem anderen Lesezeichen hinzuzufügen.</string>
+
+    <!-- Menus -->
+    <string name="menu_main_sync">Lesezeichen synchronisieren</string>
+    <string name="menu_main_search">Suchen</string>
+    <string name="menu_main_sorting">Sortierung</string>
+    <string name="menu_read_random">Zufälliges Lesezeichen</string>
+
+    <string name="menu_navigation_all">Alle</string>
+    <string name="menu_navigation_recent">Aktuell</string>
+    <string name="menu_navigation_public">Öffentlich</string>
+    <string name="menu_navigation_private">Privat</string>
+    <string name="menu_navigation_unread">Später lesen</string>
+    <string name="menu_navigation_untagged">Ohne Tags</string>
+    <string name="menu_navigation_tags">Tags</string>
+    <string name="menu_navigation_saved_filters">Gespeicherte Filter</string>
+    <string name="menu_navigation_notes">Notizen</string>
+    <string name="menu_navigation_popular">Beliebt</string>
+
+    <string name="menu_navigation_preferences">Einstellungen</string>
+    <string name="menu_navigation_accounts">Kontowechsler</string>
+    <string name="menu_navigation_export">Lesezeichen exportieren</string>
+
+    <string name="menu_link_delete">Lesezeichen entfernen</string>
+    <string name="menu_link_edit">Lesezeichen bearbeiten</string>
+    <string name="menu_link_save">Lesezeichen speichern</string>
+    <string name="menu_link_share">Lesezeichen teilen</string>
+    <string name="menu_link_open_in_browser">Im Browser öffnen</string>
+
+    <string name="menu_search_clear">Filter löschen</string>
+    <string name="menu_search_save">Filter speichern</string>
+
+    <string name="menu_side_panel_dismiss">Schließen</string>
+
+    <!-- Auth -->
+    <string name="auth_token_hint">API-Token</string>
+    <string name="auth_title_pinboard">Bei Pinboard anmelden</string>
+    <string name="auth_button">Anmelden</string>
+    <string name="auth_token_description"><![CDATA[Sie können Ihr API-Token auf der Seite <a href="https://pinboard.in/settings/password">Pinboard-Einstellungen</a> finden. Es besteht aus Ihrem Benutzernamen und einer alphanumerischen Zeichenfolge (z. B. username:00F0D0FE123456789012)]]></string>
+    <string name="auth_token_empty">Bitte geben Sie Ihr API-Token ein.</string>
+    <string name="auth_token_error">Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihr API-Token.</string>
+    <string name="auth_logged_out_feedback">Ungültiges Token. Bitte melden Sie sich erneut an.</string>
+
+    <string name="auth_switch_to_pinboard">Zu Pinboard wechseln</string>
+    <string name="auth_switch_to_linkding">Zu Linkding wechseln</string>
+
+    <string name="auth_title_linkding">Bei Linkding anmelden</string>
+    <string name="auth_linkding_instance_url">Linkding-Instanz-URL</string>
+    <string name="auth_linkding_instance_url_error">Bitte geben Sie eine gültige Instanz-URL ein.</string>
+    <string name="auth_linkding_description"><![CDATA[<a href="https://github.com/sissbruecker/linkding/tree/master">Linkding</a> ist ein selbst gehosteter Lesezeichen-Manager. Wenn Sie Pinkt für Linkding verwenden, müssen Sie Ihre Instanz-URL und Ihr Token angeben, das Sie auf der Registerkarte „Integration" der Einstellungsseite finden.]]></string>
+
+    <string name="auth_linkding_unreachable_instance_url">Verbindung zum Server nicht möglich. Die Adresse muss ein Protokoll enthalten und öffentlich zugänglich sein.</string>
+
+    <string name="auth_linkding_client_certificate">Client-Zertifikat (optional): %s</string>
+    <string name="auth_linkding_client_certificate_none">Keines</string>
+    <string name="auth_linkding_client_certificate_clear">Client-Zertifikat entfernen</string>
+    <string name="auth_linkding_client_certificate_not_selected">Kein Zertifikat ausgewählt. Haben Sie es auf Ihrem Gerät installiert?</string>
+
+    <!-- Posts -->
+    <string name="posts_title_all">Alle Lesezeichen</string>
+    <string name="posts_title_recent">Aktuelle Lesezeichen</string>
+    <string name="posts_title_public">Öffentliche Lesezeichen</string>
+    <string name="posts_title_private">Private Lesezeichen</string>
+    <string name="posts_title_unread">Später lesen</string>
+    <string name="posts_title_untagged">Lesezeichen ohne Tags</string>
+
+    <plurals name="posts_quantity">
+        <item quantity="one">1 Eintrag</item>
+        <item quantity="other">%s Einträge</item>
+    </plurals>
+
+    <string name="posts_sorting_newest_first">%s — Neueste zuerst</string>
+    <string name="posts_sorting_oldest_first">%s — Älteste zuerst</string>
+    <string name="posts_sorting_alphabetical">%s — A bis Z</string>
+    <string name="posts_sorting_alphabetical_reverse">%s — Z bis A</string>
+
+    <string name="posts_share_title">URL teilen</string>
+    <string name="posts_open_with_file_viewer">Dateibetrachter öffnen</string>
+    <string name="posts_open_with_file_viewer_description">Dieses Lesezeichen kann nicht im internen Browser angezeigt werden. Verwenden Sie stattdessen Ihren Standard-Datei-Viewer.</string>
+
+    <string name="posts_empty_title">Keine Pins auf diesem Board</string>
+    <string name="posts_empty_description">In der ausgewählten Kategorie sind keine Lesezeichen gespeichert</string>
+
+    <string name="posts_deleted_feedback">Lesezeichen erfolgreich entfernt</string>
+    <string name="posts_deleted_error">Es ist ein Fehler aufgetreten und das Lesezeichen wurde nicht entfernt. Wenn das Problem weiterhin besteht, löschen Sie es bitte über den Web-Client.</string>
+
+    <string name="posts_marked_as_read_feedback">Markierung „Später lesen" erfolgreich aktualisiert</string>
+    <string name="posts_marked_as_read_error">Aktualisierung der Markierung „Später lesen" fehlgeschlagen. Bitte versuchen Sie es erneut.</string>
+
+    <string name="posts_add_title">Lesezeichen speichern</string>
+    <string name="posts_add_url">URL</string>
+    <string name="posts_add_url_title">Titel</string>
+    <string name="posts_add_url_description">Beschreibung</string>
+    <string name="posts_add_url_notes">Notizen</string>
+    <string name="posts_add_private">Privat</string>
+    <string name="posts_add_read_later">Später lesen</string>
+
+    <string name="posts_add_non_editable_url">Um die URL zu bearbeiten, besuchen Sie Pinboard in Ihrem Browser.</string>
+
+    <string name="posts_add_tags">Neuer Tag</string>
+    <string name="posts_add_tags_add">Tag hinzufügen</string>
+
+    <string name="posts_saved_feedback">Lesezeichen erfolgreich gespeichert!</string>
+    <string name="posts_existing_feedback">Vorhandenes Lesezeichen gefunden!</string>
+    <string name="posts_existing_feedback_with_date">Vorhandenes Lesezeichen gefunden, gespeichert am %s</string>
+
+    <string name="posts_url_offline_error">Sie scheinen offline zu sein. Bitte versuchen Sie es erneut, sobald eine Verbindung verfügbar ist.</string>
+    <string name="posts_url_error">Dieses Lesezeichen kann nicht im internen Browser angezeigt werden. Verwenden Sie stattdessen Ihren Standard-Browser.</string>
+    <string name="posts_open_in_browser">Externen Browser öffnen</string>
+
+    <string name="posts_pending_add">Ausstehend: Hinzufügen</string>
+    <string name="posts_pending_add_expanded">Dieses Lesezeichen wird hinzugefügt, sobald eine Netzwerkverbindung verfügbar ist</string>
+    <string name="posts_pending_update">Ausstehend: Aktualisieren</string>
+    <string name="posts_pending_update_expanded">Dieses Lesezeichen wird aktualisiert, sobald eine Netzwerkverbindung verfügbar ist</string>
+    <string name="posts_pending_delete">Ausstehend: Löschen</string>
+    <string name="posts_pending_delete_expanded">Dieses Lesezeichen wird gelöscht, sobald eine Netzwerkverbindung verfügbar ist</string>
+
+    <!-- Offline -->
+    <string name="offline_alert">Keine Verbindung verfügbar</string>
+    <string name="offline_retry">Wiederholen</string>
+
+    <!-- Validation -->
+    <string name="validation_error_empty_url">Die URL darf nicht leer sein</string>
+    <string name="validation_error_invalid_url">Die URL wird vom Dienst nicht akzeptiert.</string>
+    <string name="validation_error_invalid_url_rationale">Die URL konnte nicht gespeichert werden. Bitte überprüfen Sie, ob sie gültig ist.</string>
+    <string name="validation_error_empty_title">Der Titel darf nicht leer sein</string>
+
+    <!-- Search -->
+    <string name="search_title">Lesezeichen filtern</string>
+    <string name="search_random">Zufälliger Tag</string>
+    <string name="search_term">URL, Titel oder Beschreibung suchen</string>
+    <string name="search_selected_tags">Tags (%d von 3):</string>
+    <string name="search_tags">Alle Tags</string>
+    <string name="search_active">Filter angewendet</string>
+
+    <plurals name="search_result_size">
+        <item quantity="one">1 Treffer</item>
+        <item quantity="other">%d Treffer</item>
+    </plurals>
+
+    <string name="search_share_title">Suchergebnisse teilen</string>
+    <string name="search_share_query">Suche teilen</string>
+    <string name="search_share_tags">Tags teilen</string>
+
+    <string name="search_advanced_content_description">Erweitert</string>
+    <string name="search_advanced_match_all">Alle übereinstimmen</string>
+    <string name="search_advanced_match_all_description">Lesezeichen müssen alle Suchbegriffe und ausgewählten Tags enthalten.</string>
+    <string name="search_advanced_exact_match">Genaue Übereinstimmung</string>
+    <string name="search_advanced_exact_match_description">Lesezeichen müssen alle Suchbegriffe genau so enthalten, wie sie eingegeben wurden. Wenn Ihre Suche Nicht-Lateinische Zeichen enthält, empfiehlt es sich, diese Option deaktiviert zu lassen</string>
+
+    <string name="search_advanced_match_any">Beliebige übereinstimmen</string>
+    <string name="search_advanced_partial_match">Teilweise Übereinstimmung</string>
+
+    <!-- Sorting -->
+    <string name="sorting_by_date_added_newest_first">Nach Hinzufügedatum (Neueste zuerst)</string>
+    <string name="sorting_by_date_added_oldest_first">Nach Hinzufügedatum (Älteste zuerst)</string>
+    <string name="sorting_by_date_modified_newest_first">Nach Änderungsdatum (Neueste zuerst)</string>
+    <string name="sorting_by_date_modified_oldest_first">Nach Änderungsdatum (Älteste zuerst)</string>
+    <string name="sorting_by_title_alphabetical">Nach Titel (A bis Z)</string>
+    <string name="sorting_by_title_alphabetical_reverse">Nach Titel (Z bis A)</string>
+
+    <!-- Tags -->
+    <string name="tags_title">Tags</string>
+    <string name="tags_empty_title">Keine Tags</string>
+    <string name="tags_added_title">Hinzugefügte Tags</string>
+    <string name="tags_empty_description">Es gibt keine Tags für Ihre gespeicherten Lesezeichen</string>
+    <string name="tags_sorting_a_to_z">A bis Z</string>
+    <string name="tags_sorting_more_first">Mehr zuerst</string>
+    <string name="tags_sorting_less_first">Weniger zuerst</string>
+    <string name="tags_sorting_filter">Suchen</string>
+    <string name="tag_filter_hint">Tag-Name</string>
+    <string name="tag_rename_title">Tag umbenennen: %s</string>
+
+    <!-- Saved Filters -->
+    <string name="saved_filters_title">Gespeicherte Filter</string>
+    <string name="saved_filters_empty_title">Keine gespeicherten Filter</string>
+    <string name="saved_filters_empty_description">Die Filter, die Sie beim Suchen von Lesezeichen speichern, werden hier angezeigt</string>
+    <string name="saved_filters_saved_feedback">Filter gespeichert</string>
+    <string name="saved_filters_deleted_feedback">Filter gelöscht</string>
+    <string name="saved_filters_item_keywords">Schlüsselwörter</string>
+    <string name="saved_filters_item_tags">Tags</string>
+
+    <!-- Notes -->
+    <string name="notes_title">Notizen</string>
+    <plurals name="notes_quantity">
+        <item quantity="one">1 Notiz</item>
+        <item quantity="other">%d Notizen</item>
+    </plurals>
+    <string name="notes_saved_at">Gespeichert am %s</string>
+    <string name="notes_updated_at">Zuletzt aktualisiert am %s</string>
+    <string name="notes_empty_title">Keine Notizen</string>
+    <string name="notes_empty_description">Sie haben noch keine Notizen gespeichert</string>
+    <string name="note_sorting_date_updated_desc">Neueste zuerst</string>
+    <string name="note_sorting_date_updated_asc">Älteste zuerst</string>
+    <string name="note_sorting_a_to_z">Titel A bis Z</string>
+
+    <!-- Popular -->
+    <string name="popular_title">Beliebte Lesezeichen</string>
+    <plurals name="popular_count">
+        <item quantity="one">1 Mal gespeichert</item>
+        <item quantity="other">%d Mal gespeichert</item>
+    </plurals>
+
+    <!-- Quick Actions -->
+    <string name="quick_actions_title">Schnellaktionen</string>
+    <string name="quick_actions_add_read_later">Zu „Später lesen" hinzufügen</string>
+    <string name="quick_actions_remove_read_later">Aus „Später lesen" entfernen</string>
+    <string name="quick_actions_copy_tags">Tags kopieren</string>
+    <string name="quick_actions_paste_tags">Tags einfügen</string>
+    <string name="quick_actions_edit">Lesezeichen bearbeiten</string>
+    <string name="quick_actions_delete">Lesezeichen löschen</string>
+    <string name="quick_actions_delete_filter">Filter löschen</string>
+    <string name="quick_actions_save">In meine Liste speichern</string>
+    <string name="quick_actions_copy_url">URL kopieren</string>
+    <string name="quick_actions_share">Lesezeichen teilen</string>
+    <string name="quick_actions_expand_description">Beschreibung erweitern</string>
+    <string name="quick_actions_open_in_browser">Im Browser öffnen</string>
+    <string name="quick_actions_rename">Umbenennen</string>
+    <string name="quick_actions_submit_to_wayback">An Wayback Machine senden</string>
+    <string name="quick_actions_search_wayback">In Wayback Machine suchen</string>
+    <string name="quick_actions_submit_to_archive_today">An Archive.Today senden</string>
+    <string name="quick_actions_submit_to_ghost_archive">An Ghost Archive senden</string>
+
+    <string name="quick_actions_more_options">Weitere Optionen</string>
+
+    <string name="quick_actions_customization_hidden_options_title">Ausgeblendete Optionen</string>
+    <string name="quick_actions_customization_hidden_options_instruction">Tippen Sie auf jede Option, um die Sichtbarkeit umzuschalten</string>
+    <string name="quick_actions_customization_hidden_options_description">Diese sind verfügbar, indem Sie auf „Weitere Optionen" klicken, wenn Sie das Schnellaktionsmenü anzeigen</string>
+
+    <string name="quick_actions_customization_save_changes">Änderungen speichern</string>
+
+    <!-- Account Switcher -->
+    <string name="account_switcher_title">Kontowechsler</string>
+    <string name="account_switcher_select">Auswählen</string>
+    <string name="account_switcher_logout">Abmelden</string>
+    <string name="account_switcher_add_pinboard">Pinboard-Konto hinzufügen</string>
+    <string name="account_switcher_add_linkding">Linkding-Konto hinzufügen</string>
+
+    <!-- Export -->
+    <string name="export_feedback_success">Lesezeichen erfolgreich exportiert!</string>
+    <string name="export_feedback_failure">Lesezeichen konnten nicht exportiert werden</string>
+
+    <!-- User Preferences -->
+    <string name="user_preferences_title">Einstellungen</string>
+
+    <string name="user_preferences_section_app">App-Einstellungen</string>
+    <string name="user_preferences_section_bookmarking">Lesezeichen-Einstellungen</string>
+
+    <string name="user_preferences_periodic_sync">Hintergrundsynchronisierung</string>
+    <string name="user_preferences_periodic_sync_description">Neue Lesezeichen, die zu Ihrer Sammlung hinzugefügt wurden, in regelmäßigen Abständen automatisch abrufen</string>
+    <string name="user_preferences_periodic_sync_caveat">Wenn die App im Vordergrund ist, werden Ihre Lesezeichen unabhängig von dieser Einstellung synchron gehalten</string>
+    <string name="user_preferences_periodic_sync_off">Aus</string>
+    <string name="user_preferences_periodic_sync_6_hours">Alle 6 Stunden</string>
+    <string name="user_preferences_periodic_sync_12_hours">Alle 12 Stunden</string>
+    <string name="user_preferences_periodic_sync_24_hours">Alle 24 Stunden</string>
+    <string name="user_preferences_appearance">Erscheinungsbild</string>
+    <string name="user_preferences_appearance_dark">Dunkles Design</string>
+    <string name="user_preferences_appearance_light">Helles Design</string>
+    <string name="user_preferences_appearance_system_default">Systemeinstellung folgen</string>
+    <string name="user_preferences_dynamic_colors">Dynamische Farben verwenden</string>
+    <string name="user_preferences_dynamic_colors_caveat">Ändert die App-Farben passend zu Ihrem Gerätestil</string>
+    <string name="user_preferences_disable_screenshots">Screenshots und Aufzeichnungen deaktivieren</string>
+    <string name="user_preferences_disable_screenshots_caveat">Verhindert, dass App-Inhalte auf Screenshots und Bildschirmaufnahmen angezeigt werden</string>
+    <string name="user_preferences_date_format">Bevorzugtes Datumsformat</string>
+    <string name="user_preferences_date_format_day_first">dd/mm/yy, hh:mm</string>
+    <string name="user_preferences_date_format_month_first">mm/dd/yy, hh:mm</string>
+    <string name="user_preferences_date_format_short_year_first">yy/mm/dd, hh:mm</string>
+    <string name="user_preferences_date_format_year_first">yyyy-mm-dd, hh:mm</string>
+    <string name="user_preferences_date_format_no_date">Datum ausblenden</string>
+    <string name="user_preferences_date_format_include_time">Uhrzeit einbeziehen (bei Datumsanzeige)</string>
+    <string name="user_preferences_preferred_details_view">Lesezeichen anzeigen</string>
+    <string name="user_preferences_preferred_details_in_app_browser">In-App-Browser verwenden</string>
+    <string name="user_preferences_preferred_details_external_browser">Externen Browser verwenden</string>
+    <string name="user_preferences_preferred_details_post_details">Lesezeichen-Detailansicht öffnen</string>
+    <string name="user_preferences_preferred_details_view_caveat">Halten Sie Listenelemente gedrückt, wenn Sie Lesezeichen durchsuchen, um auf Freigabe- und Bearbeitungsverknüpfungen zuzugreifen</string>
+    <string name="user_preferences_preferred_details_view_mark_as_read_on_open">Als gelesen markieren beim Öffnen</string>
+    <string name="user_preferences_preferred_details_view_mark_as_read_on_open_caveat">Das Lesezeichen wird automatisch aktualisiert, um die Markierung „Später lesen" zu entfernen.</string>
+    <string name="user_preferences_use_split_nav">Geteilte Navigation verwenden</string>
+    <string name="user_preferences_use_split_nav_description">Listen beim Durchsuchen sichtbar halten (verfügbar für Geräte im Querformat, Falttelefone und Tablets)</string>
+    <string name="user_preferences_use_background_share_receiver">Schnelles Speichern im Hintergrund</string>
+    <string name="user_preferences_use_background_share_receiver_description">Wenn diese Option aktiviert ist, speichert die Auswahl von „Lesezeichen schnell speichern" im Freigabe-Sheet das Lesezeichen im Hintergrund und benachrichtigt Sie über das Ergebnis per Push-Benachrichtigung</string>
+    <string name="user_preferences_use_background_share_receiver_missing_permission">Erteilen Sie die Benachrichtigungsberechtigung über die Einstellungs-App, um das Ergebnis zu sehen.</string>
+    <string name="user_preferences_follow_redirects">Weiterleitungen folgen</string>
+    <string name="user_preferences_follow_redirects_description">Beim Teilen eines Lesezeichens zur App automatisch Weiterleitungen folgen, die endgültige URL speichern. Erhöht die Ladezeit beim Speichern eines Lesezeichens über die Freigabe-Aktion</string>
+
+    <string name="user_preferences_remove_utm_parameters">UTM-Parameter entfernen</string>
+    <string name="user_preferences_remove_utm_parameters_description">Tracking-Parameter aus URLs entfernen, die vor dem Speichern zur App geteilt werden</string>
+    <string name="user_preferences_remove_url_parameters">URL-Parameter entfernen</string>
+    <string name="user_preferences_remove_url_parameters_description">Die angegebenen Parameter aus URLs entfernen, die vor dem Speichern zur App geteilt werden</string>
+    <string name="user_preferences_remove_url_parameters_hint">Parametername</string>
+
+    <string name="user_preferences_description_auto_fill">Titel und Beschreibung automatisch ausfüllen</string>
+    <string name="user_preferences_description_auto_fill_description">Beim Teilen eines Lesezeichens zur App automatisch die Seitendetails abrufen. Erhöht die Ladezeit beim Speichern eines Lesezeichens über die Freigabe-Aktion</string>
+    <string name="user_preferences_use_blockquote">Blockzitat verwenden</string>
+    <string name="user_preferences_use_blockquote_description">Die Beschreibung in ein Blockzitat-Tag einschließen</string>
+    <string name="user_preferences_description_visible_in_lists">Beschreibung in Listen anzeigen</string>
+    <string name="user_preferences_description_visible_in_lists_description">Die ersten 5 Zeilen der Beschreibung beim Durchsuchen von Lesezeichen anzeigen</string>
+    <string name="user_preferences_alphabetize_tags">Tags alphabetisch sortieren</string>
+    <string name="user_preferences_alphabetize_tags_description">Wenn aktiviert, werden Tags unter Ihren Lesezeichen in alphabetischer Reihenfolge angezeigt; andernfalls erscheinen sie in der Reihenfolge, in der Sie sie eingegeben haben. Dies ändert nicht die Reihenfolge, in der sie gespeichert werden.</string>
+    <string name="user_preferences_default_private_label">Standardmäßig privat</string>
+    <string name="user_preferences_default_private_description">Wenn aktiviert, werden Lesezeichen, die mit Pinkt geteilt werden, als privat gespeichert; andernfalls gelten Ihre Standardeinstellungen</string>
+    <string name="user_preferences_default_read_later_label">Standardmäßig „Später lesen"</string>
+    <string name="user_preferences_default_read_later_description">Wenn aktiviert, werden Lesezeichen, die mit Pinkt geteilt werden, als „Später lesen" gespeichert; andernfalls gelten Ihre Standardeinstellungen</string>
+    <string name="user_preferences_default_tags">Standard-Tags</string>
+    <string name="user_preferences_default_tags_description">Tags, die allen mit Pinkt erstellten oder geteilten Lesezeichen hinzugefügt werden</string>
+    <string name="user_preferences_edit_after_sharing_title">Editor beim Teilen öffnen</string>
+    <string name="user_preferences_edit_after_sharing_before_saving">Vor dem Speichern</string>
+    <string name="user_preferences_edit_after_sharing_after_saving">Nach dem Speichern</string>
+    <string name="user_preferences_edit_after_sharing_description">Legt fest, wann der Lesezeichen-Editor nach Auswahl der Freigabe-Aktion „Lesezeichen speichern" angezeigt werden soll. Um den Editor zu überspringen, wählen Sie beim Teilen stattdessen „Lesezeichen schnell speichern".</string>
+    <string name="user_preferences_bookmark_quick_options">Schnellaktionen für Lesezeichen</string>
+    <string name="user_preferences_bookmark_quick_actions_description">Anpassen, welche Optionen sofort beim Öffnen des Schnellaktionsmenüs sichtbar sind</string>
+
+    <string name="user_preferences_customize">Anpassen</string>
+
+    <!-- About -->
+    <string name="about_send_feedback">Feedback senden</string>
+    <string name="about_share">App teilen</string>
+    <string name="about_rate">Rezension schreiben</string>
+    <string name="about_privacy_policy">Datenschutzrichtlinie</string>
+    <string name="about_developer">Entwickelt mit ❤ von Filipe Belatti</string>
+    <string name="about_version">App-Version: %s</string>
+    <string name="about_oss_licenses">Open-Source-Lizenzen</string>
+
+    <!-- Share -->
+    <string name="share_to_pinkt">Lesezeichen speichern</string>
+    <string name="share_to_pinkt_no_edit">Lesezeichen schnell speichern</string>
+    <string name="share_to_pinkt_choose_service">Lesezeichen speichern in:</string>
+    <string name="share_title">Pinkt teilen</string>
+    <string name="share_text">Schau dir Pinkt an, eine Lesezeichen-App für Pinboard und Linkding. Kostenlos herunterladen unter %s</string>
+
+    <!-- Share Notifications -->
+    <string name="share_notification_channel_name">Ergebnisse beim Speichern von Lesezeichen</string>
+    <string name="share_notification_channel_description">Zeigt Benachrichtigungen mit dem Ergebnis des Speicherns einer geteilten URL als Lesezeichen an</string>
+    <string name="share_notification_unprocessable_url_feedback">Eine leere URL kann nicht verarbeitet werden.</string>
+    <string name="share_notification_missing_permission_feedback">Lesezeichen wird hinzugefügt… Erteilen Sie die Benachrichtigungsberechtigung, um das Ergebnis zu sehen.</string>
+    <string name="share_notification_title_foreground">Lesezeichen wird hinzugefügt…</string>
+    <string name="share_notification_title_success">Lesezeichen erfolgreich hinzugefügt!</string>
+    <string name="share_notification_title_existing">Vorhandenes Lesezeichen gefunden, gespeichert am %s</string>
+    <string name="share_notification_title_failure">Lesezeichen konnte nicht hinzugefügt werden</string>
+    <string name="share_notification_opening_deep_link">Deep Link wird geöffnet…</string>
+
+    <!-- Error -->
+    <string name="error_send_email">E-Mail senden</string>
+    <string name="error_report_rationale">Es scheint, dass etwas schief gelaufen ist.\n\nSie können diesen Fehler per E-Mail melden, was mir hilft, Probleme zu diagnostizieren und zu beheben.</string>
+    <string name="error_report">Melden</string>
+    <string name="error_ignore">Ignorieren</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_navigate_back">Zurück navigieren</string>
+    <string name="cd_share_receiver_image">Ihr Lesezeichen wird gespeichert</string>
+    <string name="cd_menu">Menü</string>
+    <string name="cd_scroll_to_top">Nach oben scrollen</string>
+</resources>

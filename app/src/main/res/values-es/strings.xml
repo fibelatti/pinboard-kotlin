@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Common -->
+    <string name="hint_ok">OK</string>
+    <string name="hint_yes">Sí</string>
+    <string name="hint_no">No</string>
+    <string name="hint_save">Guardar</string>
+    <string name="hint_help">Ayuda</string>
+    <string name="hint_mark_as_read">Marcar como leído</string>
+    <string name="hint_add">Agregar</string>
+
+    <string name="alert_confirm_deletion">¿Estás seguro de que quieres eliminar este marcador?</string>
+    <string name="alert_confirm_unsaved_changes">Tienes cambios sin guardar que se perderán. ¿Continuar sin guardar?</string>
+
+    <string name="server_error">No se puede acceder al servicio. Comprueba tu token de autenticación o inténtalo de nuevo en breve.</string>
+
+    <string name="feedback_copied_to_clipboard">Copiado al portapapeles</string>
+
+    <string name="feedback_tags_copied_to_clipboard">&lt;b>Etiquetas copiadas al portapapeles.&lt;/b>&lt;br />Usa la acción &lt;i>Pegar etiquetas&lt;/i> para añadirlas directamente a otro marcador.</string>
+
+    <!-- Menus -->
+    <string name="menu_main_sync">Sincronizar marcadores</string>
+    <string name="menu_main_search">Buscar</string>
+    <string name="menu_main_sorting">Ordenar</string>
+    <string name="menu_read_random">Marcador aleatorio</string>
+
+    <string name="menu_navigation_all">Todos</string>
+    <string name="menu_navigation_recent">Recientes</string>
+    <string name="menu_navigation_public">Públicos</string>
+    <string name="menu_navigation_private">Privados</string>
+    <string name="menu_navigation_unread">Para leer después</string>
+    <string name="menu_navigation_untagged">Sin etiquetas</string>
+    <string name="menu_navigation_tags">Etiquetas</string>
+    <string name="menu_navigation_saved_filters">Filtros guardados</string>
+    <string name="menu_navigation_notes">Notas</string>
+    <string name="menu_navigation_popular">Populares</string>
+
+    <string name="menu_navigation_preferences">Preferencias</string>
+    <string name="menu_navigation_accounts">Selector de cuenta</string>
+    <string name="menu_navigation_export">Exportar marcadores</string>
+
+    <string name="menu_link_delete">Eliminar marcador</string>
+    <string name="menu_link_edit">Editar marcador</string>
+    <string name="menu_link_save">Guardar marcador</string>
+    <string name="menu_link_share">Compartir marcador</string>
+    <string name="menu_link_open_in_browser">Abrir en el navegador</string>
+
+    <string name="menu_search_clear">Borrar filtro</string>
+    <string name="menu_search_save">Guardar filtro</string>
+
+    <string name="menu_side_panel_dismiss">Cerrar</string>
+
+    <!-- Auth -->
+    <string name="auth_token_hint">Token de API</string>
+    <string name="auth_title_pinboard">Iniciar sesión en Pinboard</string>
+    <string name="auth_button">Iniciar sesión</string>
+    <string name="auth_token_description"><![CDATA[Puedes encontrar tu token de API en la página de <a href="https://pinboard.in/settings/password">Configuración de Pinboard</a>. Está compuesto por tu nombre de usuario y una cadena alfanumérica (p. ej. username:00F0D0FE123456789012)]]></string>
+    <string name="auth_token_empty">Por favor, introduce tu token de API.</string>
+    <string name="auth_token_error">Error al iniciar sesión. Por favor, comprueba tu token de API.</string>
+    <string name="auth_logged_out_feedback">Token no válido. Por favor, inicia sesión de nuevo.</string>
+
+    <string name="auth_switch_to_pinboard">Cambiar a Pinboard</string>
+    <string name="auth_switch_to_linkding">Cambiar a Linkding</string>
+
+    <string name="auth_title_linkding">Iniciar sesión en Linkding</string>
+    <string name="auth_linkding_instance_url">URL de la instancia de Linkding</string>
+    <string name="auth_linkding_instance_url_error">Por favor, introduce una URL de instancia válida.</string>
+    <string name="auth_linkding_description"><![CDATA[<a href="https://github.com/sissbruecker/linkding/tree/master">Linkding</a> es un gestor de marcadores auto-alojado. Al usar Pinkt para Linkding, debes proporcionar la URL de tu instancia y tu token, que se pueden encontrar en la pestaña Integración de la página de Configuración.]]></string>
+
+    <string name="auth_linkding_unreachable_instance_url">No se puede conectar al servidor. La dirección debe contener un protocolo y ser accesible públicamente.</string>
+
+    <string name="auth_linkding_client_certificate">Certificado de cliente (opcional): %s</string>
+    <string name="auth_linkding_client_certificate_none">Ninguno</string>
+    <string name="auth_linkding_client_certificate_clear">Eliminar certificado de cliente</string>
+    <string name="auth_linkding_client_certificate_not_selected">Ningún certificado seleccionado. ¿Lo has instalado en tu dispositivo?</string>
+
+    <!-- Posts -->
+    <string name="posts_title_all">Todos los marcadores</string>
+    <string name="posts_title_recent">Marcadores recientes</string>
+    <string name="posts_title_public">Marcadores públicos</string>
+    <string name="posts_title_private">Marcadores privados</string>
+    <string name="posts_title_unread">Para leer después</string>
+    <string name="posts_title_untagged">Marcadores sin etiqueta</string>
+
+    <plurals name="posts_quantity">
+        <item quantity="one">1 elemento</item>
+        <item quantity="many">%s elementos</item>
+        <item quantity="other">%s elementos</item>
+    </plurals>
+
+    <string name="posts_sorting_newest_first">%s — Más recientes primero</string>
+    <string name="posts_sorting_oldest_first">%s — Más antiguos primero</string>
+    <string name="posts_sorting_alphabetical">%s — A a Z</string>
+    <string name="posts_sorting_alphabetical_reverse">%s — Z a A</string>
+
+    <string name="posts_share_title">Compartiendo URL</string>
+    <string name="posts_open_with_file_viewer">Abrir visor de archivos</string>
+    <string name="posts_open_with_file_viewer_description">Este marcador no se puede ver con el navegador interno. Usa tu visor de archivos predeterminado en su lugar.</string>
+
+    <string name="posts_empty_title">No hay marcadores en este tablero</string>
+    <string name="posts_empty_description">No hay marcadores guardados en la categoría seleccionada</string>
+
+    <string name="posts_deleted_feedback">Marcador eliminado correctamente</string>
+    <string name="posts_deleted_error">Se produjo un error y el marcador no fue eliminado. Si el problema persiste, elimínalo usando el cliente web.</string>
+
+    <string name="posts_marked_as_read_feedback">Marcador «Para leer después» actualizado correctamente</string>
+    <string name="posts_marked_as_read_error">Error al actualizar el marcador «Para leer después». Por favor, inténtalo de nuevo.</string>
+
+    <string name="posts_add_title">Guardar marcador</string>
+    <string name="posts_add_url">URL</string>
+    <string name="posts_add_url_title">Título</string>
+    <string name="posts_add_url_description">Descripción</string>
+    <string name="posts_add_url_notes">Notas</string>
+    <string name="posts_add_private">Privado</string>
+    <string name="posts_add_read_later">Para leer después</string>
+
+    <string name="posts_add_non_editable_url">Para editar la URL, visita Pinboard en tu navegador.</string>
+
+    <string name="posts_add_tags">Nueva etiqueta</string>
+    <string name="posts_add_tags_add">Agregar etiqueta</string>
+
+    <string name="posts_saved_feedback">¡Marcador guardado correctamente!</string>
+    <string name="posts_existing_feedback">¡Marcador existente encontrado!</string>
+    <string name="posts_existing_feedback_with_date">Marcador existente encontrado, guardado el %s</string>
+
+    <string name="posts_url_offline_error">Parece que estás sin conexión. Por favor, inténtalo de nuevo cuando haya una conexión disponible.</string>
+    <string name="posts_url_error">Este marcador no se puede ver con el navegador interno. Usa tu navegador predeterminado en su lugar.</string>
+    <string name="posts_open_in_browser">Abrir en navegador externo</string>
+
+    <string name="posts_pending_add">Adición pendiente</string>
+    <string name="posts_pending_add_expanded">Este marcador se añadirá cuando haya red disponible</string>
+    <string name="posts_pending_update">Actualización pendiente</string>
+    <string name="posts_pending_update_expanded">Este marcador se actualizará cuando haya red disponible</string>
+    <string name="posts_pending_delete">Eliminación pendiente</string>
+    <string name="posts_pending_delete_expanded">Este marcador se eliminará cuando haya red disponible</string>
+
+    <!-- Offline -->
+    <string name="offline_alert">Sin conexión disponible</string>
+    <string name="offline_retry">Reintentar</string>
+
+    <!-- Validation -->
+    <string name="validation_error_empty_url">La URL no puede estar vacía</string>
+    <string name="validation_error_invalid_url">La URL no es aceptada por el servicio.</string>
+    <string name="validation_error_invalid_url_rationale">La URL no se pudo guardar. Por favor, verifica que sea válida.</string>
+    <string name="validation_error_empty_title">El título no puede estar vacío</string>
+
+    <!-- Search -->
+    <string name="search_title">Filtrar marcadores</string>
+    <string name="search_random">Etiqueta aleatoria</string>
+    <string name="search_term">Buscar en la URL, el título o la descripción</string>
+    <string name="search_selected_tags">Etiquetas (%d de 3):</string>
+    <string name="search_tags">Todas las etiquetas</string>
+    <string name="search_active">Filtro aplicado</string>
+
+    <plurals name="search_result_size">
+        <item quantity="one">1 coincidencia</item>
+        <item quantity="many">%d coincidencias</item>
+        <item quantity="other">%d coincidencias</item>
+    </plurals>
+
+    <string name="search_share_title">Compartiendo resultados de búsqueda</string>
+    <string name="search_share_query">Compartir búsqueda</string>
+    <string name="search_share_tags">Compartir etiquetas</string>
+
+    <string name="search_advanced_content_description">Avanzado</string>
+    <string name="search_advanced_match_all">Coincidir todo</string>
+    <string name="search_advanced_match_all_description">Los marcadores deben incluir todos los términos de búsqueda y las etiquetas seleccionadas.</string>
+    <string name="search_advanced_exact_match">Coincidencia exacta</string>
+    <string name="search_advanced_exact_match_description">Los marcadores deben incluir todos los términos de búsqueda exactamente tal como se escribieron. Si tu búsqueda incluye caracteres no latinos, se recomienda dejar esta opción desactivada</string>
+
+    <string name="search_advanced_match_any">Coincidir cualquiera</string>
+    <string name="search_advanced_partial_match">Coincidencia parcial</string>
+
+    <!-- Sorting -->
+    <string name="sorting_by_date_added_newest_first">Por fecha de adición (Más recientes primero)</string>
+    <string name="sorting_by_date_added_oldest_first">Por fecha de adición (Más antiguos primero)</string>
+    <string name="sorting_by_date_modified_newest_first">Por fecha de modificación (Más recientes primero)</string>
+    <string name="sorting_by_date_modified_oldest_first">Por fecha de modificación (Más antiguos primero)</string>
+    <string name="sorting_by_title_alphabetical">Por título (A a Z)</string>
+    <string name="sorting_by_title_alphabetical_reverse">Por título (Z a A)</string>
+
+    <!-- Tags -->
+    <string name="tags_title">Etiquetas</string>
+    <string name="tags_empty_title">Sin etiquetas</string>
+    <string name="tags_added_title">Etiquetas añadidas</string>
+    <string name="tags_empty_description">No hay etiquetas para tus marcadores guardados</string>
+    <string name="tags_sorting_a_to_z">A a Z</string>
+    <string name="tags_sorting_more_first">Más primero</string>
+    <string name="tags_sorting_less_first">Menos primero</string>
+    <string name="tags_sorting_filter">Buscar</string>
+    <string name="tag_filter_hint">Nombre de etiqueta</string>
+    <string name="tag_rename_title">Renombrar etiqueta: %s</string>
+
+    <!-- Saved Filters -->
+    <string name="saved_filters_title">Filtros guardados</string>
+    <string name="saved_filters_empty_title">Sin filtros guardados</string>
+    <string name="saved_filters_empty_description">Los filtros que guardes al buscar marcadores aparecerán aquí</string>
+    <string name="saved_filters_saved_feedback">Filtro guardado</string>
+    <string name="saved_filters_deleted_feedback">Filtro eliminado</string>
+    <string name="saved_filters_item_keywords">Palabras clave</string>
+    <string name="saved_filters_item_tags">Etiquetas</string>
+
+    <!-- Notes -->
+    <string name="notes_title">Notas</string>
+    <plurals name="notes_quantity">
+        <item quantity="one">1 nota</item>
+        <item quantity="many">%d notas</item>
+        <item quantity="other">%d notas</item>
+    </plurals>
+    <string name="notes_saved_at">Guardado el %s</string>
+    <string name="notes_updated_at">Última actualización el %s</string>
+    <string name="notes_empty_title">Sin notas</string>
+    <string name="notes_empty_description">Aún no has guardado ninguna nota</string>
+    <string name="note_sorting_date_updated_desc">Más recientes primero</string>
+    <string name="note_sorting_date_updated_asc">Más antiguas primero</string>
+    <string name="note_sorting_a_to_z">Título A a Z</string>
+
+    <!-- Popular -->
+    <string name="popular_title">Marcadores populares</string>
+    <plurals name="popular_count">
+        <item quantity="one">Agregado como favorito 1 vez</item>
+        <item quantity="many">Agregado como favorito %d veces</item>
+        <item quantity="other">Agregado como favorito %d veces</item>
+    </plurals>
+
+    <!-- Quick Actions -->
+    <string name="quick_actions_title">Acciones rápidas</string>
+    <string name="quick_actions_add_read_later">Añadir a «Para leer después»</string>
+    <string name="quick_actions_remove_read_later">Quitar de «Para leer después»</string>
+    <string name="quick_actions_copy_tags">Copiar etiquetas</string>
+    <string name="quick_actions_paste_tags">Pegar etiquetas</string>
+    <string name="quick_actions_edit">Editar marcador</string>
+    <string name="quick_actions_delete">Eliminar marcador</string>
+    <string name="quick_actions_delete_filter">Eliminar filtro</string>
+    <string name="quick_actions_save">Guardar en los míos</string>
+    <string name="quick_actions_copy_url">Copiar URL</string>
+    <string name="quick_actions_share">Compartir marcador</string>
+    <string name="quick_actions_expand_description">Expandir descripción</string>
+    <string name="quick_actions_open_in_browser">Abrir en el navegador</string>
+    <string name="quick_actions_rename">Renombrar</string>
+    <string name="quick_actions_submit_to_wayback">Enviar a Wayback Machine</string>
+    <string name="quick_actions_search_wayback">Buscar en Wayback Machine</string>
+    <string name="quick_actions_submit_to_archive_today">Enviar a Archive.Today</string>
+    <string name="quick_actions_submit_to_ghost_archive">Enviar a Ghost Archive</string>
+
+    <string name="quick_actions_more_options">Más opciones</string>
+
+    <string name="quick_actions_customization_hidden_options_title">Opciones ocultas</string>
+    <string name="quick_actions_customization_hidden_options_instruction">Toca cada opción para alternar su visibilidad</string>
+    <string name="quick_actions_customization_hidden_options_description">Estas están disponibles haciendo clic en «Más opciones» al ver el menú de acciones rápidas</string>
+
+    <string name="quick_actions_customization_save_changes">Guardar cambios</string>
+
+    <!-- Account Switcher -->
+    <string name="account_switcher_title">Selector de cuenta</string>
+    <string name="account_switcher_select">Seleccionar</string>
+    <string name="account_switcher_logout">Cerrar sesión</string>
+    <string name="account_switcher_add_pinboard">Agregar cuenta de Pinboard</string>
+    <string name="account_switcher_add_linkding">Agregar cuenta de Linkding</string>
+
+    <!-- Export -->
+    <string name="export_feedback_success">¡Marcadores exportados correctamente!</string>
+    <string name="export_feedback_failure">Error al exportar marcadores</string>
+
+    <!-- User Preferences -->
+    <string name="user_preferences_title">Preferencias</string>
+
+    <string name="user_preferences_section_app">Preferencias de la aplicación</string>
+    <string name="user_preferences_section_bookmarking">Preferencias de marcadores</string>
+
+    <string name="user_preferences_periodic_sync">Sincronización en segundo plano</string>
+    <string name="user_preferences_periodic_sync_description">Obtener automáticamente nuevos marcadores añadidos a tu colección a intervalos regulares</string>
+    <string name="user_preferences_periodic_sync_caveat">Cuando la app está en primer plano, tus marcadores se mantienen sincronizados independientemente de esta preferencia</string>
+    <string name="user_preferences_periodic_sync_off">Desactivada</string>
+    <string name="user_preferences_periodic_sync_6_hours">Cada 6 horas</string>
+    <string name="user_preferences_periodic_sync_12_hours">Cada 12 horas</string>
+    <string name="user_preferences_periodic_sync_24_hours">Cada 24 horas</string>
+    <string name="user_preferences_appearance">Apariencia</string>
+    <string name="user_preferences_appearance_dark">Tema oscuro</string>
+    <string name="user_preferences_appearance_light">Tema claro</string>
+    <string name="user_preferences_appearance_system_default">Seguir el sistema</string>
+    <string name="user_preferences_dynamic_colors">Usar colores dinámicos</string>
+    <string name="user_preferences_dynamic_colors_caveat">Cambia los colores de la app para que coincidan con el estilo de tu dispositivo</string>
+    <string name="user_preferences_disable_screenshots">Desactivar capturas de pantalla y grabación</string>
+    <string name="user_preferences_disable_screenshots_caveat">Evita que el contenido de la app se muestre en capturas de pantalla y grabaciones de pantalla</string>
+    <string name="user_preferences_date_format">Formato de fecha preferido</string>
+    <string name="user_preferences_date_format_day_first">dd/mm/yy, hh:mm</string>
+    <string name="user_preferences_date_format_month_first">mm/dd/yy, hh:mm</string>
+    <string name="user_preferences_date_format_short_year_first">yy/mm/dd, hh:mm</string>
+    <string name="user_preferences_date_format_year_first">yyyy-mm-dd, hh:mm</string>
+    <string name="user_preferences_date_format_no_date">Ocultar fechas</string>
+    <string name="user_preferences_date_format_include_time">Incluir hora (al mostrar fechas)</string>
+    <string name="user_preferences_preferred_details_view">Ver marcadores</string>
+    <string name="user_preferences_preferred_details_in_app_browser">Usar navegador integrado</string>
+    <string name="user_preferences_preferred_details_external_browser">Usar navegador externo</string>
+    <string name="user_preferences_preferred_details_post_details">Abrir pantalla de detalles del marcador</string>
+    <string name="user_preferences_preferred_details_view_caveat">Mantén pulsados los elementos de la lista al navegar por los marcadores para acceder a los accesos directos de compartir y editar</string>
+    <string name="user_preferences_preferred_details_view_mark_as_read_on_open">Marcar como leído al abrir</string>
+    <string name="user_preferences_preferred_details_view_mark_as_read_on_open_caveat">Actualiza automáticamente el marcador para eliminar el indicador «Para leer después».</string>
+    <string name="user_preferences_use_split_nav">Usar navegación dividida</string>
+    <string name="user_preferences_use_split_nav_description">Mantener las listas visibles al navegar (disponible para dispositivos en horizontal, plegables y tabletas)</string>
+    <string name="user_preferences_use_background_share_receiver">Guardado rápido en segundo plano</string>
+    <string name="user_preferences_use_background_share_receiver_description">Cuando está activada, al seleccionar «Guardar marcador rápidamente» en la hoja de compartir, el marcador se guarda en segundo plano y se te notifica el resultado mediante una notificación push</string>
+    <string name="user_preferences_use_background_share_receiver_missing_permission">Concede el permiso de notificación a través de la app de ajustes para ver el resultado.</string>
+    <string name="user_preferences_follow_redirects">Seguir redirecciones</string>
+    <string name="user_preferences_follow_redirects_description">Seguir automáticamente las redirecciones al compartir un marcador en la app, guardando la URL final. Aumenta el tiempo de carga al guardar un marcador mediante la acción de compartir</string>
+
+    <string name="user_preferences_remove_utm_parameters">Eliminar parámetros UTM</string>
+    <string name="user_preferences_remove_utm_parameters_description">Eliminar los parámetros de seguimiento de las URLs compartidas con la app antes de guardarlas</string>
+    <string name="user_preferences_remove_url_parameters">Eliminar parámetros de URL</string>
+    <string name="user_preferences_remove_url_parameters_description">Eliminar los parámetros especificados de las URLs compartidas con la app antes de guardarlas</string>
+    <string name="user_preferences_remove_url_parameters_hint">Nombre del parámetro</string>
+
+    <string name="user_preferences_description_auto_fill">Autocompletar título y descripción</string>
+    <string name="user_preferences_description_auto_fill_description">Obtener automáticamente los detalles de la página al compartir un marcador con la app. Aumenta el tiempo de carga al guardar un marcador mediante la acción de compartir</string>
+    <string name="user_preferences_use_blockquote">Usar cita en bloque</string>
+    <string name="user_preferences_use_blockquote_description">Envolver la descripción en una etiqueta blockquote</string>
+    <string name="user_preferences_description_visible_in_lists">Mostrar descripción en listas</string>
+    <string name="user_preferences_description_visible_in_lists_description">Mostrar las primeras 5 líneas de la descripción al navegar por los marcadores</string>
+    <string name="user_preferences_alphabetize_tags">Ordenar etiquetas alfabéticamente</string>
+    <string name="user_preferences_alphabetize_tags_description">Cuando está activada, las etiquetas se muestran bajo tus marcadores en orden alfabético; de lo contrario, aparecen en el orden en que las introdujiste. Esto no cambia el orden en que se guardan.</string>
+    <string name="user_preferences_default_private_label">Privado por defecto</string>
+    <string name="user_preferences_default_private_description">Cuando está activada, los marcadores compartidos con Pinkt se guardan como privados; de lo contrario, se aplican tus preferencias predeterminadas</string>
+    <string name="user_preferences_default_read_later_label">«Para leer después» por defecto</string>
+    <string name="user_preferences_default_read_later_description">Cuando está activada, los marcadores compartidos con Pinkt se guardan como «Para leer después»; de lo contrario, se aplican tus preferencias predeterminadas</string>
+    <string name="user_preferences_default_tags">Etiquetas predeterminadas</string>
+    <string name="user_preferences_default_tags_description">Etiquetas que se añadirán a todos los marcadores creados o compartidos con Pinkt</string>
+    <string name="user_preferences_edit_after_sharing_title">Abrir editor al compartir</string>
+    <string name="user_preferences_edit_after_sharing_before_saving">Antes de guardar</string>
+    <string name="user_preferences_edit_after_sharing_after_saving">Después de guardar</string>
+    <string name="user_preferences_edit_after_sharing_description">Controla cuándo se debe mostrar el editor de marcadores después de elegir la acción de compartir «Guardar marcador». Para omitir el editor, elige «Guardar marcador rápidamente» al compartir en su lugar.</string>
+    <string name="user_preferences_bookmark_quick_options">Acciones rápidas del marcador</string>
+    <string name="user_preferences_bookmark_quick_actions_description">Personalizar qué opciones son visibles inmediatamente al abrir el menú de acciones rápidas</string>
+
+    <string name="user_preferences_customize">Personalizar</string>
+
+    <!-- About -->
+    <string name="about_send_feedback">Enviar comentarios</string>
+    <string name="about_share">Compartir la aplicación</string>
+    <string name="about_rate">Escribir una reseña</string>
+    <string name="about_privacy_policy">Política de privacidad</string>
+    <string name="about_developer">Desarrollado con ❤ por Filipe Belatti</string>
+    <string name="about_version">Versión de la app: %s</string>
+    <string name="about_oss_licenses">Licencias OSS</string>
+
+    <!-- Share -->
+    <string name="share_to_pinkt">Guardar marcador</string>
+    <string name="share_to_pinkt_no_edit">Guardar marcador rápidamente</string>
+    <string name="share_to_pinkt_choose_service">Guardar marcador en:</string>
+    <string name="share_title">Compartiendo Pinkt</string>
+    <string name="share_text">Echa un vistazo a Pinkt, una app de marcadores para Pinboard y Linkding. Descárgala gratis en %s</string>
+
+    <!-- Share Notifications -->
+    <string name="share_notification_channel_name">Resultados al guardar marcadores</string>
+    <string name="share_notification_channel_description">Muestra notificaciones con el resultado de guardar una URL compartida como marcador</string>
+    <string name="share_notification_unprocessable_url_feedback">No se puede procesar una URL vacía.</string>
+    <string name="share_notification_missing_permission_feedback">Añadiendo marcador… Concede el permiso de notificación para ver el resultado.</string>
+    <string name="share_notification_title_foreground">Añadiendo marcador…</string>
+    <string name="share_notification_title_success">¡Marcador añadido correctamente!</string>
+    <string name="share_notification_title_existing">Marcador existente encontrado, guardado el %s</string>
+    <string name="share_notification_title_failure">No se pudo añadir el marcador</string>
+    <string name="share_notification_opening_deep_link">Abriendo enlace profundo…</string>
+
+    <!-- Error -->
+    <string name="error_send_email">Enviar correo electrónico</string>
+    <string name="error_report_rationale">Parece que algo salió mal.\n\nPuedes reportar este error por correo electrónico, lo que me ayuda a diagnosticar y solucionar problemas.</string>
+    <string name="error_report">Reportar</string>
+    <string name="error_ignore">Ignorar</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_navigate_back">Navegar atrás</string>
+    <string name="cd_share_receiver_image">Guardando tu marcador</string>
+    <string name="cd_menu">Menú</string>
+    <string name="cd_scroll_to_top">Desplazarse hacia arriba</string>
+</resources>

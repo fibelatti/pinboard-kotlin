@@ -41,6 +41,10 @@ android {
         resValues = true
     }
 
+    androidResources {
+        generateLocaleConfig = false
+    }
+
     defaultConfig {
         applicationId = AppInfo.APPLICATION_ID
         versionCode = AppInfo.versionCode
@@ -139,7 +143,7 @@ androidComponents {
             com.android.build.api.variant.ResValue(appName, null),
         )
 
-        variant.androidResources.localeFilters.add("en")
+        variant.androidResources.localeFilters.addAll(listOf("en", "de", "fr", "es"))
     }
 }
 

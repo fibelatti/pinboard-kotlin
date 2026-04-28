@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Common -->
+    <string name="hint_ok">OK</string>
+    <string name="hint_yes">Oui</string>
+    <string name="hint_no">Non</string>
+    <string name="hint_save">Enregistrer</string>
+    <string name="hint_help">Aide</string>
+    <string name="hint_mark_as_read">Marquer comme lu</string>
+    <string name="hint_add">Ajouter</string>
+
+    <string name="alert_confirm_deletion">Voulez-vous vraiment supprimer ce favori ?</string>
+    <string name="alert_confirm_unsaved_changes">Vous avez des modifications non enregistrées qui seront perdues. Continuer sans enregistrer ?</string>
+
+    <string name="server_error">Impossible d\'accéder au service. Vérifiez votre jeton d\'authentification ou réessayez dans quelques instants.</string>
+
+    <string name="feedback_copied_to_clipboard">Copié dans le presse-papiers</string>
+
+    <string name="feedback_tags_copied_to_clipboard">&lt;b>Étiquettes copiées dans le presse-papiers.&lt;/b>&lt;br />Utilisez l\'action &lt;i>Coller les étiquettes&lt;/i> pour les ajouter directement à un autre favori.</string>
+
+    <!-- Menus -->
+    <string name="menu_main_sync">Synchroniser les favoris</string>
+    <string name="menu_main_search">Rechercher</string>
+    <string name="menu_main_sorting">Tri</string>
+    <string name="menu_read_random">Favori aléatoire</string>
+
+    <string name="menu_navigation_all">Tous</string>
+    <string name="menu_navigation_recent">Récents</string>
+    <string name="menu_navigation_public">Publics</string>
+    <string name="menu_navigation_private">Privés</string>
+    <string name="menu_navigation_unread">À lire plus tard</string>
+    <string name="menu_navigation_untagged">Non étiquetés</string>
+    <string name="menu_navigation_tags">Étiquettes</string>
+    <string name="menu_navigation_saved_filters">Filtres enregistrés</string>
+    <string name="menu_navigation_notes">Notes</string>
+    <string name="menu_navigation_popular">Populaires</string>
+
+    <string name="menu_navigation_preferences">Préférences</string>
+    <string name="menu_navigation_accounts">Sélecteur de compte</string>
+    <string name="menu_navigation_export">Exporter les favoris</string>
+
+    <string name="menu_link_delete">Supprimer le favori</string>
+    <string name="menu_link_edit">Modifier le favori</string>
+    <string name="menu_link_save">Enregistrer le favori</string>
+    <string name="menu_link_share">Partager le favori</string>
+    <string name="menu_link_open_in_browser">Ouvrir dans le navigateur</string>
+
+    <string name="menu_search_clear">Effacer le filtre</string>
+    <string name="menu_search_save">Enregistrer le filtre</string>
+
+    <string name="menu_side_panel_dismiss">Fermer</string>
+
+    <!-- Auth -->
+    <string name="auth_token_hint">Jeton d\'API</string>
+    <string name="auth_title_pinboard">Se connecter à Pinboard</string>
+    <string name="auth_button">Se connecter</string>
+    <string name="auth_token_description">Vous pouvez trouver votre jeton d\'API sur la page &lt;a href="https://pinboard.in/settings/password"&gt;Paramètres Pinboard&lt;/a&gt;. Il est composé de votre nom d\'utilisateur et d\'une chaîne alphanumérique (p. ex. username:00F0D0FE123456789012)</string>
+    <string name="auth_token_empty">Veuillez entrer votre jeton d\'API.</string>
+    <string name="auth_token_error">Échec de la connexion. Veuillez vérifier votre jeton d\'API.</string>
+    <string name="auth_logged_out_feedback">Jeton invalide. Veuillez vous reconnecter.</string>
+
+    <string name="auth_switch_to_pinboard">Passer à Pinboard</string>
+    <string name="auth_switch_to_linkding">Passer à Linkding</string>
+
+    <string name="auth_title_linkding">Se connecter à Linkding</string>
+    <string name="auth_linkding_instance_url">URL de l\'instance Linkding</string>
+    <string name="auth_linkding_instance_url_error">Veuillez entrer une URL d\'instance valide.</string>
+    <string name="auth_linkding_description">&lt;a href="https://github.com/sissbruecker/linkding/tree/master"&gt;Linkding&lt;/a&gt; est un gestionnaire de favoris auto-hébergé. Lorsque vous utilisez Pinkt pour Linkding, vous devez fournir l\'URL de votre instance et votre jeton, qui se trouvent dans l\'onglet Intégration de la page Paramètres.</string>
+
+    <string name="auth_linkding_unreachable_instance_url">Impossible de se connecter au serveur. L\'adresse doit contenir un protocole et être accessible publiquement.</string>
+
+    <string name="auth_linkding_client_certificate">Certificat client (facultatif) : %s</string>
+    <string name="auth_linkding_client_certificate_none">Aucun</string>
+    <string name="auth_linkding_client_certificate_clear">Supprimer le certificat client</string>
+    <string name="auth_linkding_client_certificate_not_selected">Aucun certificat sélectionné. L\'avez-vous installé sur votre appareil ?</string>
+
+    <!-- Posts -->
+    <string name="posts_title_all">Tous les favoris</string>
+    <string name="posts_title_recent">Favoris récents</string>
+    <string name="posts_title_public">Favoris publics</string>
+    <string name="posts_title_private">Favoris privés</string>
+    <string name="posts_title_unread">À lire plus tard</string>
+    <string name="posts_title_untagged">Favoris sans étiquette</string>
+
+    <plurals name="posts_quantity">
+        <item quantity="one">%s élément</item>
+        <item quantity="many">%s éléments</item>
+        <item quantity="other">%s éléments</item>
+    </plurals>
+
+    <string name="posts_sorting_newest_first">%s — Plus récents d\'abord</string>
+    <string name="posts_sorting_oldest_first">%s — Plus anciens d\'abord</string>
+    <string name="posts_sorting_alphabetical">%s — A à Z</string>
+    <string name="posts_sorting_alphabetical_reverse">%s — Z à A</string>
+
+    <string name="posts_share_title">Partage d\'URL</string>
+    <string name="posts_open_with_file_viewer">Ouvrir dans l\'explorateur de fichiers</string>
+    <string name="posts_open_with_file_viewer_description">Ce favori ne peut pas être affiché dans le navigateur interne. Utilisez votre visionneuse de fichiers par défaut.</string>
+
+    <string name="posts_empty_title">Aucune épingle sur ce tableau</string>
+    <string name="posts_empty_description">Il n\'y a aucun favori enregistré dans la catégorie sélectionnée</string>
+
+    <string name="posts_deleted_feedback">Favori supprimé avec succès</string>
+    <string name="posts_deleted_error">Une erreur s\'est produite et le favori n\'a pas été supprimé. Si le problème persiste, veuillez le supprimer via le client web.</string>
+
+    <string name="posts_marked_as_read_feedback">Indicateur « À lire plus tard » mis à jour avec succès</string>
+    <string name="posts_marked_as_read_error">Échec de la mise à jour de l\'indicateur « À lire plus tard ». Veuillez réessayer.</string>
+
+    <string name="posts_add_title">Enregistrer un favori</string>
+    <string name="posts_add_url">URL</string>
+    <string name="posts_add_url_title">Titre</string>
+    <string name="posts_add_url_description">Description</string>
+    <string name="posts_add_url_notes">Notes</string>
+    <string name="posts_add_private">Privé</string>
+    <string name="posts_add_read_later">À lire plus tard</string>
+
+    <string name="posts_add_non_editable_url">Pour modifier l\'URL, visitez Pinboard dans votre navigateur.</string>
+
+    <string name="posts_add_tags">Nouvelle étiquette</string>
+    <string name="posts_add_tags_add">Ajouter une étiquette</string>
+
+    <string name="posts_saved_feedback">Favori enregistré avec succès !</string>
+    <string name="posts_existing_feedback">Favori existant trouvé !</string>
+    <string name="posts_existing_feedback_with_date">Favori existant trouvé, enregistré le %s</string>
+
+    <string name="posts_url_offline_error">On dirait que vous êtes hors ligne. Veuillez réessayer dès qu\'une connexion est disponible.</string>
+    <string name="posts_url_error">Ce favori ne peut pas être affiché dans le navigateur interne. Utilisez votre navigateur par défaut.</string>
+    <string name="posts_open_in_browser">Ouvrir dans un navigateur externe</string>
+
+    <string name="posts_pending_add">Ajout en attente</string>
+    <string name="posts_pending_add_expanded">Ce favori sera ajouté dès que le réseau sera disponible</string>
+    <string name="posts_pending_update">Mise à jour en attente</string>
+    <string name="posts_pending_update_expanded">Ce favori sera mis à jour dès que le réseau sera disponible</string>
+    <string name="posts_pending_delete">Suppression en attente</string>
+    <string name="posts_pending_delete_expanded">Ce favori sera supprimé dès que le réseau sera disponible</string>
+
+    <!-- Offline -->
+    <string name="offline_alert">Aucune connexion disponible</string>
+    <string name="offline_retry">Réessayer</string>
+
+    <!-- Validation -->
+    <string name="validation_error_empty_url">L\'URL ne peut pas être vide</string>
+    <string name="validation_error_invalid_url">L\'URL n\'est pas acceptée par le service.</string>
+    <string name="validation_error_invalid_url_rationale">L\'URL n\'a pas pu être enregistrée. Veuillez vérifier qu\'elle est valide.</string>
+    <string name="validation_error_empty_title">Le titre ne peut pas être vide</string>
+
+    <!-- Search -->
+    <string name="search_title">Filtrer les favoris</string>
+    <string name="search_random">Étiquette aléatoire</string>
+    <string name="search_term">Rechercher dans l\'URL, le titre ou la description</string>
+    <string name="search_selected_tags">Étiquettes (%d sur 3) :</string>
+    <string name="search_tags">Toutes les étiquettes</string>
+    <string name="search_active">Filtre appliqué</string>
+
+    <plurals name="search_result_size">
+        <item quantity="one">%d correspondance</item>
+        <item quantity="many">%d correspondances</item>
+        <item quantity="other">%d correspondances</item>
+    </plurals>
+
+    <string name="search_share_title">Partage des résultats de recherche</string>
+    <string name="search_share_query">Partager la requête</string>
+    <string name="search_share_tags">Partager les étiquettes</string>
+
+    <string name="search_advanced_content_description">Avancé</string>
+    <string name="search_advanced_match_all">Correspondre à tout</string>
+    <string name="search_advanced_match_all_description">Les favoris doivent inclure tous les termes de recherche et les étiquettes sélectionnées.</string>
+    <string name="search_advanced_exact_match">Correspondance exacte</string>
+    <string name="search_advanced_exact_match_description">Les favoris doivent inclure tous les termes de recherche exactement tels qu\'ils ont été saisis. Si votre recherche contient des caractères non latins, il est recommandé de laisser cette option désactivée</string>
+
+    <string name="search_advanced_match_any">Correspondre à l\'un quelconque</string>
+    <string name="search_advanced_partial_match">Correspondance partielle</string>
+
+    <!-- Sorting -->
+    <string name="sorting_by_date_added_newest_first">Par date d\'ajout (Plus récents d\'abord)</string>
+    <string name="sorting_by_date_added_oldest_first">Par date d\'ajout (Plus anciens d\'abord)</string>
+    <string name="sorting_by_date_modified_newest_first">Par date de modification (Plus récents d\'abord)</string>
+    <string name="sorting_by_date_modified_oldest_first">Par date de modification (Plus anciens d\'abord)</string>
+    <string name="sorting_by_title_alphabetical">Par titre (A à Z)</string>
+    <string name="sorting_by_title_alphabetical_reverse">Par titre (Z à A)</string>
+
+    <!-- Tags -->
+    <string name="tags_title">Étiquettes</string>
+    <string name="tags_empty_title">Aucune étiquette</string>
+    <string name="tags_added_title">Étiquettes ajoutées</string>
+    <string name="tags_empty_description">Il n\'y a aucune étiquette pour vos favoris enregistrés</string>
+    <string name="tags_sorting_a_to_z">A à Z</string>
+    <string name="tags_sorting_more_first">Plus d\'abord</string>
+    <string name="tags_sorting_less_first">Moins d\'abord</string>
+    <string name="tags_sorting_filter">Rechercher</string>
+    <string name="tag_filter_hint">Nom de l\'étiquette</string>
+    <string name="tag_rename_title">Renommer l\'étiquette : %s</string>
+
+    <!-- Saved Filters -->
+    <string name="saved_filters_title">Filtres enregistrés</string>
+    <string name="saved_filters_empty_title">Aucun filtre enregistré</string>
+    <string name="saved_filters_empty_description">Les filtres que vous enregistrez lors de la recherche de favoris apparaîtront ici</string>
+    <string name="saved_filters_saved_feedback">Filtre enregistré</string>
+    <string name="saved_filters_deleted_feedback">Filtre supprimé</string>
+    <string name="saved_filters_item_keywords">Mots-clés</string>
+    <string name="saved_filters_item_tags">Étiquettes</string>
+
+    <!-- Notes -->
+    <string name="notes_title">Notes</string>
+    <plurals name="notes_quantity">
+        <item quantity="one">%d note</item>
+        <item quantity="many">%d notes</item>
+        <item quantity="other">%d notes</item>
+    </plurals>
+    <string name="notes_saved_at">Enregistré le %s</string>
+    <string name="notes_updated_at">Dernière mise à jour le %s</string>
+    <string name="notes_empty_title">Aucune note</string>
+    <string name="notes_empty_description">Vous n\'avez encore enregistré aucune note</string>
+    <string name="note_sorting_date_updated_desc">Plus récentes d\'abord</string>
+    <string name="note_sorting_date_updated_asc">Plus anciennes d\'abord</string>
+    <string name="note_sorting_a_to_z">Titre A à Z</string>
+
+    <!-- Popular -->
+    <string name="popular_title">Favoris populaires</string>
+    <plurals name="popular_count">
+        <item quantity="one">Ajouté aux favoris %d fois</item>
+        <item quantity="many">Ajouté aux favoris %d fois</item>
+        <item quantity="other">Ajouté aux favoris %d fois</item>
+    </plurals>
+
+    <!-- Quick Actions -->
+    <string name="quick_actions_title">Actions rapides</string>
+    <string name="quick_actions_add_read_later">Ajouter à « À lire plus tard »</string>
+    <string name="quick_actions_remove_read_later">Retirer de « À lire plus tard »</string>
+    <string name="quick_actions_copy_tags">Copier les étiquettes</string>
+    <string name="quick_actions_paste_tags">Coller les étiquettes</string>
+    <string name="quick_actions_edit">Modifier le favori</string>
+    <string name="quick_actions_delete">Supprimer le favori</string>
+    <string name="quick_actions_delete_filter">Supprimer le filtre</string>
+    <string name="quick_actions_save">Enregistrer dans les miens</string>
+    <string name="quick_actions_copy_url">Copier l\'URL</string>
+    <string name="quick_actions_share">Partager le favori</string>
+    <string name="quick_actions_expand_description">Développer la description</string>
+    <string name="quick_actions_open_in_browser">Ouvrir dans le navigateur</string>
+    <string name="quick_actions_rename">Renommer</string>
+    <string name="quick_actions_submit_to_wayback">Envoyer à la Wayback Machine</string>
+    <string name="quick_actions_search_wayback">Rechercher dans la Wayback Machine</string>
+    <string name="quick_actions_submit_to_archive_today">Envoyer à Archive.Today</string>
+    <string name="quick_actions_submit_to_ghost_archive">Envoyer à Ghost Archive</string>
+
+    <string name="quick_actions_more_options">Plus d\'options</string>
+
+    <string name="quick_actions_customization_hidden_options_title">Options masquées</string>
+    <string name="quick_actions_customization_hidden_options_instruction">Appuyez sur chaque option pour basculer sa visibilité</string>
+    <string name="quick_actions_customization_hidden_options_description">Celles-ci sont disponibles en cliquant sur « Plus d\'options » lors de l\'affichage du menu des actions rapides</string>
+
+    <string name="quick_actions_customization_save_changes">Enregistrer les modifications</string>
+
+    <!-- Account Switcher -->
+    <string name="account_switcher_title">Sélecteur de compte</string>
+    <string name="account_switcher_select">Sélectionner</string>
+    <string name="account_switcher_logout">Se déconnecter</string>
+    <string name="account_switcher_add_pinboard">Ajouter un compte Pinboard</string>
+    <string name="account_switcher_add_linkding">Ajouter un compte Linkding</string>
+
+    <!-- Export -->
+    <string name="export_feedback_success">Favoris exportés avec succès !</string>
+    <string name="export_feedback_failure">Échec de l\'exportation des favoris</string>
+
+    <!-- User Preferences -->
+    <string name="user_preferences_title">Préférences</string>
+
+    <string name="user_preferences_section_app">Préférences de l\'application</string>
+    <string name="user_preferences_section_bookmarking">Préférences de favoris</string>
+
+    <string name="user_preferences_periodic_sync">Synchronisation en arrière-plan</string>
+    <string name="user_preferences_periodic_sync_description">Récupérer automatiquement les nouveaux favoris ajoutés à votre collection à intervalles réguliers</string>
+    <string name="user_preferences_periodic_sync_caveat">Lorsque l\'application est au premier plan, vos favoris sont synchronisés en permanence quelle que soit cette préférence</string>
+    <string name="user_preferences_periodic_sync_off">Désactivée</string>
+    <string name="user_preferences_periodic_sync_6_hours">Toutes les 6 heures</string>
+    <string name="user_preferences_periodic_sync_12_hours">Toutes les 12 heures</string>
+    <string name="user_preferences_periodic_sync_24_hours">Toutes les 24 heures</string>
+    <string name="user_preferences_appearance">Apparence</string>
+    <string name="user_preferences_appearance_dark">Thème sombre</string>
+    <string name="user_preferences_appearance_light">Thème clair</string>
+    <string name="user_preferences_appearance_system_default">Suivre le système</string>
+    <string name="user_preferences_dynamic_colors">Utiliser les couleurs dynamiques</string>
+    <string name="user_preferences_dynamic_colors_caveat">Modifie les couleurs de l\'application pour correspondre au style de votre appareil</string>
+    <string name="user_preferences_disable_screenshots">Désactiver les captures d\'écran et les enregistrements</string>
+    <string name="user_preferences_disable_screenshots_caveat">Empêche le contenu de l\'application d\'apparaître sur les captures d\'écran et les enregistrements d\'écran</string>
+    <string name="user_preferences_date_format">Format de date préféré</string>
+    <string name="user_preferences_date_format_day_first">dd/mm/yy, hh:mm</string>
+    <string name="user_preferences_date_format_month_first">mm/dd/yy, hh:mm</string>
+    <string name="user_preferences_date_format_short_year_first">yy/mm/dd, hh:mm</string>
+    <string name="user_preferences_date_format_year_first">yyyy-mm-dd, hh:mm</string>
+    <string name="user_preferences_date_format_no_date">Masquer les dates</string>
+    <string name="user_preferences_date_format_include_time">Inclure l\'heure (lors de l\'affichage des dates)</string>
+    <string name="user_preferences_preferred_details_view">Affichage des favoris</string>
+    <string name="user_preferences_preferred_details_in_app_browser">Utiliser le navigateur intégré</string>
+    <string name="user_preferences_preferred_details_external_browser">Utiliser le navigateur externe</string>
+    <string name="user_preferences_preferred_details_post_details">Ouvrir l\'écran de détails du favori</string>
+    <string name="user_preferences_preferred_details_view_caveat">Appuyez longuement sur les éléments de la liste lors de la navigation dans les favoris pour accéder aux raccourcis de partage et de modification</string>
+    <string name="user_preferences_preferred_details_view_mark_as_read_on_open">Marquer comme lu à l\'ouverture</string>
+    <string name="user_preferences_preferred_details_view_mark_as_read_on_open_caveat">Met automatiquement à jour le favori pour supprimer l\'indicateur « À lire plus tard ».</string>
+    <string name="user_preferences_use_split_nav">Utiliser la navigation fractionnée</string>
+    <string name="user_preferences_use_split_nav_description">Garder les listes visibles lors de la navigation (disponible pour les appareils en mode paysage, les pliables et les tablettes)</string>
+    <string name="user_preferences_use_background_share_receiver">Sauvegarde rapide en arrière-plan</string>
+    <string name="user_preferences_use_background_share_receiver_description">Lorsqu\'elle est activée, la sélection de « Sauvegarde rapide d\'un favori » dans la feuille de partage enregistre le favori en arrière-plan et vous notifie du résultat par notification push</string>
+    <string name="user_preferences_use_background_share_receiver_missing_permission">Accordez l\'autorisation de notification via l\'application Paramètres pour voir le résultat.</string>
+    <string name="user_preferences_follow_redirects">Suivre les redirections</string>
+    <string name="user_preferences_follow_redirects_description">Suivre automatiquement les redirections lors du partage d\'un favori vers l\'application, en enregistrant l\'URL finale. Augmente le temps de chargement lors de l\'enregistrement d\'un favori via l\'action de partage</string>
+
+    <string name="user_preferences_remove_utm_parameters">Supprimer les paramètres UTM</string>
+    <string name="user_preferences_remove_utm_parameters_description">Supprimer les paramètres de suivi des URL partagées avec l\'application avant de les enregistrer</string>
+    <string name="user_preferences_remove_url_parameters">Supprimer les paramètres d\'URL</string>
+    <string name="user_preferences_remove_url_parameters_description">Supprimer les paramètres spécifiés des URL partagées avec l\'application avant de les enregistrer</string>
+    <string name="user_preferences_remove_url_parameters_hint">Nom du paramètre</string>
+
+    <string name="user_preferences_description_auto_fill">Remplissage automatique du titre et de la description</string>
+    <string name="user_preferences_description_auto_fill_description">Obtenir automatiquement les détails de la page lors du partage d\'un favori vers l\'application. Augmente le temps de chargement lors de l\'enregistrement d\'un favori via l\'action de partage</string>
+    <string name="user_preferences_use_blockquote">Utiliser un bloc de citation</string>
+    <string name="user_preferences_use_blockquote_description">Envelopper la description dans une balise blockquote</string>
+    <string name="user_preferences_description_visible_in_lists">Afficher la description dans les listes</string>
+    <string name="user_preferences_description_visible_in_lists_description">Afficher les 5 premières lignes de la description lors de la navigation dans les favoris</string>
+    <string name="user_preferences_alphabetize_tags">Trier les étiquettes par ordre alphabétique</string>
+    <string name="user_preferences_alphabetize_tags_description">Lorsque cette option est activée, les étiquettes sont affichées sous vos favoris dans l\'ordre alphabétique ; sinon, elles apparaissent dans l\'ordre dans lequel vous les avez saisies. Cela ne change pas l\'ordre dans lequel elles sont enregistrées.</string>
+    <string name="user_preferences_default_private_label">Privé par défaut</string>
+    <string name="user_preferences_default_private_description">Lorsque cette option est activée, les favoris partagés avec Pinkt sont enregistrés comme privés ; sinon, vos préférences par défaut s\'appliquent</string>
+    <string name="user_preferences_default_read_later_label">« À lire plus tard » par défaut</string>
+    <string name="user_preferences_default_read_later_description">Lorsque cette option est activée, les favoris partagés avec Pinkt sont enregistrés comme « À lire plus tard » ; sinon, vos préférences par défaut s\'appliquent</string>
+    <string name="user_preferences_default_tags">Étiquettes par défaut</string>
+    <string name="user_preferences_default_tags_description">Étiquettes à ajouter à tous les favoris créés avec ou partagés vers Pinkt</string>
+    <string name="user_preferences_edit_after_sharing_title">Ouvrir l\'éditeur lors du partage</string>
+    <string name="user_preferences_edit_after_sharing_before_saving">Avant l\'enregistrement</string>
+    <string name="user_preferences_edit_after_sharing_after_saving">Après l\'enregistrement</string>
+    <string name="user_preferences_edit_after_sharing_description">Contrôle quand l\'éditeur de favori doit être affiché après avoir choisi l\'action de partage « Enregistrer le favori ». Pour ignorer l\'éditeur, choisissez plutôt « Sauvegarde rapide d\'un favori » lors du partage.</string>
+    <string name="user_preferences_bookmark_quick_options">Actions rapides du favori</string>
+    <string name="user_preferences_bookmark_quick_actions_description">Personnaliser les options immédiatement visibles lors de l\'ouverture du menu des actions rapides</string>
+
+    <string name="user_preferences_customize">Personnaliser</string>
+
+    <!-- About -->
+    <string name="about_send_feedback">Envoyer vos commentaires</string>
+    <string name="about_share">Partager l\'application</string>
+    <string name="about_rate">Rédiger un avis</string>
+    <string name="about_privacy_policy">Politique de confidentialité</string>
+    <string name="about_developer">Développé avec ❤ par Filipe Belatti</string>
+    <string name="about_version">Version de l\'application : %s</string>
+    <string name="about_oss_licenses">Licences OSS</string>
+
+    <!-- Share -->
+    <string name="share_to_pinkt">Enregistrer le favori</string>
+    <string name="share_to_pinkt_no_edit">Sauvegarde rapide d\'un favori</string>
+    <string name="share_to_pinkt_choose_service">Enregistrer le favori dans :</string>
+    <string name="share_title">Partage de Pinkt</string>
+    <string name="share_text">Découvrez Pinkt, une application de gestion de favoris pour Pinboard et Linkding. Téléchargez gratuitement sur %s</string>
+
+    <!-- Share Notifications -->
+    <string name="share_notification_channel_name">Résultats de l\'enregistrement des favoris</string>
+    <string name="share_notification_channel_description">Affiche des notifications avec le résultat de l\'enregistrement d\'une URL partagée en tant que favori</string>
+    <string name="share_notification_unprocessable_url_feedback">Impossible de traiter une URL vide.</string>
+    <string name="share_notification_missing_permission_feedback">Ajout du favori… Accordez l\'autorisation de notification pour voir le résultat.</string>
+    <string name="share_notification_title_foreground">Ajout du favori…</string>
+    <string name="share_notification_title_success">Favori ajouté avec succès !</string>
+    <string name="share_notification_title_existing">Favori existant trouvé, enregistré le %s</string>
+    <string name="share_notification_title_failure">Impossible d\'ajouter le favori</string>
+    <string name="share_notification_opening_deep_link">Ouverture du lien profond…</string>
+
+    <!-- Error -->
+    <string name="error_send_email">Envoyer un e-mail</string>
+    <string name="error_report_rationale">On dirait que quelque chose s\'est mal passé.\n\nVous pouvez signaler cette erreur par e-mail, ce qui m\'aide à diagnostiquer et résoudre les problèmes.</string>
+    <string name="error_report">Signaler</string>
+    <string name="error_ignore">Ignorer</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_navigate_back">Retour en arrière</string>
+    <string name="cd_share_receiver_image">Enregistrement de votre favori</string>
+    <string name="cd_menu">Menu</string>
+    <string name="cd_scroll_to_top">Faire défiler vers le haut</string>
+</resources>
