@@ -172,7 +172,7 @@ private fun NoteListContent(
                 listState = listState,
                 contentPadding = listWindowInsets.asPaddingValues(),
             ) {
-                items(notes) { note ->
+                items(notes, key = { it.id }) { note ->
                     NoteListItem(
                         note = note,
                         onNoteClicked = onNoteClicked,

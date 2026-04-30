@@ -113,7 +113,7 @@ private fun SavedFiltersScreen(
                 .asPaddingValues(),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            items(savedFilters) { savedFilter ->
+            items(savedFilters, key = { it.hashCode() }) { savedFilter ->
                 SavedFilterItem(
                     savedFilter = savedFilter,
                     onClicked = onSavedFilterClicked,

@@ -123,7 +123,7 @@ fun PopularBookmarksContent(
             onPullToRefresh = onPullToRefresh,
             contentPadding = windowInsets.asPaddingValues(),
         ) {
-            items(posts.keys.toList()) { bookmark ->
+            items(posts.keys.toList(), key = { it.id }) { bookmark ->
                 PopularBookmarkItem(
                     post = bookmark,
                     count = posts.getOrDefault(bookmark, defaultValue = 1),
