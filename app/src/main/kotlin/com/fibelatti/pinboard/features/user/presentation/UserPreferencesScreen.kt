@@ -179,7 +179,6 @@ private fun AppPreferencesContent(
     userPreferencesViewModel: UserPreferencesViewModel = hiltViewModel(),
 ) {
     val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
 
     AppPreferencesContent(
         appMode = appMode,
@@ -187,15 +186,13 @@ private fun AppPreferencesContent(
         onAppearanceChange = { newAppearance ->
             userPreferencesViewModel.saveAppearance(newAppearance)
 
-            scope.launch {
-                val mode = when (newAppearance) {
-                    is Appearance.DarkTheme -> AppCompatDelegate.MODE_NIGHT_YES
-                    is Appearance.LightTheme -> AppCompatDelegate.MODE_NIGHT_NO
-                    else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                }
-
-                AppCompatDelegate.setDefaultNightMode(mode)
+            val mode = when (newAppearance) {
+                is Appearance.DarkTheme -> AppCompatDelegate.MODE_NIGHT_YES
+                is Appearance.LightTheme -> AppCompatDelegate.MODE_NIGHT_NO
+                else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             }
+
+            AppCompatDelegate.setDefaultNightMode(mode)
         },
         onDynamicColorChange = { newValue: Boolean ->
             userPreferencesViewModel.saveApplyDynamicColors(newValue)

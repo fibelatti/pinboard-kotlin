@@ -88,8 +88,7 @@ fun <T> SelectionDialogBottomSheet(
             optionName = optionName,
             optionIcon = optionIcon,
             onOptionSelected = { option ->
-                onOptionSelected(option)
-                sheetState.hideBottomSheet()
+                sheetState.hideBottomSheet { onOptionSelected(option) }
             },
             footer = footer,
         )
@@ -116,8 +115,7 @@ fun <T> SelectionDialogCustomizationBottomSheet(
             optionName = optionName,
             optionIcon = optionIcon,
             onConfirm = { selectedOptions ->
-                onConfirm(selectedOptions)
-                sheetState.hideBottomSheet()
+                sheetState.hideBottomSheet { onConfirm(selectedOptions) }
             },
         )
     }
