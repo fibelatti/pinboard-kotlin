@@ -1,0 +1,6 @@
+This version brings the following updates:
+
+* Added support for German, French, and Spanish
+* Small UI performance improvements
+
+Thank you for using the app!
