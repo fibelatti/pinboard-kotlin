@@ -155,7 +155,7 @@ private fun <T> SelectionDialogContent(
             }
         }
 
-        items(visibleOptions, key = { it.hashCode() }) { option ->
+        items(visibleOptions) { option ->
             SelectionItem(
                 option = option,
                 optionName = optionName,
@@ -178,7 +178,7 @@ private fun <T> SelectionDialogContent(
             }
 
             hiddenOptions.isNotEmpty() -> {
-                itemsIndexed(hiddenOptions, key = { _, option -> option.hashCode() }) { index, option ->
+                itemsIndexed(hiddenOptions) { index, option ->
                     SelectionItem(
                         option = option,
                         optionName = optionName,
@@ -247,7 +247,7 @@ private fun <T> SelectionDialogCustomizationContent(
             }
         }
 
-        items(visibleOptions, key = { it.hashCode() }) { option ->
+        items(visibleOptions) { option ->
             SelectionItem(
                 option = option,
                 optionName = optionName,
@@ -287,7 +287,7 @@ private fun <T> SelectionDialogCustomizationContent(
                 }
             }
 
-            items(hiddenOptions, key = { it.hashCode() }) { option ->
+            items(hiddenOptions) { option ->
                 SelectionItem(
                     option = option,
                     optionName = optionName,
