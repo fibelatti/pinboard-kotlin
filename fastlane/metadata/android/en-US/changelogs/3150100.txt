@@ -1,0 +1,5 @@
+This version brings the following updates:
+
+* Fixed a crash when using the selection dialog
+
+Thanks for using the app!
