@@ -2,6 +2,9 @@ package com.fibelatti.pinboard.features.main.reducer
 
 import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.Close
+import com.fibelatti.pinboard.core.android.icons.Done
 import com.fibelatti.pinboard.features.appstate.AddPostContent
 import com.fibelatti.pinboard.features.appstate.AppState
 import com.fibelatti.pinboard.features.appstate.EditPostContent
@@ -22,7 +25,7 @@ class BookmarkEditorReducer @Inject constructor(
 
         return MainState(
             title = MainState.TitleComponent.Visible(resourceProvider.getString(R.string.posts_add_title)),
-            navigation = MainState.NavigationComponent.Visible(icon = R.drawable.ic_close),
+            navigation = MainState.NavigationComponent.Visible(icon = AppIcons.Close),
             bottomAppBar = MainState.BottomAppBarComponent.Visible(
                 contentType = EditPostContent::class,
                 menuItems = buildList {
@@ -36,7 +39,7 @@ class BookmarkEditorReducer @Inject constructor(
             ),
             floatingActionButton = MainState.FabComponent.Visible(
                 contentType = EditPostContent::class,
-                icon = R.drawable.ic_done,
+                icon = AppIcons.Done,
             ),
         )
     }

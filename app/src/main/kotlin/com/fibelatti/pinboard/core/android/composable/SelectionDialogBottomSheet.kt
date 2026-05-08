@@ -30,9 +30,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -52,7 +52,7 @@ fun <T> SelectionDialogBottomSheet(
     optionName: (T) -> String,
     onOptionSelected: (T) -> Unit,
     modifier: Modifier = Modifier,
-    optionIcon: (T) -> Int? = { null },
+    optionIcon: (T) -> ImageVector? = { null },
     footer: @Composable () -> Unit = {},
 ) {
     SelectionDialogBottomSheet(
@@ -75,7 +75,7 @@ fun <T> SelectionDialogBottomSheet(
     optionName: (T) -> String,
     onOptionSelected: (T) -> Unit,
     modifier: Modifier = Modifier,
-    optionIcon: (T) -> Int? = { null },
+    optionIcon: (T) -> ImageVector? = { null },
     footer: @Composable () -> Unit = {},
 ) {
     AppBottomSheet(
@@ -103,7 +103,7 @@ fun <T> SelectionDialogCustomizationBottomSheet(
     optionName: (T) -> String,
     onConfirm: (Map<T, Boolean>) -> Unit,
     modifier: Modifier = Modifier,
-    optionIcon: (T) -> Int? = { null },
+    optionIcon: (T) -> ImageVector? = { null },
 ) {
     AppBottomSheet(
         sheetState = sheetState,
@@ -126,7 +126,7 @@ private fun <T> SelectionDialogContent(
     title: String,
     options: Map<T, Boolean>,
     optionName: (T) -> String,
-    optionIcon: (T) -> Int?,
+    optionIcon: (T) -> ImageVector?,
     onOptionSelected: (T) -> Unit,
     footer: @Composable () -> Unit = {},
 ) {
@@ -203,7 +203,7 @@ private fun <T> SelectionDialogCustomizationContent(
     title: String,
     options: Map<T, Boolean>,
     optionName: (T) -> String,
-    optionIcon: (T) -> Int?,
+    optionIcon: (T) -> ImageVector?,
     onConfirm: (Map<T, Boolean>) -> Unit,
 ) {
     var currentSelection by remember { mutableStateOf(options) }
@@ -320,7 +320,7 @@ private fun <T> SelectionDialogCustomizationContent(
 private fun <T> SelectionItem(
     option: T,
     optionName: (T) -> String,
-    optionIcon: (T) -> Int?,
+    optionIcon: (T) -> ImageVector?,
     onClick: (T) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -335,9 +335,9 @@ private fun <T> SelectionItem(
             textAlign = TextAlign.Center,
         )
 
-        optionIcon(option)?.let {
+        optionIcon(option)?.let { icon ->
             Icon(
-                painter = painterResource(id = it),
+                imageVector = icon,
                 contentDescription = "",
                 modifier = Modifier.size(16.dp),
             )

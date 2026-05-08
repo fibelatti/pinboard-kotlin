@@ -54,12 +54,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -79,6 +79,9 @@ import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.ChevronTop
+import com.fibelatti.pinboard.core.android.icons.Tag
 import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.RefreshTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -220,7 +223,7 @@ fun TagList(
                 if (items.isEmpty() && searchInput.isBlank()) {
                     item(key = "empty-list") {
                         EmptyListContent(
-                            icon = painterResource(id = R.drawable.ic_tag),
+                            icon = AppIcons.Tag,
                             title = stringResource(id = R.string.tags_empty_title),
                             description = stringResource(id = R.string.tags_empty_description),
                             scrollable = false,
@@ -418,7 +421,7 @@ private fun ScrollToTopButton(
     modifier: Modifier = Modifier,
 ) {
     LongClickIconButton(
-        painter = painterResource(id = R.drawable.ic_chevron_top),
+        painter = rememberVectorPainter(AppIcons.ChevronTop),
         description = stringResource(id = R.string.cd_scroll_to_top),
         onClick = onClick,
         modifier = modifier

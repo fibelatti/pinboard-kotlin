@@ -35,7 +35,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
@@ -50,6 +49,8 @@ import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LoadingContent
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.Notes
 import com.fibelatti.pinboard.features.appstate.NoteListContent
 import com.fibelatti.pinboard.features.appstate.RefreshNotes
 import com.fibelatti.pinboard.features.appstate.ViewNote
@@ -117,7 +118,7 @@ private fun NoteListContent(
 
         if (notes.isEmpty()) {
             EmptyListContent(
-                icon = painterResource(id = R.drawable.ic_notes),
+                icon = AppIcons.Notes,
                 title = stringResource(id = R.string.notes_empty_title),
                 description = stringResource(id = R.string.notes_empty_description),
             )

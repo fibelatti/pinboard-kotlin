@@ -33,11 +33,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -46,6 +46,10 @@ import com.fibelatti.core.functional.ScreenState
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.UrlSaved
+import com.fibelatti.pinboard.core.android.icons.UrlSavedError
+import com.fibelatti.pinboard.core.android.icons.UrlSaving
 import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.core.extension.showErrorReportDialog
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
@@ -65,10 +69,15 @@ fun ShareReceiverScreen(
 ) {
     val state by shareReceiverViewModel.screenState.collectAsStateWithLifecycle()
 
-    val icon = when (state) {
-        is ScreenState.Error -> painterResource(id = R.drawable.ic_url_saved_error)
-        is ScreenState.Loaded -> painterResource(id = R.drawable.ic_url_saved)
-        else -> painterResource(id = R.drawable.ic_url_saving)
+    val icon: ImageVector = when (state) {
+        is ScreenState.Loading -> AppIcons.UrlSaving
+        is ScreenState.Loaded -> AppIcons.UrlSaved
+        is ScreenState.Error -> AppIcons.UrlSavedError
+    }
+    val iconTint: Color = if (state !is ScreenState.Error) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.error
     }
 
     val currentState = state
@@ -98,15 +107,17 @@ fun ShareReceiverScreen(
             currentState.data is ShareReceiverViewModel.SharingResult.ChooseService,
         onSelectService = onSelectService,
         modifier = modifier,
+        iconTint = iconTint,
     )
 }
 
 @Composable
 fun ShareReceiverScreen(
-    icon: Painter,
+    icon: ImageVector,
     servicePickerVisible: Boolean,
     onSelectService: (AppMode) -> Unit,
     modifier: Modifier = Modifier,
+    iconTint: Color = MaterialTheme.colorScheme.primary,
 ) {
     var showServicePicker by remember { mutableStateOf(servicePickerVisible) }
 
@@ -127,9 +138,9 @@ fun ShareReceiverScreen(
                 label = "ShareReceiver_Icon",
             ) {
                 Icon(
-                    painter = it,
+                    imageVector = it,
                     contentDescription = stringResource(id = R.string.cd_share_receiver_image),
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = iconTint,
                 )
             }
             CircularProgressIndicator(
@@ -236,7 +247,7 @@ private fun ShareReceiverErrorDialog(
 private fun ShareReceiverScreenPreview() {
     ExtendedTheme {
         ShareReceiverScreen(
-            icon = painterResource(id = R.drawable.ic_url_saving),
+            icon = AppIcons.UrlSaving,
             servicePickerVisible = false,
             onSelectService = {},
         )
@@ -248,7 +259,7 @@ private fun ShareReceiverScreenPreview() {
 private fun ShareReceiverScreenWithPickerPreview() {
     ExtendedTheme {
         ShareReceiverScreen(
-            icon = painterResource(id = R.drawable.ic_url_saving),
+            icon = AppIcons.UrlSaving,
             servicePickerVisible = true,
             onSelectService = {},
         )

@@ -46,9 +46,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
@@ -60,6 +60,9 @@ import androidx.lifecycle.flowWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.Close
+import com.fibelatti.pinboard.core.android.icons.Preferences
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.appstate.AddSearchTag
 import com.fibelatti.pinboard.features.appstate.ClearSearch
@@ -237,7 +240,7 @@ private fun SearchBookmarksScreen(
                     trailingIcon = {
                         if (searchTermFieldState.text.isNotEmpty()) {
                             Icon(
-                                painter = painterResource(R.drawable.ic_close),
+                                imageVector = AppIcons.Close,
                                 contentDescription = null,
                                 modifier = Modifier.clickable(onClick = searchTermFieldState::clearText),
                             )
@@ -262,7 +265,7 @@ private fun SearchBookmarksScreen(
                     modifier = Modifier.padding(bottom = 4.dp, end = 8.dp),
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_preferences),
+                        imageVector = AppIcons.Preferences,
                         contentDescription = stringResource(R.string.search_advanced_content_description),
                         tint = MaterialTheme.colorScheme.onSurface,
                     )
@@ -278,7 +281,7 @@ private fun SearchBookmarksScreen(
                     items = searchParameters.tags.map {
                         ChipGroup.Item(
                             text = it.name,
-                            icon = painterResource(id = R.drawable.ic_close),
+                            icon = rememberVectorPainter(AppIcons.Close),
                         )
                     },
                     onItemClick = { item ->

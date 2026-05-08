@@ -13,8 +13,9 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.Check
+import com.fibelatti.pinboard.core.android.icons.Xmark
 
 @Composable
 fun SwitchWithIcon(
@@ -28,11 +29,11 @@ fun SwitchWithIcon(
         modifier = modifier,
         thumbContent = {
             AnimatedContent(
-                targetState = painterResource(if (checked) R.drawable.ic_check else R.drawable.ic_xmark),
+                targetState = if (checked) AppIcons.Check else AppIcons.Xmark,
                 transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut() },
-            ) { painter ->
+            ) { vector ->
                 Icon(
-                    painter = painter,
+                    imageVector = vector,
                     contentDescription = null,
                     modifier = Modifier.size(SwitchDefaults.IconSize),
                     tint = if (checked) {

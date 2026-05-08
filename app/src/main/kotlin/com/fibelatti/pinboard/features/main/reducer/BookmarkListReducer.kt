@@ -4,6 +4,9 @@ import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.Menu
+import com.fibelatti.pinboard.core.android.icons.Pin
 import com.fibelatti.pinboard.features.appstate.AccountSwitcherContent
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppState
@@ -79,11 +82,11 @@ class BookmarkListReducer @Inject constructor(
                         add(MainState.MenuItemComponent.SyncBookmarks)
                     }
                 },
-                navigationIcon = R.drawable.ic_menu,
+                navigationIcon = AppIcons.Menu,
             ),
             floatingActionButton = MainState.FabComponent.Visible(
                 contentType = PostListContent::class,
-                icon = R.drawable.ic_pin,
+                icon = AppIcons.Pin,
             ),
         )
     }

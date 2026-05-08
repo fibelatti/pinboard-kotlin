@@ -57,10 +57,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
@@ -79,6 +79,9 @@ import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogCustomizationBottomSheet
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.core.android.composable.SwitchWithIcon
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.Close
+import com.fibelatti.pinboard.core.android.icons.Edit
 import com.fibelatti.pinboard.core.extension.fillWidthOfParent
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.notifications.isNotificationPermissionGranted
@@ -780,7 +783,7 @@ private fun RemoveUrlParametersSetting(
                 }
             }
 
-            val closeIcon = painterResource(id = R.drawable.ic_close)
+            val closeIcon = rememberVectorPainter(AppIcons.Close)
             SingleLineChipGroup(
                 items = remember(removedParameters) {
                     removedParameters.map { parameter -> ChipGroup.Item(text = parameter, icon = closeIcon) }
@@ -846,7 +849,7 @@ private fun PreferenceButton(
         Spacer(modifier = Modifier.size(4.dp))
 
         Icon(
-            painter = painterResource(id = R.drawable.ic_edit),
+            imageVector = AppIcons.Edit,
             contentDescription = null,
             modifier = Modifier.size(16.dp),
         )

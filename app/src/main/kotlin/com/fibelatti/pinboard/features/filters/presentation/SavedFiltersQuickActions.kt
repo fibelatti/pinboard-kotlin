@@ -1,13 +1,15 @@
 package com.fibelatti.pinboard.features.filters.presentation
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.Delete
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 
 sealed class SavedFiltersQuickActions(
     @StringRes val title: Int,
-    @DrawableRes val icon: Int,
+    val icon: ImageVector,
 ) {
 
     abstract val savedFilter: SavedFilter
@@ -16,7 +18,7 @@ sealed class SavedFiltersQuickActions(
         override val savedFilter: SavedFilter,
     ) : SavedFiltersQuickActions(
         title = R.string.quick_actions_delete_filter,
-        icon = R.drawable.ic_delete,
+        icon = AppIcons.Delete,
     )
 
     companion object {

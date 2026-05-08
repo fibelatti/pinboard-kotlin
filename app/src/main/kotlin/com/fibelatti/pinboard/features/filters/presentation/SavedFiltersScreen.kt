@@ -28,7 +28,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -40,6 +39,8 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.Filter
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.appstate.ViewSavedFilter
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
@@ -99,7 +100,7 @@ private fun SavedFiltersScreen(
 ) {
     if (savedFilters.isEmpty()) {
         EmptyListContent(
-            icon = painterResource(id = R.drawable.ic_filter),
+            icon = AppIcons.Filter,
             title = stringResource(id = R.string.saved_filters_empty_title),
             description = stringResource(id = R.string.saved_filters_empty_description),
             modifier = modifier,

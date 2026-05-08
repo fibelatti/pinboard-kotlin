@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -110,7 +109,6 @@ fun PopularBookmarksContent(
 ) {
     if (posts.isEmpty()) {
         EmptyListContent(
-            icon = painterResource(id = R.drawable.ic_pin),
             title = stringResource(id = R.string.posts_empty_title),
             description = stringResource(id = R.string.posts_empty_description),
         )

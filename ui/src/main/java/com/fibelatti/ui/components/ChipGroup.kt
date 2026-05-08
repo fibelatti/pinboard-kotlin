@@ -24,12 +24,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.fibelatti.ui.R
+import com.fibelatti.ui.icons.Close
+import com.fibelatti.ui.icons.UiIcons
 import com.fibelatti.ui.preview.PreviewAccessibility
 import com.fibelatti.ui.preview.PreviewThemesAndColors
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -188,7 +189,7 @@ private fun MultilineChipGroupPreview() {
         val items = tags.mapIndexed { index, tag ->
             ChipGroup.Item(
                 text = tag,
-                icon = painterResource(id = R.drawable.ic_close),
+                icon = rememberVectorPainter(UiIcons.Close),
                 isSelected = index == 0,
             )
         }
@@ -211,7 +212,7 @@ private fun SingleLineChipGroupPreview() {
         val items = tags.mapIndexed { index, tag ->
             ChipGroup.Item(
                 text = tag,
-                icon = painterResource(id = R.drawable.ic_close),
+                icon = rememberVectorPainter(UiIcons.Close),
                 isSelected = index == 0,
             )
         }

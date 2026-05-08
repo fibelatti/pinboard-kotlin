@@ -62,6 +62,9 @@ import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.Done
+import com.fibelatti.pinboard.core.android.icons.Save
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.materialAlertDialogBuilder
 import com.fibelatti.pinboard.core.extension.showBanner
@@ -164,7 +167,7 @@ private fun LaunchedViewModelEffects(
                 currentState.copy(
                     actionButton = MainState.ActionButtonComponent.Visible(
                         contentType = EditPostContent::class,
-                        icon = R.drawable.ic_save,
+                        icon = AppIcons.Save,
                         label = localResources.getString(R.string.hint_save),
                     ),
                 )
@@ -189,7 +192,7 @@ private fun LaunchedViewModelEffects(
                 currentState.copy(
                     floatingActionButton = MainState.FabComponent.Visible(
                         contentType = EditPostContent::class,
-                        icon = R.drawable.ic_done,
+                        icon = AppIcons.Done,
                     ),
                 )
             }
@@ -279,7 +282,7 @@ private fun LaunchedEditPostViewModelEffect(
                     currentState.copy(
                         floatingActionButton = MainState.FabComponent.Visible(
                             contentType = EditPostContent::class,
-                            icon = R.drawable.ic_done,
+                            icon = AppIcons.Done,
                         ),
                     )
                 }

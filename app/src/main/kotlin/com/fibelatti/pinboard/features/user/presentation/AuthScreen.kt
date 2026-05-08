@@ -58,8 +58,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -72,6 +72,12 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
 import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.Delete
+import com.fibelatti.pinboard.core.android.icons.Eye
+import com.fibelatti.pinboard.core.android.icons.EyeSlash
+import com.fibelatti.pinboard.core.android.icons.Help
+import com.fibelatti.pinboard.core.android.icons.Pin
 import com.fibelatti.ui.components.TextWithLinks
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -138,7 +144,7 @@ private fun AuthScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_pin),
+            imageVector = AppIcons.Pin,
             contentDescription = null,
             modifier = Modifier
                 .padding(top = if (allowSwitching) 40.dp else 0.dp, bottom = 20.dp)
@@ -225,9 +231,7 @@ private fun AuthScreen(
                                 label = "AuthTokenIconVisibility",
                             ) { visible ->
                                 Icon(
-                                    painter = painterResource(
-                                        id = if (visible) R.drawable.ic_eye else R.drawable.ic_eye_slash,
-                                    ),
+                                    imageVector = if (visible) AppIcons.Eye else AppIcons.EyeSlash,
                                     contentDescription = null,
                                     modifier = Modifier.size(30.dp),
                                 )
@@ -356,7 +360,7 @@ fun ClientCertPicker(
                 shapes = IconButtonDefaults.shapes(),
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_delete),
+                    imageVector = AppIcons.Delete,
                     contentDescription = stringResource(
                         id = R.string.auth_linkding_client_certificate_clear,
                     ),
@@ -421,7 +425,7 @@ private fun AuthTokenHelp(
             )
         } else {
             LongClickIconButton(
-                painter = painterResource(id = R.drawable.ic_help),
+                painter = rememberVectorPainter(AppIcons.Help),
                 description = stringResource(id = R.string.hint_help),
                 onClick = { helpVisible = true },
                 iconTint = MaterialTheme.colorScheme.onSurfaceVariant,

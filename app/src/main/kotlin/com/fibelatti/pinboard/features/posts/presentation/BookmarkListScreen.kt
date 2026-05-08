@@ -62,7 +62,6 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -88,6 +87,13 @@ import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
 import com.fibelatti.pinboard.core.android.composable.TextWithBlockquote
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.ClearFilter
+import com.fibelatti.pinboard.core.android.icons.Private
+import com.fibelatti.pinboard.core.android.icons.ReadLater
+import com.fibelatti.pinboard.core.android.icons.Save
+import com.fibelatti.pinboard.core.android.icons.Share
+import com.fibelatti.pinboard.core.android.icons.Sync
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.copyToClipboard
@@ -449,7 +455,6 @@ fun BookmarkListScreen(
 
         if (posts == null && !isLoading) {
             EmptyListContent(
-                icon = painterResource(id = R.drawable.ic_pin),
                 title = stringResource(id = R.string.posts_empty_title),
                 description = stringResource(id = R.string.posts_empty_description),
             )
@@ -541,7 +546,7 @@ private fun ActiveSearch(
             contentPadding = padding,
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_clear_filter),
+                imageVector = AppIcons.ClearFilter,
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
             )
@@ -554,7 +559,7 @@ private fun ActiveSearch(
             contentPadding = padding,
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_save),
+                imageVector = AppIcons.Save,
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
             )
@@ -568,7 +573,7 @@ private fun ActiveSearch(
                 contentPadding = padding,
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_share),
+                    imageVector = AppIcons.Share,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
                 )
@@ -739,7 +744,7 @@ fun PendingSyncIndicator(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_sync),
+            imageVector = AppIcons.Sync,
             contentDescription = null,
             modifier = Modifier.size(12.dp),
             tint = MaterialTheme.colorScheme.primary,
@@ -782,7 +787,7 @@ private fun BookmarkFlags(
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_private),
+                    imageVector = AppIcons.Private,
                     contentDescription = null,
                     modifier = Modifier.size(16.dp),
                     tint = MaterialTheme.colorScheme.onSurface,
@@ -805,7 +810,7 @@ private fun BookmarkFlags(
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_read_later),
+                    imageVector = AppIcons.ReadLater,
                     contentDescription = null,
                     modifier = Modifier.size(16.dp),
                     tint = MaterialTheme.colorScheme.onSurface,

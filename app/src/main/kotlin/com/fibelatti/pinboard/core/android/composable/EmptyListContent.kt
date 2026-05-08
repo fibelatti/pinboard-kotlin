@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.core.android.composable
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,24 +15,26 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.Pin
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 
 @Composable
 fun EmptyListContent(
     modifier: Modifier = Modifier,
-    icon: Painter = painterResource(id = R.drawable.ic_pin),
+    icon: ImageVector = AppIcons.Pin,
     title: String = stringResource(id = R.string.posts_empty_title),
     description: String = stringResource(id = R.string.posts_empty_description),
     scrollable: Boolean = true,
@@ -79,8 +80,8 @@ fun EmptyListContent(
                 )
             }
 
-            Image(
-                painter = icon,
+            Icon(
+                imageVector = icon,
                 contentDescription = "",
                 modifier = Modifier.align(Alignment.BottomEnd),
             )

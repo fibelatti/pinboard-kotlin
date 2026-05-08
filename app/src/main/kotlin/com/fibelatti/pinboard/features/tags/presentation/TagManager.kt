@@ -18,9 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
@@ -33,6 +33,8 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
+import com.fibelatti.ui.icons.Close
+import com.fibelatti.ui.icons.UiIcons
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -170,7 +172,7 @@ fun TagManager(
             color = MaterialTheme.colorScheme.primary,
         )
 
-        val closeIcon = painterResource(id = R.drawable.ic_close)
+        val closeIcon = rememberVectorPainter(UiIcons.Close)
 
         MultilineChipGroup(
             items = remember(currentTags) {

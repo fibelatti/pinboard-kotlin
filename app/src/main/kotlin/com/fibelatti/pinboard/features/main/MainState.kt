@@ -1,8 +1,21 @@
 package com.fibelatti.pinboard.features.main
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.BackArrow
+import com.fibelatti.pinboard.core.android.icons.Browser
+import com.fibelatti.pinboard.core.android.icons.ClearFilter
+import com.fibelatti.pinboard.core.android.icons.Close
+import com.fibelatti.pinboard.core.android.icons.Delete
+import com.fibelatti.pinboard.core.android.icons.Edit
+import com.fibelatti.pinboard.core.android.icons.Random
+import com.fibelatti.pinboard.core.android.icons.Save
+import com.fibelatti.pinboard.core.android.icons.Search
+import com.fibelatti.pinboard.core.android.icons.Share
+import com.fibelatti.pinboard.core.android.icons.Sort
+import com.fibelatti.pinboard.core.android.icons.Sync
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.features.appstate.Content
 import kotlin.reflect.KClass
@@ -28,7 +41,7 @@ data class MainState(
 
         data object Gone : NavigationComponent()
 
-        data class Visible(@DrawableRes val icon: Int = R.drawable.ic_back_arrow) : NavigationComponent()
+        data class Visible(val icon: ImageVector = AppIcons.BackArrow) : NavigationComponent()
     }
 
     sealed class ActionButtonComponent {
@@ -42,7 +55,7 @@ data class MainState(
 
         data class Visible(
             override val contentType: ContentType,
-            @DrawableRes val icon: Int?,
+            val icon: ImageVector?,
             val label: String,
             val data: Any? = null,
         ) : ActionButtonComponent()
@@ -60,74 +73,74 @@ data class MainState(
         data class Visible(
             override val contentType: ContentType,
             val menuItems: List<MenuItemComponent>,
-            @DrawableRes val navigationIcon: Int? = null,
+            val navigationIcon: ImageVector? = null,
             val data: Any? = null,
         ) : BottomAppBarComponent()
     }
 
     sealed class MenuItemComponent(
         @StringRes val name: Int,
-        @DrawableRes val icon: Int?,
+        val icon: ImageVector?,
     ) {
 
         data object ClearSearch : MenuItemComponent(
             name = R.string.menu_search_clear,
-            icon = R.drawable.ic_clear_filter,
+            icon = AppIcons.ClearFilter,
         )
 
         data object SaveSearch : MenuItemComponent(
             name = R.string.menu_search_save,
-            icon = R.drawable.ic_save,
+            icon = AppIcons.Save,
         )
 
         data object CloseSidePanel : MenuItemComponent(
             name = R.string.menu_side_panel_dismiss,
-            icon = R.drawable.ic_close,
+            icon = AppIcons.Close,
         )
 
         data object DeleteBookmark : MenuItemComponent(
             name = R.string.menu_link_delete,
-            icon = R.drawable.ic_delete,
+            icon = AppIcons.Delete,
         )
 
         data object EditBookmark : MenuItemComponent(
             name = R.string.menu_link_edit,
-            icon = R.drawable.ic_edit,
+            icon = AppIcons.Edit,
         )
 
         data object OpenInBrowser : MenuItemComponent(
             name = R.string.menu_link_open_in_browser,
-            icon = R.drawable.ic_browser,
+            icon = AppIcons.Browser,
         )
 
         data object SaveBookmark : MenuItemComponent(
             name = R.string.menu_link_save,
-            icon = R.drawable.ic_save,
+            icon = AppIcons.Save,
         )
 
         data object SearchBookmarks : MenuItemComponent(
             name = R.string.menu_main_search,
-            icon = R.drawable.ic_search,
+            icon = AppIcons.Search,
         )
 
         data object ShareBookmark : MenuItemComponent(
             name = R.string.menu_link_share,
-            icon = R.drawable.ic_share,
+            icon = AppIcons.Share,
         )
 
         data object SortBookmarks : MenuItemComponent(
             name = R.string.menu_main_sorting,
-            icon = R.drawable.ic_sort,
+            icon = AppIcons.Sort,
         )
 
         data object RandomBookmark : MenuItemComponent(
             name = R.string.menu_read_random,
-            icon = R.drawable.ic_random,
+            icon = AppIcons.Random,
         )
 
         data object SyncBookmarks : MenuItemComponent(
             name = R.string.menu_main_sync,
-            icon = R.drawable.ic_sync,
+            icon = AppIcons.Sync,
         )
     }
 
@@ -142,7 +155,7 @@ data class MainState(
 
         data class Visible(
             override val contentType: ContentType,
-            @DrawableRes val icon: Int,
+            val icon: ImageVector,
             val data: Any? = null,
         ) : FabComponent()
     }

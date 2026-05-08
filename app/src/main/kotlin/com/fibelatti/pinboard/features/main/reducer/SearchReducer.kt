@@ -2,6 +2,9 @@ package com.fibelatti.pinboard.features.main.reducer
 
 import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.Random
+import com.fibelatti.pinboard.core.android.icons.Search
 import com.fibelatti.pinboard.features.appstate.AppState
 import com.fibelatti.pinboard.features.appstate.SearchContent
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
@@ -33,7 +36,7 @@ class SearchReducer @Inject constructor(
             actionButton = if (content.allTags.isNotEmpty()) {
                 MainState.ActionButtonComponent.Visible(
                     contentType = SearchContent::class,
-                    icon = R.drawable.ic_random,
+                    icon = AppIcons.Random,
                     label = resourceProvider.getString(R.string.search_random),
                 )
             } else {
@@ -58,7 +61,7 @@ class SearchReducer @Inject constructor(
             ),
             floatingActionButton = MainState.FabComponent.Visible(
                 contentType = SearchContent::class,
-                icon = R.drawable.ic_search,
+                icon = AppIcons.Search,
             ),
         )
     }

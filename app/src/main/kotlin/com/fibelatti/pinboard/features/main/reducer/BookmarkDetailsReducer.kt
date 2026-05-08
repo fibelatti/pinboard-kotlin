@@ -2,6 +2,9 @@ package com.fibelatti.pinboard.features.main.reducer
 
 import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.Done
+import com.fibelatti.pinboard.core.android.icons.Share
 import com.fibelatti.pinboard.features.appstate.AppState
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PopularPostsContent
@@ -36,7 +39,7 @@ class BookmarkDetailsReducer @Inject constructor(
         val actionButtonState = if (post.readLater == true && !post.isFile()) {
             MainState.ActionButtonComponent.Visible(
                 contentType = PostDetailContent::class,
-                icon = R.drawable.ic_done,
+                icon = AppIcons.Done,
                 label = resourceProvider.getString(R.string.hint_mark_as_read),
                 data = post,
             )
@@ -75,7 +78,7 @@ class BookmarkDetailsReducer @Inject constructor(
                 ),
                 floatingActionButton = MainState.FabComponent.Visible(
                     contentType = PostDetailContent::class,
-                    icon = R.drawable.ic_share,
+                    icon = AppIcons.Share,
                     data = post,
                 ),
             )

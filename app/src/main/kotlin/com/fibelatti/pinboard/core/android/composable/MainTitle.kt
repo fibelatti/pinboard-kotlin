@@ -28,19 +28,23 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.BackArrow
+import com.fibelatti.pinboard.core.android.icons.Random
+import com.fibelatti.pinboard.core.android.icons.Save
 import com.fibelatti.pinboard.features.appstate.Content
 import com.fibelatti.pinboard.features.main.MainState
 import com.fibelatti.ui.components.AutoSizeText
@@ -67,16 +71,16 @@ fun MainTitle(
             .padding(bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        var navigationIconRes: Int by remember { mutableIntStateOf(-1) }
+        var navigationIcon: ImageVector by remember { mutableStateOf(AppIcons.BackArrow) }
         SideEffect(navigation) {
             if (navigation is MainState.NavigationComponent.Visible) {
-                navigationIconRes = navigation.icon
+                navigationIcon = navigation.icon
             }
         }
 
-        AnimatedVisibility(visible = navigation is MainState.NavigationComponent.Visible && navigationIconRes != -1) {
+        AnimatedVisibility(visible = navigation is MainState.NavigationComponent.Visible) {
             LongClickIconButton(
-                painter = painterResource(id = navigationIconRes),
+                painter = rememberVectorPainter(navigationIcon),
                 description = stringResource(id = R.string.cd_navigate_back),
                 onClick = onNavigationClicked,
                 iconTint = MaterialTheme.colorScheme.onSurface,
@@ -145,7 +149,7 @@ fun MainTitle(
             currentActionButton?.let {
                 if (it.icon != null) {
                     LongClickIconButton(
-                        painter = painterResource(id = it.icon),
+                        painter = rememberVectorPainter(it.icon),
                         description = it.label,
                         onClick = { onActionButtonClicked(currentActionButton?.data) },
                         modifier = Modifier.padding(end = 16.dp),
@@ -183,7 +187,7 @@ private fun MainTitlePreview() {
                 onNavigationClicked = {},
                 actionButton = MainState.ActionButtonComponent.Visible(
                     contentType = Content::class,
-                    icon = R.drawable.ic_save,
+                    icon = AppIcons.Save,
                     label = "Action",
                 ),
                 onActionButtonClicked = {},
@@ -204,7 +208,7 @@ private fun MainTitleWithSubtitlePreview() {
                 onNavigationClicked = {},
                 actionButton = MainState.ActionButtonComponent.Visible(
                     contentType = Content::class,
-                    icon = R.drawable.ic_random,
+                    icon = AppIcons.Random,
                     label = "Action",
                 ),
                 onActionButtonClicked = {},

@@ -1,8 +1,8 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalUriHandler
@@ -10,6 +10,11 @@ import androidx.compose.ui.res.stringResource
 import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.Browser
+import com.fibelatti.pinboard.core.android.icons.Copy
+import com.fibelatti.pinboard.core.android.icons.Save
+import com.fibelatti.pinboard.core.android.icons.Share
 import com.fibelatti.pinboard.core.extension.copyToClipboard
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.components.AppSheetState
@@ -53,7 +58,7 @@ fun PopularBookmarkQuickActionsBottomSheet(
 
 private sealed class PopularPostQuickActions(
     @StringRes val title: Int,
-    @DrawableRes val icon: Int,
+    val icon: ImageVector,
 ) {
 
     abstract val post: Post
@@ -62,28 +67,28 @@ private sealed class PopularPostQuickActions(
         override val post: Post,
     ) : PopularPostQuickActions(
         title = R.string.quick_actions_save,
-        icon = R.drawable.ic_save,
+        icon = AppIcons.Save,
     )
 
     data class CopyUrl(
         override val post: Post,
     ) : PopularPostQuickActions(
         title = R.string.quick_actions_copy_url,
-        icon = R.drawable.ic_copy,
+        icon = AppIcons.Copy,
     )
 
     data class Share(
         override val post: Post,
     ) : PopularPostQuickActions(
         title = R.string.quick_actions_share,
-        icon = R.drawable.ic_share,
+        icon = AppIcons.Share,
     )
 
     data class OpenBrowser(
         override val post: Post,
     ) : PopularPostQuickActions(
         title = R.string.quick_actions_open_in_browser,
-        icon = R.drawable.ic_browser,
+        icon = AppIcons.Browser,
     )
 
     companion object {

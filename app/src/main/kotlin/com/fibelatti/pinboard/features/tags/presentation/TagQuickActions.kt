@@ -1,13 +1,15 @@
 package com.fibelatti.pinboard.features.tags.presentation
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.Edit
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 
 sealed class TagQuickActions(
     @StringRes val title: Int,
-    @DrawableRes val icon: Int,
+    val icon: ImageVector,
 ) {
 
     abstract val tag: Tag
@@ -16,7 +18,7 @@ sealed class TagQuickActions(
         override val tag: Tag,
     ) : TagQuickActions(
         title = R.string.quick_actions_rename,
-        icon = R.drawable.ic_edit,
+        icon = AppIcons.Edit,
     )
 
     companion object {

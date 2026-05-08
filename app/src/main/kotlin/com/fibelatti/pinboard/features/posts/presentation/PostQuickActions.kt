@@ -1,14 +1,25 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.Browser
+import com.fibelatti.pinboard.core.android.icons.Copy
+import com.fibelatti.pinboard.core.android.icons.Delete
+import com.fibelatti.pinboard.core.android.icons.Edit
+import com.fibelatti.pinboard.core.android.icons.Expand
+import com.fibelatti.pinboard.core.android.icons.ReadLater
+import com.fibelatti.pinboard.core.android.icons.Search
+import com.fibelatti.pinboard.core.android.icons.Send
+import com.fibelatti.pinboard.core.android.icons.Share
+import com.fibelatti.pinboard.core.android.icons.Tag
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 
 sealed class PostQuickActions(
     @StringRes val title: Int,
-    @DrawableRes val icon: Int,
+    val icon: ImageVector,
 ) {
 
     abstract val post: Post
@@ -22,7 +33,7 @@ sealed class PostQuickActions(
         } else {
             R.string.quick_actions_add_read_later
         },
-        icon = R.drawable.ic_read_later,
+        icon = AppIcons.ReadLater,
     ) {
 
         override val serializedName: String = "TOGGLE_READ_LATER"
@@ -33,7 +44,7 @@ sealed class PostQuickActions(
         val tags: List<Tag>,
     ) : PostQuickActions(
         title = R.string.quick_actions_copy_tags,
-        icon = R.drawable.ic_tag,
+        icon = AppIcons.Tag,
     ) {
 
         override val serializedName: String = "COPY_TAGS"
@@ -44,7 +55,7 @@ sealed class PostQuickActions(
         val tags: List<Tag>,
     ) : PostQuickActions(
         title = R.string.quick_actions_paste_tags,
-        icon = R.drawable.ic_tag,
+        icon = AppIcons.Tag,
     ) {
 
         override val serializedName: String = "PASTE_TAGS"
@@ -54,7 +65,7 @@ sealed class PostQuickActions(
         override val post: Post,
     ) : PostQuickActions(
         title = R.string.quick_actions_edit,
-        icon = R.drawable.ic_edit,
+        icon = AppIcons.Edit,
     ) {
 
         override val serializedName: String = "EDIT"
@@ -64,7 +75,7 @@ sealed class PostQuickActions(
         override val post: Post,
     ) : PostQuickActions(
         title = R.string.quick_actions_delete,
-        icon = R.drawable.ic_delete,
+        icon = AppIcons.Delete,
     ) {
 
         override val serializedName: String = "DELETE"
@@ -74,7 +85,7 @@ sealed class PostQuickActions(
         override val post: Post,
     ) : PostQuickActions(
         title = R.string.quick_actions_copy_url,
-        icon = R.drawable.ic_copy,
+        icon = AppIcons.Copy,
     ) {
 
         override val serializedName: String = "COPY_URL"
@@ -84,7 +95,7 @@ sealed class PostQuickActions(
         override val post: Post,
     ) : PostQuickActions(
         title = R.string.quick_actions_share,
-        icon = R.drawable.ic_share,
+        icon = AppIcons.Share,
     ) {
 
         override val serializedName: String = "SHARE"
@@ -94,7 +105,7 @@ sealed class PostQuickActions(
         override val post: Post,
     ) : PostQuickActions(
         title = R.string.quick_actions_expand_description,
-        icon = R.drawable.ic_expand,
+        icon = AppIcons.Expand,
     ) {
 
         override val serializedName: String = "EXPAND_DESCRIPTION"
@@ -104,7 +115,7 @@ sealed class PostQuickActions(
         override val post: Post,
     ) : PostQuickActions(
         title = R.string.quick_actions_open_in_browser,
-        icon = R.drawable.ic_browser,
+        icon = AppIcons.Browser,
     ) {
 
         override val serializedName: String = "OPEN_BROWSER"
@@ -114,7 +125,7 @@ sealed class PostQuickActions(
         override val post: Post,
     ) : PostQuickActions(
         title = R.string.quick_actions_search_wayback,
-        icon = R.drawable.ic_search,
+        icon = AppIcons.Search,
     ) {
 
         override val serializedName: String = "SEARCH_WAYBACK"
@@ -124,7 +135,7 @@ sealed class PostQuickActions(
         override val post: Post,
     ) : PostQuickActions(
         title = R.string.quick_actions_submit_to_wayback,
-        icon = R.drawable.ic_send,
+        icon = AppIcons.Send,
     ) {
 
         override val serializedName: String = "SUBMIT_TO_WAYBACK"
@@ -134,7 +145,7 @@ sealed class PostQuickActions(
         override val post: Post,
     ) : PostQuickActions(
         title = R.string.quick_actions_submit_to_archive_today,
-        icon = R.drawable.ic_send,
+        icon = AppIcons.Send,
     ) {
 
         override val serializedName: String = "SEND_TO_ARCHIVE_TODAY"
@@ -144,7 +155,7 @@ sealed class PostQuickActions(
         override val post: Post,
     ) : PostQuickActions(
         title = R.string.quick_actions_submit_to_ghost_archive,
-        icon = R.drawable.ic_send,
+        icon = AppIcons.Send,
     ) {
 
         override val serializedName: String = "SEND_TO_GHOST_ARCHIVE"
