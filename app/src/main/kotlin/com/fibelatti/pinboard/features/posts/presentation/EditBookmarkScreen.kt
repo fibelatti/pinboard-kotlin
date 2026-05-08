@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -59,7 +60,7 @@ import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppMode
-import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
+import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.materialAlertDialogBuilder
@@ -73,7 +74,6 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.TagManagerState
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagManager
-import com.fibelatti.ui.foundation.RememberedEffect
 import com.fibelatti.ui.foundation.rememberKeyboardState
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -158,7 +158,7 @@ private fun LaunchedViewModelEffects(
         }
     }
 
-    RememberedEffect(imeVisible) {
+    SideEffect(imeVisible) {
         if (imeVisible) {
             mainViewModel.updateState { currentState ->
                 currentState.copy(
@@ -181,7 +181,7 @@ private fun LaunchedViewModelEffects(
     LaunchedPostDetailViewModelEffect()
 
     val editError by editPostViewModel.error.collectAsStateWithLifecycle()
-    LaunchedErrorHandlerEffect(
+    ErrorHandlerEffect(
         error = editError,
         handler = editPostViewModel::errorHandled,
         postAction = {
@@ -197,7 +197,7 @@ private fun LaunchedViewModelEffects(
     )
 
     val detailError by postDetailViewModel.error.collectAsStateWithLifecycle()
-    LaunchedErrorHandlerEffect(error = detailError, handler = postDetailViewModel::errorHandled)
+    ErrorHandlerEffect(error = detailError, handler = postDetailViewModel::errorHandled)
 
     DisposableEffect(Unit) {
         onDispose {
@@ -267,7 +267,7 @@ private fun LaunchedEditPostViewModelEffect(
     val screenState by editPostViewModel.screenState.collectAsStateWithLifecycle()
     val localView = LocalView.current
 
-    RememberedEffect(screenState) {
+    SideEffect(screenState) {
         when {
             screenState.saved -> {
                 localView.showBanner(R.string.posts_saved_feedback)
@@ -305,7 +305,7 @@ private fun LaunchedPostDetailViewModelEffect(
 
     val localView = LocalView.current
 
-    RememberedEffect(screenState) {
+    SideEffect(screenState) {
         val current = screenState
         if (current.deleted is Success<Boolean> && current.deleted.value) {
             localView.showBanner(R.string.posts_deleted_feedback)
@@ -501,7 +501,7 @@ private fun BookmarkBasicDetails(
             }
         }
 
-        RememberedEffect(urlFieldState.text) {
+        SideEffect(urlFieldState.text) {
             onUrlChanged(urlFieldState.text.toString())
         }
 
@@ -538,7 +538,7 @@ private fun BookmarkBasicDetails(
 
         val titleFieldState = rememberTextFieldState(initialText = title)
 
-        RememberedEffect(titleFieldState.text) {
+        SideEffect(titleFieldState.text) {
             onTitleChanged(titleFieldState.text.toString())
         }
 
@@ -564,7 +564,7 @@ private fun BookmarkBasicDetails(
 
         val descriptionFieldState = rememberTextFieldState(initialText = description)
 
-        RememberedEffect(descriptionFieldState.text) {
+        SideEffect(descriptionFieldState.text) {
             onDescriptionChanged(descriptionFieldState.text.toString())
         }
 
@@ -583,7 +583,7 @@ private fun BookmarkBasicDetails(
         if (AppMode.LINKDING == appMode) {
             val notesFieldState = rememberTextFieldState(initialText = notes)
 
-            RememberedEffect(notesFieldState.text) {
+            SideEffect(notesFieldState.text) {
                 onNotesChanged(notesFieldState.text.toString())
             }
 

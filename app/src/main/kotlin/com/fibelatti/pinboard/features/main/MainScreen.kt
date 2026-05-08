@@ -48,6 +48,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -67,7 +68,6 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
 import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
 import com.fibelatti.pinboard.core.android.composable.MainTitle
-import com.fibelatti.pinboard.core.android.composable.RememberedEffect
 import com.fibelatti.pinboard.core.android.getWindowSizeClass
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.features.appstate.AccountSwitcherContent
@@ -137,11 +137,11 @@ fun MainScreen(
         onBack = mainViewModel::navigateBack,
     )
 
-    RememberedEffect(isWidthAtLeastBreakpoint) {
+    SideEffect(isWidthAtLeastBreakpoint) {
         mainViewModel.setMultiPanelAvailable(value = isWidthAtLeastBreakpoint)
     }
 
-    RememberedEffect(appState.content) {
+    SideEffect(appState.content) {
         mainViewModel.setCurrentScrollDirection(ScrollDirection.IDLE)
 
         when (val content = appState.content) {

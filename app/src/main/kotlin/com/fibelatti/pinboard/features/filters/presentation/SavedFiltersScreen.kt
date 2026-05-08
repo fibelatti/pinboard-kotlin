@@ -38,7 +38,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
-import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
+import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.appstate.ViewSavedFilter
@@ -68,7 +68,7 @@ fun SavedFiltersScreen(
         val savedFilterMenuSheetState = rememberAppSheetState()
 
         val error by savedFiltersViewModel.error.collectAsStateWithLifecycle()
-        LaunchedErrorHandlerEffect(error = error, handler = savedFiltersViewModel::errorHandled)
+        ErrorHandlerEffect(error = error, handler = savedFiltersViewModel::errorHandled)
 
         SavedFiltersScreen(
             savedFilters = savedFilters,

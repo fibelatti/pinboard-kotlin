@@ -47,7 +47,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
-import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
+import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LoadingContent
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.features.appstate.NoteListContent
@@ -75,7 +75,7 @@ fun NoteListScreen(
         )
 
         val error by noteListViewModel.error.collectAsStateWithLifecycle()
-        LaunchedErrorHandlerEffect(error = error, handler = noteListViewModel::errorHandled)
+        ErrorHandlerEffect(error = error, handler = noteListViewModel::errorHandled)
 
         if (noteListContent.shouldLoad) {
             LoadingContent()

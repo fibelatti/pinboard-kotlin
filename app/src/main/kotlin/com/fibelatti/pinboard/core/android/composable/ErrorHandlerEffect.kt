@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.core.android.composable
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalContext
@@ -12,7 +13,7 @@ import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.core.extension.showErrorReportDialog
 
 @Composable
-fun LaunchedErrorHandlerEffect(
+fun ErrorHandlerEffect(
     error: Throwable?,
     handler: () -> Unit,
     postAction: () -> Unit = {},
@@ -25,8 +26,8 @@ fun LaunchedErrorHandlerEffect(
         postAction()
     }
 
-    RememberedEffect(error) {
-        val current = error ?: return@RememberedEffect
+    SideEffect(error) {
+        val current = error ?: return@SideEffect
 
         if (BuildConfig.DEBUG) {
             current.printStackTrace()

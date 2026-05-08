@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -67,7 +68,7 @@ fun MainTitle(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         var navigationIconRes: Int by remember { mutableIntStateOf(-1) }
-        RememberedEffect(navigation) {
+        SideEffect(navigation) {
             if (navigation is MainState.NavigationComponent.Visible) {
                 navigationIconRes = navigation.icon
             }
@@ -93,14 +94,14 @@ fun MainTitle(
             verticalArrangement = Arrangement.Center,
         ) {
             var titleText by remember { mutableStateOf("") }
-            RememberedEffect(title) {
+            SideEffect(title) {
                 if (title is MainState.TitleComponent.Visible) {
                     titleText = title.label
                 }
             }
 
             var subtitleText by remember { mutableStateOf("") }
-            RememberedEffect(subtitle) {
+            SideEffect(subtitle) {
                 if (subtitle is MainState.TitleComponent.Visible) {
                     subtitleText = subtitle.label
                 }

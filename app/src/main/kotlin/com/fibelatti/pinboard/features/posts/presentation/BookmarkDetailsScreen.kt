@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,8 +58,7 @@ import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
-import com.fibelatti.pinboard.core.android.composable.RememberedEffect
+import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.materialAlertDialogBuilder
@@ -136,10 +136,10 @@ private fun LaunchedViewModelEffects(
     LaunchedPopularPostsViewModelEffect()
 
     val detailError by postDetailViewModel.error.collectAsStateWithLifecycle()
-    LaunchedErrorHandlerEffect(error = detailError, handler = postDetailViewModel::errorHandled)
+    ErrorHandlerEffect(error = detailError, handler = postDetailViewModel::errorHandled)
 
     val popularError by popularPostsViewModel.error.collectAsStateWithLifecycle()
-    LaunchedErrorHandlerEffect(error = popularError, handler = popularPostsViewModel::errorHandled)
+    ErrorHandlerEffect(error = popularError, handler = popularPostsViewModel::errorHandled)
 
     DisposableEffect(Unit) {
         onDispose {
@@ -215,7 +215,7 @@ private fun LaunchedPostDetailViewModelEffect(
     val localContext = LocalContext.current
     val localView = LocalView.current
 
-    RememberedEffect(screenState) {
+    SideEffect(screenState) {
         val current = screenState
         when {
             current.deleted is Success<Boolean> && current.deleted.value -> {
@@ -253,7 +253,7 @@ private fun LaunchedPopularPostsViewModelEffect(
     val screenState by popularPostsViewModel.screenState.collectAsStateWithLifecycle()
     val localView = LocalView.current
 
-    RememberedEffect(screenState) {
+    SideEffect(screenState) {
         screenState.savedMessage?.let { messageRes ->
             localView.showBanner(messageRes)
             popularPostsViewModel.userNotified()
@@ -366,11 +366,11 @@ fun BookmarkDetailsScreen(
                 val nestedScrollDirection by rememberScrollDirection(webView)
                 val currentOnScrollDirectionChanged by rememberUpdatedState(onScrollDirectionChanged)
 
-                RememberedEffect(nestedScrollDirection) {
+                SideEffect(nestedScrollDirection) {
                     currentOnScrollDirectionChanged(nestedScrollDirection)
                 }
 
-                RememberedEffect(post.id) {
+                SideEffect(post.id) {
                     webView.loadUrl(post.url)
                     webViewLoading = true
                 }

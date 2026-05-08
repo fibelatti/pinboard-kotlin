@@ -38,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -57,8 +58,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
-import com.fibelatti.pinboard.core.android.composable.RememberedEffect
+import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.appstate.AddSearchTag
@@ -145,7 +145,7 @@ fun SearchBookmarksScreen(
         }
 
         val error: Throwable? by tagsViewModel.error.collectAsStateWithLifecycle()
-        LaunchedErrorHandlerEffect(error = error, handler = tagsViewModel::errorHandled)
+        ErrorHandlerEffect(error = error, handler = tagsViewModel::errorHandled)
 
         DisposableEffect(Unit) {
             onDispose {
@@ -206,7 +206,7 @@ private fun SearchBookmarksScreen(
             val focusRequester = remember { FocusRequester() }
             val searchTermFieldState = rememberTextFieldState(initialText = searchParameters.term)
 
-            RememberedEffect(searchTermFieldState.text) {
+            SideEffect(searchTermFieldState.text) {
                 onSearchTermChanged(searchTermFieldState.text.toString())
             }
 

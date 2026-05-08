@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
@@ -34,9 +35,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
-import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
+import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
-import com.fibelatti.pinboard.core.android.composable.RememberedEffect
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.RefreshPopular
@@ -66,7 +66,7 @@ fun PopularBookmarksScreen(
 
         val localView = LocalView.current
 
-        RememberedEffect(screenState.savedMessage) {
+        SideEffect(screenState.savedMessage) {
             screenState.savedMessage?.let { messageRes ->
                 localView.showBanner(messageRes)
                 popularPostsViewModel.userNotified()
@@ -74,7 +74,7 @@ fun PopularBookmarksScreen(
         }
 
         val error by popularPostsViewModel.error.collectAsStateWithLifecycle()
-        LaunchedErrorHandlerEffect(error = error, handler = popularPostsViewModel::errorHandled)
+        ErrorHandlerEffect(error = error, handler = popularPostsViewModel::errorHandled)
 
         val popularBookmarkQuickActionsSheetState = rememberAppSheetState()
 

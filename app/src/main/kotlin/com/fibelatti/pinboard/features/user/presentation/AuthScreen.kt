@@ -69,7 +69,7 @@ import androidx.core.text.HtmlCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
-import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
+import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
 import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
 import com.fibelatti.ui.components.TextWithLinks
@@ -83,7 +83,7 @@ fun AuthScreen(
     val screenState: AuthViewModel.ScreenState by authViewModel.screenState.collectAsStateWithLifecycle()
 
     val error: Throwable? by authViewModel.error.collectAsStateWithLifecycle()
-    LaunchedErrorHandlerEffect(error = error, handler = authViewModel::errorHandled)
+    ErrorHandlerEffect(error = error, handler = authViewModel::errorHandled)
 
     val activity: AppCompatActivity = LocalAppCompatActivity.current
 

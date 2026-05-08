@@ -44,6 +44,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -83,9 +84,8 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_PAGE_SIZE
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
-import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
+import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
-import com.fibelatti.pinboard.core.android.composable.RememberedEffect
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
 import com.fibelatti.pinboard.core.android.composable.TextWithBlockquote
 import com.fibelatti.pinboard.core.extension.ScrollDirection
@@ -191,8 +191,8 @@ fun BookmarkListScreen(
 
         LaunchedMainViewModelEffect(onSortClick = sortSelectionSheetState::showBottomSheet)
         LaunchedPostDetailViewModelEffect()
-        LaunchedErrorHandlerEffect(error = postListError, handler = postListViewModel::errorHandled)
-        LaunchedErrorHandlerEffect(error = postDetailError, handler = postDetailViewModel::errorHandled)
+        ErrorHandlerEffect(error = postListError, handler = postListViewModel::errorHandled)
+        ErrorHandlerEffect(error = postDetailError, handler = postDetailViewModel::errorHandled)
 
         BookmarkListScreen(
             appMode = appState.appMode,
@@ -365,7 +365,7 @@ private fun LaunchedPostDetailViewModelEffect(
     val localContext = LocalContext.current
     val localView = LocalView.current
 
-    RememberedEffect(screenState) {
+    SideEffect(screenState) {
         val current = screenState
         when {
             current.deleted is Success<Boolean> && current.deleted.value -> {
@@ -467,11 +467,11 @@ fun BookmarkListScreen(
             }
             val currentOnNextPageRequested by rememberUpdatedState(onNextPageRequested)
 
-            RememberedEffect(posts.canPaginate, shouldRequestNewPage) {
+            SideEffect(posts.canPaginate, shouldRequestNewPage) {
                 if (posts.canPaginate && shouldRequestNewPage) currentOnNextPageRequested()
             }
 
-            RememberedEffect(scrollDirection) {
+            SideEffect(scrollDirection) {
                 currentOnScrollDirectionChanged(scrollDirection)
             }
 

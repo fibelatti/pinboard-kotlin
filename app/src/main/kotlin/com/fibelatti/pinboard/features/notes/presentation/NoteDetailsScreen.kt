@@ -26,7 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
-import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
+import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.pinboard.features.main.MainState
 import com.fibelatti.pinboard.features.main.MainViewModel
@@ -64,7 +64,7 @@ fun NoteDetailsScreen(
         }
 
         val error by noteDetailsViewModel.error.collectAsStateWithLifecycle()
-        LaunchedErrorHandlerEffect(error = error, handler = noteDetailsViewModel::errorHandled)
+        ErrorHandlerEffect(error = error, handler = noteDetailsViewModel::errorHandled)
 
         CrossfadeLoadingLayout(
             data = current.note.rightOrNull(),

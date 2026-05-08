@@ -75,7 +75,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
-import com.fibelatti.pinboard.core.android.composable.LaunchedErrorHandlerEffect
+import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
@@ -107,7 +107,7 @@ fun TagListScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val error by tagsViewModel.error.collectAsStateWithLifecycle()
-    LaunchedErrorHandlerEffect(error = error, handler = tagsViewModel::errorHandled)
+    ErrorHandlerEffect(error = error, handler = tagsViewModel::errorHandled)
 
     DisposableEffect(Unit) {
         onDispose { keyboardController?.hide() }
