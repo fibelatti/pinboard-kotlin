@@ -84,8 +84,8 @@ fun PopularBookmarksScreen(
             PopularBookmarksContent(
                 posts = posts,
                 onPullToRefresh = { popularPostsViewModel.runAction(RefreshPopular) },
-                onBookmarkClicked = { popularPostsViewModel.runAction(ViewPost(it)) },
-                onBookmarkLongClicked = { post ->
+                onBookmarkClick = { popularPostsViewModel.runAction(ViewPost(it)) },
+                onBookmarkLongClick = { post ->
                     popularBookmarkQuickActionsSheetState.showBottomSheet(data = post)
                 },
                 sidePanelVisible = appState.sidePanelVisible,
@@ -103,8 +103,8 @@ fun PopularBookmarksScreen(
 fun PopularBookmarksContent(
     posts: Map<Post, Int>,
     onPullToRefresh: () -> Unit = {},
-    onBookmarkClicked: (Post) -> Unit = {},
-    onBookmarkLongClicked: (Post) -> Unit = {},
+    onBookmarkClick: (Post) -> Unit = {},
+    onBookmarkLongClick: (Post) -> Unit = {},
     sidePanelVisible: Boolean = false,
 ) {
     if (posts.isEmpty()) {
@@ -125,8 +125,8 @@ fun PopularBookmarksContent(
                 PopularBookmarkItem(
                     post = bookmark,
                     count = posts.getOrDefault(bookmark, defaultValue = 1),
-                    onPostClicked = onBookmarkClicked,
-                    onPostLongClicked = onBookmarkLongClicked,
+                    onPostClick = onBookmarkClick,
+                    onPostLongClick = onBookmarkLongClick,
                 )
             }
         }
@@ -137,8 +137,8 @@ fun PopularBookmarksContent(
 private fun PopularBookmarkItem(
     post: Post,
     count: Int,
-    onPostClicked: (Post) -> Unit,
-    onPostLongClicked: (Post) -> Unit,
+    onPostClick: (Post) -> Unit,
+    onPostLongClick: (Post) -> Unit,
 ) {
     val haptic = LocalHapticFeedback.current
 
@@ -147,10 +147,10 @@ private fun PopularBookmarkItem(
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
             .combinedClickable(
-                onClick = { onPostClicked(post) },
+                onClick = { onPostClick(post) },
                 onLongClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onPostLongClicked(post)
+                    onPostLongClick(post)
                 },
             ),
         shape = MaterialTheme.shapes.small,

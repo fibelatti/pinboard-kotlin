@@ -158,15 +158,15 @@ fun SearchBookmarksScreen(
 
         SearchBookmarksScreen(
             searchParameters = currentContent.searchParameters,
-            onSearchTermChanged = { newValue -> searchPostViewModel.runAction(SetTerm(newValue)) },
+            onSearchTermChange = { newValue -> searchPostViewModel.runAction(SetTerm(newValue)) },
             onKeyboardSearch = { searchPostViewModel.runAction(Search) },
-            onSelectedTagRemoved = { tag -> searchPostViewModel.runAction(RemoveSearchTag(tag)) },
+            onSelectedTagRemove = { tag -> searchPostViewModel.runAction(RemoveSearchTag(tag)) },
             onUpdateSearchParameters = { matchAll: Boolean, exactMatch: Boolean ->
                 searchPostViewModel.runAction(SetAdvancedSearchParameters(matchAll, exactMatch))
             },
             availableTags = tagsState.filteredTags,
             isLoadingTags = tagsState.isLoading,
-            onTagsSortOptionClicked = { sorting ->
+            onTagsSortOptionClick = { sorting ->
                 tagsViewModel.sortTags(
                     sorting = when (sorting) {
                         TagList.Sorting.Alphabetically -> TagSorting.AtoZ
@@ -178,8 +178,8 @@ fun SearchBookmarksScreen(
                 )
             },
             tagsSearchTerm = tagsState.currentQuery,
-            onTagsSearchInputChanged = tagsViewModel::searchTags,
-            onAvailableTagClicked = { tag -> searchPostViewModel.runAction(AddSearchTag(tag)) },
+            onTagsSearchInputChange = tagsViewModel::searchTags,
+            onAvailableTagClick = { tag -> searchPostViewModel.runAction(AddSearchTag(tag)) },
             onTagsPullToRefresh = { searchPostViewModel.runAction(RefreshSearchTags) },
         )
     }
@@ -189,16 +189,16 @@ fun SearchBookmarksScreen(
 private fun SearchBookmarksScreen(
     searchParameters: SearchParameters,
     modifier: Modifier = Modifier,
-    onSearchTermChanged: (String) -> Unit = {},
+    onSearchTermChange: (String) -> Unit = {},
     onKeyboardSearch: () -> Unit = {},
-    onSelectedTagRemoved: (Tag) -> Unit = {},
+    onSelectedTagRemove: (Tag) -> Unit = {},
     onUpdateSearchParameters: (matchAll: Boolean, exactMatch: Boolean) -> Unit = { _, _ -> },
     availableTags: List<Tag> = emptyList(),
     isLoadingTags: Boolean = false,
-    onTagsSortOptionClicked: (TagList.Sorting) -> Unit = {},
+    onTagsSortOptionClick: (TagList.Sorting) -> Unit = {},
     tagsSearchTerm: String = "",
-    onTagsSearchInputChanged: (newValue: String) -> Unit = {},
-    onAvailableTagClicked: (Tag) -> Unit = {},
+    onTagsSearchInputChange: (newValue: String) -> Unit = {},
+    onAvailableTagClick: (Tag) -> Unit = {},
     onTagsPullToRefresh: () -> Unit = {},
 ) {
     val advancedDialogState = rememberAppSheetState()
@@ -210,7 +210,7 @@ private fun SearchBookmarksScreen(
             val searchTermFieldState = rememberTextFieldState(initialText = searchParameters.term)
 
             SideEffect(searchTermFieldState.text) {
-                onSearchTermChanged(searchTermFieldState.text.toString())
+                onSearchTermChange(searchTermFieldState.text.toString())
             }
 
             LaunchedEffect(Unit) {
@@ -285,13 +285,13 @@ private fun SearchBookmarksScreen(
                         )
                     },
                     onItemClick = { item ->
-                        onSelectedTagRemoved(searchParameters.tags.first { it.name == item.text })
+                        onSelectedTagRemove(searchParameters.tags.first { it.name == item.text })
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp),
                     onItemIconClick = { item ->
-                        onSelectedTagRemoved(searchParameters.tags.first { it.name == item.text })
+                        onSelectedTagRemove(searchParameters.tags.first { it.name == item.text })
                     },
                     itemTextStyle = MaterialTheme.typography.bodySmall.copy(
                         fontFamily = FontFamily.Monospace,
@@ -336,10 +336,10 @@ private fun SearchBookmarksScreen(
         items = availableTags,
         isLoading = isLoadingTags,
         modifier = modifier,
-        onSortOptionClicked = onTagsSortOptionClicked,
+        onSortOptionClick = onTagsSortOptionClick,
         searchInput = tagsSearchTerm,
-        onSearchInputChanged = onTagsSearchInputChanged,
-        onTagClicked = onAvailableTagClicked,
+        onSearchInputChange = onTagsSearchInputChange,
+        onTagClick = onAvailableTagClick,
         onPullToRefresh = onTagsPullToRefresh,
     )
 

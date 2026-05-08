@@ -50,7 +50,7 @@ fun <T> SelectionDialogBottomSheet(
     title: String,
     options: List<T>,
     optionName: (T) -> String,
-    onOptionSelected: (T) -> Unit,
+    onOptionSelect: (T) -> Unit,
     modifier: Modifier = Modifier,
     optionIcon: (T) -> ImageVector? = { null },
     footer: @Composable () -> Unit = {},
@@ -60,7 +60,7 @@ fun <T> SelectionDialogBottomSheet(
         title = title,
         options = options.associateWith { false },
         optionName = optionName,
-        onOptionSelected = onOptionSelected,
+        onOptionSelect = onOptionSelect,
         modifier = modifier,
         optionIcon = optionIcon,
         footer = footer,
@@ -73,7 +73,7 @@ fun <T> SelectionDialogBottomSheet(
     title: String,
     options: Map<T, Boolean>,
     optionName: (T) -> String,
-    onOptionSelected: (T) -> Unit,
+    onOptionSelect: (T) -> Unit,
     modifier: Modifier = Modifier,
     optionIcon: (T) -> ImageVector? = { null },
     footer: @Composable () -> Unit = {},
@@ -87,8 +87,8 @@ fun <T> SelectionDialogBottomSheet(
             options = options,
             optionName = optionName,
             optionIcon = optionIcon,
-            onOptionSelected = { option ->
-                sheetState.hideBottomSheet { onOptionSelected(option) }
+            onOptionSelect = { option ->
+                sheetState.hideBottomSheet { onOptionSelect(option) }
             },
             footer = footer,
         )
@@ -127,7 +127,7 @@ private fun <T> SelectionDialogContent(
     options: Map<T, Boolean>,
     optionName: (T) -> String,
     optionIcon: (T) -> ImageVector?,
-    onOptionSelected: (T) -> Unit,
+    onOptionSelect: (T) -> Unit,
     footer: @Composable () -> Unit = {},
 ) {
     val visibleOptions = remember(options) { options.filterValues { hidden -> !hidden }.keys.toList() }
@@ -160,7 +160,7 @@ private fun <T> SelectionDialogContent(
                 option = option,
                 optionName = optionName,
                 optionIcon = optionIcon,
-                onClick = onOptionSelected,
+                onClick = onOptionSelect,
             )
         }
 
@@ -183,7 +183,7 @@ private fun <T> SelectionDialogContent(
                         option = option,
                         optionName = optionName,
                         optionIcon = optionIcon,
-                        onClick = onOptionSelected,
+                        onClick = onOptionSelect,
                         modifier = Modifier.animateItem(
                             fadeInSpec = tween(delayMillis = 75 * index, easing = FastOutLinearInEasing),
                         ),
@@ -356,7 +356,7 @@ private fun SelectionDialogContentPreview() {
             options = listOf("Option 1", "Option 2", "Option 3").associateWith { false },
             optionName = { it },
             optionIcon = { null },
-            onOptionSelected = {},
+            onOptionSelect = {},
         )
     }
 }
@@ -372,7 +372,7 @@ private fun SelectionDialogContentHiddenOptionsPreview() {
                 .plus(listOf("Option 4", "Option 5", "Option 6", "Option 7").associateWith { true }),
             optionName = { it },
             optionIcon = { null },
-            onOptionSelected = {},
+            onOptionSelect = {},
         )
     }
 }

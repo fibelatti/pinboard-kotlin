@@ -27,7 +27,7 @@ class ShareReceiverActivity : AppCompatActivity() {
                     startActivity(MainComposeActivity.Builder(this).build())
                     finish()
                 },
-                onSaved = ::finish,
+                onSave = ::finish,
                 onSelectService = shareReceiverViewModel::selectService,
                 errorDialogAction = ::finish,
             )

@@ -83,7 +83,7 @@ fun NoteListScreen(
         } else {
             NoteListContent(
                 notes = noteListContent.notes,
-                onSortOptionClicked = { noteListSorting ->
+                onSortOptionClick = { noteListSorting ->
                     val sorting = when (noteListSorting) {
                         NoteList.Sorting.ByDateUpdatedDesc -> NoteSorting.ByDateUpdatedDesc
                         NoteList.Sorting.ByDateUpdatedAsc -> NoteSorting.ByDateUpdatedAsc
@@ -93,7 +93,7 @@ fun NoteListScreen(
                     noteListViewModel.sort(noteListContent.notes, sorting)
                 },
                 onPullToRefresh = { noteListViewModel.runAction(RefreshNotes) },
-                onNoteClicked = { note -> noteListViewModel.runAction(ViewNote(note.id)) },
+                onNoteClick = { note -> noteListViewModel.runAction(ViewNote(note.id)) },
                 sidePanelVisible = appState.sidePanelVisible,
             )
         }
@@ -103,9 +103,9 @@ fun NoteListScreen(
 @Composable
 private fun NoteListContent(
     notes: List<Note>,
-    onSortOptionClicked: (NoteList.Sorting) -> Unit = {},
+    onSortOptionClick: (NoteList.Sorting) -> Unit = {},
     onPullToRefresh: () -> Unit = {},
-    onNoteClicked: (Note) -> Unit = {},
+    onNoteClick: (Note) -> Unit = {},
     sidePanelVisible: Boolean = false,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -142,7 +142,7 @@ private fun NoteListContent(
                         checked = index == selectedSortingIndex,
                         onCheckedChange = {
                             selectedSortingIndex = index
-                            onSortOptionClicked(sorting)
+                            onSortOptionClick(sorting)
                         },
                         modifier = Modifier
                             .weight(weight)
@@ -176,7 +176,7 @@ private fun NoteListContent(
                 items(notes, key = { it.id }) { note ->
                     NoteListItem(
                         note = note,
-                        onNoteClicked = onNoteClicked,
+                        onNoteClick = onNoteClick,
                     )
                 }
             }
@@ -187,14 +187,14 @@ private fun NoteListContent(
 @Composable
 private fun NoteListItem(
     note: Note,
-    onNoteClicked: (Note) -> Unit,
+    onNoteClick: (Note) -> Unit,
 ) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 60.dp)
             .padding(horizontal = 8.dp)
-            .clickable { onNoteClicked(note) },
+            .clickable { onNoteClick(note) },
         shape = MaterialTheme.shapes.small,
         color = MaterialTheme.colorScheme.surfaceContainer,
     ) {

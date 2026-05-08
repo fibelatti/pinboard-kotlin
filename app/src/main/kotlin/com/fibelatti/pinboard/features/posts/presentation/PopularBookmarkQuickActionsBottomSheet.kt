@@ -36,7 +36,7 @@ fun PopularBookmarkQuickActionsBottomSheet(
         options = PopularPostQuickActions.allOptions(post),
         optionName = { option -> localResources.getString(option.title) },
         optionIcon = PopularPostQuickActions::icon,
-        onOptionSelected = { option ->
+        onOptionSelect = { option ->
             when (option) {
                 is PopularPostQuickActions.Save -> onSave(option.post)
 

@@ -267,7 +267,7 @@ private fun AppPreferencesContent(
                         Appearance.SystemDefault,
                     )
                 },
-                onOptionSelected = onAppearanceChange,
+                onOptionSelect = onAppearanceChange,
             )
         }
 
@@ -325,7 +325,7 @@ private fun AppPreferencesContent(
                         PreferredDateFormat.NoDate,
                     )
                 },
-                onOptionSelected = { newSelection ->
+                onOptionSelect = { newSelection ->
                     onDateFormatChange(newSelection, userPreferences.preferredDateFormat.includeTime)
                 },
                 footer = {
@@ -381,7 +381,7 @@ private fun AppPreferencesContent(
                             PeriodicSync.Every24Hours,
                         )
                     },
-                    onOptionSelected = onPeriodicSyncChange,
+                    onOptionSelect = onPeriodicSyncChange,
                 )
 
                 Text(
@@ -470,7 +470,7 @@ private fun AppPreferencesContent(
                         PreferredDetailsView.Edit,
                     )
                 },
-                onOptionSelected = onPreferredViewChange,
+                onOptionSelect = onPreferredViewChange,
             )
 
             Text(
@@ -580,13 +580,13 @@ private fun BookmarkingPreferencesContent(
 
             TagManager(
                 searchTagInput = tagState.currentQuery,
-                onSearchTagInputChanged = userPreferencesViewModel::setTagSearchQuery,
-                onAddTagClicked = userPreferencesViewModel::addTag,
+                onSearchTagInputChange = userPreferencesViewModel::setTagSearchQuery,
+                onAddTagClick = userPreferencesViewModel::addTag,
                 suggestedTags = tagState.suggestedTags,
-                onSuggestedTagClicked = userPreferencesViewModel::addTag,
+                onSuggestedTagClick = userPreferencesViewModel::addTag,
                 currentTagsTitle = stringResource(id = tagState.displayTitle),
                 currentTags = tagState.tags,
-                onRemoveCurrentTagClicked = userPreferencesViewModel::removeTag,
+                onRemoveCurrentTagClick = userPreferencesViewModel::removeTag,
                 modifier = Modifier.fillWidthOfParent(parentPaddingStart = 8.dp, parentPaddingEnd = 8.dp),
                 horizontalPadding = 8.dp,
             )
@@ -640,7 +640,7 @@ private fun BookmarkingPreferencesContent(
                         EditAfterSharing.AfterSaving,
                     )
                 },
-                onOptionSelected = onEditAfterSharingChange,
+                onOptionSelect = onEditAfterSharingChange,
             )
 
             Text(
@@ -862,7 +862,7 @@ private fun <T> PreferenceSelectionButton(
     buttonText: (T) -> Int,
     @StringRes title: Int,
     options: () -> List<T>,
-    onOptionSelected: (T) -> Unit,
+    onOptionSelect: (T) -> Unit,
     modifier: Modifier = Modifier,
     footer: @Composable () -> Unit = {},
 ) {
@@ -880,7 +880,7 @@ private fun <T> PreferenceSelectionButton(
         title = stringResource(title),
         options = options(),
         optionName = { option -> localResources.getString(buttonText(option)) },
-        onOptionSelected = onOptionSelected,
+        onOptionSelect = onOptionSelect,
         footer = footer,
     )
 }

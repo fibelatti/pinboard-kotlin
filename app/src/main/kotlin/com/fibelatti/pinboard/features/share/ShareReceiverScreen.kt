@@ -61,7 +61,7 @@ import io.ktor.client.plugins.ResponseException
 @Composable
 fun ShareReceiverScreen(
     onEdit: () -> Unit,
-    onSaved: () -> Unit,
+    onSave: () -> Unit,
     onSelectService: (AppMode) -> Unit,
     errorDialogAction: () -> Unit,
     modifier: Modifier = Modifier,
@@ -91,7 +91,7 @@ fun ShareReceiverScreen(
         }
         when (currentState.data) {
             is ShareReceiverViewModel.SharingResult.Edit -> onEdit()
-            is ShareReceiverViewModel.SharingResult.Saved -> onSaved()
+            is ShareReceiverViewModel.SharingResult.Saved -> onSave()
             else -> Unit // Unreachable
         }
     } else if (currentState is ScreenState.Error) {

@@ -385,9 +385,9 @@ private fun MainTopAppBar(
             title = state.title,
             subtitle = state.subtitle,
             navigation = state.navigation,
-            onNavigationClicked = onNavigationClick,
+            onNavigationClick = onNavigationClick,
             actionButton = state.actionButton,
-            onActionButtonClicked = onActionButtonClick,
+            onActionButtonClick = onActionButtonClick,
         )
 
         AnimatedVisibility(visible = isOffline) {

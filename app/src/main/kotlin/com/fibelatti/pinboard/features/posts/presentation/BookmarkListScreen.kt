@@ -204,13 +204,13 @@ fun BookmarkListScreen(
             appMode = appState.appMode,
             posts = postListContent.posts,
             isLoading = isLoading,
-            onScrollDirectionChanged = mainViewModel::setCurrentScrollDirection,
-            onNextPageRequested = { mainViewModel.runAction(GetNextPostPage) },
+            onScrollDirectionChange = mainViewModel::setCurrentScrollDirection,
+            onNextPageRequest = { mainViewModel.runAction(GetNextPostPage) },
             sortType = postListContent.sortType,
             searchParameters = postListContent.searchParameters,
-            onActiveSearchClicked = { mainViewModel.runAction(ViewSearch) },
-            onClearClicked = { mainViewModel.runAction(ClearSearch) },
-            onSaveClicked = {
+            onActiveSearchClick = { mainViewModel.runAction(ViewSearch) },
+            onClearClick = { mainViewModel.runAction(ClearSearch) },
+            onSaveClick = {
                 postListViewModel.saveFilter(
                     SavedFilter(
                         term = postListContent.searchParameters.term,
@@ -221,8 +221,8 @@ fun BookmarkListScreen(
                 )
                 localView.showBanner(R.string.saved_filters_saved_feedback)
             },
-            onShareClicked = shareClicked@{
-                val username: String = userCredentials.getPinboardUsername() ?: return@shareClicked
+            onShareClick = shareClick@{
+                val username: String = userCredentials.getPinboardUsername() ?: return@shareClick
                 val searchParameters: SearchParameters = postListContent.searchParameters
 
                 when {
@@ -246,13 +246,13 @@ fun BookmarkListScreen(
                 }
             },
             onPullToRefresh = { mainViewModel.runAction(Refresh()) },
-            onPostClicked = { post -> mainViewModel.runAction(ViewPost(post)) },
-            onPostLongClicked = { post ->
+            onPostClick = { post -> mainViewModel.runAction(ViewPost(post)) },
+            onPostLongClick = { post ->
                 bookmarkQuickActionsSheetState.showBottomSheet(post)
             },
-            onTagClicked = { post -> mainViewModel.runAction(PostsForTag(post)) },
-            onPrivateClicked = { mainViewModel.runAction(Private) },
-            onReadLaterClicked = { mainViewModel.runAction(Unread) },
+            onTagClick = { post -> mainViewModel.runAction(PostsForTag(post)) },
+            onPrivateClick = { mainViewModel.runAction(Private) },
+            onReadLaterClick = { mainViewModel.runAction(Unread) },
             showPostDescription = postListContent.showDescription,
             sidePanelVisible = appState.sidePanelVisible,
             listState = listState,
@@ -309,7 +309,7 @@ fun BookmarkListScreen(
         SortingSelectionBottomSheet(
             sheetState = sortSelectionSheetState,
             appMode = appState.appMode,
-            onOptionSelected = { sortType -> mainViewModel.runAction(SetSorting(sortType)) },
+            onOptionSelect = { sortType -> mainViewModel.runAction(SetSorting(sortType)) },
         )
     }
 }
@@ -321,6 +321,7 @@ private fun LaunchedMainViewModelEffect(
     onSortClick: () -> Unit,
 ) {
     val localLifecycle = LocalLifecycleOwner.current.lifecycle
+    val currentOnSortClick by rememberUpdatedState(onSortClick)
 
     LaunchedEffect(Unit) {
         mainViewModel.menuItemClicks(contentType = PostListContent::class)
@@ -331,7 +332,7 @@ private fun LaunchedMainViewModelEffect(
                     }
 
                     is MainState.MenuItemComponent.SortBookmarks -> {
-                        onSortClick()
+                        currentOnSortClick()
                     }
 
                     is MainState.MenuItemComponent.RandomBookmark -> {
@@ -406,20 +407,20 @@ fun BookmarkListScreen(
     appMode: AppMode,
     posts: PostList?,
     isLoading: Boolean,
-    onScrollDirectionChanged: (ScrollDirection) -> Unit,
-    onNextPageRequested: () -> Unit,
+    onScrollDirectionChange: (ScrollDirection) -> Unit,
+    onNextPageRequest: () -> Unit,
     sortType: SortType,
     searchParameters: SearchParameters,
-    onActiveSearchClicked: () -> Unit,
-    onClearClicked: () -> Unit,
-    onSaveClicked: () -> Unit,
-    onShareClicked: () -> Unit,
+    onActiveSearchClick: () -> Unit,
+    onClearClick: () -> Unit,
+    onSaveClick: () -> Unit,
+    onShareClick: () -> Unit,
     onPullToRefresh: () -> Unit,
-    onPostClicked: (Post) -> Unit,
-    onPostLongClicked: (Post) -> Unit,
-    onTagClicked: (Tag) -> Unit,
-    onPrivateClicked: () -> Unit,
-    onReadLaterClicked: () -> Unit,
+    onPostClick: (Post) -> Unit,
+    onPostLongClick: (Post) -> Unit,
+    onTagClick: (Tag) -> Unit,
+    onPrivateClick: () -> Unit,
+    onReadLaterClick: () -> Unit,
     showPostDescription: Boolean,
     sidePanelVisible: Boolean,
     modifier: Modifier = Modifier,
@@ -435,10 +436,10 @@ fun BookmarkListScreen(
         AnimatedVisibility(visible = searchParameters.isActive()) {
             ActiveSearch(
                 appMode = appMode,
-                onViewClicked = onActiveSearchClicked,
-                onClearClicked = onClearClicked,
-                onSaveClicked = onSaveClicked,
-                onShareClicked = onShareClicked,
+                onViewClick = onActiveSearchClick,
+                onClearClick = onClearClick,
+                onSaveClick = onSaveClick,
+                onShareClick = onShareClick,
                 modifier = Modifier.windowInsetsPadding(windowInsets),
             )
         }
@@ -460,7 +461,7 @@ fun BookmarkListScreen(
             )
         } else if (posts != null) {
             val scrollDirection by listState.rememberScrollDirection()
-            val currentOnScrollDirectionChanged by rememberUpdatedState(onScrollDirectionChanged)
+            val currentOnScrollDirectionChanged by rememberUpdatedState(onScrollDirectionChange)
 
             val shouldRequestNewPage by remember {
                 derivedStateOf {
@@ -470,7 +471,7 @@ fun BookmarkListScreen(
                     }
                 }
             }
-            val currentOnNextPageRequested by rememberUpdatedState(onNextPageRequested)
+            val currentOnNextPageRequested by rememberUpdatedState(onNextPageRequest)
 
             SideEffect(posts.canPaginate, shouldRequestNewPage) {
                 if (posts.canPaginate && shouldRequestNewPage) currentOnNextPageRequested()
@@ -495,12 +496,12 @@ fun BookmarkListScreen(
                         post = post,
                         sortType = sortType,
                         alphabetizeTags = posts.alphabetizeTags,
-                        onPostClicked = onPostClicked,
-                        onPostLongClicked = onPostLongClicked,
+                        onPostClick = onPostClick,
+                        onPostLongClick = onPostLongClick,
                         showDescription = showPostDescription,
-                        onTagClicked = onTagClicked,
-                        onPrivateClicked = onPrivateClicked,
-                        onReadLaterClicked = onReadLaterClicked,
+                        onTagClick = onTagClick,
+                        onPrivateClick = onPrivateClick,
+                        onReadLaterClick = onReadLaterClick,
                     )
                 }
             }
@@ -511,10 +512,10 @@ fun BookmarkListScreen(
 @Composable
 private fun ActiveSearch(
     appMode: AppMode,
-    onViewClicked: () -> Unit,
-    onClearClicked: () -> Unit,
-    onSaveClicked: () -> Unit,
-    onShareClicked: () -> Unit,
+    onViewClick: () -> Unit,
+    onClearClick: () -> Unit,
+    onSaveClick: () -> Unit,
+    onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -526,7 +527,7 @@ private fun ActiveSearch(
         val padding = PaddingValues(horizontal = 8.dp)
 
         FilledTonalButton(
-            onClick = onViewClicked,
+            onClick = onViewClick,
             shapes = ExtendedTheme.defaultButtonShapes,
             modifier = Modifier.heightIn(min = minHeight),
             contentPadding = padding,
@@ -540,7 +541,7 @@ private fun ActiveSearch(
         Spacer(modifier = Modifier.weight(1f))
 
         FilledTonalButton(
-            onClick = onClearClicked,
+            onClick = onClearClick,
             shapes = ExtendedTheme.defaultButtonShapes,
             modifier = Modifier.heightIn(min = minHeight),
             contentPadding = padding,
@@ -553,7 +554,7 @@ private fun ActiveSearch(
         }
 
         FilledTonalButton(
-            onClick = onSaveClicked,
+            onClick = onSaveClick,
             shapes = ExtendedTheme.defaultButtonShapes,
             modifier = Modifier.heightIn(min = minHeight),
             contentPadding = padding,
@@ -567,7 +568,7 @@ private fun ActiveSearch(
 
         if (AppMode.PINBOARD == appMode) {
             FilledTonalButton(
-                onClick = onShareClicked,
+                onClick = onShareClick,
                 shapes = ExtendedTheme.defaultButtonShapes,
                 modifier = Modifier.heightIn(min = minHeight),
                 contentPadding = padding,
@@ -588,12 +589,12 @@ private fun BookmarkItem(
     post: Post,
     sortType: SortType,
     alphabetizeTags: Boolean,
-    onPostClicked: (Post) -> Unit,
-    onPostLongClicked: (Post) -> Unit,
+    onPostClick: (Post) -> Unit,
+    onPostLongClick: (Post) -> Unit,
     showDescription: Boolean,
-    onTagClicked: (Tag) -> Unit,
-    onPrivateClicked: () -> Unit,
-    onReadLaterClicked: () -> Unit,
+    onTagClick: (Tag) -> Unit,
+    onPrivateClick: () -> Unit,
+    onReadLaterClick: () -> Unit,
 ) {
     val haptic = LocalHapticFeedback.current
 
@@ -606,10 +607,10 @@ private fun BookmarkItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .combinedClickable(
-                    onClick = { onPostClicked(post) },
+                    onClick = { onPostClick(post) },
                     onLongClick = {
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        onPostLongClicked(post)
+                        onPostLongClick(post)
                     },
                 ),
             shape = MaterialTheme.shapes.small,
@@ -706,7 +707,7 @@ private fun BookmarkItem(
 
                     MultilineChipGroup(
                         items = tags,
-                        onItemClick = { item -> onTagClicked(post.tags.first { tag -> tag.name == item.text }) },
+                        onItemClick = { item -> onTagClick(post.tags.first { tag -> tag.name == item.text }) },
                         modifier = Modifier.padding(top = 8.dp),
                         itemTextStyle = MaterialTheme.typography.bodySmall.copy(
                             fontFamily = FontFamily.Monospace,
@@ -727,8 +728,8 @@ private fun BookmarkItem(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .offset(y = (-12).dp, x = (-12).dp),
-            onPrivateClicked = onPrivateClicked,
-            onReadLaterClicked = onReadLaterClicked,
+            onPrivateClick = onPrivateClick,
+            onReadLaterClick = onReadLaterClick,
         )
     }
 }
@@ -764,8 +765,8 @@ private fun BookmarkFlags(
     private: Boolean?,
     readLater: Boolean?,
     modifier: Modifier = Modifier,
-    onPrivateClicked: () -> Unit = {},
-    onReadLaterClicked: () -> Unit = {},
+    onPrivateClick: () -> Unit = {},
+    onReadLaterClick: () -> Unit = {},
 ) {
     Row(
         modifier = modifier.height(IntrinsicSize.Max),
@@ -781,7 +782,7 @@ private fun BookmarkFlags(
                         shape = MaterialTheme.shapes.medium,
                         color = MaterialTheme.colorScheme.surfaceVariant,
                     )
-                    .clickable(onClick = onPrivateClicked)
+                    .clickable(onClick = onPrivateClick)
                     .padding(all = 8.dp)
                     .testTag("private-flag"),
                 contentAlignment = Alignment.Center,
@@ -804,7 +805,7 @@ private fun BookmarkFlags(
                         shape = MaterialTheme.shapes.medium,
                         color = MaterialTheme.colorScheme.surfaceVariant,
                     )
-                    .clickable(onClick = onReadLaterClicked)
+                    .clickable(onClick = onReadLaterClick)
                     .padding(all = 8.dp)
                     .testTag("read-later-flag"),
                 contentAlignment = Alignment.Center,
@@ -870,7 +871,7 @@ private fun BookmarkQuickActionsBottomSheet(
         options = allOptions,
         optionName = { option -> localResources.getString(option.title) },
         optionIcon = PostQuickActions::icon,
-        onOptionSelected = { option ->
+        onOptionSelect = { option ->
             when (option) {
                 is PostQuickActions.ToggleReadLater -> {
                     onToggleReadLater(post)
@@ -932,7 +933,7 @@ private fun BookmarkQuickActionsBottomSheet(
 private fun SortingSelectionBottomSheet(
     sheetState: AppSheetState,
     appMode: AppMode,
-    onOptionSelected: (SortType) -> Unit,
+    onOptionSelect: (SortType) -> Unit,
 ) {
     val localResources = LocalResources.current
 
@@ -963,7 +964,7 @@ private fun SortingSelectionBottomSheet(
 
             localResources.getString(resId)
         },
-        onOptionSelected = onOptionSelected,
+        onOptionSelect = onOptionSelect,
     )
 }
 
@@ -986,7 +987,7 @@ private fun ShareFilterResultsBottomSheet(
                 ShareSearchOption.TAGS -> localResources.getString(R.string.search_share_tags)
             }
         },
-        onOptionSelected = { option ->
+        onOptionSelect = { option ->
             val url = when (option) {
                 ShareSearchOption.QUERY -> searchParameters.pinboardQueryUrl(username = username)
                 ShareSearchOption.TAGS -> searchParameters.pinboardTagsUrl(username = username)
@@ -1013,20 +1014,20 @@ private fun BookmarkListScreenPreview(
                 alphabetizeTags = true,
             ),
             isLoading = true,
-            onScrollDirectionChanged = {},
-            onNextPageRequested = {},
+            onScrollDirectionChange = {},
+            onNextPageRequest = {},
             sortType = ByDateModifiedNewestFirst,
             searchParameters = SearchParameters(term = "bookmark"),
-            onActiveSearchClicked = {},
-            onClearClicked = {},
-            onSaveClicked = {},
-            onShareClicked = {},
+            onActiveSearchClick = {},
+            onClearClick = {},
+            onSaveClick = {},
+            onShareClick = {},
             onPullToRefresh = {},
-            onPostClicked = {},
-            onPostLongClicked = {},
-            onTagClicked = {},
-            onPrivateClicked = {},
-            onReadLaterClicked = {},
+            onPostClick = {},
+            onPostLongClick = {},
+            onTagClick = {},
+            onPrivateClick = {},
+            onReadLaterClick = {},
             showPostDescription = true,
             sidePanelVisible = false,
         )
@@ -1040,10 +1041,10 @@ private fun ActiveSearchPreview() {
     ExtendedTheme {
         Box {
             ActiveSearch(
-                onViewClicked = {},
-                onClearClicked = {},
-                onSaveClicked = {},
-                onShareClicked = {},
+                onViewClick = {},
+                onClearClick = {},
+                onSaveClick = {},
+                onShareClick = {},
                 appMode = AppMode.LINKDING,
             )
         }
@@ -1067,12 +1068,12 @@ private fun BookmarkItemPreview(
                 post = post,
                 sortType = ByDateModifiedNewestFirst,
                 alphabetizeTags = true,
-                onPostClicked = {},
-                onPostLongClicked = {},
+                onPostClick = {},
+                onPostLongClick = {},
                 showDescription = true,
-                onTagClicked = {},
-                onPrivateClicked = {},
-                onReadLaterClicked = {},
+                onTagClick = {},
+                onPrivateClick = {},
+                onReadLaterClick = {},
             )
         }
     }

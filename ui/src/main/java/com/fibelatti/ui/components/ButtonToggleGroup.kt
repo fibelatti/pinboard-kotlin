@@ -62,12 +62,9 @@ public fun ColumnToggleButtonGroup(
             val isButtonSelected = selectedIndex == index
 
             ToggleButton(
+                onClick = { onButtonClick(toggleButtonGroupItem) },
                 item = toggleButtonGroupItem,
                 mode = mode,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .defaultMinSize(minHeight = buttonHeight)
-                    .offset(y = borderSize * -index),
                 buttonShape = when (index) {
                     0 -> shape.copy(bottomStart = SquareCorner, bottomEnd = SquareCorner)
                     items.size - 1 -> shape.copy(topStart = SquareCorner, topEnd = SquareCorner)
@@ -81,7 +78,10 @@ public fun ColumnToggleButtonGroup(
                 textStyle = textStyle,
                 iconColor = if (isButtonSelected) colors.selectedIconColor else colors.unselectedIconColor,
                 iconPosition = iconPosition,
-                onClick = { onButtonClick(toggleButtonGroupItem) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .defaultMinSize(minHeight = buttonHeight)
+                    .offset(y = borderSize * -index),
             )
         }
     }
@@ -115,12 +115,9 @@ public fun RowToggleButtonGroup(
             val isButtonSelected = selectedIndex == index
 
             ToggleButton(
+                onClick = { onButtonClick.invoke(toggleButtonGroupItem) },
                 item = toggleButtonGroupItem,
                 mode = mode,
-                modifier = Modifier
-                    .weight(weight = 1f)
-                    .defaultMinSize(minHeight = buttonHeight)
-                    .offset(x = borderSize * -index),
                 buttonShape = when (index) {
                     0 -> shape.copy(bottomEnd = squareCorner, topEnd = squareCorner)
                     items.size - 1 -> shape.copy(topStart = squareCorner, bottomStart = squareCorner)
@@ -134,7 +131,10 @@ public fun RowToggleButtonGroup(
                 textStyle = textStyle,
                 iconColor = if (isButtonSelected) colors.selectedIconColor else colors.unselectedIconColor,
                 iconPosition = iconPosition,
-                onClick = { onButtonClick.invoke(toggleButtonGroupItem) },
+                modifier = Modifier
+                    .weight(weight = 1f)
+                    .defaultMinSize(minHeight = buttonHeight)
+                    .offset(x = borderSize * -index),
             )
         }
     }
@@ -142,9 +142,9 @@ public fun RowToggleButtonGroup(
 
 @Composable
 private fun ToggleButton(
+    onClick: () -> Unit,
     item: ToggleButtonGroup.Item,
     mode: ToggleButtonGroup.Mode,
-    modifier: Modifier,
     buttonShape: CornerBasedShape,
     border: BorderStroke,
     containerColor: Color,
@@ -154,7 +154,7 @@ private fun ToggleButton(
     textStyle: TextStyle,
     iconColor: Color,
     iconPosition: ToggleButtonGroup.IconPosition,
-    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     OutlinedButton(
         onClick = onClick,

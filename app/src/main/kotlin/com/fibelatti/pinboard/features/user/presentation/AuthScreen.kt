@@ -96,7 +96,7 @@ fun AuthScreen(
     AuthScreen(
         allowSwitching = screenState.allowSwitching,
         useLinkding = screenState.useLinkding,
-        onUseLinkdingChanged = authViewModel::useLinkding,
+        onUseLinkdingChange = authViewModel::useLinkding,
         clientCertAlias = screenState.clientCertAlias,
         onClientCertAliasClick = {
             activity.launchClientCertPicker(
@@ -104,8 +104,8 @@ fun AuthScreen(
                 onAliasSelected = authViewModel::setClientCertAlias,
             )
         },
-        onClientCertAliasChanged = authViewModel::setClientCertAlias,
-        onAuthRequested = authViewModel::login,
+        onClientCertAliasChange = authViewModel::setClientCertAlias,
+        onAuthRequest = authViewModel::login,
         isLoading = screenState.isLoading,
         apiTokenError = screenState.apiTokenError,
         instanceUrlError = screenState.instanceUrlError,
@@ -116,11 +116,11 @@ fun AuthScreen(
 private fun AuthScreen(
     allowSwitching: Boolean,
     useLinkding: Boolean,
-    onUseLinkdingChanged: (Boolean) -> Unit,
+    onUseLinkdingChange: (Boolean) -> Unit,
     clientCertAlias: String?,
     onClientCertAliasClick: () -> Unit,
-    onClientCertAliasChanged: (String?) -> Unit,
-    onAuthRequested: (token: String, instanceUrl: String) -> Unit,
+    onClientCertAliasChange: (String?) -> Unit,
+    onAuthRequest: (token: String, instanceUrl: String) -> Unit,
     isLoading: Boolean,
     apiTokenError: String?,
     instanceUrlError: String?,
@@ -244,7 +244,7 @@ private fun AuthScreen(
                         keyboardType = KeyboardType.Password,
                     ),
                     onKeyboardAction = KeyboardActionHandler {
-                        onAuthRequested(
+                        onAuthRequest(
                             authTokenFieldState.text.toString(),
                             instanceUrlFieldState.text.toString(),
                         )
@@ -269,7 +269,7 @@ private fun AuthScreen(
                     ClientCertPicker(
                         onClientCertAliasClick = onClientCertAliasClick,
                         clientCertAlias = clientCertAlias,
-                        onClientCertAliasChanged = onClientCertAliasChanged,
+                        onClientCertAliasChange = onClientCertAliasChange,
                         modifier = Modifier.padding(top = 8.dp),
                     )
                 }
@@ -289,7 +289,7 @@ private fun AuthScreen(
                     } else {
                         Button(
                             onClick = {
-                                onAuthRequested(
+                                onAuthRequest(
                                     authTokenFieldState.text.toString(),
                                     instanceUrlFieldState.text.toString(),
                                 )
@@ -303,7 +303,7 @@ private fun AuthScreen(
 
                 if (allowSwitching) {
                     TextButton(
-                        onClick = { onUseLinkdingChanged(!useLinkding) },
+                        onClick = { onUseLinkdingChange(!useLinkding) },
                         shapes = ExtendedTheme.defaultButtonShapes,
                         modifier = Modifier
                             .padding(top = 8.dp)
@@ -333,7 +333,7 @@ private fun AuthScreen(
 fun ClientCertPicker(
     onClientCertAliasClick: () -> Unit,
     clientCertAlias: String?,
-    onClientCertAliasChanged: (String?) -> Unit,
+    onClientCertAliasChange: (String?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -356,7 +356,7 @@ fun ClientCertPicker(
 
         if (clientCertAlias != null) {
             IconButton(
-                onClick = { onClientCertAliasChanged(null) },
+                onClick = { onClientCertAliasChange(null) },
                 shapes = IconButtonDefaults.shapes(),
             ) {
                 Icon(
@@ -442,11 +442,11 @@ private fun AuthScreenPreview() {
         AuthScreen(
             useLinkding = false,
             allowSwitching = true,
-            onUseLinkdingChanged = {},
+            onUseLinkdingChange = {},
             clientCertAlias = null,
             onClientCertAliasClick = {},
-            onClientCertAliasChanged = {},
-            onAuthRequested = { _, _ -> },
+            onClientCertAliasChange = {},
+            onAuthRequest = { _, _ -> },
             isLoading = false,
             apiTokenError = null,
             instanceUrlError = null,
@@ -461,11 +461,11 @@ private fun AuthScreenLinkdingPreview() {
         AuthScreen(
             useLinkding = true,
             allowSwitching = true,
-            onUseLinkdingChanged = {},
+            onUseLinkdingChange = {},
             clientCertAlias = null,
             onClientCertAliasClick = {},
-            onClientCertAliasChanged = {},
-            onAuthRequested = { _, _ -> },
+            onClientCertAliasChange = {},
+            onAuthRequest = { _, _ -> },
             isLoading = false,
             apiTokenError = null,
             instanceUrlError = null,
@@ -480,11 +480,11 @@ private fun AuthScreenLoadingPreview() {
         AuthScreen(
             useLinkding = false,
             allowSwitching = true,
-            onUseLinkdingChanged = {},
+            onUseLinkdingChange = {},
             clientCertAlias = null,
             onClientCertAliasClick = {},
-            onClientCertAliasChanged = {},
-            onAuthRequested = { _, _ -> },
+            onClientCertAliasChange = {},
+            onAuthRequest = { _, _ -> },
             isLoading = true,
             apiTokenError = null,
             instanceUrlError = null,
@@ -499,11 +499,11 @@ private fun AuthScreenErrorPreview() {
         AuthScreen(
             useLinkding = false,
             allowSwitching = true,
-            onUseLinkdingChanged = {},
+            onUseLinkdingChange = {},
             clientCertAlias = null,
             onClientCertAliasClick = {},
-            onClientCertAliasChanged = {},
-            onAuthRequested = { _, _ -> },
+            onClientCertAliasChange = {},
+            onAuthRequest = { _, _ -> },
             isLoading = false,
             apiTokenError = "Some error happened. Please try again.",
             instanceUrlError = null,

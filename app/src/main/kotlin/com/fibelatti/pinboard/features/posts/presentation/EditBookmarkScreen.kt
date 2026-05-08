@@ -105,34 +105,34 @@ fun EditBookmarkScreen(
         post = currentState,
         isNewBookmark = editPostScreenState.isNewBookmark,
         isLoading = editPostScreenState.isLoading || postDetailScreenState.isLoading,
-        onUrlChanged = { newValue ->
+        onUrlChange = { newValue ->
             editPostViewModel.updatePost { post -> post.copy(url = newValue) }
         },
         urlError = editPostScreenState.invalidUrlError,
-        onTitleChanged = { newValue ->
+        onTitleChange = { newValue ->
             editPostViewModel.updatePost { post -> post.copy(title = newValue) }
         },
         titleError = editPostScreenState.invalidTitleError,
-        onDescriptionChanged = { newValue ->
+        onDescriptionChange = { newValue ->
             editPostViewModel.updatePost { post -> post.copy(description = newValue) }
         },
-        onNotesChanged = { newValue ->
+        onNotesChange = { newValue ->
             editPostViewModel.updatePost { post -> post.copy(notes = newValue) }
         },
-        onPrivateChanged = { newValue ->
+        onPrivateChange = { newValue ->
             editPostViewModel.updatePost { post -> post.copy(private = newValue) }
         },
-        onReadLaterChanged = { newValue ->
+        onReadLaterChange = { newValue ->
             editPostViewModel.updatePost { post -> post.copy(readLater = newValue) }
         },
         searchTagInput = tagManagerState.currentQuery,
-        onSearchTagInputChanged = editPostViewModel::setTagSearchQuery,
-        onAddTagClicked = editPostViewModel::addTag,
+        onSearchTagInputChange = editPostViewModel::setTagSearchQuery,
+        onAddTagClick = editPostViewModel::addTag,
         suggestedTags = tagManagerState.suggestedTags,
-        onSuggestedTagClicked = editPostViewModel::addTag,
+        onSuggestedTagClick = editPostViewModel::addTag,
         currentTagsTitle = stringResource(id = tagManagerState.displayTitle),
         currentTags = tagManagerState.tags,
-        onRemoveCurrentTagClicked = editPostViewModel::removeTag,
+        onRemoveCurrentTagClick = editPostViewModel::removeTag,
     )
 }
 
@@ -325,22 +325,22 @@ private fun EditBookmarkScreen(
     post: Post,
     isNewBookmark: Boolean,
     isLoading: Boolean,
-    onUrlChanged: (String) -> Unit,
+    onUrlChange: (String) -> Unit,
     urlError: String,
-    onTitleChanged: (String) -> Unit,
+    onTitleChange: (String) -> Unit,
     titleError: String,
-    onDescriptionChanged: (String) -> Unit,
-    onNotesChanged: (String) -> Unit,
-    onPrivateChanged: (Boolean) -> Unit,
-    onReadLaterChanged: (Boolean) -> Unit,
+    onDescriptionChange: (String) -> Unit,
+    onNotesChange: (String) -> Unit,
+    onPrivateChange: (Boolean) -> Unit,
+    onReadLaterChange: (Boolean) -> Unit,
     searchTagInput: String,
-    onSearchTagInputChanged: (String) -> Unit,
-    onAddTagClicked: (String) -> Unit,
+    onSearchTagInputChange: (String) -> Unit,
+    onAddTagClick: (String) -> Unit,
     suggestedTags: List<String>,
-    onSuggestedTagClicked: (String) -> Unit,
+    onSuggestedTagClick: (String) -> Unit,
     currentTagsTitle: String,
     currentTags: List<Tag>,
-    onRemoveCurrentTagClicked: (Tag) -> Unit,
+    onRemoveCurrentTagClick: (Tag) -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -351,22 +351,22 @@ private fun EditBookmarkScreen(
             appMode = appMode,
             post = post,
             isNewBookmark = isNewBookmark,
-            onUrlChanged = onUrlChanged,
+            onUrlChange = onUrlChange,
             urlError = urlError,
-            onTitleChanged = onTitleChanged,
+            onTitleChange = onTitleChange,
             titleError = titleError,
-            onDescriptionChanged = onDescriptionChanged,
-            onNotesChanged = onNotesChanged,
-            onPrivateChanged = onPrivateChanged,
-            onReadLaterChanged = onReadLaterChanged,
+            onDescriptionChange = onDescriptionChange,
+            onNotesChange = onNotesChange,
+            onPrivateChange = onPrivateChange,
+            onReadLaterChange = onReadLaterChange,
             searchTagInput = searchTagInput,
-            onSearchTagInputChanged = onSearchTagInputChanged,
-            onAddTagClicked = onAddTagClicked,
+            onSearchTagInputChange = onSearchTagInputChange,
+            onAddTagClick = onAddTagClick,
             suggestedTags = suggestedTags,
-            onSuggestedTagClicked = onSuggestedTagClicked,
+            onSuggestedTagClick = onSuggestedTagClick,
             currentTagsTitle = currentTagsTitle,
             currentTags = currentTags,
-            onRemoveCurrentTagClicked = onRemoveCurrentTagClicked,
+            onRemoveCurrentTagClick = onRemoveCurrentTagClick,
         )
 
         if (isLoading) {
@@ -391,22 +391,22 @@ private fun BookmarkContent(
     appMode: AppMode,
     post: Post,
     isNewBookmark: Boolean,
-    onUrlChanged: (String) -> Unit,
+    onUrlChange: (String) -> Unit,
     urlError: String,
-    onTitleChanged: (String) -> Unit,
+    onTitleChange: (String) -> Unit,
     titleError: String,
-    onDescriptionChanged: (String) -> Unit,
-    onNotesChanged: (String) -> Unit,
-    onPrivateChanged: (Boolean) -> Unit,
-    onReadLaterChanged: (Boolean) -> Unit,
+    onDescriptionChange: (String) -> Unit,
+    onNotesChange: (String) -> Unit,
+    onPrivateChange: (Boolean) -> Unit,
+    onReadLaterChange: (Boolean) -> Unit,
     searchTagInput: String,
-    onSearchTagInputChanged: (String) -> Unit,
-    onAddTagClicked: (String) -> Unit,
+    onSearchTagInputChange: (String) -> Unit,
+    onAddTagClick: (String) -> Unit,
     suggestedTags: List<String>,
-    onSuggestedTagClicked: (String) -> Unit,
+    onSuggestedTagClick: (String) -> Unit,
     currentTagsTitle: String,
     currentTags: List<Tag>,
-    onRemoveCurrentTagClicked: (Tag) -> Unit,
+    onRemoveCurrentTagClick: (Tag) -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
@@ -434,34 +434,34 @@ private fun BookmarkContent(
             appMode = appMode,
             isNewBookmark = isNewBookmark,
             url = post.url,
-            onUrlChanged = onUrlChanged,
+            onUrlChange = onUrlChange,
             urlError = urlError,
             title = post.displayTitle,
-            onTitleChanged = onTitleChanged,
+            onTitleChange = onTitleChange,
             titleError = titleError,
             description = post.displayDescription,
-            onDescriptionChanged = onDescriptionChanged,
+            onDescriptionChange = onDescriptionChange,
             notes = post.notes.orEmpty(),
-            onNotesChanged = onNotesChanged,
+            onNotesChange = onNotesChange,
         )
 
         BookmarkFlags(
             appMode = appMode,
             private = post.private,
-            onPrivateChanged = onPrivateChanged,
+            onPrivateChange = onPrivateChange,
             readLater = post.readLater,
-            onReadLaterChanged = onReadLaterChanged,
+            onReadLaterChange = onReadLaterChange,
         )
 
         TagManager(
             searchTagInput = searchTagInput,
-            onSearchTagInputChanged = onSearchTagInputChanged,
-            onAddTagClicked = onAddTagClicked,
+            onSearchTagInputChange = onSearchTagInputChange,
+            onAddTagClick = onAddTagClick,
             suggestedTags = suggestedTags,
-            onSuggestedTagClicked = onSuggestedTagClicked,
+            onSuggestedTagClick = onSuggestedTagClick,
             currentTagsTitle = currentTagsTitle,
             currentTags = currentTags,
-            onRemoveCurrentTagClicked = onRemoveCurrentTagClicked,
+            onRemoveCurrentTagClick = onRemoveCurrentTagClick,
             modifier = Modifier.padding(bottom = 100.dp),
         )
     }
@@ -472,15 +472,15 @@ private fun BookmarkBasicDetails(
     appMode: AppMode,
     isNewBookmark: Boolean,
     url: String,
-    onUrlChanged: (String) -> Unit,
+    onUrlChange: (String) -> Unit,
     urlError: String,
     title: String,
-    onTitleChanged: (String) -> Unit,
+    onTitleChange: (String) -> Unit,
     titleError: String,
     description: String,
-    onDescriptionChanged: (String) -> Unit,
+    onDescriptionChange: (String) -> Unit,
     notes: String,
-    onNotesChanged: (String) -> Unit,
+    onNotesChange: (String) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -505,7 +505,7 @@ private fun BookmarkBasicDetails(
         }
 
         SideEffect(urlFieldState.text) {
-            onUrlChanged(urlFieldState.text.toString())
+            onUrlChange(urlFieldState.text.toString())
         }
 
         OutlinedTextField(
@@ -542,7 +542,7 @@ private fun BookmarkBasicDetails(
         val titleFieldState = rememberTextFieldState(initialText = title)
 
         SideEffect(titleFieldState.text) {
-            onTitleChanged(titleFieldState.text.toString())
+            onTitleChange(titleFieldState.text.toString())
         }
 
         OutlinedTextField(
@@ -568,7 +568,7 @@ private fun BookmarkBasicDetails(
         val descriptionFieldState = rememberTextFieldState(initialText = description)
 
         SideEffect(descriptionFieldState.text) {
-            onDescriptionChanged(descriptionFieldState.text.toString())
+            onDescriptionChange(descriptionFieldState.text.toString())
         }
 
         OutlinedTextField(
@@ -587,7 +587,7 @@ private fun BookmarkBasicDetails(
             val notesFieldState = rememberTextFieldState(initialText = notes)
 
             SideEffect(notesFieldState.text) {
-                onNotesChanged(notesFieldState.text.toString())
+                onNotesChange(notesFieldState.text.toString())
             }
 
             OutlinedTextField(
@@ -616,9 +616,9 @@ private enum class FocusedField {
 private fun BookmarkFlags(
     appMode: AppMode,
     private: Boolean?,
-    onPrivateChanged: (Boolean) -> Unit,
+    onPrivateChange: (Boolean) -> Unit,
     readLater: Boolean?,
-    onReadLaterChanged: (Boolean) -> Unit,
+    onReadLaterChange: (Boolean) -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -631,7 +631,7 @@ private fun BookmarkFlags(
                 title = stringResource(id = R.string.posts_add_private),
                 description = null,
                 checked = private == true,
-                onCheckedChange = onPrivateChanged,
+                onCheckedChange = onPrivateChange,
                 modifier = Modifier.weight(0.5f),
             )
         }
@@ -640,7 +640,7 @@ private fun BookmarkFlags(
             title = stringResource(id = R.string.posts_add_read_later),
             description = null,
             checked = readLater == true,
-            onCheckedChange = onReadLaterChanged,
+            onCheckedChange = onReadLaterChange,
             modifier = Modifier.weight(0.5f),
         )
     }
@@ -659,22 +659,22 @@ private fun EditBookmarkScreenPreview(
             post = post.copy(description = post.description.take(200)),
             isNewBookmark = true,
             isLoading = false,
-            onUrlChanged = {},
+            onUrlChange = {},
             urlError = "",
-            onTitleChanged = {},
+            onTitleChange = {},
             titleError = "",
-            onDescriptionChanged = {},
-            onNotesChanged = {},
-            onPrivateChanged = {},
-            onReadLaterChanged = {},
+            onDescriptionChange = {},
+            onNotesChange = {},
+            onPrivateChange = {},
+            onReadLaterChange = {},
             searchTagInput = "",
-            onSearchTagInputChanged = {},
-            onAddTagClicked = {},
+            onSearchTagInputChange = {},
+            onAddTagClick = {},
             suggestedTags = emptyList(),
-            onSuggestedTagClicked = {},
+            onSuggestedTagClick = {},
             currentTagsTitle = stringResource(id = R.string.tags_added_title),
             currentTags = post.tags.orEmpty(),
-            onRemoveCurrentTagClicked = {},
+            onRemoveCurrentTagClick = {},
         )
     }
 }

@@ -268,8 +268,6 @@ dependencies {
     kspAndroidTest(libs.hilt.android.compiler)
 
     androidTestImplementation(libs.mockwebserver)
-
-    lintChecks(libs.compose.lint.checks)
 }
 
 /**

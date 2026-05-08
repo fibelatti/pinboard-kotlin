@@ -56,9 +56,9 @@ fun MainTitle(
     title: MainState.TitleComponent,
     subtitle: MainState.TitleComponent,
     navigation: MainState.NavigationComponent,
-    onNavigationClicked: () -> Unit,
+    onNavigationClick: () -> Unit,
     actionButton: MainState.ActionButtonComponent,
-    onActionButtonClicked: (data: Any?) -> Unit,
+    onActionButtonClick: (data: Any?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -82,7 +82,7 @@ fun MainTitle(
             LongClickIconButton(
                 painter = rememberVectorPainter(navigationIcon),
                 description = stringResource(id = R.string.cd_navigate_back),
-                onClick = onNavigationClicked,
+                onClick = onNavigationClick,
                 iconTint = MaterialTheme.colorScheme.onSurface,
             )
         }
@@ -151,13 +151,13 @@ fun MainTitle(
                     LongClickIconButton(
                         painter = rememberVectorPainter(it.icon),
                         description = it.label,
-                        onClick = { onActionButtonClicked(currentActionButton?.data) },
+                        onClick = { onActionButtonClick(currentActionButton?.data) },
                         modifier = Modifier.padding(end = 16.dp),
                         iconTint = MaterialTheme.colorScheme.primary,
                     )
                 } else {
                     TextButton(
-                        onClick = { onActionButtonClicked(currentActionButton?.data) },
+                        onClick = { onActionButtonClick(currentActionButton?.data) },
                         shapes = ExtendedTheme.defaultButtonShapes,
                         modifier = Modifier.padding(end = 16.dp),
                         contentPadding = ButtonDefaults.ExtraSmallContentPadding,
@@ -184,13 +184,13 @@ private fun MainTitlePreview() {
                 title = MainState.TitleComponent.Visible("Title"),
                 subtitle = MainState.TitleComponent.Gone,
                 navigation = MainState.NavigationComponent.Visible(),
-                onNavigationClicked = {},
+                onNavigationClick = {},
                 actionButton = MainState.ActionButtonComponent.Visible(
                     contentType = Content::class,
                     icon = AppIcons.Save,
                     label = "Action",
                 ),
-                onActionButtonClicked = {},
+                onActionButtonClick = {},
             )
         }
     }
@@ -205,13 +205,13 @@ private fun MainTitleWithSubtitlePreview() {
                 title = MainState.TitleComponent.Visible("Title"),
                 subtitle = MainState.TitleComponent.Visible("Subtitle"),
                 navigation = MainState.NavigationComponent.Visible(),
-                onNavigationClicked = {},
+                onNavigationClick = {},
                 actionButton = MainState.ActionButtonComponent.Visible(
                     contentType = Content::class,
                     icon = AppIcons.Random,
                     label = "Action",
                 ),
-                onActionButtonClicked = {},
+                onActionButtonClick = {},
             )
         }
     }

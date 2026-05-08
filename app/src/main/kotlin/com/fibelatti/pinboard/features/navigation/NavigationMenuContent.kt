@@ -68,35 +68,35 @@ import com.fibelatti.ui.theme.ExtendedTheme
 @Composable
 fun NavigationMenuContent(
     appMode: AppMode,
-    onNavOptionClicked: (Action) -> Unit,
-    onExportClicked: () -> Unit,
-    onSendFeedbackClicked: () -> Unit,
-    onWriteReviewClicked: () -> Unit,
-    onShareClicked: () -> Unit,
-    onPrivacyPolicyClicked: () -> Unit,
-    onLicensesClicked: () -> Unit,
+    onNavOptionClick: (Action) -> Unit,
+    onExportClick: () -> Unit,
+    onSendFeedbackClick: () -> Unit,
+    onWriteReviewClick: () -> Unit,
+    onShareClick: () -> Unit,
+    onPrivacyPolicyClick: () -> Unit,
+    onLicensesClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     NavigationMenuContent(
         appMode = appMode,
-        onAllClicked = { onNavOptionClicked(All) },
-        onRecentClicked = { onNavOptionClicked(Recent) },
-        onPublicClicked = { onNavOptionClicked(Public) },
-        onPrivateClicked = { onNavOptionClicked(Private) },
-        onReadLaterClicked = { onNavOptionClicked(Unread) },
-        onUntaggedClicked = { onNavOptionClicked(Untagged) },
-        onSavedFiltersClicked = { onNavOptionClicked(ViewSavedFilters) },
-        onTagsClicked = { onNavOptionClicked(ViewTags) },
-        onNotesClicked = { onNavOptionClicked(ViewNotes) },
-        onPopularClicked = { onNavOptionClicked(ViewPopular) },
-        onPreferencesClicked = { onNavOptionClicked(ViewPreferences) },
-        onAccountsClicked = { onNavOptionClicked(ViewAccountSwitcher) },
-        onExportClicked = onExportClicked,
-        onSendFeedbackClicked = onSendFeedbackClicked,
-        onWriteReviewClicked = onWriteReviewClicked,
-        onShareClicked = onShareClicked,
-        onPrivacyPolicyClicked = onPrivacyPolicyClicked,
-        onLicensesClicked = onLicensesClicked,
+        onAllClick = { onNavOptionClick(All) },
+        onRecentClick = { onNavOptionClick(Recent) },
+        onPublicClick = { onNavOptionClick(Public) },
+        onPrivateClick = { onNavOptionClick(Private) },
+        onReadLaterClick = { onNavOptionClick(Unread) },
+        onUntaggedClick = { onNavOptionClick(Untagged) },
+        onSavedFiltersClick = { onNavOptionClick(ViewSavedFilters) },
+        onTagsClick = { onNavOptionClick(ViewTags) },
+        onNotesClick = { onNavOptionClick(ViewNotes) },
+        onPopularClick = { onNavOptionClick(ViewPopular) },
+        onPreferencesClick = { onNavOptionClick(ViewPreferences) },
+        onAccountsClick = { onNavOptionClick(ViewAccountSwitcher) },
+        onExportClick = onExportClick,
+        onSendFeedbackClick = onSendFeedbackClick,
+        onWriteReviewClick = onWriteReviewClick,
+        onShareClick = onShareClick,
+        onPrivacyPolicyClick = onPrivacyPolicyClick,
+        onLicensesClick = onLicensesClick,
         modifier = modifier,
     )
 }
@@ -104,24 +104,24 @@ fun NavigationMenuContent(
 @Composable
 private fun NavigationMenuContent(
     appMode: AppMode,
-    onAllClicked: () -> Unit,
-    onRecentClicked: () -> Unit,
-    onPublicClicked: () -> Unit,
-    onPrivateClicked: () -> Unit,
-    onReadLaterClicked: () -> Unit,
-    onUntaggedClicked: () -> Unit,
-    onSavedFiltersClicked: () -> Unit,
-    onTagsClicked: () -> Unit,
-    onNotesClicked: () -> Unit,
-    onPopularClicked: () -> Unit,
-    onPreferencesClicked: () -> Unit,
-    onAccountsClicked: () -> Unit,
-    onExportClicked: () -> Unit,
-    onSendFeedbackClicked: () -> Unit,
-    onWriteReviewClicked: () -> Unit,
-    onShareClicked: () -> Unit,
-    onPrivacyPolicyClicked: () -> Unit,
-    onLicensesClicked: () -> Unit,
+    onAllClick: () -> Unit,
+    onRecentClick: () -> Unit,
+    onPublicClick: () -> Unit,
+    onPrivateClick: () -> Unit,
+    onReadLaterClick: () -> Unit,
+    onUntaggedClick: () -> Unit,
+    onSavedFiltersClick: () -> Unit,
+    onTagsClick: () -> Unit,
+    onNotesClick: () -> Unit,
+    onPopularClick: () -> Unit,
+    onPreferencesClick: () -> Unit,
+    onAccountsClick: () -> Unit,
+    onExportClick: () -> Unit,
+    onSendFeedbackClick: () -> Unit,
+    onWriteReviewClick: () -> Unit,
+    onShareClick: () -> Unit,
+    onPrivacyPolicyClick: () -> Unit,
+    onLicensesClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -153,7 +153,7 @@ private fun NavigationMenuContent(
 
         MenuItem(
             textRes = R.string.menu_navigation_all,
-            onClick = onAllClicked,
+            onClick = onAllClick,
             icon = AppIcons.Bookmarks,
             shape = MaterialTheme.shapes.medium.copy(
                 bottomStart = CornerSize(2.dp),
@@ -163,33 +163,33 @@ private fun NavigationMenuContent(
 
         MenuItem(
             textRes = R.string.menu_navigation_recent,
-            onClick = onRecentClicked,
+            onClick = onRecentClick,
             icon = AppIcons.Bookmarks,
         )
 
         if (AppMode.NO_API != appMode) {
             MenuItem(
                 textRes = R.string.menu_navigation_public,
-                onClick = onPublicClicked,
+                onClick = onPublicClick,
                 icon = AppIcons.Bookmarks,
             )
 
             MenuItem(
                 textRes = R.string.menu_navigation_private,
-                onClick = onPrivateClicked,
+                onClick = onPrivateClick,
                 icon = AppIcons.Bookmarks,
             )
         }
 
         MenuItem(
             textRes = R.string.menu_navigation_unread,
-            onClick = onReadLaterClicked,
+            onClick = onReadLaterClick,
             icon = AppIcons.Bookmarks,
         )
 
         MenuItem(
             textRes = R.string.menu_navigation_untagged,
-            onClick = onUntaggedClicked,
+            onClick = onUntaggedClick,
             icon = AppIcons.Bookmarks,
             shape = if (AppMode.PINBOARD == appMode) {
                 RoundedCornerShape(2.dp)
@@ -204,7 +204,7 @@ private fun NavigationMenuContent(
         if (AppMode.PINBOARD == appMode) {
             MenuItem(
                 textRes = R.string.menu_navigation_popular,
-                onClick = onPopularClicked,
+                onClick = onPopularClick,
                 icon = AppIcons.Bookmarks,
                 shape = MaterialTheme.shapes.medium.copy(
                     topStart = CornerSize(2.dp),
@@ -217,7 +217,7 @@ private fun NavigationMenuContent(
 
         MenuItem(
             textRes = R.string.menu_navigation_saved_filters,
-            onClick = onSavedFiltersClicked,
+            onClick = onSavedFiltersClick,
             icon = AppIcons.Filter,
             shape = MaterialTheme.shapes.medium.copy(
                 bottomStart = CornerSize(2.dp),
@@ -227,7 +227,7 @@ private fun NavigationMenuContent(
 
         MenuItem(
             textRes = R.string.menu_navigation_tags,
-            onClick = onTagsClicked,
+            onClick = onTagsClick,
             icon = AppIcons.Tag,
             shape = if (AppMode.PINBOARD == appMode) {
                 RoundedCornerShape(2.dp)
@@ -242,7 +242,7 @@ private fun NavigationMenuContent(
         if (AppMode.PINBOARD == appMode) {
             MenuItem(
                 textRes = R.string.menu_navigation_notes,
-                onClick = onNotesClicked,
+                onClick = onNotesClick,
                 icon = AppIcons.Notes,
                 shape = MaterialTheme.shapes.medium.copy(
                     topStart = CornerSize(2.dp),
@@ -255,7 +255,7 @@ private fun NavigationMenuContent(
 
         MenuItem(
             textRes = R.string.menu_navigation_preferences,
-            onClick = onPreferencesClicked,
+            onClick = onPreferencesClick,
             icon = AppIcons.Preferences,
             shape = MaterialTheme.shapes.medium.copy(
                 bottomStart = CornerSize(2.dp),
@@ -265,13 +265,13 @@ private fun NavigationMenuContent(
 
         MenuItem(
             textRes = R.string.menu_navigation_accounts,
-            onClick = onAccountsClicked,
+            onClick = onAccountsClick,
             icon = AppIcons.Person,
         )
 
         MenuItem(
             textRes = R.string.menu_navigation_export,
-            onClick = onExportClicked,
+            onClick = onExportClick,
             icon = AppIcons.Backup,
             shape = MaterialTheme.shapes.medium.copy(
                 topStart = CornerSize(2.dp),
@@ -283,7 +283,7 @@ private fun NavigationMenuContent(
 
         MenuItem(
             textRes = R.string.about_send_feedback,
-            onClick = onSendFeedbackClicked,
+            onClick = onSendFeedbackClick,
             icon = AppIcons.Feedback,
             shape = MaterialTheme.shapes.medium.copy(
                 bottomStart = CornerSize(2.dp),
@@ -293,19 +293,19 @@ private fun NavigationMenuContent(
 
         MenuItem(
             textRes = R.string.about_rate,
-            onClick = onWriteReviewClicked,
+            onClick = onWriteReviewClick,
             icon = AppIcons.Rate,
         )
 
         MenuItem(
             textRes = R.string.about_share,
-            onClick = onShareClicked,
+            onClick = onShareClick,
             icon = AppIcons.Share,
         )
 
         MenuItem(
             textRes = R.string.about_privacy_policy,
-            onClick = onPrivacyPolicyClicked,
+            onClick = onPrivacyPolicyClick,
             icon = AppIcons.PrivacyPolicy,
             shape = MaterialTheme.shapes.medium.copy(
                 topStart = CornerSize(2.dp),
@@ -316,7 +316,7 @@ private fun NavigationMenuContent(
         Spacer(modifier = Modifier.height(30.dp))
 
         AppVersionDetails(
-            onClick = onLicensesClicked,
+            onClick = onLicensesClick,
         )
     }
 }
@@ -402,24 +402,24 @@ private fun NavigationMenuContentPreview() {
     ExtendedTheme {
         NavigationMenuContent(
             appMode = AppMode.PINBOARD,
-            onAllClicked = {},
-            onRecentClicked = {},
-            onPublicClicked = {},
-            onPrivateClicked = {},
-            onReadLaterClicked = {},
-            onUntaggedClicked = {},
-            onSavedFiltersClicked = {},
-            onTagsClicked = {},
-            onNotesClicked = {},
-            onPopularClicked = {},
-            onPreferencesClicked = {},
-            onAccountsClicked = {},
-            onExportClicked = {},
-            onSendFeedbackClicked = {},
-            onWriteReviewClicked = {},
-            onShareClicked = {},
-            onPrivacyPolicyClicked = {},
-            onLicensesClicked = {},
+            onAllClick = {},
+            onRecentClick = {},
+            onPublicClick = {},
+            onPrivateClick = {},
+            onReadLaterClick = {},
+            onUntaggedClick = {},
+            onSavedFiltersClick = {},
+            onTagsClick = {},
+            onNotesClick = {},
+            onPopularClick = {},
+            onPreferencesClick = {},
+            onAccountsClick = {},
+            onExportClick = {},
+            onSendFeedbackClick = {},
+            onWriteReviewClick = {},
+            onShareClick = {},
+            onPrivacyPolicyClick = {},
+            onLicensesClick = {},
         )
     }
 }

@@ -87,31 +87,31 @@ fun NavigationMenuBottomSheet(
 
         NavigationMenuContent(
             appMode = appState.appMode,
-            onNavOptionClicked = { action ->
+            onNavOptionClick = { action ->
                 mainViewModel.runAction(action)
                 sheetState.hideBottomSheet()
             },
-            onExportClicked = navigationMenuViewModel::createBackup,
-            onSendFeedbackClicked = {
+            onExportClick = navigationMenuViewModel::createBackup,
+            onSendFeedbackClick = {
                 localActivity?.showFeedbackPrompt()
                 sheetState.hideBottomSheet()
             },
-            onWriteReviewClicked = {
+            onWriteReviewClick = {
                 localUriHandler.openUri(NavigationMenu.APP_URL)
                 sheetState.hideBottomSheet()
             },
-            onShareClicked = {
+            onShareClick = {
                 localActivity?.shareText(
                     title = R.string.share_title,
                     text = localActivity.getString(R.string.share_text, NavigationMenu.APP_URL),
                 )
                 sheetState.hideBottomSheet()
             },
-            onPrivacyPolicyClicked = {
+            onPrivacyPolicyClick = {
                 localUriHandler.openUri(NavigationMenu.PRIVACY_POLICY_URL)
                 sheetState.hideBottomSheet()
             },
-            onLicensesClicked = {
+            onLicensesClick = {
                 localActivity?.startActivity(Intent(localActivity, OssLicensesActivity::class.java))
                 sheetState.hideBottomSheet()
             },

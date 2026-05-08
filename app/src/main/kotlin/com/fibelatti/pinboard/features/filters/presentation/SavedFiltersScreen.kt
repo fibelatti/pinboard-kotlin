@@ -73,10 +73,10 @@ fun SavedFiltersScreen(
 
         SavedFiltersScreen(
             savedFilters = savedFilters,
-            onSavedFilterClicked = { savedFilter ->
+            onSavedFilterClick = { savedFilter ->
                 savedFiltersViewModel.runAction(ViewSavedFilter(savedFilter = savedFilter))
             },
-            onSavedFilterLongClicked = { savedFilter ->
+            onSavedFilterLongClick = { savedFilter ->
                 savedFilterMenuSheetState.showBottomSheet(data = savedFilter)
             },
         )
@@ -94,8 +94,8 @@ fun SavedFiltersScreen(
 @Composable
 private fun SavedFiltersScreen(
     savedFilters: List<SavedFilter>,
-    onSavedFilterClicked: (SavedFilter) -> Unit,
-    onSavedFilterLongClicked: (SavedFilter) -> Unit,
+    onSavedFilterClick: (SavedFilter) -> Unit,
+    onSavedFilterLongClick: (SavedFilter) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (savedFilters.isEmpty()) {
@@ -117,8 +117,8 @@ private fun SavedFiltersScreen(
             items(savedFilters, key = { it.hashCode() }) { savedFilter ->
                 SavedFilterItem(
                     savedFilter = savedFilter,
-                    onClicked = onSavedFilterClicked,
-                    onLongClicked = onSavedFilterLongClicked,
+                    onClick = onSavedFilterClick,
+                    onLongClick = onSavedFilterLongClick,
                 )
             }
         }
@@ -128,8 +128,8 @@ private fun SavedFiltersScreen(
 @Composable
 private fun SavedFilterItem(
     savedFilter: SavedFilter,
-    onClicked: (SavedFilter) -> Unit,
-    onLongClicked: (SavedFilter) -> Unit,
+    onClick: (SavedFilter) -> Unit,
+    onLongClick: (SavedFilter) -> Unit,
 ) {
     val haptic = LocalHapticFeedback.current
 
@@ -138,10 +138,10 @@ private fun SavedFilterItem(
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
             .combinedClickable(
-                onClick = { onClicked(savedFilter) },
+                onClick = { onClick(savedFilter) },
                 onLongClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onLongClicked(savedFilter)
+                    onLongClick(savedFilter)
                 },
             ),
         shape = MaterialTheme.shapes.small,
@@ -249,7 +249,7 @@ private fun SavedFiltersQuickActionsBottomSheet(
         options = SavedFiltersQuickActions.allOptions(savedFilter),
         optionName = { localResources.getString(it.title) },
         optionIcon = SavedFiltersQuickActions::icon,
-        onOptionSelected = { option ->
+        onOptionSelect = { option ->
             when (option) {
                 is SavedFiltersQuickActions.Delete -> onDeleteClick(savedFilter)
             }
@@ -266,8 +266,8 @@ private fun SavedFilterScreenPreview(
     ExtendedTheme {
         SavedFiltersScreen(
             savedFilters = remember { savedFilters },
-            onSavedFilterClicked = {},
-            onSavedFilterLongClicked = {},
+            onSavedFilterClick = {},
+            onSavedFilterLongClick = {},
             modifier = Modifier.safeDrawingPadding(),
         )
     }
@@ -279,8 +279,8 @@ private fun SavedFilterScreenEmptyPreview() {
     ExtendedTheme {
         SavedFiltersScreen(
             savedFilters = emptyList(),
-            onSavedFilterClicked = {},
-            onSavedFilterLongClicked = {},
+            onSavedFilterClick = {},
+            onSavedFilterLongClick = {},
             modifier = Modifier.safeDrawingPadding(),
         )
     }

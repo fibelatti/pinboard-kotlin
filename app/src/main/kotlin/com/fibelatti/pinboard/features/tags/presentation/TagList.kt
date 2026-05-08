@@ -121,7 +121,7 @@ fun TagListScreen(
         items = tagsState.filteredTags,
         isLoading = tagsState.isLoading,
         modifier = modifier.background(color = ExtendedTheme.colors.backgroundNoOverlay),
-        onSortOptionClicked = { sorting ->
+        onSortOptionClick = { sorting ->
             tagsViewModel.sortTags(
                 sorting = when (sorting) {
                     TagList.Sorting.Alphabetically -> TagSorting.AtoZ
@@ -133,9 +133,9 @@ fun TagListScreen(
             )
         },
         searchInput = tagsState.currentQuery,
-        onSearchInputChanged = tagsViewModel::searchTags,
-        onTagClicked = { tagsViewModel.runAction(PostsForTag(it)) },
-        onTagLongClicked = { tag ->
+        onSearchInputChange = tagsViewModel::searchTags,
+        onTagClick = { tagsViewModel.runAction(PostsForTag(it)) },
+        onTagLongClick = { tag ->
             if (AppMode.PINBOARD == appState.appMode) {
                 quickActionTag = tag
                 tagQuickActionsSheetState.showBottomSheet()
@@ -151,7 +151,7 @@ fun TagListScreen(
             options = TagQuickActions.allOptions(tag = tag),
             optionName = { localResources.getString(it.title) },
             optionIcon = TagQuickActions::icon,
-            onOptionSelected = { option ->
+            onOptionSelect = { option ->
                 when (option) {
                     is TagQuickActions.Rename -> renameTagSheetState.showBottomSheet()
                 }
@@ -172,12 +172,12 @@ fun TagList(
     items: List<Tag>,
     isLoading: Boolean,
     modifier: Modifier = Modifier,
-    onSortOptionClicked: (TagList.Sorting) -> Unit = {},
+    onSortOptionClick: (TagList.Sorting) -> Unit = {},
     searchInput: String = "",
-    onSearchInputChanged: (newValue: String) -> Unit = {},
-    onSearchInputFocusChanged: (hasFocus: Boolean) -> Unit = {},
-    onTagClicked: (Tag) -> Unit = {},
-    onTagLongClicked: (Tag) -> Unit = {},
+    onSearchInputChange: (newValue: String) -> Unit = {},
+    onSearchInputFocusChange: (hasFocus: Boolean) -> Unit = {},
+    onTagClick: (Tag) -> Unit = {},
+    onTagLongClick: (Tag) -> Unit = {},
     onPullToRefresh: () -> Unit = {},
 ) {
     Column(
@@ -232,9 +232,9 @@ fun TagList(
                 } else {
                     stickyHeader(key = "sorting-controls") {
                         TagListSortingControls(
-                            onSortOptionClicked = onSortOptionClicked,
-                            onSearchInputChanged = onSearchInputChanged,
-                            onSearchInputFocusChanged = onSearchInputFocusChanged,
+                            onSortOptionClick = onSortOptionClick,
+                            onSearchInputChange = onSearchInputChange,
+                            onSearchInputFocusChange = onSearchInputFocusChange,
                             searchInput = searchInput,
                             modifier = Modifier.padding(bottom = 8.dp),
                         )
@@ -243,8 +243,8 @@ fun TagList(
                     itemsIndexed(items, key = { _, item -> item.hashCode() }) { idx, item ->
                         TagListItem(
                             item = item,
-                            onTagClicked = onTagClicked,
-                            onTagLongClicked = onTagLongClicked,
+                            onTagClick = onTagClick,
+                            onTagLongClick = onTagLongClick,
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)
                                 .background(
@@ -293,9 +293,9 @@ fun TagList(
 
 @Composable
 private fun TagListSortingControls(
-    onSortOptionClicked: (TagList.Sorting) -> Unit,
-    onSearchInputChanged: (newValue: String) -> Unit,
-    onSearchInputFocusChanged: (hasFocus: Boolean) -> Unit,
+    onSortOptionClick: (TagList.Sorting) -> Unit,
+    onSearchInputChange: (newValue: String) -> Unit,
+    onSearchInputFocusChange: (hasFocus: Boolean) -> Unit,
     searchInput: String,
     modifier: Modifier = Modifier,
 ) {
@@ -325,11 +325,11 @@ private fun TagListSortingControls(
                         selectedSortingIndex = index
                         showFilter = sorting == TagList.Sorting.Search
 
-                        onSortOptionClicked(sorting)
+                        onSortOptionClick(sorting)
 
                         if (!showFilter) {
-                            onSearchInputChanged("")
-                            onSearchInputFocusChanged(false)
+                            onSearchInputChange("")
+                            onSearchInputFocusChange(false)
                         }
                     },
                     modifier = Modifier
@@ -359,11 +359,11 @@ private fun TagListSortingControls(
         ) {
             OutlinedTextField(
                 value = searchInput,
-                onValueChange = onSearchInputChanged,
+                onValueChange = onSearchInputChange,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp, horizontal = 16.dp)
-                    .onFocusChanged { onSearchInputFocusChanged(it.hasFocus) },
+                    .onFocusChanged { onSearchInputFocusChange(it.hasFocus) },
                 label = { Text(text = stringResource(id = R.string.tag_filter_hint)) },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions { focusManager.clearFocus() },
@@ -377,8 +377,8 @@ private fun TagListSortingControls(
 @Composable
 private fun TagListItem(
     item: Tag,
-    onTagClicked: (Tag) -> Unit,
-    onTagLongClicked: (Tag) -> Unit,
+    onTagClick: (Tag) -> Unit,
+    onTagLongClick: (Tag) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val haptic = LocalHapticFeedback.current
@@ -386,10 +386,10 @@ private fun TagListItem(
         modifier = modifier
             .fillMaxWidth()
             .combinedClickable(
-                onClick = { onTagClicked(item) },
+                onClick = { onTagClick(item) },
                 onLongClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onTagLongClicked(item)
+                    onTagLongClick(item)
                 },
             )
             .padding(vertical = 8.dp),

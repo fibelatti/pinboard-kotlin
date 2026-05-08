@@ -76,7 +76,7 @@ fun AccountSwitcherScreen(
                     onAliasSelected = accountSwitcherViewModel::setClientCertAlias,
                 )
             },
-            onClientCertAliasChanged = accountSwitcherViewModel::setClientCertAlias,
+            onClientCertAliasChange = accountSwitcherViewModel::setClientCertAlias,
             onAddPinboardAccountClick = {
                 accountSwitcherViewModel.addAccount(appMode = AppMode.PINBOARD)
             },
@@ -101,7 +101,7 @@ private fun AccountSwitcherScreen(
     onSelectLinkdingClick: () -> Unit,
     onLogoutLinkdingClick: () -> Unit,
     onClientCertAliasClick: () -> Unit,
-    onClientCertAliasChanged: (String?) -> Unit,
+    onClientCertAliasChange: (String?) -> Unit,
     onAddPinboardAccountClick: () -> Unit,
     onAddLinkdingAccountClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -149,7 +149,7 @@ private fun AccountSwitcherScreen(
                     ClientCertPicker(
                         onClientCertAliasClick = onClientCertAliasClick,
                         clientCertAlias = userCredentials.linkdingClientCertAlias,
-                        onClientCertAliasChanged = onClientCertAliasChanged,
+                        onClientCertAliasChange = onClientCertAliasChange,
                         modifier = Modifier.padding(top = 8.dp),
                     )
                 }
@@ -264,7 +264,7 @@ private fun AccountSwitcherScreenPinboardOnlyPreview() {
             onSelectLinkdingClick = {},
             onLogoutLinkdingClick = {},
             onClientCertAliasClick = {},
-            onClientCertAliasChanged = {},
+            onClientCertAliasChange = {},
             onAddPinboardAccountClick = {},
             onAddLinkdingAccountClick = {},
             modifier = Modifier.safeDrawingPadding(),
@@ -289,7 +289,7 @@ private fun AccountSwitcherScreenLinkdingOnlyPreview() {
             onSelectLinkdingClick = {},
             onLogoutLinkdingClick = {},
             onClientCertAliasClick = {},
-            onClientCertAliasChanged = {},
+            onClientCertAliasChange = {},
             onAddPinboardAccountClick = {},
             onAddLinkdingAccountClick = {},
             modifier = Modifier.safeDrawingPadding(),
@@ -315,7 +315,7 @@ private fun AccountSwitcherScreenLinkdingWithCertPreview() {
             onSelectLinkdingClick = {},
             onLogoutLinkdingClick = {},
             onClientCertAliasClick = {},
-            onClientCertAliasChanged = {},
+            onClientCertAliasChange = {},
             onAddPinboardAccountClick = {},
             onAddLinkdingAccountClick = {},
             modifier = Modifier.safeDrawingPadding(),
@@ -341,7 +341,7 @@ private fun AccountSwitcherScreenReviewModePreview() {
             onSelectLinkdingClick = {},
             onLogoutLinkdingClick = {},
             onClientCertAliasClick = {},
-            onClientCertAliasChanged = {},
+            onClientCertAliasChange = {},
             onAddPinboardAccountClick = {},
             onAddLinkdingAccountClick = {},
             modifier = Modifier.safeDrawingPadding(),
@@ -366,7 +366,7 @@ private fun AccountSwitcherScreenPreview() {
             onSelectLinkdingClick = {},
             onLogoutLinkdingClick = {},
             onClientCertAliasClick = {},
-            onClientCertAliasChanged = {},
+            onClientCertAliasChange = {},
             onAddPinboardAccountClick = {},
             onAddLinkdingAccountClick = {},
             modifier = Modifier.safeDrawingPadding(),

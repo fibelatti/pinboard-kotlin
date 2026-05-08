@@ -119,9 +119,9 @@ fun BookmarkDetailsScreen(
             post = post,
             isLoading = isLoading,
             isConnected = isConnected,
-            onOpenInFileViewerClicked = { openUrlInFileViewer(localContext, post) },
-            onOpenInBrowserClicked = { openUrlInExternalBrowser(localContext, post) },
-            onScrollDirectionChanged = mainViewModel::setCurrentScrollDirection,
+            onOpenInFileViewerClick = { openUrlInFileViewer(localContext, post) },
+            onOpenInBrowserClick = { openUrlInExternalBrowser(localContext, post) },
+            onScrollDirectionChange = mainViewModel::setCurrentScrollDirection,
         )
     }
 }
@@ -299,9 +299,9 @@ fun BookmarkDetailsScreen(
     post: Post,
     isLoading: Boolean,
     isConnected: Boolean,
-    onOpenInFileViewerClicked: () -> Unit,
-    onOpenInBrowserClicked: () -> Unit,
-    onScrollDirectionChanged: (ScrollDirection) -> Unit,
+    onOpenInFileViewerClick: () -> Unit,
+    onOpenInBrowserClick: () -> Unit,
+    onScrollDirectionChange: (ScrollDirection) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var webViewLoadFailed by remember { mutableStateOf(false) }
@@ -311,7 +311,7 @@ fun BookmarkDetailsScreen(
             BookmarkPlaceholder(
                 title = post.displayTitle,
                 url = post.url,
-                onButtonClicked = onOpenInFileViewerClicked,
+                onButtonClick = onOpenInFileViewerClick,
                 icon = AppIcons.Mobile,
                 description = stringResource(id = R.string.posts_open_with_file_viewer_description),
                 buttonText = stringResource(id = R.string.posts_open_with_file_viewer),
@@ -323,7 +323,7 @@ fun BookmarkDetailsScreen(
             BookmarkPlaceholder(
                 title = post.displayTitle,
                 url = post.url,
-                onButtonClicked = onOpenInBrowserClicked,
+                onButtonClick = onOpenInBrowserClick,
                 description = stringResource(id = R.string.posts_url_offline_error),
                 modifier = modifier,
             )
@@ -333,7 +333,7 @@ fun BookmarkDetailsScreen(
             BookmarkPlaceholder(
                 title = post.displayTitle,
                 url = post.url,
-                onButtonClicked = onOpenInBrowserClicked,
+                onButtonClick = onOpenInBrowserClick,
                 modifier = modifier,
             )
         }
@@ -366,7 +366,7 @@ fun BookmarkDetailsScreen(
                 }
 
                 val nestedScrollDirection by rememberScrollDirection(webView)
-                val currentOnScrollDirectionChanged by rememberUpdatedState(onScrollDirectionChanged)
+                val currentOnScrollDirectionChanged by rememberUpdatedState(onScrollDirectionChange)
 
                 SideEffect(nestedScrollDirection) {
                     currentOnScrollDirectionChanged(nestedScrollDirection)
@@ -419,7 +419,7 @@ fun BookmarkDetailsScreen(
 private fun BookmarkPlaceholder(
     title: String,
     url: String,
-    onButtonClicked: () -> Unit,
+    onButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
     icon: ImageVector = AppIcons.Browser,
     description: String = stringResource(id = R.string.posts_url_error),
@@ -469,7 +469,7 @@ private fun BookmarkPlaceholder(
         )
 
         Button(
-            onClick = onButtonClicked,
+            onClick = onButtonClick,
             shapes = ExtendedTheme.defaultButtonShapes,
             modifier = Modifier.padding(top = 24.dp),
         ) {
@@ -487,7 +487,7 @@ private fun FileBookmarkPreview() {
         BookmarkPlaceholder(
             title = "Some bookmark",
             url = "https://www.bookmark.com",
-            onButtonClicked = {},
+            onButtonClick = {},
             icon = AppIcons.Mobile,
             description = stringResource(id = R.string.posts_open_with_file_viewer_description),
             buttonText = stringResource(id = R.string.posts_open_with_file_viewer),
@@ -502,7 +502,7 @@ private fun BookmarkErrorPreview() {
         BookmarkPlaceholder(
             title = "Some bookmark",
             url = "https://www.bookmark.com",
-            onButtonClicked = {},
+            onButtonClick = {},
         )
     }
 }
