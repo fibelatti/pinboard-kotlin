@@ -27,10 +27,8 @@ import com.fibelatti.pinboard.core.android.composable.AppTheme
 import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
 import com.fibelatti.ui.foundation.copy
 import com.mikepenz.aboutlibraries.Libs
-import com.mikepenz.aboutlibraries.ui.compose.LibrariesContainer
 import com.mikepenz.aboutlibraries.ui.compose.LibraryDefaults
-import com.mikepenz.aboutlibraries.ui.compose.chipColors
-import com.mikepenz.aboutlibraries.ui.compose.libraryColors
+import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import com.mikepenz.aboutlibraries.ui.compose.produceLibraries
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -70,17 +68,6 @@ private fun OssLicensesScreen(
             .padding(top = paddingValues.calculateTopPadding()),
         contentPadding = paddingValues.copy(top = 0.dp),
         showLicenseBadges = false,
-        colors = LibraryDefaults.libraryColors(
-            libraryBackgroundColor = MaterialTheme.colorScheme.background,
-            libraryContentColor = MaterialTheme.colorScheme.onBackground,
-            versionChipColors = LibraryDefaults.chipColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                contentColor = MaterialTheme.colorScheme.onSurface,
-            ),
-            dialogBackgroundColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            dialogContentColor = MaterialTheme.colorScheme.onSurface,
-            dialogConfirmButtonColor = MaterialTheme.colorScheme.primary,
-        ),
         padding = LibraryDefaults.libraryPadding(
             versionPadding = LibraryDefaults.chipPadding(
                 containerPadding = PaddingValues(start = 8.dp, top = 8.dp, end = 8.dp),
