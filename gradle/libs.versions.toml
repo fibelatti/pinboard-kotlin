@@ -96,7 +96,7 @@ hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", ve
 mockwebserver = { module = "com.squareup.okhttp3:mockwebserver3", version.ref = "okhttp" }
 turbine = { module = "app.cash.turbine:turbine", version = "1.2.1" }
 
-compose-lint-checks = { module = "com.slack.lint.compose:compose-lint-checks", version = "1.4.2" }
+compose-lint-checks = { module = "com.slack.lint.compose:compose-lint-checks", version = "1.4.3" }
 
 # Dependencies of the included build-logic
 android-gradle-plugin = { module = "com.android.tools.build:gradle-api", version.ref = "agp" }
