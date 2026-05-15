@@ -18,7 +18,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -30,7 +29,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -52,6 +50,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -70,6 +69,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.layout.WindowSizeClass
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.Appearance
@@ -79,6 +79,7 @@ import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogCustomizationBottomSheet
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.core.android.composable.SwitchWithIcon
+import com.fibelatti.pinboard.core.android.getWindowSizeClass
 import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.Close
 import com.fibelatti.pinboard.core.android.icons.Edit
@@ -125,50 +126,50 @@ fun UserPreferencesScreen(
         onDispose { keyboardController?.hide() }
     }
 
-    BoxWithConstraints(
-        modifier = modifier
-            .background(color = ExtendedTheme.colors.backgroundNoOverlay)
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(top = 8.dp, bottom = 32.dp)
-            .windowInsetsPadding(
-                WindowInsets.safeDrawing
-                    .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-            ),
-    ) {
-        if (maxWidth < 600.dp) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                AppPreferencesContent(
-                    appMode = appState.appMode,
-                    onDynamicColorChange = restartActivity,
-                    onDisableScreenshotsChange = restartActivity,
-                )
+    val currentAppMode by rememberUpdatedState(appState.appMode)
 
-                BookmarkingPreferencesContent(
-                    appMode = appState.appMode,
-                    modifier = Modifier.padding(top = 32.dp),
-                )
-            }
-        } else {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                val childWidth = this@BoxWithConstraints.maxWidth / 2
+    val appPreferences: @Composable (Modifier) -> Unit = remember {
+        movableContentOf { contentModifier ->
+            AppPreferencesContent(
+                appMode = currentAppMode,
+                onDynamicColorChange = restartActivity,
+                onDisableScreenshotsChange = restartActivity,
+                modifier = contentModifier,
+            )
+        }
+    }
 
-                AppPreferencesContent(
-                    appMode = appState.appMode,
-                    onDynamicColorChange = restartActivity,
-                    onDisableScreenshotsChange = restartActivity,
-                    modifier = Modifier.requiredWidth(childWidth),
-                )
+    val bookmarkingPreferences: @Composable (Modifier) -> Unit = remember {
+        movableContentOf { contentModifier ->
+            BookmarkingPreferencesContent(
+                appMode = currentAppMode,
+                modifier = contentModifier,
+            )
+        }
+    }
 
-                BookmarkingPreferencesContent(
-                    appMode = appState.appMode,
-                    modifier = Modifier.requiredWidth(childWidth),
-                )
-            }
+    val isAtLeastMediumWidth: Boolean = getWindowSizeClass()
+        .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
+
+    val containerModifier = modifier
+        .background(color = ExtendedTheme.colors.backgroundNoOverlay)
+        .fillMaxSize()
+        .verticalScroll(rememberScrollState())
+        .padding(top = 8.dp, bottom = 32.dp)
+        .windowInsetsPadding(
+            WindowInsets.safeDrawing
+                .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+        )
+
+    if (!isAtLeastMediumWidth) {
+        Column(modifier = containerModifier.fillMaxWidth()) {
+            appPreferences(Modifier)
+            bookmarkingPreferences(Modifier.padding(top = 32.dp))
+        }
+    } else {
+        Row(modifier = containerModifier.fillMaxWidth()) {
+            appPreferences(Modifier.weight(1f))
+            bookmarkingPreferences(Modifier.weight(1f))
         }
     }
 }
