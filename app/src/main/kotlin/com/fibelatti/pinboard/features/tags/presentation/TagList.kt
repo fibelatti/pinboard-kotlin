@@ -101,7 +101,7 @@ fun TagListScreen(
     val appState by tagsViewModel.appState.collectAsStateWithLifecycle()
     val tagsState by tagsViewModel.state.collectAsStateWithLifecycle()
 
-    var quickActionTag: Tag? by remember { mutableStateOf(null) }
+    var quickActionTag: Tag? by rememberSaveable { mutableStateOf(null) }
 
     val tagQuickActionsSheetState = rememberAppSheetState()
     val renameTagSheetState = rememberAppSheetState()

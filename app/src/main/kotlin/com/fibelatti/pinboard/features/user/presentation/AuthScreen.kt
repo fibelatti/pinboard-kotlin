@@ -54,6 +54,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -208,7 +209,7 @@ private fun AuthScreen(
                     }
                 }
 
-                var authTokenVisible by remember { mutableStateOf(false) }
+                var authTokenVisible by rememberSaveable { mutableStateOf(false) }
 
                 OutlinedSecureTextField(
                     state = authTokenFieldState,
@@ -401,7 +402,7 @@ private fun AuthTokenHelp(
     useLinkding: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    var helpVisible by remember { mutableStateOf(false) }
+    var helpVisible by rememberSaveable { mutableStateOf(false) }
 
     AnimatedContent(
         targetState = helpVisible,

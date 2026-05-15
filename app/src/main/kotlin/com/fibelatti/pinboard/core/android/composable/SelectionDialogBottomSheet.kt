@@ -26,6 +26,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -133,7 +134,7 @@ private fun <T> SelectionDialogContent(
     val visibleOptions = remember(options) { options.filterValues { hidden -> !hidden }.keys.toList() }
     val hiddenOptions = remember(options) { options.filterValues { hidden -> hidden }.keys.toList() }
 
-    var showHiddenOptions by remember { mutableStateOf(false) }
+    var showHiddenOptions by rememberSaveable { mutableStateOf(false) }
 
     LazyColumn(
         modifier = Modifier

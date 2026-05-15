@@ -119,7 +119,7 @@ fun ShareReceiverScreen(
     modifier: Modifier = Modifier,
     iconTint: Color = MaterialTheme.colorScheme.primary,
 ) {
-    var showServicePicker by remember { mutableStateOf(servicePickerVisible) }
+    var showServicePicker by rememberSaveable { mutableStateOf(servicePickerVisible) }
 
     Column(
         modifier = modifier
