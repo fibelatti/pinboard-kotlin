@@ -97,7 +97,14 @@ public fun AppBottomSheet(
 public fun rememberAppSheetState(
     skipPartiallyExpanded: Boolean = true,
 ): AppSheetState {
-    val sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = skipPartiallyExpanded)
+    val sheetState: SheetState = rememberBottomSheetState(
+        initialValue = SheetValue.Hidden,
+        enabledValues = setOfNotNull(
+            SheetValue.Hidden,
+            SheetValue.PartiallyExpanded.takeUnless { skipPartiallyExpanded },
+            SheetValue.Expanded,
+        ),
+    )
     val scope: CoroutineScope = rememberCoroutineScope()
     val isVisibleState: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) }
     // `data` is stored as `Any?` — callers must pass values supported by Bundle (primitives, Parcelable, Serializable)
