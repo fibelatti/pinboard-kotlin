@@ -10,7 +10,7 @@ interface AppStateRepository {
     suspend fun runAction(action: Action)
 
     suspend fun runDelayedAction(action: Action, timeMillis: Long = 200L) {
-        delay(timeMillis)
+        delay(timeMillis = timeMillis)
         runAction(action)
     }
 }

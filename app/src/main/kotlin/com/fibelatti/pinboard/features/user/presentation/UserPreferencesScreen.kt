@@ -117,7 +117,7 @@ fun UserPreferencesScreen(
     val scope = rememberCoroutineScope()
     val restartActivity: () -> Unit by rememberUpdatedState {
         scope.launch {
-            delay(300L) // Wait until the switch is done animating
+            delay(timeMillis = 300L) // Wait until the switch is done animating
             localActivity?.let(ActivityCompat::recreate)
         }
     }

@@ -30,7 +30,7 @@ suspend fun <T> tooManyRequestsBackoff(
             return block()
         } catch (httpException: ResponseException) {
             if (429 == httpException.response.status.value) {
-                delay(currentDelay)
+                delay(timeMillis = currentDelay)
                 currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
             } else {
                 throw httpException

@@ -324,7 +324,7 @@ private fun MainPanelContent(
         postListContent?.searchParameters,
     ) {
         if (postListContent != null) {
-            delay(200L)
+            delay(timeMillis = 200L)
             bookmarkListState.scrollToItem(index = 0)
         }
     }

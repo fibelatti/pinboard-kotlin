@@ -25,7 +25,7 @@ fun rememberAutoDismissPullRefreshState(
             scope.launch {
                 refreshing = true
                 onPullToRefresh()
-                delay(500L)
+                delay(timeMillis = 500L)
                 refreshing = false
             }
         },

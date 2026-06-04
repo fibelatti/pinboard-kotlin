@@ -32,7 +32,7 @@ fun LazyListState.rememberScrollDirection(autoResetTime: Long = 2_000): State<Sc
     val isScrolling: Boolean by produceState(isScrollInProgress) {
         snapshotFlow { isScrollInProgress }
             .mapLatest { scrolling ->
-                if (!scrolling) delay(autoResetTime)
+                if (!scrolling) delay(timeMillis = autoResetTime)
                 scrolling
             }
             .collectLatest { value = it }

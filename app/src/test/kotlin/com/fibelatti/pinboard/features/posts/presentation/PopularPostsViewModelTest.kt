@@ -83,7 +83,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
             // GIVEN
             val mockPosts = mockk<Map<Post, Int>>()
             coEvery { mockGetPopularPosts() } coAnswers {
-                delay(2_000)
+                delay(timeMillis = 2_000)
                 Success(mockPosts)
             } andThenAnswer {
                 Success(mockPosts)

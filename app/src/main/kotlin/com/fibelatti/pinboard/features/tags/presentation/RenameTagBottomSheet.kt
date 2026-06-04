@@ -87,7 +87,7 @@ private fun RenameTagScreen(
 
             LaunchedEffect(Unit) {
                 // Compose bug: without this delay the cursor won't appear
-                delay(100)
+                delay(timeMillis = 100)
                 focusRequester.requestFocus()
             }
 

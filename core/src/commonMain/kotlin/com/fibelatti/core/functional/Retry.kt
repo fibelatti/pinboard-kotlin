@@ -22,15 +22,15 @@ public suspend fun <T> retryIO(
     factor: Double = 2.0,
     block: suspend () -> T,
 ): T {
-    var currentDelay = initialDelay
+    var currentDelay: Long = initialDelay
 
     repeat(times - 1) {
         try {
             return block()
-        } catch (ignored: IOException) {
+        } catch (_: IOException) {
         }
 
-        delay(currentDelay)
+        delay(timeMillis = currentDelay)
 
         currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
     }

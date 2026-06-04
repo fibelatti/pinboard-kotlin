@@ -39,7 +39,7 @@ class SavedFiltersViewModelTest : BaseViewModelTest() {
 
         every { savedFiltersRepository.getSavedFilters() } returns flow {
             emit(firstValue)
-            delay(1_000L)
+            delay(timeMillis = 1_000L)
             emit(secondValue)
         }
 
