@@ -499,7 +499,7 @@ private fun BookmarkBasicDetails(
         LaunchedEffect(Unit) {
             if (isUrlInputEnabled) {
                 // Compose bug: without this delay the cursor won't appear
-                delay(100)
+                delay(timeMillis = 100)
                 focusRequester.requestFocus()
             }
         }
@@ -532,7 +532,7 @@ private fun BookmarkBasicDetails(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next),
             onKeyboardAction = KeyboardActionHandler { focusManager.moveFocus(FocusDirection.Next) },
             lineLimits = TextFieldLineLimits.SingleLine,
-            contentPadding = OutlinedTextFieldDefaults.contentPadding(
+            contentPadding = OutlinedTextFieldDefaults.contentPaddingWithLabel(
                 start = 8.dp,
                 end = 8.dp,
                 bottom = 8.dp,
@@ -558,7 +558,7 @@ private fun BookmarkBasicDetails(
             inputTransformation = InputTransformation.maxLength(AppConfig.PinboardApiMaxLength.TEXT_TYPE.value),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             onKeyboardAction = KeyboardActionHandler { focusManager.moveFocus(FocusDirection.Next) },
-            contentPadding = OutlinedTextFieldDefaults.contentPadding(
+            contentPadding = OutlinedTextFieldDefaults.contentPaddingWithLabel(
                 start = 8.dp,
                 end = 8.dp,
                 bottom = 8.dp,
@@ -576,7 +576,7 @@ private fun BookmarkBasicDetails(
             modifier = Modifier.fillMaxWidth(),
             label = { Text(text = stringResource(id = R.string.posts_add_url_description)) },
             supportingText = {},
-            contentPadding = OutlinedTextFieldDefaults.contentPadding(
+            contentPadding = OutlinedTextFieldDefaults.contentPaddingWithLabel(
                 start = 8.dp,
                 end = 8.dp,
                 bottom = 8.dp,
@@ -594,7 +594,7 @@ private fun BookmarkBasicDetails(
                 state = notesFieldState,
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text(text = stringResource(id = R.string.posts_add_url_notes)) },
-                contentPadding = OutlinedTextFieldDefaults.contentPadding(
+                contentPadding = OutlinedTextFieldDefaults.contentPaddingWithLabel(
                     start = 8.dp,
                     end = 8.dp,
                     bottom = 8.dp,
@@ -602,14 +602,6 @@ private fun BookmarkBasicDetails(
             )
         }
     }
-}
-
-private enum class FocusedField {
-    NONE,
-    URL,
-    TITLE,
-    DESCRIPTION,
-    NOTES,
 }
 
 @Composable

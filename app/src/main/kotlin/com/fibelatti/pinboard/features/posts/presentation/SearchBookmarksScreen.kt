@@ -252,7 +252,7 @@ private fun SearchBookmarksScreen(
                         onKeyboardSearch()
                     },
                     lineLimits = TextFieldLineLimits.SingleLine,
-                    contentPadding = OutlinedTextFieldDefaults.contentPadding(
+                    contentPadding = OutlinedTextFieldDefaults.contentPaddingWithLabel(
                         start = 8.dp,
                         end = 8.dp,
                         bottom = 8.dp,

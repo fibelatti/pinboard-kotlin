@@ -191,7 +191,7 @@ private fun AuthScreen(
                             ),
                             onKeyboardAction = KeyboardActionHandler { focusManager.moveFocus(FocusDirection.Next) },
                             lineLimits = TextFieldLineLimits.SingleLine,
-                            contentPadding = OutlinedTextFieldDefaults.contentPadding(
+                            contentPadding = OutlinedTextFieldDefaults.contentPaddingWithLabel(
                                 start = 8.dp,
                                 end = 8.dp,
                                 bottom = 8.dp,
@@ -250,7 +250,7 @@ private fun AuthScreen(
                             instanceUrlFieldState.text.toString(),
                         )
                     },
-                    contentPadding = OutlinedTextFieldDefaults.contentPadding(
+                    contentPadding = OutlinedTextFieldDefaults.contentPaddingWithLabel(
                         start = 8.dp,
                         end = 8.dp,
                         bottom = 8.dp,

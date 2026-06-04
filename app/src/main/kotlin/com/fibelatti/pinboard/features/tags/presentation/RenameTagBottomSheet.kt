@@ -100,7 +100,7 @@ private fun RenameTagScreen(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 onKeyboardAction = KeyboardActionHandler { onRename(textFieldState.text.toString()) },
                 lineLimits = TextFieldLineLimits.SingleLine,
-                contentPadding = OutlinedTextFieldDefaults.contentPadding(
+                contentPadding = OutlinedTextFieldDefaults.contentPaddingWithLabel(
                     start = 8.dp,
                     end = 8.dp,
                     bottom = 8.dp,

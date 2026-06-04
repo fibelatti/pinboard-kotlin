@@ -768,7 +768,7 @@ private fun RemoveUrlParametersSetting(
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                     onKeyboardAction = KeyboardActionHandler { submitValueAction() },
                     lineLimits = TextFieldLineLimits.SingleLine,
-                    contentPadding = OutlinedTextFieldDefaults.contentPadding(
+                    contentPadding = OutlinedTextFieldDefaults.contentPaddingWithLabel(
                         start = 8.dp,
                         end = 8.dp,
                         bottom = 8.dp,
