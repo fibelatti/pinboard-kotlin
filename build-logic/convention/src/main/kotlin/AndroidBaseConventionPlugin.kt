@@ -45,7 +45,7 @@ class AndroidBaseConventionPlugin : Plugin<Project> {
             implementation("kotlin")
             implementation("coroutines-core")
 
-            implementation("core-ktx")
+            implementation("core")
         }
     }
 
