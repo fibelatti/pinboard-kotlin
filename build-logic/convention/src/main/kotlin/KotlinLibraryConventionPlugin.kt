@@ -50,8 +50,6 @@ internal fun Project.configureKotlinCompilerOptions() {
                 buildList {
                     addAll(freeCompilerArgs.get())
                     add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
-                    add("-opt-in=kotlin.uuid.ExperimentalUuidApi")
-                    add("-Xannotation-default-target=param-property")
                 },
             )
         }

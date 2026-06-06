@@ -218,6 +218,7 @@ dependencies {
     debugImplementation(libs.compose.ui.test.manifest)
 
     // Misc
+    ksp(libs.kotlin.metadata.jvm)
     ksp(libs.dagger.hilt.compiler)
     ksp(libs.hilt.compiler)
     implementation(libs.dagger.hilt.android)
