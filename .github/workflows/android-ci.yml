@@ -17,7 +17,7 @@ jobs:
       contents: write
     steps:
       - name: Project checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Android build
         uses: ./.github/actions/setup-android-build
@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Project checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Android build
         uses: ./.github/actions/setup-android-build
@@ -60,7 +60,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Project checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Android build
         uses: ./.github/actions/setup-android-build
@@ -120,7 +120,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Project checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Android build
         uses: ./.github/actions/setup-android-build
@@ -133,7 +133,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Project checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Android build
         uses: ./.github/actions/setup-android-build
@@ -146,7 +146,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Project checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Android build
         uses: ./.github/actions/setup-android-build
@@ -159,7 +159,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Project checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Android build
         uses: ./.github/actions/setup-android-build
