@@ -10,7 +10,7 @@ lifecycle = "2.10.0"
 okhttp = "5.4.0"
 room = "2.8.4"
 coil = "3.5.0"
-spotless = "8.6.0"
+spotless = "8.7.0"
 aboutLibraries = "14.2.1"
 
 [libraries]
