@@ -6,7 +6,6 @@ import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.invoke
 import org.gradle.kotlin.dsl.maybeCreate
-import org.gradle.kotlin.dsl.provideDelegate
 
 @Suppress("Unused")
 class AndroidBaseConventionPlugin : Plugin<Project> {
@@ -23,8 +22,8 @@ class AndroidBaseConventionPlugin : Plugin<Project> {
     }
 
     private fun Project.configureSdkCompatibility() {
-        val compileSdkVersion: Int by this
-        val minSdkVersion: Int by this
+        val compileSdkVersion: Int = findExtraInHierarchy("compileSdkVersion")
+        val minSdkVersion: Int = findExtraInHierarchy("minSdkVersion")
 
         extensions.getByType<CommonExtension>().apply {
             compileSdk = compileSdkVersion

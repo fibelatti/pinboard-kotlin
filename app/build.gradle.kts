@@ -33,7 +33,7 @@ object AppInfo {
 }
 
 android {
-    val targetSdkVersion: Int by project
+    val targetSdkVersion: Int = findExtraInHierarchy("targetSdkVersion")
 
     namespace = "com.fibelatti.pinboard"
 
@@ -276,7 +276,8 @@ dependencies {
  * Prints the current version code. Used for GitHub releases.
  */
 @Suppress("unused")
-val printReleaseVersionCode by tasks.registering {
+val printReleaseVersionCode = tasks.register("printReleaseVersionCode") {
+    description = "Prints the current version code to the console."
     doLast {
         println(AppInfo.versionCode)
     }
