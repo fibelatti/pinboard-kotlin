@@ -401,12 +401,12 @@ private fun AppPreferencesContent(
 
             val bookmarkQuickActionCustomizationSheetState = rememberAppSheetState()
             val localResources = LocalResources.current
-            val quickActionOptions = remember {
+            val quickActionOptions = remember(appMode) {
                 val samplePost = Post.EMPTY.copy(
                     description = "sample_description",
                     tags = listOf(Tag(name = "sample_tags")),
                 )
-                PostQuickActions.allOptions(samplePost).associateWith { option ->
+                PostQuickActions.allOptions(samplePost, appMode = appMode).associateWith { option ->
                     option.serializedName in userPreferences.hiddenPostQuickOptions
                 }
             }

@@ -33,6 +33,7 @@
     <string name="menu_navigation_private">Private</string>
     <string name="menu_navigation_unread">Read Later</string>
     <string name="menu_navigation_untagged">Untagged</string>
+    <string name="menu_navigation_archived">Archived</string>
     <string name="menu_navigation_tags">Tags</string>
     <string name="menu_navigation_saved_filters">Saved Filters</string>
     <string name="menu_navigation_notes">Notes</string>
@@ -44,6 +45,8 @@
 
     <string name="menu_link_delete">Remove bookmark</string>
     <string name="menu_link_edit">Edit bookmark</string>
+    <string name="menu_link_archive">Archive bookmark</string>
+    <string name="menu_link_unarchive">Unarchive bookmark</string>
     <string name="menu_link_save">Save bookmark</string>
     <string name="menu_link_share">Share bookmark</string>
     <string name="menu_link_open_in_browser">Open in browser</string>
@@ -84,6 +87,7 @@
     <string name="posts_title_private">Private Bookmarks</string>
     <string name="posts_title_unread">Read Later Bookmarks</string>
     <string name="posts_title_untagged">Untagged Bookmarks</string>
+    <string name="posts_title_archived">Archived Bookmarks</string>
 
     <plurals name="posts_quantity">
         <item quantity="one">1 item</item>
@@ -105,8 +109,8 @@
     <string name="posts_deleted_feedback">Bookmark removed successfully</string>
     <string name="posts_deleted_error">An error happened and the bookmark was not removed. If the problem persists please delete it using the web client.</string>
 
-    <string name="posts_marked_as_read_feedback">Read Later flag updated successfully</string>
-    <string name="posts_marked_as_read_error">Failed to update the Read Later flag. Please try again.</string>
+    <string name="posts_updated_feedback">Bookmark updated successfully</string>
+    <string name="posts_updated_error">Failed to update the bookmark. Please try again.</string>
 
     <string name="posts_add_title">Save bookmark</string>
     <string name="posts_add_url">URL</string>
@@ -135,6 +139,10 @@
     <string name="posts_pending_update_expanded">This bookmark will be updated when network becomes available</string>
     <string name="posts_pending_delete">Pending delete</string>
     <string name="posts_pending_delete_expanded">This bookmark will be deleted when network becomes available</string>
+    <string name="posts_pending_archive">Pending archive</string>
+    <string name="posts_pending_archive_expanded">This bookmark will be archived when network becomes available</string>
+    <string name="posts_pending_unarchive">Pending unarchive</string>
+    <string name="posts_pending_unarchive_expanded">This bookmark will be unarchived when network becomes available</string>
 
     <!-- Offline -->
     <string name="offline_alert">No connection available</string>
@@ -230,6 +238,8 @@
     <string name="quick_actions_paste_tags">Paste tags</string>
     <string name="quick_actions_edit">Edit bookmark</string>
     <string name="quick_actions_delete">Delete bookmark</string>
+    <string name="quick_actions_archive">Archive bookmark</string>
+    <string name="quick_actions_unarchive">Unarchive bookmark</string>
     <string name="quick_actions_delete_filter">Delete filter</string>
     <string name="quick_actions_save">Save to mine</string>
     <string name="quick_actions_copy_url">Copy URL</string>

@@ -12,7 +12,9 @@ import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostSaved
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
+import com.fibelatti.pinboard.features.posts.domain.usecase.ArchivePost
 import com.fibelatti.pinboard.features.posts.domain.usecase.DeletePost
+import com.fibelatti.pinboard.features.posts.domain.usecase.UnarchivePost
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -31,6 +33,8 @@ class PostDetailViewModel @Inject constructor(
     appStateRepository: AppStateRepository,
     private val deletePost: DeletePost,
     private val addPost: AddPost,
+    private val archivePost: ArchivePost,
+    private val unarchivePost: UnarchivePost,
 ) : BaseViewModel(scope, appStateRepository) {
 
     private val _screenState = MutableStateFlow(ScreenState())
@@ -80,6 +84,27 @@ class PostDetailViewModel @Inject constructor(
             if (post.tags?.containsAll(tags) == true) return@launch
 
             editPost(newPost = post.copy(tags = post.tags.orEmpty().plus(tags).distinct()))
+        }
+    }
+
+    fun toggleArchived(post: Post) {
+        scope.launch {
+            _screenState.update { currentState -> currentState.copy(isLoading = true) }
+
+            val archived: Boolean = post.isArchived == true
+            val result: Result<Post> = if (archived) unarchivePost(params = post) else archivePost(params = post)
+            result
+                .onSuccess { updatedPost ->
+                    _screenState.update { currentState ->
+                        currentState.copy(isLoading = false, updated = Success(value = true))
+                    }
+                    runDelayedAction(PostSaved(updatedPost))
+                }
+                .onFailure { throwable ->
+                    _screenState.update { currentState ->
+                        currentState.copy(isLoading = false, updated = Failure(throwable))
+                    }
+                }
         }
     }
 

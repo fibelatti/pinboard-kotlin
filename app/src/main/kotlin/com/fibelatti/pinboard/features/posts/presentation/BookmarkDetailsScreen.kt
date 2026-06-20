@@ -184,6 +184,8 @@ private fun LaunchedMainViewModelEffect(
 
                     is MainState.MenuItemComponent.EditBookmark -> mainViewModel.runAction(EditPost(post))
 
+                    is MainState.MenuItemComponent.ToggleArchived -> postDetailViewModel.toggleArchived(post)
+
                     is MainState.MenuItemComponent.SaveBookmark -> popularPostsViewModel.saveLink(post)
 
                     is MainState.MenuItemComponent.OpenInBrowser -> openUrlInExternalBrowser(localContext, post)
@@ -230,7 +232,7 @@ private fun LaunchedPostDetailViewModelEffect(
             }
 
             current.updated is Success<Boolean> && current.updated.value -> {
-                localView.showBanner(R.string.posts_marked_as_read_feedback)
+                localView.showBanner(R.string.posts_updated_feedback)
                 postDetailViewModel.userNotified()
                 mainViewModel.updateState { currentState ->
                     currentState.copy(actionButton = MainState.ActionButtonComponent.Gone)
@@ -238,7 +240,7 @@ private fun LaunchedPostDetailViewModelEffect(
             }
 
             current.updated is Failure -> {
-                localView.showBanner(R.string.posts_marked_as_read_error)
+                localView.showBanner(R.string.posts_updated_error)
                 postDetailViewModel.userNotified()
             }
         }

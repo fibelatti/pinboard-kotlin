@@ -30,6 +30,7 @@
     <string name="menu_navigation_private">Privat</string>
     <string name="menu_navigation_unread">Später lesen</string>
     <string name="menu_navigation_untagged">Ohne Tags</string>
+    <string name="menu_navigation_archived">Archiviert</string>
     <string name="menu_navigation_tags">Tags</string>
     <string name="menu_navigation_saved_filters">Gespeicherte Filter</string>
     <string name="menu_navigation_notes">Notizen</string>
@@ -41,6 +42,8 @@
 
     <string name="menu_link_delete">Lesezeichen entfernen</string>
     <string name="menu_link_edit">Lesezeichen bearbeiten</string>
+    <string name="menu_link_archive">Lesezeichen archivieren</string>
+    <string name="menu_link_unarchive">Lesezeichen dearchivieren</string>
     <string name="menu_link_save">Lesezeichen speichern</string>
     <string name="menu_link_share">Lesezeichen teilen</string>
     <string name="menu_link_open_in_browser">Im Browser öffnen</string>
@@ -81,6 +84,7 @@
     <string name="posts_title_private">Private Lesezeichen</string>
     <string name="posts_title_unread">Später lesen</string>
     <string name="posts_title_untagged">Lesezeichen ohne Tags</string>
+    <string name="posts_title_archived">Archivierte Lesezeichen</string>
 
     <plurals name="posts_quantity">
         <item quantity="one">1 Eintrag</item>
@@ -102,8 +106,8 @@
     <string name="posts_deleted_feedback">Lesezeichen erfolgreich entfernt</string>
     <string name="posts_deleted_error">Es ist ein Fehler aufgetreten und das Lesezeichen wurde nicht entfernt. Wenn das Problem weiterhin besteht, löschen Sie es bitte über den Web-Client.</string>
 
-    <string name="posts_marked_as_read_feedback">Markierung „Später lesen" erfolgreich aktualisiert</string>
-    <string name="posts_marked_as_read_error">Aktualisierung der Markierung „Später lesen" fehlgeschlagen. Bitte versuchen Sie es erneut.</string>
+    <string name="posts_updated_feedback">Lesezeichen erfolgreich aktualisiert</string>
+    <string name="posts_updated_error">Aktualisierung des Lesezeichens fehlgeschlagen. Bitte versuchen Sie es erneut.</string>
 
     <string name="posts_add_title">Lesezeichen speichern</string>
     <string name="posts_add_url">URL</string>
@@ -132,6 +136,10 @@
     <string name="posts_pending_update_expanded">Dieses Lesezeichen wird aktualisiert, sobald eine Netzwerkverbindung verfügbar ist</string>
     <string name="posts_pending_delete">Ausstehend: Löschen</string>
     <string name="posts_pending_delete_expanded">Dieses Lesezeichen wird gelöscht, sobald eine Netzwerkverbindung verfügbar ist</string>
+    <string name="posts_pending_archive">Ausstehend: Archivieren</string>
+    <string name="posts_pending_archive_expanded">Dieses Lesezeichen wird archiviert, sobald eine Netzwerkverbindung verfügbar ist</string>
+    <string name="posts_pending_unarchive">Ausstehend: Dearchivieren</string>
+    <string name="posts_pending_unarchive_expanded">Dieses Lesezeichen wird dearchiviert, sobald eine Netzwerkverbindung verfügbar ist</string>
 
     <!-- Offline -->
     <string name="offline_alert">Keine Verbindung verfügbar</string>
@@ -227,6 +235,8 @@
     <string name="quick_actions_paste_tags">Tags einfügen</string>
     <string name="quick_actions_edit">Lesezeichen bearbeiten</string>
     <string name="quick_actions_delete">Lesezeichen löschen</string>
+    <string name="quick_actions_archive">Lesezeichen archivieren</string>
+    <string name="quick_actions_unarchive">Lesezeichen dearchivieren</string>
     <string name="quick_actions_delete_filter">Filter löschen</string>
     <string name="quick_actions_save">In meine Liste speichern</string>
     <string name="quick_actions_copy_url">URL kopieren</string>

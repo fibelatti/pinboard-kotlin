@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.main.reducer
 
 import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.Done
 import com.fibelatti.pinboard.core.android.icons.Share
@@ -22,11 +23,14 @@ class BookmarkDetailsReducer @Inject constructor(
 
     override fun invoke(mainState: MainState, appState: AppState): MainState {
         val (post, menuItems) = when (val current = appState.content) {
-            is PostDetailContent -> current.post to listOf(
-                MainState.MenuItemComponent.DeleteBookmark,
-                MainState.MenuItemComponent.EditBookmark,
-                MainState.MenuItemComponent.OpenInBrowser,
-            )
+            is PostDetailContent -> current.post to buildList {
+                add(MainState.MenuItemComponent.DeleteBookmark)
+                if (AppMode.LINKDING == appState.appMode) {
+                    add(MainState.MenuItemComponent.ToggleArchived(isArchived = current.post.isArchived == true))
+                }
+                add(MainState.MenuItemComponent.EditBookmark)
+                add(MainState.MenuItemComponent.OpenInBrowser)
+            }
 
             is PopularPostDetailContent -> current.post to listOf(
                 MainState.MenuItemComponent.SaveBookmark,

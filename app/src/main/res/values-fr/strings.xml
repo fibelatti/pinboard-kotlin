@@ -30,6 +30,7 @@
     <string name="menu_navigation_private">Privés</string>
     <string name="menu_navigation_unread">À lire plus tard</string>
     <string name="menu_navigation_untagged">Non étiquetés</string>
+    <string name="menu_navigation_archived">Archivés</string>
     <string name="menu_navigation_tags">Étiquettes</string>
     <string name="menu_navigation_saved_filters">Filtres enregistrés</string>
     <string name="menu_navigation_notes">Notes</string>
@@ -41,6 +42,8 @@
 
     <string name="menu_link_delete">Supprimer le favori</string>
     <string name="menu_link_edit">Modifier le favori</string>
+    <string name="menu_link_archive">Archiver le favori</string>
+    <string name="menu_link_unarchive">Désarchiver le favori</string>
     <string name="menu_link_save">Enregistrer le favori</string>
     <string name="menu_link_share">Partager le favori</string>
     <string name="menu_link_open_in_browser">Ouvrir dans le navigateur</string>
@@ -81,6 +84,7 @@
     <string name="posts_title_private">Favoris privés</string>
     <string name="posts_title_unread">À lire plus tard</string>
     <string name="posts_title_untagged">Favoris sans étiquette</string>
+    <string name="posts_title_archived">Favoris archivés</string>
 
     <plurals name="posts_quantity">
         <item quantity="one">%s élément</item>
@@ -103,8 +107,8 @@
     <string name="posts_deleted_feedback">Favori supprimé avec succès</string>
     <string name="posts_deleted_error">Une erreur s\'est produite et le favori n\'a pas été supprimé. Si le problème persiste, veuillez le supprimer via le client web.</string>
 
-    <string name="posts_marked_as_read_feedback">Indicateur « À lire plus tard » mis à jour avec succès</string>
-    <string name="posts_marked_as_read_error">Échec de la mise à jour de l\'indicateur « À lire plus tard ». Veuillez réessayer.</string>
+    <string name="posts_updated_feedback">Favori mis à jour avec succès</string>
+    <string name="posts_updated_error">Échec de la mise à jour du favori. Veuillez réessayer.</string>
 
     <string name="posts_add_title">Enregistrer un favori</string>
     <string name="posts_add_url">URL</string>
@@ -133,6 +137,10 @@
     <string name="posts_pending_update_expanded">Ce favori sera mis à jour dès que le réseau sera disponible</string>
     <string name="posts_pending_delete">Suppression en attente</string>
     <string name="posts_pending_delete_expanded">Ce favori sera supprimé dès que le réseau sera disponible</string>
+    <string name="posts_pending_archive">Archivage en attente</string>
+    <string name="posts_pending_archive_expanded">Ce favori sera archivé dès que le réseau sera disponible</string>
+    <string name="posts_pending_unarchive">Désarchivage en attente</string>
+    <string name="posts_pending_unarchive_expanded">Ce favori sera désarchivé dès que le réseau sera disponible</string>
 
     <!-- Offline -->
     <string name="offline_alert">Aucune connexion disponible</string>
@@ -231,6 +239,8 @@
     <string name="quick_actions_paste_tags">Coller les étiquettes</string>
     <string name="quick_actions_edit">Modifier le favori</string>
     <string name="quick_actions_delete">Supprimer le favori</string>
+    <string name="quick_actions_archive">Archiver le favori</string>
+    <string name="quick_actions_unarchive">Désarchiver le favori</string>
     <string name="quick_actions_delete_filter">Supprimer le filtre</string>
     <string name="quick_actions_save">Enregistrer dans les miens</string>
     <string name="quick_actions_copy_url">Copier l\'URL</string>

@@ -30,6 +30,7 @@
     <string name="menu_navigation_private">Privados</string>
     <string name="menu_navigation_unread">Para leer después</string>
     <string name="menu_navigation_untagged">Sin etiquetas</string>
+    <string name="menu_navigation_archived">Archivados</string>
     <string name="menu_navigation_tags">Etiquetas</string>
     <string name="menu_navigation_saved_filters">Filtros guardados</string>
     <string name="menu_navigation_notes">Notas</string>
@@ -41,6 +42,8 @@
 
     <string name="menu_link_delete">Eliminar marcador</string>
     <string name="menu_link_edit">Editar marcador</string>
+    <string name="menu_link_archive">Archivar marcador</string>
+    <string name="menu_link_unarchive">Desarchivar marcador</string>
     <string name="menu_link_save">Guardar marcador</string>
     <string name="menu_link_share">Compartir marcador</string>
     <string name="menu_link_open_in_browser">Abrir en el navegador</string>
@@ -81,6 +84,7 @@
     <string name="posts_title_private">Marcadores privados</string>
     <string name="posts_title_unread">Para leer después</string>
     <string name="posts_title_untagged">Marcadores sin etiqueta</string>
+    <string name="posts_title_archived">Marcadores archivados</string>
 
     <plurals name="posts_quantity">
         <item quantity="one">1 elemento</item>
@@ -103,8 +107,8 @@
     <string name="posts_deleted_feedback">Marcador eliminado correctamente</string>
     <string name="posts_deleted_error">Se produjo un error y el marcador no fue eliminado. Si el problema persiste, elimínalo usando el cliente web.</string>
 
-    <string name="posts_marked_as_read_feedback">Marcador «Para leer después» actualizado correctamente</string>
-    <string name="posts_marked_as_read_error">Error al actualizar el marcador «Para leer después». Por favor, inténtalo de nuevo.</string>
+    <string name="posts_updated_feedback">Marcador actualizado correctamente</string>
+    <string name="posts_updated_error">Error al actualizar el marcador. Por favor, inténtalo de nuevo.</string>
 
     <string name="posts_add_title">Guardar marcador</string>
     <string name="posts_add_url">URL</string>
@@ -133,6 +137,10 @@
     <string name="posts_pending_update_expanded">Este marcador se actualizará cuando haya red disponible</string>
     <string name="posts_pending_delete">Eliminación pendiente</string>
     <string name="posts_pending_delete_expanded">Este marcador se eliminará cuando haya red disponible</string>
+    <string name="posts_pending_archive">Archivado pendiente</string>
+    <string name="posts_pending_archive_expanded">Este marcador se archivará cuando haya red disponible</string>
+    <string name="posts_pending_unarchive">Desarchivado pendiente</string>
+    <string name="posts_pending_unarchive_expanded">Este marcador se desarchivará cuando haya red disponible</string>
 
     <!-- Offline -->
     <string name="offline_alert">Sin conexión disponible</string>
@@ -231,6 +239,8 @@
     <string name="quick_actions_paste_tags">Pegar etiquetas</string>
     <string name="quick_actions_edit">Editar marcador</string>
     <string name="quick_actions_delete">Eliminar marcador</string>
+    <string name="quick_actions_archive">Archivar marcador</string>
+    <string name="quick_actions_unarchive">Desarchivar marcador</string>
     <string name="quick_actions_delete_filter">Eliminar filtro</string>
     <string name="quick_actions_save">Guardar en los míos</string>
     <string name="quick_actions_copy_url">Copiar URL</string>

@@ -40,6 +40,7 @@ class SyncBookmarksWorker @AssistedInject constructor(
             untaggedOnly = false,
             postVisibility = PostVisibility.None,
             readLaterOnly = false,
+            archivedOnly = false,
             countLimit = -1,
             pageLimit = AppConfig.DEFAULT_PAGE_SIZE,
             pageOffset = 0,

@@ -20,6 +20,7 @@ class GetAllPosts @Inject constructor(
         untaggedOnly = params.tags is GetPostParams.Tags.Untagged,
         postVisibility = params.visibility,
         readLaterOnly = params.readLater,
+        archivedOnly = params.archived,
         countLimit = -1,
         pageLimit = params.limit,
         pageOffset = params.offset,

@@ -15,6 +15,10 @@ interface PostsRepository {
 
     suspend fun delete(post: Post): Result<Unit>
 
+    suspend fun archive(post: Post): Result<Post>
+
+    suspend fun unarchive(post: Post): Result<Post>
+
     fun getAllPosts(
         sortType: SortType,
         searchTerm: String,
@@ -24,6 +28,7 @@ interface PostsRepository {
         untaggedOnly: Boolean,
         postVisibility: PostVisibility,
         readLaterOnly: Boolean,
+        archivedOnly: Boolean,
         countLimit: Int,
         pageLimit: Int,
         pageOffset: Int,

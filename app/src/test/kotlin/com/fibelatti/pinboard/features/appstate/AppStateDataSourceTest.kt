@@ -364,6 +364,8 @@ internal class AppStateDataSourceTest {
 
                 is Untagged -> value to ExpectedHandler.NAVIGATION
 
+                is Archived -> value to ExpectedHandler.NAVIGATION
+
                 is ViewPost -> value to ExpectedHandler.NAVIGATION
 
                 is ViewRandomPost -> value to ExpectedHandler.NAVIGATION

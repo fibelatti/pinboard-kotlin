@@ -4,4 +4,6 @@ enum class PendingSync {
     ADD,
     UPDATE,
     DELETE,
+    ARCHIVE,
+    UNARCHIVE,
 }

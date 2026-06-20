@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.main.reducer
 
 import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.Close
 import com.fibelatti.pinboard.core.android.icons.Done
@@ -31,6 +32,9 @@ class BookmarkEditorReducer @Inject constructor(
                 menuItems = buildList {
                     if (post != null) {
                         add(MainState.MenuItemComponent.DeleteBookmark)
+                        if (AppMode.LINKDING == appState.appMode) {
+                            add(MainState.MenuItemComponent.ToggleArchived(isArchived = post.isArchived == true))
+                        }
                         add(MainState.MenuItemComponent.OpenInBrowser)
                     }
                 },

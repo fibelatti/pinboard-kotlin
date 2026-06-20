@@ -10,6 +10,7 @@ import com.fibelatti.pinboard.core.android.icons.Pin
 import com.fibelatti.pinboard.features.appstate.AccountSwitcherContent
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppState
+import com.fibelatti.pinboard.features.appstate.Archived
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
 import com.fibelatti.pinboard.features.appstate.ByDateAddedOldestFirst
 import com.fibelatti.pinboard.features.appstate.ByDateModifiedNewestFirst
@@ -99,6 +100,7 @@ class BookmarkListReducer @Inject constructor(
             Private -> getString(R.string.posts_title_private)
             Unread -> getString(R.string.posts_title_unread)
             Untagged -> getString(R.string.posts_title_untagged)
+            Archived -> getString(R.string.posts_title_archived)
         }
     }
 

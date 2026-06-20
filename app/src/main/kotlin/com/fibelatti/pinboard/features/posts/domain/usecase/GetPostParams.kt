@@ -14,6 +14,7 @@ data class GetPostParams(
     val exactMatch: Boolean = false,
     val visibility: PostVisibility = PostVisibility.None,
     val readLater: Boolean = false,
+    val archived: Boolean = false,
     val limit: Int = DEFAULT_PAGE_SIZE,
     val offset: Int = 0,
     val forceRefresh: Boolean = false,

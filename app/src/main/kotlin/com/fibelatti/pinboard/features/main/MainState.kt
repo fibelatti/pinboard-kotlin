@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.Archive
 import com.fibelatti.pinboard.core.android.icons.BackArrow
 import com.fibelatti.pinboard.core.android.icons.Browser
 import com.fibelatti.pinboard.core.android.icons.ClearFilter
@@ -16,6 +17,7 @@ import com.fibelatti.pinboard.core.android.icons.Search
 import com.fibelatti.pinboard.core.android.icons.Share
 import com.fibelatti.pinboard.core.android.icons.Sort
 import com.fibelatti.pinboard.core.android.icons.Sync
+import com.fibelatti.pinboard.core.android.icons.Unarchive
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.features.appstate.Content
 import kotlin.reflect.KClass
@@ -106,6 +108,11 @@ data class MainState(
         data object EditBookmark : MenuItemComponent(
             name = R.string.menu_link_edit,
             icon = AppIcons.Edit,
+        )
+
+        class ToggleArchived(isArchived: Boolean) : MenuItemComponent(
+            name = if (isArchived) R.string.menu_link_unarchive else R.string.menu_link_archive,
+            icon = if (isArchived) AppIcons.Unarchive else AppIcons.Archive,
         )
 
         data object OpenInBrowser : MenuItemComponent(

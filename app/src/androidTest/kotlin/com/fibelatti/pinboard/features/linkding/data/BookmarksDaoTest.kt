@@ -157,6 +157,15 @@ class BookmarksDaoTest : BaseDbTest() {
         unread = false,
     )
 
+    private val bookmarkArchived = createBookmarkLocal(
+        id = randomHash(),
+        isArchived = true,
+    )
+    private val bookmarkNotArchived = createBookmarkLocal(
+        id = randomHash(),
+        isArchived = false,
+    )
+
     private val bookmarkFirst = createBookmarkLocal(
         id = randomHash(),
         title = "A title",
@@ -203,29 +212,81 @@ class BookmarksDaoTest : BaseDbTest() {
     }
 
     @Test
-    fun whenDeleteAllSyncedBookmarksIsCalled_ThenOnlySyncedBookmarksAreDeleted() = runTest {
+    fun whenDeleteSyncedBookmarksArchivedIsCalled_ThenOnlySyncedArchivedBookmarksAreDeleted() = runTest {
         // GIVEN
-        val list = listOf(
-            createBookmarkLocal(),
-            createBookmarkLocal(id = "other-$SAMPLE_HASH"),
-            createBookmarkLocal(id = "not-synced-add", pendingSync = PendingSyncDto.ADD),
-            createBookmarkLocal(id = "not-synced-update", pendingSync = PendingSyncDto.UPDATE),
-            createBookmarkLocal(id = "not-synced-delete", pendingSync = PendingSyncDto.DELETE),
+        val syncedArchived = createBookmarkLocal(id = "synced-archived", isArchived = true)
+        val syncedNotArchived = createBookmarkLocal(id = "synced-not-archived", isArchived = false)
+        val pendingArchived = createBookmarkLocal(
+            id = "pending-archived",
+            isArchived = true,
+            pendingSync = PendingSyncDto.ARCHIVE,
         )
-        bookmarksDao.saveBookmarks(list)
+        bookmarksDao.saveBookmarks(listOf(syncedArchived, syncedNotArchived, pendingArchived))
 
         // WHEN
-        bookmarksDao.deleteAllSyncedBookmarks()
+        bookmarksDao.deleteSyncedBookmarks(archived = true)
 
         // THEN
-        val result = bookmarksDao.getAllBookmarks()
-        assertThat(result).isEqualTo(
-            listOf(
-                createBookmarkLocal(id = "not-synced-add", pendingSync = PendingSyncDto.ADD),
-                createBookmarkLocal(id = "not-synced-update", pendingSync = PendingSyncDto.UPDATE),
-                createBookmarkLocal(id = "not-synced-delete", pendingSync = PendingSyncDto.DELETE),
-            ),
+        val result = bookmarksDao.getBookmark(id = "synced-archived", url = "")
+        assertThat(result).isNull()
+        assertThat(bookmarksDao.getBookmark(id = "synced-not-archived", url = "")).isEqualTo(syncedNotArchived)
+        assertThat(bookmarksDao.getBookmark(id = "pending-archived", url = "")).isEqualTo(pendingArchived)
+    }
+
+    @Test
+    fun givenDbHasData_AndArchivedOnlyIsFalse_WhenGetAllBookmarksIsCalled_ThenOnlyNotArchivedAreReturned() = runTest {
+        // GIVEN
+        bookmarksDao.saveBookmarks(listOf(bookmarkArchived, bookmarkNotArchived))
+
+        // WHEN
+        val result = bookmarksDao.getAllBookmarks(
+            query = BookmarksDao.allBookmarksFtsQuery(archivedOnly = false),
         )
+
+        // THEN
+        assertThat(result).isEqualTo(listOf(bookmarkNotArchived))
+    }
+
+    @Test
+    fun givenDbHasData_AndArchivedOnlyIsTrue_WhenGetAllBookmarksIsCalled_ThenOnlyArchivedAreReturned() = runTest {
+        // GIVEN
+        bookmarksDao.saveBookmarks(listOf(bookmarkArchived, bookmarkNotArchived))
+
+        // WHEN
+        val result = bookmarksDao.getAllBookmarks(
+            query = BookmarksDao.allBookmarksFtsQuery(archivedOnly = true),
+        )
+
+        // THEN
+        assertThat(result).isEqualTo(listOf(bookmarkArchived))
+    }
+
+    @Test
+    fun givenDbHasData_AndArchivedOnlyIsFalse_WhenGetBookmarkCountIsCalled_ThenOnlyNotArchivedAreCounted() = runTest {
+        // GIVEN
+        bookmarksDao.saveBookmarks(listOf(bookmarkArchived, bookmarkNotArchived))
+
+        // WHEN
+        val result = bookmarksDao.getBookmarkCount(
+            query = BookmarksDao.bookmarksCountFtsQuery(archivedOnly = false),
+        )
+
+        // THEN
+        assertThat(result).isEqualTo(1)
+    }
+
+    @Test
+    fun givenDbHasData_AndArchivedOnlyIsTrue_WhenGetBookmarkCountIsCalled_ThenOnlyArchivedAreCounted() = runTest {
+        // GIVEN
+        bookmarksDao.saveBookmarks(listOf(bookmarkArchived, bookmarkNotArchived))
+
+        // WHEN
+        val result = bookmarksDao.getBookmarkCount(
+            query = BookmarksDao.bookmarksCountFtsQuery(archivedOnly = true),
+        )
+
+        // THEN
+        assertThat(result).isEqualTo(1)
     }
 
     @Test

@@ -50,6 +50,7 @@ import com.fibelatti.pinboard.core.android.icons.Share
 import com.fibelatti.pinboard.core.android.icons.Tag
 import com.fibelatti.pinboard.features.appstate.Action
 import com.fibelatti.pinboard.features.appstate.All
+import com.fibelatti.pinboard.features.appstate.Archived
 import com.fibelatti.pinboard.features.appstate.Private
 import com.fibelatti.pinboard.features.appstate.Public
 import com.fibelatti.pinboard.features.appstate.Recent
@@ -85,6 +86,7 @@ fun NavigationMenuContent(
         onPrivateClick = { onNavOptionClick(Private) },
         onReadLaterClick = { onNavOptionClick(Unread) },
         onUntaggedClick = { onNavOptionClick(Untagged) },
+        onArchivedClick = { onNavOptionClick(Archived) },
         onSavedFiltersClick = { onNavOptionClick(ViewSavedFilters) },
         onTagsClick = { onNavOptionClick(ViewTags) },
         onNotesClick = { onNavOptionClick(ViewNotes) },
@@ -110,6 +112,7 @@ private fun NavigationMenuContent(
     onPrivateClick: () -> Unit,
     onReadLaterClick: () -> Unit,
     onUntaggedClick: () -> Unit,
+    onArchivedClick: () -> Unit,
     onSavedFiltersClick: () -> Unit,
     onTagsClick: () -> Unit,
     onNotesClick: () -> Unit,
@@ -191,15 +194,27 @@ private fun NavigationMenuContent(
             textRes = R.string.menu_navigation_untagged,
             onClick = onUntaggedClick,
             icon = AppIcons.Bookmarks,
-            shape = if (AppMode.PINBOARD == appMode) {
-                RoundedCornerShape(2.dp)
-            } else {
+            shape = if (AppMode.NO_API == appMode) {
                 MaterialTheme.shapes.medium.copy(
                     topStart = CornerSize(2.dp),
                     topEnd = CornerSize(2.dp),
                 )
+            } else {
+                RoundedCornerShape(2.dp)
             },
         )
+
+        if (AppMode.LINKDING == appMode) {
+            MenuItem(
+                textRes = R.string.menu_navigation_archived,
+                onClick = onArchivedClick,
+                icon = AppIcons.Bookmarks,
+                shape = MaterialTheme.shapes.medium.copy(
+                    topStart = CornerSize(2.dp),
+                    topEnd = CornerSize(2.dp),
+                ),
+            )
+        }
 
         if (AppMode.PINBOARD == appMode) {
             MenuItem(
@@ -408,6 +423,7 @@ private fun NavigationMenuContentPreview() {
             onPrivateClick = {},
             onReadLaterClick = {},
             onUntaggedClick = {},
+            onArchivedClick = {},
             onSavedFiltersClick = {},
             onTagsClick = {},
             onNotesClick = {},

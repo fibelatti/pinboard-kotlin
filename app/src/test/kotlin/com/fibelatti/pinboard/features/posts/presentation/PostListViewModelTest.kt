@@ -9,6 +9,7 @@ import com.fibelatti.pinboard.MockDataProvider.createLoginContent
 import com.fibelatti.pinboard.MockDataProvider.createPostListContent
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.appstate.Archived
 import com.fibelatti.pinboard.features.appstate.Loaded
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostListContent
@@ -362,6 +363,36 @@ internal class PostListViewModelTest : BaseViewModelTest() {
                             sorting = mockSortType,
                             tags = GetPostParams.Tags.Untagged,
                             offset = expectedOffset,
+                        ),
+                    )
+                }
+            }
+
+            @ParameterizedTest
+            @MethodSource("testCases")
+            fun `WHEN loadContent is called AND category is Archived THEN getAllPosts should be called`(
+                testCase: Pair<ShouldLoad, Int>,
+            ) = runTest {
+                // GIVEN
+                val (shouldLoad, expectedOffset) = testCase
+
+                // WHEN
+                postListViewModel.loadContent(
+                    createPostListContent(
+                        category = Archived,
+                        shouldLoad = shouldLoad,
+                        sortType = mockSortType,
+                    ),
+                )
+
+                // THEN
+                verify {
+                    mockGetAllPosts(
+                        GetPostParams(
+                            sorting = mockSortType,
+                            archived = true,
+                            offset = expectedOffset,
+                            forceRefresh = shouldLoad is ShouldForceLoad,
                         ),
                     )
                 }

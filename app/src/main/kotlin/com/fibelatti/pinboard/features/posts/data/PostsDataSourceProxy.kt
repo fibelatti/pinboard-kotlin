@@ -54,6 +54,10 @@ internal class PostsDataSourceProxy @Inject constructor(
 
     override suspend fun delete(post: Post): Result<Unit> = repository.delete(post = post)
 
+    override suspend fun archive(post: Post): Result<Post> = repository.archive(post = post)
+
+    override suspend fun unarchive(post: Post): Result<Post> = repository.unarchive(post = post)
+
     override fun getAllPosts(
         sortType: SortType,
         searchTerm: String,
@@ -63,6 +67,7 @@ internal class PostsDataSourceProxy @Inject constructor(
         untaggedOnly: Boolean,
         postVisibility: PostVisibility,
         readLaterOnly: Boolean,
+        archivedOnly: Boolean,
         countLimit: Int,
         pageLimit: Int,
         pageOffset: Int,
@@ -76,6 +81,7 @@ internal class PostsDataSourceProxy @Inject constructor(
         untaggedOnly = untaggedOnly,
         postVisibility = postVisibility,
         readLaterOnly = readLaterOnly,
+        archivedOnly = archivedOnly,
         countLimit = countLimit,
         pageLimit = pageLimit,
         pageOffset = pageOffset,

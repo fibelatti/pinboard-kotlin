@@ -245,6 +245,8 @@ private fun LaunchedMainViewModelEffect(
                         postDetailViewModel.deletePost(post)
                     }
 
+                    is MainState.MenuItemComponent.ToggleArchived -> postDetailViewModel.toggleArchived(post)
+
                     is MainState.MenuItemComponent.OpenInBrowser -> openUrlInExternalBrowser(localContext, post)
 
                     else -> Unit
@@ -425,6 +427,8 @@ private fun BookmarkContent(
                     PendingSync.ADD -> stringResource(id = R.string.posts_pending_add_expanded)
                     PendingSync.UPDATE -> stringResource(id = R.string.posts_pending_update_expanded)
                     PendingSync.DELETE -> stringResource(id = R.string.posts_pending_delete_expanded)
+                    PendingSync.ARCHIVE -> stringResource(id = R.string.posts_pending_archive_expanded)
+                    PendingSync.UNARCHIVE -> stringResource(id = R.string.posts_pending_unarchive_expanded)
                 },
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             )

@@ -56,6 +56,7 @@ data object Public : ViewCategory()
 data object Private : ViewCategory()
 data object Unread : ViewCategory()
 data object Untagged : ViewCategory()
+data object Archived : ViewCategory()
 // endregion ViewCategory
 // endregion NavigationAction
 

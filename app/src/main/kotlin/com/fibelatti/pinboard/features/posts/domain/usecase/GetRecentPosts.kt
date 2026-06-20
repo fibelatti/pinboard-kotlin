@@ -23,6 +23,7 @@ class GetRecentPosts @Inject constructor(
         untaggedOnly = false,
         postVisibility = PostVisibility.None,
         readLaterOnly = false,
+        archivedOnly = false,
         countLimit = DEFAULT_RECENT_QUANTITY,
         pageLimit = DEFAULT_RECENT_QUANTITY,
         pageOffset = 0,

@@ -16,8 +16,8 @@ interface BookmarksDao {
     @Query("delete from $TABLE_NAME")
     suspend fun deleteAllBookmarks()
 
-    @Query("delete from $TABLE_NAME where pendingSync is null")
-    suspend fun deleteAllSyncedBookmarks()
+    @Query("delete from $TABLE_NAME where pendingSync is null and IFNULL(isArchived, 0) = :archived")
+    suspend fun deleteSyncedBookmarks(archived: Boolean)
 
     @Query("delete from $TABLE_NAME where id = :id")
     suspend fun deleteBookmark(id: String)
@@ -58,6 +58,7 @@ interface BookmarksDao {
             untaggedOnly: Boolean = false,
             postVisibility: PostVisibility = PostVisibility.None,
             readLaterOnly: Boolean = false,
+            archivedOnly: Boolean = false,
             limit: Int = -1,
         ): SimpleSQLiteQuery {
             return bookmarksFtsQuery(
@@ -70,6 +71,7 @@ interface BookmarksDao {
                 untaggedOnly = untaggedOnly,
                 postVisibility = postVisibility,
                 readLaterOnly = readLaterOnly,
+                archivedOnly = archivedOnly,
                 limit = limit,
                 addTrailingParenthesis = true,
             )
@@ -84,6 +86,7 @@ interface BookmarksDao {
             untaggedOnly: Boolean = false,
             postVisibility: PostVisibility = PostVisibility.None,
             readLaterOnly: Boolean = false,
+            archivedOnly: Boolean = false,
             sortType: Int = 0,
             offset: Int = 0,
             limit: Int = -1,
@@ -98,6 +101,7 @@ interface BookmarksDao {
                 untaggedOnly = untaggedOnly,
                 postVisibility = postVisibility,
                 readLaterOnly = readLaterOnly,
+                archivedOnly = archivedOnly,
                 sortType = sortType,
                 offset = offset,
                 limit = limit,
@@ -114,6 +118,7 @@ interface BookmarksDao {
             untaggedOnly: Boolean,
             postVisibility: PostVisibility,
             readLaterOnly: Boolean,
+            archivedOnly: Boolean,
             sortType: Int = 0,
             offset: Int = 0,
             limit: Int = -1,
@@ -169,6 +174,8 @@ interface BookmarksDao {
                 if (readLaterOnly) {
                     append(" and unread = 1")
                 }
+
+                append(" and IFNULL(isArchived, 0) = ${if (archivedOnly) 1 else 0}")
 
                 when (sortType) {
                     0 -> append(" order by dateAdded DESC")
@@ -236,6 +243,7 @@ interface BookmarksDao {
             untaggedOnly: Boolean = false,
             postVisibility: PostVisibility = PostVisibility.None,
             readLaterOnly: Boolean = false,
+            archivedOnly: Boolean = false,
             limit: Int = -1,
         ): SimpleSQLiteQuery {
             return bookmarksNoFtsQuery(
@@ -249,6 +257,7 @@ interface BookmarksDao {
                 untaggedOnly = untaggedOnly,
                 postVisibility = postVisibility,
                 readLaterOnly = readLaterOnly,
+                archivedOnly = archivedOnly,
                 limit = limit,
                 addTrailingParenthesis = true,
             )
@@ -264,6 +273,7 @@ interface BookmarksDao {
             untaggedOnly: Boolean = false,
             postVisibility: PostVisibility = PostVisibility.None,
             readLaterOnly: Boolean = false,
+            archivedOnly: Boolean = false,
             sortType: Int = 0,
             offset: Int = 0,
             limit: Int = -1,
@@ -279,6 +289,7 @@ interface BookmarksDao {
                 untaggedOnly = untaggedOnly,
                 postVisibility = postVisibility,
                 readLaterOnly = readLaterOnly,
+                archivedOnly = archivedOnly,
                 sortType = sortType,
                 offset = offset,
                 limit = limit,
@@ -296,6 +307,7 @@ interface BookmarksDao {
             untaggedOnly: Boolean,
             postVisibility: PostVisibility,
             readLaterOnly: Boolean,
+            archivedOnly: Boolean,
             sortType: Int = -1,
             offset: Int = 0,
             limit: Int = -1,
@@ -355,6 +367,8 @@ interface BookmarksDao {
                 if (readLaterOnly) {
                     append(" and unread = 1")
                 }
+
+                append(" and IFNULL(isArchived, 0) = ${if (archivedOnly) 1 else 0}")
 
                 when (sortType) {
                     0 -> append(" order by dateAdded DESC")

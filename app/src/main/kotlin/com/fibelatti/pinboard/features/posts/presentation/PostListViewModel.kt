@@ -6,6 +6,7 @@ import com.fibelatti.core.functional.onEachSuccess
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
+import com.fibelatti.pinboard.features.appstate.Archived
 import com.fibelatti.pinboard.features.appstate.PostAction
 import com.fibelatti.pinboard.features.appstate.PostListContent
 import com.fibelatti.pinboard.features.appstate.Private
@@ -124,6 +125,17 @@ class PostListViewModel @Inject constructor(
                         sorting = content.sortType,
                         tags = GetPostParams.Tags.Untagged,
                         offset = offset,
+                    ),
+                )
+            }
+
+            is Archived -> {
+                getAll(
+                    params = GetPostParams(
+                        sorting = content.sortType,
+                        archived = true,
+                        offset = offset,
+                        forceRefresh = content.shouldLoad is ShouldForceLoad,
                     ),
                 )
             }

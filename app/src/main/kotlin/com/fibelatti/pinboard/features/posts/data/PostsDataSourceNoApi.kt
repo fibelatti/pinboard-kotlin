@@ -2,6 +2,7 @@ package com.fibelatti.pinboard.features.posts.data
 
 import androidx.annotation.VisibleForTesting
 import androidx.sqlite.db.SimpleSQLiteQuery
+import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.Result
 import com.fibelatti.core.functional.Success
 import com.fibelatti.core.functional.catching
@@ -68,6 +69,10 @@ class PostsDataSourceNoApi @Inject constructor(
         postsDao.deletePost(url = post.url)
     }
 
+    override suspend fun archive(post: Post): Result<Post> = Failure(InvalidRequestException())
+
+    override suspend fun unarchive(post: Post): Result<Post> = Failure(InvalidRequestException())
+
     override fun getAllPosts(
         sortType: SortType,
         searchTerm: String,
@@ -77,6 +82,7 @@ class PostsDataSourceNoApi @Inject constructor(
         untaggedOnly: Boolean,
         postVisibility: PostVisibility,
         readLaterOnly: Boolean,
+        archivedOnly: Boolean,
         countLimit: Int,
         pageLimit: Int,
         pageOffset: Int,

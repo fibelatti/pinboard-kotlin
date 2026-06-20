@@ -257,11 +257,10 @@ fun BookmarkListScreen(
 
         BookmarkQuickActionsBottomSheet(
             sheetState = bookmarkQuickActionsSheetState,
+            appMode = appState.appMode,
             tagsClipboard = tagsClipboard,
             hiddenPostQuickOptions = userPreferences.hiddenPostQuickOptions,
-            onToggleReadLater = { post ->
-                postDetailViewModel.toggleReadLater(post = post)
-            },
+            onToggleReadLater = postDetailViewModel::toggleReadLater,
             onCopyTags = { tags ->
                 tagsClipboard.clear()
                 tagsClipboard.addAll(tags)
@@ -276,12 +275,11 @@ fun BookmarkListScreen(
 
                 localView.showBanner(message = tagsCopiedFeedback, duration = 3_000)
             },
-            onPasteTags = { post, tags ->
-                postDetailViewModel.addTags(post = post, tags = tags)
-            },
+            onPasteTags = postDetailViewModel::addTags,
             onEdit = { post ->
                 mainViewModel.runAction(action = EditPost(post))
             },
+            onToggleArchive = postDetailViewModel::toggleArchived,
             onDelete = { post ->
                 showDeleteConfirmationDialog(context = localContext) {
                     postDetailViewModel.deletePost(post)
@@ -385,12 +383,12 @@ private fun LaunchedPostDetailViewModelEffect(
             }
 
             current.updated is Success<Boolean> && current.updated.value -> {
-                localView.showBanner(R.string.posts_marked_as_read_feedback)
+                localView.showBanner(R.string.posts_updated_feedback)
                 postDetailViewModel.userNotified()
             }
 
             current.updated is Failure -> {
-                localView.showBanner(R.string.posts_marked_as_read_error)
+                localView.showBanner(R.string.posts_updated_error)
                 postDetailViewModel.userNotified()
             }
         }
@@ -623,6 +621,8 @@ private fun BookmarkItem(
                             PendingSync.ADD -> stringResource(id = R.string.posts_pending_add)
                             PendingSync.UPDATE -> stringResource(id = R.string.posts_pending_update)
                             PendingSync.DELETE -> stringResource(id = R.string.posts_pending_delete)
+                            PendingSync.ARCHIVE -> stringResource(id = R.string.posts_pending_archive)
+                            PendingSync.UNARCHIVE -> stringResource(id = R.string.posts_pending_unarchive)
                         },
                     )
                 }
@@ -839,12 +839,14 @@ private fun BookmarkFlags(
 @Composable
 private fun BookmarkQuickActionsBottomSheet(
     sheetState: AppSheetState,
+    appMode: AppMode,
     tagsClipboard: List<Tag>,
     hiddenPostQuickOptions: Set<String>,
     onToggleReadLater: (Post) -> Unit,
     onCopyTags: (List<Tag>) -> Unit,
     onPasteTags: (Post, List<Tag>) -> Unit,
     onEdit: (Post) -> Unit,
+    onToggleArchive: (Post) -> Unit,
     onDelete: (Post) -> Unit,
     onExpandDescription: (Post) -> Unit,
 ) {
@@ -858,7 +860,7 @@ private fun BookmarkQuickActionsBottomSheet(
         key2 = tagsClipboard,
         key3 = hiddenPostQuickOptions,
     ) {
-        PostQuickActions.allOptions(post = post, tagsClipboard = tagsClipboard)
+        PostQuickActions.allOptions(post = post, appMode = appMode, tagsClipboard = tagsClipboard)
             .associateWith { option -> option.serializedName in hiddenPostQuickOptions }
     }
 
@@ -884,6 +886,10 @@ private fun BookmarkQuickActionsBottomSheet(
 
                 is PostQuickActions.Edit -> {
                     onEdit(post)
+                }
+
+                is PostQuickActions.ToggleArchived -> {
+                    onToggleArchive(post)
                 }
 
                 is PostQuickActions.Delete -> {

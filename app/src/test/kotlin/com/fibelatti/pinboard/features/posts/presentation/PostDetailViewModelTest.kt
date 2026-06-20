@@ -8,7 +8,9 @@ import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostDeleted
 import com.fibelatti.pinboard.features.appstate.PostSaved
 import com.fibelatti.pinboard.features.posts.domain.usecase.AddPost
+import com.fibelatti.pinboard.features.posts.domain.usecase.ArchivePost
 import com.fibelatti.pinboard.features.posts.domain.usecase.DeletePost
+import com.fibelatti.pinboard.features.posts.domain.usecase.UnarchivePost
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
@@ -24,6 +26,8 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
     private val mockAppStateRepository = mockk<AppStateRepository>(relaxed = true)
     private val mockDeletePost = mockk<DeletePost>()
     private val mockAddPost = mockk<AddPost>()
+    private val mockArchivePost = mockk<ArchivePost>()
+    private val mockUnarchivePost = mockk<UnarchivePost>()
 
     private val mockPost = createPost()
 
@@ -32,6 +36,8 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
         appStateRepository = mockAppStateRepository,
         deletePost = mockDeletePost,
         addPost = mockAddPost,
+        archivePost = mockArchivePost,
+        unarchivePost = mockUnarchivePost,
     )
 
     @Test
@@ -118,6 +124,73 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
         coVerify {
             mockAddPost(expectedParams)
             mockAppStateRepository.runDelayedAction(PostSaved(mockPost))
+        }
+    }
+
+    @Test
+    fun `WHEN toggleArchived fails THEN updateError should receive a value`() = runTest {
+        // GIVEN
+        val error = Exception()
+        coEvery { mockArchivePost(mockPost) } returns Failure(error)
+
+        // WHEN
+        postDetailViewModel.toggleArchived(mockPost)
+
+        // THEN
+        assertThat(postDetailViewModel.screenState.first()).isEqualTo(
+            PostDetailViewModel.ScreenState(
+                isLoading = false,
+                deleted = Success(false),
+                updated = Failure(error),
+            ),
+        )
+        coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
+    }
+
+    @Test
+    fun `WHEN toggleArchived succeeds for a not archived post THEN it should archive and run PostSaved`() = runTest {
+        // GIVEN
+        val archivedPost = mockPost.copy(isArchived = true)
+        coEvery { mockArchivePost(mockPost) } returns Success(archivedPost)
+
+        // WHEN
+        postDetailViewModel.toggleArchived(mockPost)
+
+        // THEN
+        assertThat(postDetailViewModel.screenState.first()).isEqualTo(
+            PostDetailViewModel.ScreenState(
+                isLoading = false,
+                deleted = Success(false),
+                updated = Success(true),
+            ),
+        )
+        coVerify {
+            mockArchivePost(mockPost)
+            mockAppStateRepository.runDelayedAction(PostSaved(archivedPost))
+        }
+    }
+
+    @Test
+    fun `WHEN toggleArchived succeeds for an archived post THEN it should unarchive and run PostSaved`() = runTest {
+        // GIVEN
+        val archivedPost = mockPost.copy(isArchived = true)
+        val unarchivedPost = mockPost.copy(isArchived = false)
+        coEvery { mockUnarchivePost(archivedPost) } returns Success(unarchivedPost)
+
+        // WHEN
+        postDetailViewModel.toggleArchived(archivedPost)
+
+        // THEN
+        assertThat(postDetailViewModel.screenState.first()).isEqualTo(
+            PostDetailViewModel.ScreenState(
+                isLoading = false,
+                deleted = Success(false),
+                updated = Success(true),
+            ),
+        )
+        coVerify {
+            mockUnarchivePost(archivedPost)
+            mockAppStateRepository.runDelayedAction(PostSaved(unarchivedPost))
         }
     }
 }

@@ -228,6 +228,10 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
         }
     }
 
+    override suspend fun archive(post: Post): Result<Post> = Failure(InvalidRequestException())
+
+    override suspend fun unarchive(post: Post): Result<Post> = Failure(InvalidRequestException())
+
     override fun getAllPosts(
         sortType: SortType,
         searchTerm: String,
@@ -237,6 +241,7 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
         untaggedOnly: Boolean,
         postVisibility: PostVisibility,
         readLaterOnly: Boolean,
+        archivedOnly: Boolean,
         countLimit: Int,
         pageLimit: Int,
         pageOffset: Int,

@@ -49,6 +49,7 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
 ) : PostsRepository {
 
     private var lastGetAllTimeMillis: Long = 0
+    private var lastGetArchivedTimeMillis: Long = 0
 
     @Volatile
     private var pagedRequestsJob: Job? = null
@@ -171,6 +172,67 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
         }
     }
 
+    override suspend fun archive(post: Post): Result<Post> = setArchived(post = post, archived = true)
+
+    override suspend fun unarchive(post: Post): Result<Post> = setArchived(post = post, archived = false)
+
+    private suspend fun setArchived(post: Post, archived: Boolean): Result<Post> {
+        return if (connectivityInfoProvider.isConnected() && PendingSync.ADD != post.pendingSync) {
+            setArchivedRemote(post = post, archived = archived)
+        } else {
+            setArchivedLocal(post = post, archived = archived)
+        }
+    }
+
+    private suspend fun setArchivedRemote(post: Post, archived: Boolean): Result<Post> {
+        val networkResult = resultFromNetwork {
+            require(
+                if (archived) {
+                    linkdingApi.archiveBookmark(id = post.id)
+                } else {
+                    linkdingApi.unarchiveBookmark(id = post.id)
+                },
+            )
+        }
+
+        return when (networkResult) {
+            is Success -> setArchivedLocal(post = post, archived = archived, pendingSync = null)
+
+            is Failure -> {
+                if (networkResult.value is IOException) {
+                    setArchivedLocal(post = post, archived = archived)
+                } else {
+                    networkResult
+                }
+            }
+        }
+    }
+
+    private suspend fun setArchivedLocal(
+        post: Post,
+        archived: Boolean,
+        pendingSync: PendingSyncDto? = if (archived) PendingSyncDto.ARCHIVE else PendingSyncDto.UNARCHIVE,
+    ): Result<Post> = resultFrom {
+        val existingPost = linkdingDao.getBookmark(id = post.id, url = post.url)
+            ?: error("Can't archive post with url: ${post.url}. It doesn't exist locally.")
+
+        // A bookmark still pending creation has no server id, so keep the ADD marker and let the
+        // eventual create carry the archive state; otherwise apply the archive/unarchive marker.
+        // Note: this checks the local row's marker, not the passed post's. setArchived() only routes
+        // to the remote path when the passed post is not pending ADD, but the local row is the source
+        // of truth here, so preserving its ADD marker is the safe choice even if the two disagree.
+        val resolvedPendingSync = if (PendingSyncDto.ADD == existingPost.pendingSync) {
+            PendingSyncDto.ADD
+        } else {
+            pendingSync
+        }
+
+        val updatedPost = existingPost.copy(isArchived = archived, pendingSync = resolvedPendingSync)
+        linkdingDao.saveBookmarks(listOf(updatedPost))
+
+        bookmarkLocalMapper.map(updatedPost)
+    }
+
     override fun getAllPosts(
         sortType: SortType,
         searchTerm: String,
@@ -180,6 +242,7 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
         untaggedOnly: Boolean,
         postVisibility: PostVisibility,
         readLaterOnly: Boolean,
+        archivedOnly: Boolean,
         countLimit: Int,
         pageLimit: Int,
         pageOffset: Int,
@@ -195,6 +258,7 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
                 untaggedOnly = untaggedOnly,
                 postVisibility = postVisibility,
                 readLaterOnly = readLaterOnly,
+                archivedOnly = archivedOnly,
                 countLimit = countLimit,
                 pageLimit = pageLimit,
                 pageOffset = pageOffset,
@@ -202,55 +266,70 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
             )
         }
 
+        val lastFetchTimeMillis = if (archivedOnly) lastGetArchivedTimeMillis else lastGetAllTimeMillis
         val shouldFetchRemote = connectivityInfoProvider.isConnected() &&
-            (System.currentTimeMillis() - lastGetAllTimeMillis > 2.minutes.inWholeMilliseconds || forceRefresh)
+            (System.currentTimeMillis() - lastFetchTimeMillis > 2.minutes.inWholeMilliseconds || forceRefresh)
 
         if (shouldFetchRemote) {
             emit(localData(false))
-            getAllFromApi(localData)
+            getAllFromApi(archivedOnly = archivedOnly, localData = localData)
         } else {
             emit(localData(true))
         }
     }
 
     private suspend fun FlowCollector<Result<PostListResult>>.getAllFromApi(
+        archivedOnly: Boolean,
         localData: suspend (upToDate: Boolean) -> Result<PostListResult>,
     ) {
         pagedRequestsJob?.cancel()
 
-        val apiData = resultFromNetwork { linkdingApi.getBookmarks(offset = 0, limit = AppConfig.API_PAGE_SIZE) }
+        val apiData = resultFromNetwork { getBookmarksFromApi(archivedOnly = archivedOnly, offset = 0) }
             .mapCatching { paginatedResponse ->
-                linkdingDao.deleteAllSyncedBookmarks()
+                linkdingDao.deleteSyncedBookmarks(archived = archivedOnly)
                 linkdingDao.saveBookmarks(
                     bookmarks = bookmarkRemoteMapper.mapList(paginatedResponse.results)
-                        .let(bookmarkLocalMapper::mapListReverse),
+                        .let(bookmarkLocalMapper::mapListReverse)
+                        // Trust the endpoint over the payload: the archived list is archived, the rest is not.
+                        .map { it.copy(isArchived = archivedOnly) },
                 )
 
-                lastGetAllTimeMillis = System.currentTimeMillis()
+                if (archivedOnly) {
+                    lastGetArchivedTimeMillis = System.currentTimeMillis()
+                } else {
+                    lastGetAllTimeMillis = System.currentTimeMillis()
+                }
 
-                getAdditionalPages(totalCount = paginatedResponse.count)
+                getAdditionalPages(archivedOnly = archivedOnly, totalCount = paginatedResponse.count)
             }
             .let { localData(true) }
 
         emit(apiData)
     }
 
+    private suspend fun getBookmarksFromApi(
+        archivedOnly: Boolean,
+        offset: Int,
+    ): PaginatedResponseRemote<BookmarkRemote> = if (archivedOnly) {
+        linkdingApi.getArchivedBookmarks(offset = offset, limit = AppConfig.API_PAGE_SIZE)
+    } else {
+        linkdingApi.getBookmarks(offset = offset, limit = AppConfig.API_PAGE_SIZE)
+    }
+
     @VisibleForTesting
-    suspend fun getAdditionalPages(totalCount: Int) = supervisorScope {
+    suspend fun getAdditionalPages(archivedOnly: Boolean, totalCount: Int) = supervisorScope {
         if (totalCount <= AppConfig.API_PAGE_SIZE) return@supervisorScope
 
         pagedRequestsJob = launch {
             try {
                 for (currentOffset in AppConfig.API_PAGE_SIZE until totalCount step AppConfig.API_PAGE_SIZE) {
                     ensureActive()
-                    val additionalPosts = linkdingApi.getBookmarks(
-                        offset = currentOffset,
-                        limit = AppConfig.API_PAGE_SIZE,
-                    )
+                    val additionalPosts = getBookmarksFromApi(archivedOnly = archivedOnly, offset = currentOffset)
 
                     linkdingDao.saveBookmarks(
                         bookmarks = bookmarkRemoteMapper.mapList(additionalPosts.results)
-                            .let(bookmarkLocalMapper::mapListReverse),
+                            .let(bookmarkLocalMapper::mapListReverse)
+                            .map { it.copy(isArchived = archivedOnly) },
                     )
                 }
             } catch (e: CancellationException) {
@@ -275,6 +354,7 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
             untaggedOnly = false,
             postVisibility = PostVisibility.None,
             readLaterOnly = false,
+            archivedOnly = false,
             countLimit = -1,
         )
     }.getOrDefault(0)
@@ -288,6 +368,7 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
         untaggedOnly: Boolean,
         postVisibility: PostVisibility,
         readLaterOnly: Boolean,
+        archivedOnly: Boolean,
         countLimit: Int,
     ): Int {
         val isFtsCompatible: Boolean = matchAll &&
@@ -304,6 +385,7 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
                 untaggedOnly = untaggedOnly,
                 postVisibility = postVisibility,
                 readLaterOnly = readLaterOnly,
+                archivedOnly = archivedOnly,
                 limit = countLimit,
             )
         } else {
@@ -317,6 +399,7 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
                 untaggedOnly = untaggedOnly,
                 postVisibility = postVisibility,
                 readLaterOnly = readLaterOnly,
+                archivedOnly = archivedOnly,
                 limit = countLimit,
             )
         }
@@ -334,6 +417,7 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
         untaggedOnly: Boolean,
         postVisibility: PostVisibility,
         readLaterOnly: Boolean,
+        archivedOnly: Boolean,
         countLimit: Int,
         pageLimit: Int,
         pageOffset: Int,
@@ -347,6 +431,7 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
             untaggedOnly = untaggedOnly,
             postVisibility = postVisibility,
             readLaterOnly = readLaterOnly,
+            archivedOnly = archivedOnly,
             countLimit = countLimit,
         )
         val isFtsCompatible: Boolean = matchAll &&
@@ -362,6 +447,7 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
                 untaggedOnly = untaggedOnly,
                 postVisibility = postVisibility,
                 readLaterOnly = readLaterOnly,
+                archivedOnly = archivedOnly,
                 sortType = sortType.index,
                 offset = pageOffset,
                 limit = pageLimit,
@@ -377,6 +463,7 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
                 untaggedOnly = untaggedOnly,
                 postVisibility = postVisibility,
                 readLaterOnly = readLaterOnly,
+                archivedOnly = archivedOnly,
                 sortType = sortType.index,
                 offset = pageOffset,
                 limit = pageLimit,

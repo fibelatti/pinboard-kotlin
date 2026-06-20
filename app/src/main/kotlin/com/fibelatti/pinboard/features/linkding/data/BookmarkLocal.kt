@@ -72,6 +72,8 @@ class BookmarkLocalMapper @Inject constructor(
                 PendingSyncDto.ADD -> PendingSync.ADD
                 PendingSyncDto.UPDATE -> PendingSync.UPDATE
                 PendingSyncDto.DELETE -> PendingSync.DELETE
+                PendingSyncDto.ARCHIVE -> PendingSync.ARCHIVE
+                PendingSyncDto.UNARCHIVE -> PendingSync.UNARCHIVE
                 null -> null
             },
         )
@@ -97,6 +99,8 @@ class BookmarkLocalMapper @Inject constructor(
                 PendingSync.ADD -> PendingSyncDto.ADD
                 PendingSync.UPDATE -> PendingSyncDto.UPDATE
                 PendingSync.DELETE -> PendingSyncDto.DELETE
+                PendingSync.ARCHIVE -> PendingSyncDto.ARCHIVE
+                PendingSync.UNARCHIVE -> PendingSyncDto.UNARCHIVE
                 null -> null
             },
         )
