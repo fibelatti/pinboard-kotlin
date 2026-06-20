@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.TrafficStats
 import android.os.Build
 import coil3.ImageLoader
-import coil3.annotation.ExperimentalCoilApi
 import coil3.disk.DiskCache
 import coil3.disk.directory
 import coil3.memory.MemoryCache
@@ -127,7 +126,6 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    @OptIn(ExperimentalCoilApi::class)
     fun imageLoader(
         @ApplicationContext context: Context,
         threadStatsTagInterceptor: Interceptor,

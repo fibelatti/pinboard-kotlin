@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
-
 package com.fibelatti.pinboard.features.tags.presentation
 
 import android.view.KeyEvent
@@ -8,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -77,7 +74,7 @@ fun TagManager(
             value = searchTagInput,
             onValueChange = { newValue ->
                 when {
-                    // Handle keyboards that add a space after punctuation, . is used for private tags
+                    // Handle keyboards that add a space after punctuation, `.` is used for private tags
                     newValue == ". " -> onSearchTagInputChange(".")
 
                     newValue.isNotBlank() && newValue.endsWith(" ") -> onAddTagClick(newValue)
