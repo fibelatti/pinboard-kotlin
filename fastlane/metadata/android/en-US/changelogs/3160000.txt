@@ -1,0 +1,5 @@
+This version brings the following updates:
+
+* Added support for archived bookmarks (Linkding)
+
+Thanks for using the app!
