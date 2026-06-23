@@ -66,7 +66,7 @@ jobs:
         uses: ./.github/actions/setup-android-build
 
       - name: AVD cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         id: avd-cache
         with:
           path: |
