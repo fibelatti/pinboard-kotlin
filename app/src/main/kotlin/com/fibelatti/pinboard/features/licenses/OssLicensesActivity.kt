@@ -29,9 +29,11 @@ import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.BackArrow
 import com.fibelatti.ui.foundation.copy
 import com.mikepenz.aboutlibraries.Libs
-import com.mikepenz.aboutlibraries.ui.compose.LibraryDefaults
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import com.mikepenz.aboutlibraries.ui.compose.produceLibraries
+import com.mikepenz.aboutlibraries.ui.compose.style.LibraryActionBadges
+import com.mikepenz.aboutlibraries.ui.compose.variant.LibrariesVariant
+import com.mikepenz.aboutlibraries.ui.compose.variant.LibraryBadges
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -69,14 +71,9 @@ private fun OssLicensesScreen(
             .background(color = MaterialTheme.colorScheme.background)
             .padding(top = paddingValues.calculateTopPadding()),
         contentPadding = paddingValues.copy(top = 0.dp),
-        showLicenseBadges = false,
-        padding = LibraryDefaults.libraryPadding(
-            versionPadding = LibraryDefaults.chipPadding(
-                containerPadding = PaddingValues(start = 8.dp, top = 8.dp, end = 8.dp),
-                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
-            ),
-            licenseDialogContentPadding = 16.dp,
-        ),
+        badges = LibraryBadges(license = false),
+        actionLabels = LibraryActionBadges(sponsorEnabled = false),
+        variant = LibrariesVariant.Refined,
         header = {
             stickyHeader {
                 Row(
