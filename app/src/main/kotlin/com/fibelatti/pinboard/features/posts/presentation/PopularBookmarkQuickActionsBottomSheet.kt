@@ -18,7 +18,6 @@ import com.fibelatti.pinboard.core.android.icons.Share
 import com.fibelatti.pinboard.core.extension.copyToClipboard
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.components.AppSheetState
-import com.fibelatti.ui.components.bottomSheetData
 
 @Composable
 fun PopularBookmarkQuickActionsBottomSheet(

@@ -37,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.R
 import com.fibelatti.ui.components.AppBottomSheet
 import com.fibelatti.ui.components.AppSheetState
-import com.fibelatti.ui.components.hideBottomSheet
 import com.fibelatti.ui.preview.PreviewAccessibility
 import com.fibelatti.ui.preview.PreviewThemesAndColors
 import com.fibelatti.ui.theme.ExtendedTheme

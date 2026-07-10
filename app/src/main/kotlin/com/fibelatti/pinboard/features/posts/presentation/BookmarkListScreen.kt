@@ -135,9 +135,7 @@ import com.fibelatti.pinboard.features.user.presentation.UserPreferencesViewMode
 import com.fibelatti.ui.components.AppSheetState
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
-import com.fibelatti.ui.components.bottomSheetData
 import com.fibelatti.ui.components.rememberAppSheetState
-import com.fibelatti.ui.components.showBottomSheet
 import com.fibelatti.ui.preview.PreviewAccessibility
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.preview.PreviewThemesAndColors

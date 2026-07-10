@@ -35,7 +35,6 @@ import com.fibelatti.pinboard.features.licenses.OssLicensesActivity
 import com.fibelatti.pinboard.features.main.MainViewModel
 import com.fibelatti.ui.components.AppBottomSheet
 import com.fibelatti.ui.components.AppSheetState
-import com.fibelatti.ui.components.hideBottomSheet
 import dagger.hilt.android.EntryPointAccessors
 
 @Composable

@@ -30,7 +30,6 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.ui.components.AppBottomSheet
 import com.fibelatti.ui.components.AppSheetState
-import com.fibelatti.ui.components.hideBottomSheet
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.delay
