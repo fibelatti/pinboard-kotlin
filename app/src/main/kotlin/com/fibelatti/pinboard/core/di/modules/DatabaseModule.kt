@@ -36,7 +36,8 @@ object DatabaseModule {
                 setQueryCallback(
                     context = Dispatchers.Unconfined,
                     queryCallback = { sqlQuery: String, bindArgs: List<Any?> ->
-                        Timber.tag("AppDatabase").d("On query (sqlQuery=$sqlQuery; bindArgs=$bindArgs")
+                        Timber.tag("AppDatabase")
+                            .d("On query %s", mapOf("sqlQuery" to sqlQuery, "bindArgs" to bindArgs))
                     },
                 )
             }

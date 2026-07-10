@@ -54,7 +54,7 @@ class AppModeProvider @Inject constructor(
         credentials: UserCredentials = userRepository.userCredentials.value,
         selection: AppMode? = this.userSelection.value,
     ): AppMode {
-        Timber.d("Determining app mode (credentials=$credentials, userSelection=$selection)")
+        Timber.d("Determining app mode %s", mapOf("credentials" to credentials, "userSelection" to selection))
         return when {
             credentials.appReviewMode -> AppMode.NO_API
 

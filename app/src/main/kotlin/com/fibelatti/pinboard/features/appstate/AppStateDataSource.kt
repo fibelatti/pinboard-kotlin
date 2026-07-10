@@ -69,7 +69,10 @@ class AppStateDataSource @Inject constructor(
 
     private suspend fun reduce(action: Action) {
         reducer.emit { appState: AppState ->
-            Timber.d("Reducing (action=${action.prettyPrint()}, appState=${appState.prettyPrint()})")
+            Timber.d(
+                "Reducing %s",
+                mapOf("action" to action.prettyPrint(), "appState" to appState.prettyPrint()),
+            )
 
             val newContent: Content = when (action) {
                 is AppAction -> {

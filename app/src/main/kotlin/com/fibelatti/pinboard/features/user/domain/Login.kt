@@ -22,7 +22,7 @@ class Login @Inject constructor(
 ) : UseCaseWithParams<Login.Params, Result<Unit>> {
 
     override suspend operator fun invoke(params: Params): Result<Unit> {
-        Timber.d("Logging in (params=$params)")
+        Timber.d("Logging in %s", mapOf("params" to params))
         val appMode: AppMode = when (params) {
             is PinboardParams -> AppMode.PINBOARD
             is LinkdingParams -> AppMode.LINKDING

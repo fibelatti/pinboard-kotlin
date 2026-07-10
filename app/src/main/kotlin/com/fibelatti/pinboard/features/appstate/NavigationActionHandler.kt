@@ -144,7 +144,7 @@ class NavigationActionHandler @Inject constructor(
                 launch {
                     withContext(NonCancellable) {
                         runCatching { postsRepository.add(post.copy(readLater = false)) }
-                            .onFailure { Timber.e(it, "Failed to mark as read (bookmark=$post)") }
+                            .onFailure { Timber.e(it, "Failed to mark as read %s", mapOf("bookmark" to post)) }
                     }
                 }
             }

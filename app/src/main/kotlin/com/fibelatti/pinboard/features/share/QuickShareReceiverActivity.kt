@@ -66,7 +66,7 @@ class QuickShareReceiverActivity : AppCompatActivity() {
     }
 
     private fun enqueueWork(url: String, title: String?) {
-        Timber.i("Enqueueing work (url=$url,title=$title)")
+        Timber.i("Enqueueing work %s", mapOf("url" to url, "title" to title))
 
         val workRequest: WorkRequest = ShareReceiverWorker.workRequest(url = url, title = title)
         WorkManager.getInstance(this).enqueue(workRequest)

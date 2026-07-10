@@ -33,7 +33,7 @@ internal class PostsDataSourceProxy @Inject constructor(
         get() = runBlocking {
             val appMode = appModeProvider.appMode.first { AppMode.UNSET != it }
 
-            Timber.d("Getting repository (appMode=$appMode)")
+            Timber.d("Getting repository %s", mapOf("appMode" to appMode))
 
             currentRepository?.takeIf { currentAppMode == appMode }
                 ?: when (appMode) {
@@ -42,7 +42,7 @@ internal class PostsDataSourceProxy @Inject constructor(
                     AppMode.LINKDING -> postsDataSourceLinkdingApi.get()
                     AppMode.UNSET -> throw IllegalStateException()
                 }.also {
-                    Timber.d("Setting repository (appMode=$appMode)")
+                    Timber.d("Setting repository %s", mapOf("appMode" to appMode))
                     currentAppMode = appMode
                     currentRepository = it
                 }
