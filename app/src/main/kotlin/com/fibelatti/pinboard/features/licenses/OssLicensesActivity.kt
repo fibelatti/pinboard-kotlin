@@ -29,7 +29,10 @@ import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.BackArrow
 import com.fibelatti.ui.foundation.copy
 import com.mikepenz.aboutlibraries.Libs
+import com.mikepenz.aboutlibraries.ui.compose.LibraryColors
+import com.mikepenz.aboutlibraries.ui.compose.LibraryDefaults
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
+import com.mikepenz.aboutlibraries.ui.compose.m3.libraryColors
 import com.mikepenz.aboutlibraries.ui.compose.produceLibraries
 import com.mikepenz.aboutlibraries.ui.compose.style.LibraryActionBadges
 import com.mikepenz.aboutlibraries.ui.compose.variant.LibrariesVariant
@@ -63,6 +66,7 @@ private fun OssLicensesScreen(
     val libs: Libs? by produceLibraries {
         localResources.openRawResource(R.raw.aboutlibraries).bufferedReader().use { it.readText() }
     }
+    val colors: LibraryColors = LibraryDefaults.libraryColors()
 
     LibrariesContainer(
         libraries = libs,
@@ -72,13 +76,14 @@ private fun OssLicensesScreen(
             .padding(top = paddingValues.calculateTopPadding()),
         contentPadding = paddingValues.copy(top = 0.dp),
         badges = LibraryBadges(license = false),
+        colors = colors,
         actionLabels = LibraryActionBadges(sponsorEnabled = false),
         variant = LibrariesVariant.Refined,
         header = {
             stickyHeader {
                 Row(
                     modifier = Modifier
-                        .background(color = MaterialTheme.colorScheme.background)
+                        .background(color = colors.libraryBackgroundColor)
                         .fillMaxWidth(),
                 ) {
                     LongClickIconButton(
