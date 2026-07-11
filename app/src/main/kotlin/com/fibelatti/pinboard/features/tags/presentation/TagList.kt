@@ -47,7 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalResources
@@ -225,7 +225,7 @@ fun TagList(
                             searchInput = searchInput,
                             modifier = Modifier
                                 .padding(bottom = 8.dp)
-                                .onGloballyPositioned { stickyHeaderHeight = it.size.height },
+                                .onSizeChanged { stickyHeaderHeight = it.height },
                         )
                     }
 
