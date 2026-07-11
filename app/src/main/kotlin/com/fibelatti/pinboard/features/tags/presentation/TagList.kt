@@ -25,8 +25,6 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonGroupDefaults
@@ -46,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalFocusManager
@@ -57,7 +56,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -77,7 +75,9 @@ import com.fibelatti.pinboard.features.appstate.RefreshTags
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
 import com.fibelatti.ui.components.AutoSizeText
+import com.fibelatti.ui.components.ListItem
 import com.fibelatti.ui.components.rememberAppSheetState
+import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.foundation.pxToDp
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -239,17 +239,10 @@ fun TagList(
                                 .background(
                                     color = MaterialTheme.colorScheme.surfaceContainerHigh,
                                     shape = when (idx) {
-                                        0 -> MaterialTheme.shapes.small.copy(
-                                            bottomStart = CornerSize(2.dp),
-                                            bottomEnd = CornerSize(2.dp),
-                                        )
-
-                                        items.size - 1 -> MaterialTheme.shapes.small.copy(
-                                            topStart = CornerSize(2.dp),
-                                            topEnd = CornerSize(2.dp),
-                                        )
-
-                                        else -> RoundedCornerShape(2.dp)
+                                        0 if items.size == 1 -> Shapes.StandaloneShape
+                                        0 -> Shapes.TopShape
+                                        items.size - 1 -> Shapes.BottomShape
+                                        else -> Shapes.MiddleShape
                                     },
                                 ),
                         )
@@ -350,8 +343,10 @@ private fun TagListItem(
     onTagLongClick: (Tag) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val haptic = LocalHapticFeedback.current
-    Column(
+    val haptic: HapticFeedback = LocalHapticFeedback.current
+    ListItem(
+        headlineText = item.name,
+        supportingText = pluralStringResource(R.plurals.posts_quantity, item.posts, item.posts),
         modifier = modifier
             .fillMaxWidth()
             .combinedClickable(
@@ -360,28 +355,8 @@ private fun TagListItem(
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     onTagLongClick(item)
                 },
-            )
-            .padding(vertical = 8.dp),
-    ) {
-        Text(
-            text = item.name,
-            modifier = Modifier.padding(horizontal = 8.dp),
-            color = MaterialTheme.colorScheme.secondary,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 1,
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontFamily = FontFamily.Monospace,
             ),
-        )
-        Text(
-            text = pluralStringResource(R.plurals.posts_quantity, item.posts, item.posts),
-            modifier = Modifier.padding(horizontal = 8.dp),
-            color = MaterialTheme.colorScheme.onBackground,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 1,
-            style = MaterialTheme.typography.bodyMedium,
-        )
-    }
+    )
 }
 
 object TagList {
