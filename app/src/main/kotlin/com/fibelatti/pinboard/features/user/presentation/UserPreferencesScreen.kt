@@ -75,7 +75,6 @@ import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogCustomizationBottomSheet
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
-import com.fibelatti.pinboard.core.android.composable.SwitchWithIcon
 import com.fibelatti.pinboard.core.android.getWindowSizeClass
 import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.Close
@@ -326,25 +325,14 @@ private fun AppPreferencesContent(
                     onDateFormatChange(newSelection, userPreferences.preferredDateFormat.includeTime)
                 },
                 footer = {
-                    Row(
+                    SettingToggle(
+                        title = stringResource(R.string.user_preferences_date_format_include_time),
+                        checked = userPreferences.preferredDateFormat.includeTime,
+                        onCheckedChange = { newValue ->
+                            onDateFormatChange(userPreferences.preferredDateFormat, newValue)
+                        },
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.user_preferences_date_format_include_time),
-                            modifier = Modifier.weight(1f),
-                            color = MaterialTheme.colorScheme.onSurface,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-
-                        SwitchWithIcon(
-                            checked = userPreferences.preferredDateFormat.includeTime,
-                            onCheckedChange = { newValue ->
-                                onDateFormatChange(userPreferences.preferredDateFormat, newValue)
-                            },
-                        )
-                    }
+                    )
                 },
             )
         }

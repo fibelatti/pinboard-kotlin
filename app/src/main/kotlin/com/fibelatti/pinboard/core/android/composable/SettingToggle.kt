@@ -1,18 +1,31 @@
 package com.fibelatti.pinboard.core.android.composable
 
-import androidx.compose.foundation.background
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import com.fibelatti.pinboard.core.android.icons.AppIcons
+import com.fibelatti.pinboard.core.android.icons.Check
+import com.fibelatti.pinboard.core.android.icons.Xmark
+import com.fibelatti.ui.components.ListItem
+import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.preview.PreviewAccessibility
 import com.fibelatti.ui.preview.PreviewThemesAndColors
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -20,46 +33,44 @@ import com.fibelatti.ui.theme.ExtendedTheme
 @Composable
 fun SettingToggle(
     title: String,
-    description: String?,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    description: String? = null,
+    shape: Shape = Shapes.StandaloneShape,
 ) {
-    Row(
-        modifier = modifier
-            .background(
-                color = MaterialTheme.colorScheme.surfaceContainer,
-                shape = MaterialTheme.shapes.small,
-            )
-            .padding(horizontal = 8.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(
-            modifier = Modifier.weight(1f),
-        ) {
-            Text(
-                text = title,
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.titleMedium,
-            )
+    ListItem(
+        headlineText = title,
+        modifier = modifier,
+        trailingContent = {
+            Switch(
+                checked = checked,
+                onCheckedChange = onCheckedChange,
+                modifier = Modifier.testTag("setting-toggle-$title"),
+                thumbContent = {
+                    val icon: ImageVector = if (checked) AppIcons.Check else AppIcons.Xmark
 
-            if (description != null) {
-                Text(
-                    text = description,
-                    modifier = Modifier.padding(top = 4.dp),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-        }
-
-        SwitchWithIcon(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            modifier = Modifier.testTag("setting-toggle-$title"),
-        )
-    }
+                    AnimatedContent(
+                        targetState = icon,
+                        transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut() },
+                    ) { vector ->
+                        Icon(
+                            imageVector = vector,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                            tint = if (checked) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.inverseOnSurface
+                            },
+                        )
+                    }
+                },
+            )
+        },
+        supportingText = description,
+        shape = shape,
+    )
 }
 
 @Composable
