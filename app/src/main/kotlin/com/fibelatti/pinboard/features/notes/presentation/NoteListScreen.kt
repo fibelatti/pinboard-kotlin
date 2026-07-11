@@ -152,10 +152,10 @@ private fun NoteListContent(
                     ) {
                         AutoSizeText(
                             text = stringResource(id = sorting.label),
-                            style = MaterialTheme.typography.bodySmall,
                             textAlign = TextAlign.Center,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1,
+                            style = MaterialTheme.typography.bodySmall,
                         )
                     }
                 }

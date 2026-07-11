@@ -9,6 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
@@ -18,26 +21,41 @@ import androidx.compose.ui.unit.sp
 public fun AutoSizeText(
     text: String,
     modifier: Modifier = Modifier,
-    style: TextStyle = LocalTextStyle.current,
     color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    minFontSize: TextUnit = 10.sp,
+    fontStyle: FontStyle? = null,
+    fontWeight: FontWeight? = null,
+    fontFamily: FontFamily? = null,
     textAlign: TextAlign = TextAlign.Left,
+    lineHeight: TextUnit = TextUnit.Unspecified,
     overflow: TextOverflow = TextOverflow.Clip,
     maxLines: Int = Int.MAX_VALUE,
     minLines: Int = 1,
-    minTextSize: TextUnit = 10.sp,
+    style: TextStyle = LocalTextStyle.current,
 ) {
-    val textColor = color.takeOrElse { style.color.takeOrElse { LocalContentColor.current } }
+    val textColor: Color = color.takeOrElse { style.color.takeOrElse { LocalContentColor.current } }
+    val mergedStyle: TextStyle = style.merge(
+        color = textColor,
+        fontSize = fontSize,
+        fontWeight = fontWeight,
+        textAlign = textAlign,
+        fontFamily = fontFamily,
+        fontStyle = fontStyle,
+        lineHeight = lineHeight,
+    )
+    val autoSize: TextAutoSize = TextAutoSize.StepBased(
+        minFontSize = minFontSize,
+        maxFontSize = mergedStyle.fontSize,
+    )
 
     BasicText(
         text = text,
         modifier = modifier,
-        style = style.copy(textAlign = textAlign, color = textColor),
+        style = mergedStyle,
         overflow = overflow,
         maxLines = maxLines,
         minLines = minLines,
-        autoSize = TextAutoSize.StepBased(
-            minFontSize = minTextSize,
-            maxFontSize = style.fontSize,
-        ),
+        autoSize = autoSize,
     )
 }

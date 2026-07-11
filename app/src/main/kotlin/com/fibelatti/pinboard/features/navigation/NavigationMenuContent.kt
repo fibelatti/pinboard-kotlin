@@ -352,8 +352,9 @@ private fun AppVersionDetails(
         AutoSizeText(
             text = stringResource(id = R.string.about_developer),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+            fontFamily = FontFamily.Monospace,
             maxLines = 1,
+            style = MaterialTheme.typography.bodySmall,
         )
 
         Text(
