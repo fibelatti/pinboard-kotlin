@@ -43,7 +43,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.onSizeChanged
@@ -234,17 +236,13 @@ fun TagList(
                             item = item,
                             onTagClick = onTagClick,
                             onTagLongClick = onTagLongClick,
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                                .background(
-                                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                    shape = when (idx) {
-                                        0 if items.size == 1 -> Shapes.StandaloneShape
-                                        0 -> Shapes.TopShape
-                                        items.size - 1 -> Shapes.BottomShape
-                                        else -> Shapes.MiddleShape
-                                    },
-                                ),
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            shape = when (idx) {
+                                0 if items.size == 1 -> Shapes.StandaloneShape
+                                0 -> Shapes.TopShape
+                                items.size - 1 -> Shapes.BottomShape
+                                else -> Shapes.MiddleShape
+                            },
                         )
                     }
                 }
@@ -342,6 +340,7 @@ private fun TagListItem(
     onTagClick: (Tag) -> Unit,
     onTagLongClick: (Tag) -> Unit,
     modifier: Modifier = Modifier,
+    shape: Shape = Shapes.StandaloneShape,
 ) {
     val haptic: HapticFeedback = LocalHapticFeedback.current
     ListItem(
@@ -349,6 +348,7 @@ private fun TagListItem(
         supportingText = pluralStringResource(R.plurals.posts_quantity, item.posts, item.posts),
         modifier = modifier
             .fillMaxWidth()
+            .clip(shape)
             .combinedClickable(
                 onClick = { onTagClick(item) },
                 onLongClick = {
@@ -356,6 +356,7 @@ private fun TagListItem(
                     onTagLongClick(item)
                 },
             ),
+        shape = shape,
     )
 }
 

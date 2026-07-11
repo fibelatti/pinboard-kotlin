@@ -356,6 +356,7 @@ private fun MenuItem(
         headlineText = stringResource(id = textRes),
         modifier = modifier
             .fillMaxWidth()
+            .clip(shape)
             .minimumInteractiveComponentSize()
             .clickable(onClick = onClick, role = Role.Button),
         leadingContent = {
