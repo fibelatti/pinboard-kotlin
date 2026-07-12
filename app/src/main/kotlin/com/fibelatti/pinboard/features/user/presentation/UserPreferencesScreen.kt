@@ -25,6 +25,8 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -40,6 +42,7 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -53,6 +56,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalResources
@@ -92,8 +97,10 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagManager
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.ui.components.ChipGroup
+import com.fibelatti.ui.components.ListItem
 import com.fibelatti.ui.components.SingleLineChipGroup
 import com.fibelatti.ui.components.rememberAppSheetState
+import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.delay
@@ -234,7 +241,7 @@ private fun AppPreferencesContent(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         Text(
             text = stringResource(id = R.string.user_preferences_section_app),
@@ -243,8 +250,13 @@ private fun AppPreferencesContent(
             style = MaterialTheme.typography.titleLarge,
         )
 
+        Spacer(modifier = Modifier.height(6.dp))
+
+        val isDynamicColorSupported: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+
         SettingItem(
             title = stringResource(id = R.string.user_preferences_appearance),
+            shape = if (isDynamicColorSupported) Shapes.TopShape else Shapes.StandaloneShape,
         ) {
             PreferenceSelectionButton(
                 currentSelection = userPreferences.appearance,
@@ -267,24 +279,21 @@ private fun AppPreferencesContent(
             )
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (isDynamicColorSupported) {
             SettingToggle(
                 title = stringResource(id = R.string.user_preferences_dynamic_colors),
                 description = stringResource(id = R.string.user_preferences_dynamic_colors_caveat),
                 checked = userPreferences.applyDynamicColors,
                 onCheckedChange = onDynamicColorChange,
+                shape = Shapes.BottomShape,
             )
         }
 
-        SettingToggle(
-            title = stringResource(id = R.string.user_preferences_disable_screenshots),
-            description = stringResource(id = R.string.user_preferences_disable_screenshots_caveat),
-            checked = userPreferences.disableScreenshots,
-            onCheckedChange = onDisableScreenshotsChange,
-        )
+        Spacer(modifier = Modifier.height(12.dp))
 
         SettingItem(
             title = stringResource(id = R.string.user_preferences_date_format),
+            shape = Shapes.TopShape,
         ) {
             PreferenceSelectionButton(
                 currentSelection = userPreferences.preferredDateFormat,
@@ -337,45 +346,97 @@ private fun AppPreferencesContent(
             )
         }
 
-        if (AppMode.NO_API != appMode) {
-            SettingItem(
-                title = stringResource(id = R.string.user_preferences_periodic_sync),
-            ) {
-                Text(
-                    text = stringResource(id = R.string.user_preferences_periodic_sync_description),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+        SettingToggle(
+            title = stringResource(id = R.string.user_preferences_description_visible_in_lists),
+            description = stringResource(id = R.string.user_preferences_description_visible_in_lists_description),
+            checked = userPreferences.showDescriptionInLists,
+            onCheckedChange = onShowDescriptionInListsChange,
+            shape = Shapes.MiddleShape,
+        )
 
-                PreferenceSelectionButton(
-                    currentSelection = userPreferences.periodicSync,
-                    buttonText = { option: PeriodicSync ->
-                        when (option) {
-                            PeriodicSync.Off -> R.string.user_preferences_periodic_sync_off
-                            PeriodicSync.Every6Hours -> R.string.user_preferences_periodic_sync_6_hours
-                            PeriodicSync.Every12Hours -> R.string.user_preferences_periodic_sync_12_hours
-                            PeriodicSync.Every24Hours -> R.string.user_preferences_periodic_sync_24_hours
+        SettingToggle(
+            title = stringResource(id = R.string.user_preferences_alphabetize_tags),
+            description = stringResource(id = R.string.user_preferences_alphabetize_tags_description),
+            checked = userPreferences.alphabetizeTags,
+            onCheckedChange = onAlphabetizeTagsChange,
+            shape = Shapes.BottomShape,
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        val markAsReadOnOpen: Boolean by rememberUpdatedState(
+            newValue = when (val pdv = userPreferences.preferredDetailsView) {
+                is PreferredDetailsView.ExternalBrowser -> pdv.markAsReadOnOpen
+                is PreferredDetailsView.InAppBrowser -> pdv.markAsReadOnOpen
+                is PreferredDetailsView.Edit -> false
+            },
+        )
+        val isPreferredDetailsViewEdit: Boolean = userPreferences.preferredDetailsView is PreferredDetailsView.Edit
+
+        SettingItem(
+            title = stringResource(id = R.string.user_preferences_preferred_details_view),
+            shape = Shapes.TopShape,
+        ) {
+            PreferenceSelectionButton(
+                currentSelection = userPreferences.preferredDetailsView,
+                buttonText = { option: PreferredDetailsView ->
+                    when (option) {
+                        is PreferredDetailsView.InAppBrowser -> {
+                            R.string.user_preferences_preferred_details_in_app_browser
                         }
-                    },
-                    title = R.string.user_preferences_periodic_sync,
-                    options = {
-                        listOf(
-                            PeriodicSync.Off,
-                            PeriodicSync.Every6Hours,
-                            PeriodicSync.Every12Hours,
-                            PeriodicSync.Every24Hours,
-                        )
-                    },
-                    onOptionSelect = onPeriodicSyncChange,
-                )
 
-                Text(
-                    text = stringResource(id = R.string.user_preferences_periodic_sync_caveat),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+                        is PreferredDetailsView.ExternalBrowser -> {
+                            R.string.user_preferences_preferred_details_external_browser
+                        }
+
+                        is PreferredDetailsView.Edit -> {
+                            R.string.user_preferences_preferred_details_post_details
+                        }
+                    }
+                },
+                title = R.string.user_preferences_preferred_details_view,
+                options = {
+                    listOf(
+                        PreferredDetailsView.InAppBrowser(markAsReadOnOpen),
+                        PreferredDetailsView.ExternalBrowser(markAsReadOnOpen),
+                        PreferredDetailsView.Edit,
+                    )
+                },
+                onOptionSelect = onPreferredViewChange,
+            )
+
+            Text(
+                text = stringResource(id = R.string.user_preferences_preferred_details_view_caveat),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
+
+        SettingToggle(
+            title = stringResource(R.string.user_preferences_use_split_nav),
+            description = stringResource(R.string.user_preferences_use_split_nav_description),
+            checked = userPreferences.useSplitNav,
+            onCheckedChange = onUseSplitNavChange,
+            shape = if (isPreferredDetailsViewEdit) Shapes.BottomShape else Shapes.MiddleShape,
+        )
+
+        AnimatedVisibility(
+            visible = !isPreferredDetailsViewEdit,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut(),
+        ) {
+            SettingToggle(
+                title = stringResource(id = R.string.user_preferences_preferred_details_view_mark_as_read_on_open),
+                description = stringResource(
+                    id = R.string.user_preferences_preferred_details_view_mark_as_read_on_open_caveat,
+                ),
+                checked = markAsReadOnOpen,
+                onCheckedChange = onMarkAsReadOnOpenChange,
+                shape = Shapes.BottomShape,
+            )
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
 
         SettingItem(
             title = stringResource(R.string.user_preferences_bookmark_quick_options),
@@ -419,86 +480,55 @@ private fun AppPreferencesContent(
             )
         }
 
-        val markAsReadOnOpen by rememberUpdatedState(
-            newValue = when (val pdv = userPreferences.preferredDetailsView) {
-                is PreferredDetailsView.ExternalBrowser -> pdv.markAsReadOnOpen
-                is PreferredDetailsView.InAppBrowser -> pdv.markAsReadOnOpen
-                is PreferredDetailsView.Edit -> false
-            },
-        )
+        if (AppMode.NO_API != appMode) {
+            Spacer(modifier = Modifier.height(12.dp))
 
-        SettingItem(
-            stringResource(id = R.string.user_preferences_preferred_details_view),
-        ) {
-            PreferenceSelectionButton(
-                currentSelection = userPreferences.preferredDetailsView,
-                buttonText = { option: PreferredDetailsView ->
-                    when (option) {
-                        is PreferredDetailsView.InAppBrowser -> {
-                            R.string.user_preferences_preferred_details_in_app_browser
+            SettingItem(
+                title = stringResource(id = R.string.user_preferences_periodic_sync),
+            ) {
+                Text(
+                    text = stringResource(id = R.string.user_preferences_periodic_sync_description),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+
+                PreferenceSelectionButton(
+                    currentSelection = userPreferences.periodicSync,
+                    buttonText = { option: PeriodicSync ->
+                        when (option) {
+                            PeriodicSync.Off -> R.string.user_preferences_periodic_sync_off
+                            PeriodicSync.Every6Hours -> R.string.user_preferences_periodic_sync_6_hours
+                            PeriodicSync.Every12Hours -> R.string.user_preferences_periodic_sync_12_hours
+                            PeriodicSync.Every24Hours -> R.string.user_preferences_periodic_sync_24_hours
                         }
+                    },
+                    title = R.string.user_preferences_periodic_sync,
+                    options = {
+                        listOf(
+                            PeriodicSync.Off,
+                            PeriodicSync.Every6Hours,
+                            PeriodicSync.Every12Hours,
+                            PeriodicSync.Every24Hours,
+                        )
+                    },
+                    onOptionSelect = onPeriodicSyncChange,
+                )
 
-                        is PreferredDetailsView.ExternalBrowser -> {
-                            R.string.user_preferences_preferred_details_external_browser
-                        }
-
-                        is PreferredDetailsView.Edit -> {
-                            R.string.user_preferences_preferred_details_post_details
-                        }
-                    }
-                },
-                title = R.string.user_preferences_preferred_details_view,
-                options = {
-                    listOf(
-                        PreferredDetailsView.InAppBrowser(markAsReadOnOpen),
-                        PreferredDetailsView.ExternalBrowser(markAsReadOnOpen),
-                        PreferredDetailsView.Edit,
-                    )
-                },
-                onOptionSelect = onPreferredViewChange,
-            )
-
-            Text(
-                text = stringResource(id = R.string.user_preferences_preferred_details_view_caveat),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+                Text(
+                    text = stringResource(id = R.string.user_preferences_periodic_sync_caveat),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
 
-        SettingToggle(
-            title = stringResource(R.string.user_preferences_use_split_nav),
-            description = stringResource(R.string.user_preferences_use_split_nav_description),
-            checked = userPreferences.useSplitNav,
-            onCheckedChange = onUseSplitNavChange,
-        )
-
-        AnimatedVisibility(
-            visible = userPreferences.preferredDetailsView !is PreferredDetailsView.Edit,
-            enter = expandVertically() + fadeIn(),
-            exit = shrinkVertically() + fadeOut(),
-        ) {
-            SettingToggle(
-                title = stringResource(id = R.string.user_preferences_preferred_details_view_mark_as_read_on_open),
-                description = stringResource(
-                    id = R.string.user_preferences_preferred_details_view_mark_as_read_on_open_caveat,
-                ),
-                checked = markAsReadOnOpen,
-                onCheckedChange = onMarkAsReadOnOpenChange,
-            )
-        }
+        Spacer(modifier = Modifier.height(12.dp))
 
         SettingToggle(
-            title = stringResource(id = R.string.user_preferences_description_visible_in_lists),
-            description = stringResource(id = R.string.user_preferences_description_visible_in_lists_description),
-            checked = userPreferences.showDescriptionInLists,
-            onCheckedChange = onShowDescriptionInListsChange,
-        )
-
-        SettingToggle(
-            title = stringResource(id = R.string.user_preferences_alphabetize_tags),
-            description = stringResource(id = R.string.user_preferences_alphabetize_tags_description),
-            checked = userPreferences.alphabetizeTags,
-            onCheckedChange = onAlphabetizeTagsChange,
+            title = stringResource(id = R.string.user_preferences_disable_screenshots),
+            description = stringResource(id = R.string.user_preferences_disable_screenshots_caveat),
+            checked = userPreferences.disableScreenshots,
+            onCheckedChange = onDisableScreenshotsChange,
         )
     }
 }
@@ -526,7 +556,7 @@ private fun BookmarkingPreferencesContent(
 
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         BookmarkingPreferencesContent(
             appMode = appMode,
@@ -556,6 +586,7 @@ private fun BookmarkingPreferencesContent(
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp)
                 .animateContentSize(),
+            shape = Shapes.BottomShape,
         ) {
             Text(
                 text = stringResource(id = R.string.user_preferences_default_tags_description),
@@ -598,17 +629,20 @@ private fun BookmarkingPreferencesContent(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         Text(
             text = stringResource(id = R.string.user_preferences_section_bookmarking),
             modifier = Modifier.padding(horizontal = 8.dp),
-            color = MaterialTheme.colorScheme.primary,
+            color = MaterialTheme.colorScheme.secondary,
             style = MaterialTheme.typography.titleLarge,
         )
 
+        Spacer(modifier = Modifier.height(6.dp))
+
         SettingItem(
             title = stringResource(id = R.string.user_preferences_edit_after_sharing_title),
+            shape = Shapes.TopShape,
         ) {
             PreferenceSelectionButton(
                 currentSelection = userPreferences.editAfterSharing,
@@ -640,13 +674,17 @@ private fun BookmarkingPreferencesContent(
             description = stringResource(id = R.string.user_preferences_use_background_share_receiver_description),
             checked = userPreferences.useBackgroundShareReceiver,
             onCheckedChange = onUseBackgroundShareReceiverChange,
+            shape = Shapes.BottomShape,
         )
+
+        Spacer(modifier = Modifier.height(12.dp))
 
         SettingToggle(
             title = stringResource(id = R.string.user_preferences_follow_redirects),
             description = stringResource(id = R.string.user_preferences_follow_redirects_description),
             checked = userPreferences.followRedirects,
             onCheckedChange = onFollowRedirectsChange,
+            shape = Shapes.TopShape,
         )
 
         RemoveUrlParametersSetting(
@@ -656,15 +694,18 @@ private fun BookmarkingPreferencesContent(
             onRemovedParametersChange = onRemovedUrlParametersChange,
         )
 
+        val autoFillDescription: Boolean = userPreferences.autoFillDescription
+
         SettingToggle(
             title = stringResource(id = R.string.user_preferences_description_auto_fill),
             description = stringResource(id = R.string.user_preferences_description_auto_fill_description),
-            checked = userPreferences.autoFillDescription,
+            checked = autoFillDescription,
             onCheckedChange = onAutoFillDescriptionChange,
+            shape = if (autoFillDescription) Shapes.MiddleShape else Shapes.BottomShape,
         )
 
         AnimatedVisibility(
-            visible = userPreferences.autoFillDescription,
+            visible = autoFillDescription,
             enter = expandVertically(),
             exit = shrinkVertically(),
         ) {
@@ -673,8 +714,19 @@ private fun BookmarkingPreferencesContent(
                 description = stringResource(id = R.string.user_preferences_use_blockquote_description),
                 checked = userPreferences.useBlockquote,
                 onCheckedChange = onUseBlockquoteChange,
+                shape = Shapes.BottomShape,
             )
         }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        SettingToggle(
+            title = stringResource(id = R.string.user_preferences_default_read_later_label),
+            description = stringResource(id = R.string.user_preferences_default_read_later_description),
+            checked = userPreferences.defaultReadLater,
+            onCheckedChange = onReadLaterByDefaultChange,
+            shape = Shapes.TopShape,
+        )
 
         if (AppMode.NO_API != appMode) {
             SettingToggle(
@@ -682,15 +734,9 @@ private fun BookmarkingPreferencesContent(
                 description = stringResource(id = R.string.user_preferences_default_private_description),
                 checked = userPreferences.defaultPrivate,
                 onCheckedChange = onPrivateByDefaultChange,
+                shape = Shapes.MiddleShape,
             )
         }
-
-        SettingToggle(
-            title = stringResource(id = R.string.user_preferences_default_read_later_label),
-            description = stringResource(id = R.string.user_preferences_default_read_later_description),
-            checked = userPreferences.defaultReadLater,
-            onCheckedChange = onReadLaterByDefaultChange,
-        )
     }
 }
 
@@ -704,18 +750,20 @@ private fun RemoveUrlParametersSetting(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         SettingToggle(
             title = stringResource(R.string.user_preferences_remove_utm_parameters),
             description = stringResource(R.string.user_preferences_remove_utm_parameters_description),
             checked = removeUtmParameters,
             onCheckedChange = onRemoveUtmParametersChange,
+            shape = Shapes.MiddleShape,
         )
 
         SettingItem(
             title = stringResource(R.string.user_preferences_remove_url_parameters),
             modifier = Modifier.animateContentSize(),
+            shape = Shapes.MiddleShape,
         ) {
             Text(
                 text = stringResource(R.string.user_preferences_remove_url_parameters_description),
@@ -791,24 +839,29 @@ private fun RemoveUrlParametersSetting(
 private fun SettingItem(
     title: String,
     modifier: Modifier = Modifier,
+    shape: Shape = Shapes.StandaloneShape,
     body: @Composable ColumnScope.() -> Unit,
 ) {
-    Column(
+    androidx.compose.material3.ListItem(
         modifier = modifier
-            .background(
-                color = MaterialTheme.colorScheme.surfaceContainer,
-                shape = MaterialTheme.shapes.small,
+            .fillMaxWidth()
+            .heightIn(min = ListItem.MinHeight)
+            .clip(shape),
+        supportingContent = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                content = body,
             )
-            .padding(horizontal = 8.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        },
+        colors = ListItemDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        ),
     ) {
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface,
         )
-
-        body()
     }
 }
 

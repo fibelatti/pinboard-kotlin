@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -48,7 +49,8 @@ public fun ListItem(
             if (!supportingText.isNullOrEmpty()) {
                 AutoSizeText(
                     text = supportingText,
-                    maxLines = 3,
+                    modifier = Modifier.padding(top = 4.dp),
+                    maxLines = 4,
                     minFontSize = 8.sp,
                 )
             }
