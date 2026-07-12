@@ -77,6 +77,7 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.TagManagerState
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagManager
+import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.foundation.rememberKeyboardState
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -620,7 +621,7 @@ private fun BookmarkFlags(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, top = 4.dp, end = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         if (AppMode.NO_API != appMode) {
             SettingToggle(
@@ -629,6 +630,7 @@ private fun BookmarkFlags(
                 checked = private == true,
                 onCheckedChange = onPrivateChange,
                 modifier = Modifier.weight(0.5f),
+                shape = Shapes.StartShape,
             )
         }
 
@@ -638,6 +640,7 @@ private fun BookmarkFlags(
             checked = readLater == true,
             onCheckedChange = onReadLaterChange,
             modifier = Modifier.weight(0.5f),
+            shape = if (AppMode.NO_API != appMode) Shapes.EndShape else Shapes.StandaloneShape,
         )
     }
 }
