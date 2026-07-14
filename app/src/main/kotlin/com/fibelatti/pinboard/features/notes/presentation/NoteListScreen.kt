@@ -27,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -68,9 +67,7 @@ fun NoteListScreen(
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
         val appState by noteListViewModel.appState.collectAsStateWithLifecycle()
-        val noteListContent by rememberUpdatedState(
-            newValue = appState.content.find<NoteListContent>() ?: return@Surface,
-        )
+        val noteListContent = appState.content.find<NoteListContent>() ?: return@Surface
 
         val error by noteListViewModel.error.collectAsStateWithLifecycle()
         ErrorHandlerEffect(error = error, handler = noteListViewModel::errorHandled)

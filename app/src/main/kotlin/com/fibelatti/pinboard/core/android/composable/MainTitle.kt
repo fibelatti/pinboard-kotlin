@@ -27,7 +27,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -134,9 +133,8 @@ fun MainTitle(
             }
         }
 
-        val currentActionButton: MainState.ActionButtonComponent.Visible? by rememberUpdatedState(
-            actionButton as? MainState.ActionButtonComponent.Visible,
-        )
+        val currentActionButton: MainState.ActionButtonComponent.Visible? =
+            actionButton as? MainState.ActionButtonComponent.Visible
 
         AnimatedVisibility(
             visible = currentActionButton != null,

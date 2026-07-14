@@ -38,7 +38,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -101,7 +100,8 @@ fun SearchBookmarksScreen(
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
         val searchContent: SearchContent? by searchPostViewModel.searchContent.collectAsStateWithLifecycle(null)
-        val currentContent: SearchContent by rememberUpdatedState(newValue = searchContent ?: return@Surface)
+
+        val currentContent: SearchContent = searchContent ?: return@Surface
 
         val tagsState: TagsViewModel.State by tagsViewModel.state.collectAsStateWithLifecycle()
 

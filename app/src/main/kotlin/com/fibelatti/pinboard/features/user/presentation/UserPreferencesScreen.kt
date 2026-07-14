@@ -364,13 +364,11 @@ private fun AppPreferencesContent(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        val markAsReadOnOpen: Boolean by rememberUpdatedState(
-            newValue = when (val pdv = userPreferences.preferredDetailsView) {
-                is PreferredDetailsView.ExternalBrowser -> pdv.markAsReadOnOpen
-                is PreferredDetailsView.InAppBrowser -> pdv.markAsReadOnOpen
-                is PreferredDetailsView.Edit -> false
-            },
-        )
+        val markAsReadOnOpen: Boolean = when (val pdv = userPreferences.preferredDetailsView) {
+            is PreferredDetailsView.ExternalBrowser -> pdv.markAsReadOnOpen
+            is PreferredDetailsView.InAppBrowser -> pdv.markAsReadOnOpen
+            is PreferredDetailsView.Edit -> false
+        }
         val isPreferredDetailsViewEdit: Boolean = userPreferences.preferredDetailsView is PreferredDetailsView.Edit
 
         SettingItem(
@@ -772,7 +770,8 @@ private fun RemoveUrlParametersSetting(
             )
 
             val textFieldState = rememberTextFieldState()
-            val submitValueAction by rememberUpdatedState {
+
+            val submitValueAction = {
                 if (textFieldState.text.isNotBlank()) {
                     onRemovedParametersChange(removedParameters + textFieldState.text.toString())
                 }

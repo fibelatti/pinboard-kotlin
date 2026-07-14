@@ -87,20 +87,16 @@ fun BookmarkDetailsScreen(
     ) {
         val appState by mainViewModel.appState.collectAsStateWithLifecycle()
 
-        val post by rememberUpdatedState(
-            newValue = when (val current = appState.content) {
-                is PostDetailContent -> current.post
-                is PopularPostDetailContent -> current.post
-                else -> return@Surface
-            },
-        )
-        val isConnected by rememberUpdatedState(
-            newValue = when (val current = appState.content) {
-                is PostDetailContent -> current.isConnected
-                is PopularPostDetailContent -> current.isConnected
-                else -> false
-            },
-        )
+        val post = when (val current = appState.content) {
+            is PostDetailContent -> current.post
+            is PopularPostDetailContent -> current.post
+            else -> return@Surface
+        }
+        val isConnected = when (val current = appState.content) {
+            is PostDetailContent -> current.isConnected
+            is PopularPostDetailContent -> current.isConnected
+            else -> false
+        }
 
         val postDetailsScreenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
         val popularPostsScreenState by popularPostsViewModel.screenState.collectAsStateWithLifecycle()

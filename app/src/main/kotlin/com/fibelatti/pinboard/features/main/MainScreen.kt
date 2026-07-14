@@ -49,7 +49,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -469,7 +468,7 @@ private fun MainPanelBottomAppBar(
     if (bottomAppBar !is MainState.BottomAppBarComponent.Visible) return
 
     val expanded: Boolean = bottomAppBar.navigationIcon != null || bottomAppBar.menuItems.isNotEmpty()
-    val fab by rememberUpdatedState(floatingActionButton as? MainState.FabComponent.Visible)
+    val fab = floatingActionButton as? MainState.FabComponent.Visible
 
     HorizontalFloatingToolbar(
         expanded = expanded,

@@ -35,7 +35,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -93,7 +92,7 @@ fun EditBookmarkScreen(
 ) {
     val appState by mainViewModel.appState.collectAsStateWithLifecycle()
     val postState by editPostViewModel.postState.collectAsStateWithLifecycle(initialValue = null)
-    val currentState by rememberUpdatedState(newValue = postState ?: return)
+    val currentState = postState ?: return
 
     val editPostScreenState by editPostViewModel.screenState.collectAsStateWithLifecycle()
     val postDetailScreenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()

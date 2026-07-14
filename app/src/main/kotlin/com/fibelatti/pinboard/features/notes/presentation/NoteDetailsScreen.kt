@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -47,7 +46,7 @@ fun NoteDetailsScreen(
         color = ExtendedTheme.colors.backgroundNoOverlay,
     ) {
         val noteDetailContent by noteDetailsViewModel.noteDetailContent.collectAsStateWithLifecycle(null)
-        val current by rememberUpdatedState(newValue = noteDetailContent ?: return@Surface)
+        val current = noteDetailContent ?: return@Surface
 
         val localLifecycle = LocalLifecycleOwner.current.lifecycle
         val localOnBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
