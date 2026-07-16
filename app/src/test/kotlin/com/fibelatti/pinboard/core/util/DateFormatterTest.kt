@@ -3,22 +3,38 @@ package com.fibelatti.pinboard.core.util
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.google.common.truth.Truth.assertThat
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
+import io.mockk.unmockkAll
 import kotlinx.datetime.TimeZone
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class DateFormatterTest {
 
     private val testUserRepository = mockk<UserRepository>()
     private val dateFormatter = DateFormatter(testUserRepository)
 
+    @BeforeAll
+    fun setupAll() {
+        mockkObject(TimeZone)
+    }
+
     @BeforeEach
     fun setup() {
-        mockkObject(TimeZone)
+        clearAllMocks()
         every { TimeZone.currentSystemDefault() } returns TimeZone.UTC
+    }
+
+    @AfterAll
+    fun tearDownAll() {
+        unmockkAll()
     }
 
     @Test

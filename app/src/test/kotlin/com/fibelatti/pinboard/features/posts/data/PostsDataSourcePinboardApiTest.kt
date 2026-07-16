@@ -49,6 +49,7 @@ import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
 import io.mockk.Called
 import io.mockk.Runs
+import io.mockk.clearAllMocks
 import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.coJustRun
@@ -59,11 +60,14 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.spyk
+import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -71,6 +75,7 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PostsDataSourcePinboardApiTest {
 
     private val mockUserRepository = mockk<UserRepository>(relaxed = true)
@@ -79,18 +84,13 @@ class PostsDataSourcePinboardApiTest {
     private val mockPostRemoteDtoMapper = mockk<PostRemoteDtoMapper>()
     private val mockPostDtoMapper = mockk<PostDtoMapper>()
     private val mockDateFormatter = mockk<DateFormatter>(relaxed = true)
-    private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider> {
-        every { isConnected() } returns true
-    }
+    private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider>()
 
     private val mockPostDto = mockk<PostDto>()
     private val mockPostRemoteDto = mockk<PostRemoteDto>()
     private val mockListPostDto = listOf(mockPostDto)
     private val mockListPostRemoteDto = listOf(mockPostRemoteDto)
-    private val mockPost = mockk<Post> {
-        every { url } returns SAMPLE_URL_VALID
-        every { pendingSync } returns null
-    }
+    private val mockPost = mockk<Post>()
     private val mockListPost = listOf(mockPost)
 
     private val dataSource = spyk(
@@ -104,6 +104,21 @@ class PostsDataSourcePinboardApiTest {
             connectivityInfoProvider = mockConnectivityInfoProvider,
         ),
     )
+
+    @BeforeAll
+    fun setupAll() {
+        mockkObject(Uuid.Companion)
+    }
+
+    @BeforeEach
+    fun setup() {
+        clearAllMocks()
+    }
+
+    @AfterAll
+    fun tearDownAll() {
+        unmockkAll()
+    }
 
     @Nested
     inner class UpdateTests {
@@ -353,7 +368,6 @@ class PostsDataSourcePinboardApiTest {
                     dateAdded = SAMPLE_DATE_TIME,
                 )
 
-                mockkObject(Uuid.Companion)
                 every { Uuid.random() } returns mockk {
                     every { this@mockk.toString() } returns SAMPLE_HASH
                 }
@@ -525,7 +539,6 @@ class PostsDataSourcePinboardApiTest {
                 val expectedPost = baseExpectedPost.copy(pendingSync = PendingSyncDto.ADD)
 
                 coEvery { mockDao.getPost(SAMPLE_URL_VALID) } returns null
-                mockkObject(Uuid.Companion)
                 every { Uuid.random() } returns mockk {
                     every { this@mockk.toString() } returns SAMPLE_HASH
                 }
@@ -633,6 +646,13 @@ class PostsDataSourcePinboardApiTest {
 
     @Nested
     inner class DeleteTests {
+
+        @BeforeEach
+        fun setup() {
+            every { mockConnectivityInfoProvider.isConnected() } returns true
+            every { mockPost.pendingSync } returns null
+            every { mockPost.url } returns SAMPLE_URL_VALID
+        }
 
         @Test
         fun `GIVEN that the api returns an error WHEN delete is called THEN Failure is returned`() = runTest {
