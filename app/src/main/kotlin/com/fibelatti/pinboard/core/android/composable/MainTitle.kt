@@ -133,8 +133,7 @@ fun MainTitle(
             }
         }
 
-        val currentActionButton: MainState.ActionButtonComponent.Visible? =
-            actionButton as? MainState.ActionButtonComponent.Visible
+        val currentActionButton = actionButton as? MainState.ActionButtonComponent.Visible
 
         AnimatedVisibility(
             visible = currentActionButton != null,
@@ -146,13 +145,13 @@ fun MainTitle(
                     LongClickIconButton(
                         painter = rememberVectorPainter(it.icon),
                         description = it.label,
-                        onClick = { onActionButtonClick(currentActionButton?.data) },
+                        onClick = { onActionButtonClick(currentActionButton.data) },
                         modifier = Modifier.padding(end = 16.dp),
                         iconTint = MaterialTheme.colorScheme.primary,
                     )
                 } else {
                     TextButton(
-                        onClick = { onActionButtonClick(currentActionButton?.data) },
+                        onClick = { onActionButtonClick(currentActionButton.data) },
                         shapes = ExtendedTheme.defaultButtonShapes,
                         modifier = Modifier.padding(end = 16.dp),
                         contentPadding = ButtonDefaults.ExtraSmallContentPadding,
