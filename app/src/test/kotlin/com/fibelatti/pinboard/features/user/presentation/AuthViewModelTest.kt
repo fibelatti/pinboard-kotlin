@@ -436,13 +436,10 @@ class AuthViewModelTest : BaseViewModelTest() {
         }
 
         @Test
-        fun `GIVEN the permission is denied for good WHEN the result is received THEN settings error is shown`() =
+        fun `GIVEN the permission is denied for good WHEN the result is received THEN no inline error is set`() =
             runTest {
                 // GIVEN
                 coEvery { mockLocalNetworkAccessProvider.isPermissionRequired(SAMPLE_INSTANCE_URL) } returns true
-                every {
-                    mockResourceProvider.getString(R.string.auth_linkding_missing_local_network_permission_settings)
-                } returns "R.string.auth_linkding_missing_local_network_permission_settings"
                 viewModel.useLinkding(value = true)
                 viewModel.login(
                     apiToken = SAMPLE_API_TOKEN,
@@ -450,6 +447,7 @@ class AuthViewModelTest : BaseViewModelTest() {
                 )
 
                 // WHEN
+                // The screen shows a dialog offering the settings app, so no inline error is expected.
                 viewModel.localNetworkPermissionResult(granted = false, canRequestAgain = false)
 
                 // THEN
@@ -458,7 +456,7 @@ class AuthViewModelTest : BaseViewModelTest() {
                 assertThat(viewModel.screenState.first()).isEqualTo(
                     AuthViewModel.ScreenState(
                         useLinkding = true,
-                        instanceUrlError = "R.string.auth_linkding_missing_local_network_permission_settings",
+                        instanceUrlError = null,
                     ),
                 )
             }

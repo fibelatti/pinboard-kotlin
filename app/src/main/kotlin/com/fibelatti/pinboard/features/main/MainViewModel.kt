@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -87,7 +88,11 @@ class MainViewModel @Inject constructor(
 
         appStateRepository.appState
             // The login screen requests the permission itself, using the instance being logged into.
-            .filter { appState -> appState.appMode == AppMode.LINKDING && appState.content !is LoginContent }
+            // Distinct so the check runs once on entering the state rather than on every content update,
+            // which would otherwise re-raise the flag and show the prompt again.
+            .map { appState -> appState.appMode to (appState.content is LoginContent) }
+            .distinctUntilChanged()
+            .filter { (appMode, isLoggingIn) -> appMode == AppMode.LINKDING && !isLoggingIn }
             .onEach {
                 _localNetworkPermissionRequired.update {
                     localNetworkAccessProvider.isPermissionRequired(userRepository.linkdingInstanceUrl)

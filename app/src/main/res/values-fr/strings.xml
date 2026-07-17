@@ -4,6 +4,8 @@
     <string name="hint_ok">OK</string>
     <string name="hint_yes">Oui</string>
     <string name="hint_no">Non</string>
+    <string name="hint_cancel">Annuler</string>
+    <string name="hint_open_settings">Ouvrir les paramètres</string>
     <string name="hint_save">Enregistrer</string>
     <string name="hint_help">Aide</string>
     <string name="hint_mark_as_read">Marquer comme lu</string>

@@ -82,6 +82,7 @@ import com.fibelatti.pinboard.core.android.icons.Help
 import com.fibelatti.pinboard.core.android.icons.Pin
 import com.fibelatti.pinboard.core.extension.canRequestPermissionAgain
 import com.fibelatti.pinboard.core.extension.showLocalNetworkAccessDialog
+import com.fibelatti.pinboard.core.extension.showLocalNetworkAccessSettingsDialog
 import com.fibelatti.ui.components.TextWithLinks
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -100,10 +101,13 @@ fun AuthScreen(
     val localNetworkPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { granted: Boolean ->
-            authViewModel.localNetworkPermissionResult(
-                granted = granted,
-                canRequestAgain = activity.canRequestPermissionAgain(LocalNetworkAccessProvider.PERMISSION),
-            )
+            val canRequestAgain: Boolean = activity.canRequestPermissionAgain(LocalNetworkAccessProvider.PERMISSION)
+
+            authViewModel.localNetworkPermissionResult(granted = granted, canRequestAgain = canRequestAgain)
+
+            if (!granted && !canRequestAgain) {
+                activity.showLocalNetworkAccessSettingsDialog()
+            }
         },
     )
 

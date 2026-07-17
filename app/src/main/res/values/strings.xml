@@ -7,6 +7,8 @@
     <string name="hint_ok">OK</string>
     <string name="hint_yes">Yes</string>
     <string name="hint_no">No</string>
+    <string name="hint_cancel">Cancel</string>
+    <string name="hint_open_settings">Open settings</string>
     <string name="hint_save">Save</string>
     <string name="hint_help">Help</string>
     <string name="hint_mark_as_read">Mark as read</string>

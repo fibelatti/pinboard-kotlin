@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.provider.Settings
 import android.widget.Toast
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
@@ -39,6 +40,29 @@ fun Context.showLocalNetworkAccessDialog(onConfirm: () -> Unit) {
             onConfirm()
         }
     }.applySecureFlag().show()
+}
+
+/**
+ * Shown once the local network permission was denied for good, when the system will no longer prompt
+ * for it. The only way to grant it is from the settings app, which [openAppSettings] opens.
+ */
+fun Context.showLocalNetworkAccessSettingsDialog() {
+    materialAlertDialogBuilder().apply {
+        setMessage(R.string.auth_linkding_missing_local_network_permission_settings)
+        setPositiveButton(R.string.hint_open_settings) { dialog, _ ->
+            dialog?.dismiss()
+            openAppSettings()
+        }
+        setNegativeButton(R.string.hint_cancel) { dialog, _ -> dialog?.dismiss() }
+    }.applySecureFlag().show()
+}
+
+fun Context.openAppSettings() {
+    val intent = Intent(
+        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+        "package:$packageName".toUri(),
+    ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    startActivity(intent)
 }
 
 fun Context.showErrorReportDialog(

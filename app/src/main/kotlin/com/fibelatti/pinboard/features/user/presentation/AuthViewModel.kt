@@ -114,7 +114,8 @@ class AuthViewModel @Inject constructor(
     /**
      * Resumes a login that was held back by [localNetworkPermissionRequest] once the user has replied to the
      * permission request. [canRequestAgain] is false when the permission was denied for good, in which case
-     * the system will no longer show its dialog and only the settings app can grant it.
+     * the system will no longer show its dialog and only the settings app can grant it. That case is handled
+     * by the screen with a dialog that offers to open the settings app, so no inline error is set here.
      */
     fun localNetworkPermissionResult(granted: Boolean, canRequestAgain: Boolean) {
         val pending: PendingLogin = pendingLogin ?: return
@@ -124,13 +125,11 @@ class AuthViewModel @Inject constructor(
             _screenState.update { current ->
                 current.copy(
                     isLoading = false,
-                    instanceUrlError = resourceProvider.getString(
-                        if (canRequestAgain) {
-                            R.string.auth_linkding_missing_local_network_permission
-                        } else {
-                            R.string.auth_linkding_missing_local_network_permission_settings
-                        },
-                    ),
+                    instanceUrlError = if (canRequestAgain) {
+                        resourceProvider.getString(R.string.auth_linkding_missing_local_network_permission)
+                    } else {
+                        null
+                    },
                     localNetworkPermissionRequired = false,
                 )
             }

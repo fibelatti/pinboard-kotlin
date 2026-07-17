@@ -19,6 +19,7 @@ import com.fibelatti.pinboard.core.extension.canRequestPermissionAgain
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.core.extension.showLocalNetworkAccessDialog
+import com.fibelatti.pinboard.core.extension.showLocalNetworkAccessSettingsDialog
 import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
 import com.fibelatti.pinboard.features.notifications.AppNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,15 +42,17 @@ class MainComposeActivity : AppCompatActivity() {
     private val localNetworkPermissionLauncher: ActivityResultLauncher<String> = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
     ) { granted: Boolean ->
-        if (granted) return@registerForActivityResult
+        when {
+            granted -> Unit // No action required, the app self-recovers
 
-        showBanner(
-            messageRes = if (canRequestPermissionAgain(LocalNetworkAccessProvider.PERMISSION)) {
-                R.string.auth_linkding_missing_local_network_permission
-            } else {
-                R.string.auth_linkding_missing_local_network_permission_settings
-            },
-        )
+            canRequestPermissionAgain(LocalNetworkAccessProvider.PERMISSION) -> {
+                showBanner(messageRes = R.string.auth_linkding_missing_local_network_permission)
+            }
+
+            else -> {
+                showLocalNetworkAccessSettingsDialog()
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
