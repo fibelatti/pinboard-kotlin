@@ -11,6 +11,7 @@ import com.fibelatti.pinboard.MockDataProvider.createAppState
 import com.fibelatti.pinboard.MockDataProvider.createPostListContent
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.core.android.LocalNetworkAccessProvider
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.LoginContent
 import com.fibelatti.pinboard.features.user.domain.Login
@@ -45,6 +46,9 @@ class AuthViewModelTest : BaseViewModelTest() {
     private val mockUserRepository = mockk<UserRepository> {
         every { linkdingClientCertAlias } returns null
     }
+    private val mockLocalNetworkAccessProvider = mockk<LocalNetworkAccessProvider> {
+        coEvery { isPermissionRequired(any()) } returns false
+    }
 
     private val viewModel = AuthViewModel(
         scope = TestScope(dispatcher),
@@ -52,6 +56,7 @@ class AuthViewModelTest : BaseViewModelTest() {
         loginUseCase = mockLogin,
         resourceProvider = mockResourceProvider,
         userRepository = mockUserRepository,
+        localNetworkAccessProvider = mockLocalNetworkAccessProvider,
     )
 
     @Nested
@@ -103,6 +108,7 @@ class AuthViewModelTest : BaseViewModelTest() {
                 userRepository = mockk<UserRepository> {
                     every { linkdingClientCertAlias } returns "my-cert"
                 },
+                localNetworkAccessProvider = mockLocalNetworkAccessProvider,
             )
 
             viewModelWithCert.screenState.test {
@@ -288,6 +294,183 @@ class AuthViewModelTest : BaseViewModelTest() {
             coVerify { mockLogin(Login.PinboardParams(authToken = SAMPLE_API_TOKEN)) }
 
             assertThat(viewModel.error.first()).isEqualTo(error)
+            assertThat(viewModel.screenState.first()).isEqualTo(AuthViewModel.ScreenState())
+        }
+    }
+
+    @Nested
+    inner class LocalNetworkPermissionTests {
+
+        @Test
+        fun `GIVEN permission is required WHEN login is called THEN it is requested AND login is not called`() =
+            runTest {
+                // GIVEN
+                coEvery { mockLocalNetworkAccessProvider.isPermissionRequired(SAMPLE_INSTANCE_URL) } returns true
+                viewModel.useLinkding(value = true)
+
+                // WHEN
+                viewModel.login(
+                    apiToken = SAMPLE_API_TOKEN,
+                    instanceUrl = SAMPLE_INSTANCE_URL,
+                )
+
+                verify { mockLogin wasNot Called }
+
+                assertThat(viewModel.screenState.first()).isEqualTo(
+                    AuthViewModel.ScreenState(
+                        useLinkding = true,
+                        isLoading = false,
+                        localNetworkPermissionRequired = true,
+                    ),
+                )
+            }
+
+        @Test
+        fun `GIVEN permission is not required WHEN login is called THEN it is not requested`() = runTest {
+            // GIVEN
+            coEvery { mockLocalNetworkAccessProvider.isPermissionRequired(SAMPLE_INSTANCE_URL) } returns false
+            coEvery {
+                mockLogin(
+                    Login.LinkdingParams(
+                        authToken = SAMPLE_API_TOKEN,
+                        instanceUrl = SAMPLE_INSTANCE_URL,
+                        clientCertAlias = null,
+                    ),
+                )
+            } returns Success(Unit)
+            viewModel.useLinkding(value = true)
+
+            // WHEN
+            viewModel.login(
+                apiToken = SAMPLE_API_TOKEN,
+                instanceUrl = SAMPLE_INSTANCE_URL,
+            )
+
+            // THEN
+            coVerify {
+                mockLogin(
+                    Login.LinkdingParams(
+                        authToken = SAMPLE_API_TOKEN,
+                        instanceUrl = SAMPLE_INSTANCE_URL,
+                        clientCertAlias = null,
+                    ),
+                )
+            }
+        }
+
+        @Test
+        fun `GIVEN pinboard is used WHEN login is called THEN the permission is not required`() = runTest {
+            // GIVEN
+            coEvery { mockLogin(Login.PinboardParams(authToken = SAMPLE_API_TOKEN)) } returns Success(Unit)
+
+            // WHEN
+            viewModel.login(
+                apiToken = SAMPLE_API_TOKEN,
+                instanceUrl = SAMPLE_INSTANCE_URL,
+            )
+
+            // THEN
+            coVerify(exactly = 0) { mockLocalNetworkAccessProvider.isPermissionRequired(any()) }
+            coVerify { mockLogin(Login.PinboardParams(authToken = SAMPLE_API_TOKEN)) }
+        }
+
+        @Test
+        fun `GIVEN the permission is granted WHEN the result is received THEN login resumes`() = runTest {
+            // GIVEN
+            coEvery { mockLocalNetworkAccessProvider.isPermissionRequired(SAMPLE_INSTANCE_URL) } returns true
+            coEvery {
+                mockLogin(
+                    Login.LinkdingParams(
+                        authToken = SAMPLE_API_TOKEN,
+                        instanceUrl = SAMPLE_INSTANCE_URL,
+                        clientCertAlias = null,
+                    ),
+                )
+            } returns Success(Unit)
+            viewModel.useLinkding(value = true)
+            viewModel.login(
+                apiToken = SAMPLE_API_TOKEN,
+                instanceUrl = SAMPLE_INSTANCE_URL,
+            )
+
+            // WHEN
+            viewModel.localNetworkPermissionResult(granted = true, canRequestAgain = false)
+
+            // THEN
+            coVerify {
+                mockLogin(
+                    Login.LinkdingParams(
+                        authToken = SAMPLE_API_TOKEN,
+                        instanceUrl = SAMPLE_INSTANCE_URL,
+                        clientCertAlias = null,
+                    ),
+                )
+            }
+        }
+
+        @Test
+        fun `GIVEN the permission is denied WHEN the result is received THEN an error is shown`() = runTest {
+            // GIVEN
+            coEvery { mockLocalNetworkAccessProvider.isPermissionRequired(SAMPLE_INSTANCE_URL) } returns true
+            every {
+                mockResourceProvider.getString(R.string.auth_linkding_missing_local_network_permission)
+            } returns "R.string.auth_linkding_missing_local_network_permission"
+            viewModel.useLinkding(value = true)
+            viewModel.login(
+                apiToken = SAMPLE_API_TOKEN,
+                instanceUrl = SAMPLE_INSTANCE_URL,
+            )
+
+            // WHEN
+            viewModel.localNetworkPermissionResult(granted = false, canRequestAgain = true)
+
+            // THEN
+            verify { mockLogin wasNot Called }
+
+            assertThat(viewModel.screenState.first()).isEqualTo(
+                AuthViewModel.ScreenState(
+                    useLinkding = true,
+                    instanceUrlError = "R.string.auth_linkding_missing_local_network_permission",
+                ),
+            )
+        }
+
+        @Test
+        fun `GIVEN the permission is denied for good WHEN the result is received THEN settings error is shown`() =
+            runTest {
+                // GIVEN
+                coEvery { mockLocalNetworkAccessProvider.isPermissionRequired(SAMPLE_INSTANCE_URL) } returns true
+                every {
+                    mockResourceProvider.getString(R.string.auth_linkding_missing_local_network_permission_settings)
+                } returns "R.string.auth_linkding_missing_local_network_permission_settings"
+                viewModel.useLinkding(value = true)
+                viewModel.login(
+                    apiToken = SAMPLE_API_TOKEN,
+                    instanceUrl = SAMPLE_INSTANCE_URL,
+                )
+
+                // WHEN
+                viewModel.localNetworkPermissionResult(granted = false, canRequestAgain = false)
+
+                // THEN
+                verify { mockLogin wasNot Called }
+
+                assertThat(viewModel.screenState.first()).isEqualTo(
+                    AuthViewModel.ScreenState(
+                        useLinkding = true,
+                        instanceUrlError = "R.string.auth_linkding_missing_local_network_permission_settings",
+                    ),
+                )
+            }
+
+        @Test
+        fun `GIVEN no login is pending WHEN the result is received THEN nothing happens`() = runTest {
+            // WHEN
+            viewModel.localNetworkPermissionResult(granted = true, canRequestAgain = false)
+
+            // THEN
+            verify { mockLogin wasNot Called }
+
             assertThat(viewModel.screenState.first()).isEqualTo(AuthViewModel.ScreenState())
         }
     }

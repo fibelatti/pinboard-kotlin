@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
@@ -12,12 +14,16 @@ import androidx.lifecycle.lifecycleScope
 import com.fibelatti.core.android.platform.BaseIntentBuilder
 import com.fibelatti.core.android.platform.intentExtras
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.LocalNetworkAccessProvider
+import com.fibelatti.pinboard.core.extension.canRequestPermissionAgain
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.core.extension.showBanner
+import com.fibelatti.pinboard.core.extension.showLocalNetworkAccessDialog
 import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
 import com.fibelatti.pinboard.features.notifications.AppNotificationManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -32,6 +38,20 @@ class MainComposeActivity : AppCompatActivity() {
     @Inject
     lateinit var appNotificationManager: AppNotificationManager
 
+    private val localNetworkPermissionLauncher: ActivityResultLauncher<String> = registerForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { granted: Boolean ->
+        if (granted) return@registerForActivityResult
+
+        showBanner(
+            messageRes = if (canRequestPermissionAgain(LocalNetworkAccessProvider.PERMISSION)) {
+                R.string.auth_linkding_missing_local_network_permission
+            } else {
+                R.string.auth_linkding_missing_local_network_permission_settings
+            },
+        )
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
@@ -41,6 +61,7 @@ class MainComposeActivity : AppCompatActivity() {
         }
 
         observeUnauthorized()
+        observeLocalNetworkPermissionRequest()
         checkForDeeplink()
     }
 
@@ -61,6 +82,19 @@ class MainComposeActivity : AppCompatActivity() {
     private fun observeUnauthorized() {
         unauthorizedPluginProvider.unauthorized
             .onEach { showBanner(messageRes = R.string.auth_logged_out_feedback) }
+            .flowWithLifecycle(lifecycle = lifecycle, minActiveState = Lifecycle.State.RESUMED)
+            .launchIn(lifecycleScope)
+    }
+
+    private fun observeLocalNetworkPermissionRequest() {
+        mainViewModel.localNetworkPermissionRequired
+            .filter { required: Boolean -> required }
+            .onEach {
+                mainViewModel.localNetworkPermissionHandled()
+                showLocalNetworkAccessDialog {
+                    localNetworkPermissionLauncher.launch(LocalNetworkAccessProvider.PERMISSION)
+                }
+            }
             .flowWithLifecycle(lifecycle = lifecycle, minActiveState = Lifecycle.State.RESUMED)
             .launchIn(lifecycleScope)
     }

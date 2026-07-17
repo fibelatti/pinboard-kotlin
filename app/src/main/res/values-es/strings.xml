@@ -71,6 +71,8 @@
     <string name="auth_linkding_description"><![CDATA[<a href="https://github.com/sissbruecker/linkding/tree/master">Linkding</a> es un gestor de marcadores auto-alojado. Al usar Pinkt para Linkding, debes proporcionar la URL de tu instancia y tu token, que se pueden encontrar en la pestaña Integración de la página de Configuración.]]></string>
 
     <string name="auth_linkding_unreachable_instance_url">No se puede conectar al servidor. La dirección debe contener un protocolo y ser accesible públicamente.</string>
+    <string name="auth_linkding_missing_local_network_permission">Se necesita acceso a la red local para conectar con una instancia autoalojada. Concede el permiso para continuar.</string>
+    <string name="auth_linkding_missing_local_network_permission_settings">Concede el acceso a la red local a través de la app de ajustes para conectar con una instancia autoalojada.</string>
 
     <string name="auth_linkding_client_certificate">Certificado de cliente (opcional): %s</string>
     <string name="auth_linkding_client_certificate_none">Ninguno</string>

@@ -71,6 +71,8 @@
     <string name="auth_linkding_description"><![CDATA[<a href="https://github.com/sissbruecker/linkding/tree/master">Linkding</a> ist ein selbst gehosteter Lesezeichen-Manager. Wenn Sie Pinkt für Linkding verwenden, müssen Sie Ihre Instanz-URL und Ihr Token angeben, das Sie auf der Registerkarte „Integration" der Einstellungsseite finden.]]></string>
 
     <string name="auth_linkding_unreachable_instance_url">Verbindung zum Server nicht möglich. Die Adresse muss ein Protokoll enthalten und öffentlich zugänglich sein.</string>
+    <string name="auth_linkding_missing_local_network_permission">Für den Zugriff auf eine selbst gehostete Instanz wird Zugriff auf das lokale Netzwerk benötigt. Erteilen Sie die Berechtigung, um fortzufahren.</string>
+    <string name="auth_linkding_missing_local_network_permission_settings">Erteilen Sie den Zugriff auf das lokale Netzwerk über die Einstellungs-App, um eine selbst gehostete Instanz zu erreichen.</string>
 
     <string name="auth_linkding_client_certificate">Client-Zertifikat (optional): %s</string>
     <string name="auth_linkding_client_certificate_none">Keines</string>

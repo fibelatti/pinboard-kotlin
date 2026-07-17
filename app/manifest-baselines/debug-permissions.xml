@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!--
 Auto-generated baseline file with the expected permissions for this app.
-Last updated: 2026-03-17T11:48:36.27462
+Last updated: 2026-07-17T19:21:03.199145
 -->
 <!--@formatter:off-->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:documentation="custom">
+    <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" documentation:comment="Optional permission, required when connecting to a Linkding instance over cleartext HTTP. Android 17 and above block access to local network addresses without it, which prevents reaching a self-hosted instance on the same network."/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" documentation:comment="Basic permission to monitor the network state, identifying when the app is online for its basic functionality."/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" documentation:comment="This permission is used by Work Manager to manage background work, in this case, used to sync bookmarks in the background."/>
     <uses-permission android:name="android.permission.INTERNET" documentation:comment="Basic permission to access the internet and reach the bookmark services."/>

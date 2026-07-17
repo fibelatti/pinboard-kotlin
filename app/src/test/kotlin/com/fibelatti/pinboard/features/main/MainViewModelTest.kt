@@ -3,10 +3,13 @@ package com.fibelatti.pinboard.features.main
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.fibelatti.pinboard.BaseViewModelTest
+import com.fibelatti.pinboard.MockDataProvider.SAMPLE_INSTANCE_URL
 import com.fibelatti.pinboard.MockDataProvider.createAppState
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.MockDataProvider.createPostListContent
 import com.fibelatti.pinboard.allSealedSubclasses
+import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.core.android.LocalNetworkAccessProvider
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.features.appstate.AccountSwitcherContent
 import com.fibelatti.pinboard.features.appstate.AddPostContent
@@ -34,9 +37,11 @@ import com.fibelatti.pinboard.features.appstate.TagListContent
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.main.reducer.MainStateReducer
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
 import com.fibelatti.pinboard.receivedItems
 import com.google.common.truth.Truth.assertThat
+import io.mockk.coEvery
 import io.mockk.coJustRun
 import io.mockk.coVerify
 import io.mockk.every
@@ -45,6 +50,7 @@ import io.mockk.mockkClass
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -84,12 +90,21 @@ internal class MainViewModelTest : BaseViewModelTest() {
             }
         }
 
+    private val mockUserRepository = mockk<UserRepository> {
+        every { linkdingInstanceUrl } returns null
+    }
+    private val mockLocalNetworkAccessProvider = mockk<LocalNetworkAccessProvider> {
+        coEvery { isPermissionRequired(any()) } returns false
+    }
+
     private val viewModel = MainViewModel(
         savedStateHandle = SavedStateHandle(),
         scope = TestScope(dispatcher),
         sharingStarted = SharingStarted.Lazily,
         appStateRepository = mockAppStateRepository,
         mainStateReducers = reducers,
+        userRepository = mockUserRepository,
+        localNetworkAccessProvider = mockLocalNetworkAccessProvider,
     )
 
     @Test
@@ -277,6 +292,72 @@ internal class MainViewModelTest : BaseViewModelTest() {
 
             coVerify(exactly = 0) { mockAppStateRepository.runAction(any<ViewPost>()) }
             coVerify(exactly = 0) { mockAppStateRepository.runAction(any<EditPost>()) }
+        }
+    }
+
+    @Nested
+    inner class LocalNetworkPermissionTests {
+
+        @Test
+        fun `GIVEN linkding is used AND the permission is required THEN it is flagged as required`() = runTest {
+            // GIVEN
+            every { mockUserRepository.linkdingInstanceUrl } returns SAMPLE_INSTANCE_URL
+            coEvery { mockLocalNetworkAccessProvider.isPermissionRequired(SAMPLE_INSTANCE_URL) } returns true
+
+            // WHEN
+            appStateFlow.update { it.copy(appMode = AppMode.LINKDING, content = createPostListContent()) }
+
+            // THEN
+            assertThat(viewModel.localNetworkPermissionRequired.first()).isTrue()
+        }
+
+        @Test
+        fun `GIVEN linkding is used AND the permission is not required THEN it is not flagged`() = runTest {
+            // GIVEN
+            every { mockUserRepository.linkdingInstanceUrl } returns SAMPLE_INSTANCE_URL
+            coEvery { mockLocalNetworkAccessProvider.isPermissionRequired(SAMPLE_INSTANCE_URL) } returns false
+
+            // WHEN
+            appStateFlow.update { it.copy(appMode = AppMode.LINKDING, content = createPostListContent()) }
+
+            // THEN
+            assertThat(viewModel.localNetworkPermissionRequired.first()).isFalse()
+        }
+
+        @Test
+        fun `GIVEN pinboard is used THEN the permission is never checked`() = runTest {
+            // WHEN
+            appStateFlow.update { it.copy(appMode = AppMode.PINBOARD, content = createPostListContent()) }
+
+            // THEN
+            coVerify(exactly = 0) { mockLocalNetworkAccessProvider.isPermissionRequired(any()) }
+
+            assertThat(viewModel.localNetworkPermissionRequired.first()).isFalse()
+        }
+
+        @Test
+        fun `GIVEN the login screen is shown THEN the permission is never checked`() = runTest {
+            // WHEN
+            appStateFlow.update { it.copy(appMode = AppMode.LINKDING, content = LoginContent()) }
+
+            // THEN
+            coVerify(exactly = 0) { mockLocalNetworkAccessProvider.isPermissionRequired(any()) }
+
+            assertThat(viewModel.localNetworkPermissionRequired.first()).isFalse()
+        }
+
+        @Test
+        fun `WHEN localNetworkPermissionHandled is called THEN the flag is cleared`() = runTest {
+            // GIVEN
+            every { mockUserRepository.linkdingInstanceUrl } returns SAMPLE_INSTANCE_URL
+            coEvery { mockLocalNetworkAccessProvider.isPermissionRequired(SAMPLE_INSTANCE_URL) } returns true
+            appStateFlow.update { it.copy(appMode = AppMode.LINKDING, content = createPostListContent()) }
+
+            // WHEN
+            viewModel.localNetworkPermissionHandled()
+
+            // THEN
+            assertThat(viewModel.localNetworkPermissionRequired.first()).isFalse()
         }
     }
 

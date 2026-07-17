@@ -1,12 +1,15 @@
 package com.fibelatti.pinboard.features.main
 
 import androidx.lifecycle.SavedStateHandle
+import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.core.android.LocalNetworkAccessProvider
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.Content
 import com.fibelatti.pinboard.features.appstate.EditPost
+import com.fibelatti.pinboard.features.appstate.LoginContent
 import com.fibelatti.pinboard.features.appstate.MultiPanelAvailabilityChanged
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.appstate.PostListContent
@@ -14,20 +17,24 @@ import com.fibelatti.pinboard.features.appstate.Reset
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.main.reducer.MainStateReducer
 import com.fibelatti.pinboard.features.posts.domain.model.Post
+import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -37,6 +44,8 @@ class MainViewModel @Inject constructor(
     sharingStarted: SharingStarted,
     appStateRepository: AppStateRepository,
     mainStateReducers: Map<Class<out Content>, @JvmSuppressWildcards MainStateReducer>,
+    private val userRepository: UserRepository,
+    private val localNetworkAccessProvider: LocalNetworkAccessProvider,
 ) : BaseViewModel(scope, appStateRepository) {
 
     private val reducer: MutableSharedFlow<suspend (MainState) -> MainState> = MutableSharedFlow()
@@ -48,6 +57,20 @@ class MainViewModel @Inject constructor(
     private val actionButtonClicks = MutableSharedFlow<Pair<ContentType, Any?>>()
     private val menuItemClicks = MutableSharedFlow<Triple<ContentType, MainState.MenuItemComponent, Any?>>()
     private val fabClicks = MutableSharedFlow<Pair<ContentType, Any?>>()
+
+    private val _localNetworkPermissionRequired: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
+    /**
+     * True when the Linkding instance the user is already logged into sits in the local network
+     * and cannot be reached until [LocalNetworkAccessProvider.PERMISSION] is granted. Users who
+     * logged in before the permission existed may not go through the login screen again, so without
+     * this their bookmarks would silently stop syncing.
+     *
+     * This is state rather than an event because it is set while the app is starting up, before the
+     * screen observing it is ready. It must be cleared with [localNetworkPermissionHandled] once
+     * requested.
+     */
+    val localNetworkPermissionRequired: StateFlow<Boolean> = _localNetworkPermissionRequired.asStateFlow()
 
     init {
         appStateRepository.appState
@@ -61,6 +84,20 @@ class MainViewModel @Inject constructor(
                 }
             }
             .launchIn(scope)
+
+        appStateRepository.appState
+            // The login screen requests the permission itself, using the instance being logged into.
+            .filter { appState -> appState.appMode == AppMode.LINKDING && appState.content !is LoginContent }
+            .onEach {
+                _localNetworkPermissionRequired.update {
+                    localNetworkAccessProvider.isPermissionRequired(userRepository.linkdingInstanceUrl)
+                }
+            }
+            .launchIn(scope)
+    }
+
+    fun localNetworkPermissionHandled() {
+        _localNetworkPermissionRequired.value = false
     }
 
     fun updateState(body: (MainState) -> MainState) {

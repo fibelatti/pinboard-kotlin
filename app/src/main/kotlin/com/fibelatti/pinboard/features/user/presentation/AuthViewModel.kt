@@ -5,6 +5,7 @@ import com.fibelatti.core.functional.onFailure
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.core.android.LocalNetworkAccessProvider
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
@@ -34,10 +35,13 @@ class AuthViewModel @Inject constructor(
     private val loginUseCase: Login,
     private val resourceProvider: ResourceProvider,
     private val userRepository: UserRepository,
+    private val localNetworkAccessProvider: LocalNetworkAccessProvider,
 ) : BaseViewModel(scope, appStateRepository) {
 
     private val _screenState = MutableStateFlow(ScreenState())
     val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
+
+    private var pendingLogin: PendingLogin? = null
 
     init {
         appState.map { it.content }
@@ -95,58 +99,110 @@ class AuthViewModel @Inject constructor(
                 )
             }
 
-            val params: Login.Params = if (screenState.value.useLinkding) {
-                Login.LinkdingParams(
-                    authToken = apiToken,
-                    instanceUrl = instanceUrl,
-                    clientCertAlias = screenState.value.clientCertAlias,
-                )
-            } else {
-                Login.PinboardParams(
-                    authToken = apiToken,
-                )
+            if (screenState.value.useLinkding && localNetworkAccessProvider.isPermissionRequired(instanceUrl)) {
+                pendingLogin = PendingLogin(apiToken = apiToken, instanceUrl = instanceUrl)
+                _screenState.update { current ->
+                    current.copy(isLoading = false, localNetworkPermissionRequired = true)
+                }
+                return@launch
             }
 
-            loginUseCase(params)
-                .onFailure { error ->
-                    when {
-                        error is ConnectException && screenState.value.useLinkding -> {
-                            _screenState.update { currentState ->
-                                currentState.copy(
-                                    isLoading = false,
-                                    instanceUrlError = resourceProvider.getString(
-                                        R.string.auth_linkding_unreachable_instance_url,
-                                    ),
-                                )
-                            }
-                        }
-
-                        error is ResponseException && error.response.status.value in AppConfig.LOGIN_FAILED_CODES -> {
-                            _screenState.update { currentState ->
-                                currentState.copy(
-                                    isLoading = false,
-                                    apiTokenError = resourceProvider.getString(R.string.auth_token_error),
-                                )
-                            }
-                        }
-
-                        error.isServerException() -> {
-                            _screenState.update { currentState ->
-                                currentState.copy(
-                                    isLoading = false,
-                                    apiTokenError = resourceProvider.getString(R.string.server_error),
-                                )
-                            }
-                        }
-
-                        else -> {
-                            _screenState.update { current -> current.copy(isLoading = false) }
-                            handleError(error)
-                        }
-                    }
-                }
+            performLogin(apiToken = apiToken, instanceUrl = instanceUrl)
         }
     }
+
+    /**
+     * Resumes a login that was held back by [localNetworkPermissionRequest] once the user has replied to the
+     * permission request. [canRequestAgain] is false when the permission was denied for good, in which case
+     * the system will no longer show its dialog and only the settings app can grant it.
+     */
+    fun localNetworkPermissionResult(granted: Boolean, canRequestAgain: Boolean) {
+        val pending: PendingLogin = pendingLogin ?: return
+        pendingLogin = null
+
+        if (!granted) {
+            _screenState.update { current ->
+                current.copy(
+                    isLoading = false,
+                    instanceUrlError = resourceProvider.getString(
+                        if (canRequestAgain) {
+                            R.string.auth_linkding_missing_local_network_permission
+                        } else {
+                            R.string.auth_linkding_missing_local_network_permission_settings
+                        },
+                    ),
+                    localNetworkPermissionRequired = false,
+                )
+            }
+            return
+        }
+
+        scope.launch {
+            _screenState.update { current ->
+                current.copy(isLoading = true, localNetworkPermissionRequired = false)
+            }
+
+            performLogin(apiToken = pending.apiToken, instanceUrl = pending.instanceUrl)
+        }
+    }
+
+    private suspend fun performLogin(apiToken: String, instanceUrl: String) {
+        val params: Login.Params = if (screenState.value.useLinkding) {
+            Login.LinkdingParams(
+                authToken = apiToken,
+                instanceUrl = instanceUrl,
+                clientCertAlias = screenState.value.clientCertAlias,
+            )
+        } else {
+            Login.PinboardParams(
+                authToken = apiToken,
+            )
+        }
+
+        loginUseCase(params)
+            .onFailure { error ->
+                when {
+                    error is ConnectException && screenState.value.useLinkding -> {
+                        _screenState.update { currentState ->
+                            currentState.copy(
+                                isLoading = false,
+                                instanceUrlError = resourceProvider.getString(
+                                    R.string.auth_linkding_unreachable_instance_url,
+                                ),
+                            )
+                        }
+                    }
+
+                    error is ResponseException && error.response.status.value in AppConfig.LOGIN_FAILED_CODES -> {
+                        _screenState.update { currentState ->
+                            currentState.copy(
+                                isLoading = false,
+                                apiTokenError = resourceProvider.getString(R.string.auth_token_error),
+                            )
+                        }
+                    }
+
+                    error.isServerException() -> {
+                        _screenState.update { currentState ->
+                            currentState.copy(
+                                isLoading = false,
+                                apiTokenError = resourceProvider.getString(R.string.server_error),
+                            )
+                        }
+                    }
+
+                    else -> {
+                        _screenState.update { current -> current.copy(isLoading = false) }
+                        handleError(error)
+                    }
+                }
+            }
+    }
+
+    private data class PendingLogin(
+        val apiToken: String,
+        val instanceUrl: String,
+    )
 
     data class ScreenState(
         val allowSwitching: Boolean = true,
@@ -155,5 +211,6 @@ class AuthViewModel @Inject constructor(
         val isLoading: Boolean = false,
         val apiTokenError: String? = null,
         val instanceUrlError: String? = null,
+        val localNetworkPermissionRequired: Boolean = false,
     )
 }

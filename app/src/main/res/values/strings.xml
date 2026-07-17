@@ -74,6 +74,8 @@
     <string name="auth_linkding_description"><![CDATA[<a href="https://github.com/sissbruecker/linkding/tree/master">Linkding</a> is a self-hosted bookmark manager. When using Pinkt for Linkding you must provide your instance URL and your token, which can be found in the Integration tab of the Settings page.]]></string>
 
     <string name="auth_linkding_unreachable_instance_url">Unable to connect to server. The address must contain a protocol and be publicly accessible.</string>
+    <string name="auth_linkding_missing_local_network_permission">Local network access is needed to reach a self-hosted instance. Grant the permission to continue.</string>
+    <string name="auth_linkding_missing_local_network_permission_settings">Grant local network access through the settings app to reach a self-hosted instance.</string>
 
     <string name="auth_linkding_client_certificate">Client certificate (optional): %s</string>
     <string name="auth_linkding_client_certificate_none">None</string>

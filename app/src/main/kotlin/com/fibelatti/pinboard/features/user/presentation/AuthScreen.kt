@@ -3,6 +3,8 @@ package com.fibelatti.pinboard.features.user.presentation
 import android.app.Activity
 import android.security.KeyChain
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -48,6 +50,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,6 +70,7 @@ import androidx.core.text.HtmlCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.android.LocalNetworkAccessProvider
 import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
 import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
@@ -76,6 +80,8 @@ import com.fibelatti.pinboard.core.android.icons.Eye
 import com.fibelatti.pinboard.core.android.icons.EyeSlash
 import com.fibelatti.pinboard.core.android.icons.Help
 import com.fibelatti.pinboard.core.android.icons.Pin
+import com.fibelatti.pinboard.core.extension.canRequestPermissionAgain
+import com.fibelatti.pinboard.core.extension.showLocalNetworkAccessDialog
 import com.fibelatti.ui.components.TextWithLinks
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -90,6 +96,24 @@ fun AuthScreen(
     ErrorHandlerEffect(error = error, handler = authViewModel::errorHandled)
 
     val activity: AppCompatActivity = LocalAppCompatActivity.current
+
+    val localNetworkPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { granted: Boolean ->
+            authViewModel.localNetworkPermissionResult(
+                granted = granted,
+                canRequestAgain = activity.canRequestPermissionAgain(LocalNetworkAccessProvider.PERMISSION),
+            )
+        },
+    )
+
+    LaunchedEffect(screenState.localNetworkPermissionRequired, localNetworkPermissionLauncher) {
+        if (!screenState.localNetworkPermissionRequired) return@LaunchedEffect
+
+        activity.showLocalNetworkAccessDialog {
+            localNetworkPermissionLauncher.launch(LocalNetworkAccessProvider.PERMISSION)
+        }
+    }
 
     AuthScreen(
         allowSwitching = screenState.allowSwitching,

@@ -26,6 +26,21 @@ fun Context.copyToClipboard(
     Toast.makeText(this, R.string.feedback_copied_to_clipboard, Toast.LENGTH_SHORT).show()
 }
 
+/**
+ * The system permission dialog talks about nearby devices, which gives no hint that the same
+ * permission is required to access a server on the same network. This explains why it is about to
+ * be shown before requesting it via [onConfirm].
+ */
+fun Context.showLocalNetworkAccessDialog(onConfirm: () -> Unit) {
+    materialAlertDialogBuilder().apply {
+        setMessage(R.string.auth_linkding_missing_local_network_permission)
+        setPositiveButton(R.string.hint_ok) { dialog, _ ->
+            dialog?.dismiss()
+            onConfirm()
+        }
+    }.applySecureFlag().show()
+}
+
 fun Context.showErrorReportDialog(
     throwable: Throwable,
     title: String = "",

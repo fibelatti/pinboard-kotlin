@@ -71,6 +71,8 @@
     <string name="auth_linkding_description">&lt;a href="https://github.com/sissbruecker/linkding/tree/master"&gt;Linkding&lt;/a&gt; est un gestionnaire de favoris auto-hébergé. Lorsque vous utilisez Pinkt pour Linkding, vous devez fournir l\'URL de votre instance et votre jeton, qui se trouvent dans l\'onglet Intégration de la page Paramètres.</string>
 
     <string name="auth_linkding_unreachable_instance_url">Impossible de se connecter au serveur. L\'adresse doit contenir un protocole et être accessible publiquement.</string>
+    <string name="auth_linkding_missing_local_network_permission">L\'accès au réseau local est nécessaire pour joindre une instance auto-hébergée. Accordez l\'autorisation pour continuer.</string>
+    <string name="auth_linkding_missing_local_network_permission_settings">Accordez l\'accès au réseau local via l\'application Paramètres pour joindre une instance auto-hébergée.</string>
 
     <string name="auth_linkding_client_certificate">Certificat client (facultatif) : %s</string>
     <string name="auth_linkding_client_certificate_none">Aucun</string>
