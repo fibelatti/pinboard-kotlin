@@ -37,9 +37,52 @@ import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.R
 import com.fibelatti.ui.components.AppBottomSheet
 import com.fibelatti.ui.components.AppSheetState
+import com.fibelatti.ui.components.RadioGroup
 import com.fibelatti.ui.preview.PreviewAccessibility
 import com.fibelatti.ui.preview.PreviewThemesAndColors
 import com.fibelatti.ui.theme.ExtendedTheme
+
+@Composable
+fun <T : Any> RadioSelectionDialogBottomSheet(
+    sheetState: AppSheetState,
+    title: String,
+    options: List<T>,
+    optionName: (T) -> String,
+    currentSelection: T,
+    onOptionSelect: (T) -> Unit,
+    modifier: Modifier = Modifier,
+    footer: @Composable () -> Unit = {},
+) {
+    AppBottomSheet(
+        sheetState = sheetState,
+        modifier = modifier,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(
+                text = title,
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge,
+            )
+
+            RadioGroup(
+                items = options,
+                itemSelected = { option -> option::class == currentSelection::class },
+                onItemClick = onOptionSelect,
+                itemTitle = optionName,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            footer()
+        }
+    }
+}
 
 @Composable
 fun <T> SelectionDialogBottomSheet(

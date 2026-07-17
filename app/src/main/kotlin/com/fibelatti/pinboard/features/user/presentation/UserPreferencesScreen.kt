@@ -77,7 +77,7 @@ import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
-import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
+import com.fibelatti.pinboard.core.android.composable.RadioSelectionDialogBottomSheet
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogCustomizationBottomSheet
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.core.android.getWindowSizeClass
@@ -894,7 +894,7 @@ private fun PreferenceButton(
 }
 
 @Composable
-private fun <T> PreferenceSelectionButton(
+private fun <T : Any> PreferenceSelectionButton(
     currentSelection: T,
     buttonText: (T) -> Int,
     @StringRes title: Int,
@@ -912,11 +912,12 @@ private fun <T> PreferenceSelectionButton(
         modifier = modifier,
     )
 
-    SelectionDialogBottomSheet(
+    RadioSelectionDialogBottomSheet(
         sheetState = sheetState,
         title = stringResource(title),
         options = options(),
         optionName = { option -> localResources.getString(buttonText(option)) },
+        currentSelection = currentSelection,
         onOptionSelect = onOptionSelect,
         footer = footer,
     )

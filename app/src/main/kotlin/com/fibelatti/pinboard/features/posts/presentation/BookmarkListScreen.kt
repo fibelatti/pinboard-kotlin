@@ -82,6 +82,7 @@ import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
+import com.fibelatti.pinboard.core.android.composable.RadioSelectionDialogBottomSheet
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
 import com.fibelatti.pinboard.core.android.composable.TextWithBlockquote
 import com.fibelatti.pinboard.core.android.icons.AppIcons
@@ -302,6 +303,7 @@ fun BookmarkListScreen(
         SortingSelectionBottomSheet(
             sheetState = sortSelectionSheetState,
             appMode = appState.appMode,
+            currentSelection = postListContent.sortType,
             onOptionSelect = { sortType -> mainViewModel.runAction(SetSorting(sortType)) },
         )
     }
@@ -934,11 +936,12 @@ private fun BookmarkQuickActionsBottomSheet(
 private fun SortingSelectionBottomSheet(
     sheetState: AppSheetState,
     appMode: AppMode,
+    currentSelection: SortType,
     onOptionSelect: (SortType) -> Unit,
 ) {
     val localResources = LocalResources.current
 
-    SelectionDialogBottomSheet(
+    RadioSelectionDialogBottomSheet(
         sheetState = sheetState,
         title = stringResource(R.string.menu_main_sorting),
         options = buildList {
@@ -965,6 +968,7 @@ private fun SortingSelectionBottomSheet(
 
             localResources.getString(resId)
         },
+        currentSelection = currentSelection,
         onOptionSelect = onOptionSelect,
     )
 }
