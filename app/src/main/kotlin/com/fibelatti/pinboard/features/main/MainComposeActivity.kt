@@ -43,7 +43,9 @@ class MainComposeActivity : AppCompatActivity() {
         ActivityResultContracts.RequestPermission(),
     ) { granted: Boolean ->
         when {
-            granted -> Unit // No action required, the app self-recovers
+            granted -> Unit
+
+            // No action required, the app self-recovers
 
             canRequestPermissionAgain(LocalNetworkAccessProvider.PERMISSION) -> {
                 showBanner(messageRes = R.string.auth_linkding_missing_local_network_permission)
