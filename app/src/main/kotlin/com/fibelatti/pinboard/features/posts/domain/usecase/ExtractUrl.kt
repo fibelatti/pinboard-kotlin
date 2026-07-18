@@ -1,24 +1,21 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Result
-import com.fibelatti.core.functional.Success
-import com.fibelatti.core.functional.UseCaseWithParams
+import com.fibelatti.core.functional.ResultUseCaseWithParams
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
 
 class ExtractUrl @Inject constructor(
     private val userRepository: UserRepository,
-) : UseCaseWithParams<String, Result<ExtractUrl.ExtractedUrl>> {
+) : ResultUseCaseWithParams<String, ExtractUrl.ExtractedUrl> {
 
-    override suspend operator fun invoke(inputUrl: String): Result<ExtractedUrl> {
+    override suspend operator fun invoke(params: String): Result<ExtractedUrl> {
         val schemes = ValidUrlScheme.ALL_SCHEMES.map { "$it://" }
-        val firstSchemeIndex = schemes.mapNotNull { scheme -> inputUrl.indexOf(scheme).takeIf { it >= 0 } }
+        val firstSchemeIndex = schemes.mapNotNull { scheme -> params.indexOf(scheme).takeIf { it >= 0 } }
             .minOrNull()
-            ?: return Failure(InvalidUrlException())
-        val sourceUrl = inputUrl.substring(startIndex = firstSchemeIndex)
+            ?: return Result.failure(InvalidUrlException())
+        val sourceUrl = params.substring(startIndex = firstSchemeIndex)
             .substringBefore(delimiter = "#:~:text=")
-        val highlightedText = inputUrl.substring(startIndex = 0, endIndex = firstSchemeIndex)
+        val highlightedText = params.substring(startIndex = 0, endIndex = firstSchemeIndex)
             .trim()
             .takeIf { it.startsWith("\"") && it.endsWith("\"") }
             ?.let { it.substring(startIndex = 1, endIndex = it.length - 1) }
@@ -35,7 +32,7 @@ class ExtractUrl @Inject constructor(
             sourceUrl
         }
 
-        return Success(
+        return Result.success(
             ExtractedUrl(
                 url = cleanUrl,
                 highlightedText = highlightedText,

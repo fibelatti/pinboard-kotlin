@@ -1,8 +1,7 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
-import com.fibelatti.core.functional.Result
-import com.fibelatti.core.functional.UseCase
-import com.fibelatti.core.functional.catching
+import com.fibelatti.core.functional.ResultUseCase
+import com.fibelatti.core.functional.coRunCatching
 import com.fibelatti.pinboard.core.di.RestApi
 import com.fibelatti.pinboard.core.di.RestApiProvider
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -17,9 +16,9 @@ import org.jsoup.Jsoup
 
 class GetPopularPosts @Inject constructor(
     @RestApi(RestApiProvider.COMMON) private val httpClient: HttpClient,
-) : UseCase<Result<Map<Post, Int>>> {
+) : ResultUseCase<Map<Post, Int>> {
 
-    override suspend operator fun invoke(): Result<Map<Post, Int>> = catching {
+    override suspend operator fun invoke(): Result<Map<Post, Int>> = coRunCatching {
         val document = withContext(Dispatchers.IO) {
             Jsoup.parse(httpClient.get(urlString = "https://pinboard.in/popular/").bodyAsText())
         }

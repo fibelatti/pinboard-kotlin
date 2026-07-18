@@ -1,8 +1,6 @@
 package com.fibelatti.pinboard.features.sync
 
 import androidx.work.ListenableWorker
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
@@ -25,7 +23,7 @@ internal class PendingSyncWorkerTest {
     @Test
     fun `when getPendingSyncPosts fails then result is equal to retry`() = runTest {
         // GIVEN
-        coEvery { postsRepository.getPendingSyncPosts() } returns Failure(Exception())
+        coEvery { postsRepository.getPendingSyncPosts() } returns Result.failure(Exception())
 
         // WHEN
         val result = worker.doWork()
@@ -37,7 +35,7 @@ internal class PendingSyncWorkerTest {
     @Test
     fun `when getPendingSyncPosts returns empty then result is equal to success`() = runTest {
         // GIVEN
-        coEvery { postsRepository.getPendingSyncPosts() } returns Success(emptyList())
+        coEvery { postsRepository.getPendingSyncPosts() } returns Result.success(emptyList())
 
         // WHEN
         val result = worker.doWork()
@@ -50,8 +48,8 @@ internal class PendingSyncWorkerTest {
     fun `when pendingSync is add then add is called`() = runTest {
         // GIVEN
         val post = createPost(pendingSync = PendingSync.ADD)
-        coEvery { postsRepository.getPendingSyncPosts() } returns Success(listOf(post))
-        coEvery { postsRepository.add(post) } returns Success(post)
+        coEvery { postsRepository.getPendingSyncPosts() } returns Result.success(listOf(post))
+        coEvery { postsRepository.add(post) } returns Result.success(post)
 
         // WHEN
         val result = worker.doWork()
@@ -64,8 +62,8 @@ internal class PendingSyncWorkerTest {
     fun `when pendingSync is update then add is called`() = runTest {
         // GIVEN
         val post = createPost(pendingSync = PendingSync.UPDATE)
-        coEvery { postsRepository.getPendingSyncPosts() } returns Success(listOf(post))
-        coEvery { postsRepository.add(post) } returns Success(post)
+        coEvery { postsRepository.getPendingSyncPosts() } returns Result.success(listOf(post))
+        coEvery { postsRepository.add(post) } returns Result.success(post)
 
         // WHEN
         val result = worker.doWork()
@@ -78,8 +76,8 @@ internal class PendingSyncWorkerTest {
     fun `when pendingSync is delete then delete is called`() = runTest {
         // GIVEN
         val post = createPost(pendingSync = PendingSync.DELETE)
-        coEvery { postsRepository.getPendingSyncPosts() } returns Success(listOf(post))
-        coEvery { postsRepository.delete(post = post) } returns Success(Unit)
+        coEvery { postsRepository.getPendingSyncPosts() } returns Result.success(listOf(post))
+        coEvery { postsRepository.delete(post = post) } returns Result.success(Unit)
 
         // WHEN
         val result = worker.doWork()
@@ -93,9 +91,9 @@ internal class PendingSyncWorkerTest {
         // GIVEN
         val postAdd = createPost(pendingSync = PendingSync.ADD)
         val postDelete = createPost(pendingSync = PendingSync.DELETE)
-        coEvery { postsRepository.getPendingSyncPosts() } returns Success(listOf(postAdd, postDelete))
-        coEvery { postsRepository.add(postAdd) } returns Failure(Exception())
-        coEvery { postsRepository.delete(post = postDelete) } returns Success(Unit)
+        coEvery { postsRepository.getPendingSyncPosts() } returns Result.success(listOf(postAdd, postDelete))
+        coEvery { postsRepository.add(postAdd) } returns Result.failure(Exception())
+        coEvery { postsRepository.delete(post = postDelete) } returns Result.success(Unit)
 
         // WHEN
         val result = worker.doWork()
@@ -109,9 +107,9 @@ internal class PendingSyncWorkerTest {
         // GIVEN
         val postAdd = createPost(pendingSync = PendingSync.ADD)
         val postDelete = createPost(pendingSync = PendingSync.DELETE)
-        coEvery { postsRepository.getPendingSyncPosts() } returns Success(listOf(postAdd, postDelete))
-        coEvery { postsRepository.add(postAdd) } returns Success(postAdd)
-        coEvery { postsRepository.delete(post = postDelete) } returns Success(Unit)
+        coEvery { postsRepository.getPendingSyncPosts() } returns Result.success(listOf(postAdd, postDelete))
+        coEvery { postsRepository.add(postAdd) } returns Result.success(postAdd)
+        coEvery { postsRepository.delete(post = postDelete) } returns Result.success(Unit)
 
         // WHEN
         val result = worker.doWork()

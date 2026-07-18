@@ -1,9 +1,5 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Success
-import com.fibelatti.core.functional.exceptionOrNull
-import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.pinboard.MockDataProvider
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_VALID
 import com.fibelatti.pinboard.core.network.ApiException
@@ -30,7 +26,7 @@ class UnarchivePostTest {
     @Test
     fun `GIVEN ValidateUrl fails WHEN UnarchivePost is called THEN Failure is returned`() = runTest {
         // GIVEN
-        coEvery { mockValidateUrl(SAMPLE_URL_VALID) } returns Failure(InvalidRequestException())
+        coEvery { mockValidateUrl(SAMPLE_URL_VALID) } returns Result.failure(InvalidRequestException())
 
         // WHEN
         val result = unarchivePost(mockPost)
@@ -42,8 +38,8 @@ class UnarchivePostTest {
     @Test
     fun `GIVEN posts repository unarchive fails WHEN UnarchivePost is called THEN Failure is returned`() = runTest {
         // GIVEN
-        coEvery { mockValidateUrl(SAMPLE_URL_VALID) } returns Success(SAMPLE_URL_VALID)
-        coEvery { mockPostsRepository.unarchive(post = mockPost) } returns Failure(ApiException())
+        coEvery { mockValidateUrl(SAMPLE_URL_VALID) } returns Result.success(SAMPLE_URL_VALID)
+        coEvery { mockPostsRepository.unarchive(post = mockPost) } returns Result.failure(ApiException())
 
         // WHEN
         val result = unarchivePost(mockPost)
@@ -56,8 +52,8 @@ class UnarchivePostTest {
     fun `GIVEN posts repository unarchive succeeds WHEN UnarchivePost is called THEN Success is returned`() = runTest {
         // GIVEN
         val unarchivedPost = mockPost.copy(isArchived = false)
-        coEvery { mockValidateUrl(SAMPLE_URL_VALID) } returns Success(SAMPLE_URL_VALID)
-        coEvery { mockPostsRepository.unarchive(post = mockPost) } returns Success(unarchivedPost)
+        coEvery { mockValidateUrl(SAMPLE_URL_VALID) } returns Result.success(SAMPLE_URL_VALID)
+        coEvery { mockPostsRepository.unarchive(post = mockPost) } returns Result.success(unarchivedPost)
 
         // WHEN
         val result = unarchivePost(mockPost)

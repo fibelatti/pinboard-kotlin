@@ -1,10 +1,7 @@
 package com.fibelatti.pinboard.features.user.domain
 
-import com.fibelatti.core.functional.Result
-import com.fibelatti.core.functional.UseCaseWithParams
-import com.fibelatti.core.functional.map
-import com.fibelatti.core.functional.onFailure
-import com.fibelatti.core.functional.onSuccess
+import com.fibelatti.core.functional.ResultUseCaseWithParams
+import com.fibelatti.core.functional.coMapCatching
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
@@ -19,7 +16,7 @@ class Login @Inject constructor(
     private val appStateRepository: AppStateRepository,
     private val postsRepository: PostsRepository,
     private val appModeProvider: AppModeProvider,
-) : UseCaseWithParams<Login.Params, Result<Unit>> {
+) : ResultUseCaseWithParams<Login.Params, Unit> {
 
     override suspend operator fun invoke(params: Params): Result<Unit> {
         Timber.d("Logging in %s", mapOf("params" to params))
@@ -42,7 +39,7 @@ class Login @Inject constructor(
         }
 
         return postsRepository.update()
-            .map { postsRepository.clearCache() }
+            .coMapCatching { postsRepository.clearCache().getOrThrow() }
             .onSuccess { appStateRepository.runAction(UserLoggedIn(appMode = appMode)) }
             .onFailure { appStateRepository.runAction(UserLoginFailed(appMode = appMode)) }
     }

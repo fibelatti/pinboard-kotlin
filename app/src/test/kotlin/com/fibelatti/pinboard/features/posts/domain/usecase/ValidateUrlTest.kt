@@ -1,7 +1,5 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
-import com.fibelatti.core.functional.exceptionOrNull
-import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.pinboard.MockDataProvider
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest

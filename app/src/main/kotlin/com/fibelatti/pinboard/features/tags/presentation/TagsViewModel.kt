@@ -1,9 +1,6 @@
 package com.fibelatti.pinboard.features.tags.presentation
 
 import androidx.compose.runtime.Stable
-import com.fibelatti.core.functional.getOrThrow
-import com.fibelatti.core.functional.onFailure
-import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.SearchContent

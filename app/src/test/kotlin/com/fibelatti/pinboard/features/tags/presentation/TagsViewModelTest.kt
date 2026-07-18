@@ -1,7 +1,5 @@
 package com.fibelatti.pinboard.features.tags.presentation
 
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAGS
 import com.fibelatti.pinboard.MockDataProvider.createAppState
@@ -47,7 +45,7 @@ internal class TagsViewModelTest : BaseViewModelTest() {
     @Test
     fun `WHEN TagListContent is emitted AND shouldLoad is true THEN getAll is called`() = runTest {
         // GIVEN
-        every { mockTagsRepository.getAllTags() } returns flowOf(Success(SAMPLE_TAGS))
+        every { mockTagsRepository.getAllTags() } returns flowOf(Result.success(SAMPLE_TAGS))
 
         // WHEN
         appStateFlow.value = createAppState(
@@ -85,7 +83,7 @@ internal class TagsViewModelTest : BaseViewModelTest() {
     @Test
     fun `WHEN SearchContent is emitted AND shouldLoad is true THEN getAll is called`() = runTest {
         // GIVEN
-        every { mockTagsRepository.getAllTags() } returns flowOf(Success(SAMPLE_TAGS))
+        every { mockTagsRepository.getAllTags() } returns flowOf(Result.success(SAMPLE_TAGS))
 
         // WHEN
         appStateFlow.value = createAppState(
@@ -125,7 +123,7 @@ internal class TagsViewModelTest : BaseViewModelTest() {
     fun `WHEN getAllTags fails THEN error should receive a value`() = runTest {
         // GIVEN
         val error = Exception()
-        coEvery { mockTagsRepository.getAllTags() } returns flowOf(Failure(error))
+        coEvery { mockTagsRepository.getAllTags() } returns flowOf(Result.failure(error))
 
         // WHEN
         tagsViewModel.getAll(mockk())
@@ -138,7 +136,7 @@ internal class TagsViewModelTest : BaseViewModelTest() {
     @Test
     fun `GIVEN source is MENU WHEN getAllTags succeeds THEN AppStateRepository should run SetTags`() {
         // GIVEN
-        every { mockTagsRepository.getAllTags() } returns flowOf(Success(SAMPLE_TAGS))
+        every { mockTagsRepository.getAllTags() } returns flowOf(Result.success(SAMPLE_TAGS))
 
         // WHEN
         tagsViewModel.getAll(TagsViewModel.Source.MENU)
@@ -150,7 +148,7 @@ internal class TagsViewModelTest : BaseViewModelTest() {
     @Test
     fun `GIVEN source is SEARCH WHEN getAllTags succeeds THEN AppStateRepository should run SetSearchTags`() {
         // GIVEN
-        every { mockTagsRepository.getAllTags() } returns flowOf(Success(SAMPLE_TAGS))
+        every { mockTagsRepository.getAllTags() } returns flowOf(Result.success(SAMPLE_TAGS))
 
         // WHEN
         tagsViewModel.getAll(TagsViewModel.Source.SEARCH)
@@ -228,7 +226,7 @@ internal class TagsViewModelTest : BaseViewModelTest() {
     fun `WHEN renameTag fails THEN error should receive a value`() = runTest {
         // GIVEN
         val error = Exception()
-        coEvery { mockTagsRepository.renameTag(any(), any()) } returns Failure(error)
+        coEvery { mockTagsRepository.renameTag(any(), any()) } returns Result.failure(error)
 
         // WHEN
         tagsViewModel.renameTag(tag = Tag(name = "old-name"), newName = "new-name")
@@ -243,7 +241,7 @@ internal class TagsViewModelTest : BaseViewModelTest() {
     fun `WHEN renameTag succeeds THEN AppStateRepository should run SetTags`() = runTest {
         // GIVEN
         val tags = listOf(Tag(name = "new-name"))
-        coEvery { mockTagsRepository.renameTag(any(), any()) } returns Success(tags)
+        coEvery { mockTagsRepository.renameTag(any(), any()) } returns Result.success(tags)
 
         // WHEN
         tagsViewModel.renameTag(tag = Tag(name = "old-name"), newName = "new-name")

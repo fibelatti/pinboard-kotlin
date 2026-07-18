@@ -1,9 +1,6 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
 import androidx.annotation.StringRes
-import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.core.functional.onFailure
-import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateRepository

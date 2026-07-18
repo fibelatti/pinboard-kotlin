@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.tags.data
 
-import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.pinboard.core.di.AppDispatchers
 import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.features.appstate.AddPostContent

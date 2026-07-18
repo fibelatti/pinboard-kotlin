@@ -1,8 +1,6 @@
 package com.fibelatti.pinboard.features.sync
 
 import androidx.work.ListenableWorker
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
@@ -55,7 +53,7 @@ internal class SyncBookmarksWorkerTest {
                 pageOffset = 0,
                 forceRefresh = false,
             )
-        } returns flowOf(Success(mockk()), Success(mockk()))
+        } returns flowOf(Result.success(mockk()), Result.success(mockk()))
 
         // WHEN
         val result = worker.doWork()
@@ -83,7 +81,7 @@ internal class SyncBookmarksWorkerTest {
                 pageOffset = 0,
                 forceRefresh = false,
             )
-        } returns flowOf(Success(mockk()), Failure(Exception()))
+        } returns flowOf(Result.success(mockk()), Result.failure(Exception()))
 
         // WHEN
         val result = worker.doWork()

@@ -2,8 +2,6 @@ package com.fibelatti.pinboard.features.user.presentation
 
 import app.cash.turbine.test
 import com.fibelatti.core.android.platform.ResourceProvider
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_API_TOKEN
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_INSTANCE_URL
@@ -189,7 +187,7 @@ class AuthViewModelTest : BaseViewModelTest() {
                         clientCertAlias = null,
                     ),
                 )
-            } returns Success(Unit)
+            } returns Result.success(Unit)
             viewModel.useLinkding(value = true)
 
             // WHEN
@@ -230,7 +228,7 @@ class AuthViewModelTest : BaseViewModelTest() {
                     }
                 }
 
-                coEvery { mockLogin(Login.PinboardParams(authToken = SAMPLE_API_TOKEN)) } returns Failure(error)
+                coEvery { mockLogin(Login.PinboardParams(authToken = SAMPLE_API_TOKEN)) } returns Result.failure(error)
                 every { mockResourceProvider.getString(R.string.auth_token_error) } returns "R.string.auth_token_error"
 
                 // WHEN
@@ -260,7 +258,7 @@ class AuthViewModelTest : BaseViewModelTest() {
                     }
                 }
 
-                coEvery { mockLogin(Login.PinboardParams(authToken = SAMPLE_API_TOKEN)) } returns Failure(error)
+                coEvery { mockLogin(Login.PinboardParams(authToken = SAMPLE_API_TOKEN)) } returns Result.failure(error)
                 every { mockResourceProvider.getString(R.string.auth_token_error) } returns "R.string.auth_token_error"
 
                 // WHEN
@@ -282,7 +280,7 @@ class AuthViewModelTest : BaseViewModelTest() {
         fun `GIVEN Login fails WHEN login is called THEN error should receive a value`() = runTest {
             // GIVEN
             val error = Exception()
-            coEvery { mockLogin(Login.PinboardParams(authToken = SAMPLE_API_TOKEN)) } returns Failure(error)
+            coEvery { mockLogin(Login.PinboardParams(authToken = SAMPLE_API_TOKEN)) } returns Result.failure(error)
 
             // WHEN
             viewModel.login(
@@ -337,7 +335,7 @@ class AuthViewModelTest : BaseViewModelTest() {
                         clientCertAlias = null,
                     ),
                 )
-            } returns Success(Unit)
+            } returns Result.success(Unit)
             viewModel.useLinkding(value = true)
 
             // WHEN
@@ -361,7 +359,7 @@ class AuthViewModelTest : BaseViewModelTest() {
         @Test
         fun `GIVEN pinboard is used WHEN login is called THEN the permission is not required`() = runTest {
             // GIVEN
-            coEvery { mockLogin(Login.PinboardParams(authToken = SAMPLE_API_TOKEN)) } returns Success(Unit)
+            coEvery { mockLogin(Login.PinboardParams(authToken = SAMPLE_API_TOKEN)) } returns Result.success(Unit)
 
             // WHEN
             viewModel.login(
@@ -386,7 +384,7 @@ class AuthViewModelTest : BaseViewModelTest() {
                         clientCertAlias = null,
                     ),
                 )
-            } returns Success(Unit)
+            } returns Result.success(Unit)
             viewModel.useLinkding(value = true)
             viewModel.login(
                 apiToken = SAMPLE_API_TOKEN,

@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.linkding.data
 
-import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_HASH
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_VALID
 import com.fibelatti.pinboard.MockDataProvider.createBookmarkLocal

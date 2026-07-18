@@ -1,16 +1,19 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Result
-import com.fibelatti.core.functional.Success
-import com.fibelatti.core.functional.UseCaseWithParams
+import com.fibelatti.core.functional.ResultUseCaseWithParams
 import javax.inject.Inject
 
-class ValidateUrl @Inject constructor() : UseCaseWithParams<String, Result<String>> {
+class ValidateUrl @Inject constructor() : ResultUseCaseWithParams<String, String> {
 
-    override suspend operator fun invoke(params: String): Result<String> =
-        if (validate(params)) Success(params) else Failure(InvalidUrlException())
+    override suspend operator fun invoke(params: String): Result<String> {
+        return if (validate(params)) {
+            Result.success(params)
+        } else {
+            Result.failure(InvalidUrlException())
+        }
+    }
 
-    private fun validate(url: String): Boolean =
-        url.substringBefore("://", "") in ValidUrlScheme.ALL_SCHEMES
+    private fun validate(url: String): Boolean {
+        return url.substringBefore("://", "") in ValidUrlScheme.ALL_SCHEMES
+    }
 }

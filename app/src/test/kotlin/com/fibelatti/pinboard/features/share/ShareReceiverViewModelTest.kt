@@ -2,9 +2,7 @@ package com.fibelatti.pinboard.features.share
 
 import app.cash.turbine.test
 import com.fibelatti.core.android.platform.ResourceProvider
-import com.fibelatti.core.functional.Failure
 import com.fibelatti.core.functional.ScreenState
-import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_DATE_TIME
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_TITLE
@@ -48,8 +46,8 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
 
     private val mockExtractUrl = mockk<ExtractUrl> {
         coEvery {
-            this@mockk.invoke(inputUrl = SAMPLE_URL_VALID)
-        } returns Success(
+            this@mockk.invoke(params = SAMPLE_URL_VALID)
+        } returns Result.success(
             ExtractUrl.ExtractedUrl(url = SAMPLE_URL_VALID),
         )
     }
@@ -61,7 +59,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                     title = SAMPLE_URL_TITLE,
                 ),
             )
-        } returns Success(
+        } returns Result.success(
             UrlPreview(
                 url = SAMPLE_URL_VALID,
                 title = SAMPLE_URL_VALID,
@@ -70,7 +68,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     }
     private val mockAddPost = mockk<AddPost>()
     private val mockPostsRepository = mockk<PostsRepository> {
-        coEvery { getPost(id = any(), url = any()) } returns Failure(InvalidRequestException())
+        coEvery { getPost(id = any(), url = any()) } returns Result.failure(InvalidRequestException())
     }
     private val mockUserRepository = mockk<UserRepository> {
         every { userCredentials } returns MutableStateFlow(credentials)
@@ -138,7 +136,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                         tags = defaultTags,
                     ),
                 )
-            } returns Success(post)
+            } returns Result.success(post)
 
             shareReceiverViewModel.screenState.test {
                 shareReceiverViewModel.saveUrl(url = SAMPLE_URL_VALID, title = SAMPLE_URL_TITLE, skipEdit = true)
@@ -185,7 +183,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                     tags = defaultTags,
                 ),
             )
-        } returns Success(post)
+        } returns Result.success(post)
 
         val savedFeedback = "Bookmark saved successfully!"
         every { mockResourceProvider.getString(R.string.posts_saved_feedback) } returns savedFeedback
@@ -208,7 +206,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     @Test
     fun `WHEN ExtractUrl fails THEN failed should receive a value`() = runTest {
         // GIVEN
-        coEvery { mockExtractUrl(SAMPLE_URL_VALID) } returns Failure(error)
+        coEvery { mockExtractUrl(SAMPLE_URL_VALID) } returns Result.failure(error)
 
         // WHEN
         shareReceiverViewModel.saveUrl(url = SAMPLE_URL_VALID, title = SAMPLE_URL_TITLE)
@@ -221,7 +219,9 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     @Test
     fun `WHEN GetUrlPreview fails THEN failed should receive a value`() = runTest {
         // GIVEN
-        coEvery { mockGetUrlPreview(GetUrlPreview.Params(SAMPLE_URL_VALID, SAMPLE_URL_TITLE)) } returns Failure(error)
+        coEvery { mockGetUrlPreview(GetUrlPreview.Params(SAMPLE_URL_VALID, SAMPLE_URL_TITLE)) } returns Result.failure(
+            error,
+        )
 
         // WHEN
         shareReceiverViewModel.saveUrl(url = SAMPLE_URL_VALID, title = SAMPLE_URL_TITLE)
@@ -235,7 +235,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     fun `GIVEN skipEdit is true WHEN an existing post is found THEN save should receive a value`() = runTest {
         // GIVEN
         val existingFeedback = "Existing bookmark found, saved on $SAMPLE_DATE_TIME"
-        coEvery { mockPostsRepository.getPost(id = "", url = SAMPLE_URL_VALID) } returns Success(post)
+        coEvery { mockPostsRepository.getPost(id = "", url = SAMPLE_URL_VALID) } returns Result.success(post)
         every {
             mockResourceProvider.getString(R.string.posts_existing_feedback_with_date, SAMPLE_DATE_TIME)
         } returns existingFeedback
@@ -256,7 +256,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         runTest {
             // GIVEN
             val existingFeedback = "Existing bookmark found, saved on $SAMPLE_DATE_TIME"
-            coEvery { mockPostsRepository.getPost(id = "", url = SAMPLE_URL_VALID) } returns Success(post)
+            coEvery { mockPostsRepository.getPost(id = "", url = SAMPLE_URL_VALID) } returns Result.success(post)
             every { mockUserRepository.editAfterSharing } returns EditAfterSharing.BeforeSaving
             every {
                 mockResourceProvider.getString(R.string.posts_existing_feedback_with_date, SAMPLE_DATE_TIME)
@@ -279,7 +279,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
         runTest {
             // GIVEN
             val existingFeedback = "Existing bookmark found, saved on $SAMPLE_DATE_TIME"
-            coEvery { mockPostsRepository.getPost(id = "", url = SAMPLE_URL_VALID) } returns Success(post)
+            coEvery { mockPostsRepository.getPost(id = "", url = SAMPLE_URL_VALID) } returns Result.success(post)
             every { mockUserRepository.editAfterSharing } returns EditAfterSharing.AfterSaving
             every {
                 mockResourceProvider.getString(R.string.posts_existing_feedback_with_date, SAMPLE_DATE_TIME)
@@ -359,7 +359,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                     tags = defaultTags,
                 ),
             )
-        } returns Failure(error)
+        } returns Result.failure(error)
 
         // WHEN
         shareReceiverViewModel.saveUrl(url = SAMPLE_URL_VALID, title = SAMPLE_URL_TITLE)
@@ -398,7 +398,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                     tags = defaultTags,
                 ),
             )
-        } returns Success(createPost())
+        } returns Result.success(createPost())
 
         // WHEN
         shareReceiverViewModel.saveUrl(url = SAMPLE_URL_VALID, title = SAMPLE_URL_TITLE, skipEdit = true)
@@ -443,7 +443,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
                     tags = defaultTags,
                 ),
             )
-        } returns Success(post)
+        } returns Result.success(post)
 
         // WHEN
         shareReceiverViewModel.saveUrl(url = SAMPLE_URL_VALID, title = SAMPLE_URL_TITLE)

@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
-import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAGS
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_VALID
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_PAGE_SIZE
@@ -51,7 +50,7 @@ class GetAllPostsTest {
                 pageOffset = any(),
                 forceRefresh = any(),
             )
-        } returns flowOf(Success(mockResponse))
+        } returns flowOf(Result.success(mockResponse))
     }
 
     @Nested

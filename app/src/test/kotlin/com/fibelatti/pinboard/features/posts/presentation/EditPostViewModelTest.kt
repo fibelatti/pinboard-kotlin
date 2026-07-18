@@ -3,8 +3,6 @@ package com.fibelatti.pinboard.features.posts.presentation
 import app.cash.turbine.test
 import app.cash.turbine.turbineScope
 import com.fibelatti.core.android.platform.ResourceProvider
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.createAppState
 import com.fibelatti.pinboard.MockDataProvider.createPost
@@ -162,7 +160,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         runTest {
             editPostViewModel.screenState.test {
                 // GIVEN
-                coEvery { mockAddPost(post) } returns Failure(InvalidUrlException())
+                coEvery { mockAddPost(post) } returns Result.failure(InvalidUrlException())
 
                 // WHEN
                 editPostViewModel.saveLink()
@@ -187,7 +185,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         turbineScope {
             // GIVEN
             val exception = Exception()
-            coEvery { mockAddPost(post) } returns Failure(exception)
+            coEvery { mockAddPost(post) } returns Result.failure(exception)
 
             val screenState = editPostViewModel.screenState.testIn(backgroundScope)
             val error = editPostViewModel.error.testIn(backgroundScope)
@@ -215,7 +213,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
         runTest {
             turbineScope {
                 // GIVEN
-                coEvery { mockAddPost(post) } returns Success(post)
+                coEvery { mockAddPost(post) } returns Result.success(post)
 
                 val screenState = editPostViewModel.screenState.testIn(backgroundScope)
                 val error = editPostViewModel.error.testIn(backgroundScope)

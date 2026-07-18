@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.posts.data
 
-import com.fibelatti.core.functional.Result
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.features.appstate.SortType

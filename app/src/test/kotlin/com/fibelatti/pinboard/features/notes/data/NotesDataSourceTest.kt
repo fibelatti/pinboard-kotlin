@@ -1,7 +1,5 @@
 package com.fibelatti.pinboard.features.notes.data
 
-import com.fibelatti.core.functional.exceptionOrNull
-import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_NOTE_ID
 import com.fibelatti.pinboard.features.notes.data.model.NoteDto
 import com.fibelatti.pinboard.features.notes.data.model.NoteDtoMapper

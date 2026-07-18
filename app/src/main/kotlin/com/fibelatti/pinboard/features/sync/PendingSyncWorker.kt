@@ -4,8 +4,6 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.fibelatti.core.functional.Success
-import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
 import dagger.assisted.Assisted
@@ -39,11 +37,11 @@ class PendingSyncWorker @AssistedInject constructor(
                         PendingSync.DELETE -> postsRepository.delete(post = post)
                         PendingSync.ARCHIVE -> postsRepository.archive(post = post)
                         PendingSync.UNARCHIVE -> postsRepository.unarchive(post = post)
-                        null -> Success(Unit)
+                        null -> kotlin.Result.success(Unit)
                     }
                 }
             }.awaitAll()
-        }.all { it is Success }
+        }.all { it.isSuccess }
 
         return if (success) Result.success() else Result.retry()
     }

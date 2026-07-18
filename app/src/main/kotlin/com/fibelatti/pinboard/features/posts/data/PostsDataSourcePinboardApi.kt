@@ -3,14 +3,9 @@ package com.fibelatti.pinboard.features.posts.data
 import androidx.annotation.VisibleForTesting
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.fibelatti.core.extension.ifNullOrBlank
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Result
-import com.fibelatti.core.functional.Success
-import com.fibelatti.core.functional.catching
-import com.fibelatti.core.functional.getOrDefault
-import com.fibelatti.core.functional.getOrThrow
-import com.fibelatti.core.functional.mapCatching
-import com.fibelatti.core.functional.mapFailure
+import com.fibelatti.core.functional.coMapCatching
+import com.fibelatti.core.functional.coRecoverCatching
+import com.fibelatti.core.functional.coRunCatching
 import com.fibelatti.pinboard.core.AppConfig.API_BASE_URL_LENGTH
 import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
@@ -68,21 +63,19 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
     @Volatile
     private var pagedRequestsJob: Job? = null
 
-    private fun <T> Result<T>.mapApiRequestFailure(endpoint: String): Result<T> = mapFailure { throwable ->
-        val mappedValue: Throwable = if (throwable is ResponseException) {
+    private fun <T> Result<T>.mapApiRequestFailure(endpoint: String): Result<T> = coRecoverCatching { original ->
+        throw if (original is ResponseException) {
             RuntimeException(
-                "Network call to `$endpoint` failed. HTTP Code ${throwable.response.status.value}.",
-                throwable,
+                "Network call to `$endpoint` failed. HTTP Code ${original.response.status.value}.",
+                original,
             )
         } else {
-            throwable
+            original
         }
-
-        Failure(mappedValue)
     }
 
     override suspend fun update(): Result<String> = resultFromNetwork {
-        withTimeout(SERVER_DOWN_TIMEOUT_SHORT) {
+        withTimeout(timeMillis = SERVER_DOWN_TIMEOUT_SHORT) {
             postsApi.update().updateTime
         }
     }.mapApiRequestFailure(endpoint = "posts/update")
@@ -127,7 +120,7 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
         }
 
         val networkResult = resultFromNetwork {
-            withTimeout(SERVER_DOWN_TIMEOUT_LONG) {
+            withTimeout(timeMillis = SERVER_DOWN_TIMEOUT_LONG) {
                 try {
                     add(PinboardApiMaxLength.URI.value - currentLength)
                 } catch (httpException: ResponseException) {
@@ -140,10 +133,10 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
             }
         }
 
-        return when (networkResult) {
-            is Success -> {
-                catching {
-                    when (networkResult.value.resultCode) {
+        return networkResult.fold(
+            onSuccess = {
+                coRunCatching {
+                    when (it.resultCode) {
                         ApiResultCodes.DONE.code -> {
                             postsDao.deletePendingSyncPost(post.url)
                             savePosts(listOf(postDtoMapper.mapReverse(post)))
@@ -154,19 +147,18 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
                             getPost(id = "", url = post.url).getOrThrow()
                         }
 
-                        else -> throw ApiException(networkResult.value.resultCode)
+                        else -> throw ApiException(it.resultCode)
                     }
                 }
-            }
-
-            is Failure -> {
-                if (networkResult.value is IOException) {
+            },
+            onFailure = {
+                if (it is IOException) {
                     addPostLocal(post = post)
                 } else {
-                    networkResult
+                    Result.failure(it)
                 }
-            }
-        }
+            },
+        )
     }
 
     private suspend fun addPostLocal(post: Post): Result<Post> = resultFrom {
@@ -202,19 +194,18 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
             postsApi.delete(post.url)
         }
 
-        return when (networkResult) {
-            is Success -> {
-                catching {
-                    if (networkResult.value.isDone) {
+        return networkResult.fold(
+            onSuccess = {
+                coRunCatching {
+                    if (it.isDone) {
                         postsDao.deletePost(post.url)
                     } else {
-                        throw ApiException(networkResult.value.resultCode)
+                        throw ApiException(it.resultCode)
                     }
                 }
-            }
-
-            is Failure -> deletePostLocal(post = post)
-        }
+            },
+            onFailure = { deletePostLocal(post = post) },
+        )
     }
 
     private suspend fun deletePostLocal(post: Post): Result<Unit> = resultFrom {
@@ -228,9 +219,9 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
         }
     }
 
-    override suspend fun archive(post: Post): Result<Post> = Failure(InvalidRequestException())
+    override suspend fun archive(post: Post): Result<Post> = Result.failure(InvalidRequestException())
 
-    override suspend fun unarchive(post: Post): Result<Post> = Failure(InvalidRequestException())
+    override suspend fun unarchive(post: Post): Result<Post> = Result.failure(InvalidRequestException())
 
     override fun getAllPosts(
         sortType: SortType,
@@ -289,7 +280,7 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
 
         val apiData = resultFromNetwork { postsApi.getAllPosts(offset = 0, limit = API_PAGE_SIZE) }
             .mapApiRequestFailure(endpoint = "posts/all")
-            .mapCatching { posts ->
+            .coMapCatching { posts ->
                 postsDao.deleteAllSyncedPosts()
                 savePosts(posts.let(postRemoteDtoMapper::mapList))
 
@@ -349,7 +340,7 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
         tags: List<Tag>?,
         matchAll: Boolean,
         exactMatch: Boolean,
-    ): Int = catching {
+    ): Int = coRunCatching {
         getLocalDataSize(
             searchTerm = searchTerm,
             tags = tags,

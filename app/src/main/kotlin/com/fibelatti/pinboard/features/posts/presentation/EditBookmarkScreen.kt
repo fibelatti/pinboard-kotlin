@@ -55,7 +55,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
-import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppMode
@@ -312,7 +311,7 @@ private fun LaunchedPostDetailViewModelEffect(
 
     SideEffect(screenState) {
         val current = screenState
-        if (current.deleted is Success<Boolean> && current.deleted.value) {
+        if (current.deleted.getOrNull() == true) {
             localView.showBanner(R.string.posts_deleted_feedback)
             postDetailViewModel.userNotified()
         }

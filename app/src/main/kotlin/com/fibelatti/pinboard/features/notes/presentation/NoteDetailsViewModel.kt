@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.features.notes.presentation
 
-import com.fibelatti.core.functional.mapCatching
-import com.fibelatti.core.functional.onFailure
+import com.fibelatti.core.functional.coMapCatching
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.NoteDetailContent
@@ -36,7 +35,7 @@ class NoteDetailsViewModel @Inject constructor(
 
     private suspend fun getNoteDetails(id: String) {
         notesRepository.getNote(id)
-            .mapCatching { runAction(SetNote(it)) }
+            .coMapCatching { runAction(SetNote(it)) }
             .onFailure(::handleError)
     }
 }

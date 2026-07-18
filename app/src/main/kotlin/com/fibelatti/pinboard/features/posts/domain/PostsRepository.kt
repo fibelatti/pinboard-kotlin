@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.posts.domain
 
-import com.fibelatti.core.functional.Result
 import com.fibelatti.pinboard.features.appstate.SortType
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult

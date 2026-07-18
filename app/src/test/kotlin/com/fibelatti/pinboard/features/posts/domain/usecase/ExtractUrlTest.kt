@@ -1,10 +1,5 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Result
-import com.fibelatti.core.functional.Success
-import com.fibelatti.core.functional.exceptionOrNull
-import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
@@ -56,7 +51,7 @@ internal class ExtractUrlTest {
         val result = extractUrl(input)
 
         // THEN
-        if (result is Success) {
+        if (result.isSuccess) {
             assertThat(result).isEqualTo(expectedResult)
         } else {
             assertThat(result.exceptionOrNull()).isInstanceOf(InvalidUrlException::class.java)
@@ -64,13 +59,18 @@ internal class ExtractUrlTest {
     }
 
     fun testCases(): List<Pair<String, Result<ExtractUrl.ExtractedUrl>>> = buildList {
-        ValidUrlScheme.ALL_SCHEMES.map {
-            add("Check this awesome url $it://www.url.com" to Success(ExtractUrl.ExtractedUrl("$it://www.url.com")))
+        ValidUrlScheme.ALL_SCHEMES.forEach {
+            add(
+                "Check this awesome url $it://www.url.com" to
+                    Result.success(ExtractUrl.ExtractedUrl("$it://www.url.com")),
+            )
         }
         add(
             "https://web.archive.org/web/20111117040806/http://www.url.com" to
-                Success(ExtractUrl.ExtractedUrl("https://web.archive.org/web/20111117040806/http://www.url.com")),
+                Result.success(
+                    ExtractUrl.ExtractedUrl("https://web.archive.org/web/20111117040806/http://www.url.com"),
+                ),
         )
-        add("Check this not so awesome url www.url.com" to Failure(InvalidUrlException()))
+        add("Check this not so awesome url www.url.com" to Result.failure(InvalidUrlException()))
     }
 }

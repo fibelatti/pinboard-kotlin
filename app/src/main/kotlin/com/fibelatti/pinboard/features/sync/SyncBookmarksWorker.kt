@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
@@ -45,7 +44,7 @@ class SyncBookmarksWorker @AssistedInject constructor(
             pageLimit = AppConfig.DEFAULT_PAGE_SIZE,
             pageOffset = 0,
             forceRefresh = false,
-        ).toList().all { it is Success }
+        ).toList().all { it.isSuccess }
 
         return if (success) Result.success() else Result.retry()
     }

@@ -1,12 +1,6 @@
 package com.fibelatti.pinboard.features.tags.data
 
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Result
-import com.fibelatti.core.functional.Success
-import com.fibelatti.core.functional.map
-import com.fibelatti.core.functional.mapCatching
-import com.fibelatti.core.functional.onFailureReturn
-import com.fibelatti.core.functional.onSuccess
+import com.fibelatti.core.functional.coMapCatching
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.ApiException
@@ -29,7 +23,7 @@ internal class TagsDataSourcePinboardApi @Inject constructor(
     private var localTags: List<Tag>? = null
 
     override fun getAllTags(): Flow<Result<List<Tag>>> = flow {
-        localTags?.let { value -> emit(Success(value)) }
+        localTags?.let { value -> emit(Result.success(value)) }
         emit(getLocalTags())
         if (connectivityInfoProvider.isConnected()) {
             emit(getRemoteTags())
@@ -39,34 +33,34 @@ internal class TagsDataSourcePinboardApi @Inject constructor(
     }
 
     private suspend fun getLocalTags(): Result<List<Tag>> = resultFrom { postsDao.getAllPostTags() }
-        .mapCatching { concatenatedTags ->
+        .coMapCatching { concatenatedTags ->
             concatenatedTags
                 .flatMap { it.split(" ") }
                 .groupBy { it }
                 .map { (tag, postList) -> Tag(tag, postList.size) }
                 .sortedBy { it.name }
         }
-        .onFailureReturn(localTags.orEmpty())
+        .recover { localTags.orEmpty() }
 
     private suspend fun getRemoteTags(): Result<List<Tag>> = resultFromNetwork { tagsApi.getTags() }
-        .mapCatching { tagsAndPostCount ->
+        .coMapCatching { tagsAndPostCount ->
             tagsAndPostCount
                 .map { (tag, postCount) -> Tag(tag, postCount) }
                 .sortedBy { it.name }
         }
-        .onFailureReturn(localTags.orEmpty())
+        .recover { localTags.orEmpty() }
 
     override suspend fun renameTag(
         oldName: String,
         newName: String,
     ): Result<List<Tag>> = resultFromNetwork {
         tagsApi.renameTag(oldName = oldName, newName = newName)
-    }.map { response ->
+    }.coMapCatching { response ->
         if (response.result == ApiResultCodes.DONE.code) {
             localTags = localTags?.map { tag -> if (tag.name == oldName) tag.copy(name = newName) else tag }
-            localTags?.let(::Success) ?: getRemoteTags()
+            localTags ?: getRemoteTags().getOrThrow()
         } else {
-            Failure(ApiException(response.result))
+            throw ApiException(response.result)
         }
     }
 }

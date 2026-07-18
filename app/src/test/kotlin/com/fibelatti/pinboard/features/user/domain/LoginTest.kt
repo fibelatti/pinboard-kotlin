@@ -1,9 +1,5 @@
 package com.fibelatti.pinboard.features.user.domain
 
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Success
-import com.fibelatti.core.functional.exceptionOrNull
-import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_API_TOKEN
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_DATE_TIME
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_INSTANCE_URL
@@ -47,7 +43,7 @@ class LoginTest {
     @Test
     fun `GIVEN repository call fails WHEN Login is called THEN UserLoginFailed runs`() = runTest {
         // GIVEN
-        coEvery { mockPostsRepository.update() } returns Failure(Exception())
+        coEvery { mockPostsRepository.update() } returns Result.failure(Exception())
 
         // WHEN
         val result = login(Login.PinboardParams(authToken = SAMPLE_API_TOKEN))
@@ -65,8 +61,8 @@ class LoginTest {
     @Test
     fun `GIVEN repository call is successful WHEN Login is called THEN UserLoggedIn runs`() = runTest {
         // GIVEN
-        coEvery { mockPostsRepository.update() } returns Success(SAMPLE_DATE_TIME)
-        coEvery { mockPostsRepository.clearCache() } returns Success(Unit)
+        coEvery { mockPostsRepository.update() } returns Result.success(SAMPLE_DATE_TIME)
+        coEvery { mockPostsRepository.clearCache() } returns Result.success(Unit)
 
         // WHEN
         val result = login(
@@ -93,8 +89,8 @@ class LoginTest {
     @Test
     fun `GIVEN repository call is successful WHEN Login is called THEN UserLoggedIn runs - mTLS`() = runTest {
         // GIVEN
-        coEvery { mockPostsRepository.update() } returns Success(SAMPLE_DATE_TIME)
-        coEvery { mockPostsRepository.clearCache() } returns Success(Unit)
+        coEvery { mockPostsRepository.update() } returns Result.success(SAMPLE_DATE_TIME)
+        coEvery { mockPostsRepository.clearCache() } returns Result.success(Unit)
 
         val clientCert = randomString()
 

@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.features.user.presentation
 
 import com.fibelatti.core.android.platform.ResourceProvider
-import com.fibelatti.core.functional.onFailure
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppMode

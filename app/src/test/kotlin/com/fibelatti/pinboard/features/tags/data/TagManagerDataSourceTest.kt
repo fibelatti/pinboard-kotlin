@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard.features.tags.data
 
 import app.cash.turbine.test
-import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_TAGS
 import com.fibelatti.pinboard.MockDataProvider.createAppState
@@ -104,10 +103,10 @@ internal class TagManagerDataSourceTest : BaseViewModelTest() {
         dataSource.tagManagerState.test {
             coEvery {
                 mockPostsRepository.searchExistingPostTag(tag = "", currentTags = emptyList())
-            } returns Success(listOf("tag-1", "tag-2"))
+            } returns Result.success(listOf("tag-1", "tag-2"))
             coEvery {
                 mockPostsRepository.searchExistingPostTag(tag = "", currentTags = listOf(Tag("tag-1")))
-            } returns Success(listOf("tag-2"))
+            } returns Result.success(listOf("tag-2"))
 
             appStateFlow.value = createAppState(
                 content = AddPostContent(

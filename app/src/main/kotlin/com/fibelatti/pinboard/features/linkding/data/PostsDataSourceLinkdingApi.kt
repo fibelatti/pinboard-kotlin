@@ -3,12 +3,8 @@ package com.fibelatti.pinboard.features.linkding.data
 import androidx.annotation.VisibleForTesting
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.fibelatti.core.extension.ifNullOrBlank
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Result
-import com.fibelatti.core.functional.Success
-import com.fibelatti.core.functional.catching
-import com.fibelatti.core.functional.getOrDefault
-import com.fibelatti.core.functional.mapCatching
+import com.fibelatti.core.functional.coMapCatching
+import com.fibelatti.core.functional.coRunCatching
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
@@ -59,7 +55,7 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
      */
     override suspend fun update(): Result<String> = resultFromNetwork {
         linkdingApi.getBookmarks(limit = 1)
-    }.mapCatching { dateFormatter.nowAsDataFormat() }
+    }.coMapCatching { dateFormatter.nowAsDataFormat() }
 
     override suspend fun add(post: Post): Result<Post> {
         val resolvedPost = post.copy(
@@ -97,26 +93,25 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
             }
         }
 
-        return when (networkResult) {
-            is Success -> {
-                catching {
-                    val bookmark = bookmarkRemoteMapper.map(networkResult.value)
+        return networkResult.fold(
+            onSuccess = {
+                coRunCatching {
+                    val bookmark = bookmarkRemoteMapper.map(it)
 
                     linkdingDao.deletePendingSyncBookmark(url = bookmark.url)
                     linkdingDao.saveBookmarks(listOf(bookmarkLocalMapper.mapReverse(bookmark)))
 
                     bookmark
                 }
-            }
-
-            is Failure -> {
-                if (networkResult.value is IOException) {
+            },
+            onFailure = {
+                if (it is IOException) {
                     addBookmarkLocal(post = post)
                 } else {
-                    networkResult
+                    Result.failure(it)
                 }
-            }
-        }
+            },
+        )
     }
 
     private suspend fun addBookmarkLocal(post: Post): Result<Post> = resultFrom {
@@ -155,10 +150,10 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
             require(linkdingApi.deleteBookmark(id = post.id))
         }
 
-        return when (networkResult) {
-            is Success -> catching { linkdingDao.deleteBookmark(id = post.id) }
-            is Failure -> deleteBookmarkLocal(post = post)
-        }
+        return networkResult.fold(
+            onSuccess = { coRunCatching { linkdingDao.deleteBookmark(id = post.id) } },
+            onFailure = { deleteBookmarkLocal(post = post) },
+        )
     }
 
     private suspend fun deleteBookmarkLocal(post: Post): Result<Unit> = resultFrom {
@@ -195,17 +190,16 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
             )
         }
 
-        return when (networkResult) {
-            is Success -> setArchivedLocal(post = post, archived = archived, pendingSync = null)
-
-            is Failure -> {
-                if (networkResult.value is IOException) {
+        return networkResult.fold(
+            onSuccess = { setArchivedLocal(post = post, archived = archived, pendingSync = null) },
+            onFailure = {
+                if (it is IOException) {
                     setArchivedLocal(post = post, archived = archived)
                 } else {
-                    networkResult
+                    Result.failure(it)
                 }
-            }
-        }
+            },
+        )
     }
 
     private suspend fun setArchivedLocal(
@@ -285,7 +279,7 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
         pagedRequestsJob?.cancel()
 
         val apiData = resultFromNetwork { getBookmarksFromApi(archivedOnly = archivedOnly, offset = 0) }
-            .mapCatching { paginatedResponse ->
+            .coMapCatching { paginatedResponse ->
                 linkdingDao.deleteSyncedBookmarks(archived = archivedOnly)
                 linkdingDao.saveBookmarks(
                     bookmarks = bookmarkRemoteMapper.mapList(paginatedResponse.results)
@@ -345,7 +339,7 @@ internal class PostsDataSourceLinkdingApi @Inject constructor(
         tags: List<Tag>?,
         matchAll: Boolean,
         exactMatch: Boolean,
-    ): Int = catching {
+    ): Int = coRunCatching {
         getLocalDataSize(
             searchTerm = searchTerm,
             tags = tags,

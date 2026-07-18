@@ -74,8 +74,6 @@ import androidx.lifecycle.flowWithLifecycle
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import com.fibelatti.core.android.extension.shareText
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_PAGE_SIZE
 import com.fibelatti.pinboard.core.AppMode
@@ -370,24 +368,24 @@ private fun LaunchedPostDetailViewModelEffect(
     SideEffect(screenState) {
         val current = screenState
         when {
-            current.deleted is Success<Boolean> && current.deleted.value -> {
+            current.deleted.getOrNull() == true -> {
                 localView.showBanner(R.string.posts_deleted_feedback)
                 postDetailViewModel.userNotified()
             }
 
-            current.deleted is Failure -> {
+            current.deleted.isFailure -> {
                 localContext.materialAlertDialogBuilder().apply {
                     setMessage(R.string.posts_deleted_error)
                     setPositiveButton(R.string.hint_ok) { dialog, _ -> dialog?.dismiss() }
                 }.applySecureFlag().show()
             }
 
-            current.updated is Success<Boolean> && current.updated.value -> {
+            current.updated.getOrNull() == null -> {
                 localView.showBanner(R.string.posts_updated_feedback)
                 postDetailViewModel.userNotified()
             }
 
-            current.updated is Failure -> {
+            current.updated.isFailure -> {
                 localView.showBanner(R.string.posts_updated_error)
                 postDetailViewModel.userNotified()
             }

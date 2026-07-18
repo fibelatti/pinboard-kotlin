@@ -1,6 +1,5 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
-import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.core.AppConfig.DEFAULT_RECENT_QUANTITY
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
 import com.fibelatti.pinboard.features.appstate.ByDateAddedOldestFirst
@@ -42,7 +41,7 @@ class GetRecentPostsTest {
                 pageOffset = any(),
                 forceRefresh = any(),
             )
-        } returns flowOf(Success(mockResponse))
+        } returns flowOf(Result.success(mockResponse))
     }
 
     private val getRecentPosts = GetRecentPosts(

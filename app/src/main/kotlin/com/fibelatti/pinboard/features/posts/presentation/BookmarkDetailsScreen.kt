@@ -51,8 +51,6 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import com.fibelatti.core.android.extension.shareText
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.icons.AppIcons
@@ -215,19 +213,19 @@ private fun LaunchedPostDetailViewModelEffect(
     SideEffect(screenState) {
         val current = screenState
         when {
-            current.deleted is Success<Boolean> && current.deleted.value -> {
+            current.deleted.getOrNull() == true -> {
                 localView.showBanner(R.string.posts_deleted_feedback)
                 postDetailViewModel.userNotified()
             }
 
-            current.deleted is Failure -> {
+            current.deleted.isFailure -> {
                 localContext.materialAlertDialogBuilder().apply {
                     setMessage(R.string.posts_deleted_error)
                     setPositiveButton(R.string.hint_ok) { dialog, _ -> dialog?.dismiss() }
                 }.applySecureFlag().show()
             }
 
-            current.updated is Success<Boolean> && current.updated.value -> {
+            current.updated.getOrNull() == true -> {
                 localView.showBanner(R.string.posts_updated_feedback)
                 postDetailViewModel.userNotified()
                 mainViewModel.updateState { currentState ->
@@ -235,7 +233,7 @@ private fun LaunchedPostDetailViewModelEffect(
                 }
             }
 
-            current.updated is Failure -> {
+            current.updated.isFailure -> {
                 localView.showBanner(R.string.posts_updated_error)
                 postDetailViewModel.userNotified()
             }

@@ -1,10 +1,5 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Result
-import com.fibelatti.core.functional.Success
-import com.fibelatti.core.functional.onFailure
-import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.PostDeleted
@@ -57,7 +52,7 @@ class PostDetailViewModel @Inject constructor(
                     _screenState.update { currentState ->
                         currentState.copy(
                             isLoading = false,
-                            deleted = Success(value = true),
+                            deleted = Result.success(value = true),
                         )
                     }
                     runDelayedAction(PostDeleted)
@@ -66,7 +61,7 @@ class PostDetailViewModel @Inject constructor(
                     _screenState.update { currentState ->
                         currentState.copy(
                             isLoading = false,
-                            deleted = Failure(it),
+                            deleted = Result.failure(it),
                         )
                     }
                 }
@@ -96,13 +91,13 @@ class PostDetailViewModel @Inject constructor(
             result
                 .onSuccess { updatedPost ->
                     _screenState.update { currentState ->
-                        currentState.copy(isLoading = false, updated = Success(value = true))
+                        currentState.copy(isLoading = false, updated = Result.success(value = true))
                     }
                     runDelayedAction(PostSaved(updatedPost))
                 }
                 .onFailure { throwable ->
                     _screenState.update { currentState ->
-                        currentState.copy(isLoading = false, updated = Failure(throwable))
+                        currentState.copy(isLoading = false, updated = Result.failure(throwable))
                     }
                 }
         }
@@ -115,7 +110,7 @@ class PostDetailViewModel @Inject constructor(
                 _screenState.update { currentState ->
                     currentState.copy(
                         isLoading = false,
-                        updated = Success(value = true),
+                        updated = Result.success(value = true),
                     )
                 }
                 runDelayedAction(PostSaved(addedPost))
@@ -124,7 +119,7 @@ class PostDetailViewModel @Inject constructor(
                 _screenState.update { currentState ->
                     currentState.copy(
                         isLoading = false,
-                        updated = Failure(throwable),
+                        updated = Result.failure(throwable),
                     )
                 }
             }
@@ -133,15 +128,15 @@ class PostDetailViewModel @Inject constructor(
     fun userNotified() {
         _screenState.update { currentState ->
             currentState.copy(
-                deleted = Success(value = false),
-                updated = Success(value = false),
+                deleted = Result.success(value = false),
+                updated = Result.success(value = false),
             )
         }
     }
 
     data class ScreenState(
         val isLoading: Boolean = false,
-        val deleted: Result<Boolean> = Success(value = false),
-        val updated: Result<Boolean> = Success(value = false),
+        val deleted: Result<Boolean> = Result.success(value = false),
+        val updated: Result<Boolean> = Result.success(value = false),
     )
 }

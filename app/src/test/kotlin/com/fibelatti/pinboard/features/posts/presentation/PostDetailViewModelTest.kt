@@ -1,7 +1,5 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
@@ -44,7 +42,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
     fun `WHEN deletePost fails THEN deleteError should receive a value`() = runTest {
         // GIVEN
         val error = Exception()
-        coEvery { mockDeletePost(mockPost) } returns Failure(error)
+        coEvery { mockDeletePost(mockPost) } returns Result.failure(error)
 
         // WHEN
         postDetailViewModel.deletePost(mockPost)
@@ -53,8 +51,8 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
         assertThat(postDetailViewModel.screenState.first()).isEqualTo(
             PostDetailViewModel.ScreenState(
                 isLoading = false,
-                deleted = Failure(error),
-                updated = Success(false),
+                deleted = Result.failure(error),
+                updated = Result.success(false),
             ),
         )
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
@@ -63,7 +61,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
     @Test
     fun `WHEN deletePost succeeds THEN appStateRepository should run PostDeleted`() = runTest {
         // GIVEN
-        coEvery { mockDeletePost(mockPost) } returns Success(Unit)
+        coEvery { mockDeletePost(mockPost) } returns Result.success(Unit)
 
         // WHEN
         postDetailViewModel.deletePost(mockPost)
@@ -72,8 +70,8 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
         assertThat(postDetailViewModel.screenState.first()).isEqualTo(
             PostDetailViewModel.ScreenState(
                 isLoading = false,
-                deleted = Success(true),
-                updated = Success(false),
+                deleted = Result.success(true),
+                updated = Result.success(false),
             ),
         )
         coVerify { mockAppStateRepository.runDelayedAction(PostDeleted) }
@@ -83,7 +81,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
     fun `WHEN toggleReadLater fails THEN updateError should receive a value`() = runTest {
         // GIVEN
         val error = Exception()
-        coEvery { mockAddPost(any()) } returns Failure(error)
+        coEvery { mockAddPost(any()) } returns Result.failure(error)
 
         // WHEN
         postDetailViewModel.toggleReadLater(mockPost)
@@ -92,8 +90,8 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
         assertThat(postDetailViewModel.screenState.first()).isEqualTo(
             PostDetailViewModel.ScreenState(
                 isLoading = false,
-                deleted = Success(false),
-                updated = Failure(error),
+                deleted = Result.success(false),
+                updated = Result.failure(error),
             ),
         )
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
@@ -108,7 +106,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
             readLater = !randomBoolean,
         )
 
-        coEvery { mockAddPost(expectedParams) } returns Success(mockPost)
+        coEvery { mockAddPost(expectedParams) } returns Result.success(mockPost)
 
         // WHEN
         postDetailViewModel.toggleReadLater(post)
@@ -117,8 +115,8 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
         assertThat(postDetailViewModel.screenState.first()).isEqualTo(
             PostDetailViewModel.ScreenState(
                 isLoading = false,
-                deleted = Success(false),
-                updated = Success(true),
+                deleted = Result.success(false),
+                updated = Result.success(true),
             ),
         )
         coVerify {
@@ -131,7 +129,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
     fun `WHEN toggleArchived fails THEN updateError should receive a value`() = runTest {
         // GIVEN
         val error = Exception()
-        coEvery { mockArchivePost(mockPost) } returns Failure(error)
+        coEvery { mockArchivePost(mockPost) } returns Result.failure(error)
 
         // WHEN
         postDetailViewModel.toggleArchived(mockPost)
@@ -140,8 +138,8 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
         assertThat(postDetailViewModel.screenState.first()).isEqualTo(
             PostDetailViewModel.ScreenState(
                 isLoading = false,
-                deleted = Success(false),
-                updated = Failure(error),
+                deleted = Result.success(false),
+                updated = Result.failure(error),
             ),
         )
         coVerify(exactly = 0) { mockAppStateRepository.runAction(any()) }
@@ -151,7 +149,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
     fun `WHEN toggleArchived succeeds for a not archived post THEN it should archive and run PostSaved`() = runTest {
         // GIVEN
         val archivedPost = mockPost.copy(isArchived = true)
-        coEvery { mockArchivePost(mockPost) } returns Success(archivedPost)
+        coEvery { mockArchivePost(mockPost) } returns Result.success(archivedPost)
 
         // WHEN
         postDetailViewModel.toggleArchived(mockPost)
@@ -160,8 +158,8 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
         assertThat(postDetailViewModel.screenState.first()).isEqualTo(
             PostDetailViewModel.ScreenState(
                 isLoading = false,
-                deleted = Success(false),
-                updated = Success(true),
+                deleted = Result.success(false),
+                updated = Result.success(true),
             ),
         )
         coVerify {
@@ -175,7 +173,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
         // GIVEN
         val archivedPost = mockPost.copy(isArchived = true)
         val unarchivedPost = mockPost.copy(isArchived = false)
-        coEvery { mockUnarchivePost(archivedPost) } returns Success(unarchivedPost)
+        coEvery { mockUnarchivePost(archivedPost) } returns Result.success(unarchivedPost)
 
         // WHEN
         postDetailViewModel.toggleArchived(archivedPost)
@@ -184,8 +182,8 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
         assertThat(postDetailViewModel.screenState.first()).isEqualTo(
             PostDetailViewModel.ScreenState(
                 isLoading = false,
-                deleted = Success(false),
-                updated = Success(true),
+                deleted = Result.success(false),
+                updated = Result.success(true),
             ),
         )
         coVerify {

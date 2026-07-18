@@ -2,13 +2,9 @@ package com.fibelatti.pinboard.features.share
 
 import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.core.functional.ScreenState
+import com.fibelatti.core.functional.coMapCatching
 import com.fibelatti.core.functional.emitError
 import com.fibelatti.core.functional.emitLoaded
-import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.core.functional.getOrThrow
-import com.fibelatti.core.functional.mapCatching
-import com.fibelatti.core.functional.onFailure
-import com.fibelatti.core.functional.onSuccess
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.AppModeProvider
@@ -90,8 +86,8 @@ class ShareReceiverViewModel @Inject constructor(
     private suspend fun processRequest(request: SaveRequest, service: AppMode) {
         appModeProvider.setSelection(appMode = service)
 
-        extractUrl(inputUrl = request.url)
-            .mapCatching { (extractedUrl, highlightedText) ->
+        extractUrl(params = request.url)
+            .coMapCatching { (extractedUrl, highlightedText) ->
                 val preview = getUrlPreview(
                     GetUrlPreview.Params(
                         url = extractedUrl,

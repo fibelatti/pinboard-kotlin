@@ -1,7 +1,5 @@
 package com.fibelatti.pinboard.core.network
 
-import com.fibelatti.core.functional.Result
-import com.fibelatti.core.functional.exceptionOrNull
 import com.google.common.truth.Truth.assertThat
 import io.ktor.client.plugins.ResponseException
 import io.mockk.every

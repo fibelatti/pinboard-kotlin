@@ -1,9 +1,5 @@
 package com.fibelatti.pinboard.features.posts.data
 
-import com.fibelatti.core.functional.Success
-import com.fibelatti.core.functional.exceptionOrNull
-import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.core.functional.getOrThrow
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_DATE_TIME
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_FUTURE_DATE_TIME
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_HASH
@@ -786,7 +782,7 @@ class PostsDataSourcePinboardApiTest {
                         pageOffset = 0,
                         upToDate = true,
                     )
-                } returns Success(mockLocalData)
+                } returns Result.success(mockLocalData)
 
                 // WHEN
                 val result = dataSource.getAllPosts(
@@ -832,7 +828,7 @@ class PostsDataSourcePinboardApiTest {
                         pageOffset = 0,
                         upToDate = false,
                     )
-                } returns Success(mockLocalData)
+                } returns Result.success(mockLocalData)
                 coEvery {
                     dataSource.getLocalData(
                         sortType = ByDateAddedNewestFirst,
@@ -848,7 +844,7 @@ class PostsDataSourcePinboardApiTest {
                         pageOffset = 0,
                         upToDate = true,
                     )
-                } returns Success(mockUpToDateLocalData)
+                } returns Result.success(mockUpToDateLocalData)
             }
 
             @Test

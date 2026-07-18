@@ -1,9 +1,5 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Success
-import com.fibelatti.core.functional.exceptionOrNull
-import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.pinboard.MockDataProvider
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_VALID
 import com.fibelatti.pinboard.core.network.ApiException
@@ -30,7 +26,7 @@ class DeletePostTest {
     @Test
     fun `GIVEN ValidateUrl fails WHEN AddPost is called THEN Failure is returned`() = runTest {
         // GIVEN
-        coEvery { mockValidateUrl(SAMPLE_URL_VALID) } returns Failure(InvalidRequestException())
+        coEvery { mockValidateUrl(SAMPLE_URL_VALID) } returns Result.failure(InvalidRequestException())
 
         // WHEN
         val result = deletePost(mockPost)
@@ -42,8 +38,8 @@ class DeletePostTest {
     @Test
     fun `GIVEN posts repository add fails WHEN AddPost is called THEN Failure is returned`() = runTest {
         // GIVEN
-        coEvery { mockValidateUrl(SAMPLE_URL_VALID) } returns Success(SAMPLE_URL_VALID)
-        coEvery { mockPostsRepository.delete(post = mockPost) } returns Failure(ApiException())
+        coEvery { mockValidateUrl(SAMPLE_URL_VALID) } returns Result.success(SAMPLE_URL_VALID)
+        coEvery { mockPostsRepository.delete(post = mockPost) } returns Result.failure(ApiException())
 
         // WHEN
         val result = deletePost(mockPost)
@@ -55,8 +51,8 @@ class DeletePostTest {
     @Test
     fun `GIVEN posts repository add succeeds WHEN AddPost is called THEN Success is returned`() = runTest {
         // GIVEN
-        coEvery { mockValidateUrl(SAMPLE_URL_VALID) } returns Success(SAMPLE_URL_VALID)
-        coEvery { mockPostsRepository.delete(post = mockPost) } returns Success(Unit)
+        coEvery { mockValidateUrl(SAMPLE_URL_VALID) } returns Result.success(SAMPLE_URL_VALID)
+        coEvery { mockPostsRepository.delete(post = mockPost) } returns Result.success(Unit)
 
         // WHEN
         val result = deletePost(mockPost)

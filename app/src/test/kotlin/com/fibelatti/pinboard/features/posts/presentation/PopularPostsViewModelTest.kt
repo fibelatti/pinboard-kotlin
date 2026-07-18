@@ -1,7 +1,5 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.createAppState
 import com.fibelatti.pinboard.MockDataProvider.createPost
@@ -43,7 +41,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
 
     private val mockUserRepository = mockk<UserRepository>(relaxed = true)
     private val mockPostsRepository = mockk<PostsRepository> {
-        coEvery { getPost(id = any(), url = any()) } returns Failure(mockk())
+        coEvery { getPost(id = any(), url = any()) } returns Result.failure(mockk())
     }
     private val mockGetPopularPosts = mockk<GetPopularPosts>()
     private val mockAddPost = mockk<AddPost>()
@@ -61,7 +59,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
     fun `WHEN PopularPostsContent is emitted AND shouldLoad is true THEN getPosts is called - success`() = runTest {
         // GIVEN
         val mockPosts = mockk<Map<Post, Int>>()
-        coEvery { mockGetPopularPosts() } returns Success(mockPosts)
+        coEvery { mockGetPopularPosts() } returns Result.success(mockPosts)
 
         // WHEN
         appStateFlow.value = createAppState(
@@ -84,9 +82,9 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
             val mockPosts = mockk<Map<Post, Int>>()
             coEvery { mockGetPopularPosts() } coAnswers {
                 delay(timeMillis = 2_000)
-                Success(mockPosts)
+                Result.success(mockPosts)
             } andThenAnswer {
-                Success(mockPosts)
+                Result.success(mockPosts)
             }
 
             // WHEN
@@ -98,7 +96,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
                 ),
             )
 
-            advanceTimeBy(1_000)
+            advanceTimeBy(delayTimeMillis = 1_000)
 
             appStateFlow.value = createAppState(
                 content = PopularPostsContent(
@@ -118,7 +116,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
     fun `WHEN PopularPostsContent is emitted AND shouldLoad is true THEN getPosts is called - failure`() = runTest {
         // GIVEN
         val error = Exception()
-        coEvery { mockGetPopularPosts() } returns Failure(error)
+        coEvery { mockGetPopularPosts() } returns Result.failure(error)
 
         // WHEN
         appStateFlow.value = createAppState(
@@ -139,7 +137,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
         runTest {
             // GIVEN
             val post = createPost()
-            coEvery { mockPostsRepository.getPost(id = post.id, url = post.url) } returns Success(post)
+            coEvery { mockPostsRepository.getPost(id = post.id, url = post.url) } returns Result.success(post)
 
             // WHEN
             popularPostsViewModel.saveLink(post)
@@ -184,7 +182,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
         // GIVEN
         val post = createPost()
         val error = Exception()
-        coEvery { mockAddPost(any()) } returns Failure(error)
+        coEvery { mockAddPost(any()) } returns Result.failure(error)
         every { mockUserRepository.editAfterSharing } returns mockk()
 
         // WHEN
@@ -223,7 +221,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
             every { mockUserRepository.defaultPrivate } returns randomBoolean
             every { mockUserRepository.defaultReadLater } returns randomBoolean
             every { mockUserRepository.defaultTags } returns mockTags
-            coEvery { mockAddPost(params) } returns Success(post)
+            coEvery { mockAddPost(params) } returns Result.success(post)
 
             // WHEN
             popularPostsViewModel.saveLink(post)

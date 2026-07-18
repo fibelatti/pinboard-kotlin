@@ -1,7 +1,5 @@
 package com.fibelatti.pinboard.features.tags.data
 
-import com.fibelatti.core.functional.exceptionOrNull
-import com.fibelatti.core.functional.getOrNull
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.features.posts.data.PostsDao

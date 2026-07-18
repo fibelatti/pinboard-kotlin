@@ -9,13 +9,7 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import com.fibelatti.core.functional.getOrNull
-import com.fibelatti.core.functional.getOrThrow
-import com.fibelatti.core.functional.isSuccess
-import com.fibelatti.core.functional.mapCatching
-import com.fibelatti.core.functional.onFailure
-import com.fibelatti.core.functional.onSuccess
-import com.fibelatti.core.functional.throwOnFailure
+import com.fibelatti.core.functional.coMapCatching
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.notifications.AppNotificationManager
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
@@ -65,7 +59,7 @@ class ShareReceiverWorker @AssistedInject constructor(
     private suspend fun processBookmark(
         url: String,
         title: String,
-    ): com.fibelatti.core.functional.Result<Unit> {
+    ): kotlin.Result<Unit> {
         appNotificationManager.sendNotification(
             notificationId = notificationId,
             notification = appNotificationManager.createShareReceiverNotification(
@@ -75,8 +69,8 @@ class ShareReceiverWorker @AssistedInject constructor(
             ),
         )
 
-        return extractUrl(inputUrl = url)
-            .mapCatching { (extractedUrl: String, highlightedText: String?) ->
+        return extractUrl(params = url)
+            .coMapCatching { (extractedUrl: String, highlightedText: String?) ->
                 val getPreviewParams = GetUrlPreview.Params(
                     url = extractedUrl,
                     title = title,
@@ -103,7 +97,7 @@ class ShareReceiverWorker @AssistedInject constructor(
                         ),
                     )
 
-                    return@mapCatching
+                    return@coMapCatching
                 }
 
                 val newPost = Post(
@@ -129,7 +123,7 @@ class ShareReceiverWorker @AssistedInject constructor(
                             ),
                         )
                     }
-                    .throwOnFailure()
+                    .getOrThrow()
             }.onFailure {
                 appNotificationManager.sendNotification(
                     notificationId = notificationId,

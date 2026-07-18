@@ -1,8 +1,6 @@
 package com.fibelatti.pinboard.features.notes.presentation
 
 import com.fibelatti.core.functional.Either
-import com.fibelatti.core.functional.Failure
-import com.fibelatti.core.functional.Success
 import com.fibelatti.pinboard.BaseViewModelTest
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_NOTE_ID
 import com.fibelatti.pinboard.MockDataProvider.createAppState
@@ -43,7 +41,7 @@ internal class NoteDetailsViewModelTest : BaseViewModelTest() {
     fun `WHEN NoteDetailContent is emitted AND getNote fails THEN error should receive a value`() = runTest {
         // GIVEN
         val error = Exception()
-        coEvery { mockNotesRepository.getNote(any()) } returns Failure(error)
+        coEvery { mockNotesRepository.getNote(any()) } returns Result.failure(error)
 
         // WHEN
         appStateFlow.value = createAppState(
@@ -64,7 +62,7 @@ internal class NoteDetailsViewModelTest : BaseViewModelTest() {
         runTest {
             // GIVEN
             val mockNote = mockk<Note>()
-            coEvery { mockNotesRepository.getNote(SAMPLE_NOTE_ID) } returns Success(mockNote)
+            coEvery { mockNotesRepository.getNote(SAMPLE_NOTE_ID) } returns Result.success(mockNote)
 
             // WHEN
             appStateFlow.value = createAppState(
