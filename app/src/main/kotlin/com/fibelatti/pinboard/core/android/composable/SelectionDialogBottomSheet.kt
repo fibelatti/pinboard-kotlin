@@ -74,7 +74,9 @@ fun <T : Any> RadioSelectionDialogBottomSheet(
             RadioGroup(
                 items = options,
                 itemSelected = { option -> option::class == currentSelection::class },
-                onItemClick = onOptionSelect,
+                onItemClick = { option ->
+                    sheetState.hideBottomSheet { onOptionSelect(option) }
+                },
                 itemTitle = optionName,
                 modifier = Modifier.fillMaxWidth(),
             )
