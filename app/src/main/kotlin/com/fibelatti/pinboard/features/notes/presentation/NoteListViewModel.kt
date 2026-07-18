@@ -3,7 +3,6 @@ package com.fibelatti.pinboard.features.notes.presentation
 import com.fibelatti.core.functional.mapCatching
 import com.fibelatti.core.functional.onFailure
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
-import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.NoteListContent
 import com.fibelatti.pinboard.features.appstate.SetNotes
@@ -22,7 +21,6 @@ class NoteListViewModel @Inject constructor(
     scope: CoroutineScope,
     appStateRepository: AppStateRepository,
     private val notesRepository: NotesRepository,
-    private val dateFormatter: DateFormatter,
 ) : BaseViewModel(scope, appStateRepository) {
 
     init {
