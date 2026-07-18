@@ -29,7 +29,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -82,6 +81,7 @@ import com.fibelatti.ui.components.AutoSizeText
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
 import com.fibelatti.ui.components.rememberAppSheetState
+import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.delay
@@ -248,11 +248,7 @@ private fun SearchBookmarksScreen(
                         onKeyboardSearch()
                     },
                     lineLimits = TextFieldLineLimits.SingleLine,
-                    contentPadding = OutlinedTextFieldDefaults.contentPaddingWithLabel(
-                        start = 8.dp,
-                        end = 8.dp,
-                        bottom = 8.dp,
-                    ),
+                    shape = Shapes.StandaloneShape,
                 )
 
                 IconButton(

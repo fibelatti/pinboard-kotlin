@@ -30,6 +30,7 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
+import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.icons.Close
 import com.fibelatti.ui.icons.UiIcons
 import com.fibelatti.ui.preview.PreviewAll
@@ -103,6 +104,7 @@ fun TagManager(
             keyboardActions = KeyboardActions { keyboardAction() },
             singleLine = true,
             maxLines = 1,
+            shape = Shapes.StandaloneShape,
         )
 
         FilledTonalButton(

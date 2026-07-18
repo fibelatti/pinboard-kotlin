@@ -27,7 +27,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -535,11 +534,7 @@ private fun BookmarkBasicDetails(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next),
             onKeyboardAction = KeyboardActionHandler { focusManager.moveFocus(FocusDirection.Next) },
             lineLimits = TextFieldLineLimits.SingleLine,
-            contentPadding = OutlinedTextFieldDefaults.contentPaddingWithLabel(
-                start = 8.dp,
-                end = 8.dp,
-                bottom = 8.dp,
-            ),
+            shape = Shapes.StandaloneShape,
         )
 
         val titleFieldState = rememberTextFieldState(initialText = title)
@@ -561,11 +556,7 @@ private fun BookmarkBasicDetails(
             inputTransformation = InputTransformation.maxLength(AppConfig.PinboardApiMaxLength.TEXT_TYPE.value),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             onKeyboardAction = KeyboardActionHandler { focusManager.moveFocus(FocusDirection.Next) },
-            contentPadding = OutlinedTextFieldDefaults.contentPaddingWithLabel(
-                start = 8.dp,
-                end = 8.dp,
-                bottom = 8.dp,
-            ),
+            shape = Shapes.StandaloneShape,
         )
 
         val descriptionFieldState = rememberTextFieldState(initialText = description)
@@ -579,11 +570,7 @@ private fun BookmarkBasicDetails(
             modifier = Modifier.fillMaxWidth(),
             label = { Text(text = stringResource(id = R.string.posts_add_url_description)) },
             supportingText = {},
-            contentPadding = OutlinedTextFieldDefaults.contentPaddingWithLabel(
-                start = 8.dp,
-                end = 8.dp,
-                bottom = 8.dp,
-            ),
+            shape = Shapes.StandaloneShape,
         )
 
         if (AppMode.LINKDING == appMode) {
@@ -597,11 +584,7 @@ private fun BookmarkBasicDetails(
                 state = notesFieldState,
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text(text = stringResource(id = R.string.posts_add_url_notes)) },
-                contentPadding = OutlinedTextFieldDefaults.contentPaddingWithLabel(
-                    start = 8.dp,
-                    end = 8.dp,
-                    bottom = 8.dp,
-                ),
+                shape = Shapes.StandaloneShape,
             )
         }
     }

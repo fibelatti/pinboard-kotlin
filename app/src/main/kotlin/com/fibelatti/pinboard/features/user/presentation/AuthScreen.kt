@@ -45,7 +45,6 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedSecureTextField
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -84,6 +83,7 @@ import com.fibelatti.pinboard.core.extension.canRequestPermissionAgain
 import com.fibelatti.pinboard.core.extension.showLocalNetworkAccessDialog
 import com.fibelatti.pinboard.core.extension.showLocalNetworkAccessSettingsDialog
 import com.fibelatti.ui.components.TextWithLinks
+import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -216,11 +216,7 @@ private fun AuthScreen(
                             ),
                             onKeyboardAction = KeyboardActionHandler { focusManager.moveFocus(FocusDirection.Next) },
                             lineLimits = TextFieldLineLimits.SingleLine,
-                            contentPadding = OutlinedTextFieldDefaults.contentPaddingWithLabel(
-                                start = 8.dp,
-                                end = 8.dp,
-                                bottom = 8.dp,
-                            ),
+                            shape = Shapes.StandaloneShape,
                         )
 
                         if (instanceUrlError != null) {
@@ -275,11 +271,7 @@ private fun AuthScreen(
                             instanceUrlFieldState.text.toString(),
                         )
                     },
-                    contentPadding = OutlinedTextFieldDefaults.contentPaddingWithLabel(
-                        start = 8.dp,
-                        end = 8.dp,
-                        bottom = 8.dp,
-                    ),
+                    shape = Shapes.StandaloneShape,
                 )
 
                 if (apiTokenError != null) {

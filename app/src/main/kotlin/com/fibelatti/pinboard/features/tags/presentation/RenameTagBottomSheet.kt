@@ -13,7 +13,6 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +29,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.ui.components.AppBottomSheet
 import com.fibelatti.ui.components.AppSheetState
+import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 import kotlinx.coroutines.delay
@@ -96,11 +96,7 @@ private fun RenameTagScreen(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 onKeyboardAction = KeyboardActionHandler { onRename(textFieldState.text.toString()) },
                 lineLimits = TextFieldLineLimits.SingleLine,
-                contentPadding = OutlinedTextFieldDefaults.contentPaddingWithLabel(
-                    start = 8.dp,
-                    end = 8.dp,
-                    bottom = 8.dp,
-                ),
+                shape = Shapes.StandaloneShape,
             )
 
             Button(

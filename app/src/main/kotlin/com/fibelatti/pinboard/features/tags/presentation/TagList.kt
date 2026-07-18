@@ -329,6 +329,7 @@ private fun TagListSortingControls(
                 keyboardActions = KeyboardActions { focusManager.clearFocus() },
                 singleLine = true,
                 maxLines = 1,
+                shape = Shapes.StandaloneShape,
             )
         }
     }
