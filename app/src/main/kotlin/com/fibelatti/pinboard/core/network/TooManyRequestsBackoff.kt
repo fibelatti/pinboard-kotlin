@@ -4,12 +4,12 @@ import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.delay
 
 /**
- * Shorthand function to retry executing [block] automatically for [times] in case an [HttpException]
- * with code 429 (Too many requests) happens.
+ * Shorthand function to retry executing [block] automatically for [times] in case a
+ * [ResponseException] with code 429 (Too many requests) happens.
  *
  * @param times how many times [block] will attempt to execute, default is 3
- * @param initialDelay how long the execution will be suspended for before trying for the first time,
- * in milliseconds, default is 500
+ * @param initialDelay how long the execution will be suspended for before trying for the first
+ * time, in milliseconds, default is 500
  * @param maxDelay max amount of time waiting before retrying, in milliseconds, default is 2000
  * @param factor multiplying factor of delay, default is 2
  * @param block code block to be executed inside the try catch
@@ -28,12 +28,12 @@ suspend fun <T> tooManyRequestsBackoff(
     repeat(times - 1) {
         try {
             return block()
-        } catch (httpException: ResponseException) {
-            if (429 == httpException.response.status.value) {
+        } catch (responseException: ResponseException) {
+            if (429 == responseException.response.status.value) {
                 delay(timeMillis = currentDelay)
                 currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
             } else {
-                throw httpException
+                throw responseException
             }
         }
     }
