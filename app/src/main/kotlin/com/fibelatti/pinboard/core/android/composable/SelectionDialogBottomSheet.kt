@@ -3,6 +3,8 @@ package com.fibelatti.pinboard.core.android.composable
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,11 +12,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -28,16 +29,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.R
 import com.fibelatti.ui.components.AppBottomSheet
 import com.fibelatti.ui.components.AppSheetState
+import com.fibelatti.ui.components.ListItem
 import com.fibelatti.ui.components.RadioGroup
+import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.preview.PreviewAccessibility
 import com.fibelatti.ui.preview.PreviewThemesAndColors
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -183,13 +189,16 @@ private fun <T> SelectionDialogContent(
             .nestedScroll(rememberNestedScrollInteropConnection())
             .animateContentSize(),
         contentPadding = PaddingValues(all = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         if (title.isNotEmpty()) {
             stickyHeader {
                 Text(
                     text = title,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 6.dp)
+                        .background(color = MaterialTheme.colorScheme.surfaceContainerLow),
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleLarge,
@@ -197,12 +206,20 @@ private fun <T> SelectionDialogContent(
             }
         }
 
-        items(visibleOptions) { option ->
+        itemsIndexed(items = visibleOptions) { index: Int, option: T ->
+            val shape: Shape = when {
+                visibleOptions.size == 1 -> Shapes.StandaloneShape
+                index == 0 -> Shapes.TopShape
+                index == visibleOptions.lastIndex && !showHiddenOptions -> Shapes.BottomShape
+                else -> Shapes.MiddleShape
+            }
+
             SelectionItem(
                 option = option,
                 optionName = optionName,
                 optionIcon = optionIcon,
                 onClick = onOptionSelect,
+                shape = shape,
             )
         }
 
@@ -220,7 +237,13 @@ private fun <T> SelectionDialogContent(
             }
 
             hiddenOptions.isNotEmpty() -> {
-                itemsIndexed(hiddenOptions) { index, option ->
+                itemsIndexed(hiddenOptions) { index: Int, option: T ->
+                    val shape: Shape = when {
+                        visibleOptions.isEmpty() -> Shapes.TopShape
+                        index == hiddenOptions.lastIndex -> Shapes.BottomShape
+                        else -> Shapes.MiddleShape
+                    }
+
                     SelectionItem(
                         option = option,
                         optionName = optionName,
@@ -229,6 +252,7 @@ private fun <T> SelectionDialogContent(
                         modifier = Modifier.animateItem(
                             fadeInSpec = tween(delayMillis = 75 * index, easing = FastOutLinearInEasing),
                         ),
+                        shape = shape,
                     )
                 }
             }
@@ -262,14 +286,14 @@ private fun <T> SelectionDialogCustomizationContent(
             .nestedScroll(rememberNestedScrollInteropConnection())
             .animateContentSize(),
         contentPadding = PaddingValues(all = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         item {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp),
+                    .padding(top = 8.dp, bottom = 6.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -289,7 +313,14 @@ private fun <T> SelectionDialogCustomizationContent(
             }
         }
 
-        items(visibleOptions) { option ->
+        itemsIndexed(items = visibleOptions) { index: Int, option: T ->
+            val shape: Shape = when {
+                visibleOptions.size == 1 -> Shapes.StandaloneShape
+                index == 0 -> Shapes.TopShape
+                index == visibleOptions.lastIndex -> Shapes.BottomShape
+                else -> Shapes.MiddleShape
+            }
+
             SelectionItem(
                 option = option,
                 optionName = optionName,
@@ -299,6 +330,7 @@ private fun <T> SelectionDialogCustomizationContent(
                         if (item.key == option) true else item.value
                     }
                 },
+                shape = shape,
             )
         }
 
@@ -307,7 +339,7 @@ private fun <T> SelectionDialogCustomizationContent(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp),
+                        .padding(top = 8.dp, bottom = 6.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
@@ -329,7 +361,14 @@ private fun <T> SelectionDialogCustomizationContent(
                 }
             }
 
-            items(hiddenOptions) { option ->
+            itemsIndexed(hiddenOptions) { index: Int, option: T ->
+                val shape: Shape = when {
+                    hiddenOptions.size == 1 -> Shapes.StandaloneShape
+                    index == 0 -> Shapes.TopShape
+                    index == hiddenOptions.lastIndex -> Shapes.BottomShape
+                    else -> Shapes.MiddleShape
+                }
+
                 SelectionItem(
                     option = option,
                     optionName = optionName,
@@ -342,6 +381,7 @@ private fun <T> SelectionDialogCustomizationContent(
                     modifier = Modifier
                         .fillMaxWidth(fraction = .8f)
                         .alpha(.6f),
+                    shape = shape,
                 )
             }
         }
@@ -365,26 +405,26 @@ private fun <T> SelectionItem(
     optionIcon: (T) -> ImageVector?,
     onClick: (T) -> Unit,
     modifier: Modifier = Modifier,
+    shape: Shape = Shapes.StandaloneShape,
 ) {
-    FilledTonalButton(
-        onClick = { onClick(option) },
-        shapes = ExtendedTheme.defaultButtonShapes,
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        Text(
-            text = optionName(option),
-            modifier = Modifier.weight(1F),
-            textAlign = TextAlign.Center,
-        )
-
-        optionIcon(option)?.let { icon ->
-            Icon(
-                imageVector = icon,
-                contentDescription = "",
-                modifier = Modifier.size(16.dp),
-            )
-        }
-    }
+    ListItem(
+        headlineText = optionName(option),
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .clickable(onClick = { onClick(option) }, role = Role.Button),
+        leadingContent = {
+            optionIcon(option)?.let { icon ->
+                Icon(
+                    imageVector = icon,
+                    contentDescription = "",
+                    modifier = Modifier.size(16.dp),
+                )
+            }
+        },
+        shape = shape,
+        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+    )
 }
 
 // region Previews
