@@ -1,0 +1,6 @@
+This version brings the following updates:
+
+* Fixed access to local Linkding instances on Android 17
+* Added a scroll to top button to all lists
+
+Thanks for using the app!
