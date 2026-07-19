@@ -20,7 +20,7 @@ import com.fibelatti.ui.foundation.Shapes
 
 public object ListItem {
 
-    public val MinHeight: Dp = 72.dp
+    public val MinHeight: Dp = 64.dp
 
     public val DefaultShape: Shape = Shapes.StandaloneShape
 }
