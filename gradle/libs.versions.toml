@@ -37,7 +37,7 @@ core = { module = "androidx.core:core", version = "1.19.0" }
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity" }
 adaptive-android = { module = "androidx.compose.material3.adaptive:adaptive-android", version = "1.2.0" }
 material = { module = "com.google.android.material:material", version = "1.14.0" }
-constraint-layout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version = "1.1.1" }
+constraint-layout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version = "1.1.2" }
 lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycle" }
 lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime", version.ref = "lifecycle" }
 lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
