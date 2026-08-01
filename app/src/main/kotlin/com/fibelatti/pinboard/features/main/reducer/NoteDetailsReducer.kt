@@ -1,14 +1,11 @@
 package com.fibelatti.pinboard.features.main.reducer
 
-import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.pinboard.features.appstate.AppState
 import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.pinboard.features.main.MainState
 import javax.inject.Inject
 
-class NoteDetailsReducer @Inject constructor(
-    private val resourceProvider: ResourceProvider,
-) : MainStateReducer {
+class NoteDetailsReducer @Inject constructor() : MainStateReducer {
 
     override fun invoke(mainState: MainState, appState: AppState): MainState {
         if (appState.content !is NoteDetailContent) return mainState
