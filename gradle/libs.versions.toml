@@ -4,7 +4,7 @@ coroutines = "1.11.0"
 hilt = "2.60.1"
 hiltExtensions = "1.4.0"
 kotlin = "2.4.10"
-ktor = "3.5.1"
+ktor = "3.5.2"
 activity = "1.13.0"
 lifecycle = "2.11.0"
 okhttp = "5.4.0"
@@ -65,7 +65,7 @@ hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltExtensions"
 coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
 coil-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
-jsoup = { module = "org.jsoup:jsoup", version = "1.22.2" }
+jsoup = { module = "org.jsoup:jsoup", version = "1.23.1" }
 
 about-libraries = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
 
