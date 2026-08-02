@@ -7,6 +7,7 @@ import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
+import com.fibelatti.pinboard.features.offline.domain.OfflineCopyRepository
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.sync.PeriodicSync
@@ -17,6 +18,9 @@ import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean
 import com.google.common.truth.Truth.assertThat
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.coVerifyOrder
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
@@ -30,6 +34,8 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
 internal class UserPreferencesViewModelTest : BaseViewModelTest() {
+
+    private val mockOfflineCopyRepository = mockk<OfflineCopyRepository>(relaxed = true)
 
     private val appStateFlow = MutableStateFlow(createAppState())
     private val mockAppStateRepository = mockk<AppStateRepository> {
@@ -52,6 +58,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         userRepository = mockUserRepository,
         tagManagerRepository = mockTagManagerRepository,
         periodicSyncManager = mockPeriodicSyncManager,
+        offlineCopyRepository = mockOfflineCopyRepository,
     )
 
     @Test
@@ -80,6 +87,62 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
         tagManagerStateFlow.value = TagManagerState(tags = SAMPLE_TAGS)
 
         verify(exactly = 0) { mockUserRepository.defaultTags = any() }
+    }
+
+    @Test
+    fun `WHEN the content is UserPreferencesContent THEN the offline copies size is read`() = runTest {
+        // GIVEN
+        coEvery { mockOfflineCopyRepository.totalSizeOnDisk() } returns 2_048L
+
+        // WHEN
+        appStateFlow.value = createAppState(content = mockk<UserPreferencesContent>())
+
+        // THEN
+        assertThat(userPreferencesViewModel.offlineCopiesSize.first()).isEqualTo(2_048L)
+    }
+
+    @Test
+    fun `WHEN the content is not UserPreferencesContent THEN the offline copies size is not read`() = runTest {
+        // WHEN
+        appStateFlow.value = createAppState(content = mockk())
+
+        // THEN
+        coVerify(exactly = 0) { mockOfflineCopyRepository.totalSizeOnDisk() }
+        assertThat(userPreferencesViewModel.offlineCopiesSize.first()).isEqualTo(0L)
+    }
+
+    @Test
+    fun `WHEN the preferences are revisited THEN the offline copies size is read again`() = runTest {
+        // GIVEN
+        coEvery { mockOfflineCopyRepository.totalSizeOnDisk() } returnsMany listOf(2_048L, 4_096L)
+
+        // WHEN
+        appStateFlow.value = createAppState(content = mockk<UserPreferencesContent>())
+        appStateFlow.value = createAppState(content = mockk())
+        appStateFlow.value = createAppState(content = mockk<UserPreferencesContent>())
+
+        // THEN a copy saved elsewhere in the app is reflected without restarting
+        assertThat(userPreferencesViewModel.offlineCopiesSize.first()).isEqualTo(4_096L)
+    }
+
+    @Test
+    fun `WHEN clearOfflineCopies is called THEN every copy is deleted AND the size is read again`() = runTest {
+        // GIVEN
+        coEvery { mockOfflineCopyRepository.totalSizeOnDisk() } returnsMany listOf(4_096L, 0L)
+        appStateFlow.value = createAppState(content = mockk<UserPreferencesContent>())
+
+        assertThat(userPreferencesViewModel.offlineCopiesSize.first()).isEqualTo(4_096L)
+
+        // WHEN
+        userPreferencesViewModel.clearOfflineCopies()
+
+        // THEN the size is re-read after the deletion, not before — otherwise the screen would keep
+        // showing the old total until it was revisited.
+        coVerifyOrder {
+            mockOfflineCopyRepository.deleteEverything()
+            mockOfflineCopyRepository.totalSizeOnDisk()
+        }
+        assertThat(userPreferencesViewModel.offlineCopiesSize.first()).isEqualTo(0L)
     }
 
     @Test

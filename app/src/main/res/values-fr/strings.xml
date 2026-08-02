@@ -12,6 +12,7 @@
     <string name="hint_add">Ajouter</string>
 
     <string name="alert_confirm_deletion">Voulez-vous vraiment supprimer ce favori ?</string>
+    <string name="alert_confirm_deletion_offline_copy">Voulez-vous vraiment supprimer cette copie hors ligne ?</string>
     <string name="alert_confirm_unsaved_changes">Vous avez des modifications non enregistrées qui seront perdues. Continuer sans enregistrer ?</string>
 
     <string name="server_error">Impossible d\'accéder au service. Vérifiez votre jeton d\'authentification ou réessayez dans quelques instants.</string>
@@ -36,6 +37,7 @@
     <string name="menu_navigation_tags">Étiquettes</string>
     <string name="menu_navigation_saved_filters">Filtres enregistrés</string>
     <string name="menu_navigation_notes">Notes</string>
+    <string name="menu_navigation_offline_copies">Copies hors ligne</string>
     <string name="menu_navigation_popular">Populaires</string>
 
     <string name="menu_navigation_preferences">Préférences</string>
@@ -49,6 +51,8 @@
     <string name="menu_link_save">Enregistrer le favori</string>
     <string name="menu_link_share">Partager le favori</string>
     <string name="menu_link_open_in_browser">Ouvrir dans le navigateur</string>
+    <string name="menu_link_save_offline_copy">Enregistrer une copie hors ligne</string>
+    <string name="menu_link_toggle_offline_copy">Basculer entre la copie hors ligne et la page en ligne</string>
 
     <string name="menu_search_clear">Effacer le filtre</string>
     <string name="menu_search_save">Enregistrer le filtre</string>
@@ -135,6 +139,23 @@
     <string name="posts_url_error">Ce favori ne peut pas être affiché dans le navigateur interne. Utilisez votre navigateur par défaut.</string>
     <string name="posts_open_in_browser">Ouvrir dans un navigateur externe</string>
 
+    <string name="offline_copies_title">Copies hors ligne</string>
+    <string name="offline_copies_empty_title">Aucune copie hors ligne pour l\'instant</string>
+    <string name="offline_copies_empty_description">Enregistrez une copie hors ligne d\'un favori et elle apparaîtra ici, prête à être lue sans connexion.</string>
+    <string name="offline_copies_total_size">%s utilisés</string>
+    <string name="offline_copies_delete">Supprimer la copie hors ligne</string>
+    <string name="offline_copies_deleted">Copie hors ligne supprimée</string>
+    <string name="offline_copies_open_original">Ouvrir la page d\'origine</string>
+    <plurals name="offline_copies_quantity">
+        <item quantity="one">%d copie</item>
+        <item quantity="many">%d copies</item>
+        <item quantity="other">%d copies</item>
+    </plurals>
+    <string name="posts_offline_copy_saving">Enregistrement d\'une copie hors ligne…</string>
+    <string name="posts_offline_copy_saved">Copie hors ligne enregistrée</string>
+    <string name="posts_offline_copy_saved_truncated">Copie hors ligne enregistrée. Certaines images étaient trop volumineuses et ont été omises.</string>
+    <string name="posts_offline_copy_failed">Impossible d\'enregistrer une copie hors ligne de cette page</string>
+    <string name="posts_offline_copy_unreadable">Cette page ne contenait pas assez de texte lisible pour enregistrer une copie</string>
     <string name="posts_pending_add">Ajout en attente</string>
     <string name="posts_pending_add_expanded">Ce favori sera ajouté dès que le réseau sera disponible</string>
     <string name="posts_pending_update">Mise à jour en attente</string>
@@ -247,6 +268,7 @@
     <string name="quick_actions_unarchive">Désarchiver le favori</string>
     <string name="quick_actions_delete_filter">Supprimer le filtre</string>
     <string name="quick_actions_save">Enregistrer dans les miens</string>
+    <string name="quick_actions_save_offline_copy">Enregistrer une copie hors ligne</string>
     <string name="quick_actions_copy_url">Copier l\'URL</string>
     <string name="quick_actions_share">Partager le favori</string>
     <string name="quick_actions_expand_description">Développer la description</string>
@@ -343,6 +365,10 @@
     <string name="user_preferences_edit_after_sharing_before_saving">Avant l\'enregistrement</string>
     <string name="user_preferences_edit_after_sharing_after_saving">Après l\'enregistrement</string>
     <string name="user_preferences_edit_after_sharing_description">Contrôle quand l\'éditeur de favori doit être affiché après avoir choisi l\'action de partage « Enregistrer le favori ». Pour ignorer l\'éditeur, choisissez plutôt « Sauvegarde rapide d\'un favori » lors du partage.</string>
+    <string name="user_preferences_offline_copies">Copies hors ligne</string>
+    <string name="user_preferences_offline_copies_description">Les pages enregistrées occupent actuellement %s de stockage sur cet appareil.</string>
+    <string name="user_preferences_offline_copies_clear">Supprimer toutes les copies hors ligne</string>
+    <string name="user_preferences_offline_copies_clear_confirmation">Cela supprime toutes les pages enregistrées de cet appareil. Les favoris sont conservés, mais il faudra enregistrer chacun d\'eux à nouveau pour les lire hors ligne. Continuer ?</string>
     <string name="user_preferences_bookmark_quick_options">Actions rapides du favori</string>
     <string name="user_preferences_bookmark_quick_actions_description">Personnaliser les options immédiatement visibles lors de l\'ouverture du menu des actions rapides</string>
 

@@ -213,6 +213,7 @@ dependencies {
     implementation(libs.work.runtime)
 
     implementation(libs.browser)
+    implementation(libs.webkit)
 
     implementation(libs.compose.material)
     debugImplementation(libs.compose.ui.test.manifest)
@@ -231,6 +232,7 @@ dependencies {
 
     implementation(libs.bundles.coil)
     implementation(libs.jsoup)
+    implementation(libs.readability4j)
 
     implementation(libs.about.libraries)
 
@@ -255,6 +257,7 @@ dependencies {
     testImplementation(libs.coroutines.test)
     testImplementation(libs.arch.core.testing)
     testImplementation(libs.turbine)
+    testImplementation(libs.mockwebserver)
 
     androidTestImplementation(libs.runner)
     androidTestUtil(libs.orchestrator)

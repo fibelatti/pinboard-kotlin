@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -66,9 +67,12 @@ import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
 import com.fibelatti.pinboard.features.main.MainState
 import com.fibelatti.pinboard.features.main.MainViewModel
+import com.fibelatti.pinboard.features.offline.domain.model.OfflineCopy
+import com.fibelatti.pinboard.features.offline.presentation.OfflineCopyWebView
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
+import java.io.File
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -103,6 +107,7 @@ fun BookmarkDetailsScreen(
         }
 
         val localContext = LocalContext.current
+        val localUriHandler = LocalUriHandler.current
 
         LaunchedViewModelEffects()
 
@@ -110,8 +115,12 @@ fun BookmarkDetailsScreen(
             post = post,
             isLoading = isLoading,
             isConnected = isConnected,
+            offlineCopy = postDetailsScreenState.offlineCopy,
+            offlineCopyFile = postDetailsScreenState.offlineCopyFile,
+            viewingOfflineCopy = postDetailsScreenState.viewingOfflineCopy,
             onOpenInFileViewerClick = { openUrlInFileViewer(localContext, post) },
             onOpenInBrowserClick = { openUrlInExternalBrowser(localContext, post) },
+            onOfflineCopyLinkClick = localUriHandler::openUri,
             onScrollDirectionChange = mainViewModel::setCurrentScrollDirection,
         )
     }
@@ -182,6 +191,10 @@ private fun LaunchedMainViewModelEffect(
 
                     is MainState.MenuItemComponent.SaveBookmark -> popularPostsViewModel.saveLink(post)
 
+                    is MainState.MenuItemComponent.SaveOfflineCopy -> postDetailViewModel.saveOfflineCopy(post)
+
+                    is MainState.MenuItemComponent.ToggleOfflineCopy -> postDetailViewModel.toggleViewingOfflineCopy()
+
                     is MainState.MenuItemComponent.OpenInBrowser -> openUrlInExternalBrowser(localContext, post)
 
                     is MainState.MenuItemComponent.CloseSidePanel -> localOnBackPressedDispatcher?.onBackPressed()
@@ -239,6 +252,13 @@ private fun LaunchedPostDetailViewModelEffect(
             }
         }
     }
+
+    OfflineCopySaveEffect(
+        isSavingOfflineCopy = screenState.isSavingOfflineCopy,
+        offlineCopySaved = screenState.offlineCopySaved,
+        truncated = screenState.offlineCopy?.truncated == true,
+        handler = postDetailViewModel::userNotified,
+    )
 }
 
 @Composable
@@ -292,12 +312,22 @@ fun BookmarkDetailsScreen(
     post: Post,
     isLoading: Boolean,
     isConnected: Boolean,
+    offlineCopy: OfflineCopy?,
+    offlineCopyFile: File?,
+    viewingOfflineCopy: Boolean,
     onOpenInFileViewerClick: () -> Unit,
     onOpenInBrowserClick: () -> Unit,
+    onOfflineCopyLinkClick: (String) -> Unit,
     onScrollDirectionChange: (ScrollDirection) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var webViewLoadFailed by remember { mutableStateOf(false) }
+    var webViewLoadFailed: Boolean by remember { mutableStateOf(false) }
+
+    // The saved copy is the better answer whenever the live page can't be reached, and the user
+    // can also ask for it explicitly while online.
+    val showOfflineCopy: Boolean = offlineCopy != null &&
+        offlineCopyFile != null &&
+        (viewingOfflineCopy || !isConnected || webViewLoadFailed)
 
     when {
         post.isFile() -> {
@@ -309,6 +339,16 @@ fun BookmarkDetailsScreen(
                 description = stringResource(id = R.string.posts_open_with_file_viewer_description),
                 buttonText = stringResource(id = R.string.posts_open_with_file_viewer),
                 modifier = modifier,
+            )
+        }
+
+        showOfflineCopy -> {
+            OfflineCopyWebView(
+                offlineCopy = offlineCopy,
+                file = offlineCopyFile,
+                onExternalLinkClick = onOfflineCopyLinkClick,
+                onScrollDirectionChange = onScrollDirectionChange,
+                modifier = modifier.fillMaxSize(),
             )
         }
 
@@ -332,77 +372,94 @@ fun BookmarkDetailsScreen(
         }
 
         else -> {
-            Box(
+            LiveBookmarkWebView(
+                post = post,
+                isLoading = isLoading,
+                onLoadFailedChange = { failed -> webViewLoadFailed = failed },
+                onScrollDirectionChange = onScrollDirectionChange,
                 modifier = modifier.fillMaxSize(),
-            ) {
-                var webViewLoading by remember { mutableStateOf(true) }
+            )
+        }
+    }
+}
 
-                val localContext = LocalContext.current
-                val webView: WebView = remember(localContext) {
-                    WebView(localContext).apply {
-                        webViewClient = object : WebViewClient() {
+@Composable
+private fun LiveBookmarkWebView(
+    post: Post,
+    isLoading: Boolean,
+    onLoadFailedChange: (Boolean) -> Unit,
+    onScrollDirectionChange: (ScrollDirection) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier) {
+        var webViewLoading: Boolean by remember { mutableStateOf(true) }
 
-                            override fun onPageFinished(view: WebView?, url: String?) {
-                                webViewLoading = false
-                                webViewLoadFailed = false
-                            }
+        val currentOnLoadFailedChange: (Boolean) -> Unit by rememberUpdatedState(onLoadFailedChange)
 
-                            override fun onReceivedError(
-                                view: WebView?,
-                                request: WebResourceRequest?,
-                                error: WebResourceError?,
-                            ) {
-                                webViewLoadFailed = true
-                            }
-                        }
+        val localContext = LocalContext.current
+        val webView: WebView = remember(localContext) {
+            WebView(localContext).apply {
+                webViewClient = object : WebViewClient() {
+
+                    override fun onPageFinished(view: WebView?, url: String?) {
+                        webViewLoading = false
+                        currentOnLoadFailedChange(false)
                     }
-                }
 
-                val nestedScrollDirection by rememberScrollDirection(webView)
-                val currentOnScrollDirectionChanged by rememberUpdatedState(onScrollDirectionChange)
-
-                SideEffect(nestedScrollDirection) {
-                    currentOnScrollDirectionChanged(nestedScrollDirection)
-                }
-
-                SideEffect(post.id) {
-                    webView.loadUrl(post.url)
-                    webViewLoading = true
-                }
-
-                DisposableEffect(webView) {
-                    onDispose {
-                        webView.stopLoading()
-                        webView.destroy()
-                    }
-                }
-
-                AndroidView(
-                    factory = { webView },
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(color = ExtendedTheme.colors.backgroundNoOverlay),
-                )
-
-                AnimatedVisibility(
-                    visible = isLoading || webViewLoading,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(color = ExtendedTheme.colors.backgroundNoOverlay),
-                        contentAlignment = Alignment.Center,
+                    override fun onReceivedError(
+                        view: WebView?,
+                        request: WebResourceRequest?,
+                        error: WebResourceError?,
                     ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .align(Alignment.Center),
-                            color = MaterialTheme.colorScheme.primary,
-                        )
+                        currentOnLoadFailedChange(true)
                     }
                 }
+            }
+        }
+
+        val nestedScrollDirection by rememberScrollDirection(webView)
+        val currentOnScrollDirectionChanged by rememberUpdatedState(onScrollDirectionChange)
+
+        SideEffect(nestedScrollDirection) {
+            currentOnScrollDirectionChanged(nestedScrollDirection)
+        }
+
+        SideEffect(post.id) {
+            webView.loadUrl(post.url)
+            webViewLoading = true
+        }
+
+        DisposableEffect(webView) {
+            onDispose {
+                webView.stopLoading()
+                webView.destroy()
+            }
+        }
+
+        AndroidView(
+            factory = { webView },
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = ExtendedTheme.colors.backgroundNoOverlay),
+        )
+
+        AnimatedVisibility(
+            visible = isLoading || webViewLoading,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = ExtendedTheme.colors.backgroundNoOverlay),
+                contentAlignment = Alignment.Center,
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .align(Alignment.Center),
+                    color = MaterialTheme.colorScheme.primary,
+                )
             }
         }
     }

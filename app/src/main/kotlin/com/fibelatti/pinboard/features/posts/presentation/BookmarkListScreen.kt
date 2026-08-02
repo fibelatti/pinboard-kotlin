@@ -282,6 +282,7 @@ fun BookmarkListScreen(
                     postDetailViewModel.deletePost(post)
                 }
             },
+            onSaveOfflineCopy = postDetailViewModel::saveOfflineCopy,
             onExpandDescription = { post ->
                 bookmarkDescriptionSheetState.showBottomSheet(data = post)
             },
@@ -391,6 +392,13 @@ private fun LaunchedPostDetailViewModelEffect(
             }
         }
     }
+
+    OfflineCopySaveEffect(
+        isSavingOfflineCopy = screenState.isSavingOfflineCopy,
+        offlineCopySaved = screenState.offlineCopySaved,
+        truncated = screenState.offlineCopy?.truncated == true,
+        handler = postDetailViewModel::userNotified,
+    )
 }
 // endregion ViewModel setup
 
@@ -846,6 +854,7 @@ private fun BookmarkQuickActionsBottomSheet(
     onEdit: (Post) -> Unit,
     onToggleArchive: (Post) -> Unit,
     onDelete: (Post) -> Unit,
+    onSaveOfflineCopy: (Post) -> Unit,
     onExpandDescription: (Post) -> Unit,
 ) {
     val post: Post = sheetState.bottomSheetData() ?: return
@@ -892,6 +901,10 @@ private fun BookmarkQuickActionsBottomSheet(
 
                 is PostQuickActions.Delete -> {
                     onDelete(post)
+                }
+
+                is PostQuickActions.SaveOfflineCopy -> {
+                    onSaveOfflineCopy(post)
                 }
 
                 is PostQuickActions.CopyUrl -> {

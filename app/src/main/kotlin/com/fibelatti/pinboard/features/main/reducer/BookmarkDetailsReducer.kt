@@ -29,6 +29,13 @@ class BookmarkDetailsReducer @Inject constructor(
                     add(MainState.MenuItemComponent.ToggleArchived(isArchived = current.post.isArchived == true))
                 }
                 add(MainState.MenuItemComponent.EditBookmark)
+
+                val isNotFile: Boolean = !current.post.isFile()
+                when {
+                    isNotFile && current.offlineCopy != null -> add(MainState.MenuItemComponent.ToggleOfflineCopy)
+                    isNotFile -> add(MainState.MenuItemComponent.SaveOfflineCopy)
+                }
+
                 add(MainState.MenuItemComponent.OpenInBrowser)
             }
 

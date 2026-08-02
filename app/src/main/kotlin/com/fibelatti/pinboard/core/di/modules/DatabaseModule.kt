@@ -10,6 +10,7 @@ import com.fibelatti.pinboard.core.persistence.database.DATABASE_VERSION_2
 import com.fibelatti.pinboard.core.persistence.database.DatabaseResetCallback
 import com.fibelatti.pinboard.features.filters.data.SavedFiltersDao
 import com.fibelatti.pinboard.features.linkding.data.BookmarksDao
+import com.fibelatti.pinboard.features.offline.data.OfflineCopiesDao
 import com.fibelatti.pinboard.features.posts.data.PostsDao
 import dagger.Module
 import dagger.Provides
@@ -52,4 +53,7 @@ object DatabaseModule {
 
     @Provides
     fun savedFiltersDao(database: AppDatabase): SavedFiltersDao = database.savedFiltersDao()
+
+    @Provides
+    fun offlineCopiesDao(database: AppDatabase): OfflineCopiesDao = database.offlineCopiesDao()
 }

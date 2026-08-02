@@ -8,6 +8,8 @@ import com.fibelatti.pinboard.features.appstate.NavigationAction
 import com.fibelatti.pinboard.features.appstate.NavigationActionHandler
 import com.fibelatti.pinboard.features.appstate.NoteAction
 import com.fibelatti.pinboard.features.appstate.NoteActionHandler
+import com.fibelatti.pinboard.features.appstate.OfflineCopyAction
+import com.fibelatti.pinboard.features.appstate.OfflineCopyActionHandler
 import com.fibelatti.pinboard.features.appstate.PopularAction
 import com.fibelatti.pinboard.features.appstate.PopularActionHandler
 import com.fibelatti.pinboard.features.appstate.PostAction
@@ -55,6 +57,11 @@ abstract class AppStateModule {
     @IntoMap
     @ActionHandlerKey(PopularAction::class)
     abstract fun popularActionHandler(impl: PopularActionHandler): ActionHandler<*>
+
+    @Binds
+    @IntoMap
+    @ActionHandlerKey(OfflineCopyAction::class)
+    abstract fun offlineCopyActionHandler(impl: OfflineCopyActionHandler): ActionHandler<*>
 
     @Binds
     abstract fun appStateRepository(impl: AppStateDataSource): AppStateRepository

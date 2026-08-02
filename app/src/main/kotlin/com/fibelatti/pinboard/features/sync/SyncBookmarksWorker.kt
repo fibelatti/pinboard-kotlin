@@ -5,7 +5,9 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
+import com.fibelatti.pinboard.features.offline.domain.OfflineCopyRepository
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.user.data.UserDataSource
@@ -20,6 +22,8 @@ class SyncBookmarksWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val userDataSource: UserDataSource,
     private val postsRepository: PostsRepository,
+    private val offlineCopyRepository: OfflineCopyRepository,
+    private val appModeProvider: AppModeProvider,
 ) : CoroutineWorker(context, workerParams) {
 
     companion object {
@@ -45,6 +49,12 @@ class SyncBookmarksWorker @AssistedInject constructor(
             pageOffset = 0,
             forceRefresh = false,
         ).toList().all { it.isSuccess }
+
+        // A full sync deletes and reinserts bookmark rows, so copies are orphaned.
+        // Without this the files could accumulate forever.
+        if (success) {
+            offlineCopyRepository.deleteOrphaned(appMode = appModeProvider.appMode.value)
+        }
 
         return if (success) Result.success() else Result.retry()
     }

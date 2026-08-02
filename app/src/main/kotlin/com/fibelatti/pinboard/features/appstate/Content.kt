@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.appstate
 import com.fibelatti.core.functional.Either
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.features.notes.domain.model.Note
+import com.fibelatti.pinboard.features.offline.domain.model.OfflineCopy
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
@@ -62,6 +63,7 @@ data class PostDetailContent(
     val post: Post,
     override val previousContent: PostListContent,
     override val isConnected: Boolean = true,
+    val offlineCopy: OfflineCopy? = null,
 ) : ContentWithHistory(), ConnectionAwareContent, SidePanelContent
 
 data class ExternalBrowserContent(
@@ -115,6 +117,18 @@ data class NoteDetailContent(
     override val isConnected: Boolean = true,
 ) : ContentWithHistory(), ConnectionAwareContent, SidePanelContent
 
+data class OfflineCopyListContent(
+    val offlineCopies: List<OfflineCopy>,
+    val totalSize: Long,
+    val shouldLoad: Boolean,
+    override val previousContent: PostListContent,
+) : ContentWithHistory()
+
+data class OfflineCopyDetailContent(
+    val offlineCopy: OfflineCopy,
+    override val previousContent: OfflineCopyListContent,
+) : ContentWithHistory(), SidePanelContent
+
 data class PopularPostsContent(
     val posts: Map<Post, Int>,
     val shouldLoad: Boolean,
@@ -152,5 +166,17 @@ fun <T : Content> Content.find(type: KClass<T>): T? = when {
     type.isInstance(this) -> this as? T
     this !is ContentWithHistory -> null
     else -> previousContent.find(type)
+}
+
+fun KClass<out Content>.resolveTypeForSidePanel(sidePanelVisible: Boolean): KClass<out Content> {
+    if (!sidePanelVisible) return this
+
+    return when {
+        this == PostDetailContent::class -> PostListContent::class
+        this == NoteDetailContent::class -> NoteListContent::class
+        this == PopularPostDetailContent::class -> PopularPostsContent::class
+        this == OfflineCopyDetailContent::class -> OfflineCopyListContent::class
+        else -> this
+    }
 }
 // endregion Content Helpers

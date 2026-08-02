@@ -9,6 +9,8 @@ import com.fibelatti.pinboard.features.filters.data.SavedFiltersDao
 import com.fibelatti.pinboard.features.linkding.data.BookmarkLocal
 import com.fibelatti.pinboard.features.linkding.data.BookmarkLocalFts
 import com.fibelatti.pinboard.features.linkding.data.BookmarksDao
+import com.fibelatti.pinboard.features.offline.data.OfflineCopiesDao
+import com.fibelatti.pinboard.features.offline.data.OfflineCopyDto
 import com.fibelatti.pinboard.features.posts.data.PostsDao
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
 import com.fibelatti.pinboard.features.posts.data.model.PostDtoFts
@@ -25,14 +27,16 @@ private const val DATABASE_VERSION_6 = 6 // Release 3.0.0 (Linkding support)
 private const val DATABASE_VERSION_7 = 7 // Release 3.2.0
 private const val DATABASE_VERSION_8 = 8 // Release 3.8.3
 private const val DATABASE_VERSION_9 = 9 // Release 3.12.0 (Advanced search)
+private const val DATABASE_VERSION_10 = 10 // Release 3.18.0 (Offline copies)
 
 @Database(
     entities = [
         PostDto::class, PostDtoFts::class,
         BookmarkLocal::class, BookmarkLocalFts::class,
         SavedFilterDto::class,
+        OfflineCopyDto::class,
     ],
-    version = DATABASE_VERSION_9,
+    version = DATABASE_VERSION_10,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = DATABASE_VERSION_3, to = DATABASE_VERSION_4),
@@ -41,6 +45,7 @@ private const val DATABASE_VERSION_9 = 9 // Release 3.12.0 (Advanced search)
         AutoMigration(from = DATABASE_VERSION_6, to = DATABASE_VERSION_7),
         AutoMigration(from = DATABASE_VERSION_7, to = DATABASE_VERSION_8),
         AutoMigration(from = DATABASE_VERSION_8, to = DATABASE_VERSION_9),
+        AutoMigration(from = DATABASE_VERSION_9, to = DATABASE_VERSION_10),
     ],
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -48,6 +53,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun postDao(): PostsDao
     abstract fun linkdingBookmarksDao(): BookmarksDao
     abstract fun savedFiltersDao(): SavedFiltersDao
+    abstract fun offlineCopiesDao(): OfflineCopiesDao
 }
 
 class DatabaseResetCallback @Inject constructor(

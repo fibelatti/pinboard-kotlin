@@ -1,7 +1,9 @@
 package com.fibelatti.pinboard.features.user.presentation
 
 import android.Manifest
+import android.content.Context
 import android.os.Build
+import android.text.format.Formatter
 import android.view.KeyEvent
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -59,6 +61,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -83,7 +86,9 @@ import com.fibelatti.pinboard.core.android.getWindowSizeClass
 import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.Close
 import com.fibelatti.pinboard.core.android.icons.Edit
+import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.fillWidthOfParent
+import com.fibelatti.pinboard.core.extension.materialAlertDialogBuilder
 import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.notifications.isNotificationPermissionGranted
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
@@ -184,10 +189,13 @@ private fun AppPreferencesContent(
     userPreferencesViewModel: UserPreferencesViewModel = hiltViewModel(),
 ) {
     val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
+    val offlineCopiesSize by userPreferencesViewModel.offlineCopiesSize.collectAsStateWithLifecycle()
 
     AppPreferencesContent(
         appMode = appMode,
         userPreferences = userPreferences,
+        offlineCopiesSize = offlineCopiesSize,
+        onClearOfflineCopiesClick = userPreferencesViewModel::clearOfflineCopies,
         onAppearanceChange = { newAppearance ->
             userPreferencesViewModel.saveAppearance(newAppearance)
 
@@ -223,6 +231,8 @@ private fun AppPreferencesContent(
 private fun AppPreferencesContent(
     appMode: AppMode,
     userPreferences: UserPreferences,
+    offlineCopiesSize: Long,
+    onClearOfflineCopiesClick: () -> Unit,
     onAppearanceChange: (Appearance) -> Unit,
     onDynamicColorChange: (Boolean) -> Unit,
     onDisableScreenshotsChange: (Boolean) -> Unit,
@@ -436,6 +446,34 @@ private fun AppPreferencesContent(
         Spacer(modifier = Modifier.height(12.dp))
 
         SettingItem(
+            title = stringResource(R.string.user_preferences_offline_copies),
+        ) {
+            val localContext = LocalContext.current
+
+            Text(
+                text = stringResource(
+                    R.string.user_preferences_offline_copies_description,
+                    Formatter.formatFileSize(localContext, offlineCopiesSize),
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            PreferenceButton(
+                buttonText = stringResource(R.string.user_preferences_offline_copies_clear),
+                onClick = {
+                    showClearOfflineCopiesConfirmationDialog(
+                        context = localContext,
+                        onConfirm = onClearOfflineCopiesClick,
+                    )
+                },
+                enabled = offlineCopiesSize > 0,
+            )
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        SettingItem(
             title = stringResource(R.string.user_preferences_bookmark_quick_options),
         ) {
             Text(
@@ -528,6 +566,15 @@ private fun AppPreferencesContent(
             onCheckedChange = onDisableScreenshotsChange,
         )
     }
+}
+
+private fun showClearOfflineCopiesConfirmationDialog(context: Context, onConfirm: () -> Unit) {
+    context.materialAlertDialogBuilder().apply {
+        setTitle(R.string.user_preferences_offline_copies_clear)
+        setMessage(R.string.user_preferences_offline_copies_clear_confirmation)
+        setPositiveButton(R.string.hint_yes) { _, _ -> onConfirm() }
+        setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
+    }.applySecureFlag().show()
 }
 
 @Composable
@@ -864,6 +911,7 @@ private fun PreferenceButton(
     buttonText: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     FilledTonalButton(
         onClick = onClick,
@@ -871,6 +919,7 @@ private fun PreferenceButton(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 4.dp),
+        enabled = enabled,
     ) {
         Text(
             text = buttonText,
@@ -929,6 +978,8 @@ private fun AppPreferencesContentPreview(
         AppPreferencesContent(
             appMode = AppMode.PINBOARD,
             userPreferences = userPreferences,
+            offlineCopiesSize = 0,
+            onClearOfflineCopiesClick = {},
             onAppearanceChange = {},
             onDynamicColorChange = {},
             onDisableScreenshotsChange = {},

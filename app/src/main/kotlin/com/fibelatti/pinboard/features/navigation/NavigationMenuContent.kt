@@ -34,6 +34,7 @@ import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.Backup
 import com.fibelatti.pinboard.core.android.icons.Bookmarks
+import com.fibelatti.pinboard.core.android.icons.Download
 import com.fibelatti.pinboard.core.android.icons.Feedback
 import com.fibelatti.pinboard.core.android.icons.Filter
 import com.fibelatti.pinboard.core.android.icons.Notes
@@ -53,6 +54,7 @@ import com.fibelatti.pinboard.features.appstate.Unread
 import com.fibelatti.pinboard.features.appstate.Untagged
 import com.fibelatti.pinboard.features.appstate.ViewAccountSwitcher
 import com.fibelatti.pinboard.features.appstate.ViewNotes
+import com.fibelatti.pinboard.features.appstate.ViewOfflineCopies
 import com.fibelatti.pinboard.features.appstate.ViewPopular
 import com.fibelatti.pinboard.features.appstate.ViewPreferences
 import com.fibelatti.pinboard.features.appstate.ViewSavedFilters
@@ -87,6 +89,7 @@ fun NavigationMenuContent(
         onSavedFiltersClick = { onNavOptionClick(ViewSavedFilters) },
         onTagsClick = { onNavOptionClick(ViewTags) },
         onNotesClick = { onNavOptionClick(ViewNotes) },
+        onOfflineCopiesClick = { onNavOptionClick(ViewOfflineCopies) },
         onPopularClick = { onNavOptionClick(ViewPopular) },
         onPreferencesClick = { onNavOptionClick(ViewPreferences) },
         onAccountsClick = { onNavOptionClick(ViewAccountSwitcher) },
@@ -113,6 +116,7 @@ private fun NavigationMenuContent(
     onSavedFiltersClick: () -> Unit,
     onTagsClick: () -> Unit,
     onNotesClick: () -> Unit,
+    onOfflineCopiesClick: () -> Unit,
     onPopularClick: () -> Unit,
     onPreferencesClick: () -> Unit,
     onAccountsClick: () -> Unit,
@@ -220,10 +224,17 @@ private fun NavigationMenuContent(
         Spacer(modifier = Modifier.height(30.dp))
 
         MenuItem(
+            textRes = R.string.menu_navigation_offline_copies,
+            onClick = onOfflineCopiesClick,
+            icon = AppIcons.Download,
+            shape = Shapes.TopShape,
+        )
+
+        MenuItem(
             textRes = R.string.menu_navigation_saved_filters,
             onClick = onSavedFiltersClick,
             icon = AppIcons.Filter,
-            shape = Shapes.TopShape,
+            shape = Shapes.MiddleShape,
         )
 
         MenuItem(
@@ -389,6 +400,7 @@ private fun NavigationMenuContentPreview() {
             onSavedFiltersClick = {},
             onTagsClick = {},
             onNotesClick = {},
+            onOfflineCopiesClick = {},
             onPopularClick = {},
             onPreferencesClick = {},
             onAccountsClick = {},

@@ -15,6 +15,7 @@
     <string name="hint_add">Add</string>
 
     <string name="alert_confirm_deletion">Are you sure you want to delete this bookmark?</string>
+    <string name="alert_confirm_deletion_offline_copy">Are you sure you want to delete this offline copy?</string>
     <string name="alert_confirm_unsaved_changes">You have unsaved changes that will be lost, continue without saving?</string>
 
     <string name="server_error">Unable to reach the service. Check your auth token or try again in a short while.</string>
@@ -39,6 +40,7 @@
     <string name="menu_navigation_tags">Tags</string>
     <string name="menu_navigation_saved_filters">Saved Filters</string>
     <string name="menu_navigation_notes">Notes</string>
+    <string name="menu_navigation_offline_copies">Offline copies</string>
     <string name="menu_navigation_popular">Popular</string>
 
     <string name="menu_navigation_preferences">Preferences</string>
@@ -52,6 +54,8 @@
     <string name="menu_link_save">Save bookmark</string>
     <string name="menu_link_share">Share bookmark</string>
     <string name="menu_link_open_in_browser">Open in browser</string>
+    <string name="menu_link_save_offline_copy">Save offline copy</string>
+    <string name="menu_link_toggle_offline_copy">Toggle offline/live page</string>
 
     <string name="menu_search_clear">Clear filter</string>
     <string name="menu_search_save">Save filter</string>
@@ -136,6 +140,24 @@
     <string name="posts_url_offline_error">Looks like you are offline. Please try again once a connection is available.</string>
     <string name="posts_url_error">This bookmark cannot be viewed using the internal browser. Use your default browser instead.</string>
     <string name="posts_open_in_browser">Open external browser</string>
+
+    <string name="offline_copies_title">Offline copies</string>
+    <string name="offline_copies_empty_title">No offline copies yet</string>
+    <string name="offline_copies_empty_description">Save an offline copy of a bookmark, and it will show up here, ready to read without a connection.</string>
+    <string name="offline_copies_total_size">%s used</string>
+    <string name="offline_copies_delete">Delete offline copy</string>
+    <string name="offline_copies_deleted">Offline copy deleted</string>
+    <string name="offline_copies_open_original">Open original page</string>
+    <plurals name="offline_copies_quantity">
+        <item quantity="one">%d copy</item>
+        <item quantity="other">%d copies</item>
+    </plurals>
+
+    <string name="posts_offline_copy_saving">Saving an offline copy…</string>
+    <string name="posts_offline_copy_saved">Offline copy saved</string>
+    <string name="posts_offline_copy_saved_truncated">Offline copy saved. Some images were too large and were left out.</string>
+    <string name="posts_offline_copy_failed">Couldn\'t save an offline copy of this page</string>
+    <string name="posts_offline_copy_unreadable">There wasn\'t enough readable text on this page to save a copy</string>
 
     <string name="posts_pending_add">Pending add</string>
     <string name="posts_pending_add_expanded">This bookmark will be added when network becomes available</string>
@@ -246,6 +268,7 @@
     <string name="quick_actions_unarchive">Unarchive bookmark</string>
     <string name="quick_actions_delete_filter">Delete filter</string>
     <string name="quick_actions_save">Save to mine</string>
+    <string name="quick_actions_save_offline_copy">Save offline copy</string>
     <string name="quick_actions_copy_url">Copy URL</string>
     <string name="quick_actions_share">Share bookmark</string>
     <string name="quick_actions_expand_description">Expand description</string>
@@ -342,6 +365,11 @@
     <string name="user_preferences_edit_after_sharing_before_saving">Before saving</string>
     <string name="user_preferences_edit_after_sharing_after_saving">After saving</string>
     <string name="user_preferences_edit_after_sharing_description">Controls when the bookmark editor should be displayed after choosing the \"Save bookmark\" share action. To skip the editor, choose \"Quick save bookmark\" when sharing instead.</string>
+    <string name="user_preferences_offline_copies">Offline copies</string>
+    <string name="user_preferences_offline_copies_description">Saved pages currently use %s of storage on this device.</string>
+    <string name="user_preferences_offline_copies_clear">Delete all offline copies</string>
+    <string name="user_preferences_offline_copies_clear_confirmation">This deletes every saved page from this device. The bookmarks are kept, but reading them offline will require saving each one again. Continue?</string>
+
     <string name="user_preferences_bookmark_quick_options">Bookmark quick actions</string>
     <string name="user_preferences_bookmark_quick_actions_description">Customize which options are immediately visible when opening the quick actions menu</string>
 

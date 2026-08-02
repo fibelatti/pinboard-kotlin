@@ -5,6 +5,7 @@ import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.di.AppDispatchers
 import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
+import com.fibelatti.pinboard.features.offline.domain.OfflineCopyRepository
 import com.fibelatti.pinboard.features.user.domain.GetPreferredSortType
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
@@ -36,6 +37,7 @@ class AppStateDataSource @Inject constructor(
     private val appModeProvider: AppModeProvider,
     private val unauthorizedPluginProvider: UnauthorizedPluginProvider,
     private val getPreferredSortType: GetPreferredSortType,
+    private val offlineCopyRepository: OfflineCopyRepository,
 ) : AppStateRepository {
 
     private val reducer: MutableSharedFlow<suspend (AppState) -> AppState> = MutableSharedFlow()
@@ -94,6 +96,17 @@ class AppStateDataSource @Inject constructor(
                             appModeProvider.setSelection(appMode = null)
                             unauthorizedPluginProvider.disable(appMode = action.appMode)
                             userRepository.clearAuthToken(appMode = action.appMode)
+
+                            // Only a deliberate logout drops the copies: the bookmarks they belong
+                            // to are gone for good, so the files would sit in `filesDir` forever
+                            // with nothing left to reference them.
+                            //
+                            // An invalid token is not the same thing. The bookmarks survive it, and
+                            // the saved copies are the only thing still readable until the user
+                            // signs back in, so they must outlive it.
+                            if (action is UserLoggedOut) {
+                                offlineCopyRepository.deleteAll(appMode = action.appMode)
+                            }
 
                             when {
                                 action is UserLoginFailed -> appState.content

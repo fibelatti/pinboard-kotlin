@@ -2,7 +2,10 @@ package com.fibelatti.pinboard.features.appstate
 
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.functional.Either
+import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.pinboard.features.offline.domain.OfflineCopyRepository
+import com.fibelatti.pinboard.features.offline.domain.model.OfflineCopy
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.posts.domain.model.Post
@@ -18,6 +21,8 @@ import timber.log.Timber
 class NavigationActionHandler @Inject constructor(
     private val userRepository: UserRepository,
     private val postsRepository: PostsRepository,
+    private val offlineCopyRepository: OfflineCopyRepository,
+    private val appModeProvider: AppModeProvider,
     private val connectivityInfoProvider: ConnectivityInfoProvider,
     private val getPreferredSortType: GetPreferredSortType,
 ) : ActionHandler<NavigationAction>() {
@@ -33,6 +38,8 @@ class NavigationActionHandler @Inject constructor(
             is ViewTags -> viewTags(currentContent)
             is ViewSavedFilters -> viewSavedFilters(currentContent)
             is ViewNotes -> viewNotes(currentContent)
+            is ViewOfflineCopies -> viewOfflineCopies(currentContent)
+            is ViewOfflineCopy -> viewOfflineCopy(action, currentContent)
             is ViewNote -> viewNote(action, currentContent)
             is ViewPopular -> viewPopular(currentContent)
             is ViewAccountSwitcher -> viewAccountSwitcher(currentContent)
@@ -72,18 +79,21 @@ class NavigationActionHandler @Inject constructor(
 
         return when (currentContent) {
             is PostListContent -> {
-                val default = suspend {
-                    val shouldLoad: ShouldLoad = markAsRead(action.post)
-                    PostDetailContent(
-                        post = action.post,
-                        previousContent = currentContent.copy(shouldLoad = shouldLoad),
-                        isConnected = connectivityInfoProvider.isConnected(),
-                    )
-                }
-
                 when (preferredDetailsView) {
                     is PreferredDetailsView.InAppBrowser -> {
-                        default()
+                        val shouldLoad: ShouldLoad = markAsRead(action.post)
+
+                        val offlineCopy: OfflineCopy? = offlineCopyRepository.getOfflineCopy(
+                            appMode = appModeProvider.appMode.value,
+                            bookmarkId = action.post.id,
+                        )
+
+                        PostDetailContent(
+                            post = action.post,
+                            previousContent = currentContent.copy(shouldLoad = shouldLoad),
+                            isConnected = connectivityInfoProvider.isConnected(),
+                            offlineCopy = offlineCopy,
+                        )
                     }
 
                     is PreferredDetailsView.ExternalBrowser -> {
@@ -115,7 +125,17 @@ class NavigationActionHandler @Inject constructor(
                 }
             }
 
-            is PostDetailContent -> currentContent.copy(post = action.post)
+            is PostDetailContent -> {
+                val offlineCopy: OfflineCopy? = offlineCopyRepository.getOfflineCopy(
+                    appMode = appModeProvider.appMode.value,
+                    bookmarkId = action.post.id,
+                )
+
+                currentContent.copy(
+                    post = action.post,
+                    offlineCopy = offlineCopy,
+                )
+            }
 
             is PopularPostDetailContent -> currentContent.copy(post = action.post)
 
@@ -197,6 +217,34 @@ class NavigationActionHandler @Inject constructor(
         return currentContent
             .reduce(body)
             .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
+    }
+
+    private fun viewOfflineCopies(currentContent: Content): Content {
+        val body = { postListContent: PostListContent ->
+            OfflineCopyListContent(
+                offlineCopies = emptyList(),
+                totalSize = 0,
+                shouldLoad = true,
+                previousContent = postListContent,
+            )
+        }
+
+        return currentContent
+            .reduce(body)
+            .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
+    }
+
+    private fun viewOfflineCopy(action: ViewOfflineCopy, currentContent: Content): Content {
+        return when (currentContent) {
+            is OfflineCopyListContent -> OfflineCopyDetailContent(
+                offlineCopy = action.offlineCopy,
+                previousContent = currentContent,
+            )
+
+            is OfflineCopyDetailContent -> currentContent.copy(offlineCopy = action.offlineCopy)
+
+            else -> currentContent
+        }
     }
 
     private fun viewSavedFilters(currentContent: Content): Content {

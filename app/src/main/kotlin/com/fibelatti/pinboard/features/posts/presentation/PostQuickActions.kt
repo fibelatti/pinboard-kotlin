@@ -9,6 +9,7 @@ import com.fibelatti.pinboard.core.android.icons.Archive
 import com.fibelatti.pinboard.core.android.icons.Browser
 import com.fibelatti.pinboard.core.android.icons.Copy
 import com.fibelatti.pinboard.core.android.icons.Delete
+import com.fibelatti.pinboard.core.android.icons.Download
 import com.fibelatti.pinboard.core.android.icons.Edit
 import com.fibelatti.pinboard.core.android.icons.Expand
 import com.fibelatti.pinboard.core.android.icons.ReadLater
@@ -92,6 +93,16 @@ sealed class PostQuickActions(
     ) {
 
         override val serializedName: String = "TOGGLE_ARCHIVED"
+    }
+
+    data class SaveOfflineCopy(
+        override val post: Post,
+    ) : PostQuickActions(
+        title = R.string.quick_actions_save_offline_copy,
+        icon = AppIcons.Download,
+    ) {
+
+        override val serializedName: String = "SAVE_OFFLINE_COPY"
     }
 
     data class CopyUrl(
@@ -202,6 +213,10 @@ sealed class PostQuickActions(
             }
 
             add(Delete(post))
+
+            if (!post.isFile()) {
+                add(SaveOfflineCopy(post))
+            }
 
             add(CopyUrl(post))
             add(Share(post))

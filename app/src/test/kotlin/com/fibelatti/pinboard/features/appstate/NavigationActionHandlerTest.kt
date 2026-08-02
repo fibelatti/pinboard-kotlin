@@ -4,7 +4,10 @@ import com.fibelatti.core.functional.Either
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.allSealedSubclasses
 import com.fibelatti.pinboard.core.AppMode
+import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.pinboard.features.offline.domain.OfflineCopyRepository
+import com.fibelatti.pinboard.features.offline.domain.model.OfflineCopy
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -36,6 +39,14 @@ internal class NavigationActionHandlerTest {
     private val mockPostsRepository = mockk<PostsRepository>()
     private val mockConnectivityInfoProvider = mockk<ConnectivityInfoProvider>()
 
+    private val mockOfflineCopy = mockk<OfflineCopy>()
+    private val mockOfflineCopyRepository = mockk<OfflineCopyRepository> {
+        coEvery { getOfflineCopy(any(), any()) } returns mockOfflineCopy
+    }
+    private val mockAppModeProvider = mockk<AppModeProvider> {
+        every { appMode } returns MutableStateFlow(AppMode.PINBOARD)
+    }
+
     private val mockSortType = mockk<SortType>()
     private val mockGetPreferredSortType = mockk<GetPreferredSortType> {
         every { this@mockk.invoke() } returns mockSortType
@@ -45,6 +56,8 @@ internal class NavigationActionHandlerTest {
         NavigationActionHandler(
             userRepository = mockUserRepository,
             postsRepository = mockPostsRepository,
+            offlineCopyRepository = mockOfflineCopyRepository,
+            appModeProvider = mockAppModeProvider,
             connectivityInfoProvider = mockConnectivityInfoProvider,
             getPreferredSortType = mockGetPreferredSortType,
         ),
@@ -83,6 +96,7 @@ internal class NavigationActionHandlerTest {
             // GIVEN
             val returnedContent = when (contentWithHistory) {
                 is NoteDetailContent -> mockk<NoteListContent>()
+                is OfflineCopyDetailContent -> mockk<OfflineCopyListContent>()
                 is PopularPostDetailContent -> mockk<PopularPostsContent>()
                 is UserPreferencesContent -> postListContent.copy(shouldLoad = ShouldLoadFirstPage)
                 else -> postListContent.copy(shouldLoad = Loaded)
@@ -226,9 +240,31 @@ internal class NavigationActionHandlerTest {
                         post = createPost(),
                         isConnected = isConnected,
                         previousContent = postListContent.copy(shouldLoad = mockShouldLoad),
+                        offlineCopy = mockOfflineCopy,
                     ),
                 )
+                coVerify {
+                    mockOfflineCopyRepository.getOfflineCopy(
+                        appMode = AppMode.PINBOARD,
+                        bookmarkId = createPost().id,
+                    )
+                }
             }
+
+        @Test
+        fun `WHEN the bookmark has no offline copy THEN PostDetailContent carries none`() = runTest {
+            // GIVEN
+            every { mockUserRepository.preferredDetailsView } returns PreferredDetailsView.InAppBrowser(
+                markAsReadOnOpen = markAsReadOnOpen,
+            )
+            coEvery { mockOfflineCopyRepository.getOfflineCopy(any(), any()) } returns null
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewPost(createPost()), postListContent)
+
+            // THEN
+            assertThat((result as PostDetailContent).offlineCopy).isNull()
+        }
 
         @Test
         fun `WHEN currentContent is PostListContent and PreferredDetailsView is ExternalBrowser THEN ExternalBrowserContent is returned`() =
@@ -348,14 +384,22 @@ internal class NavigationActionHandlerTest {
                 // WHEN
                 val result = navigationActionHandler.runAction(ViewPost(otherPost), content)
 
-                // THEN
+                // THEN the copy is looked up again, since it belongs to the post being opened
+                // rather than to the one that was already on screen.
                 assertThat(result).isEqualTo(
                     PostDetailContent(
                         post = otherPost,
                         previousContent = postListContent,
                         isConnected = isConnected,
+                        offlineCopy = mockOfflineCopy,
                     ),
                 )
+                coVerify {
+                    mockOfflineCopyRepository.getOfflineCopy(
+                        appMode = AppMode.PINBOARD,
+                        bookmarkId = otherPost.id,
+                    )
+                }
             }
 
         @Test
@@ -880,6 +924,135 @@ internal class NavigationActionHandlerTest {
                         note = Either.Left(isConnected),
                         isConnected = isConnected,
                         previousContent = noteListContent,
+                    ),
+                )
+            }
+    }
+
+    @Nested
+    inner class ViewOfflineCopiesTests {
+
+        @Test
+        fun `WHEN currentContent is not PostListContent THEN same content is returned`() = runTest {
+            // GIVEN
+            val content = mockk<ExternalContent>()
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewOfflineCopies, content)
+
+            // THEN
+            assertThat(result).isEqualTo(content)
+        }
+
+        @Test
+        fun `WHEN currentContent is PostListContent THEN OfflineCopiesContent is returned`() = runTest {
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewOfflineCopies, postListContent)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                OfflineCopyListContent(
+                    offlineCopies = emptyList(),
+                    totalSize = 0,
+                    shouldLoad = true,
+                    previousContent = postListContent,
+                ),
+            )
+        }
+
+        @Test
+        fun `WHEN currentContent is PostDetailContent THEN OfflineCopiesContent is returned`() = runTest {
+            // GIVEN
+            val content = mockk<PostDetailContent> {
+                every { previousContent } returns postListContent
+            }
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewOfflineCopies, content)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                OfflineCopyListContent(
+                    offlineCopies = emptyList(),
+                    totalSize = 0,
+                    shouldLoad = true,
+                    previousContent = postListContent,
+                ),
+            )
+        }
+
+        @Test
+        fun `WHEN offline copies are requested THEN connectivity is not taken into account`() = runTest {
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewOfflineCopies, postListContent)
+
+            // THEN unlike every other destination, these are read from disk, so they must load
+            // regardless of the connection — and the mock would throw if it were consulted.
+            assertThat((result as OfflineCopyListContent).shouldLoad).isTrue()
+            verify(exactly = 0) { mockConnectivityInfoProvider.isConnected() }
+        }
+    }
+
+    @Nested
+    inner class ViewOfflineCopyTests {
+
+        @Test
+        fun `WHEN currentContent is not OfflineCopiesContent THEN same content is returned`() = runTest {
+            // GIVEN
+            val content = mockk<ExternalContent>()
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewOfflineCopy(mockk()), content)
+
+            // THEN
+            assertThat(result).isEqualTo(content)
+        }
+
+        @Test
+        fun `WHEN currentContent is OfflineCopiesContent THEN OfflineCopyDetailContent is returned`() = runTest {
+            // GIVEN
+            val offlineCopy = mockk<OfflineCopy>()
+            val initialContent = OfflineCopyListContent(
+                offlineCopies = listOf(offlineCopy),
+                totalSize = 0,
+                shouldLoad = false,
+                previousContent = postListContent,
+            )
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewOfflineCopy(offlineCopy), initialContent)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                OfflineCopyDetailContent(
+                    offlineCopy = offlineCopy,
+                    previousContent = initialContent,
+                ),
+            )
+        }
+
+        @Test
+        fun `WHEN currentContent is OfflineCopyDetailContent THEN the copy is replaced AND history is kept`() =
+            runTest {
+                // GIVEN
+                val offlineCopy = mockk<OfflineCopy>()
+                val otherOfflineCopy = mockk<OfflineCopy>()
+                val offlineCopyListContent = mockk<OfflineCopyListContent>()
+
+                val content = OfflineCopyDetailContent(
+                    offlineCopy = offlineCopy,
+                    previousContent = offlineCopyListContent,
+                )
+
+                // WHEN
+                val result = navigationActionHandler.runAction(ViewOfflineCopy(otherOfflineCopy), content)
+
+                // THEN opening another copy from the side panel must not stack detail on detail,
+                // otherwise going back would step through every copy that was opened.
+                assertThat(result).isEqualTo(
+                    OfflineCopyDetailContent(
+                        offlineCopy = otherOfflineCopy,
+                        previousContent = offlineCopyListContent,
                     ),
                 )
             }

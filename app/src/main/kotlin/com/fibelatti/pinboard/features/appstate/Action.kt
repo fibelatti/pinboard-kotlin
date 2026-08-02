@@ -3,6 +3,7 @@ package com.fibelatti.pinboard.features.appstate
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
 import com.fibelatti.pinboard.features.notes.domain.model.Note
+import com.fibelatti.pinboard.features.offline.domain.model.OfflineCopy
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
@@ -44,6 +45,8 @@ data object ViewTags : NavigationAction()
 data object ViewSavedFilters : NavigationAction()
 data object ViewNotes : NavigationAction()
 data class ViewNote(val id: String) : NavigationAction()
+data object ViewOfflineCopies : NavigationAction()
+data class ViewOfflineCopy(val offlineCopy: OfflineCopy) : NavigationAction()
 data object ViewPopular : NavigationAction()
 data object ViewAccountSwitcher : NavigationAction()
 data class AddAccount(val appMode: AppMode) : NavigationAction()
@@ -72,6 +75,7 @@ data class EditPost(val post: Post) : PostAction()
 data class EditPostFromShare(val post: Post) : PostAction()
 data class PostSaved(val post: Post) : PostAction()
 data object PostDeleted : PostAction()
+data class OfflineCopySaved(val offlineCopy: OfflineCopy) : PostAction()
 // endregion PostAction
 
 // region SearchAction
@@ -105,6 +109,12 @@ data object RefreshNotes : NoteAction()
 data class SetNotes(val notes: List<Note>) : NoteAction()
 data class SetNote(val note: Note) : NoteAction()
 // endregion NoteAction
+
+// region OfflineCopyAction
+sealed class OfflineCopyAction : Action()
+
+data class SetOfflineCopies(val offlineCopies: List<OfflineCopy>) : OfflineCopyAction()
+// endregion OfflineCopyAction
 
 // region PopularAction
 sealed class PopularAction : Action()

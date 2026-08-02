@@ -25,6 +25,8 @@ import com.fibelatti.pinboard.features.appstate.MultiPanelAvailabilityChanged
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.pinboard.features.appstate.NoteListContent
+import com.fibelatti.pinboard.features.appstate.OfflineCopyDetailContent
+import com.fibelatti.pinboard.features.appstate.OfflineCopyListContent
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
@@ -83,6 +85,8 @@ internal class MainViewModelTest : BaseViewModelTest() {
                 is PopularPostDetailContent -> subclass.java to expectedReducerMock()
                 is NoteListContent -> subclass.java to expectedReducerMock()
                 is NoteDetailContent -> subclass.java to expectedReducerMock()
+                is OfflineCopyListContent -> subclass.java to expectedReducerMock()
+                is OfflineCopyDetailContent -> subclass.java to expectedReducerMock()
                 is AccountSwitcherContent -> subclass.java to expectedReducerMock()
                 is UserPreferencesContent -> subclass.java to expectedReducerMock()
                 is ExternalBrowserContent -> subclass.java to expectedReducerMock()

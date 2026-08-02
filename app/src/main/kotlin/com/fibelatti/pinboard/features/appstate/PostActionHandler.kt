@@ -20,6 +20,7 @@ class PostActionHandler @Inject constructor(
         is EditPostFromShare -> editPostFromShare(action)
         is PostSaved -> postSaved(action, currentContent)
         is PostDeleted -> postDeleted(currentContent)
+        is OfflineCopySaved -> offlineCopySaved(action, currentContent)
     }
 
     private fun refresh(currentContent: Content, force: Boolean): Content {
@@ -235,6 +236,14 @@ class PostActionHandler @Inject constructor(
 
                 else -> previousContent
             }
+        }
+    }
+
+    private fun offlineCopySaved(action: OfflineCopySaved, currentContent: Content): Content {
+        return if (currentContent is PostDetailContent && currentContent.post.id == action.offlineCopy.bookmarkId) {
+            currentContent.copy(offlineCopy = action.offlineCopy)
+        } else {
+            currentContent
         }
     }
 }

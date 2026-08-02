@@ -45,6 +45,7 @@ room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 work-runtime = { module = "androidx.work:work-runtime", version = "2.11.2" }
 browser = { module = "androidx.browser:browser", version = "1.10.0" }
+webkit = { module = "androidx.webkit:webkit", version = "1.16.0" }
 
 compose-bom = { module = "androidx.compose:compose-bom-alpha", version = "2026.07.01" }
 compose-runtime = { module = "androidx.compose.runtime:runtime" }
@@ -66,6 +67,7 @@ coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
 coil-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 jsoup = { module = "org.jsoup:jsoup", version = "1.23.1" }
+readability4j = { module = "net.dankito.readability4j:readability4j", version = "1.0.8" }
 
 about-libraries = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
 

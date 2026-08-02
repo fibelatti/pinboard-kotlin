@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
+import android.text.format.Formatter
 import android.util.Log
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -64,6 +65,10 @@ public class AppResourceProvider(context: Context) : ResourceProvider {
             Log.d(TAG, "$TAG.getJsonFromAssets", exception)
             null
         }
+    }
+
+    override fun formatSizeBytes(sizeBytes: Long): String {
+        return Formatter.formatFileSize(context, sizeBytes)
     }
 
     private companion object {

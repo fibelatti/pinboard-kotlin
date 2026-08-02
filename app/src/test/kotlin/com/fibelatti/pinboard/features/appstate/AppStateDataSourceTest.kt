@@ -8,6 +8,7 @@ import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
+import com.fibelatti.pinboard.features.offline.domain.OfflineCopyRepository
 import com.fibelatti.pinboard.features.user.domain.GetPreferredSortType
 import com.fibelatti.pinboard.features.user.domain.UserCredentials
 import com.fibelatti.pinboard.features.user.domain.UserRepository
@@ -45,7 +46,10 @@ internal class AppStateDataSourceTest {
     private val mockSearchActionHandler = mockk<SearchActionHandler>()
     private val mockTagActionHandler = mockk<TagActionHandler>()
     private val mockNoteActionHandler = mockk<NoteActionHandler>()
+    private val mockOfflineCopyActionHandler = mockk<OfflineCopyActionHandler>()
     private val mockPopularActionHandler = mockk<PopularActionHandler>()
+
+    private val mockOfflineCopyRepository = mockk<OfflineCopyRepository>(relaxed = true)
 
     private val handlers: Map<Class<out Action>, ActionHandler<*>> = mapOf(
         NavigationAction::class.java to mockNavigationActionHandler,
@@ -53,6 +57,7 @@ internal class AppStateDataSourceTest {
         SearchAction::class.java to mockSearchActionHandler,
         TagAction::class.java to mockTagActionHandler,
         NoteAction::class.java to mockNoteActionHandler,
+        OfflineCopyAction::class.java to mockOfflineCopyActionHandler,
         PopularAction::class.java to mockPopularActionHandler,
     )
 
@@ -103,6 +108,7 @@ internal class AppStateDataSourceTest {
             appModeProvider = mockAppModeProvider,
             unauthorizedPluginProvider = mockUnauthorizedPluginProvider,
             getPreferredSortType = mockGetPreferredSortType,
+            offlineCopyRepository = mockOfflineCopyRepository,
         )
     }
 
@@ -192,6 +198,49 @@ internal class AppStateDataSourceTest {
         }
     }
 
+    /**
+     * Which auth actions take the saved offline copies down with them.
+     */
+    @Nested
+    inner class AuthActionOfflineCopyTests {
+
+        @Test
+        fun `WHEN the user logs out THEN their offline copies are deleted`() = runTest {
+            // GIVEN signing out is final: the bookmarks the copies belong to become unreachable, so
+            // the files would sit in `filesDir` with nothing left to reference them.
+            appStateDataSource.appState.test {
+                appStateDataSource.runAction(UserLoggedOut(appMode = mockAppMode))
+                expectMostRecentItem()
+            }
+
+            coVerify { mockOfflineCopyRepository.deleteAll(appMode = mockAppMode) }
+        }
+
+        @Test
+        fun `WHEN the token is rejected THEN the offline copies are kept`() = runTest {
+            // GIVEN an expired or rotated token is recoverable, and with no connection to re-fetch
+            // anything the saved copies are the only thing still readable.
+            appStateDataSource.appState.test {
+                appStateDataSource.runAction(UserUnauthorized(appMode = mockAppMode))
+                expectMostRecentItem()
+            }
+
+            coVerify(exactly = 0) { mockOfflineCopyRepository.deleteAll(any()) }
+        }
+
+        @Test
+        fun `WHEN a login attempt fails THEN the offline copies are kept`() = runTest {
+            // GIVEN nothing was signed in, so there is nothing of this account's to clean up — and
+            // another account's copies must not be caught in it.
+            appStateDataSource.appState.test {
+                appStateDataSource.runAction(UserLoginFailed(appMode = mockAppMode))
+                expectMostRecentItem()
+            }
+
+            coVerify(exactly = 0) { mockOfflineCopyRepository.deleteAll(any()) }
+        }
+    }
+
     @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class RunActionTests {
@@ -203,6 +252,7 @@ internal class AppStateDataSourceTest {
             coEvery { mockSearchActionHandler.runAction(any(), any()) } returns expectedPostActionValue
             coEvery { mockTagActionHandler.runAction(any(), any()) } returns expectedPostActionValue
             coEvery { mockNoteActionHandler.runAction(any(), any()) } returns expectedPostActionValue
+            coEvery { mockOfflineCopyActionHandler.runAction(any(), any()) } returns expectedPostActionValue
             coEvery { mockPopularActionHandler.runAction(any(), any()) } returns expectedPostActionValue
         }
 
@@ -221,6 +271,7 @@ internal class AppStateDataSourceTest {
                 appModeProvider = mockAppModeProvider,
                 unauthorizedPluginProvider = mockUnauthorizedPluginProvider,
                 getPreferredSortType = mockGetPreferredSortType,
+                offlineCopyRepository = mockOfflineCopyRepository,
             )
 
             appStateDataSource.appState.test {
@@ -319,6 +370,12 @@ internal class AppStateDataSourceTest {
                         require(action is PopularAction)
                         coVerify { mockPopularActionHandler.runAction(action, expectedInitialContent) }
                     }
+
+                    ExpectedHandler.OFFLINE_COPY -> {
+                        assertThat(state).isEqualTo(expectedInitialState.copy(content = expectedPostActionValue))
+                        require(action is OfflineCopyAction)
+                        coVerify { mockOfflineCopyActionHandler.runAction(action, expectedInitialContent) }
+                    }
                 }
             }
         }
@@ -380,6 +437,10 @@ internal class AppStateDataSourceTest {
 
                 is ViewNotes -> value to ExpectedHandler.NAVIGATION
 
+                is ViewOfflineCopies -> value to ExpectedHandler.NAVIGATION
+
+                is ViewOfflineCopy -> value to ExpectedHandler.NAVIGATION
+
                 is ViewNote -> value to ExpectedHandler.NAVIGATION
 
                 is ViewPopular -> value to ExpectedHandler.NAVIGATION
@@ -408,6 +469,8 @@ internal class AppStateDataSourceTest {
                 is PostSaved -> value to ExpectedHandler.POST
 
                 is PostDeleted -> value to ExpectedHandler.POST
+
+                is OfflineCopySaved -> value to ExpectedHandler.POST
 
                 // Search
                 is RefreshSearchTags -> value to ExpectedHandler.SEARCH
@@ -443,6 +506,8 @@ internal class AppStateDataSourceTest {
                 is RefreshNotes -> value to ExpectedHandler.NOTE
 
                 is SetNotes -> value to ExpectedHandler.NOTE
+
+                is SetOfflineCopies -> value to ExpectedHandler.OFFLINE_COPY
 
                 is SetNote -> value to ExpectedHandler.NOTE
 
@@ -584,5 +649,6 @@ internal class AppStateDataSourceTest {
         TAG,
         NOTE,
         POPULAR,
+        OFFLINE_COPY,
     }
 }

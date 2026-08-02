@@ -12,6 +12,7 @@
     <string name="hint_add">Hinzufügen</string>
 
     <string name="alert_confirm_deletion">Möchten Sie dieses Lesezeichen wirklich löschen?</string>
+    <string name="alert_confirm_deletion_offline_copy">Möchten Sie diese Offline-Kopie wirklich löschen?</string>
     <string name="alert_confirm_unsaved_changes">Sie haben nicht gespeicherte Änderungen, die verloren gehen. Ohne Speichern fortfahren?</string>
 
     <string name="server_error">Der Dienst ist nicht erreichbar. Überprüfen Sie Ihr Authentifizierungstoken oder versuchen Sie es in Kürze erneut.</string>
@@ -36,6 +37,7 @@
     <string name="menu_navigation_tags">Tags</string>
     <string name="menu_navigation_saved_filters">Gespeicherte Filter</string>
     <string name="menu_navigation_notes">Notizen</string>
+    <string name="menu_navigation_offline_copies">Offline-Kopien</string>
     <string name="menu_navigation_popular">Beliebt</string>
 
     <string name="menu_navigation_preferences">Einstellungen</string>
@@ -49,6 +51,8 @@
     <string name="menu_link_save">Lesezeichen speichern</string>
     <string name="menu_link_share">Lesezeichen teilen</string>
     <string name="menu_link_open_in_browser">Im Browser öffnen</string>
+    <string name="menu_link_save_offline_copy">Offline-Kopie speichern</string>
+    <string name="menu_link_toggle_offline_copy">Zwischen Offline-Kopie und Live-Seite wechseln</string>
 
     <string name="menu_search_clear">Filter löschen</string>
     <string name="menu_search_save">Filter speichern</string>
@@ -134,6 +138,22 @@
     <string name="posts_url_error">Dieses Lesezeichen kann nicht im internen Browser angezeigt werden. Verwenden Sie stattdessen Ihren Standard-Browser.</string>
     <string name="posts_open_in_browser">Externen Browser öffnen</string>
 
+    <string name="offline_copies_title">Offline-Kopien</string>
+    <string name="offline_copies_empty_title">Noch keine Offline-Kopien</string>
+    <string name="offline_copies_empty_description">Speichere eine Offline-Kopie eines Lesezeichens und sie erscheint hier, bereit zum Lesen ohne Verbindung.</string>
+    <string name="offline_copies_total_size">%s belegt</string>
+    <string name="offline_copies_delete">Offline-Kopie löschen</string>
+    <string name="offline_copies_deleted">Offline-Kopie gelöscht</string>
+    <string name="offline_copies_open_original">Originalseite öffnen</string>
+    <plurals name="offline_copies_quantity">
+        <item quantity="one">%d Kopie</item>
+        <item quantity="other">%d Kopien</item>
+    </plurals>
+    <string name="posts_offline_copy_saving">Offline-Kopie wird gespeichert…</string>
+    <string name="posts_offline_copy_saved">Offline-Kopie gespeichert</string>
+    <string name="posts_offline_copy_saved_truncated">Offline-Kopie gespeichert. Einige Bilder waren zu groß und wurden ausgelassen.</string>
+    <string name="posts_offline_copy_failed">Von dieser Seite konnte keine Offline-Kopie gespeichert werden</string>
+    <string name="posts_offline_copy_unreadable">Diese Seite enthält nicht genug lesbaren Text für eine Kopie</string>
     <string name="posts_pending_add">Ausstehend: Hinzufügen</string>
     <string name="posts_pending_add_expanded">Dieses Lesezeichen wird hinzugefügt, sobald eine Netzwerkverbindung verfügbar ist</string>
     <string name="posts_pending_update">Ausstehend: Aktualisieren</string>
@@ -243,6 +263,7 @@
     <string name="quick_actions_unarchive">Lesezeichen dearchivieren</string>
     <string name="quick_actions_delete_filter">Filter löschen</string>
     <string name="quick_actions_save">In meine Liste speichern</string>
+    <string name="quick_actions_save_offline_copy">Offline-Kopie speichern</string>
     <string name="quick_actions_copy_url">URL kopieren</string>
     <string name="quick_actions_share">Lesezeichen teilen</string>
     <string name="quick_actions_expand_description">Beschreibung erweitern</string>
@@ -339,6 +360,10 @@
     <string name="user_preferences_edit_after_sharing_before_saving">Vor dem Speichern</string>
     <string name="user_preferences_edit_after_sharing_after_saving">Nach dem Speichern</string>
     <string name="user_preferences_edit_after_sharing_description">Legt fest, wann der Lesezeichen-Editor nach Auswahl der Freigabe-Aktion „Lesezeichen speichern" angezeigt werden soll. Um den Editor zu überspringen, wählen Sie beim Teilen stattdessen „Lesezeichen schnell speichern".</string>
+    <string name="user_preferences_offline_copies">Offline-Kopien</string>
+    <string name="user_preferences_offline_copies_description">Gespeicherte Seiten belegen derzeit %s Speicherplatz auf diesem Gerät.</string>
+    <string name="user_preferences_offline_copies_clear">Alle Offline-Kopien löschen</string>
+    <string name="user_preferences_offline_copies_clear_confirmation">Damit wird jede gespeicherte Seite von diesem Gerät gelöscht. Die Lesezeichen bleiben erhalten, aber zum Offline-Lesen muss jedes davon erneut gespeichert werden. Fortfahren?</string>
     <string name="user_preferences_bookmark_quick_options">Schnellaktionen für Lesezeichen</string>
     <string name="user_preferences_bookmark_quick_actions_description">Anpassen, welche Optionen sofort beim Öffnen des Schnellaktionsmenüs sichtbar sind</string>
 

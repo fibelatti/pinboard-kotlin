@@ -66,7 +66,6 @@ import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
 import com.fibelatti.pinboard.core.android.composable.MainTitle
 import com.fibelatti.pinboard.core.android.getWindowSizeClass
 import com.fibelatti.pinboard.core.android.icons.AppIcons
-import com.fibelatti.pinboard.core.android.icons.Hourglass
 import com.fibelatti.pinboard.core.android.icons.Menu
 import com.fibelatti.pinboard.core.android.icons.Pin
 import com.fibelatti.pinboard.core.android.icons.Save
@@ -82,6 +81,8 @@ import com.fibelatti.pinboard.features.appstate.ExternalContent
 import com.fibelatti.pinboard.features.appstate.LoginContent
 import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.pinboard.features.appstate.NoteListContent
+import com.fibelatti.pinboard.features.appstate.OfflineCopyDetailContent
+import com.fibelatti.pinboard.features.appstate.OfflineCopyListContent
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
@@ -93,10 +94,13 @@ import com.fibelatti.pinboard.features.appstate.SearchContent
 import com.fibelatti.pinboard.features.appstate.TagListContent
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
 import com.fibelatti.pinboard.features.appstate.find
+import com.fibelatti.pinboard.features.appstate.resolveTypeForSidePanel
 import com.fibelatti.pinboard.features.filters.presentation.SavedFiltersScreen
 import com.fibelatti.pinboard.features.navigation.NavigationMenuBottomSheet
 import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsScreen
 import com.fibelatti.pinboard.features.notes.presentation.NoteListScreen
+import com.fibelatti.pinboard.features.offline.presentation.OfflineCopyDetailScreen
+import com.fibelatti.pinboard.features.offline.presentation.OfflineCopyListScreen
 import com.fibelatti.pinboard.features.posts.presentation.BookmarkDetailsScreen
 import com.fibelatti.pinboard.features.posts.presentation.BookmarkListScreen
 import com.fibelatti.pinboard.features.posts.presentation.EditBookmarkScreen
@@ -263,12 +267,12 @@ fun MainScreen(
             }
         }
 
-        val bottomBarVisible = content !is LoginContent &&
-            state.floatingActionButton is MainState.FabComponent.Visible &&
-            state.scrollDirection != ScrollDirection.DOWN
+        val shouldShowBottomBar: Boolean = content !is LoginContent &&
+            state.scrollDirection != ScrollDirection.DOWN &&
+            state.isBottomBarVisible()
 
         AnimatedVisibility(
-            visible = bottomBarVisible,
+            visible = shouldShowBottomBar,
             enter = slideInVertically(initialOffsetY = { it }),
             exit = slideOutVertically(targetOffsetY = { it }),
         ) {
@@ -301,12 +305,7 @@ private fun MainPanelContent(
     modifier: Modifier = Modifier,
 ) {
     val mainPanelContent: KClass<out Content> = remember(content::class, sidePanelVisible) {
-        when {
-            sidePanelVisible && content::class == PostDetailContent::class -> PostListContent::class
-            sidePanelVisible && content::class == NoteDetailContent::class -> NoteListContent::class
-            sidePanelVisible && content::class == PopularPostDetailContent::class -> PopularPostsContent::class
-            else -> content::class
-        }
+        content::class.resolveTypeForSidePanel(sidePanelVisible = sidePanelVisible)
     }
     val postListContent: PostListContent? = remember(content) { content.find() }
 
@@ -340,6 +339,8 @@ private fun MainPanelContent(
             SavedFiltersContent::class -> SavedFiltersScreen()
             NoteListContent::class -> NoteListScreen()
             NoteDetailContent::class -> NoteDetailsScreen()
+            OfflineCopyListContent::class -> OfflineCopyListScreen()
+            OfflineCopyDetailContent::class -> OfflineCopyDetailScreen()
             PopularPostsContent::class -> PopularBookmarksScreen()
             PopularPostDetailContent::class -> BookmarkDetailsScreen()
             AccountSwitcherContent::class -> AccountSwitcherScreen()
@@ -359,6 +360,7 @@ private fun SidePanelContent(
         when (contentClass) {
             PostDetailContent::class, PopularPostDetailContent::class -> BookmarkDetailsScreen()
             NoteDetailContent::class -> NoteDetailsScreen()
+            OfflineCopyDetailContent::class -> OfflineCopyDetailScreen()
         }
     }
 }
@@ -473,19 +475,21 @@ private fun MainPanelBottomAppBar(
     HorizontalFloatingToolbar(
         expanded = expanded,
         floatingActionButton = {
-            FloatingToolbarDefaults.VibrantFloatingActionButton(
-                onClick = { onFabClick(fab?.data) },
-                modifier = Modifier.testTag("fab-${floatingActionButton.contentType.simpleName}"),
-            ) {
-                AnimatedContent(
-                    targetState = fab?.icon,
-                    transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut() },
-                    label = "Fab_Icon",
-                ) { icon ->
-                    Icon(
-                        imageVector = icon ?: AppIcons.Hourglass,
-                        contentDescription = null,
-                    )
+            if (fab != null) {
+                FloatingToolbarDefaults.VibrantFloatingActionButton(
+                    onClick = { onFabClick(fab.data) },
+                    modifier = Modifier.testTag("fab-${floatingActionButton.contentType.simpleName}"),
+                ) {
+                    AnimatedContent(
+                        targetState = fab.icon,
+                        transitionSpec = { fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut() },
+                        label = "Fab_Icon",
+                    ) { icon ->
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                        )
+                    }
                 }
             }
         },

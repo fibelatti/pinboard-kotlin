@@ -47,4 +47,6 @@ public interface ResourceProvider {
      * @return the json as a [String] if found, null otherwise
      */
     public fun getJsonFromAssets(fileName: String): String?
+
+    public fun formatSizeBytes(sizeBytes: Long): String
 }

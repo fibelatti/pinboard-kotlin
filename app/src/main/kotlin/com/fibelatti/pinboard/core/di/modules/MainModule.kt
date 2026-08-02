@@ -7,6 +7,8 @@ import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.LoginContent
 import com.fibelatti.pinboard.features.appstate.NoteDetailContent
 import com.fibelatti.pinboard.features.appstate.NoteListContent
+import com.fibelatti.pinboard.features.appstate.OfflineCopyDetailContent
+import com.fibelatti.pinboard.features.appstate.OfflineCopyListContent
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
@@ -23,6 +25,8 @@ import com.fibelatti.pinboard.features.main.reducer.LoginReducer
 import com.fibelatti.pinboard.features.main.reducer.MainStateReducer
 import com.fibelatti.pinboard.features.main.reducer.NoteDetailsReducer
 import com.fibelatti.pinboard.features.main.reducer.NoteListReducer
+import com.fibelatti.pinboard.features.main.reducer.OfflineCopyDetailsReducer
+import com.fibelatti.pinboard.features.main.reducer.OfflineCopyListReducer
 import com.fibelatti.pinboard.features.main.reducer.PopularBookmarksReducer
 import com.fibelatti.pinboard.features.main.reducer.SavedFiltersReducer
 import com.fibelatti.pinboard.features.main.reducer.SearchReducer
@@ -72,6 +76,16 @@ abstract class MainModule {
     @IntoMap
     @MainReducerKey(SavedFiltersContent::class)
     abstract fun savedFiltersReducer(impl: SavedFiltersReducer): MainStateReducer
+
+    @Binds
+    @IntoMap
+    @MainReducerKey(OfflineCopyListContent::class)
+    abstract fun offlineCopyListReducer(impl: OfflineCopyListReducer): MainStateReducer
+
+    @Binds
+    @IntoMap
+    @MainReducerKey(OfflineCopyDetailContent::class)
+    abstract fun offlineCopyDetailsReducer(impl: OfflineCopyDetailsReducer): MainStateReducer
 
     @Binds
     @IntoMap
