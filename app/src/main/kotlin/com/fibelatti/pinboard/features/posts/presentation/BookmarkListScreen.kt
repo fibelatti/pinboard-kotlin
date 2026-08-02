@@ -381,7 +381,7 @@ private fun LaunchedPostDetailViewModelEffect(
                 }.applySecureFlag().show()
             }
 
-            current.updated.getOrNull() == null -> {
+            current.updated.getOrNull() == true -> {
                 localView.showBanner(R.string.posts_updated_feedback)
                 postDetailViewModel.userNotified()
             }
