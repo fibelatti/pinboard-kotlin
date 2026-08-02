@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Sort: ImageVector
     get() {
-        if (_Sort != null) {
-            return _Sort!!
-        }
-        _Sort = ImageVector.Builder(
+        _Sort?.let { return it }
+
+        return ImageVector.Builder(
             name = "Sort",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -42,9 +42,7 @@ val AppIcons.Sort: ImageVector
                 lineTo(18f, 3f)
                 lineTo(21f, 10f)
             }
-        }.build()
-
-        return _Sort!!
+        }.build().also { _Sort = it }
     }
 
 @Suppress("ObjectPropertyName")

@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Archive: ImageVector
     get() {
-        if (_Archive != null) {
-            return _Archive!!
-        }
-        _Archive = ImageVector.Builder(
+        _Archive?.let { return it }
+
+        return ImageVector.Builder(
             name = "Archive",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -44,9 +44,7 @@ val AppIcons.Archive: ImageVector
                 lineTo(12f, 16f)
                 lineTo(14.5f, 13.5f)
             }
-        }.build()
-
-        return _Archive!!
+        }.build().also { _Archive = it }
     }
 
 @Suppress("ObjectPropertyName")

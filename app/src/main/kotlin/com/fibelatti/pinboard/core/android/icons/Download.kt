@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Download: ImageVector
     get() {
-        if (_Download != null) {
-            return _Download!!
-        }
-        _Download = ImageVector.Builder(
+        _Download?.let { return it }
+
+        return ImageVector.Builder(
             name = "Download",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -51,9 +51,7 @@ val AppIcons.Download: ImageVector
                 moveTo(12f, 15f)
                 lineTo(15f, 12f)
             }
-        }.build()
-
-        return _Download!!
+        }.build().also { _Download = it }
     }
 
 @Suppress("ObjectPropertyName")

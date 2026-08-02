@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Notes: ImageVector
     get() {
-        if (_Notes != null) {
-            return _Notes!!
-        }
-        _Notes = ImageVector.Builder(
+        _Notes?.let { return it }
+
+        return ImageVector.Builder(
             name = "Notes",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -55,9 +55,7 @@ val AppIcons.Notes: ImageVector
                 curveTo(6.52f, 21f, 7.08f, 21f, 8.2f, 21f)
                 close()
             }
-        }.build()
-
-        return _Notes!!
+        }.build().also { _Notes = it }
     }
 
 @Suppress("ObjectPropertyName")

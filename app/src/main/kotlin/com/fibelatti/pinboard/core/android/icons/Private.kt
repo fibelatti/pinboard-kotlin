@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Private: ImageVector
     get() {
-        if (_Private != null) {
-            return _Private!!
-        }
-        _Private = ImageVector.Builder(
+        _Private?.let { return it }
+
+        return ImageVector.Builder(
             name = "Private",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -52,9 +52,7 @@ val AppIcons.Private: ImageVector
                 curveTo(14.761f, 3f, 17f, 5.239f, 17f, 8f)
                 verticalLineTo(10.029f)
             }
-        }.build()
-
-        return _Private!!
+        }.build().also { _Private = it }
     }
 
 @Suppress("ObjectPropertyName")

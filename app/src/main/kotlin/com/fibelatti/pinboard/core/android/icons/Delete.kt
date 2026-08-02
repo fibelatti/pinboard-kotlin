@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Delete: ImageVector
     get() {
-        if (_Delete != null) {
-            return _Delete!!
-        }
-        _Delete = ImageVector.Builder(
+        _Delete?.let { return it }
+
+        return ImageVector.Builder(
             name = "Delete",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -49,9 +49,7 @@ val AppIcons.Delete: ImageVector
                 curveTo(8.664f, 4.008f, 8.533f, 4.401f, 8.271f, 5.188f)
                 lineTo(8f, 6f)
             }
-        }.build()
-
-        return _Delete!!
+        }.build().also { _Delete = it }
     }
 
 @Suppress("ObjectPropertyName")

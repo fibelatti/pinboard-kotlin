@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Sync: ImageVector
     get() {
-        if (_Sync != null) {
-            return _Sync!!
-        }
-        _Sync = ImageVector.Builder(
+        _Sync?.let { return it }
+
+        return ImageVector.Builder(
             name = "Sync",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -37,9 +37,7 @@ val AppIcons.Sync: ImageVector
                 curveTo(3f, 16.971f, 7.029f, 21f, 12f, 21f)
                 curveTo(16.283f, 21f, 19.868f, 18.008f, 20.777f, 14f)
             }
-        }.build()
-
-        return _Sync!!
+        }.build().also { _Sync = it }
     }
 
 @Suppress("ObjectPropertyName")

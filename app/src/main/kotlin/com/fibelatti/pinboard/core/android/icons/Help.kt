@@ -7,12 +7,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Help: ImageVector
     get() {
-        if (_Help != null) {
-            return _Help!!
-        }
-        _Help = ImageVector.Builder(
+        _Help?.let { return it }
+
+        return ImageVector.Builder(
             name = "Help",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -37,9 +37,7 @@ val AppIcons.Help: ImageVector
                 curveTo(16.971f, 3f, 21f, 7.029f, 21f, 12f)
                 close()
             }
-        }.build()
-
-        return _Help!!
+        }.build().also { _Help = it }
     }
 
 @Suppress("ObjectPropertyName")

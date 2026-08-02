@@ -6,12 +6,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Pin: ImageVector
     get() {
-        if (_Pin != null) {
-            return _Pin!!
-        }
-        _Pin = ImageVector.Builder(
+        _Pin?.let { return it }
+
+        return ImageVector.Builder(
             name = "Pin",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -50,9 +50,7 @@ val AppIcons.Pin: ImageVector
                 curveTo(24.683f, 13.317f, 24.683f, 12.683f, 24.293f, 12.293f)
                 close()
             }
-        }.build()
-
-        return _Pin!!
+        }.build().also { _Pin = it }
     }
 
 @Suppress("ObjectPropertyName")

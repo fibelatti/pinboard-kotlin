@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Browser: ImageVector
     get() {
-        if (_Browser != null) {
-            return _Browser!!
-        }
-        _Browser = ImageVector.Builder(
+        _Browser?.let { return it }
+
+        return ImageVector.Builder(
             name = "Browser",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -51,9 +51,7 @@ val AppIcons.Browser: ImageVector
                 curveTo(4.52f, 19f, 5.08f, 19f, 6.2f, 19f)
                 close()
             }
-        }.build()
-
-        return _Browser!!
+        }.build().also { _Browser = it }
     }
 
 @Suppress("ObjectPropertyName")

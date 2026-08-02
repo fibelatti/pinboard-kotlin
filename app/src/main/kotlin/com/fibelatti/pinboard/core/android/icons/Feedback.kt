@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Feedback: ImageVector
     get() {
-        if (_Feedback != null) {
-            return _Feedback!!
-        }
-        _Feedback = ImageVector.Builder(
+        _Feedback?.let { return it }
+
+        return ImageVector.Builder(
             name = "Feedback",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -61,9 +61,7 @@ val AppIcons.Feedback: ImageVector
                 lineTo(14f, 21f)
                 close()
             }
-        }.build()
-
-        return _Feedback!!
+        }.build().also { _Feedback = it }
     }
 
 @Suppress("ObjectPropertyName")

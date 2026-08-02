@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Eye: ImageVector
     get() {
-        if (_Eye != null) {
-            return _Eye!!
-        }
-        _Eye = ImageVector.Builder(
+        _Eye?.let { return it }
+
+        return ImageVector.Builder(
             name = "Eye",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -46,9 +46,7 @@ val AppIcons.Eye: ImageVector
                 curveTo(20.269f, 7.943f, 16.479f, 5f, 12.001f, 5f)
                 close()
             }
-        }.build()
-
-        return _Eye!!
+        }.build().also { _Eye = it }
     }
 
 @Suppress("ObjectPropertyName")

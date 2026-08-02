@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Search: ImageVector
     get() {
-        if (_Search != null) {
-            return _Search!!
-        }
-        _Search = ImageVector.Builder(
+        _Search?.let { return it }
+
+        return ImageVector.Builder(
             name = "Search",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -37,9 +37,7 @@ val AppIcons.Search: ImageVector
                 curveTo(15.418f, 3f, 19f, 6.582f, 19f, 11f)
                 close()
             }
-        }.build()
-
-        return _Search!!
+        }.build().also { _Search = it }
     }
 
 @Suppress("ObjectPropertyName")

@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.ReadLater: ImageVector
     get() {
-        if (_ReadLater != null) {
-            return _ReadLater!!
-        }
-        _ReadLater = ImageVector.Builder(
+        _ReadLater?.let { return it }
+
+        return ImageVector.Builder(
             name = "ReadLater",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -36,9 +36,7 @@ val AppIcons.ReadLater: ImageVector
                 curveTo(16.971f, 3f, 21f, 7.029f, 21f, 12f)
                 close()
             }
-        }.build()
-
-        return _ReadLater!!
+        }.build().also { _ReadLater = it }
     }
 
 @Suppress("ObjectPropertyName")

@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Unarchive: ImageVector
     get() {
-        if (_Unarchive != null) {
-            return _Unarchive!!
-        }
-        _Unarchive = ImageVector.Builder(
+        _Unarchive?.let { return it }
+
+        return ImageVector.Builder(
             name = "Unarchive",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -44,9 +44,7 @@ val AppIcons.Unarchive: ImageVector
                 lineTo(12f, 11f)
                 lineTo(14.5f, 13.5f)
             }
-        }.build()
-
-        return _Unarchive!!
+        }.build().also { _Unarchive = it }
     }
 
 @Suppress("ObjectPropertyName")

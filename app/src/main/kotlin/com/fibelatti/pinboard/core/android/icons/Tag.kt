@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Tag: ImageVector
     get() {
-        if (_Tag != null) {
-            return _Tag!!
-        }
-        _Tag = ImageVector.Builder(
+        _Tag?.let { return it }
+
+        return ImageVector.Builder(
             name = "Tag",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -57,9 +57,7 @@ val AppIcons.Tag: ImageVector
                 curveTo(7.326f, 6.55f, 7.55f, 6.774f, 7.55f, 7.05f)
                 close()
             }
-        }.build()
-
-        return _Tag!!
+        }.build().also { _Tag = it }
     }
 
 @Suppress("ObjectPropertyName")

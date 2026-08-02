@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Random: ImageVector
     get() {
-        if (_Random != null) {
-            return _Random!!
-        }
-        _Random = ImageVector.Builder(
+        _Random?.let { return it }
+
+        return ImageVector.Builder(
             name = "Random",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -52,9 +52,7 @@ val AppIcons.Random: ImageVector
                 curveTo(7.929f, 7f, 8.394f, 7f, 8.78f, 7.077f)
                 curveTo(8.854f, 7.092f, 8.928f, 7.108f, 9f, 7.127f)
             }
-        }.build()
-
-        return _Random!!
+        }.build().also { _Random = it }
     }
 
 @Suppress("ObjectPropertyName")

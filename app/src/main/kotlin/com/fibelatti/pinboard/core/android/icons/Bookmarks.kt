@@ -7,12 +7,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Bookmarks: ImageVector
     get() {
-        if (_Bookmarks != null) {
-            return _Bookmarks!!
-        }
-        _Bookmarks = ImageVector.Builder(
+        _Bookmarks?.let { return it }
+
+        return ImageVector.Builder(
             name = "Bookmarks",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -38,9 +38,7 @@ val AppIcons.Bookmarks: ImageVector
                 verticalLineTo(6.2f)
                 close()
             }
-        }.build()
-
-        return _Bookmarks!!
+        }.build().also { _Bookmarks = it }
     }
 
 @Suppress("ObjectPropertyName")

@@ -6,12 +6,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 public val UiIcons.Close: ImageVector
     get() {
-        if (_Close != null) {
-            return _Close!!
-        }
-        _Close = ImageVector.Builder(
+        _Close?.let { return it }
+
+        return ImageVector.Builder(
             name = "Close",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -38,9 +38,7 @@ public val UiIcons.Close: ImageVector
                 curveToRelative(0.38f, -0.38f, 0.38f, -1.02f, 0f, -1.4f)
                 close()
             }
-        }.build()
-
-        return _Close!!
+        }.build().also { _Close = it }
     }
 
 @Suppress("ObjectPropertyName")

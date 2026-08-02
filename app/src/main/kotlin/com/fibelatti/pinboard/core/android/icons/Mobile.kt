@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Mobile: ImageVector
     get() {
-        if (_Mobile != null) {
-            return _Mobile!!
-        }
-        _Mobile = ImageVector.Builder(
+        _Mobile?.let { return it }
+
+        return ImageVector.Builder(
             name = "Mobile",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -47,9 +47,7 @@ val AppIcons.Mobile: ImageVector
                 curveTo(7.52f, 21f, 8.08f, 21f, 9.2f, 21f)
                 close()
             }
-        }.build()
-
-        return _Mobile!!
+        }.build().also { _Mobile = it }
     }
 
 @Suppress("ObjectPropertyName")

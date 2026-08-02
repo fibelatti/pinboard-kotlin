@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.EyeSlash: ImageVector
     get() {
-        if (_EyeSlash != null) {
-            return _EyeSlash!!
-        }
-        _EyeSlash = ImageVector.Builder(
+        _EyeSlash?.let { return it }
+
+        return ImageVector.Builder(
             name = "EyeSlash",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -41,9 +41,7 @@ val AppIcons.EyeSlash: ImageVector
                 curveTo(16.477f, 5f, 20.267f, 7.943f, 21.541f, 12f)
                 curveTo(21.261f, 12.894f, 20.858f, 13.734f, 20.352f, 14.5f)
             }
-        }.build()
-
-        return _EyeSlash!!
+        }.build().also { _EyeSlash = it }
     }
 
 @Suppress("ObjectPropertyName")

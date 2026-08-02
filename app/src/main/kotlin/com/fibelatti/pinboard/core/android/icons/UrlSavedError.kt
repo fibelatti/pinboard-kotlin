@@ -6,12 +6,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.UrlSavedError: ImageVector
     get() {
-        if (_UrlSavedError != null) {
-            return _UrlSavedError!!
-        }
-        _UrlSavedError = ImageVector.Builder(
+        _UrlSavedError?.let { return it }
+
+        return ImageVector.Builder(
             name = "UrlSavedError",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -38,9 +38,7 @@ val AppIcons.UrlSavedError: ImageVector
                 curveToRelative(0.38f, -0.38f, 0.38f, -1.02f, 0f, -1.4f)
                 close()
             }
-        }.build()
-
-        return _UrlSavedError!!
+        }.build().also { _UrlSavedError = it }
     }
 
 @Suppress("ObjectPropertyName")

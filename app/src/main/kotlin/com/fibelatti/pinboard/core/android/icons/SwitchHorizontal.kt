@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.SwitchHorizontal: ImageVector
     get() {
-        if (_SwitchHorizontal != null) {
-            return _SwitchHorizontal!!
-        }
-        _SwitchHorizontal = ImageVector.Builder(
+        _SwitchHorizontal?.let { return it }
+
+        return ImageVector.Builder(
             name = "SwitchHorizontal",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -39,9 +39,7 @@ val AppIcons.SwitchHorizontal: ImageVector
                 moveTo(3f, 17f)
                 horizontalLineTo(17f)
             }
-        }.build()
-
-        return _SwitchHorizontal!!
+        }.build().also { _SwitchHorizontal = it }
     }
 
 @Suppress("ObjectPropertyName")

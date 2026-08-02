@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Menu: ImageVector
     get() {
-        if (_Menu != null) {
-            return _Menu!!
-        }
-        _Menu = ImageVector.Builder(
+        _Menu?.let { return it }
+
+        return ImageVector.Builder(
             name = "Menu",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -33,9 +33,7 @@ val AppIcons.Menu: ImageVector
                 moveTo(4f, 18f)
                 horizontalLineTo(20f)
             }
-        }.build()
-
-        return _Menu!!
+        }.build().also { _Menu = it }
     }
 
 @Suppress("ObjectPropertyName")

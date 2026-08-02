@@ -7,12 +7,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Copy: ImageVector
     get() {
-        if (_Copy != null) {
-            return _Copy!!
-        }
-        _Copy = ImageVector.Builder(
+        _Copy?.let { return it }
+
+        return ImageVector.Builder(
             name = "Copy",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -55,9 +55,7 @@ val AppIcons.Copy: ImageVector
                 lineTo(16f, 3f)
                 close()
             }
-        }.build()
-
-        return _Copy!!
+        }.build().also { _Copy = it }
     }
 
 @Suppress("ObjectPropertyName")

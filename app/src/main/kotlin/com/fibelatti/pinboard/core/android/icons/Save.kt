@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Save: ImageVector
     get() {
-        if (_Save != null) {
-            return _Save!!
-        }
-        _Save = ImageVector.Builder(
+        _Save?.let { return it }
+
+        return ImageVector.Builder(
             name = "Save",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -61,9 +61,7 @@ val AppIcons.Save: ImageVector
                 curveTo(13.657f, 12f, 15f, 13.343f, 15f, 15f)
                 close()
             }
-        }.build()
-
-        return _Save!!
+        }.build().also { _Save = it }
     }
 
 @Suppress("ObjectPropertyName")

@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Filter: ImageVector
     get() {
-        if (_Filter != null) {
-            return _Filter!!
-        }
-        _Filter = ImageVector.Builder(
+        _Filter?.let { return it }
+
+        return ImageVector.Builder(
             name = "Filter",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -61,9 +61,7 @@ val AppIcons.Filter: ImageVector
                 lineTo(7f, 20f)
                 close()
             }
-        }.build()
-
-        return _Filter!!
+        }.build().also { _Filter = it }
     }
 
 @Suppress("ObjectPropertyName")

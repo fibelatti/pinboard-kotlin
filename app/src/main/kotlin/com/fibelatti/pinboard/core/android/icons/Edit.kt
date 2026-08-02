@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Edit: ImageVector
     get() {
-        if (_Edit != null) {
-            return _Edit!!
-        }
-        _Edit = ImageVector.Builder(
+        _Edit?.let { return it }
+
+        return ImageVector.Builder(
             name = "Edit",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -45,9 +45,7 @@ val AppIcons.Edit: ImageVector
                 lineTo(3f, 21f)
                 close()
             }
-        }.build()
-
-        return _Edit!!
+        }.build().also { _Edit = it }
     }
 
 @Suppress("ObjectPropertyName")

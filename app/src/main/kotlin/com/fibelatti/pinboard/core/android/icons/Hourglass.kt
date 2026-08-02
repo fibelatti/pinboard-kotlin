@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Hourglass: ImageVector
     get() {
-        if (_Hourglass != null) {
-            return _Hourglass!!
-        }
-        _Hourglass = ImageVector.Builder(
+        _Hourglass?.let { return it }
+
+        return ImageVector.Builder(
             name = "Hourglass",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -55,9 +55,7 @@ val AppIcons.Hourglass: ImageVector
                 curveTo(5f, 18.49f, 6.212f, 16.134f, 8.255f, 14.675f)
                 lineTo(12f, 12f)
             }
-        }.build()
-
-        return _Hourglass!!
+        }.build().also { _Hourglass = it }
     }
 
 @Suppress("ObjectPropertyName")

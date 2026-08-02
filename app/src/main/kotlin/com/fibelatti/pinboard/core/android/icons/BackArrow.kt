@@ -6,12 +6,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.BackArrow: ImageVector
     get() {
-        if (_BackArrow != null) {
-            return _BackArrow!!
-        }
-        _BackArrow = ImageVector.Builder(
+        _BackArrow?.let { return it }
+
+        return ImageVector.Builder(
             name = "BackArrow",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -35,9 +35,7 @@ val AppIcons.BackArrow: ImageVector
                 reflectiveCurveToRelative(-0.45f, -1f, -1f, -1f)
                 close()
             }
-        }.build()
-
-        return _BackArrow!!
+        }.build().also { _BackArrow = it }
     }
 
 @Suppress("ObjectPropertyName")

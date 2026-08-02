@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Person: ImageVector
     get() {
-        if (_Person != null) {
-            return _Person!!
-        }
-        _Person = ImageVector.Builder(
+        _Person?.let { return it }
+
+        return ImageVector.Builder(
             name = "Person",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -45,9 +45,7 @@ val AppIcons.Person: ImageVector
                 curveTo(19f, 17.134f, 15.866f, 14f, 12f, 14f)
                 close()
             }
-        }.build()
-
-        return _Person!!
+        }.build().also { _Person = it }
     }
 
 @Suppress("ObjectPropertyName")

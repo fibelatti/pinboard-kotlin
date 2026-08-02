@@ -6,12 +6,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.ChevronTop: ImageVector
     get() {
-        if (_ChevronTop != null) {
-            return _ChevronTop!!
-        }
-        _ChevronTop = ImageVector.Builder(
+        _ChevronTop?.let { return it }
+
+        return ImageVector.Builder(
             name = "ChevronTop",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -31,9 +31,7 @@ val AppIcons.ChevronTop: ImageVector
                 curveToRelative(0.39f, 0.38f, 1.03f, 0.39f, 1.42f, 0f)
                 close()
             }
-        }.build()
-
-        return _ChevronTop!!
+        }.build().also { _ChevronTop = it }
     }
 
 @Suppress("ObjectPropertyName")

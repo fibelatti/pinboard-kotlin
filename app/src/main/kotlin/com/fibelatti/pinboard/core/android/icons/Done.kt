@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+@Suppress("UnusedReceiverParameter")
 val AppIcons.Done: ImageVector
     get() {
-        if (_Done != null) {
-            return _Done!!
-        }
-        _Done = ImageVector.Builder(
+        _Done?.let { return it }
+
+        return ImageVector.Builder(
             name = "Done",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
@@ -30,9 +30,7 @@ val AppIcons.Done: ImageVector
                 lineTo(8.923f, 17.5f)
                 lineTo(20f, 6.5f)
             }
-        }.build()
-
-        return _Done!!
+        }.build().also { _Done = it }
     }
 
 @Suppress("ObjectPropertyName")
