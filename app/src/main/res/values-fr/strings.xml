@@ -412,4 +412,5 @@
     <string name="cd_share_receiver_image">Enregistrement de votre favori</string>
     <string name="cd_menu">Menu</string>
     <string name="cd_scroll_to_top">Faire défiler vers le haut</string>
+    <string name="cd_dismiss_message">Fermer</string>
 </resources>

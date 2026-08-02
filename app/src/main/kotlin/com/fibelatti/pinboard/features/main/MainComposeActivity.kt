@@ -8,6 +8,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -15,9 +16,10 @@ import com.fibelatti.core.android.platform.BaseIntentBuilder
 import com.fibelatti.core.android.platform.intentExtras
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.LocalNetworkAccessProvider
+import com.fibelatti.pinboard.core.android.composable.AppMessageQueue
+import com.fibelatti.pinboard.core.android.composable.LocalAppMessages
 import com.fibelatti.pinboard.core.extension.canRequestPermissionAgain
 import com.fibelatti.pinboard.core.extension.setThemedContent
-import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.core.extension.showLocalNetworkAccessDialog
 import com.fibelatti.pinboard.core.extension.showLocalNetworkAccessSettingsDialog
 import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
@@ -33,6 +35,8 @@ class MainComposeActivity : AppCompatActivity() {
 
     private val mainViewModel: MainViewModel by viewModels()
 
+    private val appMessages: AppMessageQueue = AppMessageQueue(context = this, scope = lifecycleScope)
+
     @Inject
     lateinit var unauthorizedPluginProvider: UnauthorizedPluginProvider
 
@@ -47,7 +51,7 @@ class MainComposeActivity : AppCompatActivity() {
             granted -> Unit
 
             canRequestPermissionAgain(LocalNetworkAccessProvider.PERMISSION) -> {
-                showBanner(messageRes = R.string.auth_linkding_missing_local_network_permission)
+                appMessages.show(messageRes = R.string.auth_linkding_missing_local_network_permission)
             }
 
             else -> {
@@ -61,7 +65,9 @@ class MainComposeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setThemedContent {
-            MainScreen()
+            CompositionLocalProvider(LocalAppMessages provides appMessages) {
+                MainScreen()
+            }
         }
 
         observeUnauthorized()
@@ -85,7 +91,7 @@ class MainComposeActivity : AppCompatActivity() {
 
     private fun observeUnauthorized() {
         unauthorizedPluginProvider.unauthorized
-            .onEach { showBanner(messageRes = R.string.auth_logged_out_feedback) }
+            .onEach { appMessages.show(messageRes = R.string.auth_logged_out_feedback) }
             .flowWithLifecycle(lifecycle = lifecycle, minActiveState = Lifecycle.State.RESUMED)
             .launchIn(lifecycleScope)
     }
@@ -113,7 +119,7 @@ class MainComposeActivity : AppCompatActivity() {
 
         if (postId != null && openEditor != null) {
             mainViewModel.handleDeeplink(postId, openEditor)
-            showBanner(messageRes = R.string.share_notification_opening_deep_link)
+            appMessages.show(messageRes = R.string.share_notification_opening_deep_link)
         }
     }
 

@@ -43,7 +43,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
@@ -54,11 +53,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
+import com.fibelatti.pinboard.core.android.composable.LocalAppMessages
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.Close
 import com.fibelatti.pinboard.core.android.icons.Preferences
-import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.appstate.AddSearchTag
 import com.fibelatti.pinboard.features.appstate.ClearSearch
 import com.fibelatti.pinboard.features.appstate.RefreshSearchTags
@@ -109,7 +108,7 @@ fun SearchBookmarksScreen(
             searchPostViewModel.runAction(Search)
         }
 
-        val localView = LocalView.current
+        val localAppMessages = LocalAppMessages.current
         val localLifecycle = LocalLifecycleOwner.current.lifecycle
         val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -128,7 +127,7 @@ fun SearchBookmarksScreen(
 
                         is MainState.MenuItemComponent.SaveSearch -> {
                             (data as? SavedFilter)?.let(searchPostViewModel::saveFilter)
-                            localView.showBanner(R.string.saved_filters_saved_feedback)
+                            localAppMessages.show(R.string.saved_filters_saved_feedback)
                         }
 
                         else -> Unit

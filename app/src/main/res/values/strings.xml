@@ -413,4 +413,5 @@
     <string name="cd_share_receiver_image">Saving your bookmark</string>
     <string name="cd_menu">Menu</string>
     <string name="cd_scroll_to_top">Scroll to top</string>
+    <string name="cd_dismiss_message">Dismiss</string>
 </resources>

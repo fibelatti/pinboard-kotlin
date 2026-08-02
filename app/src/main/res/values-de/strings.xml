@@ -407,4 +407,5 @@
     <string name="cd_share_receiver_image">Ihr Lesezeichen wird gespeichert</string>
     <string name="cd_menu">Menü</string>
     <string name="cd_scroll_to_top">Nach oben scrollen</string>
+    <string name="cd_dismiss_message">Schließen</string>
 </resources>

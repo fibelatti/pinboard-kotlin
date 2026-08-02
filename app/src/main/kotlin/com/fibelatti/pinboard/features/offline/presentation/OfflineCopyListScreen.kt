@@ -28,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -37,9 +36,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LoadingContent
+import com.fibelatti.pinboard.core.android.composable.LocalAppMessages
 import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.Download
-import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.appstate.AppState
 import com.fibelatti.pinboard.features.appstate.OfflineCopyListContent
 import com.fibelatti.pinboard.features.appstate.ViewOfflineCopy
@@ -63,13 +62,13 @@ fun OfflineCopyListScreen(
 
         val screenState by offlineCopiesViewModel.screenState.collectAsStateWithLifecycle()
 
-        val localView = LocalView.current
+        val localAppMessages = LocalAppMessages.current
 
         val quickActionsSheetState = rememberAppSheetState()
 
         SideEffect(screenState.deleted) {
             if (screenState.deleted) {
-                localView.showBanner(R.string.offline_copies_deleted)
+                localAppMessages.show(R.string.offline_copies_deleted)
                 offlineCopiesViewModel.userNotified()
             }
         }

@@ -22,7 +22,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,8 +33,8 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.CrossfadeLoadingLayout
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
+import com.fibelatti.pinboard.core.android.composable.LocalAppMessages
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
-import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.RefreshPopular
 import com.fibelatti.pinboard.features.appstate.ViewPost
@@ -60,11 +59,11 @@ fun PopularBookmarksScreen(
 
         val screenState by popularPostsViewModel.screenState.collectAsStateWithLifecycle()
 
-        val localView = LocalView.current
+        val localAppMessages = LocalAppMessages.current
 
         SideEffect(screenState.savedMessage) {
             screenState.savedMessage?.let { messageRes ->
-                localView.showBanner(messageRes)
+                localAppMessages.show(messageRes)
                 popularPostsViewModel.userNotified()
             }
         }

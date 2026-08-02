@@ -412,4 +412,5 @@
     <string name="cd_share_receiver_image">Guardando tu marcador</string>
     <string name="cd_menu">Menú</string>
     <string name="cd_scroll_to_top">Desplazarse hacia arriba</string>
+    <string name="cd_dismiss_message">Cerrar</string>
 </resources>

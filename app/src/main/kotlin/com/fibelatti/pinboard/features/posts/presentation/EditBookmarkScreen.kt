@@ -43,7 +43,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -58,13 +57,13 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
+import com.fibelatti.pinboard.core.android.composable.LocalAppMessages
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
 import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.Done
 import com.fibelatti.pinboard.core.android.icons.Save
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.materialAlertDialogBuilder
-import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.appstate.EditPostContent
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.main.MainState
@@ -268,12 +267,12 @@ private fun LaunchedEditPostViewModelEffect(
     editPostViewModel: EditPostViewModel = hiltViewModel(),
 ) {
     val screenState by editPostViewModel.screenState.collectAsStateWithLifecycle()
-    val localView = LocalView.current
+    val localAppMessages = LocalAppMessages.current
 
     SideEffect(screenState) {
         when {
             screenState.saved -> {
-                localView.showBanner(R.string.posts_saved_feedback)
+                localAppMessages.show(R.string.posts_saved_feedback)
                 editPostViewModel.userNotified()
             }
 
@@ -306,12 +305,12 @@ private fun LaunchedPostDetailViewModelEffect(
 ) {
     val screenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
 
-    val localView = LocalView.current
+    val localAppMessages = LocalAppMessages.current
 
     SideEffect(screenState) {
         val current = screenState
         if (current.deleted.getOrNull() == true) {
-            localView.showBanner(R.string.posts_deleted_feedback)
+            localAppMessages.show(R.string.posts_deleted_feedback)
             postDetailViewModel.userNotified()
         }
     }

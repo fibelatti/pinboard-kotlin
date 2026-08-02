@@ -40,7 +40,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -54,6 +53,7 @@ import androidx.lifecycle.flowWithLifecycle
 import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
+import com.fibelatti.pinboard.core.android.composable.LocalAppMessages
 import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.Browser
 import com.fibelatti.pinboard.core.android.icons.Mobile
@@ -61,7 +61,6 @@ import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.materialAlertDialogBuilder
 import com.fibelatti.pinboard.core.extension.rememberScrollDirection
-import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.appstate.EditPost
 import com.fibelatti.pinboard.features.appstate.PopularPostDetailContent
 import com.fibelatti.pinboard.features.appstate.PostDetailContent
@@ -221,13 +220,13 @@ private fun LaunchedPostDetailViewModelEffect(
     val screenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
 
     val localContext = LocalContext.current
-    val localView = LocalView.current
+    val localAppMessages = LocalAppMessages.current
 
     SideEffect(screenState) {
         val current = screenState
         when {
             current.deleted.getOrNull() == true -> {
-                localView.showBanner(R.string.posts_deleted_feedback)
+                localAppMessages.show(R.string.posts_deleted_feedback)
                 postDetailViewModel.userNotified()
             }
 
@@ -239,7 +238,7 @@ private fun LaunchedPostDetailViewModelEffect(
             }
 
             current.updated.getOrNull() == true -> {
-                localView.showBanner(R.string.posts_updated_feedback)
+                localAppMessages.show(R.string.posts_updated_feedback)
                 postDetailViewModel.userNotified()
                 mainViewModel.updateState { currentState ->
                     currentState.copy(actionButton = MainState.ActionButtonComponent.Gone)
@@ -247,7 +246,7 @@ private fun LaunchedPostDetailViewModelEffect(
             }
 
             current.updated.isFailure -> {
-                localView.showBanner(R.string.posts_updated_error)
+                localAppMessages.show(R.string.posts_updated_error)
                 postDetailViewModel.userNotified()
             }
         }
@@ -266,11 +265,11 @@ private fun LaunchedPopularPostsViewModelEffect(
     popularPostsViewModel: PopularPostsViewModel = hiltViewModel(),
 ) {
     val screenState by popularPostsViewModel.screenState.collectAsStateWithLifecycle()
-    val localView = LocalView.current
+    val localAppMessages = LocalAppMessages.current
 
     SideEffect(screenState) {
         screenState.savedMessage?.let { messageRes ->
-            localView.showBanner(messageRes)
+            localAppMessages.show(messageRes)
             popularPostsViewModel.userNotified()
         }
     }

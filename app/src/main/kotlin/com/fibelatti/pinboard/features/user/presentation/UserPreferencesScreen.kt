@@ -79,6 +79,7 @@ import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
+import com.fibelatti.pinboard.core.android.composable.LocalAppMessages
 import com.fibelatti.pinboard.core.android.composable.RadioSelectionDialogBottomSheet
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogCustomizationBottomSheet
 import com.fibelatti.pinboard.core.android.composable.SettingToggle
@@ -89,7 +90,6 @@ import com.fibelatti.pinboard.core.android.icons.Edit
 import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.fillWidthOfParent
 import com.fibelatti.pinboard.core.extension.materialAlertDialogBuilder
-import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.notifications.isNotificationPermissionGranted
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.PreferredDetailsView
@@ -587,11 +587,12 @@ private fun BookmarkingPreferencesContent(
     val tagState by userPreferencesViewModel.tagManagerState.collectAsStateWithLifecycle(TagManagerState())
 
     val localAppCompatActivity = LocalAppCompatActivity.current
+    val localAppMessages = LocalAppMessages.current
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { granted: Boolean ->
             if (!granted) {
-                localAppCompatActivity.showBanner(
+                localAppMessages.show(
                     messageRes = R.string.user_preferences_use_background_share_receiver_missing_permission,
                 )
             }

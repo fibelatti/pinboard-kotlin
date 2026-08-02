@@ -57,7 +57,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -79,6 +78,7 @@ import com.fibelatti.pinboard.core.AppConfig.DEFAULT_PAGE_SIZE
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
+import com.fibelatti.pinboard.core.android.composable.LocalAppMessages
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.android.composable.RadioSelectionDialogBottomSheet
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
@@ -95,7 +95,6 @@ import com.fibelatti.pinboard.core.extension.applySecureFlag
 import com.fibelatti.pinboard.core.extension.copyToClipboard
 import com.fibelatti.pinboard.core.extension.materialAlertDialogBuilder
 import com.fibelatti.pinboard.core.extension.rememberScrollDirection
-import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.features.appstate.AccountSwitcherContent
 import com.fibelatti.pinboard.features.appstate.AddPost
 import com.fibelatti.pinboard.features.appstate.ByDateAddedNewestFirst
@@ -175,10 +174,9 @@ fun BookmarkListScreen(
         val userCredentials by userPreferencesViewModel.userCredentials.collectAsStateWithLifecycle()
         val userPreferences by userPreferencesViewModel.currentPreferences.collectAsStateWithLifecycle()
         val tagsClipboard = remember { mutableListOf<Tag>() }
-        val tagsCopiedFeedback = stringResource(R.string.feedback_tags_copied_to_clipboard)
 
         val localContext = LocalContext.current
-        val localView = LocalView.current
+        val localAppMessages = LocalAppMessages.current
         val localResources = LocalResources.current
         val localClipboard = LocalClipboard.current
 
@@ -213,7 +211,7 @@ fun BookmarkListScreen(
                         exactMatch = postListContent.searchParameters.exactMatch,
                     ),
                 )
-                localView.showBanner(R.string.saved_filters_saved_feedback)
+                localAppMessages.show(R.string.saved_filters_saved_feedback)
             },
             onShareClick = shareClick@{
                 val username: String = userCredentials.getPinboardUsername() ?: return@shareClick
@@ -270,7 +268,7 @@ fun BookmarkListScreen(
                     localClipboard.setClipEntry(ClipEntry(clipData))
                 }
 
-                localView.showBanner(message = tagsCopiedFeedback, duration = 3_000)
+                localAppMessages.show(messageRes = R.string.feedback_tags_copied_to_clipboard)
             },
             onPasteTags = postDetailViewModel::addTags,
             onEdit = { post ->
@@ -364,13 +362,13 @@ private fun LaunchedPostDetailViewModelEffect(
     val screenState by postDetailViewModel.screenState.collectAsStateWithLifecycle()
 
     val localContext = LocalContext.current
-    val localView = LocalView.current
+    val localAppMessages = LocalAppMessages.current
 
     SideEffect(screenState) {
         val current = screenState
         when {
             current.deleted.getOrNull() == true -> {
-                localView.showBanner(R.string.posts_deleted_feedback)
+                localAppMessages.show(R.string.posts_deleted_feedback)
                 postDetailViewModel.userNotified()
             }
 
@@ -382,12 +380,12 @@ private fun LaunchedPostDetailViewModelEffect(
             }
 
             current.updated.getOrNull() == true -> {
-                localView.showBanner(R.string.posts_updated_feedback)
+                localAppMessages.show(R.string.posts_updated_feedback)
                 postDetailViewModel.userNotified()
             }
 
             current.updated.isFailure -> {
-                localView.showBanner(R.string.posts_updated_error)
+                localAppMessages.show(R.string.posts_updated_error)
                 postDetailViewModel.userNotified()
             }
         }

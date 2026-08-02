@@ -5,11 +5,9 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.extension.isServerException
-import com.fibelatti.pinboard.core.extension.showBanner
 import com.fibelatti.pinboard.core.extension.showErrorReportDialog
 
 @Composable
@@ -18,7 +16,7 @@ fun ErrorHandlerEffect(
     handler: () -> Unit,
     postAction: () -> Unit = {},
 ) {
-    val localView = LocalView.current
+    val localAppMessages = LocalAppMessages.current
     val localContext = LocalContext.current
 
     val composedAction by rememberUpdatedState {
@@ -34,7 +32,7 @@ fun ErrorHandlerEffect(
         }
 
         if (current.isServerException()) {
-            localView.showBanner(messageRes = R.string.server_error)
+            localAppMessages.show(messageRes = R.string.server_error)
             composedAction()
         } else {
             localContext.showErrorReportDialog(throwable = current, postAction = composedAction)
