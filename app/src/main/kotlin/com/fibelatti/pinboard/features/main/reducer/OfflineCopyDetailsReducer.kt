@@ -14,6 +14,8 @@ class OfflineCopyDetailsReducer @Inject constructor() : MainStateReducer {
 
         return if (appState.sidePanelVisible) {
             mainState.copy(
+                bottomAppBar = MainState.BottomAppBarComponent.Gone,
+                floatingActionButton = MainState.FabComponent.Gone,
                 sidePanelAppBar = MainState.SidePanelAppBarComponent.Visible(
                     contentType = OfflineCopyDetailContent::class,
                     menuItems = listOf(
