@@ -136,17 +136,22 @@ class AppStateDataSource @Inject constructor(
         }
     }
 
+    /**
+     * Walks up to the direct subtype of [Action] — the type the [ActionHandler]s are keyed by.
+     *
+     * The walk starts at this instance's own type, not its supertype: R8 vertically merges a
+     * sealed group with a single subclass into that subclass, leaving the concrete action as a
+     * direct child of [Action] in release builds.
+     */
     @Suppress("UNCHECKED_CAST")
     private fun Action.getActionType(): Class<out Action> {
-        val thisType: Class<out Action> = this::class.java
-        if (thisType == Action::class.java) return thisType
+        var type: Class<out Action> = this::class.java
 
-        var supertype: Class<out Action> = thisType.superclass as Class<out Action>
-        while (supertype.superclass != Action::class.java) {
-            supertype = supertype.superclass as Class<out Action>
+        while (type.superclass != null && type.superclass != Action::class.java) {
+            type = type.superclass as Class<out Action>
         }
 
-        return supertype
+        return type
     }
 
     private fun getInitialContent(): Content {
