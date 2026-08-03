@@ -1,0 +1,7 @@
+This version brings the following updates:
+
+* Added offline copies: save a bookmark's page and read it without a
+  connection, browse all saved copies, and manage their storage from
+  the preferences
+
+Thanks for using the app!
