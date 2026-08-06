@@ -897,6 +897,7 @@ private fun SettingItem(
         },
         colors = ListItemDefaults.colors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            contentColor = MaterialTheme.colorScheme.onSurface,
         ),
     ) {
         Text(

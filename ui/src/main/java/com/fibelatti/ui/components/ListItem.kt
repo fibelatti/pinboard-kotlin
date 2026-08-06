@@ -34,6 +34,7 @@ public fun ListItem(
     trailingContent: @Composable (() -> Unit)? = null,
     colors: ListItemColors = ListItemDefaults.colors(
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        contentColor = MaterialTheme.colorScheme.onSurface,
     ),
     shape: Shape = ListItem.DefaultShape,
     headlineFlag: @Composable RowScope.() -> Unit = {},

@@ -407,8 +407,10 @@ private fun <T> SelectionItem(
     modifier: Modifier = Modifier,
     shape: Shape = Shapes.StandaloneShape,
 ) {
+    val text: String = optionName(option)
+
     ListItem(
-        headlineText = optionName(option),
+        headlineText = text,
         modifier = modifier
             .fillMaxWidth()
             .clip(shape)
@@ -417,13 +419,17 @@ private fun <T> SelectionItem(
             optionIcon(option)?.let { icon ->
                 Icon(
                     imageVector = icon,
-                    contentDescription = "",
+                    contentDescription = text,
                     modifier = Modifier.size(16.dp),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
             }
         },
         shape = shape,
-        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+        colors = ListItemDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        ),
     )
 }
 
