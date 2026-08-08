@@ -18,6 +18,7 @@ import com.fibelatti.ui.components.AppSheetState
 fun OfflineCopyQuickActionsBottomSheet(
     sheetState: AppSheetState,
     onDelete: (OfflineCopy) -> Unit,
+    onBulkDelete: (OfflineCopy) -> Unit,
 ) {
     val offlineCopy: OfflineCopy = sheetState.bottomSheetData() ?: return
     val localResources = LocalResources.current
@@ -33,6 +34,7 @@ fun OfflineCopyQuickActionsBottomSheet(
             when (option) {
                 is OfflineCopyQuickActions.OpenOriginal -> localUriHandler.openUri(option.offlineCopy.url)
                 is OfflineCopyQuickActions.Delete -> onDelete(option.offlineCopy)
+                is OfflineCopyQuickActions.BulkDelete -> onBulkDelete(option.offlineCopy)
             }
         },
     )
@@ -59,11 +61,19 @@ private sealed class OfflineCopyQuickActions(
         icon = AppIcons.Delete,
     )
 
+    data class BulkDelete(
+        override val offlineCopy: OfflineCopy,
+    ) : OfflineCopyQuickActions(
+        title = R.string.offline_copies_bulk_delete,
+        icon = AppIcons.Delete,
+    )
+
     companion object {
 
         fun allOptions(offlineCopy: OfflineCopy): List<OfflineCopyQuickActions> = listOf(
             OpenOriginal(offlineCopy),
             Delete(offlineCopy),
+            BulkDelete(offlineCopy),
         )
     }
 }

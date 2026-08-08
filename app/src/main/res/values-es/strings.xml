@@ -13,6 +13,11 @@
 
     <string name="alert_confirm_deletion">¿Estás seguro de que quieres eliminar este marcador?</string>
     <string name="alert_confirm_deletion_offline_copy">¿Estás seguro de que quieres eliminar esta copia sin conexión?</string>
+    <plurals name="alert_confirm_deletion_offline_copies">
+        <item quantity="one">Esto elimina %d página guardada de este dispositivo. El marcador se conserva, pero para leerlo sin conexión habrá que guardarlo de nuevo. ¿Continuar?</item>
+        <item quantity="many">Esto elimina %d páginas guardadas de este dispositivo. Los marcadores se conservan, pero para leerlos sin conexión habrá que guardar cada uno de nuevo. ¿Continuar?</item>
+        <item quantity="other">Esto elimina %d páginas guardadas de este dispositivo. Los marcadores se conservan, pero para leerlos sin conexión habrá que guardar cada uno de nuevo. ¿Continuar?</item>
+    </plurals>
     <string name="alert_confirm_unsaved_changes">Tienes cambios sin guardar que se perderán. ¿Continuar sin guardar?</string>
 
     <string name="server_error">No se puede acceder al servicio. Comprueba tu token de autenticación o inténtalo de nuevo en breve.</string>
@@ -145,6 +150,9 @@
     <string name="offline_copies_total_size">%s en uso</string>
     <string name="offline_copies_delete">Eliminar copia sin conexión</string>
     <string name="offline_copies_deleted">Copia sin conexión eliminada</string>
+    <string name="offline_copies_bulk_delete">Eliminar varias</string>
+    <string name="offline_copies_bulk_delete_action">Eliminar (%d)</string>
+    <string name="offline_copies_bulk_deleted">Copias sin conexión eliminadas</string>
     <string name="offline_copies_open_original">Abrir página original</string>
     <plurals name="offline_copies_quantity">
         <item quantity="one">%d copia</item>

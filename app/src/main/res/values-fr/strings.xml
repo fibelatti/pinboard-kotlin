@@ -13,6 +13,11 @@
 
     <string name="alert_confirm_deletion">Voulez-vous vraiment supprimer ce favori ?</string>
     <string name="alert_confirm_deletion_offline_copy">Voulez-vous vraiment supprimer cette copie hors ligne ?</string>
+    <plurals name="alert_confirm_deletion_offline_copies">
+        <item quantity="one">Cela supprime %d page enregistrée de cet appareil. Le favori est conservé, mais il faudra l\'enregistrer à nouveau pour le lire hors ligne. Continuer ?</item>
+        <item quantity="many">Cela supprime %d pages enregistrées de cet appareil. Les favoris sont conservés, mais il faudra enregistrer chacun d\'eux à nouveau pour les lire hors ligne. Continuer ?</item>
+        <item quantity="other">Cela supprime %d pages enregistrées de cet appareil. Les favoris sont conservés, mais il faudra enregistrer chacun d\'eux à nouveau pour les lire hors ligne. Continuer ?</item>
+    </plurals>
     <string name="alert_confirm_unsaved_changes">Vous avez des modifications non enregistrées qui seront perdues. Continuer sans enregistrer ?</string>
 
     <string name="server_error">Impossible d\'accéder au service. Vérifiez votre jeton d\'authentification ou réessayez dans quelques instants.</string>
@@ -145,6 +150,9 @@
     <string name="offline_copies_total_size">%s utilisés</string>
     <string name="offline_copies_delete">Supprimer la copie hors ligne</string>
     <string name="offline_copies_deleted">Copie hors ligne supprimée</string>
+    <string name="offline_copies_bulk_delete">Supprimer plusieurs</string>
+    <string name="offline_copies_bulk_delete_action">Supprimer (%d)</string>
+    <string name="offline_copies_bulk_deleted">Copies hors ligne supprimées</string>
     <string name="offline_copies_open_original">Ouvrir la page d\'origine</string>
     <plurals name="offline_copies_quantity">
         <item quantity="one">%d copie</item>

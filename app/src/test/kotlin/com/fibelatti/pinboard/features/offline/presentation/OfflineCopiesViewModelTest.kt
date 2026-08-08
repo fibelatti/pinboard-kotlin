@@ -100,14 +100,39 @@ internal class OfflineCopiesViewModelTest : BaseViewModelTest() {
         coVerify {
             mockOfflineCopyRepository.delete(appMode = AppMode.LINKDING, bookmarkId = "some-id")
         }
-        assertThat(offlineCopiesViewModel.screenState.first().deleted).isTrue()
+        assertThat(offlineCopiesViewModel.screenState.first().deletedCount).isEqualTo(1)
     }
 
     @Test
-    fun `WHEN userNotified is called THEN the deleted flag is cleared`() = runTest {
+    fun `WHEN delete is called with a list THEN every copy is removed and the screen is notified once`() = runTest {
+        // GIVEN a selection spanning both backends
+        val offlineCopies = listOf(
+            mockk<OfflineCopy> {
+                every { appMode } returns AppMode.LINKDING
+                every { bookmarkId } returns "some-id"
+            },
+            mockk<OfflineCopy> {
+                every { appMode } returns AppMode.PINBOARD
+                every { bookmarkId } returns "another-id"
+            },
+        )
+
+        // WHEN
+        offlineCopiesViewModel.delete(offlineCopies)
+
+        // THEN
+        coVerify {
+            mockOfflineCopyRepository.delete(appMode = AppMode.LINKDING, bookmarkId = "some-id")
+            mockOfflineCopyRepository.delete(appMode = AppMode.PINBOARD, bookmarkId = "another-id")
+        }
+        assertThat(offlineCopiesViewModel.screenState.first().deletedCount).isEqualTo(2)
+    }
+
+    @Test
+    fun `WHEN userNotified is called THEN the deleted count is cleared`() = runTest {
         // GIVEN
         offlineCopiesViewModel.delete(
-            mockk {
+            mockk<OfflineCopy> {
                 every { appMode } returns AppMode.PINBOARD
                 every { bookmarkId } returns "some-id"
             },
@@ -117,7 +142,7 @@ internal class OfflineCopiesViewModelTest : BaseViewModelTest() {
         offlineCopiesViewModel.userNotified()
 
         // THEN the banner must not fire again on the next state change
-        assertThat(offlineCopiesViewModel.screenState.first().deleted).isFalse()
+        assertThat(offlineCopiesViewModel.screenState.first().deletedCount).isEqualTo(0)
     }
 
     private fun createContent(shouldLoad: Boolean): OfflineCopyListContent = OfflineCopyListContent(

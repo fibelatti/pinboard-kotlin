@@ -49,18 +49,30 @@ class OfflineCopiesViewModel @Inject constructor(
                 appMode = offlineCopy.appMode,
                 bookmarkId = offlineCopy.bookmarkId,
             )
-            _screenState.update { it.copy(deleted = true) }
+            _screenState.update { it.copy(deletedCount = 1) }
             if (fromDetails) {
                 runDelayedAction(NavigateBack)
             }
         }
     }
 
+    fun delete(offlineCopies: List<OfflineCopy>) {
+        scope.launch {
+            for (offlineCopy in offlineCopies) {
+                offlineCopyRepository.delete(
+                    appMode = offlineCopy.appMode,
+                    bookmarkId = offlineCopy.bookmarkId,
+                )
+            }
+            _screenState.update { it.copy(deletedCount = offlineCopies.size) }
+        }
+    }
+
     fun userNotified() {
-        _screenState.update { it.copy(deleted = false) }
+        _screenState.update { it.copy(deletedCount = 0) }
     }
 
     data class ScreenState(
-        val deleted: Boolean = false,
+        val deletedCount: Int = 0,
     )
 }

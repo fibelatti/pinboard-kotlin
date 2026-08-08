@@ -13,6 +13,10 @@
 
     <string name="alert_confirm_deletion">Möchten Sie dieses Lesezeichen wirklich löschen?</string>
     <string name="alert_confirm_deletion_offline_copy">Möchten Sie diese Offline-Kopie wirklich löschen?</string>
+    <plurals name="alert_confirm_deletion_offline_copies">
+        <item quantity="one">Damit wird %d gespeicherte Seite von diesem Gerät gelöscht. Das Lesezeichen bleibt erhalten, aber zum Offline-Lesen muss es erneut gespeichert werden. Fortfahren?</item>
+        <item quantity="other">Damit werden %d gespeicherte Seiten von diesem Gerät gelöscht. Die Lesezeichen bleiben erhalten, aber zum Offline-Lesen muss jedes davon erneut gespeichert werden. Fortfahren?</item>
+    </plurals>
     <string name="alert_confirm_unsaved_changes">Sie haben nicht gespeicherte Änderungen, die verloren gehen. Ohne Speichern fortfahren?</string>
 
     <string name="server_error">Der Dienst ist nicht erreichbar. Überprüfen Sie Ihr Authentifizierungstoken oder versuchen Sie es in Kürze erneut.</string>
@@ -144,6 +148,9 @@
     <string name="offline_copies_total_size">%s belegt</string>
     <string name="offline_copies_delete">Offline-Kopie löschen</string>
     <string name="offline_copies_deleted">Offline-Kopie gelöscht</string>
+    <string name="offline_copies_bulk_delete">Mehrere löschen</string>
+    <string name="offline_copies_bulk_delete_action">Löschen (%d)</string>
+    <string name="offline_copies_bulk_deleted">Offline-Kopien gelöscht</string>
     <string name="offline_copies_open_original">Originalseite öffnen</string>
     <plurals name="offline_copies_quantity">
         <item quantity="one">%d Kopie</item>

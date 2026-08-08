@@ -102,3 +102,25 @@ internal fun showOfflineCopyDeleteConfirmationDialog(context: Context, onConfirm
         setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
     }.applySecureFlag().show()
 }
+
+/**
+ * The bulk variant of [showOfflineCopyDeleteConfirmationDialog], spelling out how many copies are
+ * about to go since the selection isn't visible behind the dialog.
+ */
+internal fun showOfflineCopyBulkDeleteConfirmationDialog(
+    context: Context,
+    count: Int,
+    onConfirm: () -> Unit,
+) {
+    context.materialAlertDialogBuilder().apply {
+        setMessage(
+            context.resources.getQuantityString(
+                R.plurals.alert_confirm_deletion_offline_copies,
+                count,
+                count,
+            ),
+        )
+        setPositiveButton(R.string.hint_yes) { _, _ -> onConfirm() }
+        setNegativeButton(R.string.hint_no) { dialog, _ -> dialog?.dismiss() }
+    }.applySecureFlag().show()
+}
