@@ -6,6 +6,12 @@ import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
@@ -14,6 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.webkit.WebViewAssetLoader
 import com.fibelatti.pinboard.core.extension.ScrollDirection
@@ -21,6 +29,8 @@ import com.fibelatti.pinboard.core.extension.rememberScrollDirection
 import com.fibelatti.pinboard.features.offline.domain.model.OfflineCopy
 import com.fibelatti.ui.theme.ExtendedTheme
 import java.io.File
+import java.io.InputStream
+import java.io.SequenceInputStream
 
 /**
  * Renders a saved offline copy.
@@ -65,7 +75,16 @@ fun OfflineCopyWebView(
                 override fun shouldInterceptRequest(
                     view: WebView,
                     request: WebResourceRequest,
-                ): WebResourceResponse? = assetLoader.shouldInterceptRequest(request.url)
+                ): WebResourceResponse? {
+                    val response: WebResourceResponse = assetLoader.shouldInterceptRequest(request.url)
+                        ?: return null
+
+                    if (!response.mimeType.equals(other = MIME_TYPE_HTML, ignoreCase = true)) return response
+
+                    return response.withBottomPadding(
+                        cssPixels = request.url.getQueryParameter(QUERY_BOTTOM_PADDING)?.toIntOrNull() ?: 0,
+                    )
+                }
 
                 /**
                  * Links inside a saved article and the header link back to the original still
@@ -97,8 +116,27 @@ fun OfflineCopyWebView(
         currentOnScrollDirectionChanged(nestedScrollDirection)
     }
 
-    SideEffect(offlineCopy.bookmarkId) {
-        webView.loadUrl("https://$ASSET_LOADER_DOMAIN/$ASSET_PATH/${file.name}")
+    // The bottom app bar is drawn over the content instead of taking space from it, so the end of a
+    // page would sit underneath it.
+    //
+    // A CSS pixel is a density-independent pixel at the default zoom level.
+    val bottomPadding: Int = with(LocalDensity.current) {
+        WindowInsets.navigationBars
+            .add(WindowInsets.displayCutout)
+            .only(WindowInsetsSides.Bottom)
+            .add(WindowInsets(bottom = 88.dp))
+            .getBottom(this)
+            .toDp()
+            .value
+            .toInt()
+    }
+
+    val url: String = remember(offlineCopy.bookmarkId, file, bottomPadding) {
+        "https://$ASSET_LOADER_DOMAIN/$ASSET_PATH/${file.name}?$QUERY_BOTTOM_PADDING=$bottomPadding"
+    }
+
+    SideEffect(url) {
+        webView.loadUrl(url)
     }
 
     DisposableEffect(webView) {
@@ -114,5 +152,26 @@ fun OfflineCopyWebView(
     )
 }
 
+/**
+ * Appends a stylesheet padding the bottom of the document to the response.
+ *
+ * Trailing markup is reparented into `<body>` by the parser, so this needs no insertion point, and
+ * being last it wins over the padding the document sets on itself.
+ */
+private fun WebResourceResponse.withBottomPadding(cssPixels: Int): WebResourceResponse {
+    if (cssPixels <= 0) return this
+    val body: InputStream = data ?: return this
+
+    val style = "<style>body{padding-bottom:${cssPixels}px}</style>".toByteArray()
+
+    return WebResourceResponse(
+        /* mimeType = */ mimeType,
+        /* encoding = */ encoding,
+        /* data = */ SequenceInputStream(body, style.inputStream()),
+    )
+}
+
 private const val ASSET_LOADER_DOMAIN = "appassets.androidplatform.net"
 private const val ASSET_PATH = "offline"
+private const val MIME_TYPE_HTML = "text/html"
+private const val QUERY_BOTTOM_PADDING = "bottomPadding"
