@@ -54,6 +54,7 @@ import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
 import com.fibelatti.ui.components.AutoSizeText
+import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -189,7 +190,7 @@ private fun NoteListItem(
             .heightIn(min = 60.dp)
             .padding(horizontal = 8.dp)
             .clickable { onNoteClick(note) },
-        shape = MaterialTheme.shapes.small,
+        shape = Shapes.StandaloneShape,
         color = MaterialTheme.colorScheme.surfaceContainer,
     ) {
         Column(

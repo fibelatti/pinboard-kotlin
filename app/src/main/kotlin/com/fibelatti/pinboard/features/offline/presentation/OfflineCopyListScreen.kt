@@ -304,7 +304,7 @@ private fun OfflineCopyListItem(
                     onLongClick()
                 },
             ),
-        shape = MaterialTheme.shapes.small,
+        shape = Shapes.StandaloneShape,
         color = containerColor,
     ) {
         Column(

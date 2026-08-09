@@ -180,7 +180,7 @@ private fun AuthScreen(
 
         Surface(
             modifier = Modifier.sizeIn(maxWidth = 600.dp),
-            shape = MaterialTheme.shapes.small,
+            shape = Shapes.StandaloneShape,
             color = MaterialTheme.colorScheme.surfaceContainer,
         ) {
             Column(

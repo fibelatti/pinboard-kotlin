@@ -47,6 +47,7 @@ import com.fibelatti.ui.components.AppSheetState
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
 import com.fibelatti.ui.components.rememberAppSheetState
+import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -141,7 +142,7 @@ private fun SavedFilterItem(
                     onLongClick(savedFilter)
                 },
             ),
-        shape = MaterialTheme.shapes.small,
+        shape = Shapes.StandaloneShape,
         color = MaterialTheme.colorScheme.surfaceContainer,
     ) {
         Column(

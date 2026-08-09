@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.Pin
+import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -56,7 +57,7 @@ fun EmptyListContent(
                 .border(
                     width = 2.dp,
                     color = MaterialTheme.colorScheme.onSurface,
-                    shape = MaterialTheme.shapes.small,
+                    shape = Shapes.StandaloneShape,
                 )
                 .padding(16.dp),
             contentAlignment = Alignment.TopCenter,

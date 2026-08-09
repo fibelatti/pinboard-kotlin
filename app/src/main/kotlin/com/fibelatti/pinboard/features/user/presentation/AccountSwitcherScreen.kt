@@ -32,6 +32,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
 import com.fibelatti.pinboard.features.user.domain.UserCredentials
+import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -197,7 +198,7 @@ private fun AccountItem(
             .fillMaxWidth()
             .background(
                 color = MaterialTheme.colorScheme.surfaceContainer,
-                shape = MaterialTheme.shapes.small,
+                shape = Shapes.StandaloneShape,
             )
             .padding(horizontal = 8.dp, vertical = 12.dp),
     ) {

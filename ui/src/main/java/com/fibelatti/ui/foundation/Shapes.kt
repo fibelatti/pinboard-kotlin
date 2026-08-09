@@ -7,8 +7,8 @@ import androidx.compose.ui.unit.dp
 
 public object Shapes {
 
-    private val mediumCornerSize: CornerSize = CornerSize(12.dp)
-    private val smallCornerSize: CornerSize = CornerSize(2.dp)
+    private val mediumCornerSize: CornerSize = CornerSize(16.dp)
+    private val smallCornerSize: CornerSize = CornerSize(4.dp)
 
     public val TopShape: Shape = RoundedCornerShape(
         topStart = mediumCornerSize,

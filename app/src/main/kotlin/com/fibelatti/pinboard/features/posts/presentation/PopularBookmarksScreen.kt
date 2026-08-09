@@ -41,6 +41,7 @@ import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.components.rememberAppSheetState
+import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 
@@ -149,7 +150,7 @@ private fun PopularBookmarkItem(
                     onPostLongClick(post)
                 },
             ),
-        shape = MaterialTheme.shapes.small,
+        shape = Shapes.StandaloneShape,
         color = MaterialTheme.colorScheme.surfaceContainer,
     ) {
         Column(
