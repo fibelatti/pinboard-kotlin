@@ -146,7 +146,7 @@ private fun SavedFilterItem(
         color = MaterialTheme.colorScheme.surfaceContainer,
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),
+            modifier = Modifier.padding(all = 16.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             if (savedFilter.term.isNotBlank()) {

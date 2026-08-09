@@ -107,8 +107,8 @@ private fun AccountSwitcherScreen(
     LazyColumn(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+            .padding(horizontal = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         if (AppMode.NO_API in userCredentials.getConnectedServices()) {
             item(key = "review_mode") {
@@ -200,7 +200,7 @@ private fun AccountItem(
                 color = MaterialTheme.colorScheme.surfaceContainer,
                 shape = Shapes.StandaloneShape,
             )
-            .padding(horizontal = 8.dp, vertical = 12.dp),
+            .padding(all = 16.dp),
     ) {
         Text(
             text = title,

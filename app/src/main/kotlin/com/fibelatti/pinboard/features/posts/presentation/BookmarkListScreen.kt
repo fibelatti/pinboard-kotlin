@@ -601,7 +601,7 @@ private fun BookmarkItem(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 4.dp),
+            .padding(all = 8.dp),
     ) {
         Surface(
             modifier = Modifier
@@ -617,7 +617,7 @@ private fun BookmarkItem(
             color = MaterialTheme.colorScheme.surfaceContainer,
         ) {
             Column(
-                modifier = Modifier.padding(start = 8.dp, top = 28.dp, end = 8.dp, bottom = 12.dp),
+                modifier = Modifier.padding(start = 16.dp, top = 28.dp, end = 16.dp, bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 if (post.pendingSync != null) {
