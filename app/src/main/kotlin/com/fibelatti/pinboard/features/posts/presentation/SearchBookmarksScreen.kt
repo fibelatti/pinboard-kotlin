@@ -217,7 +217,7 @@ private fun SearchBookmarksScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 8.dp, bottom = 8.dp),
+                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.Bottom,
             ) {
@@ -253,7 +253,7 @@ private fun SearchBookmarksScreen(
                 IconButton(
                     onClick = { advancedDialogState.showBottomSheet() },
                     shapes = IconButtonDefaults.shapes(),
-                    modifier = Modifier.padding(bottom = 4.dp, end = 8.dp),
+                    modifier = Modifier.padding(bottom = 4.dp),
                 ) {
                     Icon(
                         imageVector = AppIcons.Preferences,

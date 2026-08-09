@@ -259,7 +259,7 @@ private fun AppPreferencesContent(
             style = MaterialTheme.typography.titleLarge,
         )
 
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         val isDynamicColorSupported: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
@@ -682,7 +682,7 @@ private fun BookmarkingPreferencesContent(
             style = MaterialTheme.typography.titleLarge,
         )
 
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         SettingItem(
             title = stringResource(id = R.string.user_preferences_edit_after_sharing_title),

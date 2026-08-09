@@ -328,7 +328,7 @@ private fun AppVersionDetails(
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.small)
             .clickable(onClick = onClick, role = Role.Button)
-            .padding(horizontal = 4.dp),
+            .padding(horizontal = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         AutoSizeText(

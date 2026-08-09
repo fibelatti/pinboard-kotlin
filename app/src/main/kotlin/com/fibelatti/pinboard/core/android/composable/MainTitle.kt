@@ -91,7 +91,7 @@ fun MainTitle(
                     start = if (navigation is MainState.NavigationComponent.Visible) 0.dp else 16.dp,
                     end = 16.dp,
                 ),
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.spacedBy(4.dp, alignment = Alignment.CenterVertically),
         ) {
             var titleText by remember { mutableStateOf("") }
             SideEffect(title) {
@@ -124,7 +124,6 @@ fun MainTitle(
             ) {
                 AutoSizeText(
                     text = subtitleText,
-                    modifier = Modifier.padding(all = 2.dp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,

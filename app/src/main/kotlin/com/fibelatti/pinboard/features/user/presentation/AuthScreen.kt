@@ -173,7 +173,7 @@ private fun AuthScreen(
             imageVector = AppIcons.Pin,
             contentDescription = null,
             modifier = Modifier
-                .padding(top = if (allowSwitching) 40.dp else 0.dp, bottom = 20.dp)
+                .padding(top = if (allowSwitching) 40.dp else 0.dp, bottom = 24.dp)
                 .size(80.dp),
             tint = MaterialTheme.colorScheme.primary,
         )
