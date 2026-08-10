@@ -463,7 +463,7 @@ private fun BookmarkContent(
             currentTagsTitle = currentTagsTitle,
             currentTags = currentTags,
             onRemoveCurrentTagClick = onRemoveCurrentTagClick,
-            modifier = Modifier.padding(bottom = 100.dp),
+            modifier = Modifier.padding(top = 8.dp),
         )
     }
 }

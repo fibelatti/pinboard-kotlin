@@ -1,7 +1,10 @@
 package com.fibelatti.pinboard.features.tags.presentation
 
 import android.view.KeyEvent
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
@@ -13,6 +16,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -23,9 +27,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.extension.fillWidthOfParent
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
@@ -50,10 +53,11 @@ fun TagManager(
     onSearchTagInputFocusChange: (hasFocus: Boolean) -> Unit = {},
     horizontalPadding: Dp = 16.dp,
 ) {
-    ConstraintLayout(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 8.dp, bottom = 32.dp),
+            .padding(horizontal = horizontalPadding),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         val keyboardController = LocalSoftwareKeyboardController.current
         val keyboardAction = {
@@ -63,66 +67,53 @@ fun TagManager(
             }
         }
 
-        val (
-            clAddTagInput, clAddTagButton,
-            clSuggestedTags,
-            clDivider,
-            clCurrentTagsTitle,
-            clCurrentTags,
-        ) = createRefs()
-
-        OutlinedTextField(
-            value = searchTagInput,
-            onValueChange = { newValue ->
-                when {
-                    // Handle keyboards that add a space after punctuation, `.` is used for private tags
-                    newValue == ". " -> onSearchTagInputChange(".")
-
-                    newValue.isNotBlank() && newValue.endsWith(" ") -> onAddTagClick(newValue)
-
-                    else -> onSearchTagInputChange(newValue)
-                }
-            },
-            modifier = Modifier
-                .constrainAs(clAddTagInput) {
-                    start.linkTo(parent.start, margin = horizontalPadding)
-                    top.linkTo(parent.top)
-                    end.linkTo(clAddTagButton.start)
-                    width = Dimension.fillToConstraints
-                }
-                .onKeyEvent {
-                    if (it.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
-                        keyboardAction()
-                        return@onKeyEvent true
-                    }
-                    false
-                }
-                .onFocusChanged { onSearchTagInputFocusChange(it.hasFocus) },
-            textStyle = MaterialTheme.typography.bodyMedium,
-            label = { Text(text = stringResource(id = R.string.posts_add_tags)) },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-            keyboardActions = KeyboardActions { keyboardAction() },
-            singleLine = true,
-            maxLines = 1,
-            shape = Shapes.StandaloneShape,
-        )
-
-        FilledTonalButton(
-            onClick = {
-                if (searchTagInput.isNotBlank()) {
-                    onAddTagClick(searchTagInput)
-                }
-            },
-            shapes = ExtendedTheme.defaultButtonShapes,
-            modifier = Modifier.constrainAs(clAddTagButton) {
-                bottom.linkTo(clAddTagInput.bottom, margin = 4.dp)
-                start.linkTo(clAddTagInput.end, margin = 8.dp)
-                end.linkTo(parent.end, margin = horizontalPadding)
-            },
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = stringResource(id = R.string.posts_add_tags_add),
+            OutlinedTextField(
+                value = searchTagInput,
+                onValueChange = { newValue ->
+                    when {
+                        // Handle keyboards that add a space after punctuation, `.` is used for private tags
+                        newValue == ". " -> onSearchTagInputChange(".")
+
+                        newValue.isNotBlank() && newValue.endsWith(" ") -> onAddTagClick(newValue)
+
+                        else -> onSearchTagInputChange(newValue)
+                    }
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .onKeyEvent {
+                        if (it.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
+                            keyboardAction()
+                            return@onKeyEvent true
+                        }
+                        false
+                    }
+                    .onFocusChanged { onSearchTagInputFocusChange(it.hasFocus) },
+                textStyle = MaterialTheme.typography.bodyMedium,
+                label = { Text(text = stringResource(id = R.string.posts_add_tags)) },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                keyboardActions = KeyboardActions { keyboardAction() },
+                singleLine = true,
+                maxLines = 1,
+                shape = Shapes.StandaloneShape,
             )
+
+            FilledTonalButton(
+                onClick = {
+                    if (searchTagInput.isNotBlank()) {
+                        onAddTagClick(searchTagInput)
+                    }
+                },
+                shapes = ExtendedTheme.defaultButtonShapes,
+            ) {
+                Text(
+                    text = stringResource(id = R.string.posts_add_tags_add),
+                )
+            }
         }
 
         if (suggestedTags.isNotEmpty()) {
@@ -132,41 +123,20 @@ fun TagManager(
                 },
                 onItemClick = { item -> onSuggestedTagClick(suggestedTags.first { it == item.text }) },
                 modifier = Modifier
-                    .constrainAs(clSuggestedTags) {
-                        start.linkTo(parent.start)
-                        top.linkTo(clAddTagInput.bottom, margin = 16.dp)
-                        end.linkTo(parent.end)
-                    }
-                    .fillMaxWidth(),
-                itemTextStyle = MaterialTheme.typography.bodySmall.copy(
-                    fontFamily = FontFamily.Monospace,
-                ),
+                    .fillMaxWidth()
+                    .fillWidthOfParent(parentPaddingStart = horizontalPadding, parentPaddingEnd = horizontalPadding),
+                itemTextStyle = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                 contentPadding = PaddingValues(horizontal = horizontalPadding),
             )
 
             HorizontalDivider(
-                modifier = Modifier.constrainAs(clDivider) {
-                    start.linkTo(parent.start, margin = horizontalPadding)
-                    top.linkTo(clSuggestedTags.bottom, margin = 8.dp)
-                    end.linkTo(parent.end, margin = horizontalPadding)
-                    width = Dimension.fillToConstraints
-                },
+                modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.onSurface,
             )
         }
 
         Text(
             text = currentTagsTitle,
-            modifier = Modifier
-                .constrainAs(clCurrentTagsTitle) {
-                    start.linkTo(parent.start, margin = horizontalPadding)
-                    top.linkTo(
-                        anchor = if (suggestedTags.isNotEmpty()) clDivider.bottom else clAddTagInput.bottom,
-                        margin = 16.dp,
-                    )
-                    end.linkTo(parent.end, margin = horizontalPadding)
-                    width = Dimension.fillToConstraints
-                },
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary,
         )
@@ -178,16 +148,8 @@ fun TagManager(
                 currentTags.map { tag -> ChipGroup.Item(text = tag.name, icon = closeIcon) }
             },
             onItemClick = {},
-            modifier = Modifier.constrainAs(clCurrentTags) {
-                start.linkTo(parent.start, margin = horizontalPadding)
-                top.linkTo(clCurrentTagsTitle.bottom, margin = 8.dp)
-                end.linkTo(parent.end, margin = horizontalPadding)
-                width = Dimension.fillToConstraints
-            },
             onItemIconClick = { item -> onRemoveCurrentTagClick(currentTags.first { it.name == item.text }) },
-            itemTextStyle = MaterialTheme.typography.bodySmall.copy(
-                fontFamily = FontFamily.Monospace,
-            ),
+            itemTextStyle = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
         )
     }
 }

@@ -648,8 +648,7 @@ private fun BookmarkingPreferencesContent(
                 currentTagsTitle = stringResource(id = tagState.displayTitle),
                 currentTags = tagState.tags,
                 onRemoveCurrentTagClick = userPreferencesViewModel::removeTag,
-                modifier = Modifier.fillWidthOfParent(parentPaddingStart = 8.dp, parentPaddingEnd = 8.dp),
-                horizontalPadding = 8.dp,
+                modifier = Modifier.fillWidthOfParent(parentPaddingStart = 16.dp, parentPaddingEnd = 16.dp),
             )
         }
     }

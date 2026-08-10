@@ -201,7 +201,6 @@ dependencies {
     implementation(libs.activity.compose)
     implementation(libs.adaptive.android)
     implementation(libs.material)
-    implementation(libs.constraint.layout.compose)
 
     implementation(libs.lifecycle.process)
     implementation(libs.lifecycle.runtime)
