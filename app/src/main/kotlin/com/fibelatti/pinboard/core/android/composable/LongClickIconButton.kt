@@ -4,9 +4,9 @@ import android.widget.Toast
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,7 +35,7 @@ fun LongClickIconButton(
         modifier = modifier
             .minimumInteractiveComponentSize()
             .size(40.dp)
-            .clip(MaterialTheme.shapes.small)
+            .clip(CircleShape)
             .combinedClickable(
                 role = Role.Button,
                 onLongClick = { Toast.makeText(localContext, description, Toast.LENGTH_SHORT).show() },
