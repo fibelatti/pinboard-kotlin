@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
@@ -201,6 +202,9 @@ fun TagList(
 
             PullRefreshLayout(
                 onPullToRefresh = onPullToRefresh,
+                // `contentPadding` does not consume insets, so items applying `safeDrawing`
+                // themselves (such as `EmptyListContent`) would otherwise inset twice.
+                modifier = Modifier.consumeWindowInsets(windowInsets),
                 contentPadding = windowInsets.asPaddingValues(),
                 verticalArrangement = Arrangement.spacedBy(space = 1.dp, alignment = Alignment.Top),
                 scrollToTopPadding = stickyHeaderHeight.pxToDp(),
