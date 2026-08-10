@@ -478,7 +478,7 @@ private fun BookmarkPlaceholder(
         modifier = modifier
             .fillMaxSize()
             .background(color = ExtendedTheme.colors.backgroundNoOverlay)
-            .padding(horizontal = 24.dp),
+            .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
