@@ -26,6 +26,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.webkit.WebViewAssetLoader
 import com.fibelatti.pinboard.core.extension.ScrollDirection
 import com.fibelatti.pinboard.core.extension.rememberScrollDirection
+import com.fibelatti.pinboard.features.main.MainBottomAppBar
 import com.fibelatti.pinboard.features.offline.domain.model.OfflineCopy
 import com.fibelatti.ui.theme.ExtendedTheme
 import java.io.File
@@ -124,7 +125,7 @@ fun OfflineCopyWebView(
         WindowInsets.navigationBars
             .add(WindowInsets.displayCutout)
             .only(WindowInsetsSides.Bottom)
-            .add(WindowInsets(bottom = 88.dp))
+            .add(WindowInsets(bottom = MainBottomAppBar.ContentClearance))
             .getBottom(this)
             .toDp()
             .value

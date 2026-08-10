@@ -124,6 +124,7 @@ import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.appstate.pinboardQueryUrl
 import com.fibelatti.pinboard.features.appstate.pinboardTagsUrl
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
+import com.fibelatti.pinboard.features.main.MainBottomAppBar
 import com.fibelatti.pinboard.features.main.MainState
 import com.fibelatti.pinboard.features.main.MainViewModel
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync
@@ -483,7 +484,7 @@ fun BookmarkListScreen(
 
             val listWindowInsets = WindowInsets.safeDrawing
                 .only(if (sidePanelVisible) WindowInsetsSides.Start else WindowInsetsSides.Horizontal)
-                .add(WindowInsets(top = 12.dp, bottom = 100.dp))
+                .add(WindowInsets(top = 8.dp, bottom = MainBottomAppBar.ContentClearance))
 
             PullRefreshLayout(
                 onPullToRefresh = onPullToRefresh,

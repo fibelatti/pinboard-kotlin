@@ -75,6 +75,7 @@ import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.Tag
 import com.fibelatti.pinboard.features.appstate.PostsForTag
 import com.fibelatti.pinboard.features.appstate.RefreshTags
+import com.fibelatti.pinboard.features.main.MainBottomAppBar
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
 import com.fibelatti.ui.components.AutoSizeText
@@ -197,7 +198,7 @@ fun TagList(
         ) {
             val windowInsets: WindowInsets = WindowInsets.safeDrawing
                 .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-                .add(WindowInsets(bottom = 120.dp))
+                .add(WindowInsets(top = 8.dp, bottom = MainBottomAppBar.ContentClearance))
             var stickyHeaderHeight: Int by remember { mutableIntStateOf(0) }
 
             PullRefreshLayout(

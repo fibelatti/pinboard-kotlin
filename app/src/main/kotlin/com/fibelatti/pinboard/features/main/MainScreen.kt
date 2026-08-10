@@ -65,6 +65,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -601,6 +602,19 @@ private fun RowScope.MenuItemsContent(
             )
         }
     }
+}
+
+object MainBottomAppBar {
+
+    /**
+     * Space that scrollable content must leave at the bottom so it is not covered by the bottom app
+     * bar, on top of whatever navigation bar inset already applies.
+     *
+     * Derived from the bar's own geometry: the 64.dp expanded min height of its
+     * `HorizontalFloatingToolbar`, plus the 16.dp offset it is drawn with, plus an 8.dp gap. Screens
+     * reaching for a bottom inset because of the bar should use this rather than a local literal.
+     */
+    val ContentClearance: Dp = 88.dp
 }
 
 // region Previews

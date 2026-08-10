@@ -39,6 +39,7 @@ import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.RefreshPopular
 import com.fibelatti.pinboard.features.appstate.ViewPost
 import com.fibelatti.pinboard.features.appstate.find
+import com.fibelatti.pinboard.features.main.MainBottomAppBar
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.components.rememberAppSheetState
 import com.fibelatti.ui.foundation.Shapes
@@ -112,7 +113,7 @@ fun PopularBookmarksContent(
     } else {
         val windowInsets = WindowInsets.safeDrawing
             .only(if (sidePanelVisible) WindowInsetsSides.Start else WindowInsetsSides.Horizontal)
-            .add(WindowInsets(top = 4.dp, bottom = 100.dp))
+            .add(WindowInsets(top = 8.dp, bottom = MainBottomAppBar.ContentClearance))
 
         PullRefreshLayout(
             onPullToRefresh = onPullToRefresh,

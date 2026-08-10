@@ -65,6 +65,7 @@ import com.fibelatti.pinboard.features.appstate.AppState
 import com.fibelatti.pinboard.features.appstate.OfflineCopyListContent
 import com.fibelatti.pinboard.features.appstate.ViewOfflineCopy
 import com.fibelatti.pinboard.features.appstate.find
+import com.fibelatti.pinboard.features.main.MainBottomAppBar
 import com.fibelatti.pinboard.features.offline.domain.model.OfflineCopy
 import com.fibelatti.ui.components.rememberAppSheetState
 import com.fibelatti.ui.foundation.Shapes
@@ -197,7 +198,7 @@ private fun OfflineCopiesContent(
     val bottomInset: WindowInsets = WindowInsets.navigationBars
         .add(WindowInsets.displayCutout)
         .only(WindowInsetsSides.Bottom)
-        .add(WindowInsets(bottom = 88.dp))
+        .add(WindowInsets(bottom = MainBottomAppBar.ContentClearance))
 
     val listInsets: WindowInsets = WindowInsets.safeDrawing
         .only(if (sidePanelVisible) WindowInsetsSides.Start else WindowInsetsSides.Horizontal)

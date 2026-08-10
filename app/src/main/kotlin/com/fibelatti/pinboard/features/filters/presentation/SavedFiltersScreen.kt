@@ -43,6 +43,7 @@ import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.Filter
 import com.fibelatti.pinboard.features.appstate.ViewSavedFilter
 import com.fibelatti.pinboard.features.filters.domain.model.SavedFilter
+import com.fibelatti.pinboard.features.main.MainBottomAppBar
 import com.fibelatti.ui.components.AppSheetState
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
@@ -108,7 +109,7 @@ private fun SavedFiltersScreen(
             modifier = modifier.fillMaxSize(),
             contentPadding = WindowInsets.safeDrawing
                 .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-                .add(WindowInsets(bottom = 100.dp))
+                .add(WindowInsets(top = 8.dp, bottom = MainBottomAppBar.ContentClearance))
                 .asPaddingValues(),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {

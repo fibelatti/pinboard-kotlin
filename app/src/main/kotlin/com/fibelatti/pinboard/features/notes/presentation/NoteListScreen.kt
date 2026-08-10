@@ -51,6 +51,7 @@ import com.fibelatti.pinboard.features.appstate.NoteListContent
 import com.fibelatti.pinboard.features.appstate.RefreshNotes
 import com.fibelatti.pinboard.features.appstate.ViewNote
 import com.fibelatti.pinboard.features.appstate.find
+import com.fibelatti.pinboard.features.main.MainBottomAppBar
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
 import com.fibelatti.ui.components.AutoSizeText
@@ -161,7 +162,7 @@ private fun NoteListContent(
 
             val listWindowInsets = WindowInsets.safeDrawing
                 .only(if (sidePanelVisible) WindowInsetsSides.Start else WindowInsetsSides.Horizontal)
-                .add(WindowInsets(top = 16.dp, bottom = 100.dp))
+                .add(WindowInsets(top = 8.dp, bottom = MainBottomAppBar.ContentClearance))
 
             PullRefreshLayout(
                 onPullToRefresh = onPullToRefresh,
