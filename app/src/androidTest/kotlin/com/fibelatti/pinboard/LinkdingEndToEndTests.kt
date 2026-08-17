@@ -1,7 +1,6 @@
 package com.fibelatti.pinboard
 
 import android.content.SharedPreferences
-import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
@@ -22,7 +21,6 @@ import org.junit.Rule
 import org.junit.Test
 
 @HiltAndroidTest
-@OptIn(ExperimentalTestApi::class)
 class LinkdingEndToEndTests {
 
     @get:Rule(order = 0)

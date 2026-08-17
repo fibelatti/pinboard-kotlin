@@ -214,7 +214,6 @@ dependencies {
     implementation(libs.browser)
     implementation(libs.webkit)
 
-    implementation(libs.compose.material)
     debugImplementation(libs.compose.ui.test.manifest)
 
     // Misc
@@ -240,7 +239,6 @@ dependencies {
 
     // Test
     testFixturesImplementation(libs.kotlin)
-    testFixturesImplementation(platform(libs.compose.bom))
     testFixturesImplementation(libs.compose.runtime)
 
     testImplementation(platform(libs.junit6.bom))
@@ -265,7 +263,6 @@ dependencies {
     androidTestImplementation(libs.coroutines.test)
     androidTestImplementation(libs.room.testing)
 
-    androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
 
     androidTestImplementation(libs.hilt.android.testing)

@@ -34,9 +34,7 @@
 -dontnote android.widget.**
 
 # Compose
--assumevalues public class androidx.compose.runtime.ComposeRuntimeFlags {
-    static boolean isLinkBufferComposerEnabled return true;
-}
+-assumevalues public class androidx.compose.runtime.ComposeRuntimeFlags { static boolean isLinkBufferComposerEnabled() return true; }
 
 # Ktor
 -dontwarn org.slf4j.impl.StaticLoggerBinder
