@@ -47,7 +47,7 @@ room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 work-runtime = { module = "androidx.work:work-runtime", version = "2.11.2" }
 browser = { module = "androidx.browser:browser", version = "1.10.0" }
-webkit = { module = "androidx.webkit:webkit", version = "1.16.0" }
+webkit = { module = "androidx.webkit:webkit", version = "1.17.0" }
 
 compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "composeRuntime" }
 compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "composeMaterial3" }
