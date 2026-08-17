@@ -35,7 +35,7 @@ okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 
-appcompat = { module = "androidx.appcompat:appcompat", version = "1.7.1" }
+appcompat = { module = "androidx.appcompat:appcompat", version = "1.8.0" }
 core = { module = "androidx.core:core", version = "1.19.0" }
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity" }
 adaptive-android = { module = "androidx.compose.material3.adaptive:adaptive-android", version = "1.2.0" }
