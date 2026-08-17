@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.offline.presentation
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.ViewGroup
 import android.webkit.RenderProcessGoneDetail
@@ -77,6 +78,7 @@ fun OfflineCopyWebView(
             settings.builtInZoomControls = true
             settings.displayZoomControls = false
 
+            @SuppressLint("MissingOnRenderProcessGone") // Already implemented, but lint still fails
             webViewClient = object : WebViewClient() {
 
                 override fun shouldInterceptRequest(

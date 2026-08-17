@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.posts.presentation
 
+import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -404,6 +405,7 @@ private fun LiveBookmarkWebView(
         var webViewRenderProcessId: String by remember { mutableStateOf(Uuid.random().toString()) }
         val webView: WebView = remember(localContext, webViewRenderProcessId) {
             WebView(localContext).apply {
+                @SuppressLint("MissingOnRenderProcessGone") // Already implemented, but lint still fails
                 webViewClient = object : WebViewClient() {
 
                     override fun onPageFinished(view: WebView?, url: String?) {
