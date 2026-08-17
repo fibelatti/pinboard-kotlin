@@ -3,7 +3,9 @@ package com.fibelatti.pinboard.features.posts.presentation
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.view.ViewGroup
 import android.webkit.MimeTypeMap
+import android.webkit.RenderProcessGoneDetail
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
@@ -31,6 +33,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -72,6 +75,7 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
 import java.io.File
+import kotlin.uuid.Uuid
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -395,8 +399,10 @@ private fun LiveBookmarkWebView(
 
         val currentOnLoadFailedChange: (Boolean) -> Unit by rememberUpdatedState(onLoadFailedChange)
 
-        val localContext = LocalContext.current
-        val webView: WebView = remember(localContext) {
+        val localContext: Context = LocalContext.current
+
+        var webViewRenderProcessId: String by remember { mutableStateOf(Uuid.random().toString()) }
+        val webView: WebView = remember(localContext, webViewRenderProcessId) {
             WebView(localContext).apply {
                 webViewClient = object : WebViewClient() {
 
@@ -412,6 +418,17 @@ private fun LiveBookmarkWebView(
                     ) {
                         currentOnLoadFailedChange(true)
                     }
+
+                    override fun onRenderProcessGone(
+                        view: WebView?,
+                        detail: RenderProcessGoneDetail?,
+                    ): Boolean {
+                        val parent: ViewGroup? = view?.parent as? ViewGroup
+                        parent?.removeView(view)
+                        view?.destroy()
+                        webViewRenderProcessId = Uuid.random().toString()
+                        return true
+                    }
                 }
             }
         }
@@ -423,24 +440,26 @@ private fun LiveBookmarkWebView(
             currentOnScrollDirectionChanged(nestedScrollDirection)
         }
 
-        SideEffect(post.id) {
+        SideEffect(webViewRenderProcessId, post.id) {
             webView.loadUrl(post.url)
             webViewLoading = true
         }
 
-        DisposableEffect(webView) {
+        DisposableEffect(Unit) {
             onDispose {
                 webView.stopLoading()
                 webView.destroy()
             }
         }
 
-        AndroidView(
-            factory = { webView },
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = ExtendedTheme.colors.backgroundNoOverlay),
-        )
+        key(webViewRenderProcessId) {
+            AndroidView(
+                factory = { webView },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = ExtendedTheme.colors.backgroundNoOverlay),
+            )
+        }
 
         AnimatedVisibility(
             visible = isLoading || webViewLoading,

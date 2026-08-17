@@ -1,6 +1,8 @@
 package com.fibelatti.pinboard.features.offline.presentation
 
 import android.content.Context
+import android.view.ViewGroup
+import android.webkit.RenderProcessGoneDetail
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
@@ -16,12 +18,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.webkit.WebViewAssetLoader
 import com.fibelatti.pinboard.core.extension.ScrollDirection
@@ -32,6 +36,7 @@ import com.fibelatti.ui.theme.ExtendedTheme
 import java.io.File
 import java.io.InputStream
 import java.io.SequenceInputStream
+import kotlin.uuid.Uuid
 
 /**
  * Renders a saved offline copy.
@@ -53,7 +58,8 @@ fun OfflineCopyWebView(
 ) {
     val localContext: Context = LocalContext.current
 
-    val webView: WebView = remember(localContext, file.parentFile) {
+    var webViewRenderProcessId: String by remember { mutableStateOf(Uuid.random().toString()) }
+    val webView: WebView = remember(localContext, webViewRenderProcessId, file.parentFile) {
         val assetLoader: WebViewAssetLoader = WebViewAssetLoader.Builder()
             .addPathHandler(
                 "/$ASSET_PATH/",
@@ -106,6 +112,17 @@ fun OfflineCopyWebView(
                         true
                     }
                 }
+
+                override fun onRenderProcessGone(
+                    view: WebView?,
+                    detail: RenderProcessGoneDetail?,
+                ): Boolean {
+                    val parent: ViewGroup? = view?.parent as? ViewGroup
+                    parent?.removeView(view)
+                    view?.destroy()
+                    webViewRenderProcessId = Uuid.random().toString()
+                    return true
+                }
             }
         }
     }
@@ -136,21 +153,23 @@ fun OfflineCopyWebView(
         "https://$ASSET_LOADER_DOMAIN/$ASSET_PATH/${file.name}?$QUERY_BOTTOM_PADDING=$bottomPadding"
     }
 
-    SideEffect(url) {
+    SideEffect(webViewRenderProcessId, url) {
         webView.loadUrl(url)
     }
 
-    DisposableEffect(webView) {
+    DisposableEffect(Unit) {
         onDispose {
             webView.stopLoading()
             webView.destroy()
         }
     }
 
-    AndroidView(
-        factory = { webView },
-        modifier = modifier.background(color = ExtendedTheme.colors.backgroundNoOverlay),
-    )
+    key(webViewRenderProcessId) {
+        AndroidView(
+            factory = { webView },
+            modifier = modifier.background(color = ExtendedTheme.colors.backgroundNoOverlay),
+        )
+    }
 }
 
 /**
