@@ -27,6 +27,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.ChevronTop
+import com.fibelatti.ui.foundation.Shapes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -110,10 +112,12 @@ private fun ScrollToTopButton(
         onClick = onClick,
         modifier = modifier
             .widthIn(min = 100.dp)
+            .shadow(elevation = 4.dp, shape = Shapes.StandaloneShape)
             .background(
-                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
-                shape = MaterialTheme.shapes.large,
+                color = MaterialTheme.colorScheme.primaryContainer,
+                shape = Shapes.StandaloneShape,
             ),
         iconTint = MaterialTheme.colorScheme.onPrimaryContainer,
+        shape = Shapes.StandaloneShape,
     )
 }

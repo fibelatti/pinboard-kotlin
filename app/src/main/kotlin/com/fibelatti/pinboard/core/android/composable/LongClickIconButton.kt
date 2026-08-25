@@ -4,15 +4,16 @@ import android.widget.Toast
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
@@ -28,14 +29,14 @@ fun LongClickIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     iconTint: Color = LocalContentColor.current,
+    shape: Shape = CircleShape,
 ) {
     val localContext = LocalContext.current
 
     Box(
         modifier = modifier
-            .minimumInteractiveComponentSize()
-            .size(40.dp)
-            .clip(CircleShape)
+            .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+            .clip(shape)
             .combinedClickable(
                 role = Role.Button,
                 onLongClick = { Toast.makeText(localContext, description, Toast.LENGTH_SHORT).show() },
