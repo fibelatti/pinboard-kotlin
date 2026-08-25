@@ -1,0 +1,7 @@
+This version brings the following updates:
+
+* Added bulk delete for offline copies
+* Fixed the bottom bar overlapping content when reading an offline copy
+* Fixed a UI contrast issue affecting quick actions on certain color themes
+
+Thanks for using the app!
