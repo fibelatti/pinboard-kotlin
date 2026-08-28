@@ -297,6 +297,7 @@
     <string name="account_switcher_add_linkding">Linkding-Konto hinzufügen</string>
 
     <!-- Export -->
+    <string name="export_select_service">Dienst zum Exportieren auswählen</string>
     <string name="export_feedback_success">Lesezeichen erfolgreich exportiert!</string>
     <string name="export_feedback_failure">Lesezeichen konnten nicht exportiert werden</string>
 

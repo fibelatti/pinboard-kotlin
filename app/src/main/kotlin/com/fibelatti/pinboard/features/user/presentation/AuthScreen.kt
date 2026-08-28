@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.user.presentation
 
 import android.app.Activity
+import android.content.res.Resources
 import android.security.KeyChain
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -43,13 +44,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedSecureTextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,6 +62,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -69,10 +72,12 @@ import androidx.core.text.HtmlCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.LocalNetworkAccessProvider
 import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LocalAppCompatActivity
 import com.fibelatti.pinboard.core.android.composable.LongClickIconButton
+import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
 import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.Delete
 import com.fibelatti.pinboard.core.android.icons.Eye
@@ -82,7 +87,11 @@ import com.fibelatti.pinboard.core.android.icons.Pin
 import com.fibelatti.pinboard.core.extension.canRequestPermissionAgain
 import com.fibelatti.pinboard.core.extension.showLocalNetworkAccessDialog
 import com.fibelatti.pinboard.core.extension.showLocalNetworkAccessSettingsDialog
+import com.fibelatti.pinboard.features.export.ExportBookmarksEffects
+import com.fibelatti.pinboard.features.export.ExportBookmarksViewModel
+import com.fibelatti.ui.components.AppSheetState
 import com.fibelatti.ui.components.TextWithLinks
+import com.fibelatti.ui.components.rememberAppSheetState
 import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -90,6 +99,7 @@ import com.fibelatti.ui.theme.ExtendedTheme
 @Composable
 fun AuthScreen(
     authViewModel: AuthViewModel = hiltViewModel(),
+    exportBookmarksViewModel: ExportBookmarksViewModel = hiltViewModel(),
 ) {
     val screenState: AuthViewModel.ScreenState by authViewModel.screenState.collectAsStateWithLifecycle()
 
@@ -111,13 +121,43 @@ fun AuthScreen(
         },
     )
 
-    LaunchedEffect(screenState.localNetworkPermissionRequired, localNetworkPermissionLauncher) {
-        if (!screenState.localNetworkPermissionRequired) return@LaunchedEffect
+    SideEffect(screenState.localNetworkPermissionRequired, localNetworkPermissionLauncher) {
+        if (!screenState.localNetworkPermissionRequired) return@SideEffect
 
         activity.showLocalNetworkAccessDialog {
             localNetworkPermissionLauncher.launch(LocalNetworkAccessProvider.PERMISSION)
         }
     }
+
+    val exportState: ExportBookmarksViewModel.State = exportBookmarksViewModel.state
+    val exportSheetState: AppSheetState = rememberAppSheetState()
+
+    SideEffect(
+        key1 = Unit,
+        effect = exportBookmarksViewModel::refreshExportableServices,
+    )
+
+    ExportBookmarksEffects(
+        state = exportState,
+        onDestinationSelect = exportBookmarksViewModel::exportFile,
+        onMessageDismiss = exportBookmarksViewModel::messageHandled,
+    )
+
+    val localResources: Resources = LocalResources.current
+
+    SelectionDialogBottomSheet(
+        sheetState = exportSheetState,
+        title = stringResource(id = R.string.export_select_service),
+        options = remember(exportState.exportableServices) { exportState.exportableServices.toList() },
+        optionName = { appMode: AppMode ->
+            when (appMode) {
+                AppMode.PINBOARD -> localResources.getString(R.string.pinboard)
+                AppMode.LINKDING -> localResources.getString(R.string.linkding)
+                else -> error("App mode not supported.")
+            }
+        },
+        onOptionSelect = exportBookmarksViewModel::createBackup,
+    )
 
     AuthScreen(
         allowSwitching = screenState.allowSwitching,
@@ -135,6 +175,17 @@ fun AuthScreen(
         isLoading = screenState.isLoading,
         apiTokenError = screenState.apiTokenError,
         instanceUrlError = screenState.instanceUrlError,
+        // Adding an account happens while logged in, where the menu already offers the export
+        showExport = screenState.allowSwitching && exportState.exportableServices.isNotEmpty(),
+        onExportClick = {
+            val singleService: AppMode? = exportState.exportableServices.singleOrNull()
+
+            if (singleService != null) {
+                exportBookmarksViewModel.createBackup(appMode = singleService)
+            } else {
+                exportSheetState.showBottomSheet()
+            }
+        },
     )
 }
 
@@ -150,6 +201,8 @@ private fun AuthScreen(
     isLoading: Boolean,
     apiTokenError: String?,
     instanceUrlError: String?,
+    showExport: Boolean,
+    onExportClick: () -> Unit,
 ) {
     val windowInsetsSides = remember(allowSwitching) {
         buildList {
@@ -344,6 +397,17 @@ private fun AuthScreen(
                 )
             }
         }
+
+        if (showExport) {
+            OutlinedButton(
+                onClick = onExportClick,
+                shapes = ExtendedTheme.defaultButtonShapes,
+                modifier = Modifier.padding(top = 16.dp),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.secondary),
+            ) {
+                Text(text = stringResource(id = R.string.menu_navigation_export))
+            }
+        }
     }
 }
 
@@ -468,6 +532,8 @@ private fun AuthScreenPreview() {
             isLoading = false,
             apiTokenError = null,
             instanceUrlError = null,
+            showExport = false,
+            onExportClick = {},
         )
     }
 }
@@ -487,6 +553,8 @@ private fun AuthScreenLinkdingPreview() {
             isLoading = false,
             apiTokenError = null,
             instanceUrlError = null,
+            showExport = false,
+            onExportClick = {},
         )
     }
 }
@@ -506,6 +574,8 @@ private fun AuthScreenLoadingPreview() {
             isLoading = true,
             apiTokenError = null,
             instanceUrlError = null,
+            showExport = false,
+            onExportClick = {},
         )
     }
 }
@@ -525,6 +595,29 @@ private fun AuthScreenErrorPreview() {
             isLoading = false,
             apiTokenError = "Some error happened. Please try again.",
             instanceUrlError = null,
+            showExport = false,
+            onExportClick = {},
+        )
+    }
+}
+
+@Composable
+@PreviewAll
+private fun AuthScreenExportPreview() {
+    ExtendedTheme {
+        AuthScreen(
+            useLinkding = false,
+            allowSwitching = true,
+            onUseLinkdingChange = {},
+            clientCertAlias = null,
+            onClientCertAliasClick = {},
+            onClientCertAliasChange = {},
+            onAuthRequest = { _, _ -> },
+            isLoading = false,
+            apiTokenError = null,
+            instanceUrlError = null,
+            showExport = true,
+            onExportClick = {},
         )
     }
 }

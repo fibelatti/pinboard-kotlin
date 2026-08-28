@@ -1,13 +1,12 @@
-package com.fibelatti.pinboard.features.navigation
+package com.fibelatti.pinboard.features.export
 
 import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
-import com.fibelatti.pinboard.features.export.ExportBookmarksUseCase
-import com.fibelatti.pinboard.features.export.MoveFileToUriUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.File
 import javax.inject.Inject
@@ -15,20 +14,27 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class NavigationMenuViewModel @Inject constructor(
+class ExportBookmarksViewModel @Inject constructor(
     scope: CoroutineScope,
     appStateRepository: AppStateRepository,
     private val exportBookmarksUseCase: ExportBookmarksUseCase,
+    private val getExportableServicesUseCase: GetExportableServicesUseCase,
     private val moveFileToUriUseCase: MoveFileToUriUseCase,
 ) : BaseViewModel(scope, appStateRepository) {
 
     var state: State by mutableStateOf(State())
         private set
 
-    fun createBackup() {
+    fun refreshExportableServices() {
+        scope.launch {
+            state = state.copy(exportableServices = getExportableServicesUseCase())
+        }
+    }
+
+    fun createBackup(appMode: AppMode) {
         scope.launch {
             state = state.copy(isProcessing = true)
-            val file: File? = exportBookmarksUseCase()
+            val file: File? = exportBookmarksUseCase(params = appMode)
 
             state = state.copy(
                 isProcessing = false,
@@ -73,6 +79,7 @@ class NavigationMenuViewModel @Inject constructor(
 
     data class State(
         val isProcessing: Boolean = false,
+        val exportableServices: Set<AppMode> = emptySet(),
         val preparedFile: File? = null,
         val messages: List<Message> = emptyList(),
     ) {

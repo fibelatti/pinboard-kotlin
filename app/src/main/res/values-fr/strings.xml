@@ -303,6 +303,7 @@
     <string name="account_switcher_add_linkding">Ajouter un compte Linkding</string>
 
     <!-- Export -->
+    <string name="export_select_service">Choisissez le service à exporter</string>
     <string name="export_feedback_success">Favoris exportés avec succès !</string>
     <string name="export_feedback_failure">Échec de l\'exportation des favoris</string>
 

@@ -302,6 +302,7 @@
     <string name="account_switcher_add_linkding">Add Linkding account</string>
 
     <!-- Export -->
+    <string name="export_select_service">Select which service to export from</string>
     <string name="export_feedback_success">Bookmarks exported successfully!</string>
     <string name="export_feedback_failure">Failed to export bookmarks</string>
 

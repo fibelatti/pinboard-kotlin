@@ -1,9 +1,8 @@
 package com.fibelatti.pinboard.features.export
 
 import android.content.Context
-import com.fibelatti.core.functional.UseCase
+import com.fibelatti.core.functional.UseCaseWithParams
 import com.fibelatti.pinboard.core.AppMode
-import com.fibelatti.pinboard.core.AppModeProvider
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.linkding.data.BookmarkLocalMapper
 import com.fibelatti.pinboard.features.linkding.data.BookmarksDao
@@ -37,21 +36,20 @@ import timber.log.Timber
 
 class ExportBookmarksUseCase @Inject constructor(
     @ApplicationContext context: Context,
-    private val appModeProvider: AppModeProvider,
     private val postDao: PostsDao,
     private val postDtoMapper: PostDtoMapper,
     private val bookmarksDao: BookmarksDao,
     private val bookmarksMapper: BookmarkLocalMapper,
     private val dateFormatter: DateFormatter,
-) : UseCase<File?> {
+) : UseCaseWithParams<AppMode, File?> {
 
     private val parentDir: File = context.cacheDir
 
-    override suspend fun invoke(): File? = try {
+    override suspend fun invoke(params: AppMode): File? = try {
         withContext(Dispatchers.Default) {
             Timber.d("Loading bookmarks to export...")
 
-            val posts: List<Post> = getPosts()
+            val posts: List<Post> = getPosts(appMode = params)
             Timber.d("${posts.size} bookmarks found.")
 
             if (posts.isNotEmpty()) {
@@ -68,14 +66,13 @@ class ExportBookmarksUseCase @Inject constructor(
         null
     }
 
-    private suspend fun getPosts(): List<Post> {
-        val appMode: AppMode = appModeProvider.appMode.value
+    private suspend fun getPosts(appMode: AppMode): List<Post> {
         Timber.d("App mode: $appMode")
 
-        return if (appMode == AppMode.PINBOARD) {
-            postDao.getAllPosts().let(postDtoMapper::mapList)
-        } else {
-            bookmarksDao.getAllBookmarks().let(bookmarksMapper::mapList)
+        return when (appMode) {
+            AppMode.UNSET -> emptyList()
+            AppMode.NO_API, AppMode.PINBOARD -> postDao.getAllPosts().let(postDtoMapper::mapList)
+            AppMode.LINKDING -> bookmarksDao.getAllBookmarks().let(bookmarksMapper::mapList)
         }
     }
 
