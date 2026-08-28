@@ -160,21 +160,17 @@ private fun LaunchedViewModelEffects(
     }
 
     SideEffect(imeVisible) {
-        if (imeVisible) {
-            mainViewModel.updateState { currentState ->
-                currentState.copy(
-                    actionButton = MainState.ActionButtonComponent.Visible(
-                        contentType = EditPostContent::class,
-                        icon = AppIcons.Save,
-                        label = localResources.getString(R.string.hint_save),
-                    ),
-                )
-            }
+        val actionButton = if (imeVisible) {
+            MainState.ActionButtonComponent.Visible(
+                contentType = EditPostContent::class,
+                icon = AppIcons.Save,
+                label = localResources.getString(R.string.hint_save),
+            )
         } else {
-            mainViewModel.updateState { currentState ->
-                currentState.copy(actionButton = MainState.ActionButtonComponent.Gone)
-            }
+            MainState.ActionButtonComponent.Gone
         }
+
+        mainViewModel.updateState { currentState -> currentState.copy(actionButton = actionButton) }
     }
 
     LaunchedMainViewModelEffect()
