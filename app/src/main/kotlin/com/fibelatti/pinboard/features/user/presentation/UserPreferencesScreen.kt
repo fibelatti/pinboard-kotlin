@@ -160,20 +160,20 @@ fun UserPreferencesScreen(
     val containerModifier = modifier
         .background(color = ExtendedTheme.colors.backgroundNoOverlay)
         .fillMaxSize()
-        .verticalScroll(rememberScrollState())
-        .padding(top = 8.dp, bottom = 32.dp)
         .windowInsetsPadding(
             WindowInsets.safeDrawing
                 .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
         )
+        .verticalScroll(rememberScrollState())
+        .padding(top = 8.dp, bottom = 32.dp)
 
     if (!isAtLeastMediumWidth) {
-        Column(modifier = containerModifier.fillMaxWidth()) {
+        Column(modifier = containerModifier) {
             appPreferences(Modifier)
             bookmarkingPreferences(Modifier.padding(top = 32.dp))
         }
     } else {
-        Row(modifier = containerModifier.fillMaxWidth()) {
+        Row(modifier = containerModifier) {
             appPreferences(Modifier.weight(1f))
             bookmarkingPreferences(Modifier.weight(1f))
         }
