@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
@@ -414,12 +413,12 @@ private fun BookmarkContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .verticalScroll(scrollState)
             .windowInsetsPadding(
                 WindowInsets.safeDrawing
-                    .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-                    .add(WindowInsets(top = 8.dp, bottom = MainBottomAppBar.ContentClearance)),
-            ),
+                    .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+            )
+            .verticalScroll(scrollState)
+            .padding(top = 8.dp, bottom = MainBottomAppBar.ContentClearance),
     ) {
         if (post.pendingSync != null) {
             PendingSyncIndicator(

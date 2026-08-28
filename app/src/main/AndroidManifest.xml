@@ -24,7 +24,7 @@
             android:name=".features.main.MainComposeActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
