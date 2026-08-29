@@ -99,6 +99,7 @@ import com.fibelatti.pinboard.features.sync.PeriodicSync
 import com.fibelatti.pinboard.features.tags.domain.TagManagerState
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagManager
+import com.fibelatti.pinboard.features.tags.presentation.displayTitle
 import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.ListItem
@@ -645,7 +646,7 @@ private fun BookmarkingPreferencesContent(
                 onAddTagClick = userPreferencesViewModel::addTag,
                 suggestedTags = tagState.suggestedTags,
                 onSuggestedTagClick = userPreferencesViewModel::addTag,
-                currentTagsTitle = stringResource(id = tagState.displayTitle),
+                currentTagsTitle = tagState.displayTitle,
                 currentTags = tagState.tags,
                 onRemoveCurrentTagClick = userPreferencesViewModel::removeTag,
                 modifier = Modifier.fillWidthOfParent(parentPaddingStart = 16.dp, parentPaddingEnd = 16.dp),

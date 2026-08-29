@@ -74,6 +74,7 @@ import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.tags.domain.TagManagerState
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.presentation.TagManager
+import com.fibelatti.pinboard.features.tags.presentation.displayTitle
 import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.foundation.rememberKeyboardState
 import com.fibelatti.ui.preview.PreviewAll
@@ -128,7 +129,7 @@ fun EditBookmarkScreen(
         onAddTagClick = editPostViewModel::addTag,
         suggestedTags = tagManagerState.suggestedTags,
         onSuggestedTagClick = editPostViewModel::addTag,
-        currentTagsTitle = stringResource(id = tagManagerState.displayTitle),
+        currentTagsTitle = tagManagerState.displayTitle,
         currentTags = tagManagerState.tags,
         onRemoveCurrentTagClick = editPostViewModel::removeTag,
     )

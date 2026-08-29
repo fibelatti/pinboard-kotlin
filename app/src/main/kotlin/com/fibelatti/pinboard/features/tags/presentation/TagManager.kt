@@ -18,6 +18,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.extension.fillWidthOfParent
+import com.fibelatti.pinboard.features.tags.domain.TagManagerState
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
@@ -45,6 +47,14 @@ import com.fibelatti.ui.icons.Close
 import com.fibelatti.ui.icons.UiIcons
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
+
+/**
+ * Title of the section listing the tags currently added, which reflects whether there are any.
+ */
+val TagManagerState.displayTitle: String
+    @Composable
+    @ReadOnlyComposable
+    get() = stringResource(id = if (tags.isEmpty()) R.string.tags_empty_title else R.string.tags_added_title)
 
 @Composable
 fun TagManager(
