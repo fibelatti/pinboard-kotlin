@@ -237,7 +237,6 @@ dependencies {
     debugImplementation(libs.leakcanary)
 
     // Test
-    testFixturesImplementation(libs.kotlin)
     testFixturesImplementation(libs.compose.runtime)
 
     testImplementation(platform(libs.junit6.bom))
