@@ -11,7 +11,6 @@ import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
-import java.io.StringWriter
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -30,7 +29,7 @@ import kotlinx.html.head
 import kotlinx.html.html
 import kotlinx.html.meta
 import kotlinx.html.p
-import kotlinx.html.stream.appendHTML
+import kotlinx.html.stream.createHTML
 import kotlinx.html.title
 import timber.log.Timber
 
@@ -89,35 +88,37 @@ class ExportBookmarksUseCase @Inject constructor(
     }
 
     private suspend fun exportBookmarks(file: File, posts: List<Post>) {
-        val sw = StringWriter()
-
-        sw.appendLine("<!DOCTYPE netscape-bookmark-file-1>")
-        sw.appendHTML().html {
-            head {
-                meta {
-                    httpEquiv = "Content-Type"
-                    content = "text/html; charset=UTF-8"
-                }
-                title("Bookmarks")
-            }
-            body {
-                h1 {
-                    text("Bookmarks")
-                }
-                dl {
-                    p()
-
-                    for (item: Post in posts) {
-                        writePostToHtml(item)
+        val content: String = buildString {
+            appendLine("<!DOCTYPE netscape-bookmark-file-1>")
+            append(
+                createHTML().html {
+                    head {
+                        meta {
+                            httpEquiv = "Content-Type"
+                            content = "text/html; charset=UTF-8"
+                        }
+                        title("Bookmarks")
                     }
-                }
+                    body {
+                        h1 {
+                            text("Bookmarks")
+                        }
+                        dl {
+                            p()
 
-                p()
-            }
+                            for (item: Post in posts) {
+                                writePostToHtml(item)
+                            }
+                        }
+
+                        p()
+                    }
+                },
+            )
         }
 
         withContext(Dispatchers.IO) {
-            file.writeText(sw.toString())
+            file.writeText(content)
         }
     }
 
