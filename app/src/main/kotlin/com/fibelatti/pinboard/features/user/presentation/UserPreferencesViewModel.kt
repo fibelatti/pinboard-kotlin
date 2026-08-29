@@ -38,6 +38,10 @@ class UserPreferencesViewModel @Inject constructor(
     private val offlineCopyRepository: OfflineCopyRepository,
 ) : BaseViewModel(dispatcher, appStateRepository), TagManagerRepository by tagManagerRepository {
 
+    init {
+        addCloseable(tagManagerRepository)
+    }
+
     val userCredentials: StateFlow<UserCredentials> get() = userRepository.userCredentials
 
     val currentPreferences: StateFlow<UserPreferences> get() = userRepository.currentPreferences

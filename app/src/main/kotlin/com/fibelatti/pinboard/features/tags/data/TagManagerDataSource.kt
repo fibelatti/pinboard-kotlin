@@ -11,7 +11,10 @@ import com.fibelatti.pinboard.features.tags.domain.TagManagerRepository
 import com.fibelatti.pinboard.features.tags.domain.TagManagerState
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -20,10 +23,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class TagManagerDataSource @Inject constructor(
-    @Scope(AppDispatchers.DEFAULT) scope: CoroutineScope,
+    @Scope(AppDispatchers.DEFAULT) dispatcher: CoroutineDispatcher,
     appStateRepository: AppStateRepository,
     postsRepository: PostsRepository,
 ) : TagManagerRepository {
+
+    private val scope: CoroutineScope = CoroutineScope(dispatcher + SupervisorJob())
 
     private val _tagManagerState: MutableStateFlow<TagManagerState?> = MutableStateFlow(null)
     override val tagManagerState: Flow<TagManagerState> = _tagManagerState.filterNotNull()
@@ -84,5 +89,9 @@ class TagManagerDataSource @Inject constructor(
 
     override fun setTagSearchQuery(value: String) {
         _tagManagerState.update { current -> current?.copy(currentQuery = value) }
+    }
+
+    override fun close() {
+        scope.cancel()
     }
 }

@@ -18,7 +18,6 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
@@ -28,10 +27,12 @@ internal class TagManagerDataSourceTest : BaseViewModelTest() {
     private val mockAppStateRepository = mockk<AppStateRepository> {
         every { appState } returns appStateFlow
     }
-    private val mockPostsRepository = mockk<PostsRepository>()
+    private val mockPostsRepository = mockk<PostsRepository> {
+        coEvery { searchExistingPostTag(tag = any(), currentTags = any()) } returns Result.success(emptyList())
+    }
 
     private val dataSource = TagManagerDataSource(
-        scope = TestScope(dispatcher),
+        dispatcher = dispatcher,
         appStateRepository = mockAppStateRepository,
         postsRepository = mockPostsRepository,
     )

@@ -47,6 +47,10 @@ class EditPostViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
 ) : BaseViewModel(dispatcher, appStateRepository), TagManagerRepository by tagManagerRepository {
 
+    init {
+        addCloseable(tagManagerRepository)
+    }
+
     // Initial `post` state when the screen is first opened
     private val initialPostState: StateFlow<Post?> = appStateRepository.appState
         .map { appState ->

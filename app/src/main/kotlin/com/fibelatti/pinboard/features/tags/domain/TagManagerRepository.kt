@@ -4,7 +4,7 @@ import androidx.compose.runtime.Stable
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import kotlinx.coroutines.flow.Flow
 
-interface TagManagerRepository {
+interface TagManagerRepository : AutoCloseable {
 
     val tagManagerState: Flow<TagManagerState>
 
