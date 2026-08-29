@@ -5,7 +5,9 @@ import android.net.ConnectivityManager
 import androidx.core.content.getSystemService
 import com.fibelatti.core.android.platform.AppResourceProvider
 import com.fibelatti.core.android.platform.ResourceProvider
+import com.fibelatti.pinboard.core.android.AndroidConnectivityInfoProvider
 import com.fibelatti.pinboard.core.android.AndroidUserAgentProvider
+import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.android.RetainedLifecycleScope
 import com.fibelatti.pinboard.core.network.UserAgentProvider
 import dagger.Module
@@ -44,6 +46,10 @@ object AndroidModule {
     @Provides
     @Singleton
     fun userAgentProvider(impl: AndroidUserAgentProvider): UserAgentProvider = impl
+
+    @Provides
+    @Singleton
+    fun connectivityInfoProvider(impl: AndroidConnectivityInfoProvider): ConnectivityInfoProvider = impl
 }
 
 @Module

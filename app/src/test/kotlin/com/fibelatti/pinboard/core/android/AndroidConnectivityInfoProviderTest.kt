@@ -8,7 +8,7 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
 
-internal class ConnectivityInfoProviderTest {
+internal class AndroidConnectivityInfoProviderTest {
 
     private val mockNetworkA = mockk<Network>()
     private val mockNetworkB = mockk<Network>()
@@ -28,14 +28,14 @@ internal class ConnectivityInfoProviderTest {
         every { getNetworkCapabilities(null) } returns null
     }
 
-    private val connectivityInfoProvider = ConnectivityInfoProvider(
+    private val connectivityInfoProvider = AndroidConnectivityInfoProvider(
         connectivityManager = mockConnectivityManager,
     )
 
     @Test
     fun `WHEN ConnectivityManager is null THEN isConnected should return false`() {
         assertThat(
-            ConnectivityInfoProvider(
+            AndroidConnectivityInfoProvider(
                 connectivityManager = null,
             ).isConnected(),
         ).isFalse()
