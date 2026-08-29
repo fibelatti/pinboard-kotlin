@@ -11,13 +11,16 @@ import com.fibelatti.pinboard.features.posts.data.model.PostDtoMapper
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
+import kotlin.time.Clock
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format.DateTimeFormat
+import kotlinx.datetime.format.char
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.html.DL
 import kotlinx.html.a
 import kotlinx.html.body
@@ -43,6 +46,15 @@ class ExportBookmarksUseCase @Inject constructor(
 ) : UseCaseWithParams<AppMode, File?> {
 
     private val parentDir: File = context.cacheDir
+
+    private val fileNameFormat: DateTimeFormat<LocalDateTime> = LocalDateTime.Format {
+        year()
+        monthNumber()
+        day()
+        char(value = '_')
+        hour()
+        minute()
+    }
 
     override suspend fun invoke(params: AppMode): File? = try {
         withContext(Dispatchers.Default) {
@@ -78,7 +90,9 @@ class ExportBookmarksUseCase @Inject constructor(
     private suspend fun createExportFile(): File = withContext(Dispatchers.IO) {
         Timber.d("Creating export file...")
 
-        val timestamp: String = SimpleDateFormat("yyyyMMdd_HHmm", Locale.US).format(Date())
+        val timestamp: String = fileNameFormat.format(
+            Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+        )
         val file: File = File("$parentDir/bookmarks_$timestamp.html").apply {
             if (exists()) delete()
             createNewFile()
