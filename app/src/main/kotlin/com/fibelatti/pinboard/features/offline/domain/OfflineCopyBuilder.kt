@@ -1,11 +1,10 @@
 package com.fibelatti.pinboard.features.offline.domain
 
-import android.os.Build
 import com.fibelatti.core.extension.ifNullOrBlank
 import com.fibelatti.core.functional.coRunCatching
-import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.core.di.RestApi
 import com.fibelatti.pinboard.core.di.RestApiProvider
+import com.fibelatti.pinboard.core.network.UserAgentProvider
 import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
@@ -41,6 +40,7 @@ import timber.log.Timber
  */
 class OfflineCopyBuilder @Inject constructor(
     @RestApi(RestApiProvider.COMMON) private val httpClient: HttpClient,
+    private val userAgentProvider: UserAgentProvider,
 ) {
 
     suspend fun build(url: String, fallbackTitle: String): Result<Output> = coRunCatching {
@@ -100,7 +100,7 @@ class OfflineCopyBuilder @Inject constructor(
      * cache, doubling the disk cost.
      */
     private fun HttpRequestBuilder.offlineCaptureHeaders() {
-        header(HttpHeaders.UserAgent, USER_AGENT)
+        header(HttpHeaders.UserAgent, userAgentProvider.userAgent)
         header(HttpHeaders.CacheControl, "no-store")
     }
 
@@ -311,9 +311,6 @@ class OfflineCopyBuilder @Inject constructor(
         const val MAX_PAGE_BYTES: Int = 32 * 1024 * 1024
 
         private const val DATA_URI_PREFIX = "data:"
-
-        private val USER_AGENT: String
-            get() = "Pinkt/${BuildConfig.VERSION_NAME} (Android; ${Build.VERSION.SDK_INT})"
 
         private val STYLES: String = """
             :root { color-scheme: light dark; }

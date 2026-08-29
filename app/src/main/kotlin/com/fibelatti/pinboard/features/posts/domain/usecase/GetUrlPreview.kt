@@ -1,11 +1,10 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
-import android.os.Build
 import com.fibelatti.core.extension.ifNullOrBlank
 import com.fibelatti.core.functional.ResultUseCaseWithParams
 import com.fibelatti.core.functional.coRunCatching
-import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.core.network.UserAgentProvider
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -16,6 +15,7 @@ import timber.log.Timber
 
 class GetUrlPreview @Inject constructor(
     private val userRepository: UserRepository,
+    private val userAgentProvider: UserAgentProvider,
 ) : ResultUseCaseWithParams<GetUrlPreview.Params, UrlPreview> {
 
     override suspend operator fun invoke(params: Params): Result<UrlPreview> = coRunCatching {
@@ -37,10 +37,7 @@ class GetUrlPreview @Inject constructor(
     private suspend fun loadUrl(params: Params): UrlPreview {
         val document: Document = withContext(Dispatchers.IO) {
             Jsoup.connect(params.url)
-                .header(
-                    /* name = */ "User-Agent",
-                    /* value = */ "Pinkt/${BuildConfig.VERSION_NAME} (Android; ${Build.VERSION.SDK_INT})",
-                )
+                .header(/* name = */ "User-Agent", /* value = */ userAgentProvider.userAgent)
                 .get()
         }
 

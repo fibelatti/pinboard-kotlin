@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.offline.domain
 
+import com.fibelatti.pinboard.core.network.UserAgentProvider
 import com.google.common.truth.Truth.assertThat
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
@@ -15,9 +16,16 @@ internal class OfflineCopyBuilderTest {
 
     private lateinit var server: MockWebServer
 
+    private val fakeUserAgent = "Pinkt/1.0 (Android; 36)"
+
+    private val userAgentProvider = object : UserAgentProvider {
+        override val userAgent: String = fakeUserAgent
+    }
+
     private val builder: OfflineCopyBuilder
         get() = OfflineCopyBuilder(
             httpClient = HttpClient(OkHttp),
+            userAgentProvider = userAgentProvider,
         )
 
     @BeforeEach
@@ -187,6 +195,17 @@ internal class OfflineCopyBuilderTest {
             .getOrThrow()
 
         assertThat(output.html).contains("data:image/gif;base64,")
+    }
+
+    @Test
+    fun `WHEN a page is captured THEN every request is sent with the app user agent`() = runTest {
+        server.enqueue(htmlResponse(articleHtml(imageSrc = "/media/photo.png")))
+        server.enqueue(imageResponse(bytes = PNG_BYTES))
+
+        builder.build(url = server.url("/post").toString(), fallbackTitle = "Fallback").getOrThrow()
+
+        assertThat(server.takeRequest().headers["User-Agent"]).isEqualTo(fakeUserAgent)
+        assertThat(server.takeRequest().headers["User-Agent"]).isEqualTo(fakeUserAgent)
     }
 
     /**

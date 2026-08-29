@@ -5,7 +5,9 @@ import android.net.ConnectivityManager
 import androidx.core.content.getSystemService
 import com.fibelatti.core.android.platform.AppResourceProvider
 import com.fibelatti.core.android.platform.ResourceProvider
+import com.fibelatti.pinboard.core.android.AndroidUserAgentProvider
 import com.fibelatti.pinboard.core.android.RetainedLifecycleScope
+import com.fibelatti.pinboard.core.network.UserAgentProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,6 +40,10 @@ object AndroidModule {
     @Provides
     @Singleton
     fun resourceProvider(@ApplicationContext context: Context): ResourceProvider = AppResourceProvider(context)
+
+    @Provides
+    @Singleton
+    fun userAgentProvider(impl: AndroidUserAgentProvider): UserAgentProvider = impl
 }
 
 @Module
