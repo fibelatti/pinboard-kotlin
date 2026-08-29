@@ -39,6 +39,7 @@ import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LocalAppMessages
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
+import com.fibelatti.pinboard.core.android.composable.rememberJsonSheetDataSaver
 import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.Filter
 import com.fibelatti.pinboard.features.appstate.ViewSavedFilter
@@ -65,7 +66,9 @@ fun SavedFiltersScreen(
 
         val localAppMessages = LocalAppMessages.current
 
-        val savedFilterMenuSheetState = rememberAppSheetState()
+        val savedFilterMenuSheetState = rememberAppSheetState(
+            dataSaver = rememberJsonSheetDataSaver(SavedFilter.serializer()),
+        )
 
         val error by savedFiltersViewModel.error.collectAsStateWithLifecycle()
         ErrorHandlerEffect(error = error, handler = savedFiltersViewModel::errorHandled)

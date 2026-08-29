@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.fibelatti.android.application)
     alias(libs.plugins.fibelatti.manifest.permission.validation)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.room)

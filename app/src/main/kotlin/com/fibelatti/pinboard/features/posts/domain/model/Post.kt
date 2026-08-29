@@ -1,12 +1,11 @@
 package com.fibelatti.pinboard.features.posts.domain.model
 
-import android.os.Parcelable
 import androidx.compose.runtime.Stable
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 @Stable
-@Parcelize
+@Serializable
 data class Post(
     val url: String,
     val title: String,
@@ -25,7 +24,7 @@ data class Post(
     val faviconUrl: String? = null,
     val isArchived: Boolean? = null,
     val pendingSync: PendingSync? = null,
-) : Parcelable {
+) {
 
     val displayTitle: String
         get() = title.ifEmpty { websiteTitle ?: "" }

@@ -83,6 +83,7 @@ import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.android.composable.RadioSelectionDialogBottomSheet
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
 import com.fibelatti.pinboard.core.android.composable.TextWithBlockquote
+import com.fibelatti.pinboard.core.android.composable.rememberJsonSheetDataSaver
 import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.ClearFilter
 import com.fibelatti.pinboard.core.android.icons.Private
@@ -184,8 +185,9 @@ fun BookmarkListScreen(
 
         val coroutineScope = rememberCoroutineScope()
 
-        val bookmarkQuickActionsSheetState = rememberAppSheetState()
-        val bookmarkDescriptionSheetState = rememberAppSheetState()
+        val dataSaver = rememberJsonSheetDataSaver(Post.serializer())
+        val bookmarkQuickActionsSheetState = rememberAppSheetState(dataSaver = dataSaver)
+        val bookmarkDescriptionSheetState = rememberAppSheetState(dataSaver = dataSaver)
         val shareFilterResultsSheetState = rememberAppSheetState()
         val sortSelectionSheetState = rememberAppSheetState()
 

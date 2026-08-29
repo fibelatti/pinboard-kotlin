@@ -59,6 +59,7 @@ import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.LoadingContent
 import com.fibelatti.pinboard.core.android.composable.LocalAppMessages
+import com.fibelatti.pinboard.core.android.composable.rememberJsonSheetDataSaver
 import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.Download
 import com.fibelatti.pinboard.features.appstate.AppState
@@ -89,7 +90,9 @@ fun OfflineCopyListScreen(
         val localContext = LocalContext.current
         val localAppMessages = LocalAppMessages.current
 
-        val quickActionsSheetState = rememberAppSheetState()
+        val quickActionsSheetState = rememberAppSheetState(
+            dataSaver = rememberJsonSheetDataSaver(OfflineCopy.serializer()),
+        )
 
         val selectedKeys: SnapshotStateList<String> = rememberSaveable(
             saver = listSaver(

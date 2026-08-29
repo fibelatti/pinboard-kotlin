@@ -35,6 +35,7 @@ import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.LocalAppMessages
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
+import com.fibelatti.pinboard.core.android.composable.rememberJsonSheetDataSaver
 import com.fibelatti.pinboard.features.appstate.PopularPostsContent
 import com.fibelatti.pinboard.features.appstate.RefreshPopular
 import com.fibelatti.pinboard.features.appstate.ViewPost
@@ -73,7 +74,9 @@ fun PopularBookmarksScreen(
         val error by popularPostsViewModel.error.collectAsStateWithLifecycle()
         ErrorHandlerEffect(error = error, handler = popularPostsViewModel::errorHandled)
 
-        val popularBookmarkQuickActionsSheetState = rememberAppSheetState()
+        val popularBookmarkQuickActionsSheetState = rememberAppSheetState(
+            dataSaver = rememberJsonSheetDataSaver(Post.serializer()),
+        )
 
         CrossfadeLoadingLayout(
             data = popularPostsContent.posts.takeUnless { popularPostsContent.shouldLoad || screenState.isLoading },

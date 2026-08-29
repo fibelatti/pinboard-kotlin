@@ -71,6 +71,7 @@ import com.fibelatti.pinboard.core.android.composable.EmptyListContent
 import com.fibelatti.pinboard.core.android.composable.ErrorHandlerEffect
 import com.fibelatti.pinboard.core.android.composable.PullRefreshLayout
 import com.fibelatti.pinboard.core.android.composable.SelectionDialogBottomSheet
+import com.fibelatti.pinboard.core.android.composable.rememberJsonSaver
 import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.Tag
 import com.fibelatti.pinboard.features.appstate.PostsForTag
@@ -94,7 +95,9 @@ fun TagListScreen(
     val appState by tagsViewModel.appState.collectAsStateWithLifecycle()
     val tagsState by tagsViewModel.state.collectAsStateWithLifecycle()
 
-    var quickActionTag: Tag? by rememberSaveable { mutableStateOf(null) }
+    var quickActionTag: Tag? by rememberSaveable(stateSaver = rememberJsonSaver(Tag.serializer())) {
+        mutableStateOf(null)
+    }
 
     val tagQuickActionsSheetState = rememberAppSheetState()
     val renameTagSheetState = rememberAppSheetState()

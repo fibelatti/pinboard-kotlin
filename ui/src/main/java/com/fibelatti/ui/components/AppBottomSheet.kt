@@ -18,6 +18,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.autoSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -93,10 +95,16 @@ public fun AppBottomSheet(
 
 /**
  * Creates and remembers an [AppSheetState] instance, used to control the visibility of an [AppBottomSheet].
+ *
+ * @param skipPartiallyExpanded whether the sheet should skip [SheetValue.PartiallyExpanded].
+ * @param dataSaver [Saver] used to persist the value passed to [AppSheetState.showBottomSheet] across configuration
+ * changes and process death. The default only supports values the saved instance state mechanism understands, so
+ * callers passing anything else must provide a matching [Saver].
  */
 @Composable
 public fun rememberAppSheetState(
     skipPartiallyExpanded: Boolean = true,
+    dataSaver: Saver<Any?, out Any> = autoSaver(),
 ): AppSheetState {
     val sheetState: SheetState = rememberBottomSheetState(
         initialValue = SheetValue.Hidden,
@@ -108,9 +116,7 @@ public fun rememberAppSheetState(
     )
     val scope: CoroutineScope = rememberCoroutineScope()
     val isVisibleState: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) }
-    // `data` is stored as `Any?` — callers must pass values supported by Bundle (primitives, Parcelable, Serializable)
-    // for restoration to succeed across configuration changes and process death.
-    val dataState: MutableState<Any?> = rememberSaveable { mutableStateOf(null) }
+    val dataState: MutableState<Any?> = rememberSaveable(stateSaver = dataSaver) { mutableStateOf(null) }
 
     return remember(skipPartiallyExpanded) { AppSheetStateImpl(sheetState, scope, isVisibleState, dataState) }
 }
