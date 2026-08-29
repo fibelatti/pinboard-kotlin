@@ -1,8 +1,8 @@
 package com.fibelatti.pinboard.core.android
 
 import android.os.Build
+import com.fibelatti.core.platform.UserAgentProvider
 import com.fibelatti.pinboard.BuildConfig
-import com.fibelatti.pinboard.core.network.UserAgentProvider
 import javax.inject.Inject
 
 class AndroidUserAgentProvider @Inject constructor() : UserAgentProvider {

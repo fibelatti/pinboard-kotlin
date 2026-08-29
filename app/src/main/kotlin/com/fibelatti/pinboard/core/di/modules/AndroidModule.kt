@@ -5,11 +5,11 @@ import android.net.ConnectivityManager
 import androidx.core.content.getSystemService
 import com.fibelatti.core.android.platform.AppResourceProvider
 import com.fibelatti.core.android.platform.ResourceProvider
+import com.fibelatti.core.platform.UserAgentProvider
 import com.fibelatti.pinboard.core.android.AndroidConnectivityInfoProvider
 import com.fibelatti.pinboard.core.android.AndroidUserAgentProvider
 import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.android.RetainedLifecycleScope
-import com.fibelatti.pinboard.core.network.UserAgentProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

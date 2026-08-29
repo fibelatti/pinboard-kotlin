@@ -3,10 +3,10 @@ package com.fibelatti.pinboard.features.posts.domain.usecase
 import com.fibelatti.core.extension.ifNullOrBlank
 import com.fibelatti.core.functional.ResultUseCaseWithParams
 import com.fibelatti.core.functional.coRunCatching
+import com.fibelatti.core.platform.UserAgentProvider
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.di.RestApi
 import com.fibelatti.pinboard.core.di.RestApiProvider
-import com.fibelatti.pinboard.core.network.UserAgentProvider
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.HttpClientCall

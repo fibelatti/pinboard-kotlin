@@ -2,9 +2,9 @@ package com.fibelatti.pinboard.features.offline.domain
 
 import com.fibelatti.core.extension.ifNullOrBlank
 import com.fibelatti.core.functional.coRunCatching
+import com.fibelatti.core.platform.UserAgentProvider
 import com.fibelatti.pinboard.core.di.RestApi
 import com.fibelatti.pinboard.core.di.RestApiProvider
-import com.fibelatti.pinboard.core.network.UserAgentProvider
 import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get

@@ -1,6 +1,6 @@
 package com.fibelatti.pinboard.features.posts.domain.usecase
 
-import com.fibelatti.pinboard.core.network.UserAgentProvider
+import com.fibelatti.core.platform.UserAgentProvider
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.google.common.truth.Truth.assertThat
 import io.ktor.client.HttpClient
