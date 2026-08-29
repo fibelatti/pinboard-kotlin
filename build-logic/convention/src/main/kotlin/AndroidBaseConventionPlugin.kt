@@ -41,7 +41,6 @@ class AndroidBaseConventionPlugin : Plugin<Project> {
 
     private fun Project.configureCommonDependencies() {
         dependencies {
-            implementation("kotlin")
             implementation("coroutines-core")
 
             implementation("core")
