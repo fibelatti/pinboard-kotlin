@@ -18,8 +18,6 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ViewModelScoped
 import dagger.hilt.components.SingletonComponent
-import java.text.Collator
-import java.util.Locale
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -29,12 +27,6 @@ import kotlinx.coroutines.SupervisorJob
 @Module
 @InstallIn(SingletonComponent::class)
 object AndroidModule {
-
-    @Provides
-    fun localeDefault(): Locale = Locale.getDefault()
-
-    @Provides
-    fun usCollator(): Collator = Collator.getInstance(Locale.US)
 
     @Provides
     fun connectivityManager(@ApplicationContext context: Context): ConnectivityManager? = context.getSystemService()
