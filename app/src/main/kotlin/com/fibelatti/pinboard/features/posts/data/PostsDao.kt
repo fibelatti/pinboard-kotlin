@@ -3,10 +3,10 @@ package com.fibelatti.pinboard.features.posts.data
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RawQuery
+import androidx.room.RoomRawQuery
 import androidx.room.Upsert
-import androidx.sqlite.db.SimpleSQLiteQuery
-import androidx.sqlite.db.SupportSQLiteQuery
 import com.fibelatti.pinboard.core.AppConfig
+import com.fibelatti.pinboard.core.persistence.database.rawQuery
 import com.fibelatti.pinboard.features.posts.data.model.POST_FTS_TABLE_NAME
 import com.fibelatti.pinboard.features.posts.data.model.POST_TABLE_NAME
 import com.fibelatti.pinboard.features.posts.data.model.PostDto
@@ -28,13 +28,13 @@ interface PostsDao {
     suspend fun savePosts(posts: List<PostDto>)
 
     @RawQuery
-    suspend fun getPostCount(query: SupportSQLiteQuery = postCountFtsQuery()): Int
+    suspend fun getPostCount(query: RoomRawQuery = postCountFtsQuery()): Int
 
     @RawQuery
-    suspend fun getAllPosts(query: SupportSQLiteQuery = allPostsFtsQuery()): List<PostDto>
+    suspend fun getAllPosts(query: RoomRawQuery = allPostsFtsQuery()): List<PostDto>
 
     @RawQuery
-    suspend fun searchExistingPostTag(query: SupportSQLiteQuery): List<String>
+    suspend fun searchExistingPostTag(query: RoomRawQuery): List<String>
 
     @Query("select * from $POST_TABLE_NAME where href = :url")
     suspend fun getPost(url: String): PostDto?
@@ -61,7 +61,7 @@ interface PostsDao {
             postVisibility: PostVisibility = PostVisibility.None,
             readLaterOnly: Boolean = false,
             limit: Int = -1,
-        ): SimpleSQLiteQuery {
+        ): RoomRawQuery {
             return postFtsQuery(
                 selectStatement = "select count(*) from (select hash from $POST_TABLE_NAME where 1=1",
                 term = term,
@@ -89,7 +89,7 @@ interface PostsDao {
             sortType: Int = 0,
             offset: Int = 0,
             limit: Int = -1,
-        ): SimpleSQLiteQuery {
+        ): RoomRawQuery {
             return postFtsQuery(
                 selectStatement = "select $POST_TABLE_NAME.* from $POST_TABLE_NAME where 1=1",
                 term = term,
@@ -120,7 +120,7 @@ interface PostsDao {
             offset: Int = 0,
             limit: Int = -1,
             addTrailingParenthesis: Boolean = false,
-        ): SimpleSQLiteQuery {
+        ): RoomRawQuery {
             val words: List<String> = term.trim()
                 .split(regex = "\\s+".toRegex())
                 .filterNot { it.isEmpty() }
@@ -209,13 +209,13 @@ interface PostsDao {
                 add(limit)
             }
 
-            return SimpleSQLiteQuery(query = sql, bindArgs = args.toTypedArray())
+            return rawQuery(sql = sql, args = args)
         }
 
-        fun existingPostTagFtsQuery(tag: String): SimpleSQLiteQuery {
-            return SimpleSQLiteQuery(
-                query = "select tags from $POST_FTS_TABLE_NAME where tags match ?",
-                bindArgs = arrayOf(formatTagArgument(tag = tag, exactMatch = false)),
+        fun existingPostTagFtsQuery(tag: String): RoomRawQuery {
+            return rawQuery(
+                sql = "select tags from $POST_FTS_TABLE_NAME where tags match ?",
+                args = listOf(formatTagArgument(tag = tag, exactMatch = false)),
             )
         }
 
@@ -237,7 +237,7 @@ interface PostsDao {
             postVisibility: PostVisibility = PostVisibility.None,
             readLaterOnly: Boolean = false,
             limit: Int = -1,
-        ): SimpleSQLiteQuery {
+        ): RoomRawQuery {
             return postNoFtsQuery(
                 selectStatement = "select count(*) from (select hash from $POST_TABLE_NAME where 1=1",
                 term = term,
@@ -267,7 +267,7 @@ interface PostsDao {
             sortType: Int = 0,
             offset: Int = 0,
             limit: Int = -1,
-        ): SimpleSQLiteQuery {
+        ): RoomRawQuery {
             return postNoFtsQuery(
                 selectStatement = "select $POST_TABLE_NAME.* from $POST_TABLE_NAME where 1=1",
                 term = term,
@@ -300,7 +300,7 @@ interface PostsDao {
             offset: Int = 0,
             limit: Int = -1,
             addTrailingParenthesis: Boolean = false,
-        ): SimpleSQLiteQuery {
+        ): RoomRawQuery {
             val termColumns: List<String> = listOf(
                 "$POST_TABLE_NAME.href",
                 "$POST_TABLE_NAME.description",
@@ -387,13 +387,13 @@ interface PostsDao {
                 add(limit)
             }
 
-            return SimpleSQLiteQuery(query = sql, bindArgs = args.toTypedArray())
+            return rawQuery(sql = sql, args = args)
         }
 
-        fun existingPostTagNoFtsQuery(tag: String): SimpleSQLiteQuery {
-            return SimpleSQLiteQuery(
-                query = "select tags from $POST_TABLE_NAME where tags like ?",
-                bindArgs = arrayOf("%$tag%"),
+        fun existingPostTagNoFtsQuery(tag: String): RoomRawQuery {
+            return rawQuery(
+                sql = "select tags from $POST_TABLE_NAME where tags like ?",
+                args = listOf("%$tag%"),
             )
         }
         // endregion No FTS queries

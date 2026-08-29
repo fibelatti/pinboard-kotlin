@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.features.posts.data
 
 import androidx.annotation.VisibleForTesting
-import androidx.sqlite.db.SimpleSQLiteQuery
+import androidx.room.RoomRawQuery
 import com.fibelatti.core.extension.ifNullOrBlank
 import com.fibelatti.core.functional.coMapCatching
 import com.fibelatti.core.functional.coRecoverCatching
@@ -368,7 +368,7 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
             isFtsCompatible(searchTerm) &&
             (tags.isNullOrEmpty() || tags.all { isFtsCompatible(it.name) })
 
-        val query: SimpleSQLiteQuery = if (isFtsCompatible) {
+        val query: RoomRawQuery = if (isFtsCompatible) {
             PostsDao.postCountFtsQuery(
                 term = searchTerm,
                 tag1 = tags.getTagName(index = 0),
@@ -426,7 +426,7 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
         val isFtsCompatible: Boolean = matchAll &&
             isFtsCompatible(searchTerm) &&
             (tags.isNullOrEmpty() || tags.all { isFtsCompatible(it.name) })
-        val query: SimpleSQLiteQuery = if (isFtsCompatible) {
+        val query: RoomRawQuery = if (isFtsCompatible) {
             PostsDao.allPostsFtsQuery(
                 term = searchTerm,
                 tag1 = tags.getTagName(index = 0),
@@ -487,7 +487,7 @@ internal class PostsDataSourcePinboardApi @Inject constructor(
         val tagNames: List<String> = currentTags.map(Tag::name)
 
         if (tag.isNotEmpty()) {
-            val query: SimpleSQLiteQuery = if (isFtsCompatible) {
+            val query: RoomRawQuery = if (isFtsCompatible) {
                 PostsDao.existingPostTagFtsQuery(tag)
             } else {
                 PostsDao.existingPostTagNoFtsQuery(tag)

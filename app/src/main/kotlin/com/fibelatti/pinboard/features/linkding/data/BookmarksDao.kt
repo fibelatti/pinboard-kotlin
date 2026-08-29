@@ -3,9 +3,9 @@ package com.fibelatti.pinboard.features.linkding.data
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RawQuery
+import androidx.room.RoomRawQuery
 import androidx.room.Upsert
-import androidx.sqlite.db.SimpleSQLiteQuery
-import androidx.sqlite.db.SupportSQLiteQuery
+import com.fibelatti.pinboard.core.persistence.database.rawQuery
 import com.fibelatti.pinboard.features.linkding.data.BookmarkLocal.Companion.TABLE_NAME
 import com.fibelatti.pinboard.features.linkding.data.BookmarkLocalFts.Companion.TABLE_NAME as FTS_TABLE_NAME
 import com.fibelatti.pinboard.features.posts.domain.PostVisibility
@@ -26,13 +26,13 @@ interface BookmarksDao {
     suspend fun saveBookmarks(bookmarks: List<BookmarkLocal>)
 
     @RawQuery
-    suspend fun getBookmarkCount(query: SupportSQLiteQuery = bookmarksCountFtsQuery()): Int
+    suspend fun getBookmarkCount(query: RoomRawQuery = bookmarksCountFtsQuery()): Int
 
     @RawQuery
-    suspend fun getAllBookmarks(query: SupportSQLiteQuery = allBookmarksFtsQuery()): List<BookmarkLocal>
+    suspend fun getAllBookmarks(query: RoomRawQuery = allBookmarksFtsQuery()): List<BookmarkLocal>
 
     @RawQuery
-    suspend fun searchExistingBookmarkTags(query: SupportSQLiteQuery): List<String>
+    suspend fun searchExistingBookmarkTags(query: RoomRawQuery): List<String>
 
     @Query("select * from $TABLE_NAME where id = :id or url = :url")
     suspend fun getBookmark(id: String, url: String): BookmarkLocal?
@@ -60,7 +60,7 @@ interface BookmarksDao {
             readLaterOnly: Boolean = false,
             archivedOnly: Boolean = false,
             limit: Int = -1,
-        ): SimpleSQLiteQuery {
+        ): RoomRawQuery {
             return bookmarksFtsQuery(
                 selectStatement = "select count(*) from (select id from $TABLE_NAME where 1=1",
                 term = term,
@@ -90,7 +90,7 @@ interface BookmarksDao {
             sortType: Int = 0,
             offset: Int = 0,
             limit: Int = -1,
-        ): SimpleSQLiteQuery {
+        ): RoomRawQuery {
             return bookmarksFtsQuery(
                 selectStatement = "select $TABLE_NAME.* from $TABLE_NAME where 1=1",
                 term = term,
@@ -123,7 +123,7 @@ interface BookmarksDao {
             offset: Int = 0,
             limit: Int = -1,
             addTrailingParenthesis: Boolean = false,
-        ): SimpleSQLiteQuery {
+        ): RoomRawQuery {
             val words: List<String> = term.trim()
                 .split(regex = "\\s+".toRegex())
                 .filterNot { it.isEmpty() }
@@ -216,13 +216,13 @@ interface BookmarksDao {
                 add(limit)
             }
 
-            return SimpleSQLiteQuery(query = sql, bindArgs = args.toTypedArray())
+            return rawQuery(sql = sql, args = args)
         }
 
-        fun existingBookmarkTagFtsQuery(tag: String): SimpleSQLiteQuery {
-            return SimpleSQLiteQuery(
-                query = "select tagNames from $FTS_TABLE_NAME where tagNames match ?",
-                bindArgs = arrayOf(formatTagArgument(tag = tag, exactMatch = false)),
+        fun existingBookmarkTagFtsQuery(tag: String): RoomRawQuery {
+            return rawQuery(
+                sql = "select tagNames from $FTS_TABLE_NAME where tagNames match ?",
+                args = listOf(formatTagArgument(tag = tag, exactMatch = false)),
             )
         }
 
@@ -245,7 +245,7 @@ interface BookmarksDao {
             readLaterOnly: Boolean = false,
             archivedOnly: Boolean = false,
             limit: Int = -1,
-        ): SimpleSQLiteQuery {
+        ): RoomRawQuery {
             return bookmarksNoFtsQuery(
                 selectStatement = "select count(*) from (select id from $TABLE_NAME where 1=1",
                 term = term,
@@ -277,7 +277,7 @@ interface BookmarksDao {
             sortType: Int = 0,
             offset: Int = 0,
             limit: Int = -1,
-        ): SimpleSQLiteQuery {
+        ): RoomRawQuery {
             return bookmarksNoFtsQuery(
                 selectStatement = "select $TABLE_NAME.* from $TABLE_NAME where 1=1",
                 term = term,
@@ -312,7 +312,7 @@ interface BookmarksDao {
             offset: Int = 0,
             limit: Int = -1,
             addTrailingParenthesis: Boolean = false,
-        ): SimpleSQLiteQuery {
+        ): RoomRawQuery {
             val termColumns: List<String> = listOf(
                 "$TABLE_NAME.url",
                 "$TABLE_NAME.title",
@@ -406,13 +406,13 @@ interface BookmarksDao {
                 add(limit)
             }
 
-            return SimpleSQLiteQuery(query = sql, bindArgs = args.toTypedArray())
+            return rawQuery(sql = sql, args = args)
         }
 
-        fun existingBookmarkTagNoFtsQuery(tag: String): SimpleSQLiteQuery {
-            return SimpleSQLiteQuery(
-                query = "select tagNames from $TABLE_NAME where tagNames like ?",
-                bindArgs = arrayOf("%$tag%"),
+        fun existingBookmarkTagNoFtsQuery(tag: String): RoomRawQuery {
+            return rawQuery(
+                sql = "select tagNames from $TABLE_NAME where tagNames like ?",
+                args = listOf("%$tag%"),
             )
         }
         // endregion No FTS queries
