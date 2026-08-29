@@ -2,12 +2,8 @@ package com.fibelatti.pinboard.core.android
 
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import com.fibelatti.core.platform.ConnectivityInfoProvider
 import javax.inject.Inject
-
-fun interface ConnectivityInfoProvider {
-
-    fun isConnected(): Boolean
-}
 
 class AndroidConnectivityInfoProvider @Inject constructor(
     private val connectivityManager: ConnectivityManager?,

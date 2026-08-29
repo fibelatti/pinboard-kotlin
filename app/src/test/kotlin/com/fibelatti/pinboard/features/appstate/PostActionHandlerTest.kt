@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.features.appstate
 
+import com.fibelatti.core.platform.ConnectivityInfoProvider
 import com.fibelatti.pinboard.MockDataProvider.createPost
-import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.posts.domain.EditAfterSharing
 import com.fibelatti.pinboard.features.posts.domain.model.Post
 import com.fibelatti.pinboard.features.posts.domain.model.PostListResult

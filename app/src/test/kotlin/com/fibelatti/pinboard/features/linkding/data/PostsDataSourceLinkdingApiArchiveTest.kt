@@ -1,10 +1,10 @@
 package com.fibelatti.pinboard.features.linkding.data
 
+import com.fibelatti.core.platform.ConnectivityInfoProvider
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_HASH
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_URL_VALID
 import com.fibelatti.pinboard.MockDataProvider.createBookmarkLocal
 import com.fibelatti.pinboard.MockDataProvider.createPost
-import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.util.DateFormatter
 import com.fibelatti.pinboard.features.posts.data.model.PendingSyncDto
 import com.fibelatti.pinboard.features.posts.domain.model.PendingSync

@@ -1,11 +1,11 @@
 package com.fibelatti.pinboard.features.appstate
 
 import com.fibelatti.core.functional.Either
+import com.fibelatti.core.platform.ConnectivityInfoProvider
 import com.fibelatti.pinboard.MockDataProvider.createPost
 import com.fibelatti.pinboard.allSealedSubclasses
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.AppModeProvider
-import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.offline.domain.OfflineCopyRepository
 import com.fibelatti.pinboard.features.offline.domain.model.OfflineCopy
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository

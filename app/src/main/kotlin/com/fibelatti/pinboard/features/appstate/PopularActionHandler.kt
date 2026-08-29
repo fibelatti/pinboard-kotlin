@@ -1,6 +1,6 @@
 package com.fibelatti.pinboard.features.appstate
 
-import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.core.platform.ConnectivityInfoProvider
 import javax.inject.Inject
 
 class PopularActionHandler @Inject constructor(

@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.features.appstate
 
+import com.fibelatti.core.platform.ConnectivityInfoProvider
 import com.fibelatti.pinboard.MockDataProvider.createTag
-import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.user.domain.GetPreferredSortType
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import com.fibelatti.pinboard.randomBoolean

@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.features.appstate
 
+import com.fibelatti.core.platform.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.AppModeProvider
-import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.di.AppDispatchers
 import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider

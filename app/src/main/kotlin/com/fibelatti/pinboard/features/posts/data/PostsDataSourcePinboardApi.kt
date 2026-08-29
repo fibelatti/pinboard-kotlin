@@ -6,11 +6,11 @@ import com.fibelatti.core.extension.ifNullOrBlank
 import com.fibelatti.core.functional.coMapCatching
 import com.fibelatti.core.functional.coRecoverCatching
 import com.fibelatti.core.functional.coRunCatching
+import com.fibelatti.core.platform.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.AppConfig.API_BASE_URL_LENGTH
 import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiLiterals
 import com.fibelatti.pinboard.core.AppConfig.PinboardApiMaxLength
-import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.extension.containsHtmlChars
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
 import com.fibelatti.pinboard.core.functional.resultFrom

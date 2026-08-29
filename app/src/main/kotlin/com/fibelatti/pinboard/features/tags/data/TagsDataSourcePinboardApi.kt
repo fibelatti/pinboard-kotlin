@@ -1,7 +1,7 @@
 package com.fibelatti.pinboard.features.tags.data
 
 import com.fibelatti.core.functional.coMapCatching
-import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
+import com.fibelatti.core.platform.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.ApiResultCodes

@@ -2,8 +2,8 @@ package com.fibelatti.pinboard.features.appstate
 
 import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.functional.Either
+import com.fibelatti.core.platform.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.AppModeProvider
-import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.features.offline.domain.OfflineCopyRepository
 import com.fibelatti.pinboard.features.offline.domain.model.OfflineCopy
 import com.fibelatti.pinboard.features.posts.domain.PostsRepository

@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.posts.data
 
+import com.fibelatti.core.platform.ConnectivityInfoProvider
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_DATE_TIME
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_FUTURE_DATE_TIME
 import com.fibelatti.pinboard.MockDataProvider.SAMPLE_HASH
@@ -23,7 +24,6 @@ import com.fibelatti.pinboard.MockDataProvider.createPostDto
 import com.fibelatti.pinboard.MockDataProvider.createPostRemoteDto
 import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppConfig.API_PAGE_SIZE
-import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.extension.HTML_CHAR_MAP
 import com.fibelatti.pinboard.core.network.ApiException
 import com.fibelatti.pinboard.core.network.ApiResultCodes

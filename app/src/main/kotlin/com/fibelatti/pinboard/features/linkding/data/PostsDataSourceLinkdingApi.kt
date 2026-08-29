@@ -5,8 +5,8 @@ import androidx.room.RoomRawQuery
 import com.fibelatti.core.extension.ifNullOrBlank
 import com.fibelatti.core.functional.coMapCatching
 import com.fibelatti.core.functional.coRunCatching
+import com.fibelatti.core.platform.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.AppConfig
-import com.fibelatti.pinboard.core.android.ConnectivityInfoProvider
 import com.fibelatti.pinboard.core.extension.replaceHtmlChars
 import com.fibelatti.pinboard.core.functional.resultFrom
 import com.fibelatti.pinboard.core.network.resultFromNetwork
