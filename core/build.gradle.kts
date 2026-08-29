@@ -9,7 +9,6 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(libs.kotlin)
                 implementation(libs.coroutines.core)
                 implementation(libs.ktor.io)
             }
