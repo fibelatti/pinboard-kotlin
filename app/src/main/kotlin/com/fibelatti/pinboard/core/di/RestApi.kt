@@ -9,6 +9,7 @@ annotation class RestApi(val restApi: RestApiProvider)
 
 enum class RestApiProvider {
     COMMON,
+    WEBSITE,
     PINBOARD,
     LINKDING,
 }

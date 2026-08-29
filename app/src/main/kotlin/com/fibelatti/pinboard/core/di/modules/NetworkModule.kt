@@ -23,6 +23,7 @@ import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.HttpRedirect
 import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.cache.storage.FileStorage
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -67,6 +68,28 @@ object NetworkModule {
     @Singleton
     @RestApi(RestApiProvider.COMMON)
     fun commonHttpClient(builder: HttpClientBuilder): HttpClient = builder.build()
+
+    /**
+     * Fetches arbitrary websites, as opposed to the backends the app integrates with.
+     *
+     * Redirects are followed by Ktor rather than by OkHttp: when the engine follows them the response still reports
+     * the URL that was requested, and the caller has no way to learn where it landed. HTTPS downgrades are allowed
+     * so that the outcome matches what a browser would reach.
+     */
+    @Provides
+    @Singleton
+    @RestApi(RestApiProvider.WEBSITE)
+    fun websiteHttpClient(builder: HttpClientBuilder): HttpClient = builder.build(
+        extraHttpClientConfig = {
+            install(HttpRedirect) {
+                allowHttpsDowngrade = true
+            }
+        },
+        extraOkHttpClientConfig = {
+            followRedirects(false)
+            followSslRedirects(false)
+        },
+    )
 
     @Provides
     @Singleton
