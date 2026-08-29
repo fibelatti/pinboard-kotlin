@@ -1,6 +1,8 @@
 package com.fibelatti.pinboard.features.offline.presentation
 
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
+import com.fibelatti.pinboard.core.di.AppDispatchers
+import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.NavigateBack
 import com.fibelatti.pinboard.features.appstate.OfflineCopyListContent
@@ -10,7 +12,7 @@ import com.fibelatti.pinboard.features.offline.domain.model.OfflineCopy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.File
 import javax.inject.Inject
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,10 +27,10 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class OfflineCopiesViewModel @Inject constructor(
-    scope: CoroutineScope,
+    @Scope(AppDispatchers.DEFAULT) dispatcher: CoroutineDispatcher,
     appStateRepository: AppStateRepository,
     private val offlineCopyRepository: OfflineCopyRepository,
-) : BaseViewModel(scope, appStateRepository) {
+) : BaseViewModel(dispatcher, appStateRepository) {
 
     private val _screenState: MutableStateFlow<ScreenState> = MutableStateFlow(ScreenState())
     val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()

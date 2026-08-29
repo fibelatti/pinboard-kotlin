@@ -22,7 +22,6 @@ import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
@@ -37,7 +36,7 @@ internal class TagsViewModelTest : BaseViewModelTest() {
     private val mockTagsRepository = mockk<TagsRepository>()
 
     private val tagsViewModel = TagsViewModel(
-        scope = TestScope(dispatcher),
+        dispatcher = dispatcher,
         appStateRepository = mockAppStateRepository,
         tagsRepository = mockTagsRepository,
     )

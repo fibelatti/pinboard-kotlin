@@ -29,7 +29,6 @@ import java.io.File
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -50,7 +49,7 @@ internal class PostDetailViewModelTest : BaseViewModelTest() {
     private val mockPost = createPost()
 
     private val postDetailViewModel = PostDetailViewModel(
-        scope = TestScope(dispatcher),
+        dispatcher = dispatcher,
         appStateRepository = mockAppStateRepository,
         deletePost = mockDeletePost,
         addPost = mockAddPost,

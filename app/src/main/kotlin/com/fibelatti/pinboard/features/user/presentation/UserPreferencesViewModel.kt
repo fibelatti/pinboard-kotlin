@@ -3,6 +3,8 @@ package com.fibelatti.pinboard.features.user.presentation
 import com.fibelatti.pinboard.core.android.Appearance
 import com.fibelatti.pinboard.core.android.PreferredDateFormat
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
+import com.fibelatti.pinboard.core.di.AppDispatchers
+import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.UserPreferencesContent
 import com.fibelatti.pinboard.features.offline.domain.OfflineCopyRepository
@@ -16,7 +18,7 @@ import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.pinboard.features.user.domain.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,13 +30,13 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class UserPreferencesViewModel @Inject constructor(
-    scope: CoroutineScope,
+    @Scope(AppDispatchers.DEFAULT) dispatcher: CoroutineDispatcher,
     appStateRepository: AppStateRepository,
     private val userRepository: UserRepository,
     private val tagManagerRepository: TagManagerRepository,
     private val periodicSyncManager: PeriodicSyncManager,
     private val offlineCopyRepository: OfflineCopyRepository,
-) : BaseViewModel(scope, appStateRepository), TagManagerRepository by tagManagerRepository {
+) : BaseViewModel(dispatcher, appStateRepository), TagManagerRepository by tagManagerRepository {
 
     val userCredentials: StateFlow<UserCredentials> get() = userRepository.userCredentials
 

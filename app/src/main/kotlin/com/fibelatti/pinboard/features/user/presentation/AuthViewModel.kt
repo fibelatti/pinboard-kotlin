@@ -6,6 +6,8 @@ import com.fibelatti.pinboard.core.AppConfig
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.LocalNetworkAccessProvider
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
+import com.fibelatti.pinboard.core.di.AppDispatchers
+import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.LoginContent
@@ -15,7 +17,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.plugins.ResponseException
 import java.net.ConnectException
 import javax.inject.Inject
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,13 +31,13 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    scope: CoroutineScope,
+    @Scope(AppDispatchers.DEFAULT) dispatcher: CoroutineDispatcher,
     appStateRepository: AppStateRepository,
     private val loginUseCase: Login,
     private val resourceProvider: ResourceProvider,
     private val userRepository: UserRepository,
     private val localNetworkAccessProvider: LocalNetworkAccessProvider,
-) : BaseViewModel(scope, appStateRepository) {
+) : BaseViewModel(dispatcher, appStateRepository) {
 
     private val _screenState = MutableStateFlow(ScreenState())
     val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()

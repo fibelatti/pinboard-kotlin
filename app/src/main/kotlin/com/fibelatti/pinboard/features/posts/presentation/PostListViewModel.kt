@@ -4,6 +4,8 @@ import androidx.annotation.VisibleForTesting
 import com.fibelatti.core.extension.onEachFailure
 import com.fibelatti.core.extension.onEachSuccess
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
+import com.fibelatti.pinboard.core.di.AppDispatchers
+import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.features.appstate.All
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.Archived
@@ -30,19 +32,19 @@ import com.fibelatti.pinboard.features.posts.domain.usecase.GetPostParams
 import com.fibelatti.pinboard.features.posts.domain.usecase.GetRecentPosts
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 
 @HiltViewModel
 class PostListViewModel @Inject constructor(
-    scope: CoroutineScope,
+    @Scope(AppDispatchers.DEFAULT) dispatcher: CoroutineDispatcher,
     appStateRepository: AppStateRepository,
     private val savedFiltersRepository: SavedFiltersRepository,
     private val getAllPosts: GetAllPosts,
     private val getRecentPosts: GetRecentPosts,
-) : BaseViewModel(scope, appStateRepository) {
+) : BaseViewModel(dispatcher, appStateRepository) {
 
     init {
         scope.launch {

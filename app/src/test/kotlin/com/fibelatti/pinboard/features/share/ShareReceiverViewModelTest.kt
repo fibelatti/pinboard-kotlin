@@ -34,7 +34,6 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
@@ -86,7 +85,7 @@ internal class ShareReceiverViewModelTest : BaseViewModelTest() {
     private val error = Exception()
 
     private val shareReceiverViewModel = ShareReceiverViewModel(
-        scope = TestScope(dispatcher),
+        dispatcher = dispatcher,
         appStateRepository = mockAppStateRepository,
         resourceProvider = mockResourceProvider,
         extractUrl = mockExtractUrl,

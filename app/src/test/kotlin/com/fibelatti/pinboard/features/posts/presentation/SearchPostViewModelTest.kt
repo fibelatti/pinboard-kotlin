@@ -17,7 +17,6 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
@@ -33,7 +32,7 @@ internal class SearchPostViewModelTest : BaseViewModelTest() {
     private val mockSavedFiltersRepository = mockk<SavedFiltersRepository>()
 
     private val viewModel = SearchPostViewModel(
-        scope = TestScope(dispatcher),
+        dispatcher = dispatcher,
         appStateRepository = mockAppStateRepository,
         postsRepository = mockPostsRepository,
         savedFiltersRepository = mockSavedFiltersRepository,

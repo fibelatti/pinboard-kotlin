@@ -27,7 +27,6 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -53,7 +52,7 @@ internal class UserPreferencesViewModelTest : BaseViewModelTest() {
     }
 
     private val userPreferencesViewModel = UserPreferencesViewModel(
-        scope = TestScope(dispatcher),
+        dispatcher = dispatcher,
         appStateRepository = mockAppStateRepository,
         userRepository = mockUserRepository,
         tagManagerRepository = mockTagManagerRepository,

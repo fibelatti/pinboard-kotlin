@@ -1,10 +1,12 @@
 package com.fibelatti.pinboard.core.android.base
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.fibelatti.pinboard.features.appstate.Action
 import com.fibelatti.pinboard.features.appstate.AppState
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.Content
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -13,11 +15,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 
 abstract class BaseViewModel(
-    protected val scope: CoroutineScope,
+    dispatcher: CoroutineDispatcher,
     private val appStateRepository: AppStateRepository,
 ) : ViewModel() {
+
+    protected val scope: CoroutineScope = viewModelScope + dispatcher
 
     val appState: StateFlow<AppState> get() = appStateRepository.appState
 

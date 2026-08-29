@@ -3,6 +3,8 @@ package com.fibelatti.pinboard.features.posts.presentation
 import com.fibelatti.core.android.platform.ResourceProvider
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
+import com.fibelatti.pinboard.core.di.AppDispatchers
+import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.features.appstate.AddPostContent
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.EditPostContent
@@ -15,7 +17,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.plugins.ClientRequestException
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,14 +38,14 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class EditPostViewModel @Inject constructor(
-    scope: CoroutineScope,
-    dispatchers: CoroutineDispatcher,
+    @Scope(AppDispatchers.DEFAULT) dispatcher: CoroutineDispatcher,
+    @Scope(AppDispatchers.IMMEDIATE) mainDispatcher: CoroutineDispatcher,
     sharingStarted: SharingStarted,
     appStateRepository: AppStateRepository,
     private val tagManagerRepository: TagManagerRepository,
     private val addPost: AddPost,
     private val resourceProvider: ResourceProvider,
-) : BaseViewModel(scope, appStateRepository), TagManagerRepository by tagManagerRepository {
+) : BaseViewModel(dispatcher, appStateRepository), TagManagerRepository by tagManagerRepository {
 
     // Initial `post` state when the screen is first opened
     private val initialPostState: StateFlow<Post?> = appStateRepository.appState
@@ -66,7 +67,7 @@ class EditPostViewModel @Inject constructor(
                 else -> null
             }
         }
-        .flowOn(dispatchers)
+        .flowOn(mainDispatcher)
         .stateIn(scope = scope, started = sharingStarted, initialValue = null)
 
     // Source of all changes to the screen state, only takes null from `initialPostState`
@@ -74,7 +75,7 @@ class EditPostViewModel @Inject constructor(
 
     private val _postState: StateFlow<Post?> = initialPostState
         .flatMapLatest { post -> interactions.scan(initial = post) { current, interaction -> interaction(current) } }
-        .flowOn(dispatchers) // to avoid sync issues with compose TextField state
+        .flowOn(mainDispatcher) // to avoid sync issues with compose TextField state
         .stateIn(scope = scope, started = sharingStarted, initialValue = null)
     val postState: Flow<Post> get() = _postState.filterNotNull()
 

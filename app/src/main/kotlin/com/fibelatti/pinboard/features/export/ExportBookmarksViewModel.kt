@@ -6,21 +6,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
+import com.fibelatti.pinboard.core.di.AppDispatchers
+import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.File
 import javax.inject.Inject
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 
 @HiltViewModel
 class ExportBookmarksViewModel @Inject constructor(
-    scope: CoroutineScope,
+    @Scope(AppDispatchers.DEFAULT) dispatcher: CoroutineDispatcher,
     appStateRepository: AppStateRepository,
     private val exportBookmarksUseCase: ExportBookmarksUseCase,
     private val getExportableServicesUseCase: GetExportableServicesUseCase,
     private val moveFileToUriUseCase: MoveFileToUriUseCase,
-) : BaseViewModel(scope, appStateRepository) {
+) : BaseViewModel(dispatcher, appStateRepository) {
 
     var state: State by mutableStateOf(State())
         private set

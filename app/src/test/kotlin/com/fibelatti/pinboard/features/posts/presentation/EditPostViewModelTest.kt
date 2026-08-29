@@ -21,6 +21,7 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.receivedItems
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
+import io.mockk.coJustRun
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -28,7 +29,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
@@ -41,6 +41,7 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
     )
     private val mockAppStateRepository = mockk<AppStateRepository> {
         every { appState } returns appStateFlow
+        coJustRun { runDelayedAction(any(), any()) }
     }
 
     private val tagManagerStateFlow = MutableStateFlow<TagManagerState?>(null)
@@ -56,8 +57,8 @@ internal class EditPostViewModelTest : BaseViewModelTest() {
     }
 
     private val editPostViewModel = EditPostViewModel(
-        scope = TestScope(dispatcher),
-        dispatchers = Dispatchers.Unconfined,
+        dispatcher = dispatcher,
+        mainDispatcher = Dispatchers.Unconfined,
         sharingStarted = SharingStarted.Eagerly,
         appStateRepository = mockAppStateRepository,
         tagManagerRepository = mockTagManagerRepository,

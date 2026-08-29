@@ -2,6 +2,8 @@ package com.fibelatti.pinboard.features.tags.presentation
 
 import androidx.compose.runtime.Stable
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
+import com.fibelatti.pinboard.core.di.AppDispatchers
+import com.fibelatti.pinboard.core.di.Scope
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.SearchContent
 import com.fibelatti.pinboard.features.appstate.SetSearchTags
@@ -12,7 +14,7 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,10 +27,10 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class TagsViewModel @Inject constructor(
-    scope: CoroutineScope,
+    @Scope(AppDispatchers.DEFAULT) dispatcher: CoroutineDispatcher,
     appStateRepository: AppStateRepository,
     private val tagsRepository: TagsRepository,
-) : BaseViewModel(scope, appStateRepository) {
+) : BaseViewModel(dispatcher, appStateRepository) {
 
     private val _state = MutableStateFlow(State())
     val state: StateFlow<State> get() = _state.asStateFlow()

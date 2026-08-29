@@ -19,7 +19,6 @@ import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
@@ -36,7 +35,7 @@ internal class OfflineCopiesViewModelTest : BaseViewModelTest() {
     }
 
     private val offlineCopiesViewModel = OfflineCopiesViewModel(
-        scope = TestScope(dispatcher),
+        dispatcher = dispatcher,
         appStateRepository = mockAppStateRepository,
         offlineCopyRepository = mockOfflineCopyRepository,
     )

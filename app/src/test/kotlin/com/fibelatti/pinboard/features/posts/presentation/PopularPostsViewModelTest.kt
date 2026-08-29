@@ -26,7 +26,6 @@ import io.mockk.mockk
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
@@ -37,6 +36,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
     private val mockAppStateRepository = mockk<AppStateRepository> {
         every { appState } returns appStateFlow
         coJustRun { runAction(any()) }
+        coJustRun { runDelayedAction(any(), any()) }
     }
 
     private val mockUserRepository = mockk<UserRepository>(relaxed = true)
@@ -47,7 +47,7 @@ internal class PopularPostsViewModelTest : BaseViewModelTest() {
     private val mockAddPost = mockk<AddPost>()
 
     private val popularPostsViewModel = PopularPostsViewModel(
-        scope = TestScope(dispatcher),
+        dispatcher = dispatcher,
         appStateRepository = mockAppStateRepository,
         userRepository = mockUserRepository,
         postsRepository = mockPostsRepository,

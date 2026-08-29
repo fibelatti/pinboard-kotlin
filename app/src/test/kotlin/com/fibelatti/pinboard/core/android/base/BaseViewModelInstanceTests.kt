@@ -27,7 +27,6 @@ import io.mockk.mockkClass
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -47,7 +46,7 @@ internal class BaseViewModelInstanceTests : BaseViewModelTest() {
     }
 
     private val viewModel = object : BaseViewModel(
-        scope = TestScope(dispatcher),
+        dispatcher = dispatcher,
         appStateRepository = mockAppStateRepository,
     ) {
 

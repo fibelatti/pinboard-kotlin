@@ -15,7 +15,6 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
@@ -29,7 +28,7 @@ class AccountSwitcherViewModelTest : BaseViewModelTest() {
     }
 
     private val accountSwitcherViewModel = AccountSwitcherViewModel(
-        scope = TestScope(dispatcher),
+        dispatcher = dispatcher,
         appStateRepository = mockAppStateRepository,
         userRepository = mockUserRepository,
     )

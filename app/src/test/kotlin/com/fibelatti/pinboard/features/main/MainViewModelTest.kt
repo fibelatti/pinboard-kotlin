@@ -54,7 +54,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -103,7 +102,7 @@ internal class MainViewModelTest : BaseViewModelTest() {
 
     private val viewModel = MainViewModel(
         savedStateHandle = SavedStateHandle(),
-        scope = TestScope(dispatcher),
+        dispatcher = dispatcher,
         sharingStarted = SharingStarted.Lazily,
         appStateRepository = mockAppStateRepository,
         mainStateReducers = reducers,

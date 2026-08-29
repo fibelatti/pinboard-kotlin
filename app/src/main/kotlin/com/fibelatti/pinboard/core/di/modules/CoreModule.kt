@@ -25,6 +25,10 @@ object CoreModule {
     fun defaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
 
     @Provides
+    @Scope(AppDispatchers.IMMEDIATE)
+    fun immediateDispatcher(): CoroutineDispatcher = Dispatchers.Main.immediate
+
+    @Provides
     @Scope(AppDispatchers.IO)
     fun ioScope(
         @Scope(AppDispatchers.IO) dispatcher: CoroutineDispatcher,

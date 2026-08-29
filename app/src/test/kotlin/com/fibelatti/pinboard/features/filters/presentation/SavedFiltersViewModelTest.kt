@@ -13,7 +13,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
@@ -25,7 +24,7 @@ class SavedFiltersViewModelTest : BaseViewModelTest() {
 
     private val savedFiltersViewModel by lazy {
         SavedFiltersViewModel(
-            scope = TestScope(dispatcher),
+            dispatcher = dispatcher,
             sharingStarted = SharingStarted.Lazily,
             appStateRepository = mockk(),
             savedFiltersRepository = savedFiltersRepository,

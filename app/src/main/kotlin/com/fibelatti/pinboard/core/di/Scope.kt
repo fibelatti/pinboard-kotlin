@@ -11,4 +11,5 @@ annotation class Scope(val appDispatcher: AppDispatchers)
 enum class AppDispatchers {
     DEFAULT,
     IO,
+    IMMEDIATE,
 }
