@@ -6,6 +6,8 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -43,15 +45,17 @@ class KotlinLibraryConventionPlugin : Plugin<Project> {
 }
 
 internal fun Project.configureKotlinCompilerOptions() {
+    val optIn = "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+
+    when (val extension = extensions.getByType<KotlinProjectExtension>()) {
+        is KotlinMultiplatformExtension -> extension.compilerOptions { freeCompilerArgs.add(optIn) }
+        is KotlinAndroidProjectExtension -> extension.compilerOptions { freeCompilerArgs.add(optIn) }
+        else -> error("Unsupported Kotlin extension: ${extension::class.qualifiedName}")
+    }
+
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
             jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
-            freeCompilerArgs.set(
-                buildList {
-                    addAll(freeCompilerArgs.get())
-                    add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
-                },
-            )
         }
     }
 }
