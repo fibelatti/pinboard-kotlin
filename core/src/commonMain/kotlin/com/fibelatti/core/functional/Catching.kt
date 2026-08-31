@@ -1,6 +1,5 @@
 package com.fibelatti.core.functional
 
-import kotlin.Result
 import kotlinx.coroutines.CancellationException
 
 /**

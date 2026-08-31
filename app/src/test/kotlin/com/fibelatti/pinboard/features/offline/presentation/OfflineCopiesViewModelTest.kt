@@ -12,7 +12,6 @@ import com.fibelatti.pinboard.features.appstate.SetOfflineCopies
 import com.fibelatti.pinboard.features.offline.domain.OfflineCopyRepository
 import com.fibelatti.pinboard.features.offline.domain.model.OfflineCopy
 import com.google.common.truth.Truth.assertThat
-import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
