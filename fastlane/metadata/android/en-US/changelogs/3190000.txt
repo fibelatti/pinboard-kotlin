@@ -1,0 +1,8 @@
+This version brings the following updates:
+
+* Added an export option to the login screen, so bookmarks saved by a
+  previous session can still be exported
+* Improved tag editing: suggested and existing tags are now scrolled
+  into view when the input is selected
+
+Thanks for using the app!
