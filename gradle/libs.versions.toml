@@ -14,7 +14,7 @@ okhttp = "5.5.0"
 room = "2.8.4"
 coil = "3.5.0"
 spotless = "8.10.0"
-aboutLibraries = "15.1.1"
+aboutLibraries = "15.2.0"
 
 [libraries]
 kotlin-metadata-jvm = { module = "org.jetbrains.kotlin:kotlin-metadata-jvm", version.ref = "kotlin" }
