@@ -41,6 +41,7 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
+import com.fibelatti.ui.foundation.KeyboardState
 import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.foundation.rememberKeyboardState
 import com.fibelatti.ui.icons.Close
@@ -84,12 +85,12 @@ fun TagManager(
             }
         }
 
-        val imeVisible: Boolean by rememberKeyboardState()
+        val keyboardState: KeyboardState by rememberKeyboardState()
         var isTagInputFocused: Boolean by remember { mutableStateOf(false) }
         val bringIntoViewRequester: BringIntoViewRequester = remember { BringIntoViewRequester() }
 
-        LaunchedEffect(imeVisible, isTagInputFocused, suggestedTags, currentTags) {
-            val shouldBringIntoView: Boolean = imeVisible && isTagInputFocused &&
+        LaunchedEffect(keyboardState, isTagInputFocused, suggestedTags, currentTags) {
+            val shouldBringIntoView: Boolean = keyboardState.isOpen && isTagInputFocused &&
                 (suggestedTags.isNotEmpty() || currentTags.isNotEmpty())
 
             if (shouldBringIntoView) {

@@ -146,7 +146,7 @@ private fun LaunchedViewModelEffects(
     val localResources = LocalResources.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val imeVisible by rememberKeyboardState()
+    val keyboardState by rememberKeyboardState()
 
     BackHandler {
         if (editPostViewModel.hasPendingChanges()) {
@@ -160,8 +160,8 @@ private fun LaunchedViewModelEffects(
         }
     }
 
-    SideEffect(imeVisible) {
-        val actionButton = if (imeVisible) {
+    SideEffect(keyboardState) {
+        val actionButton = if (keyboardState.isOpen) {
             MainState.ActionButtonComponent.Visible(
                 contentType = EditPostContent::class,
                 icon = AppIcons.Save,
