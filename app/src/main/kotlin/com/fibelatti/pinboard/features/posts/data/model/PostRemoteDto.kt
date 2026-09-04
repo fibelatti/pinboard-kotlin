@@ -1,6 +1,7 @@
 package com.fibelatti.pinboard.features.posts.data.model
 
 import com.fibelatti.core.functional.Mapper
+import com.fibelatti.pinboard.core.AppConfig
 import javax.inject.Inject
 import kotlinx.serialization.Serializable
 
@@ -11,9 +12,9 @@ data class PostRemoteDto(
     val extended: String?,
     val hash: String,
     val time: String,
-    val shared: String,
-    val toread: String,
-    val tags: String,
+    val shared: String?,
+    val toread: String?,
+    val tags: String?,
 )
 
 class PostRemoteDtoMapper @Inject constructor() : Mapper<PostRemoteDto, PostDto> {
@@ -25,9 +26,9 @@ class PostRemoteDtoMapper @Inject constructor() : Mapper<PostRemoteDto, PostDto>
             extended = extended,
             hash = hash,
             time = time,
-            shared = shared,
-            toread = toread,
-            tags = tags,
+            shared = shared ?: AppConfig.PinboardApiLiterals.NO,
+            toread = toread ?: AppConfig.PinboardApiLiterals.YES,
+            tags = tags ?: "",
         )
     }
 }
