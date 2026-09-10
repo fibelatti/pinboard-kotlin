@@ -14,7 +14,7 @@ import dagger.hilt.testing.TestInstallIn
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.HttpResponseValidator
-import io.ktor.client.plugins.ResponseException
+import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.accept
 import io.ktor.http.ContentType
@@ -71,8 +71,8 @@ object TestPinboardModule {
                             }
                         }
 
-                        // A `ResponseException` is used when handling exceptions to notify users.
-                        throw ResponseException(response, "")
+                        // A `ServerResponseException` is used when handling exceptions to notify users.
+                        throw ServerResponseException(response, "")
                     }
                 }
             }
