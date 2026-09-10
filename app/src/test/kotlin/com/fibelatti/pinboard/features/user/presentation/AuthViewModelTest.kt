@@ -24,6 +24,8 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import java.security.cert.CertificateException
+import javax.net.ssl.SSLHandshakeException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -272,6 +274,33 @@ class AuthViewModelTest : BaseViewModelTest() {
                 assertThat(viewModel.error.first()).isNull()
                 assertThat(viewModel.screenState.first()).isEqualTo(
                     AuthViewModel.ScreenState(apiTokenError = "R.string.auth_token_error"),
+                )
+            }
+
+        @Test
+        fun `GIVEN Login fails with an untrusted certificate WHEN login is called THEN instanceUrlError should receive a value`() =
+            runTest {
+                // GIVEN
+                val error = SSLHandshakeException("Handshake failed").apply {
+                    initCause(CertificateException("Trust anchor for certification path not found."))
+                }
+
+                coEvery { mockLogin(Login.PinboardParams(authToken = SAMPLE_API_TOKEN)) } returns Result.failure(error)
+                every { mockResourceProvider.getString(R.string.certificate_error) } returns
+                    "R.string.certificate_error"
+
+                // WHEN
+                viewModel.login(
+                    apiToken = SAMPLE_API_TOKEN,
+                    instanceUrl = SAMPLE_INSTANCE_URL,
+                )
+
+                // THEN
+                coVerify { mockLogin(Login.PinboardParams(authToken = SAMPLE_API_TOKEN)) }
+
+                assertThat(viewModel.error.first()).isNull()
+                assertThat(viewModel.screenState.first()).isEqualTo(
+                    AuthViewModel.ScreenState(instanceUrlError = "R.string.certificate_error"),
                 )
             }
 

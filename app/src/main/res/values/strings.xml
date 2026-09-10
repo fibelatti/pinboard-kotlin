@@ -23,6 +23,7 @@
     <string name="alert_confirm_unsaved_changes">You have unsaved changes that will be lost, continue without saving?</string>
 
     <string name="server_error">Unable to reach the service. Check your auth token or try again in a short while.</string>
+    <string name="certificate_error">Unable to establish a secure connection. The server certificate is not trusted by this device — if the instance uses a self-signed certificate, install its certificate authority in the device settings.</string>
 
     <string name="feedback_copied_to_clipboard">Copied to the clipboard</string>
 

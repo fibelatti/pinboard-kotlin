@@ -7,6 +7,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalContext
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
+import com.fibelatti.pinboard.core.extension.isCertificateException
 import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.core.extension.showErrorReportDialog
 
@@ -31,11 +32,18 @@ fun ErrorHandlerEffect(
             current.printStackTrace()
         }
 
-        if (current.isServerException()) {
-            localAppMessages.show(messageRes = R.string.server_error)
-            composedAction()
-        } else {
-            localContext.showErrorReportDialog(throwable = current, postAction = composedAction)
+        when {
+            current.isCertificateException() -> {
+                localAppMessages.show(messageRes = R.string.certificate_error)
+                composedAction()
+            }
+
+            current.isServerException() -> {
+                localAppMessages.show(messageRes = R.string.server_error)
+                composedAction()
+            }
+
+            else -> localContext.showErrorReportDialog(throwable = current, postAction = composedAction)
         }
     }
 }

@@ -21,6 +21,7 @@
     <string name="alert_confirm_unsaved_changes">Tienes cambios sin guardar que se perderán. ¿Continuar sin guardar?</string>
 
     <string name="server_error">No se puede acceder al servicio. Comprueba tu token de autenticación o inténtalo de nuevo en breve.</string>
+    <string name="certificate_error">No se ha podido establecer una conexión segura. Este dispositivo no confía en el certificado del servidor — si la instancia usa un certificado autofirmado, instala su autoridad de certificación en los ajustes del dispositivo.</string>
 
     <string name="feedback_copied_to_clipboard">Copiado al portapapeles</string>
 

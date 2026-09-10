@@ -46,6 +46,7 @@ import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.UrlSaved
 import com.fibelatti.pinboard.core.android.icons.UrlSavedError
 import com.fibelatti.pinboard.core.android.icons.UrlSaving
+import com.fibelatti.pinboard.core.extension.isCertificateException
 import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.core.extension.showErrorReportDialog
 import com.fibelatti.pinboard.features.posts.domain.usecase.InvalidUrlException
@@ -202,6 +203,8 @@ private fun ShareReceiverErrorDialog(
 
     val errorMessage = when {
         throwable is InvalidUrlException -> R.string.validation_error_invalid_url_rationale
+
+        throwable.isCertificateException() -> R.string.certificate_error
 
         throwable.isServerException() -> R.string.server_error
 

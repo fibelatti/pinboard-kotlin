@@ -20,6 +20,7 @@
     <string name="alert_confirm_unsaved_changes">Sie haben nicht gespeicherte Änderungen, die verloren gehen. Ohne Speichern fortfahren?</string>
 
     <string name="server_error">Der Dienst ist nicht erreichbar. Überprüfen Sie Ihr Authentifizierungstoken oder versuchen Sie es in Kürze erneut.</string>
+    <string name="certificate_error">Es konnte keine sichere Verbindung hergestellt werden. Dem Serverzertifikat wird von diesem Gerät nicht vertraut — wenn die Instanz ein selbstsigniertes Zertifikat verwendet, installieren Sie deren Zertifizierungsstelle in den Geräteeinstellungen.</string>
 
     <string name="feedback_copied_to_clipboard">In die Zwischenablage kopiert</string>
 

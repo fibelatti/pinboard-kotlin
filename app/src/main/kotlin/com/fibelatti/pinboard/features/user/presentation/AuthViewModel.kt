@@ -8,6 +8,7 @@ import com.fibelatti.pinboard.core.android.LocalNetworkAccessProvider
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.core.di.AppDispatchers
 import com.fibelatti.pinboard.core.di.Scope
+import com.fibelatti.pinboard.core.extension.isCertificateException
 import com.fibelatti.pinboard.core.extension.isServerException
 import com.fibelatti.pinboard.features.appstate.AppStateRepository
 import com.fibelatti.pinboard.features.appstate.LoginContent
@@ -178,6 +179,15 @@ class AuthViewModel @Inject constructor(
                             currentState.copy(
                                 isLoading = false,
                                 apiTokenError = resourceProvider.getString(R.string.auth_token_error),
+                            )
+                        }
+                    }
+
+                    error.isCertificateException() -> {
+                        _screenState.update { currentState ->
+                            currentState.copy(
+                                isLoading = false,
+                                instanceUrlError = resourceProvider.getString(R.string.certificate_error),
                             )
                         }
                     }

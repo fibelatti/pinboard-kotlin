@@ -21,6 +21,7 @@
     <string name="alert_confirm_unsaved_changes">Vous avez des modifications non enregistrées qui seront perdues. Continuer sans enregistrer ?</string>
 
     <string name="server_error">Impossible d\'accéder au service. Vérifiez votre jeton d\'authentification ou réessayez dans quelques instants.</string>
+    <string name="certificate_error">Impossible d\'établir une connexion sécurisée. Le certificat du serveur n\'est pas approuvé par cet appareil — si l\'instance utilise un certificat auto-signé, installez son autorité de certification dans les paramètres de l\'appareil.</string>
 
     <string name="feedback_copied_to_clipboard">Copié dans le presse-papiers</string>
 

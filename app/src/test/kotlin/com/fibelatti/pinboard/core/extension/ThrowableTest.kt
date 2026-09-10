@@ -7,6 +7,8 @@ import io.ktor.client.plugins.ServerResponseException
 import io.ktor.serialization.JsonConvertException
 import io.mockk.mockk
 import java.net.UnknownHostException
+import java.security.cert.CertificateException
+import javax.net.ssl.SSLHandshakeException
 import kotlinx.io.IOException
 import org.junit.jupiter.api.Test
 
@@ -23,6 +25,24 @@ internal class ThrowableTest {
     @Test
     fun `isServerException should return true for subtypes of server exception types`() {
         assertThat(UnknownHostException("api.example.com").isServerException()).isTrue()
+        assertThat(untrustedCertificateException().isServerException()).isTrue()
+    }
+
+    @Test
+    fun `isCertificateException should return true when the certificate chain is not trusted`() {
+        assertThat(untrustedCertificateException().isCertificateException()).isTrue()
+    }
+
+    @Test
+    fun `isCertificateException should return false for other handshake failures`() {
+        assertThat(SSLHandshakeException("Connection reset").isCertificateException()).isFalse()
+        assertThat(IOException("Connection reset").isCertificateException()).isFalse()
+    }
+
+    private fun untrustedCertificateException(): SSLHandshakeException = SSLHandshakeException(
+        "Handshake failed",
+    ).apply {
+        initCause(CertificateException("Trust anchor for certification path not found."))
     }
 
     @Test
