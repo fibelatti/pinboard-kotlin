@@ -1,0 +1,5 @@
+This version brings the following updates:
+
+* Improved keyboard handling when editing bookmarks and tags
+
+Thanks for using the app!
