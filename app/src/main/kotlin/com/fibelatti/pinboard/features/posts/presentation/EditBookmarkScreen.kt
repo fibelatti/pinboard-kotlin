@@ -46,6 +46,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -552,7 +553,10 @@ private fun BookmarkBasicDetails(
             },
             isError = titleError.isNotEmpty(),
             inputTransformation = InputTransformation.maxLength(AppConfig.PinboardApiMaxLength.TEXT_TYPE.value),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Sentences,
+                imeAction = ImeAction.Next,
+            ),
             onKeyboardAction = KeyboardActionHandler { focusManager.moveFocus(FocusDirection.Next) },
             shape = Shapes.StandaloneShape,
         )
@@ -568,6 +572,7 @@ private fun BookmarkBasicDetails(
             modifier = Modifier.fillMaxWidth(),
             label = { Text(text = stringResource(id = R.string.posts_add_url_description)) },
             supportingText = {},
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             shape = Shapes.StandaloneShape,
         )
 
@@ -582,6 +587,8 @@ private fun BookmarkBasicDetails(
                 state = notesFieldState,
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text(text = stringResource(id = R.string.posts_add_url_notes)) },
+                supportingText = {},
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                 shape = Shapes.StandaloneShape,
             )
         }
