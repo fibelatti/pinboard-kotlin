@@ -11,11 +11,11 @@ import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ReadOnlyComposable
@@ -23,7 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -100,7 +99,6 @@ fun TagManager(
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
         ) {
             OutlinedTextField(
                 value = searchTagInput,
@@ -129,25 +127,25 @@ fun TagManager(
                     },
                 textStyle = MaterialTheme.typography.bodyMedium,
                 label = { Text(text = stringResource(id = R.string.posts_add_tags)) },
+                trailingIcon = {
+                    TextButton(
+                        onClick = {
+                            if (searchTagInput.isNotBlank()) {
+                                onAddTagClick(searchTagInput)
+                            }
+                        },
+                        shapes = ExtendedTheme.defaultButtonShapes,
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                    ) {
+                        Text(text = stringResource(id = R.string.hint_add))
+                    }
+                },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                 keyboardActions = KeyboardActions { keyboardAction() },
                 singleLine = true,
                 maxLines = 1,
                 shape = Shapes.StandaloneShape,
             )
-
-            FilledTonalButton(
-                onClick = {
-                    if (searchTagInput.isNotBlank()) {
-                        onAddTagClick(searchTagInput)
-                    }
-                },
-                shapes = ExtendedTheme.defaultButtonShapes,
-            ) {
-                Text(
-                    text = stringResource(id = R.string.posts_add_tags_add),
-                )
-            }
         }
 
         if (suggestedTags.isNotEmpty()) {

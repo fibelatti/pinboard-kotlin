@@ -48,6 +48,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -55,7 +56,6 @@ import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
@@ -825,38 +825,33 @@ private fun RemoveUrlParametersSetting(
                 textFieldState.setTextAndPlaceCursorAtEnd("")
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                OutlinedTextField(
-                    state = textFieldState,
-                    modifier = Modifier
-                        .weight(1f)
-                        .onKeyEvent { keyEvent ->
-                            if (keyEvent.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
-                                submitValueAction()
-                                return@onKeyEvent true
-                            }
-                            false
-                        },
-                    textStyle = MaterialTheme.typography.bodyMedium,
-                    label = { Text(text = stringResource(R.string.user_preferences_remove_url_parameters_hint)) },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-                    onKeyboardAction = KeyboardActionHandler { submitValueAction() },
-                    lineLimits = TextFieldLineLimits.SingleLine,
-                    shape = Shapes.StandaloneShape,
-                )
-
-                FilledTonalButton(
-                    onClick = submitValueAction,
-                    shapes = ExtendedTheme.defaultButtonShapes,
-                    modifier = Modifier.padding(bottom = 4.dp),
-                ) {
-                    Text(text = stringResource(R.string.hint_add))
-                }
-            }
+            OutlinedTextField(
+                state = textFieldState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onKeyEvent { keyEvent ->
+                        if (keyEvent.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
+                            submitValueAction()
+                            return@onKeyEvent true
+                        }
+                        false
+                    },
+                textStyle = MaterialTheme.typography.bodyMedium,
+                label = { Text(text = stringResource(R.string.user_preferences_remove_url_parameters_hint)) },
+                trailingIcon = {
+                    TextButton(
+                        onClick = submitValueAction,
+                        shapes = ExtendedTheme.defaultButtonShapes,
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                    ) {
+                        Text(text = stringResource(id = R.string.hint_add))
+                    }
+                },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                onKeyboardAction = KeyboardActionHandler { submitValueAction() },
+                lineLimits = TextFieldLineLimits.SingleLine,
+                shape = Shapes.StandaloneShape,
+            )
 
             val closeIcon = rememberVectorPainter(AppIcons.Close)
             SingleLineChipGroup(

@@ -135,7 +135,6 @@
     <string name="posts_add_non_editable_url">Para editar la URL, visita Pinboard en tu navegador.</string>
 
     <string name="posts_add_tags">Nueva etiqueta</string>
-    <string name="posts_add_tags_add">Agregar etiqueta</string>
 
     <string name="posts_saved_feedback">¡Marcador guardado correctamente!</string>
     <string name="posts_existing_feedback">¡Marcador existente encontrado!</string>

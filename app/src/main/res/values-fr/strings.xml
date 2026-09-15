@@ -135,7 +135,6 @@
     <string name="posts_add_non_editable_url">Pour modifier l\'URL, visitez Pinboard dans votre navigateur.</string>
 
     <string name="posts_add_tags">Nouvelle étiquette</string>
-    <string name="posts_add_tags_add">Ajouter une étiquette</string>
 
     <string name="posts_saved_feedback">Favori enregistré avec succès !</string>
     <string name="posts_existing_feedback">Favori existant trouvé !</string>

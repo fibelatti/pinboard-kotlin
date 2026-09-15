@@ -136,7 +136,6 @@
     <string name="posts_add_non_editable_url">To edit the URL, visit Pinboard in your browser.</string>
 
     <string name="posts_add_tags">New tag</string>
-    <string name="posts_add_tags_add">Add tag</string>
 
     <string name="posts_saved_feedback">Bookmark saved successfully!</string>
     <string name="posts_existing_feedback">Existing bookmark found!</string>

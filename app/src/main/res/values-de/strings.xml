@@ -133,7 +133,6 @@
     <string name="posts_add_non_editable_url">Um die URL zu bearbeiten, besuchen Sie Pinboard in Ihrem Browser.</string>
 
     <string name="posts_add_tags">Neuer Tag</string>
-    <string name="posts_add_tags_add">Tag hinzufügen</string>
 
     <string name="posts_saved_feedback">Lesezeichen erfolgreich gespeichert!</string>
     <string name="posts_existing_feedback">Vorhandenes Lesezeichen gefunden!</string>
