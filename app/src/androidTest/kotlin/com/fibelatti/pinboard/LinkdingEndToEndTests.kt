@@ -143,11 +143,11 @@ class LinkdingEndToEndTests {
                 .performClick()
             onNodeWithText(context.getString(R.string.posts_add_tags))
                 .performTextInput("kotlin")
-            onNodeWithText(context.getString(R.string.posts_add_tags_add))
+            onNodeWithText(context.getString(R.string.hint_add))
                 .performClick()
             onNodeWithText(context.getString(R.string.posts_add_tags))
                 .performTextInput("dev")
-            onNodeWithText(context.getString(R.string.posts_add_tags_add))
+            onNodeWithText(context.getString(R.string.hint_add))
                 .performClick()
 
             // Save
