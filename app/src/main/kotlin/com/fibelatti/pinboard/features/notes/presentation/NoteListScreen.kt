@@ -4,13 +4,16 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -36,7 +39,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -54,7 +56,6 @@ import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.main.MainBottomAppBar
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
-import com.fibelatti.ui.components.AutoSizeText
 import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -126,6 +127,7 @@ private fun NoteListContent(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(IntrinsicSize.Max)
                     .windowInsetsPadding(windowInsets),
                 horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
             ) {
@@ -142,6 +144,7 @@ private fun NoteListContent(
                         },
                         modifier = Modifier
                             .weight(weight)
+                            .fillMaxHeight()
                             .semantics { role = Role.RadioButton },
                         shapes = when (index) {
                             0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
@@ -149,11 +152,9 @@ private fun NoteListContent(
                             else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
                         },
                     ) {
-                        AutoSizeText(
+                        Text(
                             text = stringResource(id = sorting.label),
                             textAlign = TextAlign.Center,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1,
                             style = MaterialTheme.typography.bodySmall,
                         )
                     }

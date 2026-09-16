@@ -26,7 +26,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.fibelatti.ui.foundation.Shapes
 
 @Composable
@@ -107,11 +106,9 @@ private fun RadioGroupItem(
         },
         supportingContent = {
             if (description != null) {
-                AutoSizeText(
+                Text(
                     text = description,
                     color = contentColor,
-                    minFontSize = 8.sp,
-                    maxLines = 2,
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }

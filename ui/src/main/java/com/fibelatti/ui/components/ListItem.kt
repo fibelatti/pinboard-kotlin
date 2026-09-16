@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,7 +16,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.fibelatti.ui.foundation.Shapes
 
 public object ListItem {
@@ -48,11 +48,9 @@ public fun ListItem(
         trailingContent = trailingContent,
         supportingContent = {
             if (!supportingText.isNullOrEmpty()) {
-                AutoSizeText(
+                Text(
                     text = supportingText,
                     modifier = Modifier.padding(top = 4.dp),
-                    maxLines = 4,
-                    minFontSize = 8.sp,
                 )
             }
         },
@@ -63,10 +61,9 @@ public fun ListItem(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                AutoSizeText(
+                Text(
                     text = headlineText,
                     style = MaterialTheme.typography.titleMedium,
-                    maxLines = 2,
                 )
 
                 headlineFlag()
