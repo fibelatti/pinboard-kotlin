@@ -56,6 +56,7 @@ public fun ListItem(
                 )
             }
         },
+        verticalAlignment = Alignment.CenterVertically,
         colors = colors,
         content = {
             Row(
