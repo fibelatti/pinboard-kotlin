@@ -63,6 +63,7 @@ public fun ListItem(
             ) {
                 Text(
                     text = headlineText,
+                    modifier = Modifier.weight(1f, fill = false),
                     style = MaterialTheme.typography.titleMedium,
                 )
 
