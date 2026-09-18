@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.relocation.BringIntoViewRequester
-import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
@@ -17,12 +15,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -40,9 +34,7 @@ import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.MultilineChipGroup
 import com.fibelatti.ui.components.SingleLineChipGroup
-import com.fibelatti.ui.foundation.KeyboardState
 import com.fibelatti.ui.foundation.Shapes
-import com.fibelatti.ui.foundation.rememberKeyboardState
 import com.fibelatti.ui.icons.Close
 import com.fibelatti.ui.icons.UiIcons
 import com.fibelatti.ui.preview.PreviewAll
@@ -84,19 +76,6 @@ fun TagManager(
             }
         }
 
-        val keyboardState: KeyboardState by rememberKeyboardState()
-        var isTagInputFocused: Boolean by remember { mutableStateOf(false) }
-        val bringIntoViewRequester: BringIntoViewRequester = remember { BringIntoViewRequester() }
-
-        LaunchedEffect(keyboardState, isTagInputFocused, suggestedTags, currentTags) {
-            val shouldBringIntoView: Boolean = keyboardState.isOpen && isTagInputFocused &&
-                (suggestedTags.isNotEmpty() || currentTags.isNotEmpty())
-
-            if (shouldBringIntoView) {
-                bringIntoViewRequester.bringIntoView()
-            }
-        }
-
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
@@ -121,10 +100,7 @@ fun TagManager(
                         }
                         false
                     }
-                    .onFocusChanged {
-                        isTagInputFocused = it.hasFocus
-                        onSearchTagInputFocusChange(it.hasFocus)
-                    },
+                    .onFocusChanged { onSearchTagInputFocusChange(it.hasFocus) },
                 textStyle = MaterialTheme.typography.bodyMedium,
                 label = { Text(text = stringResource(id = R.string.posts_add_tags)) },
                 trailingIcon = {
@@ -180,7 +156,6 @@ fun TagManager(
                 currentTags.map { tag -> ChipGroup.Item(text = tag.name, icon = closeIcon) }
             },
             onItemClick = {},
-            modifier = Modifier.bringIntoViewRequester(bringIntoViewRequester),
             onItemIconClick = { item -> onRemoveCurrentTagClick(currentTags.first { it.name == item.text }) },
             itemTextStyle = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
         )

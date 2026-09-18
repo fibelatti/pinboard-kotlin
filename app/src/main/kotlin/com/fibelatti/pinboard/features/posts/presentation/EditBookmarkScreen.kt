@@ -36,12 +36,17 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalResources
@@ -83,6 +88,7 @@ import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.foundation.rememberKeyboardState
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
+import kotlin.math.roundToInt
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -410,6 +416,18 @@ private fun BookmarkContent(
     onRemoveCurrentTagClick: (Tag) -> Unit,
 ) {
     val scrollState = rememberScrollState()
+    val keyboardState by rememberKeyboardState()
+
+    var viewportTop: Float by remember { mutableFloatStateOf(0f) }
+    var tagManagerTop: Float by remember { mutableFloatStateOf(0f) }
+    var isTagInputFocused: Boolean by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isTagInputFocused, keyboardState, tagManagerTop, viewportTop) {
+        // The keyboard is skipped mid-animation: the viewport is still resizing and the target would be stale
+        if (isTagInputFocused && (keyboardState.isOpen || keyboardState.isClosed)) {
+            scrollState.animateScrollTo((scrollState.value + tagManagerTop - viewportTop).roundToInt())
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -418,6 +436,7 @@ private fun BookmarkContent(
                 WindowInsets.safeDrawing
                     .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
             )
+            .onPlaced { coordinates -> viewportTop = coordinates.positionInRoot().y }
             .verticalScroll(scrollState)
             .padding(top = 8.dp, bottom = MainBottomAppBar.ContentClearance),
     ) {
@@ -466,7 +485,10 @@ private fun BookmarkContent(
             currentTagsTitle = currentTagsTitle,
             currentTags = currentTags,
             onRemoveCurrentTagClick = onRemoveCurrentTagClick,
-            modifier = Modifier.padding(top = 8.dp),
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .onPlaced { coordinates -> tagManagerTop = coordinates.positionInRoot().y },
+            onSearchTagInputFocusChange = { hasFocus -> isTagInputFocused = hasFocus },
         )
     }
 }
