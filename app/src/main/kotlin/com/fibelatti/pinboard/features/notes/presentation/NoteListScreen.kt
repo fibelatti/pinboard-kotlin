@@ -25,7 +25,6 @@ import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.ToggleButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,10 +34,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -56,6 +51,7 @@ import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.main.MainBottomAppBar
 import com.fibelatti.pinboard.features.notes.domain.model.Note
 import com.fibelatti.pinboard.features.notes.domain.model.NoteSorting
+import com.fibelatti.ui.components.ConnectedButtonRowItem
 import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.preview.PreviewAll
 import com.fibelatti.ui.theme.ExtendedTheme
@@ -133,31 +129,22 @@ private fun NoteListContent(
             ) {
                 NoteList.Sorting.entries.forEachIndexed { index, sorting ->
                     val weight by animateFloatAsState(
-                        targetValue = if (selectedSortingIndex == index) 1.2f else 1f,
+                        targetValue = if (selectedSortingIndex == index) 1.2f else .8f,
                     )
 
-                    ToggleButton(
+                    ConnectedButtonRowItem(
                         checked = index == selectedSortingIndex,
                         onCheckedChange = {
                             selectedSortingIndex = index
                             onSortOptionClick(sorting)
                         },
+                        itemIndex = index,
+                        itemCount = NoteList.Sorting.entries.size,
                         modifier = Modifier
                             .weight(weight)
-                            .fillMaxHeight()
-                            .semantics { role = Role.RadioButton },
-                        shapes = when (index) {
-                            0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                            NoteList.Sorting.entries.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                            else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                        },
-                    ) {
-                        Text(
-                            text = stringResource(id = sorting.label),
-                            textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.bodySmall,
-                        )
-                    }
+                            .fillMaxHeight(),
+                        label = stringResource(id = sorting.label),
+                    )
                 }
             }
 

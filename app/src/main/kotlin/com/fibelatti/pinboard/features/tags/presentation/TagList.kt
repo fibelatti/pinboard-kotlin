@@ -36,7 +36,6 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.ToggleButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -59,11 +58,7 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -81,6 +76,7 @@ import com.fibelatti.pinboard.features.appstate.RefreshTags
 import com.fibelatti.pinboard.features.main.MainBottomAppBar
 import com.fibelatti.pinboard.features.tags.domain.model.Tag
 import com.fibelatti.pinboard.features.tags.domain.model.TagSorting
+import com.fibelatti.ui.components.ConnectedButtonRowItem
 import com.fibelatti.ui.components.ListItem
 import com.fibelatti.ui.components.rememberAppSheetState
 import com.fibelatti.ui.foundation.Shapes
@@ -286,10 +282,10 @@ private fun TagListSortingControls(
         ) {
             TagList.Sorting.entries.forEachIndexed { index, sorting ->
                 val weight by animateFloatAsState(
-                    targetValue = if (selectedSortingIndex == index) 1.2f else 1f,
+                    targetValue = if (selectedSortingIndex == index) 1.2f else .8f,
                 )
 
-                ToggleButton(
+                ConnectedButtonRowItem(
                     checked = index == selectedSortingIndex,
                     onCheckedChange = {
                         selectedSortingIndex = index
@@ -304,20 +300,11 @@ private fun TagListSortingControls(
                     },
                     modifier = Modifier
                         .weight(weight)
-                        .fillMaxHeight()
-                        .semantics { role = Role.RadioButton },
-                    shapes = when (index) {
-                        0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                        TagList.Sorting.entries.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                        else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                    },
-                ) {
-                    Text(
-                        text = stringResource(id = sorting.label),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
+                        .fillMaxHeight(),
+                    itemIndex = index,
+                    itemCount = TagList.Sorting.entries.size,
+                    label = stringResource(id = sorting.label),
+                )
             }
         }
 
