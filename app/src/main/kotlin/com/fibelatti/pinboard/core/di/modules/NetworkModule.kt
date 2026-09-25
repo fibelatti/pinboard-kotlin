@@ -33,10 +33,10 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.ContentType
 import io.ktor.serialization.kotlinx.json.json
-import java.io.File
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
+import kotlinx.io.files.Path
 import kotlinx.serialization.json.Json
 import okhttp3.ConnectionPool
 import okhttp3.Interceptor
@@ -110,7 +110,7 @@ object NetworkModule {
             }
 
             install(HttpCache) {
-                publicStorage(FileStorage(File("${context.cacheDir}/http-cache")))
+                publicStorage(FileStorage(directory = Path("${context.cacheDir}/http-cache")))
             }
 
             extraHttpClientConfig()
