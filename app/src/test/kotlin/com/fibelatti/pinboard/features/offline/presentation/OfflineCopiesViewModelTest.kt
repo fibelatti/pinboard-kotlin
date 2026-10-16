@@ -106,12 +106,12 @@ internal class OfflineCopiesViewModelTest : BaseViewModelTest() {
         // GIVEN a selection spanning both backends
         val offlineCopies = listOf(
             mockk<OfflineCopy> {
-                every { appMode } returns AppMode.LINKDING
-                every { bookmarkId } returns "some-id"
+                every { component2() } returns AppMode.LINKDING
+                every { component1() } returns "some-id"
             },
             mockk<OfflineCopy> {
-                every { appMode } returns AppMode.PINBOARD
-                every { bookmarkId } returns "another-id"
+                every { component2() } returns AppMode.PINBOARD
+                every { component1() } returns "another-id"
             },
         )
 

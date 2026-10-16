@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.features.offline.presentation
 
+import com.fibelatti.pinboard.core.AppMode
 import com.fibelatti.pinboard.core.android.base.BaseViewModel
 import com.fibelatti.pinboard.core.di.AppDispatchers
 import com.fibelatti.pinboard.core.di.Scope
@@ -58,7 +59,7 @@ class OfflineCopiesViewModel @Inject constructor(
 
     fun delete(offlineCopies: List<OfflineCopy>) {
         scope.launch {
-            for ((bookmarkId, appMode) in offlineCopies) {
+            for ((bookmarkId: String, appMode: AppMode) in offlineCopies) {
                 offlineCopyRepository.delete(
                     appMode = appMode,
                     bookmarkId = bookmarkId,
