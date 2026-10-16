@@ -23,10 +23,12 @@ class AndroidBaseConventionPlugin : Plugin<Project> {
 
     private fun Project.configureSdkCompatibility() {
         val compileSdkVersion: Int = findExtraInHierarchy("compileSdkVersion")
+        val compileSdkMinorVersion: Int = findExtraInHierarchy("compileSdkMinorVersion")
         val minSdkVersion: Int = findExtraInHierarchy("minSdkVersion")
 
         extensions.getByType<CommonExtension>().apply {
             compileSdk = compileSdkVersion
+            compileSdkMinor = compileSdkMinorVersion
 
             defaultConfig.apply {
                 minSdk = minSdkVersion
