@@ -1,0 +1,6 @@
+This version brings the following updates:
+
+* Fix lists sometimes being overlapped by the bottom bar
+* Update networking library version
+
+Thanks for using the app!
