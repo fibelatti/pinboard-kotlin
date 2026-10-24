@@ -110,6 +110,9 @@ class MainComposeActivity : AppCompatActivity() {
     }
 
     private fun checkForDeeplink() {
+        // Deeplink extras are only trusted when delivered through the non-exported alias
+        if (intent.component?.className != NOTIFICATION_DEEPLINK_ALIAS) return
+
         val notificationId: Int = intent.deeplinkNotificationId ?: return
 
         appNotificationManager.cancelNotification(notificationId)
@@ -123,13 +126,14 @@ class MainComposeActivity : AppCompatActivity() {
         }
     }
 
-    class Builder(context: Context) : BaseIntentBuilder(context, MainComposeActivity::class.java) {
+    class Builder(private val context: Context) : BaseIntentBuilder(context, MainComposeActivity::class.java) {
 
         fun notificationExtras(
             notificationId: Int,
             postId: String,
             openEditor: Boolean,
         ): Builder = apply {
+            intent.setClassName(context, NOTIFICATION_DEEPLINK_ALIAS)
             intent.deeplinkNotificationId = notificationId
             intent.deeplinkPostId = postId
             intent.deeplinkOpenEditor = openEditor
@@ -137,6 +141,8 @@ class MainComposeActivity : AppCompatActivity() {
     }
 
     private companion object {
+
+        const val NOTIFICATION_DEEPLINK_ALIAS = "com.fibelatti.pinboard.features.main.NotificationDeeplinkActivity"
 
         var Intent.deeplinkPostId: String? by intentExtras()
         var Intent.deeplinkNotificationId: Int? by intentExtras()

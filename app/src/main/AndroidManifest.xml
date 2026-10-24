@@ -34,6 +34,11 @@
             </intent-filter>
         </activity>
 
+        <activity-alias
+            android:name=".features.main.NotificationDeeplinkActivity"
+            android:exported="false"
+            android:targetActivity=".features.main.MainComposeActivity" />
+
         <activity
             android:name=".features.share.ShareReceiverActivity"
             android:exported="true"

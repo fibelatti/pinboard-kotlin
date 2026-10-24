@@ -68,7 +68,7 @@ class AppNotificationManager @Inject constructor(
             /* context = */ context,
             /* requestCode = */ notificationId + 1,
             /* intent = */ viewBookmarkIntent,
-            /* flags = */ PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+            /* flags = */ PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
 
         val editBookmarkIntent: Intent = MainComposeActivity.Builder(context)
@@ -78,7 +78,7 @@ class AppNotificationManager @Inject constructor(
             /* context = */ context,
             /* requestCode = */ notificationId + 2,
             /* intent = */ editBookmarkIntent,
-            /* flags = */ PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+            /* flags = */ PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
         val editBookmarkAction = NotificationCompat.Action.Builder(
             null,

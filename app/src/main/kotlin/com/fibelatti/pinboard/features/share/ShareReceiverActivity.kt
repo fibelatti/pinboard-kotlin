@@ -7,7 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ShareCompat
-import com.fibelatti.core.android.platform.intentExtras
 import com.fibelatti.pinboard.core.extension.setThemedContent
 import com.fibelatti.pinboard.features.main.MainComposeActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -42,18 +41,18 @@ class ShareReceiverActivity : AppCompatActivity() {
         shareReceiverViewModel.saveUrl(
             url = url,
             title = intentReader.subject,
-            skipEdit = intent.skipEdit == true,
+            skipEdit = intent.getBooleanExtra(EXTRA_SKIP_EDIT, false),
         )
     }
 
     companion object {
 
-        private var Intent.skipEdit: Boolean? by intentExtras()
+        private const val EXTRA_SKIP_EDIT = "skipEdit"
 
         fun quickShareIntent(context: Context, intent: Intent): Intent {
             return Intent(intent).apply {
                 setClass(context, ShareReceiverActivity::class.java)
-                skipEdit = true
+                putExtra(EXTRA_SKIP_EDIT, true)
             }
         }
     }
