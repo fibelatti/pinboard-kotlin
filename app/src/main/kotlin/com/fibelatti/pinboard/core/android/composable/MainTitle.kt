@@ -52,6 +52,7 @@ fun MainTitle(
     title: MainState.TitleComponent,
     subtitle: MainState.TitleComponent,
     navigation: MainState.NavigationComponent,
+    showNavigationIcon: Boolean,
     onNavigationClick: () -> Unit,
     actionButton: MainState.ActionButtonComponent,
     onActionButtonClick: (data: Any?) -> Unit,
@@ -74,7 +75,9 @@ fun MainTitle(
             }
         }
 
-        AnimatedVisibility(visible = navigation is MainState.NavigationComponent.Visible) {
+        val navigationVisible: Boolean = showNavigationIcon && navigation is MainState.NavigationComponent.Visible
+
+        AnimatedVisibility(visible = navigationVisible) {
             LongClickIconButton(
                 painter = rememberVectorPainter(navigationIcon),
                 description = stringResource(id = R.string.cd_navigate_back),
@@ -88,7 +91,7 @@ fun MainTitle(
                 .weight(1f)
                 .heightIn(min = 64.dp)
                 .padding(
-                    start = if (navigation is MainState.NavigationComponent.Visible) 0.dp else 16.dp,
+                    start = if (navigationVisible) 0.dp else 16.dp,
                     end = 16.dp,
                 ),
             verticalArrangement = Arrangement.spacedBy(4.dp, alignment = Alignment.CenterVertically),
@@ -177,6 +180,7 @@ private fun MainTitlePreview() {
                 title = MainState.TitleComponent.Visible("Title"),
                 subtitle = MainState.TitleComponent.Gone,
                 navigation = MainState.NavigationComponent.Visible(),
+                showNavigationIcon = true,
                 onNavigationClick = {},
                 actionButton = MainState.ActionButtonComponent.Visible(
                     contentType = Content::class,
@@ -198,6 +202,7 @@ private fun MainTitleWithSubtitlePreview() {
                 title = MainState.TitleComponent.Visible("Title"),
                 subtitle = MainState.TitleComponent.Visible("Subtitle"),
                 navigation = MainState.NavigationComponent.Visible(),
+                showNavigationIcon = true,
                 onNavigationClick = {},
                 actionButton = MainState.ActionButtonComponent.Visible(
                     contentType = Content::class,

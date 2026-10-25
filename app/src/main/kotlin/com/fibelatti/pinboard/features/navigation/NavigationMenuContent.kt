@@ -31,34 +31,6 @@ import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.AppMode
-import com.fibelatti.pinboard.core.android.icons.AppIcons
-import com.fibelatti.pinboard.core.android.icons.Backup
-import com.fibelatti.pinboard.core.android.icons.Bookmarks
-import com.fibelatti.pinboard.core.android.icons.Download
-import com.fibelatti.pinboard.core.android.icons.Feedback
-import com.fibelatti.pinboard.core.android.icons.Filter
-import com.fibelatti.pinboard.core.android.icons.Notes
-import com.fibelatti.pinboard.core.android.icons.Person
-import com.fibelatti.pinboard.core.android.icons.Preferences
-import com.fibelatti.pinboard.core.android.icons.PrivacyPolicy
-import com.fibelatti.pinboard.core.android.icons.Rate
-import com.fibelatti.pinboard.core.android.icons.Share
-import com.fibelatti.pinboard.core.android.icons.Tag
-import com.fibelatti.pinboard.features.appstate.Action
-import com.fibelatti.pinboard.features.appstate.All
-import com.fibelatti.pinboard.features.appstate.Archived
-import com.fibelatti.pinboard.features.appstate.Private
-import com.fibelatti.pinboard.features.appstate.Public
-import com.fibelatti.pinboard.features.appstate.Recent
-import com.fibelatti.pinboard.features.appstate.Unread
-import com.fibelatti.pinboard.features.appstate.Untagged
-import com.fibelatti.pinboard.features.appstate.ViewAccountSwitcher
-import com.fibelatti.pinboard.features.appstate.ViewNotes
-import com.fibelatti.pinboard.features.appstate.ViewOfflineCopies
-import com.fibelatti.pinboard.features.appstate.ViewPopular
-import com.fibelatti.pinboard.features.appstate.ViewPreferences
-import com.fibelatti.pinboard.features.appstate.ViewSavedFilters
-import com.fibelatti.pinboard.features.appstate.ViewTags
 import com.fibelatti.ui.components.AutoSizeText
 import com.fibelatti.ui.components.ListItem
 import com.fibelatti.ui.foundation.Shapes
@@ -68,64 +40,7 @@ import com.fibelatti.ui.theme.ExtendedTheme
 @Composable
 fun NavigationMenuContent(
     appMode: AppMode,
-    onNavOptionClick: (Action) -> Unit,
-    onExportClick: () -> Unit,
-    onSendFeedbackClick: () -> Unit,
-    onWriteReviewClick: () -> Unit,
-    onShareClick: () -> Unit,
-    onPrivacyPolicyClick: () -> Unit,
-    onLicensesClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    NavigationMenuContent(
-        appMode = appMode,
-        onAllClick = { onNavOptionClick(All) },
-        onRecentClick = { onNavOptionClick(Recent) },
-        onPublicClick = { onNavOptionClick(Public) },
-        onPrivateClick = { onNavOptionClick(Private) },
-        onReadLaterClick = { onNavOptionClick(Unread) },
-        onUntaggedClick = { onNavOptionClick(Untagged) },
-        onArchivedClick = { onNavOptionClick(Archived) },
-        onSavedFiltersClick = { onNavOptionClick(ViewSavedFilters) },
-        onTagsClick = { onNavOptionClick(ViewTags) },
-        onNotesClick = { onNavOptionClick(ViewNotes) },
-        onOfflineCopiesClick = { onNavOptionClick(ViewOfflineCopies) },
-        onPopularClick = { onNavOptionClick(ViewPopular) },
-        onPreferencesClick = { onNavOptionClick(ViewPreferences) },
-        onAccountsClick = { onNavOptionClick(ViewAccountSwitcher) },
-        onExportClick = onExportClick,
-        onSendFeedbackClick = onSendFeedbackClick,
-        onWriteReviewClick = onWriteReviewClick,
-        onShareClick = onShareClick,
-        onPrivacyPolicyClick = onPrivacyPolicyClick,
-        onLicensesClick = onLicensesClick,
-        modifier = modifier,
-    )
-}
-
-@Composable
-private fun NavigationMenuContent(
-    appMode: AppMode,
-    onAllClick: () -> Unit,
-    onRecentClick: () -> Unit,
-    onPublicClick: () -> Unit,
-    onPrivateClick: () -> Unit,
-    onReadLaterClick: () -> Unit,
-    onUntaggedClick: () -> Unit,
-    onArchivedClick: () -> Unit,
-    onSavedFiltersClick: () -> Unit,
-    onTagsClick: () -> Unit,
-    onNotesClick: () -> Unit,
-    onOfflineCopiesClick: () -> Unit,
-    onPopularClick: () -> Unit,
-    onPreferencesClick: () -> Unit,
-    onAccountsClick: () -> Unit,
-    onExportClick: () -> Unit,
-    onSendFeedbackClick: () -> Unit,
-    onWriteReviewClick: () -> Unit,
-    onShareClick: () -> Unit,
-    onPrivacyPolicyClick: () -> Unit,
-    onLicensesClick: () -> Unit,
+    onActionClick: (NavigationMenuAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -155,189 +70,59 @@ private fun NavigationMenuContent(
             Spacer(modifier = Modifier.height(30.dp))
         }
 
-        MenuItem(
-            textRes = R.string.menu_navigation_all,
-            onClick = onAllClick,
-            icon = AppIcons.Bookmarks,
-            shape = Shapes.TopShape,
-        )
+        val groups: List<List<NavigationMenuItem>> = remember(appMode) { navigationMenuGroups(appMode) }
 
-        MenuItem(
-            textRes = R.string.menu_navigation_recent,
-            onClick = onRecentClick,
-            icon = AppIcons.Bookmarks,
-            shape = Shapes.MiddleShape,
-        )
+        groups.forEachIndexed { groupIndex: Int, group: List<NavigationMenuItem> ->
+            if (groupIndex > 0) {
+                Spacer(modifier = Modifier.height(30.dp))
+            }
 
-        if (AppMode.NO_API != appMode) {
-            MenuItem(
-                textRes = R.string.menu_navigation_public,
-                onClick = onPublicClick,
-                icon = AppIcons.Bookmarks,
-                shape = Shapes.MiddleShape,
-            )
-
-            MenuItem(
-                textRes = R.string.menu_navigation_private,
-                onClick = onPrivateClick,
-                icon = AppIcons.Bookmarks,
-                shape = Shapes.MiddleShape,
-            )
+            group.forEachIndexed { index: Int, item: NavigationMenuItem ->
+                MenuItem(
+                    textRes = item.textRes,
+                    onClick = { onActionClick(item.action) },
+                    icon = item.icon,
+                    shape = when {
+                        group.size == 1 -> Shapes.StandaloneShape
+                        index == 0 -> Shapes.TopShape
+                        index == group.lastIndex -> Shapes.BottomShape
+                        else -> Shapes.MiddleShape
+                    },
+                )
+            }
         }
-
-        MenuItem(
-            textRes = R.string.menu_navigation_unread,
-            onClick = onReadLaterClick,
-            icon = AppIcons.Bookmarks,
-            shape = Shapes.MiddleShape,
-        )
-
-        MenuItem(
-            textRes = R.string.menu_navigation_untagged,
-            onClick = onUntaggedClick,
-            icon = AppIcons.Bookmarks,
-            shape = if (AppMode.NO_API == appMode) {
-                Shapes.BottomShape
-            } else {
-                Shapes.MiddleShape
-            },
-        )
-
-        if (AppMode.LINKDING == appMode) {
-            MenuItem(
-                textRes = R.string.menu_navigation_archived,
-                onClick = onArchivedClick,
-                icon = AppIcons.Bookmarks,
-                shape = Shapes.MiddleShape,
-            )
-        }
-
-        if (AppMode.PINBOARD == appMode) {
-            MenuItem(
-                textRes = R.string.menu_navigation_popular,
-                onClick = onPopularClick,
-                icon = AppIcons.Bookmarks,
-                shape = Shapes.BottomShape,
-            )
-        }
-
-        Spacer(modifier = Modifier.height(30.dp))
-
-        MenuItem(
-            textRes = R.string.menu_navigation_offline_copies,
-            onClick = onOfflineCopiesClick,
-            icon = AppIcons.Download,
-            shape = Shapes.TopShape,
-        )
-
-        MenuItem(
-            textRes = R.string.menu_navigation_saved_filters,
-            onClick = onSavedFiltersClick,
-            icon = AppIcons.Filter,
-            shape = Shapes.MiddleShape,
-        )
-
-        MenuItem(
-            textRes = R.string.menu_navigation_tags,
-            onClick = onTagsClick,
-            icon = AppIcons.Tag,
-            shape = if (AppMode.PINBOARD == appMode) {
-                Shapes.MiddleShape
-            } else {
-                Shapes.BottomShape
-            },
-        )
-
-        if (AppMode.PINBOARD == appMode) {
-            MenuItem(
-                textRes = R.string.menu_navigation_notes,
-                onClick = onNotesClick,
-                icon = AppIcons.Notes,
-                shape = Shapes.BottomShape,
-            )
-        }
-
-        Spacer(modifier = Modifier.height(30.dp))
-
-        MenuItem(
-            textRes = R.string.menu_navigation_preferences,
-            onClick = onPreferencesClick,
-            icon = AppIcons.Preferences,
-            shape = Shapes.TopShape,
-        )
-
-        MenuItem(
-            textRes = R.string.menu_navigation_accounts,
-            onClick = onAccountsClick,
-            icon = AppIcons.Person,
-            shape = Shapes.MiddleShape,
-        )
-
-        MenuItem(
-            textRes = R.string.menu_navigation_export,
-            onClick = onExportClick,
-            icon = AppIcons.Backup,
-            shape = Shapes.BottomShape,
-        )
-
-        Spacer(modifier = Modifier.height(30.dp))
-
-        MenuItem(
-            textRes = R.string.about_send_feedback,
-            onClick = onSendFeedbackClick,
-            icon = AppIcons.Feedback,
-            shape = Shapes.TopShape,
-        )
-
-        MenuItem(
-            textRes = R.string.about_rate,
-            onClick = onWriteReviewClick,
-            icon = AppIcons.Rate,
-            shape = Shapes.MiddleShape,
-        )
-
-        MenuItem(
-            textRes = R.string.about_share,
-            onClick = onShareClick,
-            icon = AppIcons.Share,
-            shape = Shapes.MiddleShape,
-        )
-
-        MenuItem(
-            textRes = R.string.about_privacy_policy,
-            onClick = onPrivacyPolicyClick,
-            icon = AppIcons.PrivacyPolicy,
-            shape = Shapes.BottomShape,
-        )
 
         Spacer(modifier = Modifier.height(48.dp))
 
         AppVersionDetails(
-            onClick = onLicensesClick,
+            onClick = { onActionClick(NavigationMenuAction.ViewLicenses) },
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 }
 
 @Composable
-private fun AppVersionDetails(
+fun AppVersionDetails(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
 ) {
     Column(
         modifier = modifier
-            .fillMaxWidth()
             .clip(MaterialTheme.shapes.small)
             .clickable(onClick = onClick, role = Role.Button)
             .padding(horizontal = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = horizontalAlignment,
     ) {
         AutoSizeText(
             text = stringResource(id = R.string.about_developer),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontFamily = FontFamily.Monospace,
-            maxLines = 1,
+            maxLines = 2,
             style = MaterialTheme.typography.bodySmall,
         )
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = stringResource(R.string.about_version, BuildConfig.VERSION_NAME),
@@ -390,26 +175,7 @@ private fun NavigationMenuContentPreview() {
     ExtendedTheme {
         NavigationMenuContent(
             appMode = AppMode.PINBOARD,
-            onAllClick = {},
-            onRecentClick = {},
-            onPublicClick = {},
-            onPrivateClick = {},
-            onReadLaterClick = {},
-            onUntaggedClick = {},
-            onArchivedClick = {},
-            onSavedFiltersClick = {},
-            onTagsClick = {},
-            onNotesClick = {},
-            onOfflineCopiesClick = {},
-            onPopularClick = {},
-            onPreferencesClick = {},
-            onAccountsClick = {},
-            onExportClick = {},
-            onSendFeedbackClick = {},
-            onWriteReviewClick = {},
-            onShareClick = {},
-            onPrivacyPolicyClick = {},
-            onLicensesClick = {},
+            onActionClick = {},
         )
     }
 }

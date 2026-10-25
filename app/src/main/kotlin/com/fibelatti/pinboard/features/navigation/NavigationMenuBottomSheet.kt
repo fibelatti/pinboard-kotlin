@@ -6,6 +6,8 @@ import android.os.Build
 import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
@@ -16,6 +18,7 @@ import com.fibelatti.core.android.extension.shareText
 import com.fibelatti.pinboard.BuildConfig
 import com.fibelatti.pinboard.R
 import com.fibelatti.pinboard.core.extension.ErrorReportEntryPoint
+import com.fibelatti.pinboard.features.appstate.Action
 import com.fibelatti.pinboard.features.appstate.AppState
 import com.fibelatti.pinboard.features.export.ExportBookmarksEffects
 import com.fibelatti.pinboard.features.export.ExportBookmarksViewModel
@@ -36,9 +39,6 @@ fun NavigationMenuBottomSheet(
         sheetState = sheetState,
         modifier = modifier,
     ) {
-        val localActivity: Activity? = LocalActivity.current
-        val localUriHandler: UriHandler = LocalUriHandler.current
-
         val appState: AppState by mainViewModel.appState.collectAsStateWithLifecycle()
 
         ExportBookmarksEffects(
@@ -47,37 +47,71 @@ fun NavigationMenuBottomSheet(
             onMessageDismiss = exportBookmarksViewModel::messageHandled,
         )
 
+        val onNavigationMenuAction: (NavigationMenuAction) -> Unit = rememberNavigationMenuActionHandler(
+            onNavigate = mainViewModel::runAction,
+            onExportBookmarks = { exportBookmarksViewModel.createBackup(appState.appMode) },
+        )
+
         NavigationMenuContent(
             appMode = appState.appMode,
-            onNavOptionClick = { action ->
-                mainViewModel.runAction(action)
-                sheetState.hideBottomSheet()
-            },
-            onExportClick = { exportBookmarksViewModel.createBackup(appMode = appState.appMode) },
-            onSendFeedbackClick = {
-                localActivity?.showFeedbackPrompt()
-                sheetState.hideBottomSheet()
-            },
-            onWriteReviewClick = {
-                localUriHandler.openUri(NavigationMenu.APP_URL)
-                sheetState.hideBottomSheet()
-            },
-            onShareClick = {
-                localActivity?.shareText(
-                    title = R.string.share_title,
-                    text = localActivity.getString(R.string.share_text, NavigationMenu.APP_URL),
-                )
-                sheetState.hideBottomSheet()
-            },
-            onPrivacyPolicyClick = {
-                localUriHandler.openUri(NavigationMenu.PRIVACY_POLICY_URL)
-                sheetState.hideBottomSheet()
-            },
-            onLicensesClick = {
-                localActivity?.startActivity(Intent(localActivity, OssLicensesActivity::class.java))
-                sheetState.hideBottomSheet()
+            onActionClick = { action ->
+                onNavigationMenuAction(action)
+
+                // The export flow is hosted by the sheet content, so it must stay open until the export completes
+                if (action != NavigationMenuAction.ExportBookmarks) {
+                    sheetState.hideBottomSheet()
+                }
             },
         )
+    }
+}
+
+@Composable
+fun rememberNavigationMenuActionHandler(
+    onNavigate: (Action) -> Unit,
+    onExportBookmarks: () -> Unit,
+): (NavigationMenuAction) -> Unit {
+    val onNavigateState by rememberUpdatedState(onNavigate)
+    val onExportBookmarksState by rememberUpdatedState(onExportBookmarks)
+
+    val localActivity: Activity? = LocalActivity.current
+    val localUriHandler: UriHandler = LocalUriHandler.current
+
+    return remember(localActivity, localUriHandler) {
+        { action: NavigationMenuAction ->
+            when (action) {
+                is NavigationMenuAction.Navigate -> {
+                    onNavigateState(action.action)
+                }
+
+                NavigationMenuAction.ExportBookmarks -> {
+                    onExportBookmarksState()
+                }
+
+                NavigationMenuAction.SendFeedback -> {
+                    localActivity?.showFeedbackPrompt()
+                }
+
+                NavigationMenuAction.WriteReview -> {
+                    localUriHandler.openUri(NavigationMenu.APP_URL)
+                }
+
+                NavigationMenuAction.ShareApp -> {
+                    localActivity?.shareText(
+                        title = R.string.share_title,
+                        text = localActivity.getString(R.string.share_text, NavigationMenu.APP_URL),
+                    )
+                }
+
+                NavigationMenuAction.ViewPrivacyPolicy -> {
+                    localUriHandler.openUri(NavigationMenu.PRIVACY_POLICY_URL)
+                }
+
+                NavigationMenuAction.ViewLicenses -> {
+                    localActivity?.startActivity(Intent(localActivity, OssLicensesActivity::class.java))
+                }
+            }
+        }
     }
 }
 

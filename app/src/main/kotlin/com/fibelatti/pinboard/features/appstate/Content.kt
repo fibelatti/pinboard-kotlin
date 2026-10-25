@@ -30,6 +30,13 @@ interface ConnectionAwareContent {
  * width allows it (e.g. landscape mode, foldables and tablets).
  */
 interface SidePanelContent
+
+/**
+ * Marker interface to identify a [Content] that confirms discarding unsaved changes on back
+ * navigation, so it must not offer shortcuts to other destinations that could bypass that
+ * confirmation.
+ */
+interface EditorContent
 // endregion Markers
 
 // region App Content
@@ -85,12 +92,12 @@ data class AddPostContent(
     val defaultReadLater: Boolean,
     val defaultTags: List<Tag>,
     override val previousContent: PostListContent,
-) : ContentWithHistory()
+) : ContentWithHistory(), EditorContent
 
 data class EditPostContent(
     val post: Post,
     override val previousContent: Content,
-) : ContentWithHistory()
+) : ContentWithHistory(), EditorContent
 
 data class TagListContent(
     val tags: List<Tag>,

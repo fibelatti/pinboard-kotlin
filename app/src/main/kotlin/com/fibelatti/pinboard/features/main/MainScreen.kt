@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +31,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -46,6 +48,8 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.WideNavigationRailState
+import androidx.compose.material3.rememberWideNavigationRailState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -57,6 +61,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.findRootCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -89,6 +94,7 @@ import com.fibelatti.pinboard.features.appstate.ConnectionAwareContent
 import com.fibelatti.pinboard.features.appstate.Content
 import com.fibelatti.pinboard.features.appstate.ContentWithHistory
 import com.fibelatti.pinboard.features.appstate.EditPostContent
+import com.fibelatti.pinboard.features.appstate.EditorContent
 import com.fibelatti.pinboard.features.appstate.ExternalBrowserContent
 import com.fibelatti.pinboard.features.appstate.ExternalContent
 import com.fibelatti.pinboard.features.appstate.LoginContent
@@ -110,6 +116,7 @@ import com.fibelatti.pinboard.features.appstate.find
 import com.fibelatti.pinboard.features.appstate.resolveTypeForSidePanel
 import com.fibelatti.pinboard.features.filters.presentation.SavedFiltersScreen
 import com.fibelatti.pinboard.features.navigation.NavigationMenuBottomSheet
+import com.fibelatti.pinboard.features.navigation.NavigationMenuRail
 import com.fibelatti.pinboard.features.notes.presentation.NoteDetailsScreen
 import com.fibelatti.pinboard.features.notes.presentation.NoteListScreen
 import com.fibelatti.pinboard.features.offline.presentation.OfflineCopyDetailScreen
@@ -139,8 +146,11 @@ fun MainScreen(
     val backHandlerEnabled by remember {
         derivedStateOf { (appState.content as? ContentWithHistory)?.previousContent !is ExternalContent }
     }
-    val isWidthAtLeastBreakpoint = getWindowSizeClass()
-        .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
+    val windowSizeClass: WindowSizeClass = getWindowSizeClass()
+    val isWidthAtLeastBreakpoint = windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
+    // Landscape phones are wide enough for the side panel, but too short to also fit the navigation rail
+    val isNavigationRailAvailable = isWidthAtLeastBreakpoint &&
+        windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
 
     val localActivity = LocalAppCompatActivity.current
     val localOnBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
@@ -148,6 +158,7 @@ fun MainScreen(
     val localUriHandler = LocalUriHandler.current
 
     val navMenuSheetState = rememberAppSheetState()
+    val navigationRailState: WideNavigationRailState = rememberWideNavigationRailState()
 
     BackHandler(
         enabled = backHandlerEnabled,
@@ -156,6 +167,16 @@ fun MainScreen(
 
     SideEffect(isWidthAtLeastBreakpoint) {
         mainViewModel.setMultiPanelAvailable(value = isWidthAtLeastBreakpoint)
+    }
+
+    LaunchedEffect(isNavigationRailAvailable) {
+        // The rail replaces the menu, e.g. when unfolding a foldable while the menu is open
+        if (isNavigationRailAvailable) navMenuSheetState.hideBottomSheet()
+    }
+
+    LaunchedEffect(appState.sidePanelVisible) {
+        // The expanded rail leaves too little room for both panels on smaller windows, such as unfolded foldables
+        if (appState.sidePanelVisible) navigationRailState.collapse()
     }
 
     SideEffect(appState.content) {
@@ -179,6 +200,9 @@ fun MainScreen(
     MainScreen(
         state = state,
         sidePanelVisible = appState.sidePanelVisible,
+        useSplitNav = appState.useSplitNav,
+        navigationRailAvailable = isNavigationRailAvailable,
+        navigationRailState = navigationRailState,
         content = appState.content,
         snackbarHostState = LocalAppMessages.current.snackbarHostState,
         onNavigationClick = {
@@ -226,6 +250,70 @@ fun MainScreen(
 fun MainScreen(
     state: MainState,
     sidePanelVisible: Boolean,
+    useSplitNav: Boolean,
+    navigationRailAvailable: Boolean,
+    navigationRailState: WideNavigationRailState,
+    content: Content,
+    snackbarHostState: SnackbarHostState,
+    onNavigationClick: () -> Unit,
+    onActionButtonClick: (data: Any?) -> Unit,
+    onOfflineRetryClick: () -> Unit,
+    onBottomNavClick: () -> Unit,
+    onMenuItemClick: (MainState.MenuItemComponent, data: Any?) -> Unit,
+    onSideMenuItemClick: (MainState.MenuItemComponent, data: Any?) -> Unit,
+    onFabClick: (data: Any?) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val showNavigationRail: Boolean = navigationRailAvailable &&
+        content !is LoginContent &&
+        content !is EditorContent
+    val navigationRailInsets: WindowInsets = WindowInsets.systemBars
+        .union(WindowInsets.displayCutout)
+        .only(WindowInsetsSides.Vertical + WindowInsetsSides.Start)
+
+    Row(
+        modifier = modifier.fillMaxSize(),
+    ) {
+        AnimatedVisibility(visible = showNavigationRail) {
+            NavigationMenuRail(
+                railState = navigationRailState,
+                windowInsets = navigationRailInsets,
+            )
+        }
+
+        MainContent(
+            state = state,
+            sidePanelVisible = sidePanelVisible,
+            showNavigationIcon = !showNavigationRail,
+            showTitleNavigationIcon = !(showNavigationRail && useSplitNav),
+            content = content,
+            snackbarHostState = snackbarHostState,
+            onNavigationClick = onNavigationClick,
+            onActionButtonClick = onActionButtonClick,
+            onOfflineRetryClick = onOfflineRetryClick,
+            onBottomNavClick = onBottomNavClick,
+            onMenuItemClick = onMenuItemClick,
+            onSideMenuItemClick = onSideMenuItemClick,
+            onFabClick = onFabClick,
+            modifier = Modifier
+                .weight(1f)
+                .then(
+                    if (showNavigationRail) {
+                        Modifier.consumeWindowInsets(navigationRailInsets.only(WindowInsetsSides.Start))
+                    } else {
+                        Modifier
+                    },
+                ),
+        )
+    }
+}
+
+@Composable
+private fun MainContent(
+    state: MainState,
+    sidePanelVisible: Boolean,
+    showNavigationIcon: Boolean,
+    showTitleNavigationIcon: Boolean,
     content: Content,
     snackbarHostState: SnackbarHostState,
     onNavigationClick: () -> Unit,
@@ -245,6 +333,7 @@ fun MainScreen(
             if (content !is LoginContent || content.previousContent !is ExternalContent) {
                 MainTopAppBar(
                     state = state,
+                    showNavigationIcon = showTitleNavigationIcon,
                     onNavigationClick = onNavigationClick,
                     onActionButtonClick = onActionButtonClick,
                     isOffline = content.let { it is ConnectionAwareContent && !it.isConnected },
@@ -313,6 +402,7 @@ fun MainScreen(
             MainBottomAppBar(
                 state = state,
                 sidePanelVisible = sidePanelVisible,
+                showNavigationIcon = showNavigationIcon,
                 onBottomNavClick = onBottomNavClick,
                 onMenuItemClick = onMenuItemClick,
                 onSideMenuItemClick = onSideMenuItemClick,
@@ -408,6 +498,7 @@ private fun SidePanelContent(
 @Composable
 private fun MainTopAppBar(
     state: MainState,
+    showNavigationIcon: Boolean,
     onNavigationClick: () -> Unit,
     onActionButtonClick: (data: Any?) -> Unit,
     isOffline: Boolean,
@@ -422,6 +513,7 @@ private fun MainTopAppBar(
             title = state.title,
             subtitle = state.subtitle,
             navigation = state.navigation,
+            showNavigationIcon = showNavigationIcon,
             onNavigationClick = onNavigationClick,
             actionButton = state.actionButton,
             onActionButtonClick = onActionButtonClick,
@@ -469,6 +561,7 @@ private fun OfflineAlert(
 private fun MainBottomAppBar(
     state: MainState,
     sidePanelVisible: Boolean,
+    showNavigationIcon: Boolean,
     onBottomNavClick: () -> Unit,
     onMenuItemClick: (MainState.MenuItemComponent, data: Any?) -> Unit,
     onSideMenuItemClick: (MainState.MenuItemComponent, data: Any?) -> Unit,
@@ -482,6 +575,7 @@ private fun MainBottomAppBar(
         MainPanelBottomAppBar(
             bottomAppBar = state.bottomAppBar,
             floatingActionButton = state.floatingActionButton,
+            showNavigationIcon = showNavigationIcon,
             onBottomNavClick = onBottomNavClick,
             onMenuItemClick = onMenuItemClick,
             onFabClick = onFabClick,
@@ -502,6 +596,7 @@ private fun MainBottomAppBar(
 private fun MainPanelBottomAppBar(
     bottomAppBar: MainState.BottomAppBarComponent,
     floatingActionButton: MainState.FabComponent,
+    showNavigationIcon: Boolean,
     onBottomNavClick: () -> Unit,
     onMenuItemClick: (MainState.MenuItemComponent, data: Any?) -> Unit,
     onFabClick: (data: Any?) -> Unit,
@@ -509,7 +604,8 @@ private fun MainPanelBottomAppBar(
 ) {
     if (bottomAppBar !is MainState.BottomAppBarComponent.Visible) return
 
-    val expanded: Boolean = bottomAppBar.navigationIcon != null || bottomAppBar.menuItems.isNotEmpty()
+    val navigationIcon: ImageVector? = bottomAppBar.navigationIcon.takeIf { showNavigationIcon }
+    val expanded: Boolean = navigationIcon != null || bottomAppBar.menuItems.isNotEmpty()
     val fab = floatingActionButton as? MainState.FabComponent.Visible
 
     HorizontalFloatingToolbar(
@@ -536,9 +632,9 @@ private fun MainPanelBottomAppBar(
         modifier = modifier.defaultMinSize(minHeight = if (expanded) 64.dp else 80.dp),
         colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
         content = {
-            if (bottomAppBar.navigationIcon != null) {
+            if (navigationIcon != null) {
                 LongClickIconButton(
-                    painter = rememberVectorPainter(bottomAppBar.navigationIcon),
+                    painter = rememberVectorPainter(navigationIcon),
                     description = stringResource(R.string.cd_menu),
                     onClick = onBottomNavClick,
                 )
@@ -636,6 +732,7 @@ private fun MainTopAppBarPreview() {
                     ),
                 )
             },
+            showNavigationIcon = true,
             onNavigationClick = {},
             onActionButtonClick = {},
             isOffline = true,
@@ -662,6 +759,7 @@ private fun BottomAppBarPreview() {
                     contentType = Content::class,
                     icon = AppIcons.Pin,
                 ),
+                showNavigationIcon = true,
                 onBottomNavClick = {},
                 onMenuItemClick = { _, _ -> },
                 onFabClick = {},
