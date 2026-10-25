@@ -51,14 +51,28 @@ class NavigationActionHandler @Inject constructor(
     private fun navigateBack(currentContent: Content): Content {
         return currentContent.reduce<ContentWithHistory> { contentWithHistory ->
             if (currentContent is UserPreferencesContent) {
-                currentContent.previousContent.copy(
-                    showDescription = userRepository.showDescriptionInLists,
-                    shouldLoad = ShouldLoadFirstPage,
-                )
+                currentContent.refreshedPreviousContent()
             } else {
                 contentWithHistory.previousContent
             }
         }
+    }
+
+    private fun UserPreferencesContent.refreshedPreviousContent(): PostListContent = previousContent.copy(
+        showDescription = userRepository.showDescriptionInLists,
+        shouldLoad = ShouldLoadFirstPage,
+    )
+
+    /**
+     * Opens a top-level destination from anywhere in the history by stepping back to its root [PostListContent].
+     */
+    private inline fun Content.fromRootContent(body: (PostListContent) -> Content): Content {
+        val rootContent: PostListContent = when (this) {
+            is UserPreferencesContent -> refreshedPreviousContent()
+            else -> find()
+        } ?: return this
+
+        return body(rootContent)
     }
 
     private fun viewCategory(action: ViewCategory, currentContent: Content): Content {
@@ -214,9 +228,7 @@ class NavigationActionHandler @Inject constructor(
             )
         }
 
-        return currentContent
-            .reduce(body)
-            .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
+        return currentContent.fromRootContent(body)
     }
 
     private fun viewOfflineCopies(currentContent: Content): Content {
@@ -229,9 +241,7 @@ class NavigationActionHandler @Inject constructor(
             )
         }
 
-        return currentContent
-            .reduce(body)
-            .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
+        return currentContent.fromRootContent(body)
     }
 
     private fun viewOfflineCopy(action: ViewOfflineCopy, currentContent: Content): Content {
@@ -254,9 +264,7 @@ class NavigationActionHandler @Inject constructor(
             )
         }
 
-        return currentContent
-            .reduce(body)
-            .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
+        return currentContent.fromRootContent(body)
     }
 
     private fun viewNotes(currentContent: Content): Content {
@@ -269,9 +277,7 @@ class NavigationActionHandler @Inject constructor(
             )
         }
 
-        return currentContent
-            .reduce(body)
-            .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
+        return currentContent.fromRootContent(body)
     }
 
     private fun viewNote(action: ViewNote, currentContent: Content): Content {
@@ -303,9 +309,7 @@ class NavigationActionHandler @Inject constructor(
             )
         }
 
-        return currentContent
-            .reduce(body)
-            .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
+        return currentContent.fromRootContent(body)
     }
 
     private fun viewAccountSwitcher(currentContent: Content): Content {
@@ -315,9 +319,7 @@ class NavigationActionHandler @Inject constructor(
             )
         }
 
-        return currentContent
-            .reduce(body)
-            .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
+        return currentContent.fromRootContent(body)
     }
 
     private fun addAccount(action: AddAccount, currentContent: Content): Content {
@@ -337,8 +339,6 @@ class NavigationActionHandler @Inject constructor(
             )
         }
 
-        return currentContent
-            .reduce(body)
-            .reduce<PostDetailContent> { postDetailContent -> body(postDetailContent.previousContent) }
+        return currentContent.fromRootContent(body)
     }
 }

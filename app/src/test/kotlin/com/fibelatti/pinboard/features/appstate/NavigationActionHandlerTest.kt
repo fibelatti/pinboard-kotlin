@@ -746,6 +746,64 @@ internal class NavigationActionHandlerTest {
 
             verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
         }
+
+        @Test
+        fun `WHEN currentContent has a PostListContent in its history THEN TagListContent is returned`() = runTest {
+            // GIVEN
+            every { mockConnectivityInfoProvider.isConnected() } returns false
+
+            val content = NoteDetailContent(
+                id = "some-id",
+                note = mockk(),
+                previousContent = NoteListContent(
+                    notes = emptyList(),
+                    shouldLoad = false,
+                    previousContent = postListContent,
+                ),
+            )
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewTags, content)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                TagListContent(
+                    tags = emptyList(),
+                    shouldLoad = false,
+                    isConnected = false,
+                    previousContent = postListContent,
+                ),
+            )
+        }
+
+        @Test
+        fun `WHEN currentContent is UserPreferencesContent THEN TagListContent is returned AND the bookmark list is refreshed`() =
+            runTest {
+                // GIVEN
+                every { mockConnectivityInfoProvider.isConnected() } returns false
+                every { mockUserRepository.showDescriptionInLists } returns true
+
+                val content = UserPreferencesContent(
+                    userPreferences = mockk(),
+                    previousContent = postListContent.copy(shouldLoad = Loaded),
+                )
+
+                // WHEN
+                val result = navigationActionHandler.runAction(ViewTags, content)
+
+                // THEN
+                assertThat(result).isEqualTo(
+                    TagListContent(
+                        tags = emptyList(),
+                        shouldLoad = false,
+                        isConnected = false,
+                        previousContent = postListContent.copy(
+                            showDescription = true,
+                            shouldLoad = ShouldLoadFirstPage,
+                        ),
+                    ),
+                )
+            }
     }
 
     @Nested
@@ -782,6 +840,26 @@ internal class NavigationActionHandlerTest {
             val content = mockk<PostDetailContent> {
                 every { previousContent } returns postListContent
             }
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewSavedFilters, content)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                SavedFiltersContent(
+                    previousContent = postListContent,
+                ),
+            )
+        }
+
+        @Test
+        fun `WHEN currentContent has a PostListContent in its history THEN SavedFiltersContent is returned`() = runTest {
+            // GIVEN
+            val content = TagListContent(
+                tags = emptyList(),
+                shouldLoad = false,
+                previousContent = postListContent,
+            )
 
             // WHEN
             val result = navigationActionHandler.runAction(ViewSavedFilters, content)
@@ -854,6 +932,29 @@ internal class NavigationActionHandlerTest {
             )
 
             verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
+        }
+
+        @Test
+        fun `WHEN currentContent has a PostListContent in its history THEN NoteListContent is returned`() = runTest {
+            // GIVEN
+            every { mockConnectivityInfoProvider.isConnected() } returns false
+
+            val content = SavedFiltersContent(
+                previousContent = postListContent,
+            )
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewNotes, content)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                NoteListContent(
+                    notes = emptyList(),
+                    shouldLoad = false,
+                    isConnected = false,
+                    previousContent = postListContent,
+                ),
+            )
         }
     }
 
@@ -991,6 +1092,33 @@ internal class NavigationActionHandlerTest {
             assertThat((result as OfflineCopyListContent).shouldLoad).isTrue()
             verify(exactly = 0) { mockConnectivityInfoProvider.isConnected() }
         }
+
+        @Test
+        fun `WHEN currentContent has a PostListContent in its history THEN OfflineCopiesContent is returned`() = runTest {
+            // GIVEN
+            val content = NoteDetailContent(
+                id = "some-id",
+                note = mockk(),
+                previousContent = NoteListContent(
+                    notes = emptyList(),
+                    shouldLoad = false,
+                    previousContent = postListContent,
+                ),
+            )
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewOfflineCopies, content)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                OfflineCopyListContent(
+                    offlineCopies = emptyList(),
+                    totalSize = 0,
+                    shouldLoad = true,
+                    previousContent = postListContent,
+                ),
+            )
+        }
     }
 
     @Nested
@@ -1121,6 +1249,33 @@ internal class NavigationActionHandlerTest {
 
             verify(exactly = 2) { mockConnectivityInfoProvider.isConnected() }
         }
+
+        @Test
+        fun `WHEN currentContent has a PostListContent in its history THEN PopularPostsContent is returned`() = runTest {
+            // GIVEN
+            val mockBoolean = randomBoolean()
+            every { mockConnectivityInfoProvider.isConnected() } returns mockBoolean
+
+            val content = OfflineCopyListContent(
+                offlineCopies = emptyList(),
+                totalSize = 0,
+                shouldLoad = false,
+                previousContent = postListContent,
+            )
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewPopular, content)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                PopularPostsContent(
+                    posts = emptyMap(),
+                    shouldLoad = mockBoolean,
+                    isConnected = mockBoolean,
+                    previousContent = postListContent,
+                ),
+            )
+        }
     }
 
     @Nested
@@ -1160,6 +1315,29 @@ internal class NavigationActionHandlerTest {
             val content = mockk<PostDetailContent> {
                 every { previousContent } returns postListContent
             }
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewAccountSwitcher, content)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                AccountSwitcherContent(
+                    previousContent = postListContent,
+                ),
+            )
+        }
+
+        @Test
+        fun `WHEN currentContent has a PostListContent in its history THEN AccountSwitcherContent is returned`() = runTest {
+            // GIVEN
+            val content = PopularPostDetailContent(
+                post = createPost(),
+                previousContent = PopularPostsContent(
+                    posts = emptyMap(),
+                    shouldLoad = false,
+                    previousContent = postListContent,
+                ),
+            )
 
             // WHEN
             val result = navigationActionHandler.runAction(ViewAccountSwitcher, content)
@@ -1268,6 +1446,28 @@ internal class NavigationActionHandlerTest {
             // GIVEN
             val currentPreferences = mockk<UserPreferences>()
             every { mockUserRepository.currentPreferences } returns MutableStateFlow(currentPreferences)
+
+            // WHEN
+            val result = navigationActionHandler.runAction(ViewPreferences, content)
+
+            // THEN
+            assertThat(result).isEqualTo(
+                UserPreferencesContent(
+                    userPreferences = currentPreferences,
+                    previousContent = postListContent,
+                ),
+            )
+        }
+
+        @Test
+        fun `WHEN currentContent has a PostListContent in its history THEN UserPreferencesContent is returned`() = runTest {
+            // GIVEN
+            val currentPreferences = mockk<UserPreferences>()
+            every { mockUserRepository.currentPreferences } returns MutableStateFlow(currentPreferences)
+
+            val content = AccountSwitcherContent(
+                previousContent = postListContent,
+            )
 
             // WHEN
             val result = navigationActionHandler.runAction(ViewPreferences, content)
