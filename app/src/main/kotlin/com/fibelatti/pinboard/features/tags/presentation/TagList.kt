@@ -236,7 +236,7 @@ fun TagList(
                         )
                     }
 
-                    itemsIndexed(items, key = { _, item -> item.hashCode() }) { idx, item ->
+                    itemsIndexed(items, key = { _, item -> item.name }) { idx, item ->
                         TagListItem(
                             item = item,
                             onTagClick = onTagClick,
