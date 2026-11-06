@@ -1,0 +1,5 @@
+This version brings the following updates:
+
+* Add a navigation rail for easier navigation on larger screens
+
+Thanks for using the app!
