@@ -1,5 +1,5 @@
 [versions]
-agp = "9.5.1"
+agp = "9.5.2"
 composeMaterial3 = "1.5.0-rc01"
 composeRuntime = "1.13.0-rc01"
 composeUi = "1.13.0-rc01"
