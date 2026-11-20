@@ -143,7 +143,7 @@ androidComponents {
             com.android.build.api.variant.ResValue(appName, null),
         )
 
-        variant.androidResources.localeFilters.addAll(listOf("en", "de", "fr", "es"))
+        variant.androidResources.localeFilters.addAll(listOf("en", "de", "fr", "es", "zh"))
     }
 }
 
