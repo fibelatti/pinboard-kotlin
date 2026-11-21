@@ -16,7 +16,7 @@
     <plurals name="alert_confirm_deletion_offline_copies">
         <item quantity="other">这将从此设备删除 %d 个已保存页面。书签保留，但离线阅读需要重新保存。继续？</item>
     </plurals>
-    <string name="alert_confirm_unsaved_changes">您有未保存的更改，继续不保存吗？</string>
+    <string name="alert_confirm_unsaved_changes">您有未保存的更改，继续将丢失这些更改。是否继续？</string>
 
     <string name="server_error">无法连接到服务。请检查您的授权令牌或稍后重试。</string>
     <string name="certificate_error">无法建立安全连接。设备不信任服务器证书——如果实例使用自签名证书，请在设备设置中安装其证书颁发机构。</string>
@@ -36,7 +36,7 @@
     <string name="menu_navigation_public">公开</string>
     <string name="menu_navigation_private">私有</string>
     <string name="menu_navigation_unread">待读</string>
-    <string name="menu_navigation_untagged">未标记</string>
+    <string name="menu_navigation_untagged">无标签</string>
     <string name="menu_navigation_archived">已归档</string>
     <string name="menu_navigation_tags">标签</string>
     <string name="menu_navigation_saved_filters">已保存的筛选器</string>
@@ -51,7 +51,7 @@
     <string name="menu_link_delete">移除书签</string>
     <string name="menu_link_edit">编辑书签</string>
     <string name="menu_link_archive">归档书签</string>
-    <string name="menu_link_unarchive">取消归档</string>
+    <string name="menu_link_unarchive">取消归档书签</string>
     <string name="menu_link_save">保存书签</string>
     <string name="menu_link_share">分享书签</string>
     <string name="menu_link_open_in_browser">在浏览器中打开</string>
@@ -95,7 +95,7 @@
     <string name="posts_title_public">公开书签</string>
     <string name="posts_title_private">私有书签</string>
     <string name="posts_title_unread">待读书签</string>
-    <string name="posts_title_untagged">未标记书签</string>
+    <string name="posts_title_untagged">无标签书签</string>
     <string name="posts_title_archived">已归档书签</string>
 
     <plurals name="posts_quantity">
@@ -117,7 +117,7 @@
     <string name="posts_deleted_feedback">书签已成功移除</string>
     <string name="posts_deleted_error">发生错误，书签未被移除。如果问题持续存在，请使用网页客户端删除。</string>
 
-    <string name="posts_updated_feedback">书签已更新成功</string>
+    <string name="posts_updated_feedback">书签更新成功</string>
     <string name="posts_updated_error">更新书签失败。请重试。</string>
 
     <string name="posts_add_title">保存书签</string>
@@ -221,7 +221,7 @@
     <string name="tags_empty_description">您保存的书签没有标签</string>
     <string name="tags_sorting_a_to_z">A 到 Z</string>
     <string name="tags_sorting_more_first">数量多优先</string>
-    <string name="tags_sorting_less_first">数量少先</string>
+    <string name="tags_sorting_less_first">数量少优先</string>
     <string name="tags_sorting_filter">搜索</string>
     <string name="tag_filter_hint">标签名称</string>
     <string name="tag_rename_title">重命名标签：%s</string>
@@ -263,9 +263,9 @@
     <string name="quick_actions_edit">编辑书签</string>
     <string name="quick_actions_delete">删除书签</string>
     <string name="quick_actions_archive">归档书签</string>
-    <string name="quick_actions_unarchive">取消归档</string>
+    <string name="quick_actions_unarchive">取消归档书签</string>
     <string name="quick_actions_delete_filter">删除筛选器</string>
-    <string name="quick_actions_save">保存到我的</string>
+    <string name="quick_actions_save">保存到我的书签</string>
     <string name="quick_actions_save_offline_copy">保存离线副本</string>
     <string name="quick_actions_copy_url">复制 URL</string>
     <string name="quick_actions_share">分享书签</string>
@@ -281,7 +281,7 @@
 
     <string name="quick_actions_customization_hidden_options_title">隐藏的选项</string>
     <string name="quick_actions_customization_hidden_options_instruction">点击每个选项以切换其可见性</string>
-    <string name="quick_actions_customization_hidden_options_description">在查看快速操作菜单时，点击"更多选项"可以使用这些选项</string>
+    <string name="quick_actions_customization_hidden_options_description">在查看快速操作菜单时，点击“更多选项”可以使用这些选项</string>
 
     <string name="quick_actions_customization_save_changes">保存更改</string>
 
@@ -332,10 +332,10 @@
     <string name="user_preferences_preferred_details_view_caveat">浏览书签时，长按列表项可访问分享和编辑快捷方式</string>
     <string name="user_preferences_preferred_details_view_mark_as_read_on_open">打开时标记为已读</string>
     <string name="user_preferences_preferred_details_view_mark_as_read_on_open_caveat">自动更新书签以移除待读标记。</string>
-    <string name="user_preferences_use_split_nav">使用分屏导航</string>
+    <string name="user_preferences_use_split_nav">使用分栏导航</string>
     <string name="user_preferences_use_split_nav_description">浏览时保持列表可见（适用于横屏设备、折叠屏和平板电脑）</string>
     <string name="user_preferences_use_background_share_receiver">后台快速保存</string>
-    <string name="user_preferences_use_background_share_receiver_description">启用后，在分享菜单中选择"快速保存书签"将在后台保存书签，并通过推送通知告知结果</string>
+    <string name="user_preferences_use_background_share_receiver_description">启用后，在分享菜单中选择“快速保存书签”将在后台保存书签，并通过推送通知告知结果</string>
     <string name="user_preferences_use_background_share_receiver_missing_permission">通过设置应用授予通知权限以查看结果。</string>
     <string name="user_preferences_follow_redirects">跟随重定向</string>
     <string name="user_preferences_follow_redirects_description">分享书签到应用时自动跟随重定向，保存最终 URL。通过分享操作保存书签时会增加加载时间</string>
@@ -363,7 +363,7 @@
     <string name="user_preferences_edit_after_sharing_title">分享时打开编辑器</string>
     <string name="user_preferences_edit_after_sharing_before_saving">保存前</string>
     <string name="user_preferences_edit_after_sharing_after_saving">保存后</string>
-    <string name="user_preferences_edit_after_sharing_description">控制选择"保存书签"分享操作后何时显示书签编辑器。要跳过编辑器，请改为选择"快速保存书签"。</string>
+    <string name="user_preferences_edit_after_sharing_description">控制选择“保存书签”分享操作后何时显示书签编辑器。要跳过编辑器，请改为选择“快速保存书签”。</string>
     <string name="user_preferences_offline_copies">离线副本</string>
     <string name="user_preferences_offline_copies_description">已保存页面当前占用此设备 %s 的存储空间。</string>
     <string name="user_preferences_offline_copies_clear">删除所有离线副本</string>
