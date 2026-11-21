@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Common -->
+    <string name="hint_ok">确定</string>
+    <string name="hint_yes">是</string>
+    <string name="hint_no">否</string>
+    <string name="hint_cancel">取消</string>
+    <string name="hint_open_settings">打开设置</string>
+    <string name="hint_save">保存</string>
+    <string name="hint_help">帮助</string>
+    <string name="hint_mark_as_read">标记为已读</string>
+    <string name="hint_add">添加</string>
+
+    <string name="alert_confirm_deletion">确定要删除此书签吗？</string>
+    <string name="alert_confirm_deletion_offline_copy">确定要删除此离线副本吗？</string>
+    <plurals name="alert_confirm_deletion_offline_copies">
+        <item quantity="other">这将从此设备删除 %d 个已保存页面。书签保留，但离线阅读需要重新保存。继续？</item>
+    </plurals>
+    <string name="alert_confirm_unsaved_changes">您有未保存的更改，继续将丢失这些更改。是否继续？</string>
+
+    <string name="server_error">无法连接到服务。请检查您的授权令牌或稍后重试。</string>
+    <string name="certificate_error">无法建立安全连接。设备不信任服务器证书——如果实例使用自签名证书，请在设备设置中安装其证书颁发机构。</string>
+
+    <string name="feedback_copied_to_clipboard">已复制到剪贴板</string>
+
+    <string name="feedback_tags_copied_to_clipboard">&lt;b>标签已复制到剪贴板。&lt;/b>&lt;br />使用 &lt;i>粘贴标签&lt;/i> 操作将其直接添加到另一个书签。</string>
+
+    <!-- Menus -->
+    <string name="menu_main_sync">同步书签</string>
+    <string name="menu_main_search">搜索</string>
+    <string name="menu_main_sorting">排序</string>
+    <string name="menu_read_random">随机书签</string>
+
+    <string name="menu_navigation_all">全部</string>
+    <string name="menu_navigation_recent">最近</string>
+    <string name="menu_navigation_public">公开</string>
+    <string name="menu_navigation_private">私有</string>
+    <string name="menu_navigation_unread">待读</string>
+    <string name="menu_navigation_untagged">无标签</string>
+    <string name="menu_navigation_archived">已归档</string>
+    <string name="menu_navigation_tags">标签</string>
+    <string name="menu_navigation_saved_filters">已保存的筛选器</string>
+    <string name="menu_navigation_notes">笔记</string>
+    <string name="menu_navigation_offline_copies">离线副本</string>
+    <string name="menu_navigation_popular">热门</string>
+
+    <string name="menu_navigation_preferences">偏好设置</string>
+    <string name="menu_navigation_accounts">账户切换</string>
+    <string name="menu_navigation_export">导出书签</string>
+
+    <string name="menu_link_delete">移除书签</string>
+    <string name="menu_link_edit">编辑书签</string>
+    <string name="menu_link_archive">归档书签</string>
+    <string name="menu_link_unarchive">取消归档书签</string>
+    <string name="menu_link_save">保存书签</string>
+    <string name="menu_link_share">分享书签</string>
+    <string name="menu_link_open_in_browser">在浏览器中打开</string>
+    <string name="menu_link_save_offline_copy">保存离线副本</string>
+    <string name="menu_link_toggle_offline_copy">切换离线/在线页面</string>
+
+    <string name="menu_search_clear">清除筛选</string>
+    <string name="menu_search_save">保存筛选</string>
+
+    <string name="menu_side_panel_dismiss">关闭</string>
+
+    <!-- Auth -->
+    <string name="auth_token_hint">API 令牌</string>
+    <string name="auth_title_pinboard">登录到 Pinboard</string>
+    <string name="auth_button">登录</string>
+    <string name="auth_token_description"><![CDATA[您可以在 <a href="https://pinboard.in/settings/password">Pinboard 设置</a> 页面找到您的 API 令牌。它由用户名和字母数字字符串组成（例如 username:00F0D0FE123456789012）]]></string>
+    <string name="auth_token_empty">请输入您的 API 令牌。</string>
+    <string name="auth_token_error">登录失败。请仔细检查您的 API 令牌</string>
+    <string name="auth_logged_out_feedback">令牌无效。请重新登录。</string>
+
+    <string name="auth_switch_to_pinboard">切换到 Pinboard</string>
+    <string name="auth_switch_to_linkding">切换到 Linkding</string>
+
+    <string name="auth_title_linkding">登录到 Linkding</string>
+    <string name="auth_linkding_instance_url">Linkding 实例 URL</string>
+    <string name="auth_linkding_instance_url_error">请输入有效的实例 URL。</string>
+    <string name="auth_linkding_description"><![CDATA[<a href="https://github.com/sissbruecker/linkding/tree/master">Linkding</a> 是一个自托管的书签管理器。使用 Pinkt for Linkding 时，您必须提供实例 URL 和令牌，令牌可以在设置页面的集成选项卡中找到。]]></string>
+
+    <string name="auth_linkding_unreachable_instance_url">无法连接到服务器。地址必须包含协议并且可公开访问。</string>
+    <string name="auth_linkding_missing_local_network_permission">访问自托管实例需要本地网络权限。请授予权限以继续。</string>
+    <string name="auth_linkding_missing_local_network_permission_settings">通过设置应用授予本地网络访问权限以访问自托管实例。</string>
+
+    <string name="auth_linkding_client_certificate">客户端证书（可选）：%s</string>
+    <string name="auth_linkding_client_certificate_none">无</string>
+    <string name="auth_linkding_client_certificate_clear">移除客户端证书</string>
+    <string name="auth_linkding_client_certificate_not_selected">未选择证书。您是否已在设备上安装？</string>
+
+    <!-- Posts -->
+    <string name="posts_title_all">全部书签</string>
+    <string name="posts_title_recent">最近的书签</string>
+    <string name="posts_title_public">公开书签</string>
+    <string name="posts_title_private">私有书签</string>
+    <string name="posts_title_unread">待读书签</string>
+    <string name="posts_title_untagged">无标签书签</string>
+    <string name="posts_title_archived">已归档书签</string>
+
+    <plurals name="posts_quantity">
+        <item quantity="other">%s 项</item>
+    </plurals>
+
+    <string name="posts_sorting_newest_first">%s — 最新优先</string>
+    <string name="posts_sorting_oldest_first">%s — 最早优先</string>
+    <string name="posts_sorting_alphabetical">%s — A 到 Z</string>
+    <string name="posts_sorting_alphabetical_reverse">%s — Z 到 A</string>
+
+    <string name="posts_share_title">分享 URL</string>
+    <string name="posts_open_with_file_viewer">打开文件查看器</string>
+    <string name="posts_open_with_file_viewer_description">无法使用内置浏览器查看此书签。请使用默认文件查看器。</string>
+
+    <string name="posts_empty_title">此处没有书签</string>
+    <string name="posts_empty_description">所选类别中没有保存的书签</string>
+
+    <string name="posts_deleted_feedback">书签已成功移除</string>
+    <string name="posts_deleted_error">发生错误，书签未被移除。如果问题持续存在，请使用网页客户端删除。</string>
+
+    <string name="posts_updated_feedback">书签更新成功</string>
+    <string name="posts_updated_error">更新书签失败。请重试。</string>
+
+    <string name="posts_add_title">保存书签</string>
+    <string name="posts_add_url">URL</string>
+    <string name="posts_add_url_title">标题</string>
+    <string name="posts_add_url_description">描述</string>
+    <string name="posts_add_url_notes">笔记</string>
+    <string name="posts_add_private">私有</string>
+    <string name="posts_add_read_later">待读</string>
+
+    <string name="posts_add_non_editable_url">要编辑 URL，请在浏览器中访问 Pinboard。</string>
+
+    <string name="posts_add_tags">新标签</string>
+
+    <string name="posts_saved_feedback">书签保存成功！</string>
+    <string name="posts_existing_feedback">发现已存在的书签！</string>
+    <string name="posts_existing_feedback_with_date">发现已存在的书签，保存于 %s</string>
+
+    <string name="posts_url_offline_error">您似乎处于离线状态。请在有网络连接后重试。</string>
+    <string name="posts_url_error">无法使用内置浏览器查看此书签。请使用默认浏览器。</string>
+    <string name="posts_open_in_browser">打开外部浏览器</string>
+
+    <string name="offline_copies_title">离线副本</string>
+    <string name="offline_copies_empty_title">暂无离线副本</string>
+    <string name="offline_copies_empty_description">保存书签的离线副本后，它将显示在这里，无需网络即可阅读。</string>
+    <string name="offline_copies_total_size">已使用 %s</string>
+    <string name="offline_copies_delete">删除离线副本</string>
+    <string name="offline_copies_deleted">离线副本已删除</string>
+    <string name="offline_copies_bulk_delete">批量删除</string>
+    <string name="offline_copies_bulk_delete_action">删除（%d）</string>
+    <string name="offline_copies_bulk_deleted">离线副本已删除</string>
+    <string name="offline_copies_open_original">打开原始页面</string>
+    <plurals name="offline_copies_quantity">
+        <item quantity="other">%d 份副本</item>
+    </plurals>
+
+    <string name="posts_offline_copy_saving">正在保存离线副本…</string>
+    <string name="posts_offline_copy_saved">离线副本已保存</string>
+    <string name="posts_offline_copy_saved_truncated">离线副本已保存。部分图片过大被省略。</string>
+    <string name="posts_offline_copy_failed">无法保存此页面的离线副本</string>
+    <string name="posts_offline_copy_unreadable">此页面没有足够的可读文本以供保存副本</string>
+
+    <string name="posts_pending_add">待添加</string>
+    <string name="posts_pending_add_expanded">网络可用时将添加此书签</string>
+    <string name="posts_pending_update">待更新</string>
+    <string name="posts_pending_update_expanded">网络可用时将更新此书签</string>
+    <string name="posts_pending_delete">待删除</string>
+    <string name="posts_pending_delete_expanded">网络可用时将删除此书签</string>
+    <string name="posts_pending_archive">待归档</string>
+    <string name="posts_pending_archive_expanded">网络可用时将归档此书签</string>
+    <string name="posts_pending_unarchive">待取消归档</string>
+    <string name="posts_pending_unarchive_expanded">网络可用时将取消归档此书签</string>
+
+    <!-- Offline -->
+    <string name="offline_alert">无网络连接</string>
+    <string name="offline_retry">重试</string>
+
+    <!-- Validation -->
+    <string name="validation_error_empty_url">URL 不能为空</string>
+    <string name="validation_error_invalid_url">该 URL 不被服务接受。</string>
+    <string name="validation_error_invalid_url_rationale">无法保存 URL。请验证其有效性。</string>
+    <string name="validation_error_empty_title">标题不能为空</string>
+
+    <!-- Search -->
+    <string name="search_title">筛选书签</string>
+    <string name="search_random">随机标签</string>
+    <string name="search_term">搜索 URL、标题或描述</string>
+    <string name="search_selected_tags">标签（%d / 3）：</string>
+    <string name="search_tags">所有标签</string>
+    <string name="search_active">筛选已应用</string>
+
+    <plurals name="search_result_size">
+        <item quantity="other">%d 个匹配</item>
+    </plurals>
+
+    <string name="search_share_title">分享搜索结果</string>
+    <string name="search_share_query">分享查询</string>
+    <string name="search_share_tags">分享标签</string>
+
+    <string name="search_advanced_content_description">高级</string>
+    <string name="search_advanced_match_all">匹配全部</string>
+    <string name="search_advanced_match_all_description">书签必须包含所有搜索词和选定的标签。</string>
+    <string name="search_advanced_exact_match">精确匹配</string>
+    <string name="search_advanced_exact_match_description">书签必须完全按照输入包含所有搜索词。如果您的搜索包含非拉丁字符，建议禁用此选项</string>
+
+    <string name="search_advanced_match_any">匹配任意</string>
+    <string name="search_advanced_partial_match">部分匹配</string>
+
+    <!-- Sorting -->
+    <string name="sorting_by_date_added_newest_first">按添加日期（最新优先）</string>
+    <string name="sorting_by_date_added_oldest_first">按添加日期（最早优先）</string>
+    <string name="sorting_by_date_modified_newest_first">按修改日期（最新优先）</string>
+    <string name="sorting_by_date_modified_oldest_first">按修改日期（最早优先）</string>
+    <string name="sorting_by_title_alphabetical">按标题（A 到 Z）</string>
+    <string name="sorting_by_title_alphabetical_reverse">按标题（Z 到 A）</string>
+
+    <!-- Tags -->
+    <string name="tags_title">标签</string>
+    <string name="tags_empty_title">没有标签</string>
+    <string name="tags_added_title">已添加的标签</string>
+    <string name="tags_empty_description">您保存的书签没有标签</string>
+    <string name="tags_sorting_a_to_z">A 到 Z</string>
+    <string name="tags_sorting_more_first">数量多优先</string>
+    <string name="tags_sorting_less_first">数量少优先</string>
+    <string name="tags_sorting_filter">搜索</string>
+    <string name="tag_filter_hint">标签名称</string>
+    <string name="tag_rename_title">重命名标签：%s</string>
+
+    <!-- Saved Filters -->
+    <string name="saved_filters_title">已保存的筛选器</string>
+    <string name="saved_filters_empty_title">没有已保存的筛选器</string>
+    <string name="saved_filters_empty_description">搜索书签时保存的筛选器将显示在这里</string>
+    <string name="saved_filters_saved_feedback">筛选器已保存</string>
+    <string name="saved_filters_deleted_feedback">筛选器已删除</string>
+    <string name="saved_filters_item_keywords">关键词</string>
+    <string name="saved_filters_item_tags">标签</string>
+
+    <!-- Notes -->
+    <string name="notes_title">笔记</string>
+    <plurals name="notes_quantity">
+        <item quantity="other">%d 条笔记</item>
+    </plurals>
+    <string name="notes_saved_at">保存于 %s</string>
+    <string name="notes_updated_at">最后更新于 %s</string>
+    <string name="notes_empty_title">没有笔记</string>
+    <string name="notes_empty_description">您还没有保存任何笔记</string>
+    <string name="note_sorting_date_updated_desc">最新优先</string>
+    <string name="note_sorting_date_updated_asc">最早优先</string>
+    <string name="note_sorting_a_to_z">标题 A 到 Z</string>
+
+    <!-- Popular -->
+    <string name="popular_title">热门书签</string>
+    <plurals name="popular_count">
+        <item quantity="other">被收藏 %d 次</item>
+    </plurals>
+
+    <!-- Quick Actions -->
+    <string name="quick_actions_title">快速操作</string>
+    <string name="quick_actions_add_read_later">添加到待读</string>
+    <string name="quick_actions_remove_read_later">从待读中移除</string>
+    <string name="quick_actions_copy_tags">复制标签</string>
+    <string name="quick_actions_paste_tags">粘贴标签</string>
+    <string name="quick_actions_edit">编辑书签</string>
+    <string name="quick_actions_delete">删除书签</string>
+    <string name="quick_actions_archive">归档书签</string>
+    <string name="quick_actions_unarchive">取消归档书签</string>
+    <string name="quick_actions_delete_filter">删除筛选器</string>
+    <string name="quick_actions_save">保存到我的书签</string>
+    <string name="quick_actions_save_offline_copy">保存离线副本</string>
+    <string name="quick_actions_copy_url">复制 URL</string>
+    <string name="quick_actions_share">分享书签</string>
+    <string name="quick_actions_expand_description">展开描述</string>
+    <string name="quick_actions_open_in_browser">在浏览器中打开</string>
+    <string name="quick_actions_rename">重命名</string>
+    <string name="quick_actions_submit_to_wayback">发送到 Wayback Machine</string>
+    <string name="quick_actions_search_wayback">搜索 Wayback Machine</string>
+    <string name="quick_actions_submit_to_archive_today">发送到 Archive.Today</string>
+    <string name="quick_actions_submit_to_ghost_archive">发送到 Ghost Archive</string>
+
+    <string name="quick_actions_more_options">更多选项</string>
+
+    <string name="quick_actions_customization_hidden_options_title">隐藏的选项</string>
+    <string name="quick_actions_customization_hidden_options_instruction">点击每个选项以切换其可见性</string>
+    <string name="quick_actions_customization_hidden_options_description">在查看快速操作菜单时，点击“更多选项”可以使用这些选项</string>
+
+    <string name="quick_actions_customization_save_changes">保存更改</string>
+
+    <!-- Account Switcher -->
+    <string name="account_switcher_title">账户切换</string>
+    <string name="account_switcher_select">选择</string>
+    <string name="account_switcher_logout">退出登录</string>
+    <string name="account_switcher_add_pinboard">添加 Pinboard 账户</string>
+    <string name="account_switcher_add_linkding">添加 Linkding 账户</string>
+
+    <!-- Export -->
+    <string name="export_select_service">选择要从中导出的服务</string>
+    <string name="export_feedback_success">书签导出成功！</string>
+    <string name="export_feedback_failure">导出书签失败</string>
+
+    <!-- User Preferences -->
+    <string name="user_preferences_title">偏好设置</string>
+
+    <string name="user_preferences_section_app">应用偏好</string>
+    <string name="user_preferences_section_bookmarking">书签偏好</string>
+
+    <string name="user_preferences_periodic_sync">后台同步</string>
+    <string name="user_preferences_periodic_sync_description">定期自动拉取添加到收藏的新书签</string>
+    <string name="user_preferences_periodic_sync_caveat">当应用在前台时，无论此设置如何，书签都会保持同步</string>
+    <string name="user_preferences_periodic_sync_off">关闭</string>
+    <string name="user_preferences_periodic_sync_6_hours">每 6 小时</string>
+    <string name="user_preferences_periodic_sync_12_hours">每 12 小时</string>
+    <string name="user_preferences_periodic_sync_24_hours">每 24 小时</string>
+    <string name="user_preferences_appearance">外观</string>
+    <string name="user_preferences_appearance_dark">深色主题</string>
+    <string name="user_preferences_appearance_light">浅色主题</string>
+    <string name="user_preferences_appearance_system_default">跟随系统</string>
+    <string name="user_preferences_dynamic_colors">使用动态颜色</string>
+    <string name="user_preferences_dynamic_colors_caveat">将应用颜色更改为匹配设备样式</string>
+    <string name="user_preferences_disable_screenshots">禁用截图和录制</string>
+    <string name="user_preferences_disable_screenshots_caveat">防止应用内容显示在截图和屏幕录制中</string>
+    <string name="user_preferences_date_format">首选日期格式</string>
+    <string name="user_preferences_date_format_day_first">dd/mm/yy, hh:mm</string>
+    <string name="user_preferences_date_format_month_first">mm/dd/yy, hh:mm</string>
+    <string name="user_preferences_date_format_short_year_first">yy/mm/dd, hh:mm</string>
+    <string name="user_preferences_date_format_year_first">yyyy-mm-dd, hh:mm</string>
+    <string name="user_preferences_date_format_no_date">隐藏日期</string>
+    <string name="user_preferences_date_format_include_time">包含时间（显示日期时）</string>
+    <string name="user_preferences_preferred_details_view">查看书签</string>
+    <string name="user_preferences_preferred_details_in_app_browser">使用内置浏览器</string>
+    <string name="user_preferences_preferred_details_external_browser">使用外部浏览器</string>
+    <string name="user_preferences_preferred_details_post_details">打开书签详情页</string>
+    <string name="user_preferences_preferred_details_view_caveat">浏览书签时，长按列表项可访问分享和编辑快捷方式</string>
+    <string name="user_preferences_preferred_details_view_mark_as_read_on_open">打开时标记为已读</string>
+    <string name="user_preferences_preferred_details_view_mark_as_read_on_open_caveat">自动更新书签以移除待读标记。</string>
+    <string name="user_preferences_use_split_nav">使用分栏导航</string>
+    <string name="user_preferences_use_split_nav_description">浏览时保持列表可见（适用于横屏设备、折叠屏和平板电脑）</string>
+    <string name="user_preferences_use_background_share_receiver">后台快速保存</string>
+    <string name="user_preferences_use_background_share_receiver_description">启用后，在分享菜单中选择“快速保存书签”将在后台保存书签，并通过推送通知告知结果</string>
+    <string name="user_preferences_use_background_share_receiver_missing_permission">通过设置应用授予通知权限以查看结果。</string>
+    <string name="user_preferences_follow_redirects">跟随重定向</string>
+    <string name="user_preferences_follow_redirects_description">分享书签到应用时自动跟随重定向，保存最终 URL。通过分享操作保存书签时会增加加载时间</string>
+
+    <string name="user_preferences_remove_utm_parameters">移除 UTM 参数</string>
+    <string name="user_preferences_remove_utm_parameters_description">保存前从分享到应用的 URL 中移除跟踪参数</string>
+    <string name="user_preferences_remove_url_parameters">移除 URL 参数</string>
+    <string name="user_preferences_remove_url_parameters_description">保存前从分享到应用的 URL 中移除指定参数</string>
+    <string name="user_preferences_remove_url_parameters_hint">参数名称</string>
+
+    <string name="user_preferences_description_auto_fill">自动填充标题和描述</string>
+    <string name="user_preferences_description_auto_fill_description">分享书签到应用时自动获取页面详情。通过分享操作保存书签时会增加加载时间</string>
+    <string name="user_preferences_use_blockquote">使用引用块</string>
+    <string name="user_preferences_use_blockquote_description">将描述包裹在引用块标签中</string>
+    <string name="user_preferences_description_visible_in_lists">在列表中显示描述</string>
+    <string name="user_preferences_description_visible_in_lists_description">浏览书签时显示描述的前 5 行</string>
+    <string name="user_preferences_alphabetize_tags">按字母顺序排列标签</string>
+    <string name="user_preferences_alphabetize_tags_description">启用后，书签下方的标签按字母顺序显示；否则按输入顺序显示。这不会更改标签的保存顺序。</string>
+    <string name="user_preferences_default_private_label">默认为私有</string>
+    <string name="user_preferences_default_private_description">启用后，分享到 Pinkt 的书签将保存为私有；否则将应用您的默认偏好</string>
+    <string name="user_preferences_default_read_later_label">默认为待读</string>
+    <string name="user_preferences_default_read_later_description">启用后，分享到 Pinkt 的书签将保存为待读；否则将应用您的默认偏好</string>
+    <string name="user_preferences_default_tags">默认标签</string>
+    <string name="user_preferences_default_tags_description">添加到通过 Pinkt 创建或分享的所有书签的标签</string>
+    <string name="user_preferences_edit_after_sharing_title">分享时打开编辑器</string>
+    <string name="user_preferences_edit_after_sharing_before_saving">保存前</string>
+    <string name="user_preferences_edit_after_sharing_after_saving">保存后</string>
+    <string name="user_preferences_edit_after_sharing_description">控制选择“保存书签”分享操作后何时显示书签编辑器。要跳过编辑器，请改为选择“快速保存书签”。</string>
+    <string name="user_preferences_offline_copies">离线副本</string>
+    <string name="user_preferences_offline_copies_description">已保存页面当前占用此设备 %s 的存储空间。</string>
+    <string name="user_preferences_offline_copies_clear">删除所有离线副本</string>
+    <string name="user_preferences_offline_copies_clear_confirmation">这将删除此设备上的所有已保存页面。书签保留，但离线阅读需要重新保存。继续？</string>
+
+    <string name="user_preferences_bookmark_quick_options">书签快速操作</string>
+    <string name="user_preferences_bookmark_quick_actions_description">自定义打开快速操作菜单时立即可见的选项</string>
+
+    <string name="user_preferences_customize">自定义</string>
+
+    <!-- About -->
+    <string name="about_send_feedback">发送反馈</string>
+    <string name="about_share">分享应用</string>
+    <string name="about_rate">撰写评价</string>
+    <string name="about_privacy_policy">隐私政策</string>
+    <string name="about_developer">由 Filipe Belatti 用 ❤ 开发</string>
+    <string name="about_version">应用版本：%s</string>
+    <string name="about_oss_licenses">开源许可</string>
+
+    <!-- Share -->
+    <string name="share_to_pinkt">保存书签</string>
+    <string name="share_to_pinkt_no_edit">快速保存书签</string>
+    <string name="share_to_pinkt_choose_service">保存书签到：</string>
+    <string name="share_title">分享 Pinkt</string>
+    <string name="share_text">来看看 Pinkt，一款用于 Pinboard 和 Linkding 的书签应用。在 %s 免费下载</string>
+
+    <!-- Share Notifications -->
+    <string name="share_notification_channel_name">保存书签结果</string>
+    <string name="share_notification_channel_description">显示将分享的 URL 保存为书签的结果通知</string>
+    <string name="share_notification_unprocessable_url_feedback">无法处理空的 URL。</string>
+    <string name="share_notification_missing_permission_feedback">正在添加书签… 授予通知权限以查看结果。</string>
+    <string name="share_notification_title_foreground">正在添加书签…</string>
+    <string name="share_notification_title_success">书签添加成功！</string>
+    <string name="share_notification_title_existing">发现已存在的书签，保存于 %s</string>
+    <string name="share_notification_title_failure">无法添加书签</string>
+    <string name="share_notification_opening_deep_link">正在打开深层链接…</string>
+
+    <!-- Error -->
+    <string name="error_send_email">发送邮件</string>
+    <string name="error_report_rationale">看起来出了点问题。\n\n您可以通过邮件报告此错误，这有助于我诊断和修复问题。</string>
+    <string name="error_report">报告</string>
+    <string name="error_ignore">忽略</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_navigate_back">返回</string>
+    <string name="cd_share_receiver_image">正在保存您的书签</string>
+    <string name="cd_menu">菜单</string>
+    <string name="cd_scroll_to_top">滚动到顶部</string>
+    <string name="cd_dismiss_message">关闭</string>
+</resources>
