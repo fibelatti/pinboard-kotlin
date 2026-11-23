@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,14 +45,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.hapticfeedback.HapticFeedback
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.pluralStringResource
@@ -339,20 +334,12 @@ private fun TagListItem(
     modifier: Modifier = Modifier,
     shape: Shape = Shapes.StandaloneShape,
 ) {
-    val haptic: HapticFeedback = LocalHapticFeedback.current
     ListItem(
         headlineText = item.name,
+        onClick = { onTagClick(item) },
+        modifier = modifier,
+        onLongClick = { onTagLongClick(item) },
         supportingText = pluralStringResource(R.plurals.posts_quantity, item.posts, item.posts),
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(shape)
-            .combinedClickable(
-                onClick = { onTagClick(item) },
-                onLongClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onTagLongClick(item)
-                },
-            ),
         shape = shape,
     )
 }

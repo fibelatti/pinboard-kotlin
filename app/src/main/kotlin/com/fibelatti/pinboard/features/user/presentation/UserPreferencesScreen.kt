@@ -57,7 +57,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.key.onKeyEvent
@@ -104,6 +103,7 @@ import com.fibelatti.pinboard.features.user.domain.UserPreferences
 import com.fibelatti.ui.components.ChipGroup
 import com.fibelatti.ui.components.ListItem
 import com.fibelatti.ui.components.SingleLineChipGroup
+import com.fibelatti.ui.components.defaultListItemColors
 import com.fibelatti.ui.components.rememberAppSheetState
 import com.fibelatti.ui.foundation.Shapes
 import com.fibelatti.ui.preview.PreviewAll
@@ -882,18 +882,15 @@ private fun SettingItem(
     androidx.compose.material3.ListItem(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = ListItem.MinHeight)
-            .clip(shape),
+            .heightIn(min = ListItem.MinHeight),
         supportingContent = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 content = body,
             )
         },
-        colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            contentColor = MaterialTheme.colorScheme.onSurface,
-        ),
+        shapes = ListItemDefaults.shapes(shape = shape),
+        colors = defaultListItemColors(),
     ) {
         Text(
             text = title,

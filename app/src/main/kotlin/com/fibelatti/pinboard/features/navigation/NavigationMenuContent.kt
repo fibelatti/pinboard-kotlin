@@ -14,7 +14,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -150,11 +149,8 @@ private fun MenuItem(
 ) {
     ListItem(
         headlineText = stringResource(id = textRes),
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(shape)
-            .minimumInteractiveComponentSize()
-            .clickable(onClick = onClick, role = Role.Button),
+        onClick = onClick,
+        modifier = modifier,
         leadingContent = {
             if (icon != null) {
                 Icon(

@@ -20,6 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.toggleableState
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.unit.dp
 import com.fibelatti.pinboard.core.android.icons.AppIcons
 import com.fibelatti.pinboard.core.android.icons.Check
@@ -41,12 +46,17 @@ fun SettingToggle(
 ) {
     ListItem(
         headlineText = title,
-        modifier = modifier,
+        onClick = { onCheckedChange(!checked) },
+        modifier = modifier
+            .semantics {
+                role = Role.Switch
+                toggleableState = ToggleableState(checked)
+            }
+            .testTag("setting-toggle-$title"),
         trailingContent = {
             Switch(
                 checked = checked,
-                onCheckedChange = onCheckedChange,
-                modifier = Modifier.testTag("setting-toggle-$title"),
+                onCheckedChange = null,
                 thumbContent = {
                     val icon: ImageVector = if (checked) AppIcons.Check else AppIcons.Xmark
 
