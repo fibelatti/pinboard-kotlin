@@ -1,6 +1,6 @@
 [versions]
 agp = "9.5.2"
-composeMaterial3 = "1.5.0-rc01"
+composeMaterial3 = "1.6.0-alpha01"
 composeRuntime = "1.13.0-rc01"
 composeUi = "1.13.0-rc01"
 coroutines = "1.11.0"
