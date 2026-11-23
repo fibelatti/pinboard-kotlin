@@ -1,5 +1,6 @@
 package com.fibelatti.pinboard.core.di.modules
 
+import com.fibelatti.core.functional.coRunCatching
 import com.fibelatti.pinboard.core.di.RestApi
 import com.fibelatti.pinboard.core.di.RestApiProvider
 import com.fibelatti.pinboard.core.network.UnauthorizedPluginProvider
@@ -56,7 +57,7 @@ object PinboardModule {
                 validateResponse { response ->
                     // Unfortunately nothing can be done if the server is acting up.
                     if (response.status == HttpStatusCode.InternalServerError) {
-                        runCatching {
+                        coRunCatching {
                             // Although, the action may have succeeded despite the 500 status code.
                             if (response.body<GenericResponseDto>().isDone) {
                                 // In that case, no need to abort.
